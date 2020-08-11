@@ -74,17 +74,6 @@ public class CypherBuilder {
                         }
                         propertyValuesList.add(m.property(propertyName).to(Cypher.listOf(dataValueExpressArray)));
                     }
-
-
-
-
-
-
-
-
-
-
-
                 }
             }
             Operation[] propertiesArray=propertyValuesList.toArray(new Operation[propertyValuesList.size()]);
