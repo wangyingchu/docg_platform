@@ -109,6 +109,28 @@ public class CypherBuilder {
         return rel;
     }
 
+    public static String deleteLabelWithSinglePropertyValueAndFunction(String labelName,CypherFunctionType cypherFunctionType,String propertyName,Object propertyValue){
+        Node m;
+        if(propertyName != null){
+            m = Cypher.node(labelName).named(operationResultName).withProperties(propertyName, Cypher.literalOf(propertyValue));
+        }else{
+            m = Cypher.node(labelName).named(operationResultName);
+        }
+        StatementBuilder.OngoingReadingWithoutWhere currentOngoingReadingWithoutWhere = Cypher.match(m);
+        StatementBuilder.OngoingReadingAndReturn ongoingReadingAndReturn;
+        switch(cypherFunctionType){
+            case COUNT:
+                ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.delete(m).returning(Functions.count(m));
+                break;
+            default:
+                ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.delete(m).returning(m);
+        }
+        Statement statement = ongoingReadingAndReturn.build();
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}",rel);
+        return rel;
+    }
+
     public static String matchNodeWithSingleFunctionValueEqual(CypherFunctionType propertyFunctionType,Object propertyValue,CypherFunctionType returnFunctionType){
         Node m = Cypher.anyNode().named(operationResultName);
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(m);

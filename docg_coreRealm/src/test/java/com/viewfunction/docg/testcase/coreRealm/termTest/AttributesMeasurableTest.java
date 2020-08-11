@@ -42,7 +42,9 @@ public class AttributesMeasurableTest {
             Assert.assertEquals(_ConceptionKind01.getConceptionKindDesc(),"testKind01Desc+中文描述");
         }
 
-        //Long entitiesCount = _ConceptionKind01.countConceptionEntities();
+        _ConceptionKind01.purgeAllEntities();
+        Long entitiesCount = _ConceptionKind01.countConceptionEntities();
+        Assert.assertEquals(entitiesCount,new Long(0));
 
         Map<String,Object> newEntityValue= new HashMap<>();
         newEntityValue.put("prop1",Long.parseLong("12345"));
@@ -68,17 +70,17 @@ public class AttributesMeasurableTest {
 
         ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValue);
 
-        /*
         ConceptionEntity _ConceptionEntity = _ConceptionKind01.newEntity(conceptionEntityValue,false);
         Assert.assertNotNull(_ConceptionEntity);
         Assert.assertEquals(_ConceptionEntity.getConceptionKindName(),testConceptionKindName);
         Assert.assertEquals(_ConceptionEntity.getAllConceptionKindNames().size(),1);
         Assert.assertEquals(_ConceptionEntity.getAllConceptionKindNames().get(0),testConceptionKindName);
         Assert.assertNotNull(_ConceptionEntity.getConceptionEntityUID());
-        */
 
-        String queryUIDValue = "1216";
-                //_ConceptionEntity.getConceptionEntityUID();
+        entitiesCount = _ConceptionKind01.countConceptionEntities();
+        Assert.assertEquals(entitiesCount,new Long(1));
+
+        String queryUIDValue = _ConceptionEntity.getConceptionEntityUID();
         ConceptionEntity _queryResultConceptionEntity = _ConceptionKind01.getEntityByUID(queryUIDValue);
 
         List<String> attributeNameList = _queryResultConceptionEntity.getAttributeNames();
