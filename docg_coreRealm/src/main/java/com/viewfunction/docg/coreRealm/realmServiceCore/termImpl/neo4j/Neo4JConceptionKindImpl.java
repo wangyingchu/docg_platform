@@ -10,6 +10,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payloadImpl.CommonEntitiesOperationResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 
 import java.util.Date;
@@ -132,6 +133,7 @@ public class Neo4JConceptionKindImpl implements ConceptionKind {
 
     @Override
     public EntitiesOperationResult purgeAllEntities() throws CoreRealmServiceRuntimeException{
+        CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         String deleteCql = CypherBuilder.deleteLabelWithSinglePropertyValueAndFunction(this.conceptionKindName,
                 CypherBuilder.CypherFunctionType.COUNT,null,null);
@@ -139,66 +141,16 @@ public class Neo4JConceptionKindImpl implements ConceptionKind {
                 new GetLongFormatAggregatedReturnValueTransformer("count");
         Object deleteResultObject = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer,deleteCql);
 
-
-        System.out.println(deleteResultObject);
-        System.out.println(deleteResultObject);
-        System.out.println(deleteResultObject);
-        System.out.println(deleteResultObject);
-        /*
-        workingGraphOperationExecutor.executeWrite(new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-
-
-                if(result.hasNext()){
-                    Record returnValue = result.next();
-                    System.out.println(returnValue.asMap());
-
-                }
-
-                System.out.println(result.hasNext());
-
-
-                return null;
-            }
-        },deleteCql);
-        */
-
         this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-
-
         if(deleteResultObject == null){
             throw new CoreRealmServiceRuntimeException();
         }else{
-
-            EntitiesOperationResult EntitiesOperationResult = new EntitiesOperationResult() {
-                @Override
-                public List<String> getSuccessEntityUIDs() {
-                    return null;
-                }
-
-                @Override
-                public EntitiesOperationStatistics getOperationStatistics() {
-                    return null;
-                }
-            };
-
-
+            commonEntitiesOperationResultImpl.getOperationStatistics().setSuccessItemsCount((Long)deleteResultObject);
+            commonEntitiesOperationResultImpl.getOperationStatistics().
+                    setOperationSummary("purgeAllEntities operation for conceptionKind "+this.conceptionKindName+" success.");
         }
-
-
-
-        /*
-
-        String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(conceptionEntityUID),null);
-        GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
-                new GetSingleConceptionEntityTransformer(this.conceptionKindName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
-        Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,queryCql);
-
-        //return newEntityRes != null ? (ConceptionEntity)newEntityRes:null;
-        */
-
-        return null;
+        commonEntitiesOperationResultImpl.finishEntitiesOperation();
+        return commonEntitiesOperationResultImpl;
     }
 
     @Override

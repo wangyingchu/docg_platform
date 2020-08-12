@@ -3,6 +3,7 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
@@ -42,7 +43,17 @@ public class AttributesMeasurableTest {
             Assert.assertEquals(_ConceptionKind01.getConceptionKindDesc(),"testKind01Desc+中文描述");
         }
 
-        _ConceptionKind01.purgeAllEntities();
+        EntitiesOperationResult purgeEntitiesOperationResult = _ConceptionKind01.purgeAllEntities();
+
+        Assert.assertNotNull(purgeEntitiesOperationResult.getOperationStatistics());
+        Assert.assertNotNull(purgeEntitiesOperationResult.getOperationStatistics().getStartTime());
+        Assert.assertNotNull(purgeEntitiesOperationResult.getOperationStatistics().getFinishTime());
+        Assert.assertNotNull(purgeEntitiesOperationResult.getOperationStatistics().getOperationSummary());
+        Assert.assertEquals(purgeEntitiesOperationResult.getOperationStatistics().getFailItemsCount(),0);
+
+        Assert.assertNotNull(purgeEntitiesOperationResult.getSuccessEntityUIDs());
+        Assert.assertEquals(purgeEntitiesOperationResult.getSuccessEntityUIDs().size(),0);
+
         Long entitiesCount = _ConceptionKind01.countConceptionEntities();
         Assert.assertEquals(entitiesCount,new Long(0));
 

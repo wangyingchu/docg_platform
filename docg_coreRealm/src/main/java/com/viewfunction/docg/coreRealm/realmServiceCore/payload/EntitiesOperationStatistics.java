@@ -53,4 +53,8 @@ public class EntitiesOperationStatistics {
     public void setFailItemsCount(long failItemsCount) {
         this.failItemsCount = failItemsCount;
     }
+
+    public void setSuccessItemsCount(long successItemsCount) {
+        this.successItemsCount = successItemsCount;
+    }
 }
