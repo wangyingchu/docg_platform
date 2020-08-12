@@ -162,7 +162,7 @@ public class Neo4JConceptionKindImpl implements ConceptionKind {
     public ConceptionEntity getEntityByUID(String conceptionEntityUID) {
         if (conceptionEntityUID != null) {
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-            String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(conceptionEntityUID),null);
+            String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(conceptionEntityUID),null,null);
             GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
                     new GetSingleConceptionEntityTransformer(this.conceptionKindName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,queryCql);

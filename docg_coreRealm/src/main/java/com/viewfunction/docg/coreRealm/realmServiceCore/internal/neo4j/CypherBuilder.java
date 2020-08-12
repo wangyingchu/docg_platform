@@ -17,7 +17,7 @@ public class CypherBuilder {
     private static final Renderer cypherRenderer = Renderer.getDefaultRenderer();
     public static final String operationResultName = "operationResult";
     public enum CypherFunctionType{
-        COUNT,ID,KEYS,PROPERTIES
+        COUNT,ID,KEYS,PROPERTIES,EXISTS
     }
     private static final ZoneId systemDefaultZoneId = ZoneId.systemDefault();
 
@@ -131,7 +131,7 @@ public class CypherBuilder {
         return rel;
     }
 
-    public static String matchNodeWithSingleFunctionValueEqual(CypherFunctionType propertyFunctionType,Object propertyValue,CypherFunctionType returnFunctionType){
+    public static String matchNodeWithSingleFunctionValueEqual(CypherFunctionType propertyFunctionType,Object propertyValue,CypherFunctionType returnFunctionType,String additionalPropertyName){
         Node m = Cypher.anyNode().named(operationResultName);
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(m);
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
@@ -158,6 +158,12 @@ public class CypherBuilder {
                         statement = ongoingReadingWithoutWhere.returning(Functions2.properties(m)).build();
                     }
                     break;
+                case EXISTS:
+                    if(ongoingReadingWithWhere != null){
+                        statement = ongoingReadingWithWhere.returning(Functions.exists(m.property(additionalPropertyName))).build();
+                    }else{
+                        statement = ongoingReadingWithoutWhere.returning(Functions.exists(m.property(additionalPropertyName))).build();
+                    }
             }
         }else{
             if(ongoingReadingWithWhere != null){
@@ -165,6 +171,31 @@ public class CypherBuilder {
             }else{
                 statement = ongoingReadingWithoutWhere.returning(m).build();
             }
+        }
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}",rel);
+        return rel;
+    }
+
+    public static String matchNodePropertiesWithSingleValueEqual(CypherFunctionType propertyFunctionType,Object propertyValue,String[] targetPropertyNames){
+        Node m = Cypher.anyNode().named(operationResultName);
+        StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(m);
+        StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
+        switch(propertyFunctionType){
+            case ID:
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(m).isEqualTo(Cypher.literalOf(propertyValue)));
+                break;
+            default:
+        }
+        Statement statement;
+        if(targetPropertyNames !=null && targetPropertyNames.length>0) {
+            Property[] targetPropertiesArray = new Property[targetPropertyNames.length];
+            for (int i = 0; i < targetPropertyNames.length; i++) {
+                targetPropertiesArray[i] = m.property(targetPropertyNames[i]);
+            }
+            statement = ongoingReadingWithWhere.returning(targetPropertiesArray).build();
+        }else{
+            statement = ongoingReadingWithWhere.returning(m).build();
         }
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}",rel);

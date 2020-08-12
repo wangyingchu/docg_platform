@@ -128,110 +128,115 @@ public class CommonOperationUtil {
                         !key.equals(RealmConstant._lastModifyDateProperty)&&
                         !key.equals(RealmConstant._dataOriginProperty)){
                     Object attributeValueObject = attributesValueMap.get(key);
-                    AttributeDataType currentAttributeDataType = null;
-                    if(attributeValueObject instanceof List && ((List<?>) attributeValueObject).size()>0){
-                        Object firstAttributeValue = ((List<?>) attributeValueObject).get(0);
-                        AttributeDataType firstValueType = checkAttributeDataType(firstAttributeValue);
-                        switch(firstValueType){
-                            case BOOLEAN: currentAttributeDataType = AttributeDataType.BOOLEAN_ARRAY;break;
-                            case INT: currentAttributeDataType = AttributeDataType.INT_ARRAY;break;
-                            case SHORT: currentAttributeDataType = AttributeDataType.SHORT_ARRAY;break;
-                            case LONG: currentAttributeDataType = AttributeDataType.LONG_ARRAY;break;
-                            case FLOAT: currentAttributeDataType = AttributeDataType.FLOAT_ARRAY;break;
-                            case DOUBLE: currentAttributeDataType = AttributeDataType.DOUBLE_ARRAY;break;
-                            case DECIMAL: currentAttributeDataType = AttributeDataType.DECIMAL_ARRAY;break;
-                            case STRING: currentAttributeDataType = AttributeDataType.STRING_ARRAY;break;
-                            case BINARY: currentAttributeDataType = AttributeDataType.BINARY_ARRAY;break;
-                            case DATE: currentAttributeDataType = AttributeDataType.DATE_ARRAY;break;
-                        }
-                    }else{
-                        currentAttributeDataType = checkAttributeDataType(attributeValueObject);
-                    }
-
-                    AttributeValue currentAttributeValue = new AttributeValue();
-                    currentAttributeValue.setAttributeName(key.toString());
-
-                    boolean needSetAttributeValue = true;
-                    switch(currentAttributeDataType){
-                        case DATE:
-                            ZonedDateTime currentZonedDateTime = (ZonedDateTime)attributeValueObject;
-                            Date currentDate = Date.from(currentZonedDateTime.toInstant());
-                            currentAttributeValue.setAttributeValue(currentDate);
-                            needSetAttributeValue = false;
-                            break;
-                        case DATE_ARRAY:
-                            List<ZonedDateTime> valueList = (List<ZonedDateTime>)attributeValueObject;
-                            Date[] returnDateValueArray = new Date[valueList.size()];
-                            for(int i=0;i<valueList.size();i++){
-                                returnDateValueArray[i] = Date.from(valueList.get(i).toInstant());
-                            }
-                            currentAttributeValue.setAttributeValue(returnDateValueArray);
-                            needSetAttributeValue = false;
-                            break;
-                        case INT_ARRAY:
-                            List<Integer> intValueList = (List<Integer>)attributeValueObject;
-                            Integer[] returnIntValueArray = intValueList.toArray(new Integer[intValueList.size()]);
-                            currentAttributeValue.setAttributeValue(returnIntValueArray);
-                            needSetAttributeValue = false;
-                            break;
-                        case LONG_ARRAY:
-                            List<Long> longValueList = (List<Long>)attributeValueObject;
-                            Long[] returnLongValueArray = longValueList.toArray(new Long[longValueList.size()]);
-                            currentAttributeValue.setAttributeValue(returnLongValueArray);
-                            needSetAttributeValue = false;
-                            break;
-                        case FLOAT_ARRAY:
-                            List<Float> floatValueList = (List<Float>)attributeValueObject;
-                            Float[] returnFloatValueArray = floatValueList.toArray(new Float[floatValueList.size()]);
-                            currentAttributeValue.setAttributeValue(returnFloatValueArray);
-                            needSetAttributeValue = false;
-                            break;
-                        case SHORT_ARRAY:
-                            List<Short> shortValueList = (List<Short>)attributeValueObject;
-                            Short[] returnShortValueArray = shortValueList.toArray(new Short[shortValueList.size()]);
-                            currentAttributeValue.setAttributeValue(returnShortValueArray);
-                            needSetAttributeValue = false;
-                            break;
-                        case BINARY_ARRAY:
-                            List<Byte> byteValueList = (List<Byte>)attributeValueObject;
-                            Byte[] returnByteValueArray = byteValueList.toArray(new Byte[byteValueList.size()]);
-                            currentAttributeValue.setAttributeValue(returnByteValueArray);
-                            needSetAttributeValue = false;
-                            break;
-                        case DOUBLE_ARRAY:
-                            List<Double> doubleValueList = (List<Double>)attributeValueObject;
-                            Double[] returnDoubleValueArray = doubleValueList.toArray(new Double[doubleValueList.size()]);
-                            currentAttributeValue.setAttributeValue(returnDoubleValueArray);
-                            needSetAttributeValue = false;
-                            break;
-                        case STRING_ARRAY:
-                            List<String> stringValueList = (List<String>)attributeValueObject;
-                            String[] returnStringValueArray = stringValueList.toArray(new String[stringValueList.size()]);
-                            currentAttributeValue.setAttributeValue(returnStringValueArray);
-                            needSetAttributeValue = false;
-                            break;
-                        case BOOLEAN_ARRAY:
-                            List<Boolean> booleanValueList = (List<Boolean>)attributeValueObject;
-                            Boolean[] returnBooleanValueArray = booleanValueList.toArray(new Boolean[booleanValueList.size()]);
-                            currentAttributeValue.setAttributeValue(returnBooleanValueArray);
-                            needSetAttributeValue = false;
-                            break;
-                        case DECIMAL_ARRAY:
-                            List<BigDecimal> bigDecimalValueList = (List<BigDecimal>)attributeValueObject;
-                            BigDecimal[] returnBigDecimalValueArray = bigDecimalValueList.toArray(new BigDecimal[bigDecimalValueList.size()]);
-                            currentAttributeValue.setAttributeValue(returnBigDecimalValueArray);
-                            needSetAttributeValue = false;
-                            break;
-                    }
-                    if(needSetAttributeValue) {
-                        currentAttributeValue.setAttributeValue(attributeValueObject);
-                    }
-                    currentAttributeValue.setAttributeDataType(currentAttributeDataType);
+                    AttributeValue currentAttributeValue = getAttributeValue(key.toString(),attributeValueObject);
                     attributeValueList.add(currentAttributeValue);
                 }
             }
         }
         return attributeValueList;
+    }
+
+    public static AttributeValue getAttributeValue(String attributeName,Object attributeValueObject){
+        AttributeDataType currentAttributeDataType = null;
+        if(attributeValueObject instanceof List && ((List<?>) attributeValueObject).size()>0){
+            Object firstAttributeValue = ((List<?>) attributeValueObject).get(0);
+            AttributeDataType firstValueType = checkAttributeDataType(firstAttributeValue);
+            switch(firstValueType){
+                case BOOLEAN: currentAttributeDataType = AttributeDataType.BOOLEAN_ARRAY;break;
+                case INT: currentAttributeDataType = AttributeDataType.INT_ARRAY;break;
+                case SHORT: currentAttributeDataType = AttributeDataType.SHORT_ARRAY;break;
+                case LONG: currentAttributeDataType = AttributeDataType.LONG_ARRAY;break;
+                case FLOAT: currentAttributeDataType = AttributeDataType.FLOAT_ARRAY;break;
+                case DOUBLE: currentAttributeDataType = AttributeDataType.DOUBLE_ARRAY;break;
+                case DECIMAL: currentAttributeDataType = AttributeDataType.DECIMAL_ARRAY;break;
+                case STRING: currentAttributeDataType = AttributeDataType.STRING_ARRAY;break;
+                case BINARY: currentAttributeDataType = AttributeDataType.BINARY_ARRAY;break;
+                case DATE: currentAttributeDataType = AttributeDataType.DATE_ARRAY;break;
+            }
+        }else{
+            currentAttributeDataType = checkAttributeDataType(attributeValueObject);
+        }
+
+        AttributeValue currentAttributeValue = new AttributeValue();
+        currentAttributeValue.setAttributeName(attributeName);
+
+        boolean needSetAttributeValue = true;
+        switch(currentAttributeDataType){
+            case DATE:
+                ZonedDateTime currentZonedDateTime = (ZonedDateTime)attributeValueObject;
+                Date currentDate = Date.from(currentZonedDateTime.toInstant());
+                currentAttributeValue.setAttributeValue(currentDate);
+                needSetAttributeValue = false;
+                break;
+            case DATE_ARRAY:
+                List<ZonedDateTime> valueList = (List<ZonedDateTime>)attributeValueObject;
+                Date[] returnDateValueArray = new Date[valueList.size()];
+                for(int i=0;i<valueList.size();i++){
+                    returnDateValueArray[i] = Date.from(valueList.get(i).toInstant());
+                }
+                currentAttributeValue.setAttributeValue(returnDateValueArray);
+                needSetAttributeValue = false;
+                break;
+            case INT_ARRAY:
+                List<Integer> intValueList = (List<Integer>)attributeValueObject;
+                Integer[] returnIntValueArray = intValueList.toArray(new Integer[intValueList.size()]);
+                currentAttributeValue.setAttributeValue(returnIntValueArray);
+                needSetAttributeValue = false;
+                break;
+            case LONG_ARRAY:
+                List<Long> longValueList = (List<Long>)attributeValueObject;
+                Long[] returnLongValueArray = longValueList.toArray(new Long[longValueList.size()]);
+                currentAttributeValue.setAttributeValue(returnLongValueArray);
+                needSetAttributeValue = false;
+                break;
+            case FLOAT_ARRAY:
+                List<Float> floatValueList = (List<Float>)attributeValueObject;
+                Float[] returnFloatValueArray = floatValueList.toArray(new Float[floatValueList.size()]);
+                currentAttributeValue.setAttributeValue(returnFloatValueArray);
+                needSetAttributeValue = false;
+                break;
+            case SHORT_ARRAY:
+                List<Short> shortValueList = (List<Short>)attributeValueObject;
+                Short[] returnShortValueArray = shortValueList.toArray(new Short[shortValueList.size()]);
+                currentAttributeValue.setAttributeValue(returnShortValueArray);
+                needSetAttributeValue = false;
+                break;
+            case BINARY_ARRAY:
+                List<Byte> byteValueList = (List<Byte>)attributeValueObject;
+                Byte[] returnByteValueArray = byteValueList.toArray(new Byte[byteValueList.size()]);
+                currentAttributeValue.setAttributeValue(returnByteValueArray);
+                needSetAttributeValue = false;
+                break;
+            case DOUBLE_ARRAY:
+                List<Double> doubleValueList = (List<Double>)attributeValueObject;
+                Double[] returnDoubleValueArray = doubleValueList.toArray(new Double[doubleValueList.size()]);
+                currentAttributeValue.setAttributeValue(returnDoubleValueArray);
+                needSetAttributeValue = false;
+                break;
+            case STRING_ARRAY:
+                List<String> stringValueList = (List<String>)attributeValueObject;
+                String[] returnStringValueArray = stringValueList.toArray(new String[stringValueList.size()]);
+                currentAttributeValue.setAttributeValue(returnStringValueArray);
+                needSetAttributeValue = false;
+                break;
+            case BOOLEAN_ARRAY:
+                List<Boolean> booleanValueList = (List<Boolean>)attributeValueObject;
+                Boolean[] returnBooleanValueArray = booleanValueList.toArray(new Boolean[booleanValueList.size()]);
+                currentAttributeValue.setAttributeValue(returnBooleanValueArray);
+                needSetAttributeValue = false;
+                break;
+            case DECIMAL_ARRAY:
+                List<BigDecimal> bigDecimalValueList = (List<BigDecimal>)attributeValueObject;
+                BigDecimal[] returnBigDecimalValueArray = bigDecimalValueList.toArray(new BigDecimal[bigDecimalValueList.size()]);
+                currentAttributeValue.setAttributeValue(returnBigDecimalValueArray);
+                needSetAttributeValue = false;
+                break;
+        }
+        if(needSetAttributeValue) {
+            currentAttributeValue.setAttributeValue(attributeValueObject);
+        }
+        currentAttributeValue.setAttributeDataType(currentAttributeDataType);
+        return currentAttributeValue;
     }
 
     public static AttributeDataType checkAttributeDataType(Object attributeValueObject){

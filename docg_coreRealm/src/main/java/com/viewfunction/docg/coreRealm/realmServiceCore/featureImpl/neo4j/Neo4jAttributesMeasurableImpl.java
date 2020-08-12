@@ -4,15 +4,10 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.AttributesMeasurable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListFormatAggregatedReturnValueTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetMapFormatAggregatedReturnValueTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
-import org.neo4j.driver.Result;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -37,9 +32,10 @@ public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
     public List<AttributeValue> getAttributes() {
         if (this.entityUID != null) {
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-            String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.entityUID),CypherBuilder.CypherFunctionType.PROPERTIES);
+            String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.entityUID),CypherBuilder.CypherFunctionType.PROPERTIES,null);
             GetMapFormatAggregatedReturnValueTransformer getMapFormatAggregatedReturnValueTransformer = new GetMapFormatAggregatedReturnValueTransformer("properties");
             Object resultRes = workingGraphOperationExecutor.executeRead(getMapFormatAggregatedReturnValueTransformer,queryCql);
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             Map attributeValuesMap = (Map)resultRes;
             List<AttributeValue> attributeValueList = CommonOperationUtil.getAttributeValueList(attributeValuesMap);
             return attributeValueList;
@@ -49,6 +45,14 @@ public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
 
     @Override
     public boolean hasAttribute(String attributeName) {
+        if (this.entityUID != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(this.entityUID), CypherBuilder.CypherFunctionType.EXISTS, attributeName);
+            GetBooleanFormatAggregatedReturnValueTransformer getBooleanFormatAggregatedReturnValueTransformer = new GetBooleanFormatAggregatedReturnValueTransformer("exists",attributeName);
+            Object resultRes = workingGraphOperationExecutor.executeRead(getBooleanFormatAggregatedReturnValueTransformer,queryCql);
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            return resultRes != null ? (Boolean)resultRes : false;
+        }
         return false;
     }
 
@@ -56,9 +60,10 @@ public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
     public List<String> getAttributeNames() {
         if (this.entityUID != null) {
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-            String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.entityUID),CypherBuilder.CypherFunctionType.KEYS);
+            String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.entityUID),CypherBuilder.CypherFunctionType.KEYS,null);
             GetListFormatAggregatedReturnValueTransformer getListFormatAggregatedReturnValueTransformer = new GetListFormatAggregatedReturnValueTransformer("keys");
             Object resultRes = workingGraphOperationExecutor.executeRead(getListFormatAggregatedReturnValueTransformer,queryCql);
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             List<String> returnAttributeNameList = (List<String>)resultRes;
             List<String> resultAttributeNameList = CommonOperationUtil.clearSystemBuiltinAttributeNames(returnAttributeNameList);
             return resultAttributeNameList;
@@ -68,6 +73,14 @@ public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
 
     @Override
     public AttributeValue getAttribute(String attributeName) {
+        if (this.entityUID != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            String queryCql = CypherBuilder.matchNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.entityUID),new String[]{attributeName});
+            GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(attributeName);
+            Object resultRes = workingGraphOperationExecutor.executeRead(getSingleAttributeValueTransformer,queryCql);
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            return resultRes != null?(AttributeValue)resultRes : null;
+        }
         return null;
     }
 
