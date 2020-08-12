@@ -201,4 +201,60 @@ public class CypherBuilder {
         logger.debug("Generated Cypher Statement: {}",rel);
         return rel;
     }
+
+    public static String setNodePropertiesWithSingleValueEqual(CypherFunctionType propertyFunctionType,Object propertyValue,Map<String,Object> originalTargetPropertiesMap){
+        Node m = Cypher.anyNode().named(operationResultName);
+        StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(m);
+        StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
+        switch(propertyFunctionType){
+            case ID:
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(m).isEqualTo(Cypher.literalOf(propertyValue)));
+                break;
+            default:
+        }
+        Statement statement;
+        Map<String,Object> targetPropertiesMap = CommonOperationUtil.reformatPropertyValues(originalTargetPropertiesMap);
+        if(targetPropertiesMap !=null && targetPropertiesMap.size()>0) {
+            Expression[] targetPropertiesArray = new Expression[targetPropertiesMap.size()];
+            Property[] targetNewAddPropertiesArray = new Property[targetPropertiesMap.size()];
+            Object[] keysObjectArray = targetPropertiesMap.keySet().toArray();
+            for (int i = 0; i < keysObjectArray.length; i++) {
+                String currentKey = keysObjectArray[i].toString();
+                Object currentValue = targetPropertiesMap.get(currentKey);
+                targetNewAddPropertiesArray[i] = m.property(currentKey);
+
+                if(currentValue instanceof ZonedDateTime){
+                    ZonedDateTime targetZonedDateTime = (ZonedDateTime)currentValue;
+                    String targetZonedDateTimeString = targetZonedDateTime.toString();
+                    targetPropertiesArray[i] = m.property(currentKey).to(Functions2.datetime(Cypher.literalOf(targetZonedDateTimeString)));
+                }
+                else if(currentValue instanceof Date){
+                    ZonedDateTime targetZonedDateTime = ZonedDateTime.ofInstant(((Date)currentValue).toInstant(), systemDefaultZoneId);
+                    String targetZonedDateTimeString = targetZonedDateTime.toString();
+                    targetPropertiesArray[i] = m.property(currentKey).to(Functions2.datetime(Cypher.literalOf(targetZonedDateTimeString)));
+                }
+                else if(currentValue instanceof CharSequence || currentValue instanceof Number ||
+                        currentValue instanceof Iterable || currentValue instanceof Boolean){
+                    targetPropertiesArray[i] = m.property(currentKey).to(Cypher.literalOf(currentValue));
+                }
+                else if(propertyValue instanceof Date[]){
+                    Date[] dateValueArray = (Date[])propertyValue;
+                    Expression[] dataValueExpressArray = new Expression[dateValueArray.length];
+                    for(int j=0;j<dateValueArray.length;j++){
+                        Date currentInnerValue = dateValueArray[j];
+                        ZonedDateTime targetZonedDateTime = ZonedDateTime.ofInstant(currentInnerValue.toInstant(), systemDefaultZoneId);
+                        String targetZonedDateTimeString = targetZonedDateTime.toString();
+                        dataValueExpressArray[i] = Functions2.datetime(Cypher.literalOf(targetZonedDateTimeString));
+                    }
+                    targetPropertiesArray[i] = m.property(currentKey).to(Cypher.listOf(dataValueExpressArray));
+                }
+            }
+            statement = ongoingReadingWithWhere.set(targetPropertiesArray).returning(targetNewAddPropertiesArray).build();
+        }else{
+            statement = ongoingReadingWithWhere.returning(m).build();
+        }
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}",rel);
+        return rel;
+    }
 }

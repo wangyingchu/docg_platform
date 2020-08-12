@@ -270,5 +270,130 @@ public class AttributesMeasurableTest {
                 Assert.assertNotNull(((Date[])currentAttributeValueObj)[3]);
             }
         }
+
+        AttributeValue attributeValueNotExist = _queryResultConceptionEntity.getAttribute("valueNotExost");
+        Assert.assertNull(attributeValueNotExist);
+
+        AttributeValue attributeValue_prop18 = _queryResultConceptionEntity.getAttribute("prop18");
+        Assert.assertNotNull(attributeValue_prop18);
+        Assert.assertEquals(attributeValue_prop18.getAttributeDataType(),AttributeDataType.DATE_ARRAY);
+        Assert.assertTrue(attributeValue_prop18.getAttributeValue() instanceof Date[]);
+        Assert.assertEquals(((Date[])attributeValue_prop18.getAttributeValue()).length,4);
+        Assert.assertTrue(((Date[])attributeValue_prop18.getAttributeValue())[0] instanceof Date);
+        Assert.assertNotNull(((Date[])attributeValue_prop18.getAttributeValue())[0]);
+        Assert.assertNotNull(((Date[])attributeValue_prop18.getAttributeValue())[1]);
+        Assert.assertNotNull(((Date[])attributeValue_prop18.getAttributeValue())[2]);
+        Assert.assertNotNull(((Date[])attributeValue_prop18.getAttributeValue())[3]);
+
+        AttributeValue attributeValue_prop16 = _queryResultConceptionEntity.getAttribute("prop16");
+        Assert.assertNotNull(attributeValue_prop16);
+        Assert.assertEquals(attributeValue_prop16.getAttributeDataType(),AttributeDataType.DOUBLE_ARRAY);
+        Assert.assertTrue(attributeValue_prop16.getAttributeValue() instanceof Double[]);
+        Assert.assertEquals(((Double[])attributeValue_prop16.getAttributeValue()).length,3);
+        Assert.assertTrue(((Double[])attributeValue_prop16.getAttributeValue())[0] instanceof Double);
+        Assert.assertEquals(((Double[])attributeValue_prop16.getAttributeValue())[0],new Double(1000.1d));
+        Assert.assertEquals(((Double[])attributeValue_prop16.getAttributeValue())[1],new Double(2000.2));
+        Assert.assertEquals(((Double[])attributeValue_prop16.getAttributeValue())[2],new Double(3000.3));
+
+        AttributeValue attributeValue_prop4 = _queryResultConceptionEntity.getAttribute("prop4");
+        Assert.assertNotNull(attributeValue_prop4);
+        Assert.assertEquals(attributeValue_prop4.getAttributeDataType(),AttributeDataType.STRING);
+        Assert.assertTrue(attributeValue_prop4.getAttributeValue() instanceof String);
+        Assert.assertEquals(attributeValue_prop4.getAttributeValue(),"thi is s string");
+
+        AttributeValue attributeValue_prop5 = _queryResultConceptionEntity.getAttribute("prop5");
+        Assert.assertNotNull(attributeValue_prop5);
+        Assert.assertEquals(attributeValue_prop5.getAttributeDataType(),AttributeDataType.BOOLEAN);
+        Assert.assertTrue(attributeValue_prop5.getAttributeValue() instanceof Boolean);
+        Assert.assertEquals(attributeValue_prop5.getAttributeValue(),true);
+        Assert.assertEquals(attributeValue_prop5.getAttributeValue(),new Boolean(true));
+
+        AttributeValue attributeValue_prop6 = _queryResultConceptionEntity.getAttribute("prop6");
+        Assert.assertNotNull(attributeValue_prop6);
+        Assert.assertEquals(attributeValue_prop6.getAttributeDataType(),AttributeDataType.DOUBLE);
+        Assert.assertTrue(attributeValue_prop6.getAttributeValue() instanceof Double);
+        Assert.assertEquals(attributeValue_prop6.getAttributeValue(),5566778890.223344d);
+        Assert.assertEquals(attributeValue_prop6.getAttributeValue(),new Double(5566778890.223344));
+
+        AttributeValue attributeValue_prop7 = _queryResultConceptionEntity.getAttribute("prop7");
+        Assert.assertNotNull(attributeValue_prop7);
+        Assert.assertEquals(attributeValue_prop7.getAttributeDataType(),AttributeDataType.LONG);
+        Assert.assertTrue(attributeValue_prop7.getAttributeValue() instanceof Long);
+        Assert.assertEquals(attributeValue_prop7.getAttributeValue(),24l);
+        Assert.assertEquals(attributeValue_prop7.getAttributeValue(),new Long(24));
+
+        Assert.assertTrue( _queryResultConceptionEntity.hasAttribute("prop1"));
+        Assert.assertTrue( _queryResultConceptionEntity.hasAttribute("prop7"));
+        Assert.assertTrue( _queryResultConceptionEntity.hasAttribute("prop9"));
+        Assert.assertTrue( _queryResultConceptionEntity.hasAttribute("prop20"));
+        Assert.assertFalse( _queryResultConceptionEntity.hasAttribute("propNotExist"));
+
+        AttributeValue newAddedAttributeValue1 = _queryResultConceptionEntity.addAttribute("newBooleanAttribute1",false);
+        Assert.assertNotNull(newAddedAttributeValue1);
+        Assert.assertEquals(newAddedAttributeValue1.getAttributeDataType(),AttributeDataType.BOOLEAN);
+        Assert.assertTrue(newAddedAttributeValue1.getAttributeValue() instanceof Boolean);
+        Assert.assertEquals(newAddedAttributeValue1.getAttributeValue(),false);
+        Assert.assertEquals(newAddedAttributeValue1.getAttributeValue(),new Boolean(false));
+
+        AttributeValue newAddedAttributeValue2 = _queryResultConceptionEntity.addAttribute("newBooleanAttribute2",true);
+        Assert.assertNotNull(newAddedAttributeValue2);
+        Assert.assertEquals(newAddedAttributeValue2.getAttributeDataType(),AttributeDataType.BOOLEAN);
+        Assert.assertTrue(newAddedAttributeValue2.getAttributeValue() instanceof Boolean);
+        Assert.assertEquals(newAddedAttributeValue2.getAttributeValue(),true);
+        Assert.assertEquals(newAddedAttributeValue2.getAttributeValue(),new Boolean(true));
+
+        AttributeValue newAddedAttributeValue3 = _queryResultConceptionEntity.addAttribute("newIntAttribute",5000);
+        Assert.assertNotNull(newAddedAttributeValue3);
+        Assert.assertEquals(newAddedAttributeValue3.getAttributeDataType(),AttributeDataType.LONG);
+        Assert.assertTrue(newAddedAttributeValue3.getAttributeValue() instanceof Long);
+        Assert.assertEquals(newAddedAttributeValue3.getAttributeValue(),new Long(5000));
+
+        AttributeValue newAddedAttributeValue4 = _queryResultConceptionEntity.addAttribute("newShortAttribute",Short.valueOf("25"));
+        Assert.assertNotNull(newAddedAttributeValue4);
+        Assert.assertEquals(newAddedAttributeValue4.getAttributeDataType(),AttributeDataType.LONG);
+        Assert.assertTrue(newAddedAttributeValue4.getAttributeValue() instanceof Long);
+        Assert.assertEquals(newAddedAttributeValue4.getAttributeValue(),new Long(25));
+
+        AttributeValue newAddedAttributeValue5 = _queryResultConceptionEntity.addAttribute("newLongAttribute",4566777l);
+        Assert.assertNotNull(newAddedAttributeValue5);
+        Assert.assertEquals(newAddedAttributeValue5.getAttributeDataType(),AttributeDataType.LONG);
+        Assert.assertTrue(newAddedAttributeValue5.getAttributeValue() instanceof Long);
+        Assert.assertEquals(newAddedAttributeValue5.getAttributeValue(),new Long(4566777l));
+
+        AttributeValue newAddedAttributeValue6 = _queryResultConceptionEntity.addAttribute("newFloatAttribute",3456.9f);
+        Assert.assertNotNull(newAddedAttributeValue6);
+        Assert.assertEquals(newAddedAttributeValue6.getAttributeDataType(),AttributeDataType.DOUBLE);
+        Assert.assertTrue(newAddedAttributeValue6.getAttributeValue() instanceof Double);
+        Assert.assertEquals(newAddedAttributeValue6.getAttributeValue(),new Double(3456.9));
+
+        AttributeValue newAddedAttributeValue7 = _queryResultConceptionEntity.addAttribute("newDoubleAttribute",5673.999521d);
+        Assert.assertNotNull(newAddedAttributeValue7);
+        Assert.assertEquals(newAddedAttributeValue7.getAttributeDataType(),AttributeDataType.DOUBLE);
+        Assert.assertTrue(newAddedAttributeValue7.getAttributeValue() instanceof Double);
+        Assert.assertEquals(newAddedAttributeValue7.getAttributeValue(),new Double(5673.999521d));
+
+        Date targetDate = new Date();
+        AttributeValue newAddedAttributeValue8 = _queryResultConceptionEntity.addAttribute("newDateAttribute",targetDate);
+        Assert.assertNotNull(newAddedAttributeValue8);
+        Assert.assertEquals(newAddedAttributeValue8.getAttributeDataType(),AttributeDataType.DATE);
+        Assert.assertTrue(newAddedAttributeValue8.getAttributeValue() instanceof Date);
+        Assert.assertEquals(newAddedAttributeValue8.getAttributeValue(),targetDate);
+
+        AttributeValue newAddedAttributeValue9 = _queryResultConceptionEntity.addAttribute("newStringAttribute","string值");
+        Assert.assertNotNull(newAddedAttributeValue9);
+        Assert.assertEquals(newAddedAttributeValue9.getAttributeDataType(),AttributeDataType.STRING);
+        Assert.assertTrue(newAddedAttributeValue9.getAttributeValue() instanceof String);
+        Assert.assertEquals(newAddedAttributeValue9.getAttributeValue(),"string值");
+
+        byte[] byteArray = "this is string for byte array".getBytes();
+        AttributeValue newAddedAttributeValue10 = _queryResultConceptionEntity.addAttribute("newByteArrayAttribute",byteArray);
+        Assert.assertNotNull(newAddedAttributeValue10);
+        Assert.assertEquals(newAddedAttributeValue10.getAttributeDataType(),AttributeDataType.LONG_ARRAY);
+        Assert.assertTrue(newAddedAttributeValue10.getAttributeValue() instanceof  Long[]);
+        //Assert.assertEquals(newAddedAttributeValue10.getAttributeValue(),byteArray);
+
+
+
+
     }
 }
