@@ -244,7 +244,7 @@ public class CypherBuilder {
                         Date currentInnerValue = dateValueArray[j];
                         ZonedDateTime targetZonedDateTime = ZonedDateTime.ofInstant(currentInnerValue.toInstant(), systemDefaultZoneId);
                         String targetZonedDateTimeString = targetZonedDateTime.toString();
-                        dataValueExpressArray[i] = Functions2.datetime(Cypher.literalOf(targetZonedDateTimeString));
+                        dataValueExpressArray[j] = Functions2.datetime(Cypher.literalOf(targetZonedDateTimeString));
                     }
                     targetPropertiesArray[i] = m.property(currentKey).to(Cypher.listOf(dataValueExpressArray));
                 }

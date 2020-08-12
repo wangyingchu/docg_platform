@@ -452,8 +452,22 @@ public class AttributesMeasurableTest {
         Assert.assertNotNull(newAddedAttributeValue19);
         Assert.assertEquals(newAddedAttributeValue19.getAttributeDataType(),AttributeDataType.DATE_ARRAY);
         Assert.assertTrue(newAddedAttributeValue19.getAttributeValue() instanceof Date[]);
-        Assert.assertEquals(((Double[]) newAddedAttributeValue19.getAttributeValue()).length,2);
-        Assert.assertEquals(((Double[]) newAddedAttributeValue19.getAttributeValue())[0],arrayValue1);
+        Assert.assertEquals(((Date[]) newAddedAttributeValue19.getAttributeValue()).length,2);
+        Assert.assertEquals(((Date[]) newAddedAttributeValue19.getAttributeValue())[0],arrayValue1);
+
+        AttributeValue newAddedAttributeValue20 = _queryResultConceptionEntity.addAttribute("newStringArrayAttribute",new String[]{"stringvalue1","stringvalue2"});
+        Assert.assertNotNull(newAddedAttributeValue20);
+        Assert.assertEquals(newAddedAttributeValue20.getAttributeDataType(),AttributeDataType.STRING_ARRAY);
+        Assert.assertTrue(newAddedAttributeValue20.getAttributeValue() instanceof String[]);
+        Assert.assertEquals(((String[]) newAddedAttributeValue20.getAttributeValue()).length,2);
+        Assert.assertEquals(((String[]) newAddedAttributeValue20.getAttributeValue())[1],"stringvalue2");
+
+        AttributeValue newAddedAttributeValue21 = _queryResultConceptionEntity.addAttribute("newDecimalArrayAttribute",new BigDecimal[]{new BigDecimal(11223.23455),new BigDecimal(22334.889972)});
+        Assert.assertNotNull(newAddedAttributeValue21);
+        Assert.assertEquals(newAddedAttributeValue21.getAttributeDataType(),AttributeDataType.DOUBLE_ARRAY);
+        Assert.assertTrue(newAddedAttributeValue21.getAttributeValue() instanceof Double[]);
+        Assert.assertEquals(((Double[]) newAddedAttributeValue21.getAttributeValue()).length,2);
+        Assert.assertEquals(((Double[]) newAddedAttributeValue21.getAttributeValue())[0],Double.valueOf(11223.23455));
 
 
     }

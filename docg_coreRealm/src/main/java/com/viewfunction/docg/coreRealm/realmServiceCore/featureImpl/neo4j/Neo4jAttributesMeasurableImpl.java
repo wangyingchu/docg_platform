@@ -8,6 +8,9 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -17,6 +20,7 @@ import java.util.Map;
 
 public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
 
+    private static Logger logger = LoggerFactory.getLogger(Neo4jAttributesMeasurableImpl.class);
     private String entityUID;
 
     public Neo4jAttributesMeasurableImpl(String entityUID){
@@ -87,111 +91,138 @@ public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
 
     @Override
     public AttributeValue addAttribute(String attributeName, boolean attributeValue) throws CoreRealmServiceRuntimeException {
-        return insertAttribute(attributeName,Boolean.valueOf(attributeValue));
+        return setAttribute(attributeName,Boolean.valueOf(attributeValue));
     }
 
     @Override
     public AttributeValue addAttribute(String attributeName, int attributeValue) throws CoreRealmServiceRuntimeException {
-        return insertAttribute(attributeName,Integer.valueOf(attributeValue));
+        return setAttribute(attributeName,Integer.valueOf(attributeValue));
     }
 
     @Override
     public AttributeValue addAttribute(String attributeName, short attributeValue) throws CoreRealmServiceRuntimeException {
-        return insertAttribute(attributeName,Short.valueOf(attributeValue));
+        return setAttribute(attributeName,Short.valueOf(attributeValue));
     }
 
     @Override
     public AttributeValue addAttribute(String attributeName, long attributeValue) throws CoreRealmServiceRuntimeException {
-        return insertAttribute(attributeName,Long.valueOf(attributeValue));
+        return setAttribute(attributeName,Long.valueOf(attributeValue));
     }
 
     @Override
     public AttributeValue addAttribute(String attributeName, float attributeValue) throws CoreRealmServiceRuntimeException {
-        return insertAttribute(attributeName,Float.valueOf(attributeValue));
+        return setAttribute(attributeName,Float.valueOf(attributeValue));
     }
 
     @Override
     public AttributeValue addAttribute(String attributeName, double attributeValue) throws CoreRealmServiceRuntimeException {
-        return insertAttribute(attributeName,Double.valueOf(attributeValue));
+        return setAttribute(attributeName,Double.valueOf(attributeValue));
     }
 
     @Override
     public AttributeValue addAttribute(String attributeName, Date attributeValue) throws CoreRealmServiceRuntimeException {
-        return insertAttribute(attributeName,attributeValue);
+        return setAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue addAttribute(String attributeName, String attributeValue) throws CoreRealmServiceRuntimeException {
-        return insertAttribute(attributeName,attributeValue);
+        return setAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue addAttribute(String attributeName, byte[] attributeValue) throws CoreRealmServiceRuntimeException {
-        return insertAttribute(attributeName,attributeValue);
+        return setAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue addAttribute(String attributeName, byte attributeValue) throws CoreRealmServiceRuntimeException {
-        return insertAttribute(attributeName,Byte.valueOf(attributeValue));
+        return setAttribute(attributeName,Byte.valueOf(attributeValue));
     }
 
     @Override
     public AttributeValue addAttribute(String attributeName, BigDecimal attributeValue) throws CoreRealmServiceRuntimeException {
-        return insertAttribute(attributeName,attributeValue);
+        return setAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue addAttribute(String attributeName, Boolean[] attributeValue) throws CoreRealmServiceRuntimeException {
-        return insertAttribute(attributeName,attributeValue);
+        return setAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue addAttribute(String attributeName, Integer[] attributeValue) throws CoreRealmServiceRuntimeException {
-        return insertAttribute(attributeName,attributeValue);
+        return setAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue addAttribute(String attributeName, Short[] attributeValue) throws CoreRealmServiceRuntimeException {
-        return insertAttribute(attributeName,attributeValue);
+        return setAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue addAttribute(String attributeName, Long[] attributeValue) throws CoreRealmServiceRuntimeException {
-        return insertAttribute(attributeName,attributeValue);
+        return setAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue addAttribute(String attributeName, Float[] attributeValue) throws CoreRealmServiceRuntimeException {
-        return insertAttribute(attributeName,attributeValue);
+        return setAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue addAttribute(String attributeName, Double[] attributeValue) throws CoreRealmServiceRuntimeException {
-        return insertAttribute(attributeName,attributeValue);
+        return setAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue addAttribute(String attributeName, Date[] attributeValue) throws CoreRealmServiceRuntimeException {
-        return insertAttribute(attributeName,attributeValue);
+        return setAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue addAttribute(String attributeName, String[] attributeValue) throws CoreRealmServiceRuntimeException {
-        return insertAttribute(attributeName,attributeValue);
+        return setAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue addAttribute(String attributeName, Byte[][] attributeValue) throws CoreRealmServiceRuntimeException {
-        return null;
+        CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+        exception.setCauseMessage("Neo4J storage implements doesn't support this function");
+        throw exception;
     }
 
     @Override
     public AttributeValue addAttribute(String attributeName, BigDecimal[] attributeValue) throws CoreRealmServiceRuntimeException {
-        return insertAttribute(attributeName,attributeValue);
+        return setAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue updateAttribute(String attributeName, boolean attributeValue) throws CoreRealmServiceRuntimeException {
+        if (this.entityUID != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            String queryCql = CypherBuilder.matchNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.entityUID),new String[]{attributeName});
+            GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(attributeName);
+            Object resultRes = workingGraphOperationExecutor.executeRead(getSingleAttributeValueTransformer,queryCql);
+            if(resultRes != null){
+                AttributeValue originalAttributeValue = (AttributeValue)resultRes;
+                AttributeDataType originalAttributeDataType = originalAttributeValue.getAttributeDataType();
+
+
+
+
+
+
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+                return resultRes != null?(AttributeValue)resultRes : null;
+
+            }else{
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+                logger.error("Attribute {} of entity with UID {} does not exist.",attributeName,this.entityUID);
+                CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                exception.setCauseMessage("Attribute "+attributeName +" of entity with UID "+this.entityUID+" does not exist.");
+                throw exception;
+            }
+        }
         return null;
     }
 
@@ -312,12 +343,7 @@ public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
         return null;
     }
 
-    @Override
-    public Object getInitAttribute(String attributeName) {
-        return null;
-    }
-
-    private AttributeValue insertAttribute(String attributeName,Object attributeValue){
+    private AttributeValue setAttribute(String attributeName, Object attributeValue){
         if (this.entityUID != null) {
             Map<String,Object> attributeDataMap = new HashMap<>();
             attributeDataMap.put(attributeName,attributeValue);

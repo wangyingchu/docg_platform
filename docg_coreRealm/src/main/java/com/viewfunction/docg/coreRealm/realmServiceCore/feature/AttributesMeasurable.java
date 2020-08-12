@@ -84,8 +84,8 @@ public interface AttributesMeasurable {
     public boolean setInitAttribute(String attributeName,String[] attributeValue);
     public boolean setInitAttribute(String attributeName,Byte[][] attributeValue);
     public boolean setInitAttribute(String attributeName,BigDecimal[] attributeValue);
-    */
-    public Object getInitAttribute(String attributeName);
 
+    public Object getInitAttribute(String attributeName);
+    */
 
 }
