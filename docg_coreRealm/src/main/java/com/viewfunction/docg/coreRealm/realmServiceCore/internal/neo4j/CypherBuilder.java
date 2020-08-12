@@ -214,7 +214,7 @@ public class CypherBuilder {
         }
         Statement statement;
         Map<String,Object> targetPropertiesMap = CommonOperationUtil.reformatPropertyValues(originalTargetPropertiesMap);
-        if(targetPropertiesMap !=null && targetPropertiesMap.size()>0) {
+        if(targetPropertiesMap != null && targetPropertiesMap.size()>0) {
             Expression[] targetPropertiesArray = new Expression[targetPropertiesMap.size()];
             Property[] targetNewAddPropertiesArray = new Property[targetPropertiesMap.size()];
             Object[] keysObjectArray = targetPropertiesMap.keySet().toArray();
@@ -237,8 +237,8 @@ public class CypherBuilder {
                         currentValue instanceof Iterable || currentValue instanceof Boolean){
                     targetPropertiesArray[i] = m.property(currentKey).to(Cypher.literalOf(currentValue));
                 }
-                else if(propertyValue instanceof Date[]){
-                    Date[] dateValueArray = (Date[])propertyValue;
+                else if(currentValue instanceof Date[]){
+                    Date[] dateValueArray = (Date[])currentValue;
                     Expression[] dataValueExpressArray = new Expression[dateValueArray.length];
                     for(int j=0;j<dateValueArray.length;j++){
                         Date currentInnerValue = dateValueArray[j];

@@ -396,8 +396,64 @@ public class AttributesMeasurableTest {
         Assert.assertNotNull(newAddedAttributeValue11);
         Assert.assertEquals(newAddedAttributeValue11.getAttributeDataType(),AttributeDataType.LONG);
         Assert.assertTrue(newAddedAttributeValue11.getAttributeValue() instanceof Long);
-        System.out.println(newAddedAttributeValue11.getAttributeValue());
         Assert.assertEquals(newAddedAttributeValue11.getAttributeValue(),Long.valueOf("1"));
+
+        AttributeValue newAddedAttributeValue12 = _queryResultConceptionEntity.addAttribute("newDecimalAttribute",new BigDecimal(45679.23455));
+        Assert.assertNotNull(newAddedAttributeValue12);
+        Assert.assertEquals(newAddedAttributeValue12.getAttributeDataType(),AttributeDataType.DOUBLE);
+        Assert.assertTrue(newAddedAttributeValue12.getAttributeValue() instanceof Double);
+        Assert.assertEquals(newAddedAttributeValue12.getAttributeValue(),Double.valueOf(45679.23455));
+
+        AttributeValue newAddedAttributeValue13 = _queryResultConceptionEntity.addAttribute("newBooleanArrayAttribute",new Boolean[]{false,true});
+        Assert.assertNotNull(newAddedAttributeValue13);
+        Assert.assertEquals(newAddedAttributeValue13.getAttributeDataType(),AttributeDataType.BOOLEAN_ARRAY);
+        Assert.assertTrue(newAddedAttributeValue13.getAttributeValue() instanceof Boolean[]);
+        Assert.assertEquals(((Boolean[]) newAddedAttributeValue13.getAttributeValue()).length,2);
+        Assert.assertEquals(((Boolean[]) newAddedAttributeValue13.getAttributeValue())[0],Boolean.valueOf(false));
+
+        AttributeValue newAddedAttributeValue14 = _queryResultConceptionEntity.addAttribute("newIntArrayAttribute",new Integer[]{100,200});
+        Assert.assertNotNull(newAddedAttributeValue14);
+        Assert.assertEquals(newAddedAttributeValue14.getAttributeDataType(),AttributeDataType.LONG_ARRAY);
+        Assert.assertTrue(newAddedAttributeValue14.getAttributeValue() instanceof Long[]);
+        Assert.assertEquals(((Long[]) newAddedAttributeValue14.getAttributeValue()).length,2);
+        Assert.assertEquals(((Long[]) newAddedAttributeValue14.getAttributeValue())[1],Long.valueOf(200));
+
+        AttributeValue newAddedAttributeValue15 = _queryResultConceptionEntity.addAttribute("newShortArrayAttribute",new Short[]{12,34});
+        Assert.assertNotNull(newAddedAttributeValue15);
+        Assert.assertEquals(newAddedAttributeValue15.getAttributeDataType(),AttributeDataType.LONG_ARRAY);
+        Assert.assertTrue(newAddedAttributeValue15.getAttributeValue() instanceof Long[]);
+        Assert.assertEquals(((Long[]) newAddedAttributeValue15.getAttributeValue()).length,2);
+        Assert.assertEquals(((Long[]) newAddedAttributeValue15.getAttributeValue())[0],Long.valueOf(12));
+
+        AttributeValue newAddedAttributeValue16 = _queryResultConceptionEntity.addAttribute("newLongArrayAttribute",new Long[]{444l,555l});
+        Assert.assertNotNull(newAddedAttributeValue16);
+        Assert.assertEquals(newAddedAttributeValue16.getAttributeDataType(),AttributeDataType.LONG_ARRAY);
+        Assert.assertTrue(newAddedAttributeValue16.getAttributeValue() instanceof Long[]);
+        Assert.assertEquals(((Long[]) newAddedAttributeValue16.getAttributeValue()).length,2);
+        Assert.assertEquals(((Long[]) newAddedAttributeValue16.getAttributeValue())[1],Long.valueOf(555l));
+
+        AttributeValue newAddedAttributeValue17 = _queryResultConceptionEntity.addAttribute("newFloatArrayAttribute",new Float[]{123.1f,456.7f});
+        Assert.assertNotNull(newAddedAttributeValue17);
+        Assert.assertEquals(newAddedAttributeValue17.getAttributeDataType(),AttributeDataType.DOUBLE_ARRAY);
+        Assert.assertTrue(newAddedAttributeValue17.getAttributeValue() instanceof Double[]);
+        Assert.assertEquals(((Double[]) newAddedAttributeValue17.getAttributeValue()).length,2);
+        Assert.assertEquals(((Double[]) newAddedAttributeValue17.getAttributeValue())[0],Double.valueOf(123.1d));
+
+        AttributeValue newAddedAttributeValue18 = _queryResultConceptionEntity.addAttribute("newDoubleArrayAttribute",new Double[]{77.88d,88.99d});
+        Assert.assertNotNull(newAddedAttributeValue18);
+        Assert.assertEquals(newAddedAttributeValue18.getAttributeDataType(),AttributeDataType.DOUBLE_ARRAY);
+        Assert.assertTrue(newAddedAttributeValue18.getAttributeValue() instanceof Double[]);
+        Assert.assertEquals(((Double[]) newAddedAttributeValue18.getAttributeValue()).length,2);
+        Assert.assertEquals(((Double[]) newAddedAttributeValue18.getAttributeValue())[1],Double.valueOf(88.99d));
+
+        Date arrayValue1 = new Date();
+        Date arrayValue2 = new Date();
+        AttributeValue newAddedAttributeValue19 = _queryResultConceptionEntity.addAttribute("newDateArrayAttribute",new Date[]{arrayValue1,arrayValue2});
+        Assert.assertNotNull(newAddedAttributeValue19);
+        Assert.assertEquals(newAddedAttributeValue19.getAttributeDataType(),AttributeDataType.DATE_ARRAY);
+        Assert.assertTrue(newAddedAttributeValue19.getAttributeValue() instanceof Date[]);
+        Assert.assertEquals(((Double[]) newAddedAttributeValue19.getAttributeValue()).length,2);
+        Assert.assertEquals(((Double[]) newAddedAttributeValue19.getAttributeValue())[0],arrayValue1);
 
 
     }
