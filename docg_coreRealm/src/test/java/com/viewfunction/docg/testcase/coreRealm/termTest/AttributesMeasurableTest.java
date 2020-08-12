@@ -392,7 +392,12 @@ public class AttributesMeasurableTest {
         Assert.assertTrue(newAddedAttributeValue10.getAttributeValue() instanceof  Long[]);
         //Assert.assertEquals(newAddedAttributeValue10.getAttributeValue(),byteArray);
 
-
+        AttributeValue newAddedAttributeValue11 = _queryResultConceptionEntity.addAttribute("newByteAttribute",Byte.valueOf("1"));
+        Assert.assertNotNull(newAddedAttributeValue11);
+        Assert.assertEquals(newAddedAttributeValue11.getAttributeDataType(),AttributeDataType.LONG);
+        Assert.assertTrue(newAddedAttributeValue11.getAttributeValue() instanceof Long);
+        System.out.println(newAddedAttributeValue11.getAttributeValue());
+        Assert.assertEquals(newAddedAttributeValue11.getAttributeValue(),Long.valueOf("1"));
 
 
     }
