@@ -9,6 +9,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.Comm
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -340,52 +341,99 @@ public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
                 List<String> returnAttributeNameList = (List<String>) resultRes;
                 Set<String> newDataKeys = properties.keySet();
                 List<String> realTargetAttributeKeys = new ArrayList<>();
+                List<String> dupAttributeKeys = new ArrayList<>();
                 for(String currentKey:newDataKeys){
                     if(!returnAttributeNameList.contains(currentKey)){
                         realTargetAttributeKeys.add(currentKey);
+                    }else{
+                        dupAttributeKeys.add(currentKey);
                     }
                 }
-
-
-
+                for(String currentDupKey:dupAttributeKeys){
+                    properties.remove(currentDupKey);
+                }
                 String createCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.entityUID),properties);
-                //GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(attributeName);
-                //Object resultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,createCql);
-
-
-
-
-
-
+                GetMapFormatAggregatedReturnValueTransformer getMapFormatAggregatedReturnValueTransformer = new GetMapFormatAggregatedReturnValueTransformer();
+                Object addAttributeResultRes = workingGraphOperationExecutor.executeWrite(getMapFormatAggregatedReturnValueTransformer,createCql);
+                if(addAttributeResultRes!=null){
+                    List<String> successNameList = new ArrayList<>();
+                    Map<String,Object> newAddedAttributesMap = (Map<String,Object>)addAttributeResultRes;
+                    for(String currentNewKeyToAdd:realTargetAttributeKeys){
+                        String returnedName = CypherBuilder.operationResultName+"."+currentNewKeyToAdd;
+                        if(newAddedAttributesMap.containsKey(returnedName)){
+                            successNameList.add(currentNewKeyToAdd);
+                        }
+                    }
+                    return successNameList;
+                }
             }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
-
-
-
-
-
-
-
-           // List<String> resultAttributeNameList = CommonOperationUtil.clearSystemBuiltinAttributeNames(returnAttributeNameList);
-           // return resultAttributeNameList;
-
         }
         return null;
-
-
-
-
-
-
-
-
-
-
     }
 
     @Override
     public List<String> updateAttributes(Map<String, Object> properties) {
+        if (this.entityUID != null && properties != null && properties.size() > 0) {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try {
+                String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.entityUID),CypherBuilder.CypherFunctionType.PROPERTIES,null);
+                GetMapFormatAggregatedReturnValueTransformer getMapFormatAggregatedReturnValueTransformer = new GetMapFormatAggregatedReturnValueTransformer("properties");
+                Object resultRes = workingGraphOperationExecutor.executeRead(getMapFormatAggregatedReturnValueTransformer,queryCql);
+
+                Map<String,AttributeValue> currentAttributeValueMap = new HashMap<>();
+
+                Map<String, Object> attributesValueMap = (Map<String, Object>)resultRes;
+                if(attributesValueMap != null){
+                    for(Object key : attributesValueMap.keySet()){
+                        if(!key.equals(RealmConstant._createDateProperty)&&
+                                !key.equals(RealmConstant._lastModifyDateProperty)&&
+                                !key.equals(RealmConstant._dataOriginProperty)){
+                            Object attributeValueObject = attributesValueMap.get(key);
+                            AttributeValue currentAttributeValue = CommonOperationUtil.getAttributeValue(key.toString(),attributeValueObject);
+                            currentAttributeValueMap.put(key.toString(),currentAttributeValue);
+                        }
+                    }
+                }
+
+                Set<String> newDataKeys = properties.keySet();
+                List<String> diffTargetAttributeKeys = new ArrayList<>();
+                List<String> dupAttributeKeys = new ArrayList<>();
+                for(String currentKey:newDataKeys){
+                    if(!currentAttributeValueMap.containsKey(currentKey)){
+                        diffTargetAttributeKeys.add(currentKey);
+                    }else{
+                        dupAttributeKeys.add(currentKey);
+                    }
+                }
+                for(String currentDiffKey:diffTargetAttributeKeys){
+                    properties.remove(currentDiffKey);
+                }
+                for(String currentDupKey:dupAttributeKeys){
+                    if(!CommonOperationUtil.validateValueFormat(currentAttributeValueMap.get(currentDupKey).getAttributeDataType(),properties.get(currentDupKey))){
+                        properties.remove(currentDupKey);
+                    }
+                }
+                String createCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.entityUID),properties);
+                getMapFormatAggregatedReturnValueTransformer = new GetMapFormatAggregatedReturnValueTransformer();
+
+                Object addAttributeResultRes = workingGraphOperationExecutor.executeWrite(getMapFormatAggregatedReturnValueTransformer,createCql);
+                if(addAttributeResultRes!=null){
+                    List<String> successNameList = new ArrayList<>();
+                    Map<String,Object> newAddedAttributesMap = (Map<String,Object>)addAttributeResultRes;
+                    for(String currentNewKeyToAdd:dupAttributeKeys){
+                        String returnedName = CypherBuilder.operationResultName+"."+currentNewKeyToAdd;
+                        if(newAddedAttributesMap.containsKey(returnedName)){
+                            successNameList.add(currentNewKeyToAdd);
+                        }
+                    }
+                    return successNameList;
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
 

@@ -644,9 +644,34 @@ public class AttributesMeasurableTest {
         Map<String, Object> newPropertiesMap = new HashMap<>();
         newPropertiesMap.put("newAtt1",Long.valueOf(1000001));
         newPropertiesMap.put("newAtt2",new Date());
-        newPropertiesMap.put("prop17","Dup value");
+        newPropertiesMap.put("prop7","Dup value");
 
         List<String> addAttributesResult = _queryResultConceptionEntity.addAttributes(newPropertiesMap);
+        Assert.assertNotNull(addAttributesResult);
+        Assert.assertEquals(addAttributesResult.size(),2);
+        Assert.assertTrue(addAttributesResult.contains("newAtt1"));
+        Assert.assertTrue(addAttributesResult.contains("newAtt2"));
+        Assert.assertEquals(_queryResultConceptionEntity.getAttribute("prop7").getAttributeValue(),new Long(4));
+        Assert.assertEquals(_queryResultConceptionEntity.getAttribute("newAtt1").getAttributeValue(),new Long(1000001));
+        Assert.assertNotNull(_queryResultConceptionEntity.getAttribute("newAtt2").getAttributeValue());
+
+        Map<String, Object> updatePropertiesMap = new HashMap<>();
+        updatePropertiesMap.put("newAtt1",Long.valueOf(5000001));
+        updatePropertiesMap.put("newAtt2",Long.valueOf(5000001));
+        updatePropertiesMap.put("prop7",Long.valueOf(24000));
+        updatePropertiesMap.put("prop7NotExist",new Long(24000));
+        List<String> updateAttributesResult = _queryResultConceptionEntity.updateAttributes(updatePropertiesMap);
+
+        Assert.assertNotNull(updateAttributesResult);
+        Assert.assertEquals(updateAttributesResult.size(),2);
+        Assert.assertTrue(updateAttributesResult.contains("newAtt1"));
+        Assert.assertTrue(updateAttributesResult.contains("prop7"));
+
+        Assert.assertEquals(_queryResultConceptionEntity.getAttribute("newAtt1").getAttributeValue(),new Long(5000001));
+        Assert.assertEquals(_queryResultConceptionEntity.getAttribute("prop7").getAttributeValue(),new Long(24000));
+        Assert.assertTrue(_queryResultConceptionEntity.getAttribute("newAtt2").getAttributeValue() instanceof Date);
+
+
 
     }
 }

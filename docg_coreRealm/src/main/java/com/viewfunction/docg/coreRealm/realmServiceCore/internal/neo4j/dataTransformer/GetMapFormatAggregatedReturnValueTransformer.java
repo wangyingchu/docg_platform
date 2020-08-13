@@ -14,32 +14,19 @@ public class GetMapFormatAggregatedReturnValueTransformer implements DataTransfo
         this.aggregationFunctionName = aggregationFunctionName;
     }
 
+    public GetMapFormatAggregatedReturnValueTransformer(){}
+
     @Override
     public Map transformResult(Result result) {
         if(result.hasNext()){
             Record record = result.next();
-            String resultDataProperty = aggregationFunctionName+"("+ CypherBuilder.operationResultName+")";
-            if(record.containsKey(resultDataProperty)){
-                /*
-                Value resultValue = record.get(resultDataProperty);
-                Iterable<String> resultMapValuesKey = resultValue.keys();
-                for(String currentKey:resultMapValuesKey){
-                    Value currentValue = resultValue.get(currentKey);
-                    System.out.println("=======================");
-                    System.out.println(currentKey);
-                    System.out.println(currentValue);
-                    System.out.println(currentValue.type().name());
-                    System.out.println("=======================");
+            if( aggregationFunctionName!=null ){
+                String resultDataProperty = aggregationFunctionName+"("+ CypherBuilder.operationResultName+")";
+                if(record.containsKey(resultDataProperty)){
+                    return record.get(resultDataProperty).asMap();
                 }
-                resultValue.asMap(new Function<Value, Object>() {
-                    @Override
-                    public Object apply(Value value) {
-                        System.out.println(value);
-                        return null;
-                    }
-                });
-                */
-                return record.get(resultDataProperty).asMap();
+            }else{
+                return record.asMap();
             }
         }
         return null;

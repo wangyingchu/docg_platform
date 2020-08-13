@@ -274,8 +274,6 @@ public class CommonOperationUtil {
     }
 
     public static boolean validateValueFormat(AttributeDataType attributeDataType,Object dataValue){
-        System.out.println(attributeDataType);
-        System.out.println(dataValue);
         if(attributeDataType == null || dataValue == null){
             return false;
         }else{
