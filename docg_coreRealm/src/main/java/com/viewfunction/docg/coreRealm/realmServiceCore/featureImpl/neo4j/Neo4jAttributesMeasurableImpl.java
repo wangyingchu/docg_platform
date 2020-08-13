@@ -13,10 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
 
@@ -30,6 +27,35 @@ public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
 
     @Override
     public boolean removeAttribute(String attributeName) throws CoreRealmServiceRuntimeException {
+        if (this.entityUID != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try {
+                String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(this.entityUID), CypherBuilder.CypherFunctionType.EXISTS, attributeName);
+                GetBooleanFormatAggregatedReturnValueTransformer getBooleanFormatAggregatedReturnValueTransformer = new GetBooleanFormatAggregatedReturnValueTransformer("exists", attributeName);
+                Object resultRes = workingGraphOperationExecutor.executeRead(getBooleanFormatAggregatedReturnValueTransformer, queryCql);
+                boolean existCheckKResult = resultRes != null ? ((Boolean) resultRes).booleanValue() : false;
+                if (!existCheckKResult) {
+                    logger.error("Attribute {} of entity with UID {} does not exist.", attributeName, this.entityUID);
+                    CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                    exception.setCauseMessage("Attribute " + attributeName + " of entity with UID " + this.entityUID + " does not exist.");
+                    throw exception;
+                }else{
+                    List<String> targetAttributeNameList = new ArrayList<>();
+                    targetAttributeNameList.add(attributeName);
+                    String deleteCql = CypherBuilder.removeNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.entityUID),targetAttributeNameList);
+                    GetListFormatAggregatedReturnValueTransformer getListFormatAggregatedReturnValueTransformer = new GetListFormatAggregatedReturnValueTransformer("keys");
+                    Object removeResultRes = workingGraphOperationExecutor.executeWrite(getListFormatAggregatedReturnValueTransformer,deleteCql);
+                    List<String> returnAttributeNameList = (List<String>)removeResultRes;
+                    if(returnAttributeNameList.contains(attributeName)){
+                        return false;
+                    }else{
+                        return true;
+                    }
+                }
+            }finally{
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
         return false;
     }
 
@@ -305,7 +331,57 @@ public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
 
     @Override
     public List<String> addAttributes(Map<String, Object> properties) {
+        if (this.entityUID != null && properties != null && properties.size() > 0) {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try {
+                String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(this.entityUID), CypherBuilder.CypherFunctionType.KEYS, null);
+                GetListFormatAggregatedReturnValueTransformer getListFormatAggregatedReturnValueTransformer = new GetListFormatAggregatedReturnValueTransformer("keys");
+                Object resultRes = workingGraphOperationExecutor.executeRead(getListFormatAggregatedReturnValueTransformer, queryCql);
+                List<String> returnAttributeNameList = (List<String>) resultRes;
+                Set<String> newDataKeys = properties.keySet();
+                List<String> realTargetAttributeKeys = new ArrayList<>();
+                for(String currentKey:newDataKeys){
+                    if(!returnAttributeNameList.contains(currentKey)){
+                        realTargetAttributeKeys.add(currentKey);
+                    }
+                }
+
+
+
+                String createCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.entityUID),properties);
+                //GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(attributeName);
+                //Object resultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,createCql);
+
+
+
+
+
+
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+
+
+
+
+
+
+
+           // List<String> resultAttributeNameList = CommonOperationUtil.clearSystemBuiltinAttributeNames(returnAttributeNameList);
+           // return resultAttributeNameList;
+
+        }
         return null;
+
+
+
+
+
+
+
+
+
+
     }
 
     @Override
@@ -315,23 +391,39 @@ public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
 
     @Override
     public List<String> addNewOrUpdateAttributes(Map<String, Object> properties) {
-        return null;
-    }
-
-    private AttributeValue setAttribute(String attributeName, Object attributeValue){
         if (this.entityUID != null) {
-            Map<String,Object> attributeDataMap = new HashMap<>();
-            attributeDataMap.put(attributeName,attributeValue);
-            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-            String createCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.entityUID),attributeDataMap);
-            GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(attributeName);
-            Object resultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,createCql);
-            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-            return resultRes != null?(AttributeValue)resultRes : null;
+
         }
         return null;
     }
 
+    private AttributeValue setAttribute(String attributeName, Object attributeValue) throws CoreRealmServiceRuntimeException{
+        if (this.entityUID != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(this.entityUID), CypherBuilder.CypherFunctionType.EXISTS, attributeName);
+                GetBooleanFormatAggregatedReturnValueTransformer getBooleanFormatAggregatedReturnValueTransformer = new GetBooleanFormatAggregatedReturnValueTransformer("exists",attributeName);
+                Object checkExistResultRes = workingGraphOperationExecutor.executeRead(getBooleanFormatAggregatedReturnValueTransformer,queryCql);
+                boolean checkExistResult = checkExistResultRes != null? ((Boolean)checkExistResultRes).booleanValue() : false;
+                if(checkExistResult){
+                    logger.error("Attribute {} of entity with UID {} already exist.", attributeName, this.entityUID);
+                    CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                    exception.setCauseMessage("Attribute " + attributeName + " of entity with UID " + this.entityUID + " already exist.");
+                    throw exception;
+                }else{
+                    Map<String,Object> attributeDataMap = new HashMap<>();
+                    attributeDataMap.put(attributeName,attributeValue);
+                    String createCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.entityUID),attributeDataMap);
+                    GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(attributeName);
+                    Object resultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,createCql);
+                    return resultRes != null?(AttributeValue)resultRes : null;
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
+    }
 
     private AttributeValue checkAndUpdateAttribute(String attributeName, Object attributeValue) throws CoreRealmServiceRuntimeException {
         if (this.entityUID != null) {
@@ -356,7 +448,7 @@ public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
                         Object updateResultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,updateCql);
                         return updateResultRes != null ? (AttributeValue) updateResultRes : null;
                     }
-                } else {
+                }else {
                     logger.error("Attribute {} of entity with UID {} does not exist.", attributeName, this.entityUID);
                     CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
                     exception.setCauseMessage("Attribute " + attributeName + " of entity with UID " + this.entityUID + " does not exist.");

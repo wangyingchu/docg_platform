@@ -471,11 +471,20 @@ public class AttributesMeasurableTest {
 
         boolean exceptionShouldBeCaught = false;
         try {
+            _queryResultConceptionEntity.addAttribute("newDecimalArrayAttribute", Long.parseLong("12345678"));
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
+
+        exceptionShouldBeCaught = false;
+        try {
             _queryResultConceptionEntity.updateAttribute("prop1_notExist", Long.parseLong("12345678"));
         }catch(CoreRealmServiceRuntimeException e){
             exceptionShouldBeCaught = true;
         }
         Assert.assertTrue(exceptionShouldBeCaught);
+
         exceptionShouldBeCaught = false;
         try {
             _queryResultConceptionEntity.updateAttribute("prop1", Double.parseDouble("12345678"));
@@ -483,7 +492,6 @@ public class AttributesMeasurableTest {
             exceptionShouldBeCaught = true;
         }
         Assert.assertTrue(exceptionShouldBeCaught);
-        exceptionShouldBeCaught = false;
 
         AttributeValue updatedAttributeValue_prop1 = _queryResultConceptionEntity.updateAttribute("prop1", Long.parseLong("11111"));
         Assert.assertNotNull(updatedAttributeValue_prop1);
@@ -619,5 +627,26 @@ public class AttributesMeasurableTest {
         Assert.assertEquals(updatedAttributeValue_pro20.getAttributeDataType(),AttributeDataType.LONG_ARRAY);
         Assert.assertEquals(updatedAttributeValue_pro20.getAttributeName(),"prop20");
         Assert.assertNotNull(updatedAttributeValue_pro20.getAttributeValue());
+
+        exceptionShouldBeCaught = false;
+        try {
+            _queryResultConceptionEntity.removeAttribute("prop1NotExist");
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
+
+        boolean removeAttributeResult = _queryResultConceptionEntity.removeAttribute("prop1");
+        Assert.assertTrue(removeAttributeResult);
+        Assert.assertFalse(_queryResultConceptionEntity.hasAttribute("prop1"));
+        Assert.assertNull(_queryResultConceptionEntity.getAttribute("prop1"));
+
+        Map<String, Object> newPropertiesMap = new HashMap<>();
+        newPropertiesMap.put("newAtt1",Long.valueOf(1000001));
+        newPropertiesMap.put("newAtt2",new Date());
+        newPropertiesMap.put("prop17","Dup value");
+
+        List<String> addAttributesResult = _queryResultConceptionEntity.addAttributes(newPropertiesMap);
+
     }
 }

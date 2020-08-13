@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface AttributesMeasurable {
+
     public boolean removeAttribute(String attributeName) throws CoreRealmServiceRuntimeException;
     public List<AttributeValue> getAttributes();
     public boolean hasAttribute(String attributeName);

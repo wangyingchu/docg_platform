@@ -257,4 +257,30 @@ public class CypherBuilder {
         logger.debug("Generated Cypher Statement: {}",rel);
         return rel;
     }
+
+    public static String removeNodePropertiesWithSingleValueEqual(CypherFunctionType propertyFunctionType,Object propertyValue,List<String> targetPropertiesList){
+        Node m = Cypher.anyNode().named(operationResultName);
+        StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(m);
+        StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
+        switch(propertyFunctionType){
+            case ID:
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(m).isEqualTo(Cypher.literalOf(propertyValue)));
+                break;
+            default:
+        }
+        Statement statement;
+        if(targetPropertiesList != null && targetPropertiesList.size()>0) {
+            Property[] targetPropertiesRemoveArray = new Property[targetPropertiesList.size()];
+            for (int i = 0; i < targetPropertiesList.size(); i++) {
+                String currentPropertyName = targetPropertiesList.get(i);
+                targetPropertiesRemoveArray[i] = m.property(currentPropertyName);
+            }
+            statement = ongoingReadingWithWhere.remove(targetPropertiesRemoveArray).returning(Functions2.keys(m)).build();
+        }else{
+            statement = ongoingReadingWithWhere.returning(m).build();
+        }
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}",rel);
+        return rel;
+    }
 }
