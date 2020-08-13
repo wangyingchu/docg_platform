@@ -469,6 +469,155 @@ public class AttributesMeasurableTest {
         Assert.assertEquals(((Double[]) newAddedAttributeValue21.getAttributeValue()).length,2);
         Assert.assertEquals(((Double[]) newAddedAttributeValue21.getAttributeValue())[0],Double.valueOf(11223.23455));
 
+        boolean exceptionShouldBeCaught = false;
+        try {
+            _queryResultConceptionEntity.updateAttribute("prop1_notExist", Long.parseLong("12345678"));
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
+        exceptionShouldBeCaught = false;
+        try {
+            _queryResultConceptionEntity.updateAttribute("prop1", Double.parseDouble("12345678"));
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
+        exceptionShouldBeCaught = false;
 
+        AttributeValue updatedAttributeValue_prop1 = _queryResultConceptionEntity.updateAttribute("prop1", Long.parseLong("11111"));
+        Assert.assertNotNull(updatedAttributeValue_prop1);
+        Assert.assertEquals(updatedAttributeValue_prop1.getAttributeDataType(),AttributeDataType.LONG);
+        Assert.assertEquals(updatedAttributeValue_prop1.getAttributeName(),"prop1");
+        Assert.assertEquals(updatedAttributeValue_prop1.getAttributeValue(),Long.parseLong("11111"));
+
+        AttributeValue updatedAttributeValueConfirm_prop1 = _queryResultConceptionEntity.getAttribute("prop1");
+        Assert.assertNotNull(updatedAttributeValueConfirm_prop1);
+        Assert.assertEquals(updatedAttributeValueConfirm_prop1.getAttributeDataType(),AttributeDataType.LONG);
+        Assert.assertEquals(updatedAttributeValueConfirm_prop1.getAttributeValue(),Long.parseLong("11111"));
+
+        AttributeValue updatedAttributeValue_prop2 = _queryResultConceptionEntity.updateAttribute("prop2", Double.parseDouble("12345.111"));
+        Assert.assertNotNull(updatedAttributeValue_prop2);
+        Assert.assertEquals(updatedAttributeValue_prop2.getAttributeDataType(),AttributeDataType.DOUBLE);
+        Assert.assertEquals(updatedAttributeValue_prop2.getAttributeName(),"prop2");
+        Assert.assertEquals(updatedAttributeValue_prop2.getAttributeValue(), Double.parseDouble("12345.111"));
+
+        AttributeValue updatedAttributeValue_prop3 = _queryResultConceptionEntity.updateAttribute("prop3", Integer.parseInt("445566"));
+        Assert.assertNotNull(updatedAttributeValue_prop3);
+        Assert.assertEquals(updatedAttributeValue_prop3.getAttributeDataType(),AttributeDataType.LONG);
+        Assert.assertEquals(updatedAttributeValue_prop3.getAttributeName(),"prop3");
+        Assert.assertEquals(updatedAttributeValue_prop3.getAttributeValue(), Long.parseLong("445566"));
+
+        AttributeValue updatedAttributeValue_prop4 = _queryResultConceptionEntity.updateAttribute("prop4","thi is s string");
+        Assert.assertNotNull(updatedAttributeValue_prop4);
+        Assert.assertEquals(updatedAttributeValue_prop4.getAttributeDataType(),AttributeDataType.STRING);
+        Assert.assertEquals(updatedAttributeValue_prop4.getAttributeName(),"prop4");
+        Assert.assertEquals(updatedAttributeValue_prop4.getAttributeValue(), "thi is s string");
+
+        AttributeValue updatedAttributeValue_prop5 = _queryResultConceptionEntity.updateAttribute("prop5",Boolean.valueOf("true"));
+        Assert.assertNotNull(updatedAttributeValue_prop5);
+        Assert.assertEquals(updatedAttributeValue_prop5.getAttributeDataType(),AttributeDataType.BOOLEAN);
+        Assert.assertEquals(updatedAttributeValue_prop5.getAttributeName(),"prop5");
+        Assert.assertEquals(updatedAttributeValue_prop5.getAttributeValue(), Boolean.valueOf("true"));
+
+        AttributeValue updatedAttributeValue_prop6 = _queryResultConceptionEntity.updateAttribute("prop6",new BigDecimal("556674450.224"));
+        Assert.assertNotNull(updatedAttributeValue_prop6);
+        Assert.assertEquals(updatedAttributeValue_prop6.getAttributeDataType(),AttributeDataType.DOUBLE);
+        Assert.assertEquals(updatedAttributeValue_prop6.getAttributeName(),"prop6");
+        Assert.assertEquals(updatedAttributeValue_prop6.getAttributeValue(), Double.parseDouble("556674450.224"));
+
+        AttributeValue updatedAttributeValue_prop7 = _queryResultConceptionEntity.updateAttribute("prop7",Short.valueOf("4"));
+        Assert.assertNotNull(updatedAttributeValue_prop7);
+        Assert.assertEquals(updatedAttributeValue_prop7.getAttributeDataType(),AttributeDataType.LONG);
+        Assert.assertEquals(updatedAttributeValue_prop7.getAttributeName(),"prop7");
+        Assert.assertEquals(updatedAttributeValue_prop7.getAttributeValue(), Long.parseLong("4"));
+
+        AttributeValue updatedAttributeValue_pro8 = _queryResultConceptionEntity.updateAttribute("prop8",Float.valueOf("123434.66"));
+        Assert.assertNotNull(updatedAttributeValue_pro8);
+        Assert.assertEquals(updatedAttributeValue_pro8.getAttributeDataType(),AttributeDataType.DOUBLE);
+        Assert.assertEquals(updatedAttributeValue_pro8.getAttributeName(),"prop8");
+        Assert.assertEquals(updatedAttributeValue_pro8.getAttributeValue(), Double.parseDouble("123434.66"));
+
+        AttributeValue updatedAttributeValue_pro9 = _queryResultConceptionEntity.updateAttribute("prop9",new Long[]{5000l,8000l});
+        Assert.assertNotNull(updatedAttributeValue_pro9);
+        Assert.assertEquals(updatedAttributeValue_pro9.getAttributeDataType(),AttributeDataType.LONG_ARRAY);
+        Assert.assertEquals(updatedAttributeValue_pro9.getAttributeName(),"prop9");
+        Assert.assertEquals(((Long[])updatedAttributeValue_pro9.getAttributeValue()).length, 2);
+        Assert.assertEquals(((Long[])updatedAttributeValue_pro9.getAttributeValue())[0], new Long(5000));
+
+        AttributeValue updatedAttributeValue_pro10 = _queryResultConceptionEntity.updateAttribute("prop10",new Double[]{5000.1d,8000.2d});
+        Assert.assertNotNull(updatedAttributeValue_pro10);
+        Assert.assertEquals(updatedAttributeValue_pro10.getAttributeDataType(),AttributeDataType.DOUBLE_ARRAY);
+        Assert.assertEquals(updatedAttributeValue_pro10.getAttributeName(),"prop10");
+        Assert.assertEquals(((Double[])updatedAttributeValue_pro10.getAttributeValue()).length, 2);
+        Assert.assertEquals(((Double[])updatedAttributeValue_pro10.getAttributeValue())[1], new Double(8000.2));
+
+        AttributeValue updatedAttributeValue_pro11 = _queryResultConceptionEntity.updateAttribute("prop11",new Integer[]{100,2,44,55});
+        Assert.assertNotNull(updatedAttributeValue_pro11);
+        Assert.assertEquals(updatedAttributeValue_pro11.getAttributeDataType(),AttributeDataType.LONG_ARRAY);
+        Assert.assertEquals(updatedAttributeValue_pro11.getAttributeName(),"prop11");
+        Assert.assertEquals(((Long[])updatedAttributeValue_pro11.getAttributeValue()).length, 4);
+        Assert.assertEquals(((Long[])updatedAttributeValue_pro11.getAttributeValue())[3], new Long(55));
+
+        AttributeValue updatedAttributeValue_pro12 = _queryResultConceptionEntity.updateAttribute("prop12",new String[]{"this is str1AA","这是字符串2AA"});
+        Assert.assertNotNull(updatedAttributeValue_pro12);
+        Assert.assertEquals(updatedAttributeValue_pro12.getAttributeDataType(),AttributeDataType.STRING_ARRAY);
+        Assert.assertEquals(updatedAttributeValue_pro12.getAttributeName(),"prop12");
+        Assert.assertEquals(((String[])updatedAttributeValue_pro12.getAttributeValue()).length, 2);
+        Assert.assertEquals(((String[])updatedAttributeValue_pro12.getAttributeValue())[0],"this is str1AA");
+
+        AttributeValue updatedAttributeValue_pro13 = _queryResultConceptionEntity.updateAttribute("prop13",new Boolean[]{true,true});
+        Assert.assertNotNull(updatedAttributeValue_pro13);
+        Assert.assertEquals(updatedAttributeValue_pro13.getAttributeDataType(),AttributeDataType.BOOLEAN_ARRAY);
+        Assert.assertEquals(updatedAttributeValue_pro13.getAttributeName(),"prop13");
+        Assert.assertEquals(((Boolean[])updatedAttributeValue_pro13.getAttributeValue()).length, 2);
+        Assert.assertEquals(((Boolean[])updatedAttributeValue_pro13.getAttributeValue())[1],new Boolean(true));
+
+        AttributeValue updatedAttributeValue_pro14 = _queryResultConceptionEntity.updateAttribute("prop14",new BigDecimal[]{new BigDecimal("1234567.890"),new BigDecimal("987654321.12345")});
+        Assert.assertNotNull(updatedAttributeValue_pro14);
+        Assert.assertEquals(updatedAttributeValue_pro14.getAttributeDataType(),AttributeDataType.DOUBLE_ARRAY);
+        Assert.assertEquals(updatedAttributeValue_pro14.getAttributeName(),"prop14");
+        Assert.assertEquals(((Double[])updatedAttributeValue_pro14.getAttributeValue()).length, 2);
+        Assert.assertEquals(((Double[])updatedAttributeValue_pro14.getAttributeValue())[1],new Double(987654321.12345));
+
+        AttributeValue updatedAttributeValue_pro15 = _queryResultConceptionEntity.updateAttribute("prop15",new Short[]{66,97});
+        Assert.assertNotNull(updatedAttributeValue_pro15);
+        Assert.assertEquals(updatedAttributeValue_pro15.getAttributeDataType(),AttributeDataType.LONG_ARRAY);
+        Assert.assertEquals(updatedAttributeValue_pro15.getAttributeName(),"prop15");
+        Assert.assertEquals(((Long[])updatedAttributeValue_pro15.getAttributeValue()).length, 2);
+        Assert.assertEquals(((Long[])updatedAttributeValue_pro15.getAttributeValue())[0],new Long(66));
+
+        AttributeValue updatedAttributeValue_pro16 = _queryResultConceptionEntity.updateAttribute("prop16",new Float[]{5000.1f,7000.8f});
+        Assert.assertNotNull(updatedAttributeValue_pro16);
+        Assert.assertEquals(updatedAttributeValue_pro16.getAttributeDataType(),AttributeDataType.DOUBLE_ARRAY);
+        Assert.assertEquals(updatedAttributeValue_pro16.getAttributeName(),"prop16");
+        Assert.assertEquals(((Double[])updatedAttributeValue_pro16.getAttributeValue()).length, 2);
+        Assert.assertEquals(((Double[])updatedAttributeValue_pro16.getAttributeValue())[1],new Double(7000.8));
+
+        AttributeValue updatedAttributeValue_pro17 = _queryResultConceptionEntity.updateAttribute("prop17",new Date());
+        Assert.assertNotNull(updatedAttributeValue_pro17);
+        Assert.assertEquals(updatedAttributeValue_pro17.getAttributeDataType(),AttributeDataType.DATE);
+        Assert.assertEquals(updatedAttributeValue_pro17.getAttributeName(),"prop17");
+        Assert.assertNotNull(updatedAttributeValue_pro17.getAttributeValue());
+
+        AttributeValue updatedAttributeValue_pro18 = _queryResultConceptionEntity.updateAttribute("prop18", new Date[]{new Date(),new Date()});
+        Assert.assertNotNull(updatedAttributeValue_pro18);
+        Assert.assertEquals(updatedAttributeValue_pro18.getAttributeDataType(),AttributeDataType.DATE_ARRAY);
+        Assert.assertEquals(updatedAttributeValue_pro18.getAttributeName(),"prop18");
+        Assert.assertEquals(((Date[])updatedAttributeValue_pro18.getAttributeValue()).length, 2);
+        Assert.assertNotNull(((Date[])updatedAttributeValue_pro18.getAttributeValue())[1]);
+        Assert.assertNotNull(((Date[])updatedAttributeValue_pro18.getAttributeValue())[0]);
+
+        AttributeValue updatedAttributeValue_pro19 = _queryResultConceptionEntity.updateAttribute("prop19", Byte.valueOf("9"));
+        Assert.assertNotNull(updatedAttributeValue_pro19);
+        Assert.assertEquals(updatedAttributeValue_pro19.getAttributeDataType(),AttributeDataType.LONG);
+        Assert.assertEquals(updatedAttributeValue_pro19.getAttributeName(),"prop19");
+        Assert.assertEquals(updatedAttributeValue_pro19.getAttributeValue(),new Long(9));
+
+        AttributeValue updatedAttributeValue_pro20 = _queryResultConceptionEntity.updateAttribute("prop20","this is a new byte array value".getBytes());
+        Assert.assertNotNull(updatedAttributeValue_pro20);
+        Assert.assertEquals(updatedAttributeValue_pro20.getAttributeDataType(),AttributeDataType.LONG_ARRAY);
+        Assert.assertEquals(updatedAttributeValue_pro20.getAttributeName(),"prop20");
+        Assert.assertNotNull(updatedAttributeValue_pro20.getAttributeValue());
     }
 }

@@ -198,122 +198,97 @@ public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
 
     @Override
     public AttributeValue updateAttribute(String attributeName, boolean attributeValue) throws CoreRealmServiceRuntimeException {
-        if (this.entityUID != null) {
-            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-            String queryCql = CypherBuilder.matchNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.entityUID),new String[]{attributeName});
-            GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(attributeName);
-            Object resultRes = workingGraphOperationExecutor.executeRead(getSingleAttributeValueTransformer,queryCql);
-            if(resultRes != null){
-                AttributeValue originalAttributeValue = (AttributeValue)resultRes;
-                AttributeDataType originalAttributeDataType = originalAttributeValue.getAttributeDataType();
-
-
-
-
-
-
-                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-                return resultRes != null?(AttributeValue)resultRes : null;
-
-            }else{
-                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-                logger.error("Attribute {} of entity with UID {} does not exist.",attributeName,this.entityUID);
-                CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
-                exception.setCauseMessage("Attribute "+attributeName +" of entity with UID "+this.entityUID+" does not exist.");
-                throw exception;
-            }
-        }
-        return null;
+        return checkAndUpdateAttribute(attributeName,Boolean.valueOf(attributeValue));
     }
 
     @Override
     public AttributeValue updateAttribute(String attributeName, int attributeValue) throws CoreRealmServiceRuntimeException {
-        return null;
+        return checkAndUpdateAttribute(attributeName,Integer.valueOf(attributeValue));
     }
 
     @Override
     public AttributeValue updateAttribute(String attributeName, short attributeValue) throws CoreRealmServiceRuntimeException {
-        return null;
+        return checkAndUpdateAttribute(attributeName,Short.valueOf(attributeValue));
     }
 
     @Override
     public AttributeValue updateAttribute(String attributeName, long attributeValue) throws CoreRealmServiceRuntimeException {
-        return null;
+        return checkAndUpdateAttribute(attributeName,Long.valueOf(attributeValue));
     }
 
     @Override
     public AttributeValue updateAttribute(String attributeName, float attributeValue) throws CoreRealmServiceRuntimeException {
-        return null;
+        return checkAndUpdateAttribute(attributeName,Float.valueOf(attributeValue));
     }
 
     @Override
     public AttributeValue updateAttribute(String attributeName, double attributeValue) throws CoreRealmServiceRuntimeException {
-        return null;
+        return checkAndUpdateAttribute(attributeName,Double.valueOf(attributeValue));
     }
 
     @Override
     public AttributeValue updateAttribute(String attributeName, Date attributeValue) throws CoreRealmServiceRuntimeException {
-        return null;
+        return checkAndUpdateAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue updateAttribute(String attributeName, String attributeValue) throws CoreRealmServiceRuntimeException {
-        return null;
+        return checkAndUpdateAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue updateAttribute(String attributeName, byte[] attributeValue) throws CoreRealmServiceRuntimeException {
-        return null;
+        return checkAndUpdateAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue updateAttribute(String attributeName, byte attributeValue) throws CoreRealmServiceRuntimeException {
-        return null;
+        return checkAndUpdateAttribute(attributeName,Byte.valueOf(attributeValue));
     }
 
     @Override
     public AttributeValue updateAttribute(String attributeName, BigDecimal attributeValue) throws CoreRealmServiceRuntimeException {
-        return null;
+        return checkAndUpdateAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue updateAttribute(String attributeName, Boolean[] attributeValue) throws CoreRealmServiceRuntimeException {
-        return null;
+        return checkAndUpdateAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue updateAttribute(String attributeName, Integer[] attributeValue) throws CoreRealmServiceRuntimeException {
-        return null;
+        return checkAndUpdateAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue updateAttribute(String attributeName, Short[] attributeValue) throws CoreRealmServiceRuntimeException {
-        return null;
+        return checkAndUpdateAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue updateAttribute(String attributeName, Long[] attributeValue) throws CoreRealmServiceRuntimeException {
-        return null;
+        return checkAndUpdateAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue updateAttribute(String attributeName, Float[] attributeValue) throws CoreRealmServiceRuntimeException {
-        return null;
+        return checkAndUpdateAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue updateAttribute(String attributeName, Double[] attributeValue) throws CoreRealmServiceRuntimeException {
-        return null;
+        return checkAndUpdateAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue updateAttribute(String attributeName, Date[] attributeValue) throws CoreRealmServiceRuntimeException {
-        return null;
+        return checkAndUpdateAttribute(attributeName,attributeValue);
     }
 
     @Override
     public AttributeValue updateAttribute(String attributeName, String[] attributeValue) throws CoreRealmServiceRuntimeException {
-        return null;
+        return checkAndUpdateAttribute(attributeName,attributeValue);
     }
 
     @Override
@@ -325,7 +300,7 @@ public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
 
     @Override
     public AttributeValue updateAttribute(String attributeName, BigDecimal[] attributeValue) throws CoreRealmServiceRuntimeException {
-        return null;
+        return checkAndUpdateAttribute(attributeName,attributeValue);
     }
 
     @Override
@@ -353,6 +328,43 @@ public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
             Object resultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,createCql);
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             return resultRes != null?(AttributeValue)resultRes : null;
+        }
+        return null;
+    }
+
+
+    private AttributeValue checkAndUpdateAttribute(String attributeName, Object attributeValue) throws CoreRealmServiceRuntimeException {
+        if (this.entityUID != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try {
+                String queryCql = CypherBuilder.matchNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(this.entityUID), new String[]{attributeName});
+                GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(attributeName);
+                Object resultRes = workingGraphOperationExecutor.executeRead(getSingleAttributeValueTransformer, queryCql);
+                if (resultRes != null) {
+                    AttributeValue originalAttributeValue = (AttributeValue) resultRes;
+                    AttributeDataType originalAttributeDataType = originalAttributeValue.getAttributeDataType();
+                    boolean isValidatedFormat = CommonOperationUtil.validateValueFormat(originalAttributeDataType, attributeValue);
+                    if(!isValidatedFormat){
+                        logger.error("Attribute  data type does not match {} of entity with UID {}.", attributeName, this.entityUID);
+                        CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                        exception.setCauseMessage("Attribute data type does not match " + attributeName + " of entity with UID " + this.entityUID +".");
+                        throw exception;
+                    }else{
+                        Map<String,Object> attributeDataMap = new HashMap<>();
+                        attributeDataMap.put(attributeName,attributeValue);
+                        String updateCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.entityUID),attributeDataMap);
+                        Object updateResultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,updateCql);
+                        return updateResultRes != null ? (AttributeValue) updateResultRes : null;
+                    }
+                } else {
+                    logger.error("Attribute {} of entity with UID {} does not exist.", attributeName, this.entityUID);
+                    CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                    exception.setCauseMessage("Attribute " + attributeName + " of entity with UID " + this.entityUID + " does not exist.");
+                    throw exception;
+                }
+            } finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
         }
         return null;
     }

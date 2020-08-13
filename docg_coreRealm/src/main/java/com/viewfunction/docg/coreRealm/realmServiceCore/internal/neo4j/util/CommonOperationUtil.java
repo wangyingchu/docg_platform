@@ -272,4 +272,132 @@ public class CommonOperationUtil {
         }
         return null;
     }
+
+    public static boolean validateValueFormat(AttributeDataType attributeDataType,Object dataValue){
+        System.out.println(attributeDataType);
+        System.out.println(dataValue);
+        if(attributeDataType == null || dataValue == null){
+            return false;
+        }else{
+            switch(attributeDataType){
+                case BOOLEAN:
+                    if(dataValue instanceof Boolean){
+                        return true;
+                    }
+                    break;
+                case INT:
+                    if(dataValue instanceof Integer){
+                        return true;
+                    }
+                    break;
+                case SHORT:
+                    if(dataValue instanceof Short){
+                        return true;
+                    }
+                    break;
+                case LONG:
+                    if(dataValue instanceof Short||
+                            dataValue instanceof Byte||
+                            dataValue instanceof Integer||
+                            dataValue instanceof Long){
+                        return true;
+                    }
+                    break;
+                case FLOAT:
+                    if(dataValue instanceof Float){
+                        return true;
+                    }
+                    break;
+                case DOUBLE:
+                    if(dataValue instanceof Float||
+                            dataValue instanceof BigDecimal||
+                            dataValue instanceof Double){
+                        return true;
+                    }
+                    break;
+                case DATE:
+                    if(dataValue instanceof Date){
+                        return true;
+                    }
+                    break;
+                case STRING:
+                    if(dataValue instanceof String){
+                        return true;
+                    }
+                    break;
+                case BINARY:
+                    if(dataValue instanceof byte[]){
+                        return true;
+                    }
+                    break;
+                case BYTE:
+                    if(dataValue instanceof Byte){
+                        return true;
+                    }
+                    break;
+                case DECIMAL:
+                    if(dataValue instanceof BigDecimal){
+                        return true;
+                    }
+                    break;
+                case BOOLEAN_ARRAY:
+                    if(dataValue instanceof Boolean[]){
+                        return true;
+                    }
+                    break;
+                case INT_ARRAY:
+                    if(dataValue instanceof Integer[]){
+                        return true;
+                    }
+                    break;
+                case SHORT_ARRAY:
+                    if(dataValue instanceof Short[]){
+                        return true;
+                    }
+                    break;
+                case LONG_ARRAY:
+                    if(dataValue instanceof Short[]||
+                            dataValue instanceof Byte[]||
+                            dataValue instanceof byte[]||
+                            dataValue instanceof Integer[]||
+                            dataValue instanceof Long[]){
+                        return true;
+                    }
+                    break;
+                case FLOAT_ARRAY:
+                    if(dataValue instanceof Float[]){
+                        return true;
+                    }
+                    break;
+                case DOUBLE_ARRAY:
+                    if(dataValue instanceof Float[]||
+                            dataValue instanceof BigDecimal[]||
+                            dataValue instanceof Double[]){
+                        return true;
+                    }
+                    break;
+                case DATE_ARRAY:
+                    if(dataValue instanceof Date[]){
+                        return true;
+                    }
+                    break;
+                case STRING_ARRAY:
+                    if(dataValue instanceof String[]){
+                        return true;
+                    }
+                    break;
+                case BINARY_ARRAY:
+                    if(dataValue instanceof Byte[][]){
+                        return true;
+                    }
+                    break;
+                case DECIMAL_ARRAY:
+                    if(dataValue instanceof BigDecimal[]){
+                        return true;
+                    }
+                    break;
+            }
+        }
+        return false;
+    }
 }
