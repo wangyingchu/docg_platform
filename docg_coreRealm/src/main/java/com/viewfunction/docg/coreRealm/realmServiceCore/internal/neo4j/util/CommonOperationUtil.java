@@ -1,5 +1,8 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
@@ -7,6 +10,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.util.config.PropertiesHa
 
 import org.neo4j.cypherdsl.core.Cypher;
 import org.neo4j.cypherdsl.core.Literal;
+import org.neo4j.driver.Result;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -397,5 +401,19 @@ public class CommonOperationUtil {
             }
         }
         return false;
+    }
+
+    public static void updateEntityMetaAttributes(GraphOperationExecutor workingGraphOperationExecutor,String entityUID){
+        if (entityUID != null) {
+            Map<String,Object> metaAttributesMap = new HashMap<>();
+            metaAttributesMap.put(RealmConstant._lastModifyDateProperty,new Date());
+            String updateMetaInfoCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(entityUID),metaAttributesMap);
+            workingGraphOperationExecutor.executeWrite(new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    return null;
+                }
+            }, updateMetaInfoCql);
+        }
     }
 }

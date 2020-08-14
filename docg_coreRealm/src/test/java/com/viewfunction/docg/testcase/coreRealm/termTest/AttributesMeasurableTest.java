@@ -9,6 +9,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 
 import org.testng.Assert;
@@ -87,6 +88,9 @@ public class AttributesMeasurableTest {
         Assert.assertEquals(_ConceptionEntity.getAllConceptionKindNames().size(),1);
         Assert.assertEquals(_ConceptionEntity.getAllConceptionKindNames().get(0),testConceptionKindName);
         Assert.assertNotNull(_ConceptionEntity.getConceptionEntityUID());
+
+        Date lastUpdateDate1 = (Date)_ConceptionEntity.getAttribute(RealmConstant._lastModifyDateProperty).getAttributeValue();
+        Assert.assertNotNull(lastUpdateDate1);
 
         entitiesCount = _ConceptionKind01.countConceptionEntities();
         Assert.assertEquals(entitiesCount,new Long(1));
@@ -335,6 +339,10 @@ public class AttributesMeasurableTest {
         Assert.assertEquals(newAddedAttributeValue1.getAttributeValue(),false);
         Assert.assertEquals(newAddedAttributeValue1.getAttributeValue(),new Boolean(false));
 
+        Date lastUpdateDate2 = (Date)_ConceptionEntity.getAttribute(RealmConstant._lastModifyDateProperty).getAttributeValue();
+        Assert.assertNotNull(lastUpdateDate2);
+        Assert.assertTrue(lastUpdateDate2.getTime() > lastUpdateDate1.getTime());
+
         AttributeValue newAddedAttributeValue2 = _queryResultConceptionEntity.addAttribute("newBooleanAttribute2",true);
         Assert.assertNotNull(newAddedAttributeValue2);
         Assert.assertEquals(newAddedAttributeValue2.getAttributeDataType(),AttributeDataType.BOOLEAN);
@@ -499,6 +507,10 @@ public class AttributesMeasurableTest {
         Assert.assertEquals(updatedAttributeValue_prop1.getAttributeName(),"prop1");
         Assert.assertEquals(updatedAttributeValue_prop1.getAttributeValue(),Long.parseLong("11111"));
 
+        Date lastUpdateDate3 = (Date)_ConceptionEntity.getAttribute(RealmConstant._lastModifyDateProperty).getAttributeValue();
+        Assert.assertNotNull(lastUpdateDate3);
+        Assert.assertTrue(lastUpdateDate3.getTime() > lastUpdateDate2.getTime());
+
         AttributeValue updatedAttributeValueConfirm_prop1 = _queryResultConceptionEntity.getAttribute("prop1");
         Assert.assertNotNull(updatedAttributeValueConfirm_prop1);
         Assert.assertEquals(updatedAttributeValueConfirm_prop1.getAttributeDataType(),AttributeDataType.LONG);
@@ -641,6 +653,10 @@ public class AttributesMeasurableTest {
         Assert.assertFalse(_queryResultConceptionEntity.hasAttribute("prop1"));
         Assert.assertNull(_queryResultConceptionEntity.getAttribute("prop1"));
 
+        Date lastUpdateDate4 = (Date)_ConceptionEntity.getAttribute(RealmConstant._lastModifyDateProperty).getAttributeValue();
+        Assert.assertNotNull(lastUpdateDate4);
+        Assert.assertTrue(lastUpdateDate4.getTime() > lastUpdateDate3.getTime());
+
         Map<String, Object> newPropertiesMap = new HashMap<>();
         newPropertiesMap.put("newAtt1",Long.valueOf(1000001));
         newPropertiesMap.put("newAtt2",new Date());
@@ -655,6 +671,10 @@ public class AttributesMeasurableTest {
         Assert.assertEquals(_queryResultConceptionEntity.getAttribute("newAtt1").getAttributeValue(),new Long(1000001));
         Assert.assertNotNull(_queryResultConceptionEntity.getAttribute("newAtt2").getAttributeValue());
 
+        Date lastUpdateDate5 = (Date)_ConceptionEntity.getAttribute(RealmConstant._lastModifyDateProperty).getAttributeValue();
+        Assert.assertNotNull(lastUpdateDate5);
+        Assert.assertTrue(lastUpdateDate5.getTime() > lastUpdateDate4.getTime());
+
         Map<String, Object> updatePropertiesMap = new HashMap<>();
         updatePropertiesMap.put("newAtt1",Long.valueOf(5000001));
         updatePropertiesMap.put("newAtt2",Long.valueOf(5000001));
@@ -667,11 +687,31 @@ public class AttributesMeasurableTest {
         Assert.assertTrue(updateAttributesResult.contains("newAtt1"));
         Assert.assertTrue(updateAttributesResult.contains("prop7"));
 
+        Date lastUpdateDate6 = (Date)_ConceptionEntity.getAttribute(RealmConstant._lastModifyDateProperty).getAttributeValue();
+        Assert.assertNotNull(lastUpdateDate6);
+        Assert.assertTrue(lastUpdateDate6.getTime() > lastUpdateDate5.getTime());
+
         Assert.assertEquals(_queryResultConceptionEntity.getAttribute("newAtt1").getAttributeValue(),new Long(5000001));
         Assert.assertEquals(_queryResultConceptionEntity.getAttribute("prop7").getAttributeValue(),new Long(24000));
         Assert.assertTrue(_queryResultConceptionEntity.getAttribute("newAtt2").getAttributeValue() instanceof Date);
 
+        Map<String,Object> addOrUpdAttributeMap = new HashMap<>();
+        addOrUpdAttributeMap.put("newAtt1",Long.valueOf(1000001));
+        addOrUpdAttributeMap.put("newAtt2",Long.valueOf(2000001));
+        addOrUpdAttributeMap.put("prop7",Long.valueOf(34000));
+        addOrUpdAttributeMap.put("prop7NotExist",new Long(66000));
 
+        List<String> addAndUpdateAttributesResult = _queryResultConceptionEntity.addNewOrUpdateAttributes(addOrUpdAttributeMap);
 
+        Assert.assertNotNull(addAndUpdateAttributesResult);
+        Assert.assertEquals(addAndUpdateAttributesResult.size(),3);
+        Assert.assertEquals(_queryResultConceptionEntity.getAttribute("newAtt1").getAttributeValue(),new Long(1000001));
+        Assert.assertTrue(_queryResultConceptionEntity.getAttribute("newAtt2").getAttributeValue() instanceof Date);
+        Assert.assertEquals(_queryResultConceptionEntity.getAttribute("prop7").getAttributeValue(),new Long(34000));
+        Assert.assertEquals(_queryResultConceptionEntity.getAttribute("prop7NotExist").getAttributeValue(),new Long(66000));
+
+        Date lastUpdateDate7 = (Date)_ConceptionEntity.getAttribute(RealmConstant._lastModifyDateProperty).getAttributeValue();
+        Assert.assertNotNull(lastUpdateDate7);
+        Assert.assertTrue(lastUpdateDate7.getTime() > lastUpdateDate6.getTime());
     }
 }

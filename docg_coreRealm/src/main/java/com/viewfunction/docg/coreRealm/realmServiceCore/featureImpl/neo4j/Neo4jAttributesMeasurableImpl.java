@@ -46,6 +46,7 @@ public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
                     String deleteCql = CypherBuilder.removeNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.entityUID),targetAttributeNameList);
                     GetListFormatAggregatedReturnValueTransformer getListFormatAggregatedReturnValueTransformer = new GetListFormatAggregatedReturnValueTransformer("keys");
                     Object removeResultRes = workingGraphOperationExecutor.executeWrite(getListFormatAggregatedReturnValueTransformer,deleteCql);
+                    CommonOperationUtil.updateEntityMetaAttributes(workingGraphOperationExecutor,this.entityUID);
                     List<String> returnAttributeNameList = (List<String>)removeResultRes;
                     if(returnAttributeNameList.contains(attributeName)){
                         return false;
@@ -355,6 +356,7 @@ public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
                 String createCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.entityUID),properties);
                 GetMapFormatAggregatedReturnValueTransformer getMapFormatAggregatedReturnValueTransformer = new GetMapFormatAggregatedReturnValueTransformer();
                 Object addAttributeResultRes = workingGraphOperationExecutor.executeWrite(getMapFormatAggregatedReturnValueTransformer,createCql);
+                CommonOperationUtil.updateEntityMetaAttributes(workingGraphOperationExecutor,this.entityUID);
                 if(addAttributeResultRes!=null){
                     List<String> successNameList = new ArrayList<>();
                     Map<String,Object> newAddedAttributesMap = (Map<String,Object>)addAttributeResultRes;
@@ -419,6 +421,7 @@ public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
                 getMapFormatAggregatedReturnValueTransformer = new GetMapFormatAggregatedReturnValueTransformer();
 
                 Object addAttributeResultRes = workingGraphOperationExecutor.executeWrite(getMapFormatAggregatedReturnValueTransformer,createCql);
+                CommonOperationUtil.updateEntityMetaAttributes(workingGraphOperationExecutor,this.entityUID);
                 if(addAttributeResultRes!=null){
                     List<String> successNameList = new ArrayList<>();
                     Map<String,Object> newAddedAttributesMap = (Map<String,Object>)addAttributeResultRes;
@@ -439,10 +442,14 @@ public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
 
     @Override
     public List<String> addNewOrUpdateAttributes(Map<String, Object> properties) {
-        if (this.entityUID != null) {
-
-        }
-        return null;
+        HashMap<String,Object> propertiesForAddMap = new HashMap<>();
+        propertiesForAddMap.putAll(properties);
+        List<String> successAttributeNamesList = new ArrayList<>();
+        List<String> updSuccessList = updateAttributes(properties);
+        List<String> addSuccessList = addAttributes(propertiesForAddMap);
+        successAttributeNamesList.addAll(addSuccessList);
+        successAttributeNamesList.addAll(updSuccessList);
+        return successAttributeNamesList;
     }
 
     private AttributeValue setAttribute(String attributeName, Object attributeValue) throws CoreRealmServiceRuntimeException{
@@ -464,6 +471,7 @@ public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
                     String createCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.entityUID),attributeDataMap);
                     GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(attributeName);
                     Object resultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,createCql);
+                    CommonOperationUtil.updateEntityMetaAttributes(workingGraphOperationExecutor,this.entityUID);
                     return resultRes != null?(AttributeValue)resultRes : null;
                 }
             }finally {
@@ -494,6 +502,7 @@ public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
                         attributeDataMap.put(attributeName,attributeValue);
                         String updateCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.entityUID),attributeDataMap);
                         Object updateResultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,updateCql);
+                        CommonOperationUtil.updateEntityMetaAttributes(workingGraphOperationExecutor,this.entityUID);
                         return updateResultRes != null ? (AttributeValue) updateResultRes : null;
                     }
                 }else {
