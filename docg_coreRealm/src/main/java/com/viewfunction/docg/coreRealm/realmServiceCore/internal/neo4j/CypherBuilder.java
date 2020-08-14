@@ -36,47 +36,7 @@ public class CypherBuilder {
         Node m = Cypher.node(labelName).named(operationResultName);
         Statement statement;
         if(properties != null && properties.size()>0){
-            Map<String,Object> realPropertiesData = CommonOperationUtil.reformatPropertyValues(properties);
-            properties.clear();
-            List<Operation> propertyValuesList = new ArrayList<>();
-            java.util.Set<String> propertyNameSet = realPropertiesData.keySet();
-            if(!propertyNameSet.isEmpty()){
-                Iterator<String> propertyNameIterator = propertyNameSet.iterator();
-                while(propertyNameIterator.hasNext()){
-                    String propertyName = propertyNameIterator.next();
-                    Object propertyValue = realPropertiesData.get(propertyName);
-                    if(propertyValue instanceof CharSequence || propertyValue instanceof Number ||
-                            propertyValue instanceof Iterable || propertyValue instanceof Boolean){
-                        propertyValuesList.add(m.property(propertyName).to(Cypher.literalOf(propertyValue)));
-                    }
-                    else if(propertyValue instanceof ZonedDateTime){
-                        ZonedDateTime targetZonedDateTime = (ZonedDateTime)propertyValue;
-                        String targetZonedDateTimeString = targetZonedDateTime.toString();
-                        propertyValuesList.add(m.property(propertyName).
-                                to(Functions2.datetime(Cypher.literalOf(targetZonedDateTimeString)))
-                        );
-                    }
-                    else if(propertyValue instanceof Date){
-                        ZonedDateTime targetZonedDateTime = ZonedDateTime.ofInstant(((Date)propertyValue).toInstant(), systemDefaultZoneId);
-                        String targetZonedDateTimeString = targetZonedDateTime.toString();
-                        propertyValuesList.add(m.property(propertyName).
-                                to(Functions2.datetime(Cypher.literalOf(targetZonedDateTimeString)))
-                        );
-                    }
-                    else if(propertyValue instanceof Date[]){
-                        Date[] dateValueArray = (Date[])propertyValue;
-                        Expression[] dataValueExpressArray = new Expression[dateValueArray.length];
-                        for(int i=0;i<dateValueArray.length;i++){
-                            Date currentValue = dateValueArray[i];
-                            ZonedDateTime targetZonedDateTime = ZonedDateTime.ofInstant(currentValue.toInstant(), systemDefaultZoneId);
-                            String targetZonedDateTimeString = targetZonedDateTime.toString();
-                            dataValueExpressArray[i] = Functions2.datetime(Cypher.literalOf(targetZonedDateTimeString));
-                        }
-                        propertyValuesList.add(m.property(propertyName).to(Cypher.listOf(dataValueExpressArray)));
-                    }
-                }
-            }
-            Operation[] propertiesArray=propertyValuesList.toArray(new Operation[propertyValuesList.size()]);
+            Operation[] propertiesArray = getPropertiesSettingArray(m,properties);
             statement = Cypher.create(m).set(propertiesArray).returning(m).build();
         }else{
             m = Cypher.node(labelName).named(operationResultName);
@@ -85,6 +45,76 @@ public class CypherBuilder {
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}",rel);
         return rel;
+    }
+
+    private static Operation[] getPropertiesSettingArray(Node m,Map<String,Object> properties){
+        Map<String,Object> realPropertiesData = CommonOperationUtil.reformatPropertyValues(properties);
+        properties.clear();
+        List<Operation> propertyValuesList = new ArrayList<>();
+        java.util.Set<String> propertyNameSet = realPropertiesData.keySet();
+        if(!propertyNameSet.isEmpty()){
+            Iterator<String> propertyNameIterator = propertyNameSet.iterator();
+            while(propertyNameIterator.hasNext()){
+                String propertyName = propertyNameIterator.next();
+                Object propertyValue = realPropertiesData.get(propertyName);
+                if(propertyValue instanceof CharSequence || propertyValue instanceof Number ||
+                        propertyValue instanceof Iterable || propertyValue instanceof Boolean){
+                    propertyValuesList.add(m.property(propertyName).to(Cypher.literalOf(propertyValue)));
+                }
+                else if(propertyValue instanceof ZonedDateTime){
+                    ZonedDateTime targetZonedDateTime = (ZonedDateTime)propertyValue;
+                    String targetZonedDateTimeString = targetZonedDateTime.toString();
+                    propertyValuesList.add(m.property(propertyName).
+                            to(Functions2.datetime(Cypher.literalOf(targetZonedDateTimeString)))
+                    );
+                }
+                else if(propertyValue instanceof Date){
+                    ZonedDateTime targetZonedDateTime = ZonedDateTime.ofInstant(((Date)propertyValue).toInstant(), systemDefaultZoneId);
+                    String targetZonedDateTimeString = targetZonedDateTime.toString();
+                    propertyValuesList.add(m.property(propertyName).
+                            to(Functions2.datetime(Cypher.literalOf(targetZonedDateTimeString)))
+                    );
+                }
+                else if(propertyValue instanceof Date[]){
+                    Date[] dateValueArray = (Date[])propertyValue;
+                    Expression[] dataValueExpressArray = new Expression[dateValueArray.length];
+                    for(int i=0;i<dateValueArray.length;i++){
+                        Date currentValue = dateValueArray[i];
+                        ZonedDateTime targetZonedDateTime = ZonedDateTime.ofInstant(currentValue.toInstant(), systemDefaultZoneId);
+                        String targetZonedDateTimeString = targetZonedDateTime.toString();
+                        dataValueExpressArray[i] = Functions2.datetime(Cypher.literalOf(targetZonedDateTimeString));
+                    }
+                    propertyValuesList.add(m.property(propertyName).to(Cypher.listOf(dataValueExpressArray)));
+                }
+            }
+        }
+        Operation[] propertiesArray=propertyValuesList.toArray(new Operation[propertyValuesList.size()]);
+        return propertiesArray;
+    }
+
+    public static String createMultiLabeledNodesWithProperties(String labelName, List<Map<String,Object>> propertiesList){
+        if(propertiesList != null && propertiesList.size() > 0){
+            Node[] targetNodeArray = new Node[propertiesList.size()];
+            for( int i=0;i<propertiesList.size();i++){
+                Map<String,Object> currentPropertyMap = propertiesList.get(i);
+
+
+                Map<String,Object> realPropertiesData = CommonOperationUtil.reformatPropertyValues(currentPropertyMap);
+
+
+                MapExpression targetMapExpression = Cypher.mapOf("aaa","sssss");
+                Node m = Cypher.node(labelName).withProperties(targetMapExpression);
+                targetNodeArray[i] = m;
+            }
+
+
+            Statement statement = Cypher.create(targetNodeArray).returning(targetNodeArray).build();
+
+            String rel = cypherRenderer.render(statement);
+            logger.debug("Generated Cypher Statement: {}",rel);
+            return rel;
+        }
+        return null;
     }
 
     public static String matchLabelWithSinglePropertyValueAndFunction(String labelName,CypherFunctionType cypherFunctionType,String propertyName,Object propertyValue){

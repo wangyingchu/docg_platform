@@ -83,7 +83,7 @@ public class Neo4JConceptionKindImpl implements ConceptionKind {
     public ConceptionEntity newEntity(ConceptionEntityValue conceptionEntityValue, boolean addPerDefinedRelation) {
         if (conceptionEntityValue != null) {
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-            Map<String,Object> propertiesMap = conceptionEntityValue.getEntityAttributesValue() != null?
+            Map<String,Object> propertiesMap = conceptionEntityValue.getEntityAttributesValue() != null ?
                     conceptionEntityValue.getEntityAttributesValue():new HashMap<>();
             CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
             String createCql = CypherBuilder.createLabeledNodeWithProperties(this.conceptionKindName,propertiesMap);
@@ -98,11 +98,18 @@ public class Neo4JConceptionKindImpl implements ConceptionKind {
 
     @Override
     public ConceptionEntity newEntity(ConceptionEntityValue conceptionEntityValue, List<RelationAttachKind> relationAttachKindList) {
-        return null;
+        return newEntity(conceptionEntityValue,false);
     }
 
     @Override
     public EntitiesOperationResult newEntities(List<ConceptionEntityValue> conceptionEntityValues, boolean addPerDefinedRelation) {
+        if(conceptionEntityValues !=null && conceptionEntityValues.size()>0){
+
+
+
+
+        }
+
         return null;
     }
 
