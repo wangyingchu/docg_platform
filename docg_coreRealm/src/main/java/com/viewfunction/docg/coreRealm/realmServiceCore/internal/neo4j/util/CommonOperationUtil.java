@@ -29,6 +29,14 @@ public class CommonOperationUtil {
         }
     }
 
+    public static void generateEntityMetaAttributes(Map<String,Object> propertiesMap,ZonedDateTime currentDateTime){
+        if(propertiesMap != null) {
+            propertiesMap.put(RealmConstant._createDateProperty, currentDateTime);
+            propertiesMap.put(RealmConstant._lastModifyDateProperty, currentDateTime);
+            propertiesMap.put(RealmConstant._dataOriginProperty, COMMON_DATA_ORIGIN);
+        }
+    }
+
     public static List<String> clearSystemBuiltinAttributeNames(List<String> attributeNameList){
         List<String> cleanAttributeNameList = new ArrayList<>();
         if(attributeNameList != null){

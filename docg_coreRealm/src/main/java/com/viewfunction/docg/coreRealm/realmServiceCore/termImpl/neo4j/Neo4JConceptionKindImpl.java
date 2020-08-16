@@ -13,10 +13,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payloadImpl.CommonEntitiesOperationResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 public class Neo4JConceptionKindImpl implements ConceptionKind {
 
@@ -104,8 +102,15 @@ public class Neo4JConceptionKindImpl implements ConceptionKind {
     @Override
     public EntitiesOperationResult newEntities(List<ConceptionEntityValue> conceptionEntityValues, boolean addPerDefinedRelation) {
         if(conceptionEntityValues !=null && conceptionEntityValues.size()>0){
+            ZonedDateTime currentDateTime = ZonedDateTime.now();
+            List<Map<String,Object>> attributesValueMap = new ArrayList<>();
 
-
+            for(ConceptionEntityValue currentConceptionEntityValue:conceptionEntityValues){
+                Map<String,Object> currentDateAttributesMap = currentConceptionEntityValue.getEntityAttributesValue();
+                CommonOperationUtil.generateEntityMetaAttributes(currentDateAttributesMap,currentDateTime);
+                attributesValueMap.add(currentDateAttributesMap);
+            }
+            String createCql = CypherBuilder.createMultiLabeledNodesWithProperties(this.conceptionKindName,attributesValueMap);
 
 
         }

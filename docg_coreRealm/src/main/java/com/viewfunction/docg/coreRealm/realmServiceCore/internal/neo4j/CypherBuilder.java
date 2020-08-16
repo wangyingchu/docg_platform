@@ -102,6 +102,12 @@ public class CypherBuilder {
                 Map<String,Object> realPropertiesData = CommonOperationUtil.reformatPropertyValues(currentPropertyMap);
 
 
+
+
+
+
+
+
                 MapExpression targetMapExpression = Cypher.mapOf("aaa","sssss");
                 Node m = Cypher.node(labelName).withProperties(targetMapExpression);
                 targetNodeArray[i] = m;
