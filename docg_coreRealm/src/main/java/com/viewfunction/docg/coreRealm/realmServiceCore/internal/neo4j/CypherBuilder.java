@@ -95,26 +95,19 @@ public class CypherBuilder {
     public static String createMultiLabeledNodesWithProperties(String labelName, List<Map<String,Object>> propertiesList){
         if(propertiesList != null && propertiesList.size() > 0){
             Node[] targetNodeArray = new Node[propertiesList.size()];
-            for( int i=0;i<propertiesList.size();i++){
-                Map<String,Object> currentPropertyMap = propertiesList.get(i);
-
-
-                Map<String,Object> realPropertiesData = CommonOperationUtil.reformatPropertyValues(currentPropertyMap);
-
-
-
-
-
-
-
-
-                MapExpression targetMapExpression = Cypher.mapOf("aaa","sssss");
-                Node m = Cypher.node(labelName).withProperties(targetMapExpression);
-                targetNodeArray[i] = m;
+            Map<String,Object> currentPropertyMap = propertiesList.get(0);
+            MapExpression targetMapExpression = Cypher.mapOf(CommonOperationUtil.generatePropertiesValueArray(currentPropertyMap));
+            Node m = Cypher.node(labelName).named(operationResultName+0).withProperties(targetMapExpression);
+            targetNodeArray[0] = m;
+            StatementBuilder.OngoingUpdate currentOngoingUpdate =Cypher.create(targetNodeArray[0]);
+            for( int i=1;i<propertiesList.size();i++){
+                currentPropertyMap = propertiesList.get(i);
+                targetMapExpression = Cypher.mapOf(CommonOperationUtil.generatePropertiesValueArray(currentPropertyMap));
+                Node currentN = Cypher.node(labelName).named(operationResultName+i).withProperties(targetMapExpression);
+                targetNodeArray[i] = currentN;
+                currentOngoingUpdate =currentOngoingUpdate.create(targetNodeArray[i]);
             }
-
-
-            Statement statement = Cypher.create(targetNodeArray).returning(targetNodeArray).build();
+            Statement statement = currentOngoingUpdate.returning(targetNodeArray).build();
 
             String rel = cypherRenderer.render(statement);
             logger.debug("Generated Cypher Statement: {}",rel);

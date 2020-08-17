@@ -8,17 +8,18 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.config.PropertiesHandler;
 
-import org.neo4j.cypherdsl.core.Cypher;
-import org.neo4j.cypherdsl.core.Literal;
+import org.neo4j.cypherdsl.core.*;
 import org.neo4j.driver.Result;
 
 import java.math.BigDecimal;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 
 public class CommonOperationUtil {
 
     private static final String COMMON_DATA_ORIGIN = PropertiesHandler.getPropertyValue(PropertiesHandler.COMMON_DATA_ORIGIN);
+    private static final ZoneId systemDefaultZoneId = ZoneId.systemDefault();
 
     public static void generateEntityMetaAttributes(Map<String,Object> propertiesMap){
         if(propertiesMap != null) {
@@ -128,6 +129,63 @@ public class CommonOperationUtil {
                 }
             }
             return formattedValueMap;
+        }
+        return null;
+    }
+
+    public static Object[] generatePropertiesValueArray(Map<String,Object> originalPropertiesMap){
+        if(originalPropertiesMap != null){
+            List<Object> propertiesValueList = new ArrayList<>();
+
+            for(String key : originalPropertiesMap.keySet()){
+                propertiesValueList.add(key);
+                Object propertyValue = originalPropertiesMap.get(key);
+                if(propertyValue instanceof Boolean[]||
+                        propertyValue instanceof Integer[]||
+                        propertyValue instanceof Short[]||
+                        propertyValue instanceof Long[]||
+                        propertyValue instanceof Float[]||
+                        propertyValue instanceof Double[]||
+                        propertyValue instanceof BigDecimal[]||
+                        propertyValue instanceof String[]||
+                        propertyValue instanceof Byte[]){
+                    Object[] dataValueArray = (Object[])propertyValue;
+                    Literal[] orgLiteralValue = new Literal[dataValueArray.length];
+                    for(int i=0 ;i<dataValueArray.length;i++){
+                        orgLiteralValue[i] = Cypher.literalOf(dataValueArray[i]);
+                    }
+                    propertiesValueList.add(Cypher.listOf(orgLiteralValue));
+                }else if(propertyValue instanceof byte[]) {
+                    byte[] orgValue = (byte[])propertyValue;
+                    Literal[] orgLiteralValue = new Literal[orgValue.length];
+                    for(int i=0 ;i<orgValue.length;i++){
+                        orgLiteralValue[i] = Cypher.literalOf(orgValue[i]);
+                    }
+                    propertiesValueList.add(Cypher.listOf(orgLiteralValue));
+                }else if(propertyValue instanceof Date[]) {
+                    Date[] dateValueArray = (Date[])propertyValue;
+                    Literal[] orgLiteralValue = new Literal[dateValueArray.length];
+                    for(int j=0;j<dateValueArray.length;j++){
+                        Date currentInnerValue = dateValueArray[j];
+                        ZonedDateTime targetZonedDateTime = ZonedDateTime.ofInstant(currentInnerValue.toInstant(), systemDefaultZoneId);
+                        String targetZonedDateTimeString = targetZonedDateTime.toString();
+                        orgLiteralValue[j] = new CustomContentLiteral("datetime('"+targetZonedDateTimeString+"')");
+                    }
+                    propertiesValueList.add(Cypher.listOf(orgLiteralValue));
+                }else if(propertyValue instanceof ZonedDateTime) {
+                    ZonedDateTime targetZonedDateTime = (ZonedDateTime) propertyValue;
+                    String targetZonedDateTimeString = targetZonedDateTime.toString();
+                    propertiesValueList.add(Functions2.datetime(Cypher.literalOf(targetZonedDateTimeString)));
+                }else if(propertyValue instanceof Date){
+                    ZonedDateTime targetZonedDateTime = ZonedDateTime.ofInstant(((Date)propertyValue).toInstant(), systemDefaultZoneId);
+                    String targetZonedDateTimeString = targetZonedDateTime.toString();
+                    propertiesValueList.add(Functions2.datetime(Cypher.literalOf(targetZonedDateTimeString)));
+                }else{
+                    propertiesValueList.add(Cypher.literalOf(propertyValue));
+                }
+            }
+            Object[] resultDataArray = new Object[propertiesValueList.size()];
+            return propertiesValueList.toArray(resultDataArray);
         }
         return null;
     }

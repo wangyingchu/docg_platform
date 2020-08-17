@@ -20,7 +20,7 @@ public class GetMapFormatAggregatedReturnValueTransformer implements DataTransfo
     public Map transformResult(Result result) {
         if(result.hasNext()){
             Record record = result.next();
-            if( aggregationFunctionName!=null ){
+            if(aggregationFunctionName!=null ){
                 String resultDataProperty = aggregationFunctionName+"("+ CypherBuilder.operationResultName+")";
                 if(record.containsKey(resultDataProperty)){
                     return record.get(resultDataProperty).asMap();

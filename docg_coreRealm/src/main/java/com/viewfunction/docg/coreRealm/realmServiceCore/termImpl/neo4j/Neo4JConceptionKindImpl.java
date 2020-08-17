@@ -6,12 +6,14 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetLongFormatAggregatedReturnValueTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetMapFormatAggregatedReturnValueTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payloadImpl.CommonEntitiesOperationResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
+import org.neo4j.driver.types.Node;
 
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -52,14 +54,17 @@ public class Neo4JConceptionKindImpl implements ConceptionKind {
     @Override
     public Long countConceptionEntities() throws CoreRealmServiceRuntimeException{
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-        String queryCql = CypherBuilder.matchLabelWithSinglePropertyValueAndFunction(getConceptionKindName(), CypherBuilder.CypherFunctionType.COUNT,null,null);
-        GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
-        Object countConceptionEntitiesRes = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer,queryCql);
-        this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-        if(countConceptionEntitiesRes == null){
-            throw new CoreRealmServiceRuntimeException();
-        }else{
-            return (Long)countConceptionEntitiesRes;
+        try {
+            String queryCql = CypherBuilder.matchLabelWithSinglePropertyValueAndFunction(getConceptionKindName(), CypherBuilder.CypherFunctionType.COUNT, null, null);
+            GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
+            Object countConceptionEntitiesRes = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer, queryCql);
+            if (countConceptionEntitiesRes == null) {
+                throw new CoreRealmServiceRuntimeException();
+            } else {
+                return (Long) countConceptionEntitiesRes;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
     }
 
@@ -81,15 +86,18 @@ public class Neo4JConceptionKindImpl implements ConceptionKind {
     public ConceptionEntity newEntity(ConceptionEntityValue conceptionEntityValue, boolean addPerDefinedRelation) {
         if (conceptionEntityValue != null) {
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-            Map<String,Object> propertiesMap = conceptionEntityValue.getEntityAttributesValue() != null ?
-                    conceptionEntityValue.getEntityAttributesValue():new HashMap<>();
-            CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
-            String createCql = CypherBuilder.createLabeledNodeWithProperties(this.conceptionKindName,propertiesMap);
-            GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
-                    new GetSingleConceptionEntityTransformer(this.conceptionKindName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
-            Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,createCql);
-            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-            return newEntityRes != null ? (ConceptionEntity)newEntityRes:null;
+            try {
+                Map<String, Object> propertiesMap = conceptionEntityValue.getEntityAttributesValue() != null ?
+                        conceptionEntityValue.getEntityAttributesValue() : new HashMap<>();
+                CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
+                String createCql = CypherBuilder.createLabeledNodeWithProperties(this.conceptionKindName, propertiesMap);
+                GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                        new GetSingleConceptionEntityTransformer(this.conceptionKindName, this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer, createCql);
+                return newEntityRes != null ? (ConceptionEntity) newEntityRes : null;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
         }
         return null;
     }
@@ -102,25 +110,46 @@ public class Neo4JConceptionKindImpl implements ConceptionKind {
     @Override
     public EntitiesOperationResult newEntities(List<ConceptionEntityValue> conceptionEntityValues, boolean addPerDefinedRelation) {
         if(conceptionEntityValues !=null && conceptionEntityValues.size()>0){
+            CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
+
             ZonedDateTime currentDateTime = ZonedDateTime.now();
             List<Map<String,Object>> attributesValueMap = new ArrayList<>();
-
             for(ConceptionEntityValue currentConceptionEntityValue:conceptionEntityValues){
                 Map<String,Object> currentDateAttributesMap = currentConceptionEntityValue.getEntityAttributesValue();
                 CommonOperationUtil.generateEntityMetaAttributes(currentDateAttributesMap,currentDateTime);
                 attributesValueMap.add(currentDateAttributesMap);
             }
-            String createCql = CypherBuilder.createMultiLabeledNodesWithProperties(this.conceptionKindName,attributesValueMap);
 
-
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try {
+                String createCql = CypherBuilder.createMultiLabeledNodesWithProperties(this.conceptionKindName, attributesValueMap);
+                GetMapFormatAggregatedReturnValueTransformer getMapFormatAggregatedReturnValueTransformer =
+                        new GetMapFormatAggregatedReturnValueTransformer();
+                Object newEntityRes = workingGraphOperationExecutor.executeWrite(getMapFormatAggregatedReturnValueTransformer, createCql);
+                if(newEntityRes!=null){
+                    Map<String, Node> resultNodesMap = (Map<String, Node>)newEntityRes;
+                    Iterator<Map.Entry<String,Node>> iter = resultNodesMap.entrySet().iterator();
+                    while(iter.hasNext()){
+                        Map.Entry<String,Node> entry = iter.next();
+                        Node value = entry.getValue();
+                        commonEntitiesOperationResultImpl.getSuccessEntityUIDs().add(""+value.id());
+                    }
+                    commonEntitiesOperationResultImpl.getOperationStatistics().setSuccessItemsCount(resultNodesMap.size());
+                    commonEntitiesOperationResultImpl.getOperationStatistics().
+                            setOperationSummary("newEntities operation for conceptionKind "+this.conceptionKindName+" success.");
+                }
+                commonEntitiesOperationResultImpl.finishEntitiesOperation();
+                return commonEntitiesOperationResultImpl;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
         }
-
         return null;
     }
 
     @Override
     public EntitiesOperationResult newEntities(List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList) {
-        return null;
+        return newEntities(conceptionEntityValues,false);
     }
 
     @Override
@@ -147,22 +176,25 @@ public class Neo4JConceptionKindImpl implements ConceptionKind {
     public EntitiesOperationResult purgeAllEntities() throws CoreRealmServiceRuntimeException{
         CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-        String deleteCql = CypherBuilder.deleteLabelWithSinglePropertyValueAndFunction(this.conceptionKindName,
-                CypherBuilder.CypherFunctionType.COUNT,null,null);
-        GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer =
-                new GetLongFormatAggregatedReturnValueTransformer("count");
-        Object deleteResultObject = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer,deleteCql);
+        try{
+            String deleteCql = CypherBuilder.deleteLabelWithSinglePropertyValueAndFunction(this.conceptionKindName,
+                    CypherBuilder.CypherFunctionType.COUNT,null,null);
+            GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer =
+                    new GetLongFormatAggregatedReturnValueTransformer("count");
+            Object deleteResultObject = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer,deleteCql);
 
-        this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-        if(deleteResultObject == null){
-            throw new CoreRealmServiceRuntimeException();
-        }else{
-            commonEntitiesOperationResultImpl.getOperationStatistics().setSuccessItemsCount((Long)deleteResultObject);
-            commonEntitiesOperationResultImpl.getOperationStatistics().
-                    setOperationSummary("purgeAllEntities operation for conceptionKind "+this.conceptionKindName+" success.");
+            if(deleteResultObject == null){
+                throw new CoreRealmServiceRuntimeException();
+            }else{
+                commonEntitiesOperationResultImpl.getOperationStatistics().setSuccessItemsCount((Long)deleteResultObject);
+                commonEntitiesOperationResultImpl.getOperationStatistics().
+                        setOperationSummary("purgeAllEntities operation for conceptionKind "+this.conceptionKindName+" success.");
+            }
+            commonEntitiesOperationResultImpl.finishEntitiesOperation();
+            return commonEntitiesOperationResultImpl;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
-        commonEntitiesOperationResultImpl.finishEntitiesOperation();
-        return commonEntitiesOperationResultImpl;
     }
 
     @Override
@@ -174,12 +206,15 @@ public class Neo4JConceptionKindImpl implements ConceptionKind {
     public ConceptionEntity getEntityByUID(String conceptionEntityUID) {
         if (conceptionEntityUID != null) {
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-            String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(conceptionEntityUID),null,null);
-            GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
-                    new GetSingleConceptionEntityTransformer(this.conceptionKindName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
-            Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,queryCql);
-            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-            return newEntityRes != null ? (ConceptionEntity)newEntityRes:null;
+            try {
+                String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(conceptionEntityUID), null, null);
+                GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                        new GetSingleConceptionEntityTransformer(this.conceptionKindName, this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer, queryCql);
+                return newEntityRes != null ? (ConceptionEntity) newEntityRes : null;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
         }
         return null;
     }
