@@ -143,5 +143,77 @@ public class ConceptionKindTest {
             Assert.assertNotNull(currentConceptionEntity);
             Assert.assertEquals(currentConceptionEntity.getAttributes().size(),20);
         }
+
+        ConceptionEntity currentConceptionEntity = _ConceptionKind01.getEntityByUID(addEntitiesResult.getSuccessEntityUIDs().get(0));
+
+        Assert.assertEquals(currentConceptionEntity.getAttribute("prop1").getAttributeValue(),Long.parseLong("12345"));
+        Assert.assertEquals(currentConceptionEntity.getAttribute("prop2").getAttributeValue(),Double.parseDouble("12345.789"));
+
+        Map<String,Object> updateEntityValueMap= new HashMap<>();
+        updateEntityValueMap.put("prop1",Long.parseLong("59000"));
+        updateEntityValueMap.put("prop2",Double.parseDouble("10000000.1"));
+        updateEntityValueMap.put("prop3",new Date());
+        updateEntityValueMap.put("prop3_NotExist",new Date());
+
+        ConceptionEntityValue conceptionEntityValueForUpdate = new ConceptionEntityValue(updateEntityValueMap);
+        conceptionEntityValueForUpdate.setConceptionEntityUID(addEntitiesResult.getSuccessEntityUIDs().get(0));
+
+        ConceptionEntity updatedConceptionEntityValue = _ConceptionKind01.updateEntity(conceptionEntityValueForUpdate);
+        Assert.assertNotNull(updatedConceptionEntityValue);
+        Assert.assertEquals(updatedConceptionEntityValue.getAttribute("prop1").getAttributeValue(),Long.parseLong("59000"));
+        Assert.assertEquals(updatedConceptionEntityValue.getAttribute("prop2").getAttributeValue(),Double.parseDouble("10000000.1"));
+        Assert.assertEquals(updatedConceptionEntityValue.getAttribute("prop3").getAttributeValue(),Long.parseLong("1234"));
+        Assert.assertFalse(updatedConceptionEntityValue.hasAttribute("prop3_NotExist"));
+
+        List<ConceptionEntityValue> conceptionEntityValueForUpdateList = new ArrayList<>();
+        ConceptionEntityValue conceptionEntityValueForUpdate1 = new ConceptionEntityValue(updateEntityValueMap);
+        conceptionEntityValueForUpdate1.setConceptionEntityUID(addEntitiesResult.getSuccessEntityUIDs().get(0));
+        conceptionEntityValueForUpdateList.add(conceptionEntityValueForUpdate1);
+        ConceptionEntityValue conceptionEntityValueForUpdate2 = new ConceptionEntityValue(updateEntityValueMap);
+        conceptionEntityValueForUpdate2.setConceptionEntityUID(addEntitiesResult.getSuccessEntityUIDs().get(1));
+        conceptionEntityValueForUpdateList.add(conceptionEntityValueForUpdate2);
+        ConceptionEntityValue conceptionEntityValueForUpdate3 = new ConceptionEntityValue(updateEntityValueMap);
+        conceptionEntityValueForUpdate3.setConceptionEntityUID(addEntitiesResult.getSuccessEntityUIDs().get(2));
+        conceptionEntityValueForUpdateList.add(conceptionEntityValueForUpdate3);
+        ConceptionEntityValue conceptionEntityValueForUpdate4 = new ConceptionEntityValue(updateEntityValueMap);
+        conceptionEntityValueForUpdate4.setConceptionEntityUID("123456789");
+        conceptionEntityValueForUpdateList.add(conceptionEntityValueForUpdate4);
+
+        EntitiesOperationResult entitiesOperationResult = _ConceptionKind01.updateEntities(conceptionEntityValueForUpdateList);
+        Assert.assertNotNull(entitiesOperationResult);
+        Assert.assertNotNull(entitiesOperationResult.getSuccessEntityUIDs());
+        Assert.assertNotNull(entitiesOperationResult.getOperationStatistics());
+        Assert.assertNotNull(entitiesOperationResult.getOperationStatistics().getOperationSummary());
+        Assert.assertNotNull(entitiesOperationResult.getOperationStatistics().getStartTime());
+        Assert.assertNotNull(entitiesOperationResult.getOperationStatistics().getFinishTime());
+        Assert.assertEquals(entitiesOperationResult.getSuccessEntityUIDs().size(),3);
+        Assert.assertTrue(entitiesOperationResult.getSuccessEntityUIDs().contains(addEntitiesResult.getSuccessEntityUIDs().get(0)));
+        Assert.assertTrue(entitiesOperationResult.getSuccessEntityUIDs().contains(addEntitiesResult.getSuccessEntityUIDs().get(1)));
+        Assert.assertTrue(entitiesOperationResult.getSuccessEntityUIDs().contains(addEntitiesResult.getSuccessEntityUIDs().get(2)));
+        Assert.assertEquals(entitiesOperationResult.getOperationStatistics().getSuccessItemsCount(),3);
+        Assert.assertEquals(entitiesOperationResult.getOperationStatistics().getFailItemsCount(),1);
+
+        ConceptionEntity conceptionEntityForDelete = _ConceptionKind01.getEntityByUID(addEntitiesResult.getSuccessEntityUIDs().get(0));
+        Assert.assertNotNull(conceptionEntityForDelete);
+        boolean deleteEntityResult = _ConceptionKind01.deleteEntity(addEntitiesResult.getSuccessEntityUIDs().get(0));
+        Assert.assertTrue(deleteEntityResult);
+        conceptionEntityForDelete = _ConceptionKind01.getEntityByUID(addEntitiesResult.getSuccessEntityUIDs().get(0));
+        Assert.assertNull(conceptionEntityForDelete);
+
+        boolean exceptionShouldBeCaught = false;
+        try{
+            _ConceptionKind01.deleteEntity("123456");
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
+
+        exceptionShouldBeCaught = false;
+        try{
+            _ConceptionKind01.deleteEntity(addEntitiesResult.getSuccessEntityUIDs().get(0));
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
     }
 }

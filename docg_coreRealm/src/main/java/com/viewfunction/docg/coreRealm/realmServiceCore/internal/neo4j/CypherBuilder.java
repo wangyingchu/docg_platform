@@ -207,6 +207,52 @@ public class CypherBuilder {
         return rel;
     }
 
+    public static String deleteNodeWithSingleFunctionValueEqual(CypherFunctionType propertyFunctionType,Object propertyValue,CypherFunctionType returnFunctionType,String additionalPropertyName){
+        Node m = Cypher.anyNode().named(operationResultName);
+        StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(m);
+        StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
+        switch(propertyFunctionType){
+            case ID:
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(m).isEqualTo(Cypher.literalOf(propertyValue)));
+                break;
+            default:
+        }
+        Statement statement = null;
+        if(returnFunctionType !=null) {
+            switch (returnFunctionType) {
+                case KEYS:
+                    if(ongoingReadingWithWhere != null){
+                        statement = ongoingReadingWithWhere.delete(m).returning(Functions2.keys(m)).build();
+                    }else{
+                        statement = ongoingReadingWithoutWhere.delete(m).returning(Functions2.keys(m)).build();
+                    }
+                    break;
+                case PROPERTIES:
+                    if(ongoingReadingWithWhere != null){
+                        statement = ongoingReadingWithWhere.delete(m).returning(Functions2.properties(m)).build();
+                    }else{
+                        statement = ongoingReadingWithoutWhere.delete(m).returning(Functions2.properties(m)).build();
+                    }
+                    break;
+                case EXISTS:
+                    if(ongoingReadingWithWhere != null){
+                        statement = ongoingReadingWithWhere.delete(m).returning(Functions.exists(m.property(additionalPropertyName))).build();
+                    }else{
+                        statement = ongoingReadingWithoutWhere.delete(m).returning(Functions.exists(m.property(additionalPropertyName))).build();
+                    }
+            }
+        }else{
+            if(ongoingReadingWithWhere != null){
+                statement = ongoingReadingWithWhere.delete(m).returning(m).build();
+            }else{
+                statement = ongoingReadingWithoutWhere.delete(m).returning(m).build();
+            }
+        }
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}",rel);
+        return rel;
+    }
+
     public static String matchNodePropertiesWithSingleValueEqual(CypherFunctionType propertyFunctionType,Object propertyValue,String[] targetPropertyNames){
         Node m = Cypher.anyNode().named(operationResultName);
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(m);

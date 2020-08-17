@@ -215,17 +215,15 @@ public class Neo4JConceptionKindImpl implements ConceptionKind {
             if(targetConceptionEntity != null){
                 GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
                 try{
-                    String deleteCql = CypherBuilder.deleteLabelWithSinglePropertyValueAndFunction(this.conceptionKindName,
-                            CypherBuilder.CypherFunctionType.COUNT,CypherBuilder.neo4jID_propertyName,Long.valueOf(conceptionEntityUID));
-                    GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer =
-                            new GetLongFormatAggregatedReturnValueTransformer("count");
-                    Object deleteResultObject = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer,deleteCql);
-                    if(deleteResultObject == null){
+                    String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(conceptionEntityUID),null,null);
+                    GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                            new GetSingleConceptionEntityTransformer(this.conceptionKindName, this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    Object deletedEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer, deleteCql);
+                    if(deletedEntityRes == null){
                         throw new CoreRealmServiceRuntimeException();
                     }else{
-                        if( (Long)deleteResultObject ==1){
-                            return true;
-                        }
+                        return true;
+
                     }
                 }finally {
                     this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
