@@ -30,13 +30,17 @@ public class GetSingleConceptionEntityTransformer implements DataTransformer<Con
             if(nodeRecord != null){
                 Node resultNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
                 List<String> allConceptionKindNames = Lists.newArrayList(resultNode.labels());
-                long nodeUID = resultNode.id();
-                String conceptionEntityUID = ""+nodeUID;
-                Neo4jConceptionEntityImpl neo4jConceptionEntityImpl =
-                        new Neo4jConceptionEntityImpl(targetConceptionKindName,conceptionEntityUID);
-                neo4jConceptionEntityImpl.setAllConceptionKindNames(allConceptionKindNames);
-                neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(this.workingGraphOperationExecutor);
-                return neo4jConceptionEntityImpl;
+                if(allConceptionKindNames.contains(this.targetConceptionKindName)){
+                    long nodeUID = resultNode.id();
+                    String conceptionEntityUID = ""+nodeUID;
+                    Neo4jConceptionEntityImpl neo4jConceptionEntityImpl =
+                            new Neo4jConceptionEntityImpl(targetConceptionKindName,conceptionEntityUID);
+                    neo4jConceptionEntityImpl.setAllConceptionKindNames(allConceptionKindNames);
+                    neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(this.workingGraphOperationExecutor);
+                    return neo4jConceptionEntityImpl;
+                }else{
+                    return null;
+                }
             }
         }
         return null;

@@ -16,6 +16,7 @@ public class CypherBuilder {
     private static Logger logger = LoggerFactory.getLogger(CypherBuilder.class);
     private static final Renderer cypherRenderer = Renderer.getDefaultRenderer();
     public static final String operationResultName = "operationResult";
+    public static final String neo4jID_propertyName = "identity";
     public enum CypherFunctionType{
         COUNT,ID,KEYS,PROPERTIES,EXISTS
     }

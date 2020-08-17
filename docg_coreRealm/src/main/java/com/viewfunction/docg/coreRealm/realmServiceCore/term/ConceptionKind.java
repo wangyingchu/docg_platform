@@ -24,10 +24,10 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
     public ConceptionEntity newEntity(ConceptionEntityValue conceptionEntityValue,List<RelationAttachKind> relationAttachKindList);
     public EntitiesOperationResult newEntities(List<ConceptionEntityValue> conceptionEntityValues, boolean addPerDefinedRelation);
     public EntitiesOperationResult newEntities(List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList);
-    public ConceptionEntity updateEntity(ConceptionEntityValue conceptionEntityValueForUpdate);
+    public ConceptionEntity updateEntity(ConceptionEntityValue conceptionEntityValueForUpdate) throws CoreRealmServiceRuntimeException;
     public EntitiesOperationResult updateEntities(List<ConceptionEntityValue> entityValues);
-    public boolean deleteEntity(String conceptionEntityUID);
-    public EntitiesOperationResult deleteEntities(List<String> conceptionEntityUIDs);
+    public boolean deleteEntity(String conceptionEntityUID) throws CoreRealmServiceRuntimeException;
+    public EntitiesOperationResult deleteEntities(List<String> conceptionEntityUIDs) throws CoreRealmServiceRuntimeException;
     public EntitiesOperationResult purgeAllEntities() throws CoreRealmServiceRuntimeException;
     public ConceptionEntitiesRetrieveResult getEntities(QueryParameters queryParameters);
     public ConceptionEntity getEntityByUID(String conceptionEntityUID);

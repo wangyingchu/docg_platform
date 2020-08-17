@@ -14,12 +14,15 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payloadImpl.CommonEntitiesOperationResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import org.neo4j.driver.types.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.ZonedDateTime;
 import java.util.*;
 
 public class Neo4JConceptionKindImpl implements ConceptionKind {
 
+    private static Logger logger = LoggerFactory.getLogger(Neo4JConceptionKindImpl.class);
     private String coreRealmName;
     private String conceptionKindName;
     private String conceptionKindDesc;
@@ -153,17 +156,87 @@ public class Neo4JConceptionKindImpl implements ConceptionKind {
     }
 
     @Override
-    public ConceptionEntity updateEntity(ConceptionEntityValue conceptionEntityValueForUpdate) {
+    public ConceptionEntity updateEntity(ConceptionEntityValue conceptionEntityValueForUpdate) throws CoreRealmServiceRuntimeException{
+        if(conceptionEntityValueForUpdate != null && conceptionEntityValueForUpdate.getConceptionEntityUID() != null){
+            ConceptionEntity targetConceptionEntity = this.getEntityByUID(conceptionEntityValueForUpdate.getConceptionEntityUID());
+            if(targetConceptionEntity != null){
+                Map<String,Object> newValueMap = conceptionEntityValueForUpdate.getEntityAttributesValue();
+                targetConceptionEntity.updateAttributes(newValueMap);
+                return this.getEntityByUID(conceptionEntityValueForUpdate.getConceptionEntityUID());
+            }else{
+                logger.error("ConceptionKind {} does not contains entity with UID {}.", this.conceptionKindName, conceptionEntityValueForUpdate.getConceptionEntityUID());
+                CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                exception.setCauseMessage("ConceptionKind " + this.conceptionKindName + " does not contains entity with UID " +  conceptionEntityValueForUpdate.getConceptionEntityUID() + ".");
+                throw exception;
+            }
+        }
         return null;
     }
 
     @Override
     public EntitiesOperationResult updateEntities(List<ConceptionEntityValue> entityValues) {
+        if(entityValues != null && entityValues.size()>0){
+            CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
+            boolean countFail = false;
+            for(ConceptionEntityValue currentConceptionEntityValue:entityValues){
+                ConceptionEntity targetConceptionEntity = this.getEntityByUID(currentConceptionEntityValue.getConceptionEntityUID());
+                if(targetConceptionEntity != null){
+                    Map<String,Object> newValueMap = currentConceptionEntityValue.getEntityAttributesValue();
+                    List<String> updateSuccessResult = targetConceptionEntity.updateAttributes(newValueMap);
+                    if(updateSuccessResult != null && updateSuccessResult.size()>0){
+                        commonEntitiesOperationResultImpl.getSuccessEntityUIDs().add(currentConceptionEntityValue.getConceptionEntityUID());
+                        commonEntitiesOperationResultImpl.getOperationStatistics().increaseSuccessCount();
+                    }else{
+                        commonEntitiesOperationResultImpl.getOperationStatistics().increaseFailCount();
+                        countFail = true;
+                    }
+                }else{
+                    commonEntitiesOperationResultImpl.getOperationStatistics().increaseFailCount();
+                    countFail = true;
+                }
+            }
+            if(countFail){
+                commonEntitiesOperationResultImpl.getOperationStatistics().
+                        setOperationSummary("updateEntities operation for conceptionKind "+this.conceptionKindName+" partial success.");
+            }else{
+                commonEntitiesOperationResultImpl.getOperationStatistics().
+                        setOperationSummary("updateEntities operation for conceptionKind "+this.conceptionKindName+" success.");
+            }
+            commonEntitiesOperationResultImpl.finishEntitiesOperation();
+            return commonEntitiesOperationResultImpl;
+        }
         return null;
     }
 
     @Override
-    public boolean deleteEntity(String conceptionEntityUID) {
+    public boolean deleteEntity(String conceptionEntityUID) throws CoreRealmServiceRuntimeException{
+        if(conceptionEntityUID != null){
+            ConceptionEntity targetConceptionEntity = this.getEntityByUID(conceptionEntityUID);
+            if(targetConceptionEntity != null){
+                GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+                try{
+                    String deleteCql = CypherBuilder.deleteLabelWithSinglePropertyValueAndFunction(this.conceptionKindName,
+                            CypherBuilder.CypherFunctionType.COUNT,CypherBuilder.neo4jID_propertyName,Long.valueOf(conceptionEntityUID));
+                    GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer =
+                            new GetLongFormatAggregatedReturnValueTransformer("count");
+                    Object deleteResultObject = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer,deleteCql);
+                    if(deleteResultObject == null){
+                        throw new CoreRealmServiceRuntimeException();
+                    }else{
+                        if( (Long)deleteResultObject ==1){
+                            return true;
+                        }
+                    }
+                }finally {
+                    this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+                }
+            }else{
+                logger.error("ConceptionKind {} does not contains entity with UID {}.", this.conceptionKindName, conceptionEntityUID);
+                CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                exception.setCauseMessage("ConceptionKind " + this.conceptionKindName + " does not contains entity with UID " + conceptionEntityUID + ".");
+                throw exception;
+            }
+        }
         return false;
     }
 
