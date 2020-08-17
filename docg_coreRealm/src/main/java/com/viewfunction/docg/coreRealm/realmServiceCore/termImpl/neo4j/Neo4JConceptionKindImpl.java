@@ -240,6 +240,40 @@ public class Neo4JConceptionKindImpl implements ConceptionKind {
 
     @Override
     public EntitiesOperationResult deleteEntities(List<String> conceptionEntityUIDs) {
+        if(conceptionEntityUIDs != null && conceptionEntityUIDs.size()>0){
+            CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
+            boolean countFail = false;
+            for(String currentConceptionEntityUID:conceptionEntityUIDs) {
+                ConceptionEntity targetConceptionEntity = this.getEntityByUID(currentConceptionEntityUID);
+                if(targetConceptionEntity != null){
+                    try {
+                        boolean deleteCurrentEntityResult = deleteEntity(currentConceptionEntityUID);
+                        if(deleteCurrentEntityResult){
+                            commonEntitiesOperationResultImpl.getSuccessEntityUIDs().add(currentConceptionEntityUID);
+                            commonEntitiesOperationResultImpl.getOperationStatistics().increaseSuccessCount();
+                        }else{
+                            commonEntitiesOperationResultImpl.getOperationStatistics().getFailItemsCount();
+                        }
+                    } catch (CoreRealmServiceRuntimeException e) {
+                        e.printStackTrace();
+                        commonEntitiesOperationResultImpl.getOperationStatistics().getFailItemsCount();
+                        logger.error("Exception occurred during delete entity with UID {} of ConceptionKind {}.", currentConceptionEntityUID , this.conceptionKindName);
+                    }
+                }else{
+                    commonEntitiesOperationResultImpl.getOperationStatistics().increaseFailCount();
+                    countFail = true;
+                }
+            }
+            if(countFail){
+                commonEntitiesOperationResultImpl.getOperationStatistics().
+                        setOperationSummary("deleteEntities operation for conceptionKind "+this.conceptionKindName+" partial success.");
+            }else{
+                commonEntitiesOperationResultImpl.getOperationStatistics().
+                        setOperationSummary("deleteEntities operation for conceptionKind "+this.conceptionKindName+" success.");
+            }
+            commonEntitiesOperationResultImpl.finishEntitiesOperation();
+            return commonEntitiesOperationResultImpl;
+        }
         return null;
     }
 

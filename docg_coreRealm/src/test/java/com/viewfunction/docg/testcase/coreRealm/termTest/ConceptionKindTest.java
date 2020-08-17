@@ -215,5 +215,24 @@ public class ConceptionKindTest {
             exceptionShouldBeCaught = true;
         }
         Assert.assertTrue(exceptionShouldBeCaught);
+
+        List<String> entityUIDsForDelete = new ArrayList<>();
+        entityUIDsForDelete.add(addEntitiesResult.getSuccessEntityUIDs().get(0));
+        entityUIDsForDelete.add(addEntitiesResult.getSuccessEntityUIDs().get(1));
+        entityUIDsForDelete.add(addEntitiesResult.getSuccessEntityUIDs().get(2));
+        entityUIDsForDelete.add("123456");
+
+        entitiesOperationResult = _ConceptionKind01.deleteEntities(entityUIDsForDelete);
+        Assert.assertNotNull(entitiesOperationResult);
+        Assert.assertNotNull(entitiesOperationResult.getSuccessEntityUIDs());
+        Assert.assertNotNull(entitiesOperationResult.getOperationStatistics());
+        Assert.assertNotNull(entitiesOperationResult.getOperationStatistics().getOperationSummary());
+        Assert.assertNotNull(entitiesOperationResult.getOperationStatistics().getStartTime());
+        Assert.assertNotNull(entitiesOperationResult.getOperationStatistics().getFinishTime());
+        Assert.assertEquals(entitiesOperationResult.getSuccessEntityUIDs().size(),2);
+        Assert.assertTrue(entitiesOperationResult.getSuccessEntityUIDs().contains(addEntitiesResult.getSuccessEntityUIDs().get(1)));
+        Assert.assertTrue(entitiesOperationResult.getSuccessEntityUIDs().contains(addEntitiesResult.getSuccessEntityUIDs().get(2)));
+        Assert.assertEquals(entitiesOperationResult.getOperationStatistics().getSuccessItemsCount(),2);
+        Assert.assertEquals(entitiesOperationResult.getOperationStatistics().getFailItemsCount(),2);
     }
 }
