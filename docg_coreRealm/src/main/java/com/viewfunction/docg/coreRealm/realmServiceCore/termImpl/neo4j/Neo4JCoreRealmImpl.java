@@ -5,13 +5,12 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.CheckResultExistenceTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleAttributeKindTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleAttributesViewKindTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionKindTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.slf4j.Logger;
@@ -161,6 +160,41 @@ public class Neo4JCoreRealmImpl implements CoreRealm {
             exception.setCauseMessage("AttributesViewKind does not contains entity with UID " + attributesViewKindUID + ".");
             throw exception;
         }
+    }
+
+    @Override
+    public AttributeKind getAttributeKind(String attributeKindUID) {
+        return null;
+    }
+
+    @Override
+    public AttributeKind createAttributeKind(String attributeKindName, String attributeKindDesc, AttributeDataType attributeDataType) {
+        if(attributeKindName == null || attributeDataType == null){
+            return null;
+        }
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            Map<String,Object> propertiesMap = new HashMap<>();
+            propertiesMap.put(RealmConstant._NameProperty,attributeKindName);
+            if(attributeKindDesc != null) {
+                propertiesMap.put(RealmConstant._DescProperty, attributeKindDesc);
+            }
+            propertiesMap.put(RealmConstant._attributeDataType, attributeDataType.toString());
+            CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
+            String createCql = CypherBuilder.createLabeledNodeWithProperties(RealmConstant.AttributeKindClass,propertiesMap);
+
+            GetSingleAttributeKindTransformer getSingleAttributeKindTransformer =
+                    new GetSingleAttributeKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object createAttributesViewKindRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeKindTransformer,createCql);
+            return createAttributesViewKindRes != null ? (AttributeKind)createAttributesViewKindRes : null;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public boolean removeAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException {
+        return false;
     }
 
     //internal graphOperationExecutor management logic

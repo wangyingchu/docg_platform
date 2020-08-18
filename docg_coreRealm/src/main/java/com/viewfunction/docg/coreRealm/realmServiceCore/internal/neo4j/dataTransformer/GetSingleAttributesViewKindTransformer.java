@@ -53,9 +53,9 @@ public class GetSingleAttributesViewKindTransformer implements DataTransformer<A
                             break;
                         case "EXTERNAL_VALUE":currentAttributesViewKindDataForm = AttributesViewKind.AttributesViewKindDataForm.EXTERNAL_VALUE;
                     }
-                    String attributesViewKindNameDescUID = ""+nodeUID;
+                    String attributesViewKindUID = ""+nodeUID;
                     Neo4jAttributesViewKindImpl neo4jAttributesViewKindImpl =
-                            new Neo4jAttributesViewKindImpl(coreRealmName,attributesViewKindName,attributesViewKindNameDesc,currentAttributesViewKindDataForm,attributesViewKindNameDescUID);
+                            new Neo4jAttributesViewKindImpl(coreRealmName,attributesViewKindName,attributesViewKindNameDesc,currentAttributesViewKindDataForm,attributesViewKindUID);
                     neo4jAttributesViewKindImpl.setGlobalGraphOperationExecutor(this.workingGraphOperationExecutor);
                     return neo4jAttributesViewKindImpl;
                 }

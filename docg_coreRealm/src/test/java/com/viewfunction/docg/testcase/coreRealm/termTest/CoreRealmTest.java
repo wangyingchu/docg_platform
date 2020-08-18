@@ -1,9 +1,7 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.termImpl.neo4j.Neo4JConceptionKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
@@ -26,7 +24,7 @@ public class CoreRealmTest {
     public void testCoreRealmFunction() throws CoreRealmServiceRuntimeException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
-
+/*
         ConceptionKind _ConceptionKind01 = coreRealm.getConceptionKind("kind01");
         Assert.assertNull(_ConceptionKind01);
         _ConceptionKind01 = coreRealm.createConceptionKind("kind01","kind01Desc+中文描述");
@@ -96,5 +94,14 @@ public class CoreRealmTest {
             exceptionShouldBeCaught = true;
         }
         Assert.assertTrue(exceptionShouldBeCaught);
+*/
+
+        AttributeKind attributeKind01 = coreRealm.createAttributeKind("attributeKind01","attributeKind01Desc", AttributeDataType.BOOLEAN);
+        Assert.assertNotNull(attributeKind01);
+        Assert.assertNotNull(attributeKind01.getAttributeKindUID());
+        Assert.assertEquals(attributeKind01.getAttributeKindName(),"attributeKind01");
+        Assert.assertEquals(attributeKind01.getAttributeKindDesc(),"attributeKind01Desc");
+        Assert.assertEquals(attributeKind01.getAttributeDataType(),AttributeDataType.BOOLEAN);
+
     }
 }

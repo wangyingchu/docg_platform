@@ -15,4 +15,8 @@ public interface CoreRealm {
     public AttributesViewKind getAttributesViewKind(String attributesViewKindUID);
     public AttributesViewKind createAttributesViewKind(String attributesViewKindName,String attributesViewKindDesc, AttributesViewKind.AttributesViewKindDataForm attributesViewKindDataForm);
     public boolean removeAttributesViewKind(String attributesViewKindUID) throws CoreRealmServiceRuntimeException;
+
+    public AttributeKind getAttributeKind(String attributeKindUID);
+    public AttributeKind createAttributeKind(String attributeKindName,String attributeKindDesc, AttributeDataType attributeDataType);
+    public boolean removeAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException;
 }

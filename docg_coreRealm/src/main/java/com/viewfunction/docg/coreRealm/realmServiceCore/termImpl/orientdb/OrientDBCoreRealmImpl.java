@@ -1,9 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.termImpl.orientdb;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 
 public class OrientDBCoreRealmImpl implements CoreRealm {
@@ -42,9 +40,23 @@ public class OrientDBCoreRealmImpl implements CoreRealm {
         return null;
     }
 
-
     @Override
     public boolean removeAttributesViewKind(String attributesViewKindUID) throws CoreRealmServiceRuntimeException {
+        return false;
+    }
+
+    @Override
+    public AttributeKind getAttributeKind(String attributeKindUID) {
+        return null;
+    }
+
+    @Override
+    public AttributeKind createAttributeKind(String attributeKindName, String attributeKindDesc, AttributeDataType attributeDataType) {
+        return null;
+    }
+
+    @Override
+    public boolean removeAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException {
         return false;
     }
 }
