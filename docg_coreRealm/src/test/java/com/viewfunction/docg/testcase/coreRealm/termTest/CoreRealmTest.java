@@ -1,5 +1,7 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.termImpl.neo4j.Neo4JConceptionKindImpl;
@@ -21,7 +23,7 @@ public class CoreRealmTest {
     }
 
     @Test
-    public void testCoreRealmFunction(){
+    public void testCoreRealmFunction() throws CoreRealmServiceRuntimeException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
 
@@ -46,5 +48,53 @@ public class CoreRealmTest {
         Assert.assertEquals(_ConceptionKind01.getConceptionKindDesc(),"kind01Desc+中文描述");
         Assert.assertNotNull(((Neo4JConceptionKindImpl)_ConceptionKind01).getConceptionKindUID());
         Assert.assertNull(((Neo4JConceptionKindImpl)_ConceptionKind01).getCoreRealmName());
+
+        AttributesViewKind attributesViewKind01 = coreRealm.createAttributesViewKind("attributesViewKind01","attributesViewKind01Desc",null);
+        Assert.assertNotNull(attributesViewKind01);
+        Assert.assertNotNull(attributesViewKind01.getAttributesViewKindUID());
+        Assert.assertEquals(attributesViewKind01.getAttributesViewKindName(),"attributesViewKind01");
+        Assert.assertEquals(attributesViewKind01.getAttributesViewKindDesc(),"attributesViewKind01Desc");
+        Assert.assertEquals(attributesViewKind01.getAttributesViewKindDataForm(),AttributesViewKind.AttributesViewKindDataForm.SINGLE_VALUE);
+        Assert.assertFalse(attributesViewKind01.isCollectionAttributesViewKind());
+
+        String targetAttributesViewKindUID = attributesViewKind01.getAttributesViewKindUID();
+
+        attributesViewKind01 = coreRealm.createAttributesViewKind(null,"attributesViewKind01Desc",null);
+        Assert.assertNull(attributesViewKind01);
+
+        attributesViewKind01 = coreRealm.createAttributesViewKind("attributesViewKind02",null,AttributesViewKind.AttributesViewKindDataForm.LIST_VALUE);
+        Assert.assertNotNull(attributesViewKind01);
+        Assert.assertNotNull(attributesViewKind01.getAttributesViewKindUID());
+        Assert.assertEquals(attributesViewKind01.getAttributesViewKindName(),"attributesViewKind02");
+        Assert.assertEquals(attributesViewKind01.getAttributesViewKindDataForm(),AttributesViewKind.AttributesViewKindDataForm.LIST_VALUE);
+        Assert.assertTrue(attributesViewKind01.isCollectionAttributesViewKind());
+
+        AttributesViewKind attributesViewKind02 = coreRealm.getAttributesViewKind(targetAttributesViewKindUID);
+        Assert.assertNotNull(attributesViewKind02);
+        Assert.assertNotNull(attributesViewKind02.getAttributesViewKindUID());
+        Assert.assertEquals(attributesViewKind02.getAttributesViewKindName(),"attributesViewKind01");
+        Assert.assertEquals(attributesViewKind02.getAttributesViewKindDesc(),"attributesViewKind01Desc");
+        Assert.assertEquals(attributesViewKind02.getAttributesViewKindDataForm(),AttributesViewKind.AttributesViewKindDataForm.SINGLE_VALUE);
+        Assert.assertFalse(attributesViewKind02.isCollectionAttributesViewKind());
+
+        attributesViewKind02 = coreRealm.getAttributesViewKind("123456");
+        Assert.assertNull(attributesViewKind02);
+
+        boolean removeAttributesViewKindRes = coreRealm.removeAttributesViewKind(targetAttributesViewKindUID);
+        Assert.assertTrue(removeAttributesViewKindRes);
+
+        attributesViewKind02 = coreRealm.getAttributesViewKind(targetAttributesViewKindUID);
+        Assert.assertNull(attributesViewKind02);
+
+        removeAttributesViewKindRes = coreRealm.removeAttributesViewKind(null);
+        Assert.assertFalse(removeAttributesViewKindRes);
+
+        boolean exceptionShouldBeCaught = false;
+        try{
+            coreRealm.removeAttributesViewKind("123456");
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
     }
 }

@@ -5,7 +5,6 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.AttributesMeasur
 import java.util.List;
 
 public interface ConceptionEntity extends AttributesMeasurable {
-    //public interface ConceptionEntity extends AttributesMeasurable {
     public String getConceptionEntityUID();
     public String getConceptionKindName();
     public List<String> getAllConceptionKindNames();

@@ -6,7 +6,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaConfigItemFe
 
 import java.util.List;
 
-public interface AttributesViewKind extends MetaConfigItemFeatureSupportable, MetaAttributeFeatureSupportable, ClassificationKindAttachable {
+//public interface AttributesViewKind extends MetaConfigItemFeatureSupportable, MetaAttributeFeatureSupportable, ClassificationKindAttachable {
+public interface AttributesViewKind {
     public enum AttributesViewKindDataForm {SINGLE_VALUE, LIST_VALUE, RELATED_VALUE, EXTERNAL_VALUE}
     public String getAttributesViewKindUID();
     public String getAttributesViewKindName();
