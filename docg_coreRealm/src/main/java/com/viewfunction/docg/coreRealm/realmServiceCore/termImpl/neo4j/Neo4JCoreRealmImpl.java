@@ -164,7 +164,19 @@ public class Neo4JCoreRealmImpl implements CoreRealm {
 
     @Override
     public AttributeKind getAttributeKind(String attributeKindUID) {
-        return null;
+        if(attributeKindUID == null){
+            return null;
+        }
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(attributeKindUID), null, null);
+            GetSingleAttributeKindTransformer getSingleAttributeKindTransformer =
+                    new GetSingleAttributeKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object getAttributeKindRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeKindTransformer,queryCql);
+            return getAttributeKindRes != null ? (AttributeKind)getAttributeKindRes : null;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
@@ -194,7 +206,31 @@ public class Neo4JCoreRealmImpl implements CoreRealm {
 
     @Override
     public boolean removeAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException {
-        return false;
+        if(attributeKindUID == null){
+            return false;
+        }
+        AttributeKind targetAttributeKind = this.getAttributeKind(attributeKindUID);
+        if(targetAttributeKind != null){
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(attributeKindUID),null,null);
+                GetSingleAttributeKindTransformer getSingleAttributeKindTransformer =
+                        new GetSingleAttributeKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object deletedAttributeKindRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeKindTransformer,deleteCql);
+                if(deletedAttributeKindRes == null){
+                    throw new CoreRealmServiceRuntimeException();
+                }else{
+                    return true;
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }else{
+            logger.error("AttributeKind does not contains entity with UID {}.", attributeKindUID);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("AttributeKind does not contains entity with UID " + attributeKindUID + ".");
+            throw exception;
+        }
     }
 
     //internal graphOperationExecutor management logic

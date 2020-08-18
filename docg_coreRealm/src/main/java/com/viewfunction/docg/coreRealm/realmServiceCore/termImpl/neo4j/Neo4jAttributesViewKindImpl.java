@@ -79,7 +79,7 @@ public class Neo4jAttributesViewKindImpl implements AttributesViewKind {
     }
 
     @Override
-    public List<AttributeKind> getContainedAttributeKinds() {
+    public List<AttributeKind> getContainsAttributeKinds() {
         return null;
     }
 

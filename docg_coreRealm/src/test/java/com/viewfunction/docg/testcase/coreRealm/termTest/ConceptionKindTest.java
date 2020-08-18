@@ -1,10 +1,8 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
@@ -14,7 +12,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 public class ConceptionKindTest {
@@ -30,7 +27,7 @@ public class ConceptionKindTest {
     }
 
     @Test
-    public void testCoreRealmFunction() throws CoreRealmServiceRuntimeException {
+    public void testConceptionKindFunction() throws CoreRealmServiceRuntimeException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
 
@@ -52,6 +49,14 @@ public class ConceptionKindTest {
         Long entitiesCount = _ConceptionKind01.countConceptionEntities();
         Assert.assertEquals(entitiesCount.longValue(),0);
 
+
+        List<AttributesViewKind> containedAttributesViewKindsList = _ConceptionKind01.getContainsAttributesViewKinds();
+        AttributesViewKind attributesViewKindToAdd01 = coreRealm.createAttributesViewKind("targetAttributesViewKindToAdd01","targetAttributesViewKindToAdd01Desc",null);
+
+        boolean addAttributesViewKindResult = _ConceptionKind01.addAttributesViewKind(attributesViewKindToAdd01.getAttributesViewKindUID());
+
+
+/*
         Map<String,Object> newEntityValue= new HashMap<>();
         newEntityValue.put("prop1",10000l);
         newEntityValue.put("prop2",190.22d);
@@ -234,5 +239,7 @@ public class ConceptionKindTest {
         Assert.assertTrue(entitiesOperationResult.getSuccessEntityUIDs().contains(addEntitiesResult.getSuccessEntityUIDs().get(2)));
         Assert.assertEquals(entitiesOperationResult.getOperationStatistics().getSuccessItemsCount(),2);
         Assert.assertEquals(entitiesOperationResult.getOperationStatistics().getFailItemsCount(),2);
+
+        */
     }
 }

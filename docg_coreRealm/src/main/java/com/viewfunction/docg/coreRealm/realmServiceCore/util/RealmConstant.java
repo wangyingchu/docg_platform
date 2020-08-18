@@ -4,6 +4,7 @@ public interface RealmConstant {
     public final String ConceptionKindClass="DOCG_ConceptionKind";
     public final String AttributesViewKindClass="DOCG_AttributesViewKind";
     public final String AttributeKindClass="DOCG_AttributeKind";
+    public final String ConceptionKind_AttributesViewKindRelationClass="DOCG_ConceptionContainsViewKindIs";
 
     public final String _NameProperty = "name";
     public final String _DescProperty = "description";

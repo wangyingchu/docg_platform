@@ -1,6 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import org.neo4j.cypherdsl.core.*;
 import org.neo4j.cypherdsl.core.renderer.Renderer;
 
@@ -355,6 +356,73 @@ public class CypherBuilder {
         }else{
             statement = ongoingReadingWithWhere.returning(m).build();
         }
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}",rel);
+        return rel;
+    }
+
+    public static String matchRelatedNodesFromSpecialStartNodes(CypherFunctionType sourcePropertyFunctionType,Object sourcePropertyValue,
+                                                                String targetConceptionKind,String relationKind,
+                                                                RelationDirection relationDirection,CypherFunctionType returnFunctionType){
+        Node sourceNode = Cypher.anyNode().named("SourceNode");
+        Node resultNodes = Cypher.node(targetConceptionKind).named(operationResultName);
+        StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = null;
+        switch(relationDirection){
+            case FROM: ongoingReadingWithoutWhere = Cypher.match(sourceNode.relationshipFrom(resultNodes,relationKind));
+                break;
+            case TO:ongoingReadingWithoutWhere = Cypher.match(sourceNode.relationshipTo(resultNodes,relationKind));
+                break;
+            case TWO_WAY:
+                ongoingReadingWithoutWhere = Cypher.match(sourceNode.relationshipBetween(resultNodes,relationKind));
+        }
+
+        StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
+        switch(sourcePropertyFunctionType){
+            case ID:
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
+                break;
+            default:
+        }
+
+        Statement statement = null;
+
+        if(returnFunctionType !=null) {
+            switch (returnFunctionType) {
+                case KEYS:
+                    if(ongoingReadingWithWhere != null){
+                        statement = ongoingReadingWithWhere.returning(Functions2.keys(resultNodes)).build();
+                    }else{
+                        statement = ongoingReadingWithoutWhere.returning(Functions2.keys(resultNodes)).build();
+                    }
+                    break;
+                case PROPERTIES:
+                    if(ongoingReadingWithWhere != null){
+                        statement = ongoingReadingWithWhere.returning(Functions2.properties(resultNodes)).build();
+                    }else{
+                        statement = ongoingReadingWithoutWhere.returning(Functions2.properties(resultNodes)).build();
+                    }
+                    break;
+            }
+        }else{
+            if(ongoingReadingWithWhere != null){
+                statement = ongoingReadingWithWhere.returning(resultNodes).build();
+            }else{
+                statement = ongoingReadingWithoutWhere.returning(resultNodes).build();
+            }
+        }
+
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}",rel);
+        return rel;
+    }
+
+    public static String createNodesRelationshipByIdMatch(Long sourceNodeId, Long targetNodeId,String relationKind, Map<String,Object> relationProperties){
+        Node sourceNode = Cypher.anyNode().named("sourceNode");
+        Node targetNode = Cypher.anyNode().named("targetNode");
+        Relationship relation = sourceNode.relationshipTo(targetNode, relationKind).named(operationResultName);
+        Statement statement = Cypher.match(sourceNode,targetNode).
+                where(sourceNode.internalId().isEqualTo(Cypher.literalOf(sourceNodeId))
+                        .and(targetNode.internalId().isEqualTo(Cypher.literalOf(targetNodeId)))).create(relation).returning(relation).build();
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}",rel);
         return rel;

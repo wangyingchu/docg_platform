@@ -17,6 +17,6 @@ public interface AttributesViewKind {
     public boolean addAttributeKind(String attributeKindUID);
     public boolean addAttributeKind(AttributeKind attributeKind);
     public boolean removeAttributeKind(String attributeKindUID);
-    public List<AttributeKind> getContainedAttributeKinds();
+    public List<AttributeKind> getContainsAttributeKinds();
     public List<ConceptionKind> getContainerConceptionKinds();
 }

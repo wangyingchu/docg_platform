@@ -24,7 +24,7 @@ public class CoreRealmTest {
     public void testCoreRealmFunction() throws CoreRealmServiceRuntimeException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
-/*
+
         ConceptionKind _ConceptionKind01 = coreRealm.getConceptionKind("kind01");
         Assert.assertNull(_ConceptionKind01);
         _ConceptionKind01 = coreRealm.createConceptionKind("kind01","kind01Desc+中文描述");
@@ -94,7 +94,6 @@ public class CoreRealmTest {
             exceptionShouldBeCaught = true;
         }
         Assert.assertTrue(exceptionShouldBeCaught);
-*/
 
         AttributeKind attributeKind01 = coreRealm.createAttributeKind("attributeKind01","attributeKind01Desc", AttributeDataType.BOOLEAN);
         Assert.assertNotNull(attributeKind01);
@@ -103,5 +102,24 @@ public class CoreRealmTest {
         Assert.assertEquals(attributeKind01.getAttributeKindDesc(),"attributeKind01Desc");
         Assert.assertEquals(attributeKind01.getAttributeDataType(),AttributeDataType.BOOLEAN);
 
+        String targetAttributeKindUID = attributeKind01.getAttributeKindUID();
+        AttributeKind attributeKind02 = coreRealm.getAttributeKind(targetAttributeKindUID);
+        Assert.assertNotNull(attributeKind02);
+        Assert.assertNotNull(attributeKind02.getAttributeKindUID());
+        Assert.assertEquals(attributeKind02.getAttributeKindName(),"attributeKind01");
+        Assert.assertEquals(attributeKind02.getAttributeKindDesc(),"attributeKind01Desc");
+        Assert.assertEquals(attributeKind02.getAttributeDataType(),AttributeDataType.BOOLEAN);
+
+        attributeKind02 = coreRealm.getAttributeKind(null);
+        Assert.assertNull(attributeKind02);
+        attributeKind02 = coreRealm.getAttributeKind("123456");
+        Assert.assertNull(attributeKind02);
+
+        boolean removeAttributeKindRes01 = coreRealm.removeAttributeKind(null);
+        Assert.assertFalse(removeAttributeKindRes01);
+        removeAttributeKindRes01 = coreRealm.removeAttributeKind(targetAttributeKindUID);
+        Assert.assertTrue(removeAttributeKindRes01);
+        attributeKind02 = coreRealm.getAttributeKind(targetAttributeKindUID);
+        Assert.assertNull(attributeKind02);
     }
 }

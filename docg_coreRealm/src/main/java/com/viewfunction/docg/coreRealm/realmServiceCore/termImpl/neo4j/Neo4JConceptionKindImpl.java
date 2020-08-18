@@ -13,6 +13,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.Grap
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payloadImpl.CommonEntitiesOperationResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.types.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -335,7 +336,13 @@ public class Neo4JConceptionKindImpl implements ConceptionKind {
     }
 
     @Override
-    public boolean addAttributesViewKind(String AttributesViewKindUID) throws CoreRealmServiceRuntimeException {
+    public boolean addAttributesViewKind(String attributesViewKindUID) throws CoreRealmServiceRuntimeException {
+        String createCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(conceptionKindUID),Long.parseLong(attributesViewKindUID),
+                RealmConstant.ConceptionKind_AttributesViewKindRelationClass,null);
+
+
+
+
         return false;
     }
 
@@ -350,7 +357,13 @@ public class Neo4JConceptionKindImpl implements ConceptionKind {
     }
 
     @Override
-    public List<AttributesViewKind> getContainedAttributesViewKinds() {
+    public List<AttributesViewKind> getContainsAttributesViewKinds() {
+        String queryCql = CypherBuilder.matchRelatedNodesFromSpecialStartNodes(
+                CypherBuilder.CypherFunctionType.ID, Long.parseLong(conceptionKindUID),
+                RealmConstant.AttributesViewKindClass,RealmConstant.ConceptionKind_AttributesViewKindRelationClass,RelationDirection.TO, null);
+
+
+
         return null;
     }
 
