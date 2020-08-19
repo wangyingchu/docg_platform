@@ -1,0 +1,45 @@
+package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer;
+
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.termImpl.neo4j.Neo4jRelationEntityImpl;
+import org.neo4j.driver.Record;
+import org.neo4j.driver.Result;
+import org.neo4j.driver.types.Relationship;
+
+public class GetSingleRelationEntityTransformer implements DataTransformer<RelationEntity>{
+
+    private GraphOperationExecutor workingGraphOperationExecutor;
+    private String targetRelationKindName;
+
+    public GetSingleRelationEntityTransformer(String targetRelationKindName,GraphOperationExecutor workingGraphOperationExecutor){
+        this.targetRelationKindName = targetRelationKindName;
+        this.workingGraphOperationExecutor = workingGraphOperationExecutor;
+    }
+
+    @Override
+    public RelationEntity transformResult(Result result) {
+        if(result.hasNext()){
+            Record nodeRecord = result.next();
+            if(nodeRecord != null){
+                Relationship resultRelationship = nodeRecord.get(CypherBuilder.operationResultName).asRelationship();
+                String relationType = resultRelationship.type();
+                boolean isMatchedKind = relationType.equals(targetRelationKindName)? true : false;
+                if(isMatchedKind){
+                    long relationUID = resultRelationship.id();
+                    String relationEntityUID = ""+relationUID;
+                    String fromEntityUID = ""+resultRelationship.startNodeId();
+                    String toEntityUID = ""+resultRelationship.endNodeId();
+                    Neo4jRelationEntityImpl neo4jRelationEntityImpl =
+                            new Neo4jRelationEntityImpl(targetRelationKindName,relationEntityUID,fromEntityUID,toEntityUID);
+                    neo4jRelationEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+                    return neo4jRelationEntityImpl;
+                }else{
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+}

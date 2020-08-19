@@ -49,11 +49,34 @@ public class ConceptionKindTest {
         Long entitiesCount = _ConceptionKind01.countConceptionEntities();
         Assert.assertEquals(entitiesCount.longValue(),0);
 
-
         List<AttributesViewKind> containedAttributesViewKindsList = _ConceptionKind01.getContainsAttributesViewKinds();
+        Assert.assertNotNull(containedAttributesViewKindsList);
+        Assert.assertEquals(containedAttributesViewKindsList.size(),0);
+
         AttributesViewKind attributesViewKindToAdd01 = coreRealm.createAttributesViewKind("targetAttributesViewKindToAdd01","targetAttributesViewKindToAdd01Desc",null);
 
         boolean addAttributesViewKindResult = _ConceptionKind01.addAttributesViewKind(attributesViewKindToAdd01.getAttributesViewKindUID());
+        Assert.assertTrue(addAttributesViewKindResult);
+        addAttributesViewKindResult = _ConceptionKind01.addAttributesViewKind(null);
+        Assert.assertFalse(addAttributesViewKindResult);
+
+        boolean exceptionShouldBeCaught = false;
+        try{
+            _ConceptionKind01.addAttributesViewKind("123456");
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
+
+        containedAttributesViewKindsList = _ConceptionKind01.getContainsAttributesViewKinds();
+        Assert.assertNotNull(containedAttributesViewKindsList);
+        Assert.assertEquals(containedAttributesViewKindsList.size(),1);
+
+        Assert.assertEquals(containedAttributesViewKindsList.get(0).getAttributesViewKindName(),"targetAttributesViewKindToAdd01");
+        Assert.assertEquals(containedAttributesViewKindsList.get(0).getAttributesViewKindDesc(),"targetAttributesViewKindToAdd01Desc");
+        Assert.assertEquals(containedAttributesViewKindsList.get(0).getAttributesViewKindUID(),attributesViewKindToAdd01.getAttributesViewKindUID());
+        Assert.assertEquals(containedAttributesViewKindsList.get(0).getAttributesViewKindDataForm(), AttributesViewKind.AttributesViewKindDataForm.SINGLE_VALUE);
+
 
 
 /*
@@ -205,7 +228,7 @@ public class ConceptionKindTest {
         conceptionEntityForDelete = _ConceptionKind01.getEntityByUID(addEntitiesResult.getSuccessEntityUIDs().get(0));
         Assert.assertNull(conceptionEntityForDelete);
 
-        boolean exceptionShouldBeCaught = false;
+        exceptionShouldBeCaught = false;
         try{
             _ConceptionKind01.deleteEntity("123456");
         }catch(CoreRealmServiceRuntimeException e){

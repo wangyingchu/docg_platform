@@ -151,10 +151,10 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingAndReturn ongoingReadingAndReturn;
         switch(cypherFunctionType){
             case COUNT:
-                ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.delete(m).returning(Functions.count(m));
+                ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.detachDelete(m).returning(Functions.count(m));
                 break;
             default:
-                ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.delete(m).returning(m);
+                ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.detachDelete(m).returning(m);
         }
         Statement statement = ongoingReadingAndReturn.build();
         String rel = cypherRenderer.render(statement);
@@ -223,30 +223,30 @@ public class CypherBuilder {
             switch (returnFunctionType) {
                 case KEYS:
                     if(ongoingReadingWithWhere != null){
-                        statement = ongoingReadingWithWhere.delete(m).returning(Functions2.keys(m)).build();
+                        statement = ongoingReadingWithWhere.detachDelete(m).returning(Functions2.keys(m)).build();
                     }else{
-                        statement = ongoingReadingWithoutWhere.delete(m).returning(Functions2.keys(m)).build();
+                        statement = ongoingReadingWithoutWhere.detachDelete(m).returning(Functions2.keys(m)).build();
                     }
                     break;
                 case PROPERTIES:
                     if(ongoingReadingWithWhere != null){
-                        statement = ongoingReadingWithWhere.delete(m).returning(Functions2.properties(m)).build();
+                        statement = ongoingReadingWithWhere.detachDelete(m).returning(Functions2.properties(m)).build();
                     }else{
-                        statement = ongoingReadingWithoutWhere.delete(m).returning(Functions2.properties(m)).build();
+                        statement = ongoingReadingWithoutWhere.detachDelete(m).returning(Functions2.properties(m)).build();
                     }
                     break;
                 case EXISTS:
                     if(ongoingReadingWithWhere != null){
-                        statement = ongoingReadingWithWhere.delete(m).returning(Functions.exists(m.property(additionalPropertyName))).build();
+                        statement = ongoingReadingWithWhere.detachDelete(m).returning(Functions.exists(m.property(additionalPropertyName))).build();
                     }else{
-                        statement = ongoingReadingWithoutWhere.delete(m).returning(Functions.exists(m.property(additionalPropertyName))).build();
+                        statement = ongoingReadingWithoutWhere.detachDelete(m).returning(Functions.exists(m.property(additionalPropertyName))).build();
                     }
             }
         }else{
             if(ongoingReadingWithWhere != null){
-                statement = ongoingReadingWithWhere.delete(m).returning(m).build();
+                statement = ongoingReadingWithWhere.detachDelete(m).returning(m).build();
             }else{
-                statement = ongoingReadingWithoutWhere.delete(m).returning(m).build();
+                statement = ongoingReadingWithoutWhere.detachDelete(m).returning(m).build();
             }
         }
         String rel = cypherRenderer.render(statement);
@@ -419,7 +419,13 @@ public class CypherBuilder {
     public static String createNodesRelationshipByIdMatch(Long sourceNodeId, Long targetNodeId,String relationKind, Map<String,Object> relationProperties){
         Node sourceNode = Cypher.anyNode().named("sourceNode");
         Node targetNode = Cypher.anyNode().named("targetNode");
-        Relationship relation = sourceNode.relationshipTo(targetNode, relationKind).named(operationResultName);
+        Relationship relation;
+        if(relationProperties != null && relationProperties.size()>0){
+            MapExpression targetMapExpression = Cypher.mapOf(CommonOperationUtil.generatePropertiesValueArray(relationProperties));
+            relation = sourceNode.relationshipTo(targetNode, relationKind).named(operationResultName).withProperties(targetMapExpression);
+        }else{
+            relation = sourceNode.relationshipTo(targetNode, relationKind).named(operationResultName);
+        }
         Statement statement = Cypher.match(sourceNode,targetNode).
                 where(sourceNode.internalId().isEqualTo(Cypher.literalOf(sourceNodeId))
                         .and(targetNode.internalId().isEqualTo(Cypher.literalOf(targetNodeId)))).create(relation).returning(relation).build();
