@@ -32,6 +32,10 @@ public class ConceptionKindTest {
         Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
 
         ConceptionKind _ConceptionKind01 = coreRealm.getConceptionKind(testConceptionKindName);
+        if(_ConceptionKind01 != null){
+            coreRealm.removeConceptionKind(testConceptionKindName,true);
+        }
+        _ConceptionKind01 = coreRealm.getConceptionKind(testConceptionKindName);
         if(_ConceptionKind01 == null){
             _ConceptionKind01 = coreRealm.createConceptionKind(testConceptionKindName,"TestConceptionKindADesc+中文描述");
             Assert.assertNotNull(_ConceptionKind01);
@@ -77,9 +81,16 @@ public class ConceptionKindTest {
         Assert.assertEquals(containedAttributesViewKindsList.get(0).getAttributesViewKindUID(),attributesViewKindToAdd01.getAttributesViewKindUID());
         Assert.assertEquals(containedAttributesViewKindsList.get(0).getAttributesViewKindDataForm(), AttributesViewKind.AttributesViewKindDataForm.SINGLE_VALUE);
 
+        AttributesViewKind attributesViewKindToAdd02 = coreRealm.createAttributesViewKind("targetAttributesViewKindToAdd02",
+                "targetAttributesViewKindToAdd02Desc",AttributesViewKind.AttributesViewKindDataForm.LIST_VALUE);
+        addAttributesViewKindResult = _ConceptionKind01.addAttributesViewKind(attributesViewKindToAdd02.getAttributesViewKindUID());
+        Assert.assertTrue(addAttributesViewKindResult);
 
+        containedAttributesViewKindsList = _ConceptionKind01.getContainsAttributesViewKinds();
+        Assert.assertNotNull(containedAttributesViewKindsList);
+        Assert.assertEquals(containedAttributesViewKindsList.size(),2);
 
-/*
+        /*
         Map<String,Object> newEntityValue= new HashMap<>();
         newEntityValue.put("prop1",10000l);
         newEntityValue.put("prop2",190.22d);

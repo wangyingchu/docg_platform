@@ -40,6 +40,9 @@ public class Neo4JCoreRealmImpl implements CoreRealm {
 
     @Override
     public ConceptionKind getConceptionKind(String conceptionKindName) {
+        if(conceptionKindName == null){
+            return null;
+        }
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
             String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.ConceptionKindClass,RealmConstant._NameProperty,conceptionKindName,1);
@@ -85,6 +88,39 @@ public class Neo4JCoreRealmImpl implements CoreRealm {
         CoreRealmFunctionNotSupportedException exception = new CoreRealmFunctionNotSupportedException();
         exception.setCauseMessage("Neo4J storage implements doesn't support this function");
         throw exception;
+    }
+
+    @Override
+    public boolean removeConceptionKind(String conceptionKindName, boolean deleteExistEntities) throws CoreRealmServiceRuntimeException{
+        if(conceptionKindName == null){
+            return false;
+        }
+        ConceptionKind targetConceptionKind =this.getConceptionKind(conceptionKindName);
+        if(targetConceptionKind == null){
+            logger.error("CoreRealm does not contains ConceptionKind with name {}.", conceptionKindName);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("CoreRealm does not contains ConceptionKind with name " + conceptionKindName + ".");
+            throw exception;
+        }else{
+            if(deleteExistEntities){
+                targetConceptionKind.purgeAllEntities();
+            }
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String conceptionKindUID = ((Neo4JConceptionKindImpl)targetConceptionKind).getConceptionKindUID();
+                String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(conceptionKindUID),null,null);
+                GetSingleConceptionKindTransformer getSingleConceptionKindTransformer =
+                        new GetSingleConceptionKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object deletedConceptionKindRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionKindTransformer,deleteCql);
+                if(deletedConceptionKindRes == null){
+                    throw new CoreRealmServiceRuntimeException();
+                }else{
+                    return true;
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
     }
 
     @Override

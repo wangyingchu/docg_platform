@@ -26,6 +26,11 @@ public class CoreRealmTest {
         Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
 
         ConceptionKind _ConceptionKind01 = coreRealm.getConceptionKind("kind01");
+        if(_ConceptionKind01 != null){
+            boolean removeResult = coreRealm.removeConceptionKind("kind01",true);
+            Assert.assertTrue(removeResult);
+            _ConceptionKind01 = coreRealm.getConceptionKind("kind01");
+        }
         Assert.assertNull(_ConceptionKind01);
         _ConceptionKind01 = coreRealm.createConceptionKind("kind01","kind01Desc+中文描述");
         Assert.assertNotNull(_ConceptionKind01);
@@ -37,7 +42,11 @@ public class CoreRealmTest {
         _ConceptionKind01 = coreRealm.createConceptionKind("kind01","kind01Desc+中文描述");
         Assert.assertNull(_ConceptionKind01);
 
-        ConceptionKind _ConceptionKind02 = coreRealm.createConceptionKind("kind02","kind02Desc+中文描述");
+        ConceptionKind _ConceptionKind02 = coreRealm.getConceptionKind("kind02");
+        if(_ConceptionKind02 != null){
+            coreRealm.removeConceptionKind("kind02",true);
+        }
+        _ConceptionKind02 = coreRealm.createConceptionKind("kind02","kind02Desc+中文描述");
         Assert.assertNotNull(_ConceptionKind02);
 
         _ConceptionKind01 = coreRealm.getConceptionKind("kind01");

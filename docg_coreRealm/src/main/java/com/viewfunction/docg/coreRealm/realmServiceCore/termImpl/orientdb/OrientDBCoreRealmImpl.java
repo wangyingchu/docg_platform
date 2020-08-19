@@ -31,6 +31,11 @@ public class OrientDBCoreRealmImpl implements CoreRealm {
     }
 
     @Override
+    public boolean removeConceptionKind(String conceptionKindName, boolean deleteExistEntities) {
+        return false;
+    }
+
+    @Override
     public AttributesViewKind getAttributesViewKind(String attributesViewKindUID) {
         return null;
     }
