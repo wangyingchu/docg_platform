@@ -100,6 +100,14 @@ public class ConceptionKindTest {
         targetAttributesViewKind = _ConceptionKind01.getAttributesViewKind("targetAttributesViewKindNotExist");
         Assert.assertNull(targetAttributesViewKind);
 
+        targetAttributesViewKind = _ConceptionKind01.getAttributesViewKind("targetAttributesViewKindToAdd02");
+        boolean removeViewKindResult = _ConceptionKind01.removeAttributesViewKind(targetAttributesViewKind.getAttributesViewKindUID());
+        Assert.assertTrue(removeViewKindResult);
+        removeViewKindResult = _ConceptionKind01.removeAttributesViewKind(targetAttributesViewKind.getAttributesViewKindUID());
+        Assert.assertFalse(removeViewKindResult);
+
+        targetAttributesViewKind = _ConceptionKind01.getAttributesViewKind("targetAttributesViewKindToAdd02");
+        Assert.assertNull(targetAttributesViewKind);
 
         /*
         Map<String,Object> newEntityValue= new HashMap<>();

@@ -39,6 +39,17 @@ public final class Functions2 {
         Assert.notNull(node, "The node parameter is required.");
         return keys(node.getRequiredSymbolicName());
     }
+
+    /**
+     * @param relationship The named relationship to be counted
+     * @return A function call for {@code keys()} for one named node
+     * @see #datetime(Expression)
+     */
+    public static FunctionInvocation keys(Relationship relationship) {
+        Assert.notNull(relationship, "The node parameter is required.");
+        return keys(relationship.getRequiredSymbolicName());
+    }
+
     /**
      * Creates a function invocation for the {@code keys()} function.
      * See <a href="https://neo4j.com/docs/cypher-manual/current/functions/aggregating/#functions-count">count</a>.
@@ -60,6 +71,17 @@ public final class Functions2 {
         Assert.notNull(node, "The node parameter is required.");
         return properties(node.getRequiredSymbolicName());
     }
+
+    /**
+     * @param relationship The named node to be counted
+     * @return A function call for {@code properties()} for one named node
+     * @see #datetime(Expression)
+     */
+    public static FunctionInvocation properties(Relationship relationship) {
+        Assert.notNull(relationship, "The node parameter is required.");
+        return properties(relationship.getRequiredSymbolicName());
+    }
+
     /**
      * Creates a function invocation for the {@code properties()} function.
      * See <a href="https://neo4j.com/docs/cypher-manual/current/functions/aggregating/#functions-count">count</a>.
@@ -71,7 +93,6 @@ public final class Functions2 {
         Assert.notNull(expression, "The expression to count is required.");
         return new FunctionInvocation("properties", expression);
     }
-
 
     private Functions2() {}
 }
