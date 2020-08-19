@@ -90,6 +90,17 @@ public class ConceptionKindTest {
         Assert.assertNotNull(containedAttributesViewKindsList);
         Assert.assertEquals(containedAttributesViewKindsList.size(),2);
 
+        AttributesViewKind targetAttributesViewKind = _ConceptionKind01.getAttributesViewKind("targetAttributesViewKindToAdd02");
+        Assert.assertNotNull(targetAttributesViewKind);
+        Assert.assertEquals(targetAttributesViewKind.getAttributesViewKindName(),"targetAttributesViewKindToAdd02");
+        Assert.assertEquals(targetAttributesViewKind.getAttributesViewKindDesc(),"targetAttributesViewKindToAdd02Desc");
+        Assert.assertEquals(targetAttributesViewKind.getAttributesViewKindUID(),attributesViewKindToAdd02.getAttributesViewKindUID());
+        Assert.assertEquals(targetAttributesViewKind.getAttributesViewKindDataForm(), AttributesViewKind.AttributesViewKindDataForm.LIST_VALUE);
+
+        targetAttributesViewKind = _ConceptionKind01.getAttributesViewKind("targetAttributesViewKindNotExist");
+        Assert.assertNull(targetAttributesViewKind);
+
+
         /*
         Map<String,Object> newEntityValue= new HashMap<>();
         newEntityValue.put("prop1",10000l);

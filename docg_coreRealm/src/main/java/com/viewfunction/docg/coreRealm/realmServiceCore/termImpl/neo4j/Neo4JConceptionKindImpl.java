@@ -222,7 +222,6 @@ public class Neo4JConceptionKindImpl implements ConceptionKind {
                         throw new CoreRealmServiceRuntimeException();
                     }else{
                         return true;
-
                     }
                 }finally {
                     this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
@@ -372,13 +371,69 @@ public class Neo4JConceptionKindImpl implements ConceptionKind {
     public AttributesViewKind getAttributesViewKind(String attributesViewKindName) {
         if(attributesViewKindName == null){
             return null;
+        }else{
+            List<AttributesViewKind> allContainsAttributesViewKinds = this.getContainsAttributesViewKinds();
+            if(allContainsAttributesViewKinds != null && allContainsAttributesViewKinds.size()>0){
+                for(AttributesViewKind currentAttributesViewKind : allContainsAttributesViewKinds){
+                    if(currentAttributesViewKind.getAttributesViewKindName().equals(attributesViewKindName.trim())){
+                        return currentAttributesViewKind;
+                    }
+                }
+            }
         }
         return null;
     }
 
     @Override
-    public boolean removeAttributesViewKind(String AttributesViewKindUID) throws CoreRealmServiceRuntimeException {
-        return false;
+    public boolean removeAttributesViewKind(String attributesViewKindUID) throws CoreRealmServiceRuntimeException {
+        if(attributesViewKindUID == null){
+            return false;
+        }
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(attributesViewKindUID), null, null);
+            GetSingleAttributesViewKindTransformer getSingleAttributesViewKindTransformer =
+                    new GetSingleAttributesViewKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object checkAttributesViewKindRes = workingGraphOperationExecutor.executeWrite(getSingleAttributesViewKindTransformer,queryCql);
+            if(checkAttributesViewKindRes != null){
+
+
+
+
+
+
+
+
+
+                Map<String,Object> relationPropertiesMap = new HashMap<>();
+                CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
+                String createCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(conceptionKindUID),Long.parseLong(attributesViewKindUID),
+                        RealmConstant.ConceptionKind_AttributesViewKindRelationClass,relationPropertiesMap);
+                GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
+                        (RealmConstant.ConceptionKind_AttributesViewKindRelationClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object newRelationEntityRes = workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, createCql);
+                if(newRelationEntityRes == null){
+                    throw new CoreRealmServiceRuntimeException();
+                }else{
+                    return true;
+                }
+
+
+
+
+
+
+
+
+            }else{
+                logger.error("AttributesViewKind does not contains entity with UID {}.", attributesViewKindUID);
+                CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                exception.setCauseMessage("AttributesViewKind does not contains entity with UID " + attributesViewKindUID + ".");
+                throw exception;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
