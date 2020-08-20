@@ -1,8 +1,11 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
@@ -12,6 +15,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 public class ConceptionKindTest {
@@ -90,26 +94,27 @@ public class ConceptionKindTest {
         Assert.assertNotNull(containedAttributesViewKindsList);
         Assert.assertEquals(containedAttributesViewKindsList.size(),2);
 
-        AttributesViewKind targetAttributesViewKind = _ConceptionKind01.getAttributesViewKind("targetAttributesViewKindToAdd02");
-        Assert.assertNotNull(targetAttributesViewKind);
-        Assert.assertEquals(targetAttributesViewKind.getAttributesViewKindName(),"targetAttributesViewKindToAdd02");
-        Assert.assertEquals(targetAttributesViewKind.getAttributesViewKindDesc(),"targetAttributesViewKindToAdd02Desc");
-        Assert.assertEquals(targetAttributesViewKind.getAttributesViewKindUID(),attributesViewKindToAdd02.getAttributesViewKindUID());
-        Assert.assertEquals(targetAttributesViewKind.getAttributesViewKindDataForm(), AttributesViewKind.AttributesViewKindDataForm.LIST_VALUE);
+        List<AttributesViewKind> targetAttributesViewKindList = _ConceptionKind01.getContainsAttributesViewKinds("targetAttributesViewKindToAdd02");
+        Assert.assertNotNull(targetAttributesViewKindList);
+        Assert.assertNotNull(targetAttributesViewKindList.get(0));
+        Assert.assertEquals(targetAttributesViewKindList.get(0).getAttributesViewKindName(),"targetAttributesViewKindToAdd02");
+        Assert.assertEquals(targetAttributesViewKindList.get(0).getAttributesViewKindDesc(),"targetAttributesViewKindToAdd02Desc");
+        Assert.assertEquals(targetAttributesViewKindList.get(0).getAttributesViewKindUID(),attributesViewKindToAdd02.getAttributesViewKindUID());
+        Assert.assertEquals(targetAttributesViewKindList.get(0).getAttributesViewKindDataForm(), AttributesViewKind.AttributesViewKindDataForm.LIST_VALUE);
 
-        targetAttributesViewKind = _ConceptionKind01.getAttributesViewKind("targetAttributesViewKindNotExist");
-        Assert.assertNull(targetAttributesViewKind);
+        targetAttributesViewKindList = _ConceptionKind01.getContainsAttributesViewKinds("targetAttributesViewKindNotExist");
+        Assert.assertEquals(targetAttributesViewKindList.size(),0);
 
-        targetAttributesViewKind = _ConceptionKind01.getAttributesViewKind("targetAttributesViewKindToAdd02");
-        boolean removeViewKindResult = _ConceptionKind01.removeAttributesViewKind(targetAttributesViewKind.getAttributesViewKindUID());
+        targetAttributesViewKindList = _ConceptionKind01.getContainsAttributesViewKinds("targetAttributesViewKindToAdd02");
+        boolean removeViewKindResult = _ConceptionKind01.removeAttributesViewKind(targetAttributesViewKindList.get(0).getAttributesViewKindUID());
         Assert.assertTrue(removeViewKindResult);
-        removeViewKindResult = _ConceptionKind01.removeAttributesViewKind(targetAttributesViewKind.getAttributesViewKindUID());
+        removeViewKindResult = _ConceptionKind01.removeAttributesViewKind(targetAttributesViewKindList.get(0).getAttributesViewKindUID());
         Assert.assertFalse(removeViewKindResult);
 
-        targetAttributesViewKind = _ConceptionKind01.getAttributesViewKind("targetAttributesViewKindToAdd02");
-        Assert.assertNull(targetAttributesViewKind);
+        targetAttributesViewKindList = _ConceptionKind01.getContainsAttributesViewKinds("targetAttributesViewKindToAdd02");
+        Assert.assertEquals(targetAttributesViewKindList.size(),0);
 
-        /*
+
         Map<String,Object> newEntityValue= new HashMap<>();
         newEntityValue.put("prop1",10000l);
         newEntityValue.put("prop2",190.22d);
@@ -292,7 +297,5 @@ public class ConceptionKindTest {
         Assert.assertTrue(entitiesOperationResult.getSuccessEntityUIDs().contains(addEntitiesResult.getSuccessEntityUIDs().get(2)));
         Assert.assertEquals(entitiesOperationResult.getOperationStatistics().getSuccessItemsCount(),2);
         Assert.assertEquals(entitiesOperationResult.getOperationStatistics().getFailItemsCount(),2);
-
-        */
     }
 }

@@ -7,7 +7,7 @@ public interface MetaAttributeFeatureSupportable {
     public Date getLastModifyDateTime();
     public String getCreatorId();
     public String getDataOrigin();
-    public boolean updateModifyDate();
-    public boolean updateCreatorId();
-    public boolean updateDataOrigin();
+    public boolean updateLastModifyDateTime();
+    public boolean updateCreatorId(String creatorId);
+    public boolean updateDataOrigin(String dataOrigin);
 }

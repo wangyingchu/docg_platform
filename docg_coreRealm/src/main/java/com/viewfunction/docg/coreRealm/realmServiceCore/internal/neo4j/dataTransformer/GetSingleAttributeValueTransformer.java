@@ -8,7 +8,7 @@ import org.neo4j.driver.Result;
 
 import java.util.Map;
 
-public class GetSingleAttributeValueTransformer  implements DataTransformer<AttributeValue>{
+public class GetSingleAttributeValueTransformer implements DataTransformer<AttributeValue>{
 
     private String attributeName;
 

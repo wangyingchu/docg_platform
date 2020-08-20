@@ -3,6 +3,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.termImpl.neo4j;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.featureImpl.neo4j.Neo4jMetaAttributeFeatureSupportableImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
@@ -19,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-public class Neo4JConceptionKindImpl implements ConceptionKind {
+public class Neo4JConceptionKindImpl extends Neo4jMetaAttributeFeatureSupportableImpl implements ConceptionKind {
 
     private static Logger logger = LoggerFactory.getLogger(Neo4JConceptionKindImpl.class);
     private String coreRealmName;
@@ -28,6 +29,7 @@ public class Neo4JConceptionKindImpl implements ConceptionKind {
     private String conceptionKindUID;
 
     public Neo4JConceptionKindImpl(String coreRealmName,String conceptionKindName,String conceptionKindDesc,String conceptionKindUID){
+        super(conceptionKindUID);
         this.coreRealmName = coreRealmName;
         this.conceptionKindName = conceptionKindName;
         this.conceptionKindDesc = conceptionKindDesc;
@@ -378,20 +380,21 @@ public class Neo4JConceptionKindImpl implements ConceptionKind {
     }
 
     @Override
-    public AttributesViewKind getAttributesViewKind(String attributesViewKindName) {
+    public List<AttributesViewKind> getContainsAttributesViewKinds(String attributesViewKindName) {
         if(attributesViewKindName == null){
             return null;
         }else{
+            List<AttributesViewKind> resultAttributesViewKindList = new ArrayList<>();
             List<AttributesViewKind> allContainsAttributesViewKinds = this.getContainsAttributesViewKinds();
             if(allContainsAttributesViewKinds != null && allContainsAttributesViewKinds.size()>0){
                 for(AttributesViewKind currentAttributesViewKind : allContainsAttributesViewKinds){
                     if(currentAttributesViewKind.getAttributesViewKindName().equals(attributesViewKindName.trim())){
-                        return currentAttributesViewKind;
+                        resultAttributesViewKindList.add(currentAttributesViewKind);
                     }
                 }
             }
+            return resultAttributesViewKindList;
         }
-        return null;
     }
 
     @Override
@@ -479,41 +482,6 @@ public class Neo4JConceptionKindImpl implements ConceptionKind {
     @Override
     public List<ClassificationEntity> getAttachedClassificationEntities(String relationKindName, RelationDirection relationDirection) {
         return null;
-    }
-
-    @Override
-    public Date getCreateDateTime() {
-        return null;
-    }
-
-    @Override
-    public Date getLastModifyDateTime() {
-        return null;
-    }
-
-    @Override
-    public String getCreatorId() {
-        return null;
-    }
-
-    @Override
-    public String getDataOrigin() {
-        return null;
-    }
-
-    @Override
-    public boolean updateModifyDate() {
-        return false;
-    }
-
-    @Override
-    public boolean updateCreatorId() {
-        return false;
-    }
-
-    @Override
-    public boolean updateDataOrigin() {
-        return false;
     }
 
     @Override
