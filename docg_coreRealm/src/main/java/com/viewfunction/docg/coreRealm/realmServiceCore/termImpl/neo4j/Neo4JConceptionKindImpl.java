@@ -3,7 +3,6 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.termImpl.neo4j;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.featureImpl.neo4j.Neo4jMetaAttributeFeatureSupportableImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
@@ -13,6 +12,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payloadImpl.CommonEntitiesOperationResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
+
 import org.neo4j.driver.types.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-public class Neo4JConceptionKindImpl extends Neo4jMetaAttributeFeatureSupportableImpl implements ConceptionKind {
+public class Neo4JConceptionKindImpl implements ConceptionKind {
 
     private static Logger logger = LoggerFactory.getLogger(Neo4JConceptionKindImpl.class);
     private String coreRealmName;
@@ -29,7 +29,6 @@ public class Neo4JConceptionKindImpl extends Neo4jMetaAttributeFeatureSupportabl
     private String conceptionKindUID;
 
     public Neo4JConceptionKindImpl(String coreRealmName,String conceptionKindName,String conceptionKindDesc,String conceptionKindUID){
-        super(conceptionKindUID);
         this.coreRealmName = coreRealmName;
         this.conceptionKindName = conceptionKindName;
         this.conceptionKindDesc = conceptionKindDesc;
@@ -509,5 +508,15 @@ public class Neo4JConceptionKindImpl extends Neo4jMetaAttributeFeatureSupportabl
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
+    }
+
+    @Override
+    public String getEntityUID() {
+        return conceptionKindUID;
+    }
+
+    @Override
+    public GraphOperationExecutorHelper getGraphOperationExecutorHelper() {
+        return graphOperationExecutorHelper;
     }
 }
