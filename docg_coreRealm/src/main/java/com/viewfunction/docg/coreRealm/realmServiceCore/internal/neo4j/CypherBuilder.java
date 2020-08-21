@@ -364,7 +364,7 @@ public class CypherBuilder {
     public static String matchRelatedNodesFromSpecialStartNodes(CypherFunctionType sourcePropertyFunctionType,Object sourcePropertyValue,
                                                                 String targetConceptionKind,String relationKind,
                                                                 RelationDirection relationDirection,CypherFunctionType returnFunctionType){
-        Node sourceNode = Cypher.anyNode().named("SourceNode");
+        Node sourceNode = Cypher.anyNode().named("sourceNode");
         Node resultNodes = Cypher.node(targetConceptionKind).named(operationResultName);
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = null;
         switch(relationDirection){
@@ -488,6 +488,61 @@ public class CypherBuilder {
                 statement = ongoingReadingWithoutWhere.delete(relation).returning(relation).build();
             }
         }
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}",rel);
+        return rel;
+    }
+
+    public static String mergeRelatedNodesFromSpecialStartNodes(CypherFunctionType sourcePropertyFunctionType,Object sourcePropertyValue,
+                                                                String targetConceptionKind,String relationKind,
+                                                                RelationDirection relationDirection,CypherFunctionType returnFunctionType){
+        Node sourceNode = Cypher.anyNode().named("sourceNode");
+        Node resultNodes = Cypher.node(targetConceptionKind).named(operationResultName);
+
+        StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(sourceNode);
+        StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
+        switch(sourcePropertyFunctionType){
+            case ID:
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
+                break;
+            default:
+        }
+        switch(relationDirection){
+            case FROM: ongoingReadingWithWhere.merge(sourceNode.relationshipFrom(resultNodes,relationKind));
+                break;
+            case TO: ongoingReadingWithWhere.merge(sourceNode.relationshipTo(resultNodes,relationKind));
+                break;
+            case TWO_WAY:
+                ongoingReadingWithWhere.merge(sourceNode.relationshipBetween(resultNodes,relationKind));
+        }
+
+        Statement statement = null;
+
+        if(returnFunctionType != null) {
+            switch (returnFunctionType) {
+                case KEYS:
+                    if(ongoingReadingWithWhere != null){
+                        statement = ongoingReadingWithWhere.returning(Functions2.keys(resultNodes)).build();
+                    }else{
+                        statement = ongoingReadingWithoutWhere.returning(Functions2.keys(resultNodes)).build();
+                    }
+                    break;
+                case PROPERTIES:
+                    if(ongoingReadingWithWhere != null){
+                        statement = ongoingReadingWithWhere.returning(Functions2.properties(resultNodes)).build();
+                    }else{
+                        statement = ongoingReadingWithoutWhere.returning(Functions2.properties(resultNodes)).build();
+                    }
+                    break;
+            }
+        }else{
+            if(ongoingReadingWithWhere != null){
+                statement = ongoingReadingWithWhere.returning(resultNodes).build();
+            }else{
+                statement = ongoingReadingWithoutWhere.returning(resultNodes).build();
+            }
+        }
+
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}",rel);
         return rel;

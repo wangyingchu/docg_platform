@@ -25,4 +25,9 @@
             <class name="com.viewfunction.docg.testcase.coreRealm.termTest.MetaAttributeFeatureSupportableTest"/>
         </classes>
     </test>
+    <test verbose="6" name="MetaConfigItemFeatureSupportableTest">
+        <classes>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.MetaConfigItemFeatureSupportableTest"/>
+        </classes>
+    </test>
 </suite>

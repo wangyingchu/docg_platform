@@ -92,4 +92,14 @@ public class Neo4jMetaConfigItemFeatureSupportableImpl implements MetaConfigItem
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }
+
+    @Override
+    public String getEntityUID() {
+        return null;
+    }
+
+    @Override
+    public GraphOperationExecutorHelper getGraphOperationExecutorHelper() {
+        return null;
+    }
 }
