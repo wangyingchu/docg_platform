@@ -1,8 +1,8 @@
-package com.viewfunction.docg.coreRealm.realmServiceCore.feature;
+package com.viewfunction.docg.coreRealm.realmServiceCore.featureImpl.neo4j;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 
-public interface KeyResourcesRetrievable {
+public interface Neo4JKeyResourcesRetrievable {
 
     public String getEntityUID();
     public GraphOperationExecutorHelper getGraphOperationExecutorHelper();

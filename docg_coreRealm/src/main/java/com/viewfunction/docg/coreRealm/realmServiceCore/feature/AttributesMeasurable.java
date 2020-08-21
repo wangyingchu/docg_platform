@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface AttributesMeasurable {
-
     public boolean removeAttribute(String attributeName) throws CoreRealmServiceRuntimeException;
     public List<AttributeValue> getAttributes();
     public boolean hasAttribute(String attributeName);
@@ -62,31 +61,4 @@ public interface AttributesMeasurable {
     public List<String> addAttributes(Map<String,Object> properties);
     public List<String> updateAttributes(Map<String,Object> properties);
     public List<String> addNewOrUpdateAttributes(Map<String, Object> properties);
-
-    /*
-    public boolean setInitAttribute(String attributeName,boolean attributeValue);
-    public boolean setInitAttribute(String attributeName,int attributeValue);
-    public boolean setInitAttribute(String attributeName,short attributeValue);
-    public boolean setInitAttribute(String attributeName,long attributeValue);
-    public boolean setInitAttribute(String attributeName,float attributeValue);
-    public boolean setInitAttribute(String attributeName,double attributeValue);
-    public boolean setInitAttribute(String attributeName,Date attributeValue);
-    public boolean setInitAttribute(String attributeName,String attributeValue);
-    public boolean setInitAttribute(String attributeName,byte[] attributeValue);
-    public boolean setInitAttribute(String attributeName,byte attributeValue);
-    public boolean setInitAttribute(String attributeName,BigDecimal attributeValue);
-    public boolean setInitAttribute(String attributeName,Boolean[] attributeValue);
-    public boolean setInitAttribute(String attributeName,Integer[] attributeValue);
-    public boolean setInitAttribute(String attributeName,Short[] attributeValue);
-    public boolean setInitAttribute(String attributeName,Long[] attributeValue);
-    public boolean setInitAttribute(String attributeName,Float[] attributeValue);
-    public boolean setInitAttribute(String attributeName,Double[] attributeValue);
-    public boolean setInitAttribute(String attributeName,Date[] attributeValue);
-    public boolean setInitAttribute(String attributeName,String[] attributeValue);
-    public boolean setInitAttribute(String attributeName,Byte[][] attributeValue);
-    public boolean setInitAttribute(String attributeName,BigDecimal[] attributeValue);
-
-    public Object getInitAttribute(String attributeName);
-    */
-
 }
