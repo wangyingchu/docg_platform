@@ -9,7 +9,13 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import java.util.List;
 
 public interface ClassificationKindAttachable {
-    public RelationEntity attachClassificationEntity(RelationAttachInfo relationAttachInfo, String classificationEntityUID) throws CoreRealmServiceRuntimeException;
-    public boolean detachClassificationEntity(String classificationEntityUID, String relationKindName, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException;
-    public List<ClassificationEntity> getAttachedClassificationEntities(String relationKindName, RelationDirection relationDirection);
+    default RelationEntity attachClassificationEntity(RelationAttachInfo relationAttachInfo, String classificationEntityUID) throws CoreRealmServiceRuntimeException{
+        return null;
+    }
+    default boolean detachClassificationEntity(String classificationEntityUID, String relationKindName, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException {
+    return false;
+    }
+    default List<ClassificationEntity> getAttachedClassificationEntities(String relationKindName, RelationDirection relationDirection){
+        return null;
+    }
 }

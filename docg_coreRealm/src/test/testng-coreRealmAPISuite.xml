@@ -1,0 +1,28 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="CIM Data service model API  test suite">
+    <test verbose="1" name="RealmTermFactoryTest">
+        <classes>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.RealmTermFactoryTest"/>
+        </classes>
+    </test>
+    <test verbose="2" name="CoreRealmTest">
+        <classes>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.CoreRealmTest"/>
+        </classes>
+    </test>
+    <test verbose="3" name="ConceptionKindTest">
+        <classes>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.ConceptionKindTest"/>
+        </classes>
+    </test>
+    <test verbose="4" name="AttributesMeasurableTest">
+        <classes>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.AttributesMeasurableTest"/>
+        </classes>
+    </test>
+    <test verbose="5" name="MetaAttributeFeatureSupportableTest">
+        <classes>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.MetaAttributeFeatureSupportableTest"/>
+        </classes>
+    </test>
+</suite>

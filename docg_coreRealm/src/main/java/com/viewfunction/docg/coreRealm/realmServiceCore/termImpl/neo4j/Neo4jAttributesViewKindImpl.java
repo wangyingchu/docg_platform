@@ -94,4 +94,14 @@ public class Neo4jAttributesViewKindImpl implements AttributesViewKind {
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }
+
+    @Override
+    public String getEntityUID() {
+        return this.attributesViewKindUID;
+    }
+
+    @Override
+    public GraphOperationExecutorHelper getGraphOperationExecutorHelper() {
+        return this.graphOperationExecutorHelper;
+    }
 }

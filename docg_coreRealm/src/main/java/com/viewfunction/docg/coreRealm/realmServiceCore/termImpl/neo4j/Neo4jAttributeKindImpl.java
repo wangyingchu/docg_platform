@@ -59,4 +59,14 @@ public class Neo4jAttributeKindImpl implements AttributeKind {
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }
+
+    @Override
+    public String getEntityUID() {
+        return this.attributeKindUID;
+    }
+
+    @Override
+    public GraphOperationExecutorHelper getGraphOperationExecutorHelper() {
+        return this.graphOperationExecutorHelper;
+    }
 }
