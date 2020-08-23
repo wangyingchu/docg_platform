@@ -16,12 +16,12 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.util.*;
 
-public class Neo4jAttributesMeasurableImpl implements AttributesMeasurable {
+public class Neo4JAttributesMeasurableImpl implements AttributesMeasurable {
 
-    private static Logger logger = LoggerFactory.getLogger(Neo4jAttributesMeasurableImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(Neo4JAttributesMeasurableImpl.class);
     private String entityUID;
 
-    public Neo4jAttributesMeasurableImpl(String entityUID){
+    public Neo4JAttributesMeasurableImpl(String entityUID){
         this.entityUID = entityUID;
         this.graphOperationExecutorHelper = new GraphOperationExecutorHelper();
     }

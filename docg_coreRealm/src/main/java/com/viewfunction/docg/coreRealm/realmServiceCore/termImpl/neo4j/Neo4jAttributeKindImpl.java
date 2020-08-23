@@ -5,12 +5,13 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.Grap
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
+import com.viewfunction.docg.coreRealm.realmServiceCore.termInf.neo4j.Neo4JAttributeKindInf;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class Neo4jAttributeKindImpl implements AttributeKind {
+public class Neo4jAttributeKindImpl implements Neo4JAttributeKindInf {
 
     private static Logger logger = LoggerFactory.getLogger(Neo4jAttributeKindImpl.class);
     private String coreRealmName;

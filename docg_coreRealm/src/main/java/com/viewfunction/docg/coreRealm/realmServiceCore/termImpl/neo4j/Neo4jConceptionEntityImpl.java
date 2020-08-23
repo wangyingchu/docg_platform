@@ -1,6 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.termImpl.neo4j;
 
-import com.viewfunction.docg.coreRealm.realmServiceCore.featureImpl.neo4j.Neo4jAttributesMeasurableImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.featureImpl.neo4j.Neo4JAttributesMeasurableImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
@@ -8,7 +8,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Neo4jConceptionEntityImpl extends Neo4jAttributesMeasurableImpl implements ConceptionEntity {
+public class Neo4jConceptionEntityImpl extends Neo4JAttributesMeasurableImpl implements ConceptionEntity {
 
     private String conceptionEntityUID;
     private String conceptionKindName;
