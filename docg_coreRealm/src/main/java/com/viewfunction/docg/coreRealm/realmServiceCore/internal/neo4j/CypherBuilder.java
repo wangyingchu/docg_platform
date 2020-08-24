@@ -547,4 +547,129 @@ public class CypherBuilder {
         logger.debug("Generated Cypher Statement: {}",rel);
         return rel;
     }
+
+    public static String match2JumpRelatedNodesFromSpecialStartNodes(CypherFunctionType sourcePropertyFunctionType,Object sourcePropertyValue,
+                                                                     String middleConceptionKind,String middleRelationKind, RelationDirection middleRelationDirection,
+                                                                     Map<String,Object> middleEntityProperties,
+                                                                     String targetConceptionKind,String targetRelationKind, RelationDirection targetRelationDirection,
+                                                                     Map<String,Object> targetEntityProperties,
+                                                                     CypherFunctionType returnFunctionType){
+        //Cypher.match(finalChain).where(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
+        Node sourceNode = Cypher.anyNode().named("sourceNode");
+        Node middleNode;
+        MapExpression middleNodeEntityMapExpression = middleEntityProperties != null ?
+                Cypher.mapOf(CommonOperationUtil.generatePropertiesValueArray(middleEntityProperties)) : null;
+        if(middleConceptionKind != null){
+            if(middleNodeEntityMapExpression != null){
+                middleNode = Cypher.node(middleConceptionKind).named("middleNode").withProperties(middleNodeEntityMapExpression);
+            }else{
+                middleNode = Cypher.node(middleConceptionKind).named("middleNode");
+            }
+        }else{
+            if(middleNodeEntityMapExpression != null){
+            middleNode = Cypher.anyNode().named("middleNode").withProperties(middleNodeEntityMapExpression);
+            }else{
+                middleNode = Cypher.anyNode().named("middleNode");
+            }
+        }
+        Node resultNodes;
+        MapExpression resultNodeEntityMapExpression = targetEntityProperties != null ?
+                Cypher.mapOf(CommonOperationUtil.generatePropertiesValueArray(targetEntityProperties)) : null;
+        if(targetConceptionKind != null){
+            if(targetConceptionKind != null){
+                resultNodes = Cypher.node(targetConceptionKind).named(operationResultName).withProperties(resultNodeEntityMapExpression);
+            }else{
+                resultNodes = Cypher.node(targetConceptionKind).named(operationResultName);
+            }
+        }else{
+            if(targetConceptionKind != null){
+                resultNodes = Cypher.anyNode().named(operationResultName).withProperties(resultNodeEntityMapExpression);
+            }else{
+                resultNodes = Cypher.anyNode().named(operationResultName);
+            }
+        }
+        Relationship jump1Relation = null;
+        switch(middleRelationDirection){
+            case FROM:
+                if(middleRelationKind != null){
+                    jump1Relation = sourceNode.relationshipFrom(middleNode,middleRelationKind);
+                }else{
+                    jump1Relation = sourceNode.relationshipFrom(middleNode);
+                }
+                break;
+            case TO:
+                if(middleRelationKind != null){
+                    jump1Relation = sourceNode.relationshipTo(middleNode,middleRelationKind);
+                }else{
+                    jump1Relation = sourceNode.relationshipTo(middleNode);
+                }
+                break;
+            case TWO_WAY:
+                if(middleRelationKind != null){
+                    jump1Relation = sourceNode.relationshipBetween(middleNode,middleRelationKind);
+                }else{
+                    jump1Relation = sourceNode.relationshipBetween(middleNode);
+                }
+        }
+        RelationshipChain finalChain = null;
+        switch(targetRelationDirection){
+            case FROM:
+                if(targetRelationKind != null){
+                    finalChain = jump1Relation.relationshipFrom(resultNodes,targetRelationKind);
+                }else{
+                    finalChain = jump1Relation.relationshipFrom(resultNodes);
+                }
+                break;
+            case TO:
+                if(targetRelationKind != null){
+                    finalChain = jump1Relation.relationshipTo(resultNodes,targetRelationKind);
+                }else{
+                    finalChain = jump1Relation.relationshipTo(resultNodes);
+                }
+                break;
+            case TWO_WAY:
+                if(targetRelationKind != null){
+                    finalChain = jump1Relation.relationshipBetween(resultNodes,targetRelationKind);
+                }else{
+                    finalChain = jump1Relation.relationshipBetween(resultNodes);
+                }
+        }
+        StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(finalChain);
+        StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
+        switch(sourcePropertyFunctionType){
+            case ID:
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
+                break;
+            default:
+        }
+
+        Statement statement = null;
+        if(returnFunctionType !=null) {
+            switch (returnFunctionType) {
+                case KEYS:
+                    if(ongoingReadingWithWhere != null){
+                        statement = ongoingReadingWithWhere.returning(Functions2.keys(resultNodes)).build();
+                    }else{
+                        statement = ongoingReadingWithoutWhere.returning(Functions2.keys(resultNodes)).build();
+                    }
+                    break;
+                case PROPERTIES:
+                    if(ongoingReadingWithWhere != null){
+                        statement = ongoingReadingWithWhere.returning(Functions2.properties(resultNodes)).build();
+                    }else{
+                        statement = ongoingReadingWithoutWhere.returning(Functions2.properties(resultNodes)).build();
+                    }
+                    break;
+            }
+        }else{
+            if(ongoingReadingWithWhere != null){
+                statement = ongoingReadingWithWhere.returning(resultNodes).build();
+            }else{
+                statement = ongoingReadingWithoutWhere.returning(resultNodes).build();
+            }
+        }
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}",rel);
+        return rel;
+    }
 }

@@ -4,10 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 
@@ -103,6 +100,46 @@ public class ConceptionKindTest {
         Assert.assertEquals(targetAttributesViewKindList.get(0).getAttributesViewKindDesc(),"targetAttributesViewKindToAdd02Desc");
         Assert.assertEquals(targetAttributesViewKindList.get(0).getAttributesViewKindUID(),attributesViewKindToAdd02.getAttributesViewKindUID());
         Assert.assertEquals(targetAttributesViewKindList.get(0).getAttributesViewKindDataForm(), AttributesViewKind.AttributesViewKindDataForm.LIST_VALUE);
+
+        List<AttributeKind> attributeKindList = _ConceptionKind01.getContainsSingleValueAttributeKinds();
+        Assert.assertNotNull(attributeKindList);
+        Assert.assertEquals(attributeKindList.size(),0);
+
+        AttributeKind attributeKind01 = coreRealm.createAttributeKind("attributeKind01","attributeKind01Desc", AttributeDataType.BOOLEAN);
+        Assert.assertNotNull(attributeKind01);
+
+        boolean attachAttributeKindRes = attributesViewKindToAdd02.attachAttributeKind(attributeKind01.getAttributeKindUID());
+        Assert.assertTrue(attachAttributeKindRes);
+
+        attributeKindList = _ConceptionKind01.getContainsSingleValueAttributeKinds();
+        Assert.assertNotNull(attributeKindList);
+        Assert.assertEquals(attributeKindList.size(),0);
+
+        AttributeKind attributeKind02 = coreRealm.createAttributeKind("attributeKind02","attributeKind02Desc", AttributeDataType.DATE);
+        Assert.assertNotNull(attributeKind02);
+
+        attachAttributeKindRes = attributesViewKindToAdd01.attachAttributeKind(attributeKind02.getAttributeKindUID());
+        Assert.assertTrue(attachAttributeKindRes);
+
+        attributeKindList = _ConceptionKind01.getContainsSingleValueAttributeKinds();
+        Assert.assertNotNull(attributeKindList);
+        Assert.assertEquals(attributeKindList.size(),1);
+        Assert.assertNotNull(attributeKindList.get(0).getAttributeKindUID());
+        Assert.assertEquals(attributeKindList.get(0).getAttributeKindName(),"attributeKind02");
+        Assert.assertEquals(attributeKindList.get(0).getAttributeKindDesc(),"attributeKind02Desc");
+        Assert.assertEquals(attributeKindList.get(0).getAttributeDataType(),AttributeDataType.DATE);
+
+        attributeKindList = _ConceptionKind01.getContainsSingleValueAttributeKinds("attributeKind02");
+        Assert.assertNotNull(attributeKindList);
+        Assert.assertEquals(attributeKindList.size(),1);
+        Assert.assertNotNull(attributeKindList.get(0).getAttributeKindUID());
+        Assert.assertEquals(attributeKindList.get(0).getAttributeKindName(),"attributeKind02");
+        Assert.assertEquals(attributeKindList.get(0).getAttributeKindDesc(),"attributeKind02Desc");
+        Assert.assertEquals(attributeKindList.get(0).getAttributeDataType(),AttributeDataType.DATE);
+
+        attributeKindList = _ConceptionKind01.getContainsSingleValueAttributeKinds("attributeKind02+NotExist");
+        Assert.assertNotNull(attributeKindList);
+        Assert.assertEquals(attributeKindList.size(),0);
 
         targetAttributesViewKindList = _ConceptionKind01.getContainsAttributesViewKinds("targetAttributesViewKindNotExist");
         Assert.assertEquals(targetAttributesViewKindList.size(),0);

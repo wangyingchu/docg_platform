@@ -35,10 +35,10 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
     public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNames(List<String> attributeNames, QueryParameters exploreParameters);
 
     public boolean attachAttributesViewKind(String attributesViewKindUID) throws CoreRealmServiceRuntimeException;
+    public List<AttributesViewKind> getContainsAttributesViewKinds();
     public List<AttributesViewKind> getContainsAttributesViewKinds(String attributesViewKindName);
     public boolean detachAttributesViewKind(String attributesViewKindUID) throws CoreRealmServiceRuntimeException;
-    public List<AttributesViewKind> getContainsAttributesViewKinds();
 
-    public List<AttributeKind> getSingleValueAttributeKinds();
-    public AttributeKind getSingleValueAttributeKind(String AttributeKindName);
+    public List<AttributeKind> getContainsSingleValueAttributeKinds();
+    public List<AttributeKind> getContainsSingleValueAttributeKinds(String attributeKindName);
 }
