@@ -19,4 +19,10 @@ public interface CoreRealm {
     public AttributeKind getAttributeKind(String attributeKindUID);
     public AttributeKind createAttributeKind(String attributeKindName,String attributeKindDesc, AttributeDataType attributeDataType);
     public boolean removeAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException;
+
+    public RelationKind getRelationKind(String relationKindName);
+    public RelationKind createRelationKind(String relationKindName,String relationKindDesc);
+    public RelationKind createRelationKind(String relationKindName,String relationKindDesc,String parentRelationKindName)
+            throws CoreRealmFunctionNotSupportedException;
+    public boolean removeRelationKind(String relationKindName, boolean deleteExistEntities) throws CoreRealmServiceRuntimeException;
 }

@@ -271,6 +271,91 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         }
     }
 
+    @Override
+    public RelationKind getRelationKind(String relationKindName) {
+        if(relationKindName == null){
+            return null;
+        }
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.RelationKindClass,RealmConstant._NameProperty,relationKindName,1);
+            GetSingleRelationKindTransformer getSingleRelationKindTransformer =
+                    new GetSingleRelationKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object getRelationKindRes = workingGraphOperationExecutor.executeWrite(getSingleRelationKindTransformer,queryCql);
+            return getRelationKindRes != null ? (RelationKind)getRelationKindRes : null;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public RelationKind createRelationKind(String relationKindName, String relationKindDesc) {
+        if(relationKindName == null){
+            return null;
+        }
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String checkCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.RelationKindClass,RealmConstant._NameProperty,relationKindName,1);
+            Object relationKindExistenceRes = workingGraphOperationExecutor.executeRead(new CheckResultExistenceTransformer(),checkCql);
+            if(((Boolean)relationKindExistenceRes).booleanValue()){
+                return null;
+            }
+            Map<String,Object> propertiesMap = new HashMap<>();
+            propertiesMap.put(RealmConstant._NameProperty,relationKindName);
+            if(relationKindDesc != null) {
+                propertiesMap.put(RealmConstant._DescProperty, relationKindDesc);
+            }
+            CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
+            String createCql = CypherBuilder.createLabeledNodeWithProperties(RealmConstant.RelationKindClass,propertiesMap);
+            GetSingleRelationKindTransformer getSingleRelationKindTransformer =
+                    new GetSingleRelationKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object createRelationKindRes = workingGraphOperationExecutor.executeWrite(getSingleRelationKindTransformer,createCql);
+            return createRelationKindRes != null ? (RelationKind)createRelationKindRes : null;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public RelationKind createRelationKind(String relationKindName, String relationKindDesc, String parentRelationKindName) throws CoreRealmFunctionNotSupportedException {
+        CoreRealmFunctionNotSupportedException exception = new CoreRealmFunctionNotSupportedException();
+        exception.setCauseMessage("Neo4J storage implements doesn't support this function");
+        throw exception;
+    }
+
+    @Override
+    public boolean removeRelationKind(String relationKindName, boolean deleteExistEntities) throws CoreRealmServiceRuntimeException {
+        if(relationKindName == null){
+            return false;
+        }
+        RelationKind targetRelationKind = this.getRelationKind(relationKindName);
+        if(targetRelationKind == null){
+            logger.error("RelationKind does not contains entity with UID {}.", relationKindName);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("RelationKind does not contains entity with UID " + relationKindName + ".");
+            throw exception;
+        }else{
+            if(deleteExistEntities){
+                targetRelationKind.purgeAllRelationEntities();
+            }
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String relationKindUID = ((Neo4JRelationKindImpl)targetRelationKind).getRelationKindUID();
+                String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(relationKindUID),null,null);
+                GetSingleRelationKindTransformer getSingleRelationKindTransformer =
+                        new GetSingleRelationKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object deletedRelationKindRes = workingGraphOperationExecutor.executeWrite(getSingleRelationKindTransformer,deleteCql);
+                if(deletedRelationKindRes == null){
+                    throw new CoreRealmServiceRuntimeException();
+                }else{
+                    return true;
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
+    }
+
     //internal graphOperationExecutor management logic
     private GraphOperationExecutorHelper graphOperationExecutorHelper;
 

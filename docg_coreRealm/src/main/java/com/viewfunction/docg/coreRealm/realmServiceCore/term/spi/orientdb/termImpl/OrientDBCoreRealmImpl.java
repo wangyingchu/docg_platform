@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.orientdb.termImpl;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
@@ -62,6 +63,26 @@ public class OrientDBCoreRealmImpl implements CoreRealm {
 
     @Override
     public boolean removeAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException {
+        return false;
+    }
+
+    @Override
+    public RelationKind getRelationKind(String relationKindName) {
+        return null;
+    }
+
+    @Override
+    public RelationKind createRelationKind(String relationKindName, String relationKindDesc) {
+        return null;
+    }
+
+    @Override
+    public RelationKind createRelationKind(String relationKindName, String relationKindDesc, String parentRelationKindName) throws CoreRealmFunctionNotSupportedException {
+        return null;
+    }
+
+    @Override
+    public boolean removeRelationKind(String relationKindName, boolean deleteExistEntities) throws CoreRealmServiceRuntimeException {
         return false;
     }
 }

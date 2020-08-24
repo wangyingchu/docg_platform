@@ -2,9 +2,11 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationKindAttachable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaAttributeFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaConfigItemFeatureSupportable;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntitiesRetrieveResult;
 
 import java.util.List;
@@ -16,4 +18,5 @@ public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttr
     public List<RelationKind> getChildRelationKinds() throws CoreRealmFunctionNotSupportedException;
     public Long countRelationEntities(boolean includeDescendant);
     public RelationEntitiesRetrieveResult getRelationEntities(QueryParameters queryParameters);
+    public EntitiesOperationResult purgeAllRelationEntities() throws CoreRealmServiceRuntimeException;
 }

@@ -3,6 +3,7 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 import org.testng.Assert;
@@ -69,5 +70,10 @@ public class MetaAttributeFeatureSupportableTest {
 
         Date newCreatDate = _ConceptionKind01.getCreateDateTime();
         Assert.assertEquals(createdDateTime,newCreatDate);
+
+        RelationKind targetRelationKind01 = coreRealm.getRelationKind("relationKind01");
+        //Assert.assertNotNull(targetRelationKind01.getCreateDateTime());
+        //Assert.assertNotNull(targetRelationKind01.getLastModifyDateTime());
+        //Assert.assertNotNull(targetRelationKind01.getDataOrigin());
     }
 }

@@ -14,7 +14,7 @@ import org.neo4j.driver.types.Node;
 
 import java.util.List;
 
-public class GetSingleAttributeKindTransformer  implements DataTransformer<AttributeKind>{
+public class GetSingleAttributeKindTransformer implements DataTransformer<AttributeKind>{
 
     private GraphOperationExecutor workingGraphOperationExecutor;
     private String currentCoreRealmName;

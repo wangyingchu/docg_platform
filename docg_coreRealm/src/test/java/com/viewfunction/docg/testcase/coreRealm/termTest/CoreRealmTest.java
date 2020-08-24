@@ -1,5 +1,6 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionKindImpl;
@@ -130,5 +131,39 @@ public class CoreRealmTest {
         Assert.assertTrue(removeAttributeKindRes01);
         attributeKind02 = coreRealm.getAttributeKind(targetAttributeKindUID);
         Assert.assertNull(attributeKind02);
+
+        RelationKind relationKind01 = coreRealm.createRelationKind("relationKind01","relationKind01Desc");
+        Assert.assertNotNull(relationKind01);
+        Assert.assertEquals(relationKind01.getRelationKindName(),"relationKind01");
+        Assert.assertEquals(relationKind01.getRelationKindDesc(),"relationKind01Desc");
+        relationKind01 = coreRealm.createRelationKind("relationKind01","relationKind01Desc");
+        Assert.assertNull(relationKind01);
+
+        RelationKind targetRelationKind01 = coreRealm.getRelationKind("relationKind01");
+        Assert.assertNotNull(targetRelationKind01);
+        Assert.assertEquals(targetRelationKind01.getRelationKindName(),"relationKind01");
+        Assert.assertEquals(targetRelationKind01.getRelationKindDesc(),"relationKind01Desc");
+
+        targetRelationKind01 = coreRealm.getRelationKind("relationKind01+NotExist");
+        Assert.assertNull(targetRelationKind01);
+
+        boolean removeRelationTypeRes = coreRealm.removeRelationKind("relationKind01",true);
+        Assert.assertTrue(removeRelationTypeRes);
+
+        exceptionShouldBeCaught = false;
+        try{
+            coreRealm.removeRelationKind("relationKind01",true);
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
+
+        exceptionShouldBeCaught = false;
+        try{
+            coreRealm.createRelationKind("relationKind02","relationKind02Desc","parentRelationType");
+        }catch(CoreRealmFunctionNotSupportedException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
     }
 }
