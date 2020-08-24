@@ -3,7 +3,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTran
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4jConceptionEntityImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionEntityImpl;
 
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
@@ -37,8 +37,8 @@ public class GetSingleConceptionEntityTransformer implements DataTransformer<Con
                 if(isMatchedConceptionKind){
                     long nodeUID = resultNode.id();
                     String conceptionEntityUID = ""+nodeUID;
-                    Neo4jConceptionEntityImpl neo4jConceptionEntityImpl =
-                            new Neo4jConceptionEntityImpl(targetConceptionKindName,conceptionEntityUID);
+                    Neo4JConceptionEntityImpl neo4jConceptionEntityImpl =
+                            new Neo4JConceptionEntityImpl(targetConceptionKindName,conceptionEntityUID);
                     neo4jConceptionEntityImpl.setAllConceptionKindNames(allConceptionKindNames);
                     neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
                     return neo4jConceptionEntityImpl;

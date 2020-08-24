@@ -3,7 +3,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTran
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4jRelationEntityImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JRelationEntityImpl;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Relationship;
@@ -31,8 +31,8 @@ public class GetSingleRelationEntityTransformer implements DataTransformer<Relat
                     String relationEntityUID = ""+relationUID;
                     String fromEntityUID = ""+resultRelationship.startNodeId();
                     String toEntityUID = ""+resultRelationship.endNodeId();
-                    Neo4jRelationEntityImpl neo4jRelationEntityImpl =
-                            new Neo4jRelationEntityImpl(targetRelationKindName,relationEntityUID,fromEntityUID,toEntityUID);
+                    Neo4JRelationEntityImpl neo4jRelationEntityImpl =
+                            new Neo4JRelationEntityImpl(targetRelationKindName,relationEntityUID,fromEntityUID,toEntityUID);
                     neo4jRelationEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
                     return neo4jRelationEntityImpl;
                 }else{

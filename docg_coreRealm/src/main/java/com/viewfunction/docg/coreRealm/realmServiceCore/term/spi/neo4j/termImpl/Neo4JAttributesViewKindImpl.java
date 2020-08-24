@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Neo4jAttributesViewKindImpl implements Neo4JAttributesViewKind {
+public class Neo4JAttributesViewKindImpl implements Neo4JAttributesViewKind {
 
     private static Logger logger = LoggerFactory.getLogger(Neo4JConceptionKindImpl.class);
     private String coreRealmName;
@@ -29,7 +29,7 @@ public class Neo4jAttributesViewKindImpl implements Neo4JAttributesViewKind {
     private String attributesViewKindUID;
     private AttributesViewKindDataForm attributesViewKindDataForm;
 
-    public Neo4jAttributesViewKindImpl(String coreRealmName,String attributesViewKindName,String attributesViewKindDesc,AttributesViewKindDataForm attributesViewKindDataForm,String attributesViewKindUID){
+    public Neo4JAttributesViewKindImpl(String coreRealmName, String attributesViewKindName, String attributesViewKindDesc, AttributesViewKindDataForm attributesViewKindDataForm, String attributesViewKindUID){
         this.coreRealmName = coreRealmName;
         this.attributesViewKindName = attributesViewKindName;
         this.attributesViewKindDesc = attributesViewKindDesc;

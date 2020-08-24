@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4jAttributesViewKindImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JAttributesViewKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
@@ -58,8 +58,8 @@ public class GetListAttributesViewKindTransformer implements DataTransformer<Lis
                         }
 
                         String attributesViewKindUID = ""+nodeUID;
-                        Neo4jAttributesViewKindImpl neo4jAttributesViewKindImpl =
-                                new Neo4jAttributesViewKindImpl(coreRealmName,attributesViewKindName,attributesViewKindNameDesc,currentAttributesViewKindDataForm,attributesViewKindUID);
+                        Neo4JAttributesViewKindImpl neo4jAttributesViewKindImpl =
+                                new Neo4JAttributesViewKindImpl(coreRealmName,attributesViewKindName,attributesViewKindNameDesc,currentAttributesViewKindDataForm,attributesViewKindUID);
                         neo4jAttributesViewKindImpl.setGlobalGraphOperationExecutor(this.workingGraphOperationExecutor);
                         attributesViewKindList.add(neo4jAttributesViewKindImpl);
                     }

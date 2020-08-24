@@ -8,13 +8,13 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Neo4jConceptionEntityImpl extends Neo4JAttributesMeasurableImpl implements ConceptionEntity {
+public class Neo4JConceptionEntityImpl extends Neo4JAttributesMeasurableImpl implements ConceptionEntity {
 
     private String conceptionEntityUID;
     private String conceptionKindName;
     private List<String> allConceptionKindNames;
 
-    public Neo4jConceptionEntityImpl(String conceptionKindName,String conceptionEntityUID){
+    public Neo4JConceptionEntityImpl(String conceptionKindName, String conceptionEntityUID){
         super(conceptionEntityUID);
         this.conceptionKindName = conceptionKindName;
         this.conceptionEntityUID = conceptionEntityUID;

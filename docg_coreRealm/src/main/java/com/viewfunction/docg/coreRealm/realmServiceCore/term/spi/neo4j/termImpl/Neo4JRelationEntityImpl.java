@@ -5,14 +5,14 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOper
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JRelationEntity;
 
-public class Neo4jRelationEntityImpl extends Neo4JAttributesMeasurableImpl implements Neo4JRelationEntity {
+public class Neo4JRelationEntityImpl extends Neo4JAttributesMeasurableImpl implements Neo4JRelationEntity {
 
     private String relationEntityUID;
     private String relationKindName;
     private String fromEntityUID;
     private String toEntityUID;
 
-    public Neo4jRelationEntityImpl(String relationKindName,String relationEntityUID,String fromEntityUID,String toEntityUID){
+    public Neo4JRelationEntityImpl(String relationKindName, String relationEntityUID, String fromEntityUID, String toEntityUID){
         super(relationEntityUID);
         this.relationKindName = relationKindName;
         this.relationEntityUID = relationEntityUID;

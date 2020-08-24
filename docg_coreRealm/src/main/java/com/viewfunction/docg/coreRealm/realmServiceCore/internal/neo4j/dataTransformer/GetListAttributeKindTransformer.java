@@ -5,7 +5,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBui
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeKind;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4jAttributeKindImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JAttributeKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 
 import org.neo4j.driver.Record;
@@ -92,8 +92,8 @@ public class GetListAttributeKindTransformer  implements DataTransformer<List<At
                             case "DECIMAL_ARRAY":attributeDataType = AttributeDataType.DECIMAL_ARRAY;
                         }
                         String attributeKindUID = ""+nodeUID;
-                        Neo4jAttributeKindImpl Neo4jAttributeKindImpl =
-                                new Neo4jAttributeKindImpl(coreRealmName,attributeKindName,attributeKindNameDesc,attributeDataType,attributeKindUID);
+                        Neo4JAttributeKindImpl Neo4jAttributeKindImpl =
+                                new Neo4JAttributeKindImpl(coreRealmName,attributeKindName,attributeKindNameDesc,attributeDataType,attributeKindUID);
                         Neo4jAttributeKindImpl.setGlobalGraphOperationExecutor(this.workingGraphOperationExecutor);
                         attributeKindsList.add(Neo4jAttributeKindImpl);
                     }

@@ -15,16 +15,16 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class Neo4jAttributeKindImpl implements Neo4JAttributeKind {
+public class Neo4JAttributeKindImpl implements Neo4JAttributeKind {
 
-    private static Logger logger = LoggerFactory.getLogger(Neo4jAttributeKindImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(Neo4JAttributeKindImpl.class);
     private String coreRealmName;
     private String attributeKindName;
     private String attributeKindDesc;
     private String attributeKindUID;
     private AttributeDataType attributeDataType;
 
-    public Neo4jAttributeKindImpl(String coreRealmName, String attributeKindName, String attributeKindDesc, AttributeDataType attributeDataType, String attributeKindUID){
+    public Neo4JAttributeKindImpl(String coreRealmName, String attributeKindName, String attributeKindDesc, AttributeDataType attributeDataType, String attributeKindUID){
         this.coreRealmName = coreRealmName;
         this.attributeKindName = attributeKindName;
         this.attributeKindDesc = attributeKindDesc;
