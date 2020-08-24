@@ -73,7 +73,7 @@ public class Neo4jAttributesViewKindImpl implements Neo4JAttributesViewKind {
     }
 
     @Override
-    public boolean addAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException{
+    public boolean attachAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException{
         if(attributeKindUID == null){
             return false;
         }
@@ -117,7 +117,7 @@ public class Neo4jAttributesViewKindImpl implements Neo4JAttributesViewKind {
     }
 
     @Override
-    public boolean removeAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException{
+    public boolean detachAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException{
         if(attributeKindUID == null){
             return false;
         }

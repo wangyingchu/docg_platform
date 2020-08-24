@@ -335,7 +335,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public boolean addAttributesViewKind(String attributesViewKindUID) throws CoreRealmServiceRuntimeException {
+    public boolean attachAttributesViewKind(String attributesViewKindUID) throws CoreRealmServiceRuntimeException {
         if(attributesViewKindUID == null){
             return false;
         }
@@ -398,7 +398,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public boolean removeAttributesViewKind(String attributesViewKindUID) throws CoreRealmServiceRuntimeException {
+    public boolean detachAttributesViewKind(String attributesViewKindUID) throws CoreRealmServiceRuntimeException {
         if(attributesViewKindUID == null){
             return false;
         }

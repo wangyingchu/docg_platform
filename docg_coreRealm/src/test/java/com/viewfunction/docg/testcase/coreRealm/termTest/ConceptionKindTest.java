@@ -63,16 +63,16 @@ public class ConceptionKindTest {
 
         AttributesViewKind attributesViewKindToAdd01 = coreRealm.createAttributesViewKind("targetAttributesViewKindToAdd01","targetAttributesViewKindToAdd01Desc",null);
 
-        boolean addAttributesViewKindResult = _ConceptionKind01.addAttributesViewKind(attributesViewKindToAdd01.getAttributesViewKindUID());
+        boolean addAttributesViewKindResult = _ConceptionKind01.attachAttributesViewKind(attributesViewKindToAdd01.getAttributesViewKindUID());
         Assert.assertTrue(addAttributesViewKindResult);
-        addAttributesViewKindResult = _ConceptionKind01.addAttributesViewKind(attributesViewKindToAdd01.getAttributesViewKindUID());
+        addAttributesViewKindResult = _ConceptionKind01.attachAttributesViewKind(attributesViewKindToAdd01.getAttributesViewKindUID());
         Assert.assertTrue(addAttributesViewKindResult);
-        addAttributesViewKindResult = _ConceptionKind01.addAttributesViewKind(null);
+        addAttributesViewKindResult = _ConceptionKind01.attachAttributesViewKind(null);
         Assert.assertFalse(addAttributesViewKindResult);
 
         boolean exceptionShouldBeCaught = false;
         try{
-            _ConceptionKind01.addAttributesViewKind("123456");
+            _ConceptionKind01.attachAttributesViewKind("123456");
         }catch(CoreRealmServiceRuntimeException e){
             exceptionShouldBeCaught = true;
         }
@@ -89,7 +89,7 @@ public class ConceptionKindTest {
 
         AttributesViewKind attributesViewKindToAdd02 = coreRealm.createAttributesViewKind("targetAttributesViewKindToAdd02",
                 "targetAttributesViewKindToAdd02Desc",AttributesViewKind.AttributesViewKindDataForm.LIST_VALUE);
-        addAttributesViewKindResult = _ConceptionKind01.addAttributesViewKind(attributesViewKindToAdd02.getAttributesViewKindUID());
+        addAttributesViewKindResult = _ConceptionKind01.attachAttributesViewKind(attributesViewKindToAdd02.getAttributesViewKindUID());
         Assert.assertTrue(addAttributesViewKindResult);
 
         containedAttributesViewKindsList = _ConceptionKind01.getContainsAttributesViewKinds();
@@ -108,9 +108,9 @@ public class ConceptionKindTest {
         Assert.assertEquals(targetAttributesViewKindList.size(),0);
 
         targetAttributesViewKindList = _ConceptionKind01.getContainsAttributesViewKinds("targetAttributesViewKindToAdd02");
-        boolean removeViewKindResult = _ConceptionKind01.removeAttributesViewKind(targetAttributesViewKindList.get(0).getAttributesViewKindUID());
+        boolean removeViewKindResult = _ConceptionKind01.detachAttributesViewKind(targetAttributesViewKindList.get(0).getAttributesViewKindUID());
         Assert.assertTrue(removeViewKindResult);
-        removeViewKindResult = _ConceptionKind01.removeAttributesViewKind(targetAttributesViewKindList.get(0).getAttributesViewKindUID());
+        removeViewKindResult = _ConceptionKind01.detachAttributesViewKind(targetAttributesViewKindList.get(0).getAttributesViewKindUID());
         Assert.assertFalse(removeViewKindResult);
 
         targetAttributesViewKindList = _ConceptionKind01.getContainsAttributesViewKinds("targetAttributesViewKindToAdd02");

@@ -16,10 +16,10 @@ public interface RelationAttachKind extends MetaConfigItemFeatureSupportable, Me
     public String getTargetConceptionKindName();
     public String getRelationKindName();
     public String getRelationAttachKindDesc();
-    public boolean updateRelationshipDefDesc(String newDesc);
+    public boolean updateRelationAttachKindDesc(String newDesc);
     public List<RelationAttachLinkLogic> getRelationAttachLinkLogic();
-    public RelationAttachLinkLogic addRelationAttachLinkLogic(RelationAttachLinkLogic relationAttachLinkLogic) throws CoreRealmServiceRuntimeException;
+    public RelationAttachLinkLogic createRelationAttachLinkLogic(RelationAttachLinkLogic relationAttachLinkLogic) throws CoreRealmServiceRuntimeException;
     public boolean removeRelationAttachLinkLogic(String relationAttachLinkLogicUID) throws CoreRealmServiceRuntimeException;
-    public boolean createRelationEntity(String sourceConceptionKindUID, String targetConceptionKindUID, Map<String,Object> relationData);
-    public EntitiesOperationResult createUniversalRelationEntities();
+    public boolean newRelationEntity(String sourceConceptionKindUID, String targetConceptionKindUID, Map<String,Object> relationData);
+    public EntitiesOperationResult newUniversalRelationEntities();
 }

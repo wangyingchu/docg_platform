@@ -7,15 +7,15 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaConfigItemFe
 
 import java.util.List;
 
-public interface AttributesViewKind  extends MetaConfigItemFeatureSupportable, MetaAttributeFeatureSupportable, ClassificationKindAttachable {
+public interface AttributesViewKind extends MetaConfigItemFeatureSupportable, MetaAttributeFeatureSupportable, ClassificationKindAttachable {
     public enum AttributesViewKindDataForm {SINGLE_VALUE, LIST_VALUE, RELATED_VALUE, EXTERNAL_VALUE}
     public String getAttributesViewKindUID();
     public String getAttributesViewKindName();
     public String getAttributesViewKindDesc();
     public boolean isCollectionAttributesViewKind();
     public AttributesViewKindDataForm getAttributesViewKindDataForm();
-    public boolean addAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException;
-    public boolean removeAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException;
+    public boolean attachAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException;
+    public boolean detachAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException;
     public List<AttributeKind> getContainsAttributeKinds();
     public List<ConceptionKind> getContainerConceptionKinds();
 }

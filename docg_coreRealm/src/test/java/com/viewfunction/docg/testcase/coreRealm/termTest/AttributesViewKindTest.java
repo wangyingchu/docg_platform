@@ -58,9 +58,9 @@ public class AttributesViewKindTest {
         Assert.assertEquals(attributeKind01.getAttributeKindDesc(),"attributeKind01Desc");
         Assert.assertEquals(attributeKind01.getAttributeDataType(),AttributeDataType.BOOLEAN);
 
-        boolean addAttributeKineRes = targetAttributesViewKind.addAttributeKind(attributeKind01.getAttributeKindUID());
+        boolean addAttributeKineRes = targetAttributesViewKind.attachAttributeKind(attributeKind01.getAttributeKindUID());
         Assert.assertTrue(addAttributeKineRes);
-        addAttributeKineRes = targetAttributesViewKind.addAttributeKind(attributeKind01.getAttributeKindUID());
+        addAttributeKineRes = targetAttributesViewKind.attachAttributeKind(attributeKind01.getAttributeKindUID());
         Assert.assertTrue(addAttributeKineRes);
 
         containsAttributeKinds = targetAttributesViewKind.getContainsAttributeKinds();
@@ -74,7 +74,7 @@ public class AttributesViewKindTest {
 
         boolean exceptionShouldBeCaught = false;
         try{
-            targetAttributesViewKind.addAttributeKind("123456");
+            targetAttributesViewKind.attachAttributeKind("123456");
         }catch(CoreRealmServiceRuntimeException e){
             exceptionShouldBeCaught = true;
         }
@@ -82,7 +82,7 @@ public class AttributesViewKindTest {
 
         AttributeKind attributeKind02 = coreRealm.createAttributeKind("attributeKind02","attributeKind02Desc", AttributeDataType.DATE);
         Assert.assertNotNull(attributeKind02);
-        addAttributeKineRes = targetAttributesViewKind.addAttributeKind(attributeKind02.getAttributeKindUID());
+        addAttributeKineRes = targetAttributesViewKind.attachAttributeKind(attributeKind02.getAttributeKindUID());
         Assert.assertTrue(addAttributeKineRes);
 
         containsAttributeKinds = targetAttributesViewKind.getContainsAttributeKinds();
@@ -111,7 +111,7 @@ public class AttributesViewKindTest {
 
         AttributeKind attributeKind03 = coreRealm.createAttributeKind("attributeKind03","attributeKind03Desc", AttributeDataType.DATE);
         Assert.assertNotNull(attributeKind03);
-        removeAttributeTypeRes = targetAttributesViewKind.removeAttributeKind(attributeKind03.getAttributeKindUID());
+        removeAttributeTypeRes = targetAttributesViewKind.detachAttributeKind(attributeKind03.getAttributeKindUID());
         Assert.assertFalse(removeAttributeTypeRes);
 
     }
