@@ -9,8 +9,9 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payloadImpl.CommonEntitiesOperationResultImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.impl.CommonEntitiesOperationResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 
 import org.neo4j.driver.types.Node;
@@ -20,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-public class Neo4JConceptionKindImpl implements ConceptionKind {
+public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
     private static Logger logger = LoggerFactory.getLogger(Neo4JConceptionKindImpl.class);
     private String coreRealmName;
