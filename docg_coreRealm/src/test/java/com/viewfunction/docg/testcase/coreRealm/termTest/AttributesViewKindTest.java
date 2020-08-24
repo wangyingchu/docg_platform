@@ -46,10 +46,19 @@ public class AttributesViewKindTest {
         Assert.assertEquals(attributeKind01.getAttributeKindDesc(),"attributeKind01Desc");
         Assert.assertEquals(attributeKind01.getAttributeDataType(),AttributeDataType.BOOLEAN);
 
+        List<AttributesViewKind> attributesViewKindsList = attributeKind01.getContainerAttributesViewKinds();
+        Assert.assertNotNull(attributesViewKindsList);
+        Assert.assertEquals(attributesViewKindsList.size(),0);
+
         boolean addAttributeKineRes = targetAttributesViewKind.attachAttributeKind(attributeKind01.getAttributeKindUID());
         Assert.assertTrue(addAttributeKineRes);
         addAttributeKineRes = targetAttributesViewKind.attachAttributeKind(attributeKind01.getAttributeKindUID());
         Assert.assertTrue(addAttributeKineRes);
+
+        attributesViewKindsList = attributeKind01.getContainerAttributesViewKinds();
+        Assert.assertNotNull(attributesViewKindsList);
+        Assert.assertEquals(attributesViewKindsList.size(),1);
+        Assert.assertEquals(attributesViewKindsList.get(0).getAttributesViewKindName(),"targetAttributesViewKindA");
 
         containsAttributeKinds = targetAttributesViewKind.getContainsAttributeKinds();
         Assert.assertNotNull(containsAttributeKinds);
