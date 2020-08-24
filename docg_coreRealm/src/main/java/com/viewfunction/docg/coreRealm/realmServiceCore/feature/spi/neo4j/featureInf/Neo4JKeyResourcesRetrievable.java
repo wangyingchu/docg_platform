@@ -1,4 +1,4 @@
-package com.viewfunction.docg.coreRealm.realmServiceCore.featureImpl.neo4j;
+package com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 

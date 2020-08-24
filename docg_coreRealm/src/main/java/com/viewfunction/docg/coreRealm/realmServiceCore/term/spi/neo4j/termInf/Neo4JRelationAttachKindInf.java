@@ -1,4 +1,4 @@
-package com.viewfunction.docg.coreRealm.realmServiceCore.termInf.neo4j;
+package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationKindAttachable;

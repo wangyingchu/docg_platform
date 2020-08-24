@@ -2,8 +2,8 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.util.factory;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
-import com.viewfunction.docg.coreRealm.realmServiceCore.termImpl.neo4j.Neo4JCoreRealmImpl;
-import com.viewfunction.docg.coreRealm.realmServiceCore.termImpl.orientdb.OrientDBCoreRealmImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JCoreRealmImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.orientdb.termImpl.OrientDBCoreRealmImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.config.PropertiesHandler;
 

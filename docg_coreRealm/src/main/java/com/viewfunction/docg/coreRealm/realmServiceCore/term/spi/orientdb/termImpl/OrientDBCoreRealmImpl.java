@@ -1,4 +1,4 @@
-package com.viewfunction.docg.coreRealm.realmServiceCore.termImpl.orientdb;
+package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.orientdb.termImpl;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;

@@ -1,6 +1,6 @@
-package com.viewfunction.docg.coreRealm.realmServiceCore.termImpl.neo4j;
+package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
-import com.viewfunction.docg.coreRealm.realmServiceCore.featureImpl.neo4j.Neo4JAttributesMeasurableImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureImpl.Neo4JAttributesMeasurableImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
