@@ -71,9 +71,12 @@ public class MetaAttributeFeatureSupportableTest {
         Date newCreatDate = _ConceptionKind01.getCreateDateTime();
         Assert.assertEquals(createdDateTime,newCreatDate);
 
-        RelationKind targetRelationKind01 = coreRealm.getRelationKind("relationKind01");
-        //Assert.assertNotNull(targetRelationKind01.getCreateDateTime());
-        //Assert.assertNotNull(targetRelationKind01.getLastModifyDateTime());
-        //Assert.assertNotNull(targetRelationKind01.getDataOrigin());
+        RelationKind targetRelationKind01 = coreRealm.getRelationKind("relationKindForMetaAttributeTest");
+        if(targetRelationKind01 == null){
+            targetRelationKind01 = coreRealm.createRelationKind("relationKindForMetaAttributeTest",null);
+        }
+        Assert.assertNotNull(targetRelationKind01.getCreateDateTime());
+        Assert.assertNotNull(targetRelationKind01.getLastModifyDateTime());
+        Assert.assertNotNull(targetRelationKind01.getDataOrigin());
     }
 }

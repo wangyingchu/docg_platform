@@ -4,6 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 import org.testng.Assert;
@@ -87,6 +88,23 @@ public class MetaConfigItemFeatureSupportableTest {
         boolean addConfigItemResult2 = _ConceptionKind01.addOrUpdateMetaConfigItem("configItem1",new Date());
         Assert.assertTrue(addConfigItemResult2);
         metaConfigItemsMap = _ConceptionKind01.getMetaConfigItems();
+        Assert.assertNotNull(metaConfigItemsMap);
+        Assert.assertEquals(metaConfigItemsMap.size(),1);
+
+        RelationKind targetRelationKind01 = coreRealm.getRelationKind("relationKindForMetaConfigTest");
+        if(targetRelationKind01 != null){
+            coreRealm.removeRelationKind("relationKindForMetaConfigTest",true);
+        }
+        targetRelationKind01 = coreRealm.getRelationKind("relationKindForMetaConfigTest");
+        if(targetRelationKind01 == null){
+            targetRelationKind01 = coreRealm.createRelationKind("relationKindForMetaConfigTest",null);
+        }
+        metaConfigItemsMap = targetRelationKind01.getMetaConfigItems();
+        Assert.assertNotNull(metaConfigItemsMap);
+        Assert.assertEquals(metaConfigItemsMap.size(),0);
+        boolean addConfigItemResult3 = targetRelationKind01.addOrUpdateMetaConfigItem("configItem2",new Date());
+        Assert.assertTrue(addConfigItemResult3);
+        metaConfigItemsMap = targetRelationKind01.getMetaConfigItems();
         Assert.assertNotNull(metaConfigItemsMap);
         Assert.assertEquals(metaConfigItemsMap.size(),1);
     }
