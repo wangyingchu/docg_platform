@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationKindAttachable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaAttributeFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaConfigItemFeatureSupportable;
@@ -13,9 +14,8 @@ public interface AttributesViewKind  extends MetaConfigItemFeatureSupportable, M
     public String getAttributesViewKindDesc();
     public boolean isCollectionAttributesViewKind();
     public AttributesViewKindDataForm getAttributesViewKindDataForm();
-    public boolean addAttributeKind(String attributeKindUID);
-    public boolean addAttributeKind(AttributeKind attributeKind);
-    public boolean removeAttributeKind(String attributeKindUID);
+    public boolean addAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException;
+    public boolean removeAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException;
     public List<AttributeKind> getContainsAttributeKinds();
     public List<ConceptionKind> getContainerConceptionKinds();
 }

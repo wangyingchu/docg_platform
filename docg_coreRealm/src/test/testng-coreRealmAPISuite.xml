@@ -30,4 +30,9 @@
             <class name="com.viewfunction.docg.testcase.coreRealm.termTest.MetaConfigItemFeatureSupportableTest"/>
         </classes>
     </test>
+    <test verbose="6" name="AttributesViewKindTest">
+        <classes>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.AttributesViewKindTest"/>
+        </classes>
+    </test>
 </suite>

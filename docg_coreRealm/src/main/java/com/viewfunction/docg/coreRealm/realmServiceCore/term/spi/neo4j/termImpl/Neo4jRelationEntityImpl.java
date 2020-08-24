@@ -3,9 +3,9 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureImpl.Neo4JAttributesMeasurableImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JRelationEntity;
 
-public class Neo4jRelationEntityImpl extends Neo4JAttributesMeasurableImpl implements RelationEntity {
+public class Neo4jRelationEntityImpl extends Neo4JAttributesMeasurableImpl implements Neo4JRelationEntity {
 
     private String relationEntityUID;
     private String relationKindName;

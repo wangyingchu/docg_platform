@@ -13,7 +13,7 @@ import org.neo4j.driver.types.Node;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetListAttributesViewKindTransformer  implements DataTransformer<List<AttributesViewKind>>{
+public class GetListAttributesViewKindTransformer implements DataTransformer<List<AttributesViewKind>>{
 
     private GraphOperationExecutor workingGraphOperationExecutor;
     private String currentCoreRealmName;

@@ -65,6 +65,8 @@ public class ConceptionKindTest {
 
         boolean addAttributesViewKindResult = _ConceptionKind01.addAttributesViewKind(attributesViewKindToAdd01.getAttributesViewKindUID());
         Assert.assertTrue(addAttributesViewKindResult);
+        addAttributesViewKindResult = _ConceptionKind01.addAttributesViewKind(attributesViewKindToAdd01.getAttributesViewKindUID());
+        Assert.assertTrue(addAttributesViewKindResult);
         addAttributesViewKindResult = _ConceptionKind01.addAttributesViewKind(null);
         Assert.assertFalse(addAttributesViewKindResult);
 
