@@ -1,6 +1,8 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
@@ -24,7 +26,7 @@ public class MetaConfigItemFeatureSupportableTest {
     }
 
     @Test
-    public void testMetaConfigItemFeatureSupportableFunction() {
+    public void testMetaConfigItemFeatureSupportableFunction() throws CoreRealmServiceRuntimeException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
         AttributesViewKind targetAttributesViewKind = coreRealm.createAttributesViewKind(testAttributesViewKindName,"desc",null);
@@ -67,6 +69,24 @@ public class MetaConfigItemFeatureSupportableTest {
         Assert.assertNull(itemNotExistResult);
 
         metaConfigItemsMap = targetAttributesViewKind.getMetaConfigItems();
+        Assert.assertNotNull(metaConfigItemsMap);
+        Assert.assertEquals(metaConfigItemsMap.size(),1);
+
+        ConceptionKind _ConceptionKind01 = coreRealm.getConceptionKind("TestConceptionKindC");
+        if(_ConceptionKind01 != null){
+            coreRealm.removeConceptionKind("TestConceptionKindC",true);
+        }
+        _ConceptionKind01 = coreRealm.getConceptionKind("TestConceptionKindC");
+        if(_ConceptionKind01 == null){
+            _ConceptionKind01 = coreRealm.createConceptionKind("TestConceptionKindC","TestConceptionKindCDesc+中文描述");
+            Assert.assertNotNull(_ConceptionKind01);
+        }
+        metaConfigItemsMap = _ConceptionKind01.getMetaConfigItems();
+        Assert.assertNotNull(metaConfigItemsMap);
+        Assert.assertEquals(metaConfigItemsMap.size(),0);
+        boolean addConfigItemResult2 = _ConceptionKind01.addOrUpdateMetaConfigItem("configItem1",new Date());
+        Assert.assertTrue(addConfigItemResult2);
+        metaConfigItemsMap = _ConceptionKind01.getMetaConfigItems();
         Assert.assertNotNull(metaConfigItemsMap);
         Assert.assertEquals(metaConfigItemsMap.size(),1);
     }

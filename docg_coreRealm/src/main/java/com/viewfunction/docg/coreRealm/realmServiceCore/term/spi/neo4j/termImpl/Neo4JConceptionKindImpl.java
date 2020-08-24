@@ -469,41 +469,6 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         return null;
     }
 
-    @Override
-    public RelationEntity attachClassificationEntity(RelationAttachInfo relationAttachInfo, String classificationEntityUID) throws CoreRealmServiceRuntimeException {
-        return null;
-    }
-
-    @Override
-    public boolean detachClassificationEntity(String classificationEntityUID, String relationKindName, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException {
-        return false;
-    }
-
-    @Override
-    public List<ClassificationEntity> getAttachedClassificationEntities(String relationKindName, RelationDirection relationDirection) {
-        return null;
-    }
-
-    @Override
-    public boolean addOrUpdateMetaConfigItem(String itemName, Object itemValue) {
-        return false;
-    }
-
-    @Override
-    public Map<String, Object> getMetaConfigItems() {
-        return null;
-    }
-
-    @Override
-    public Object getMetaConfigItem(String itemName) {
-        return null;
-    }
-
-    @Override
-    public boolean deleteMetaConfigItem(String itemName) {
-        return false;
-    }
-
     //internal graphOperationExecutor management logic
     private GraphOperationExecutorHelper graphOperationExecutorHelper;
 
