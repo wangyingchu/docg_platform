@@ -27,18 +27,6 @@ public class AttributesViewKindTest {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
 
-        ConceptionKind _ConceptionKind01 = coreRealm.getConceptionKind(testConceptionKindName);
-        if(_ConceptionKind01 != null){
-            coreRealm.removeConceptionKind(testConceptionKindName,true);
-        }
-        _ConceptionKind01 = coreRealm.getConceptionKind(testConceptionKindName);
-        if(_ConceptionKind01 == null){
-            _ConceptionKind01 = coreRealm.createConceptionKind(testConceptionKindName,"TestConceptionKindBDesc+中文描述");
-            Assert.assertNotNull(_ConceptionKind01);
-            Assert.assertEquals(_ConceptionKind01.getConceptionKindName(),testConceptionKindName);
-            Assert.assertEquals(_ConceptionKind01.getConceptionKindDesc(),"TestConceptionKindBDesc+中文描述");
-        }
-
         AttributesViewKind targetAttributesViewKind = coreRealm.createAttributesViewKind("targetAttributesViewKindA","targetAttributesViewKindADesc",null);
         Assert.assertNotNull(targetAttributesViewKind);
         Assert.assertNotNull(targetAttributesViewKind.getAttributesViewKindUID());
@@ -114,5 +102,36 @@ public class AttributesViewKindTest {
         removeAttributeTypeRes = targetAttributesViewKind.detachAttributeKind(attributeKind03.getAttributeKindUID());
         Assert.assertFalse(removeAttributeTypeRes);
 
+        List<ConceptionKind> containerConceptionKindList = targetAttributesViewKind.getContainerConceptionKinds();
+        Assert.assertNotNull(containerConceptionKindList);
+        Assert.assertEquals(containerConceptionKindList.size(),0);
+
+        ConceptionKind _ConceptionKind01 = coreRealm.getConceptionKind(testConceptionKindName);
+        if(_ConceptionKind01 != null){
+            coreRealm.removeConceptionKind(testConceptionKindName,true);
+        }
+        _ConceptionKind01 = coreRealm.getConceptionKind(testConceptionKindName);
+        if(_ConceptionKind01 == null){
+            _ConceptionKind01 = coreRealm.createConceptionKind(testConceptionKindName,"TestConceptionKindBDesc+中文描述");
+            Assert.assertNotNull(_ConceptionKind01);
+            Assert.assertEquals(_ConceptionKind01.getConceptionKindName(),testConceptionKindName);
+            Assert.assertEquals(_ConceptionKind01.getConceptionKindDesc(),"TestConceptionKindBDesc+中文描述");
+        }
+
+        boolean attachAttributesViewKindRes = _ConceptionKind01.attachAttributesViewKind(targetAttributesViewKind.getAttributesViewKindUID());
+        Assert.assertTrue(attachAttributesViewKindRes);
+
+        containerConceptionKindList = targetAttributesViewKind.getContainerConceptionKinds();
+        Assert.assertNotNull(containerConceptionKindList);
+        Assert.assertEquals(containerConceptionKindList.size(),1);
+        Assert.assertEquals(containerConceptionKindList.get(0).getConceptionKindName(),testConceptionKindName);
+        Assert.assertEquals(containerConceptionKindList.get(0).getConceptionKindDesc(),"TestConceptionKindBDesc+中文描述");
+
+        boolean detachAttributesViewKindRes = _ConceptionKind01.detachAttributesViewKind(targetAttributesViewKind.getAttributesViewKindUID());
+        Assert.assertTrue(detachAttributesViewKindRes);
+
+        containerConceptionKindList = targetAttributesViewKind.getContainerConceptionKinds();
+        Assert.assertNotNull(containerConceptionKindList);
+        Assert.assertEquals(containerConceptionKindList.size(),0);
     }
 }
