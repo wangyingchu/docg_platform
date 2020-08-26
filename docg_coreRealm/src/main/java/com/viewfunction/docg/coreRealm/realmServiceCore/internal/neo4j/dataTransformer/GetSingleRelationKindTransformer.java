@@ -1,12 +1,12 @@
-package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
+package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer;
 
 import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationKind;
-
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JRelationKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
+
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
