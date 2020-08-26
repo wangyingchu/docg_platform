@@ -76,7 +76,9 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             GetSingleConceptionKindTransformer getSingleConceptionKindTransformer =
                     new GetSingleConceptionKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object createConceptionKindRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionKindTransformer,createCql);
-            return createConceptionKindRes != null ? (ConceptionKind)createConceptionKindRes : null;
+            ConceptionKind targetConceptionKind = createConceptionKindRes != null ? (ConceptionKind)createConceptionKindRes : null;
+            executeConceptionKindCacheOperation(targetConceptionKind,CacheOperationType.INSERT);
+            return targetConceptionKind;
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }

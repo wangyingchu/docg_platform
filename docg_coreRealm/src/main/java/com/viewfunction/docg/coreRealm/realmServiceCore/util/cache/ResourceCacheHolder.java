@@ -32,7 +32,7 @@ public class ResourceCacheHolder<K, V> {
     private String clusterResourceCacheServiceLocationStr;
     private String clusterResourceCacheServiceDefaultResourceIdStr;
     private String clusterResourceCacheServiceShareResourceIdStr;
-    private final String CLUSTER_RESOURCE_POOL = "CIM_BUILDIN_CLUSTER_RESOURCE_POOL";
+    private final String CLUSTER_RESOURCE_POOL = "CORE_REALM_CLUSTER_RESOURCE_POOL";
 
     private ResourceCacheHolder() {
         //init encache
