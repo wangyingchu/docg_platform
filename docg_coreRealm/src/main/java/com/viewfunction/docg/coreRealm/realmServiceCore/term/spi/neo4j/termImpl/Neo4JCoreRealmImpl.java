@@ -113,7 +113,9 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 GetSingleConceptionKindTransformer getSingleConceptionKindTransformer =
                         new GetSingleConceptionKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object deletedConceptionKindRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionKindTransformer,deleteCql);
-                if(deletedConceptionKindRes == null){
+                ConceptionKind resultConceptionKind = deletedConceptionKindRes != null ? (ConceptionKind)deletedConceptionKindRes : null;
+                executeConceptionKindCacheOperation(resultConceptionKind,CacheOperationType.DELETE);
+                if(resultConceptionKind == null){
                     throw new CoreRealmServiceRuntimeException();
                 }else{
                     return true;
@@ -164,7 +166,9 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             GetSingleAttributesViewKindTransformer getSingleAttributesViewKindTransformer =
                     new GetSingleAttributesViewKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object createAttributesViewKindRes = workingGraphOperationExecutor.executeWrite(getSingleAttributesViewKindTransformer,createCql);
-            return createAttributesViewKindRes != null ? (AttributesViewKind)createAttributesViewKindRes : null;
+            AttributesViewKind resultKind = createAttributesViewKindRes != null ? (AttributesViewKind)createAttributesViewKindRes : null;
+            executeAttributesViewKindCacheOperation(resultKind,CacheOperationType.INSERT);
+            return resultKind;
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
@@ -183,9 +187,11 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 GetSingleAttributesViewKindTransformer getSingleAttributesViewKindTransformer =
                         new GetSingleAttributesViewKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object deletedAttributesViewKindRes = workingGraphOperationExecutor.executeWrite(getSingleAttributesViewKindTransformer,deleteCql);
-                if(deletedAttributesViewKindRes == null){
+                AttributesViewKind resultKind = deletedAttributesViewKindRes != null ? (AttributesViewKind)deletedAttributesViewKindRes : null;
+                if(resultKind == null){
                     throw new CoreRealmServiceRuntimeException();
                 }else{
+                    executeAttributesViewKindCacheOperation(resultKind,CacheOperationType.DELETE);
                     return true;
                 }
             }finally {
@@ -235,7 +241,9 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             GetSingleAttributeKindTransformer getSingleAttributeKindTransformer =
                     new GetSingleAttributeKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object createAttributesViewKindRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeKindTransformer,createCql);
-            return createAttributesViewKindRes != null ? (AttributeKind)createAttributesViewKindRes : null;
+            AttributeKind resultKind = createAttributesViewKindRes != null ? (AttributeKind)createAttributesViewKindRes : null;
+            executeAttributeKindCacheOperation(resultKind,CacheOperationType.INSERT);
+            return resultKind;
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
@@ -254,9 +262,11 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 GetSingleAttributeKindTransformer getSingleAttributeKindTransformer =
                         new GetSingleAttributeKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object deletedAttributeKindRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeKindTransformer,deleteCql);
-                if(deletedAttributeKindRes == null){
+                AttributeKind resultKind = deletedAttributeKindRes != null ? (AttributeKind)deletedAttributeKindRes : null;
+                if(resultKind == null){
                     throw new CoreRealmServiceRuntimeException();
                 }else{
+                    executeAttributeKindCacheOperation(resultKind,CacheOperationType.DELETE);
                     return true;
                 }
             }finally {
@@ -309,7 +319,9 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             GetSingleRelationKindTransformer getSingleRelationKindTransformer =
                     new GetSingleRelationKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object createRelationKindRes = workingGraphOperationExecutor.executeWrite(getSingleRelationKindTransformer,createCql);
-            return createRelationKindRes != null ? (RelationKind)createRelationKindRes : null;
+            RelationKind resultKind = createRelationKindRes != null ? (RelationKind)createRelationKindRes : null;
+            executeRelationKindCacheOperation(resultKind,CacheOperationType.INSERT);
+            return resultKind;
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
@@ -344,9 +356,11 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 GetSingleRelationKindTransformer getSingleRelationKindTransformer =
                         new GetSingleRelationKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object deletedRelationKindRes = workingGraphOperationExecutor.executeWrite(getSingleRelationKindTransformer,deleteCql);
-                if(deletedRelationKindRes == null){
+                RelationKind resultKind = deletedRelationKindRes != null ? (RelationKind)deletedRelationKindRes : null;
+                if(resultKind == null){
                     throw new CoreRealmServiceRuntimeException();
                 }else{
+                    executeRelationKindCacheOperation(resultKind,CacheOperationType.DELETE);
                     return true;
                 }
             }finally {

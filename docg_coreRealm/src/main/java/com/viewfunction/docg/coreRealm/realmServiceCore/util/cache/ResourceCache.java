@@ -20,6 +20,10 @@ public class ResourceCache<K,V> {
         this.cacheImpl.put(keyData,valueData);
     }
 
+    public void updateCacheItem(K keyData, V valueData){
+        this.cacheImpl.replace(keyData,valueData);
+    }
+
     public V getCacheItem(K keyData){
         return this.cacheImpl.get(keyData);
     }
