@@ -42,7 +42,13 @@ public interface KindCacheable<K,V>{
     }
 
     public default void executeConceptionKindCacheOperation(ConceptionKind conceptionKind, CacheOperationType cacheOperationType) {
-
+        ResourceCacheHolder resourceCacheHolder = com.viewfunction.docg.coreRealm.realmServiceCore.util.cache.ResourceCacheHolder.getInstance();
+        ResourceCache<String, ConceptionKindVO> cache = resourceCacheHolder.getOrCreateCache(CONCEPTION_KIND_CACHE, String.class, ConceptionKindVO.class);
+        if(conceptionKind != null){
+            String cacheItemKey = conceptionKind.getConceptionKindName();
+            ConceptionKindVO conceptionKindVO = new ConceptionKindVO(conceptionKind.getConceptionKindName(),conceptionKind.getConceptionKindDesc());
+            accessCacheData(cache,cacheOperationType,cacheItemKey,conceptionKindVO);
+        }
     }
 
     public default void executeRelationAttachKindCacheOperation(RelationAttachKind relationAttachKind, CacheOperationType cacheOperationType) {
@@ -50,7 +56,13 @@ public interface KindCacheable<K,V>{
     }
 
     public default void executeRelationKindCacheOperation(RelationKind relationKind, CacheOperationType cacheOperationType) {
-
+        ResourceCacheHolder resourceCacheHolder = com.viewfunction.docg.coreRealm.realmServiceCore.util.cache.ResourceCacheHolder.getInstance();
+        ResourceCache<String, RelationKindVO> cache = resourceCacheHolder.getOrCreateCache(RELATION_KIND_CACHE, String.class, RelationKindVO.class);
+        if(relationKind != null){
+            String cacheItemKey = relationKind.getRelationKindName();
+            RelationKindVO relationKindVO = new RelationKindVO(relationKind.getRelationKindName(),relationKind.getRelationKindDesc());
+            accessCacheData(cache,cacheOperationType,cacheItemKey,relationKindVO);
+        }
     }
 
     private void accessCacheData(ResourceCache cache,CacheOperationType cacheOperationType,String cacheItemKey,Object cacheData){
