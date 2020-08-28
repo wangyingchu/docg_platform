@@ -8,7 +8,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataValueObject.
 public interface KindCacheable<K,V>{
 
     String ATTRIBUTE_KIND_CACHE = "ATTRIBUTE_KIND_CACHE";
-    String ATTRIBUTES_VIEW_CACHE = "ATTRIBUTES_VIEW_CACHE";
+    String ATTRIBUTES_VIEW_KIND_CACHE = "ATTRIBUTES_VIEW_KIND_CACHE";
     String CLASSIFICATION_KIND_CACHE = "CLASSIFICATION_KIND_CACHE";
     String CONCEPTION_KIND_CACHE = "CONCEPTION_KIND_CACHE";
     String RELATION_ATTACH_KIND_CACHE = "RELATION_ATTACH_KIND_CACHE";
@@ -28,7 +28,7 @@ public interface KindCacheable<K,V>{
 
     public default void executeAttributesViewKindCacheOperation(AttributesViewKind attributesViewKind, CacheOperationType cacheOperationType) {
         ResourceCacheHolder resourceCacheHolder = com.viewfunction.docg.coreRealm.realmServiceCore.util.cache.ResourceCacheHolder.getInstance();
-        ResourceCache<String, AttributesViewKindVO> cache = resourceCacheHolder.getOrCreateCache(ATTRIBUTES_VIEW_CACHE, String.class, AttributesViewKindVO.class);
+        ResourceCache<String, AttributesViewKindVO> cache = resourceCacheHolder.getOrCreateCache(ATTRIBUTES_VIEW_KIND_CACHE, String.class, AttributesViewKindVO.class);
         if(attributesViewKind != null){
             String cacheItemKey = attributesViewKind.getAttributesViewKindUID();
             AttributesViewKindVO attributesViewKindVO = new AttributesViewKindVO(attributesViewKind.getAttributesViewKindName(),attributesViewKind.getAttributesViewKindDesc(),

@@ -1,6 +1,8 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataValueObject;
 
-public class ConceptionKindVO {
+import java.io.Serializable;
+
+public class ConceptionKindVO implements Serializable {
 
     private String conceptionKindName;
     private String conceptionKindDesc;

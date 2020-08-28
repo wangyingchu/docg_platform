@@ -1,4 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataValueObject;
 
-public class RelationAttachKindVO {
+import java.io.Serializable;
+
+public class RelationAttachKindVO implements Serializable {
 }

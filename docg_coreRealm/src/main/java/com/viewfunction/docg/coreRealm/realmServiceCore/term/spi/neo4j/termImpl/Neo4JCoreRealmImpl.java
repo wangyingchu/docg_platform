@@ -114,7 +114,9 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                         new GetSingleConceptionKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object deletedConceptionKindRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionKindTransformer,deleteCql);
                 ConceptionKind resultConceptionKind = deletedConceptionKindRes != null ? (ConceptionKind)deletedConceptionKindRes : null;
-                executeConceptionKindCacheOperation(resultConceptionKind,CacheOperationType.DELETE);
+                String conceptionKindId = ((Neo4JConceptionKindImpl)resultConceptionKind).getConceptionKindUID();
+                Neo4JConceptionKindImpl resultNeo4JConceptionKindImplForCacheOperation = new Neo4JConceptionKindImpl(coreRealmName,conceptionKindName,null,conceptionKindId);
+                executeConceptionKindCacheOperation(resultNeo4JConceptionKindImplForCacheOperation,CacheOperationType.DELETE);
                 if(resultConceptionKind == null){
                     throw new CoreRealmServiceRuntimeException();
                 }else{

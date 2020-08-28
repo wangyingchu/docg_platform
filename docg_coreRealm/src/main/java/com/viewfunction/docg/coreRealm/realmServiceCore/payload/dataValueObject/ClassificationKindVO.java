@@ -1,4 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataValueObject;
 
-public class ClassificationKindVO {
+import java.io.Serializable;
+
+public class ClassificationKindVO implements Serializable {
 }

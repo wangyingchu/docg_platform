@@ -1,5 +1,5 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="CIM Data service model API  test suite">
+<suite name="DOCG Core Realm API  test suite">
     <test verbose="1" name="RealmTermFactoryTest">
         <classes>
             <class name="com.viewfunction.docg.testcase.coreRealm.termTest.RealmTermFactoryTest"/>
