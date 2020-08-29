@@ -114,12 +114,12 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                         new GetSingleConceptionKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object deletedConceptionKindRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionKindTransformer,deleteCql);
                 ConceptionKind resultConceptionKind = deletedConceptionKindRes != null ? (ConceptionKind)deletedConceptionKindRes : null;
-                String conceptionKindId = ((Neo4JConceptionKindImpl)resultConceptionKind).getConceptionKindUID();
-                Neo4JConceptionKindImpl resultNeo4JConceptionKindImplForCacheOperation = new Neo4JConceptionKindImpl(coreRealmName,conceptionKindName,null,conceptionKindId);
-                executeConceptionKindCacheOperation(resultNeo4JConceptionKindImplForCacheOperation,CacheOperationType.DELETE);
                 if(resultConceptionKind == null){
                     throw new CoreRealmServiceRuntimeException();
                 }else{
+                    String conceptionKindId = ((Neo4JConceptionKindImpl)resultConceptionKind).getConceptionKindUID();
+                    Neo4JConceptionKindImpl resultNeo4JConceptionKindImplForCacheOperation = new Neo4JConceptionKindImpl(coreRealmName,conceptionKindName,null,conceptionKindId);
+                    executeConceptionKindCacheOperation(resultNeo4JConceptionKindImplForCacheOperation,CacheOperationType.DELETE);
                     return true;
                 }
             }finally {
@@ -362,7 +362,9 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 if(resultKind == null){
                     throw new CoreRealmServiceRuntimeException();
                 }else{
-                    executeRelationKindCacheOperation(resultKind,CacheOperationType.DELETE);
+                    String resultRelationKindUID = ((Neo4JRelationKindImpl)resultKind).getRelationKindUID();
+                    Neo4JRelationKindImpl resultNeo4JRelationKindImplForCacheOperation = new Neo4JRelationKindImpl(coreRealmName,relationKindName,null,resultRelationKindUID);
+                    executeRelationKindCacheOperation(resultNeo4JRelationKindImplForCacheOperation,CacheOperationType.DELETE);
                     return true;
                 }
             }finally {

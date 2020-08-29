@@ -5,6 +5,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.KindCacheable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataValueObject.AttributeKindVO;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataValueObject.AttributesViewKindVO;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataValueObject.ConceptionKindVO;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataValueObject.RelationKindVO;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.cache.ResourceCache;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.cache.ResourceCacheHolder;
@@ -79,7 +80,23 @@ public class KindCacheableTest {
         coreRealm.removeConceptionKind("conceptionKind_01",true);
         Assert.assertFalse(cache3.containsCacheItem(_ConceptionKind01.getConceptionKindName()));
 
+        RelationKind _RelationKind01 = coreRealm.getRelationKind("relationKind_01");
+        if(_RelationKind01 != null){
+            coreRealm.removeRelationKind("relationKind_01",true);
+        }
+        _RelationKind01 = coreRealm.getRelationKind("relationKind_01");
+        if(_RelationKind01 == null) {
+            _RelationKind01 = coreRealm.createRelationKind("relationKind_01", "relationKind_01Desc");
+            Assert.assertNotNull(_RelationKind01);
+        }
 
+        ResourceCache<String, RelationKindVO> cache4 = resourceCacheHolder.getCache(KindCacheable.RELATION_KIND_CACHE,String.class,RelationKindVO.class);
+        Assert.assertTrue(cache4.containsCacheItem(_RelationKind01.getRelationKindName()));
+        RelationKindVO targetRelationKindVO = cache4.getCacheItem(_RelationKind01.getRelationKindName());
+        Assert.assertEquals(targetRelationKindVO.getRelationKindDesc(),_RelationKind01.getRelationKindDesc());
+
+        coreRealm.removeRelationKind("relationKind_01",true);
+        Assert.assertFalse(cache4.containsCacheItem(_RelationKind01.getRelationKindName()));
 
         resourceCacheHolder.shutdownCacheHolder();
     }
