@@ -2,6 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import org.neo4j.cypherdsl.core.*;
@@ -675,10 +676,47 @@ public class CypherBuilder {
         return rel;
     }
 
-    public static String matchLabelsWithQueryParameters(String labelName, QueryParameters queryParameters){
-        FilteringItem defaultFilteringItem = queryParameters.getDefaultFilteringItem();
-        List<FilteringItem> andFilteringItemList = queryParameters.getAndFilteringItemsList();
-        List<FilteringItem> orFilteringItemList = queryParameters.getOrFilteringItemsList();
+    public static String matchNodesWithQueryParameters(String labelName, QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException {
+        Node m = null;
+        if(labelName != null){
+            m = Cypher.node(labelName).named(operationResultName);
+        }else{
+            m = Cypher.anyNode().named(operationResultName);
+        }
+        if(queryParameters != null){
+            FilteringItem defaultFilteringItem = queryParameters.getDefaultFilteringItem();
+            List<FilteringItem> andFilteringItemList = queryParameters.getAndFilteringItemsList();
+            List<FilteringItem> orFilteringItemList = queryParameters.getOrFilteringItemsList();
+            if(defaultFilteringItem == null){
+                if((andFilteringItemList != null && andFilteringItemList.size()>0) ||
+                        (orFilteringItemList != null && orFilteringItemList.size()>0)){
+                    logger.error("Default Filtering Item is required");
+                    CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+                    e.setCauseMessage("Default Filtering Item is required");
+                    throw e;
+                }
+            }else{
+               Cypher.match(m).where(m.property("xxx").startsWith(Cypher.literalOf("aasdd")));
+
+
+
+
+            }
+        }
+
+
+
+
+
+        /*
+        if(queryParameters != null){
+
+        }
+        */
+
+
+
+
 
 
         /*

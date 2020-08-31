@@ -2,6 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
@@ -308,23 +309,26 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public ConceptionEntitiesRetrieveResult getEntities(QueryParameters queryParameters) {
-        CommonConceptionEntitiesRetrieveResultImpl commonConceptionEntitiesRetrieveResultImpl = new CommonConceptionEntitiesRetrieveResultImpl();
-        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-        try{
-            String deleteCql = CypherBuilder.deleteLabelWithSinglePropertyValueAndFunction(this.conceptionKindName,
-                    CypherBuilder.CypherFunctionType.COUNT,null,null);
+    public ConceptionEntitiesRetrieveResult getEntities(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException {
+        if (queryParameters != null) {
+            CommonConceptionEntitiesRetrieveResultImpl commonConceptionEntitiesRetrieveResultImpl = new CommonConceptionEntitiesRetrieveResultImpl();
+            commonConceptionEntitiesRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String queryCql = CypherBuilder.matchNodesWithQueryParameters(this.conceptionKindName,queryParameters);
 
 
 
 
 
 
-        }finally {
-            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            commonConceptionEntitiesRetrieveResultImpl.finishEntitiesRetrieving();
+            return commonConceptionEntitiesRetrieveResultImpl;
         }
-        commonConceptionEntitiesRetrieveResultImpl.finishEntitiesRetrieving();
-        return commonConceptionEntitiesRetrieveResultImpl;
+       return null;
     }
 
     @Override

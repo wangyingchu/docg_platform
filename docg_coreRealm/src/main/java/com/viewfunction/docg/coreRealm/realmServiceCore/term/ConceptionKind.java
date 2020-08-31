@@ -2,6 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationKindAttachable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaAttributeFeatureSupportable;
@@ -29,7 +30,7 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
     public boolean deleteEntity(String conceptionEntityUID) throws CoreRealmServiceRuntimeException;
     public EntitiesOperationResult deleteEntities(List<String> conceptionEntityUIDs) throws CoreRealmServiceRuntimeException;
     public EntitiesOperationResult purgeAllEntities() throws CoreRealmServiceRuntimeException;
-    public ConceptionEntitiesRetrieveResult getEntities(QueryParameters queryParameters);
+    public ConceptionEntitiesRetrieveResult getEntities(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
     public ConceptionEntity getEntityByUID(String conceptionEntityUID);
     public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByViewKinds(List<String> attributesViewKindNames, QueryParameters exploreParameters);
     public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNames(List<String> attributeNames, QueryParameters exploreParameters);
