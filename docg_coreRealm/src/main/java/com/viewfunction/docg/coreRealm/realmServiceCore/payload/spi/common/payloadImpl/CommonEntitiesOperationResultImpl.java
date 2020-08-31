@@ -1,4 +1,4 @@
-package com.viewfunction.docg.coreRealm.realmServiceCore.payload.impl;
+package com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationStatistics;

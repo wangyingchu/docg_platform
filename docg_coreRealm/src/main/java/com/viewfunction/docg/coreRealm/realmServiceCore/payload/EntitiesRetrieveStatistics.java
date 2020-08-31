@@ -5,6 +5,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryPara
 import java.util.Date;
 
 public class EntitiesRetrieveStatistics {
+
     private QueryParameters queryParameters;
     private Date startTime;
     private Date finishTime;

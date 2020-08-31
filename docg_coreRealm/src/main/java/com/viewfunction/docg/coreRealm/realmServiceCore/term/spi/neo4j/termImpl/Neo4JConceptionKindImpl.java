@@ -9,7 +9,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.impl.CommonEntitiesOperationResultImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonConceptionEntitiesRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
@@ -308,7 +309,22 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
     @Override
     public ConceptionEntitiesRetrieveResult getEntities(QueryParameters queryParameters) {
-        return null;
+        CommonConceptionEntitiesRetrieveResultImpl commonConceptionEntitiesRetrieveResultImpl = new CommonConceptionEntitiesRetrieveResultImpl();
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String deleteCql = CypherBuilder.deleteLabelWithSinglePropertyValueAndFunction(this.conceptionKindName,
+                    CypherBuilder.CypherFunctionType.COUNT,null,null);
+
+
+
+
+
+
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        commonConceptionEntitiesRetrieveResultImpl.finishEntitiesRetrieving();
+        return commonConceptionEntitiesRetrieveResultImpl;
     }
 
     @Override

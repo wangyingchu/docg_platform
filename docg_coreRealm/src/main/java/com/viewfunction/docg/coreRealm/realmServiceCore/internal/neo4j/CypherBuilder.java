@@ -1,5 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import org.neo4j.cypherdsl.core.*;
@@ -672,4 +674,37 @@ public class CypherBuilder {
         logger.debug("Generated Cypher Statement: {}",rel);
         return rel;
     }
+
+    public static String matchLabelsWithQueryParameters(String labelName, QueryParameters queryParameters){
+        FilteringItem defaultFilteringItem = queryParameters.getDefaultFilteringItem();
+        List<FilteringItem> andFilteringItemList = queryParameters.getAndFilteringItemsList();
+        List<FilteringItem> orFilteringItemList = queryParameters.getOrFilteringItemsList();
+
+
+        /*
+        Node m = Cypher.node(labelName).named(operationResultName).withProperties(propertyName, Cypher.literalOf(propertyValue));
+        Statement statement = Cypher.match(m)
+                .returning(m)
+                .limit(matchValue)
+                .build();
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}",rel);
+        return rel;
+
+
+
+
+
+        */
+
+        return null;
+    }
+
+
+
+
+
+
+
+
 }
