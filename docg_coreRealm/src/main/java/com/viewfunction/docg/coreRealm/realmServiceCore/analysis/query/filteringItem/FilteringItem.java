@@ -2,8 +2,8 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filterin
 
 public interface FilteringItem {
 
-    public String getFilteringLogic();
     public void reverseCondition();
     public String getAttributeName();
     public boolean isReversedCondition();
+
 }

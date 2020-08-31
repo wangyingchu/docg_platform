@@ -522,7 +522,25 @@ public class CommonOperationUtil {
             }
         }
         else if(filteringItem instanceof InValueFilteringItem){
-
+            InValueFilteringItem currentFilteringItem = (InValueFilteringItem)filteringItem;
+            String propertyName = currentFilteringItem.getAttributeName();
+            List<Object> propertyValue = currentFilteringItem.getAttributeValues();
+            Literal[] listLiteralValue = new Literal[propertyValue.size()];
+            for(int i = 0 ; i < propertyValue.size() ; i++){
+                Object currentValue = propertyValue.get(i);
+                if(currentValue instanceof ZonedDateTime) {
+                    ZonedDateTime targetZonedDateTime = (ZonedDateTime) currentValue;
+                    String targetZonedDateTimeString = targetZonedDateTime.toString();
+                    listLiteralValue[i] = new CustomContentLiteral("datetime('" + targetZonedDateTimeString + "')");
+                }else if(propertyValue instanceof Date){
+                    ZonedDateTime targetZonedDateTime = ZonedDateTime.ofInstant(((Date)propertyValue).toInstant(), systemDefaultZoneId);
+                    String targetZonedDateTimeString = targetZonedDateTime.toString();
+                    listLiteralValue[i] = new CustomContentLiteral("datetime('" + targetZonedDateTimeString + "')");
+                }else{
+                    listLiteralValue[i] = Cypher.literalOf(propertyValue);
+                }
+            }
+            return targetNode.property(propertyName).in(Cypher.listOf(listLiteralValue));
         }
         else if(filteringItem instanceof LessThanEqualFilteringItem){
             LessThanEqualFilteringItem currentFilteringItem = (LessThanEqualFilteringItem)filteringItem;

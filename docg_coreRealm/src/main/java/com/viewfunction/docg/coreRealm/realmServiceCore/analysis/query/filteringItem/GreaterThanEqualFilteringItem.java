@@ -1,27 +1,14 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem;
 
 public class GreaterThanEqualFilteringItem  implements FilteringItem{
+
     private boolean reverseCondition=false;
     private String attributeName;
     private Object attributeValue;
+
     public GreaterThanEqualFilteringItem(String attributeName, Object attributeValue){
         this.attributeName=attributeName;
         this.attributeValue=attributeValue;
-    }
-
-    @Override
-    public String getFilteringLogic() {
-        /*
-        String filteringValueStr= SQLBuilder.formatFilteringValue(attributeValue);
-        String filteringLogic=attributeName+" >= " + filteringValueStr;
-        if(!reverseCondition){
-            return filteringLogic;
-        }else{
-            return "NOT("+filteringLogic+")";
-        }
-
-         */
-        return null;
     }
 
     @Override

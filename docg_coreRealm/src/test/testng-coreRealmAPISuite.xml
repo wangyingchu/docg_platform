@@ -35,7 +35,15 @@
             <class name="com.viewfunction.docg.testcase.coreRealm.termTest.AttributesViewKindTest"/>
         </classes>
     </test>
-    <test verbose="8" name="KindCacheableTest">
+    <test verbose="8" name="EntityQueryTest">
+        <classes>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.EntityQueryTest"/>
+        </classes>
+    </test>
+
+
+
+    <test verbose="9" name="KindCacheableTest">
         <classes>
             <class name="com.viewfunction.docg.testcase.coreRealm.termTest.KindCacheableTest"/>
         </classes>

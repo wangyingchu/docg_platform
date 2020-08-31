@@ -678,6 +678,7 @@ public class CypherBuilder {
 
     public static String matchNodesWithQueryParameters(String labelName, QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException {
         Node m = null;
+        Statement statement = null;
         if(labelName != null){
             m = Cypher.node(labelName).named(operationResultName);
         }else{
@@ -694,53 +695,28 @@ public class CypherBuilder {
                     CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
                     e.setCauseMessage("Default Filtering Item is required");
                     throw e;
+                }else{
+                    statement = Cypher.match(m).returning(m).limit(queryParameters.getPageSize()).build();
                 }
             }else{
-                StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere =Cypher.match(m).where(CommonOperationUtil.getQueryCondition(m,defaultFilteringItem));
-
-
+                StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = Cypher.match(m).where(CommonOperationUtil.getQueryCondition(m,defaultFilteringItem));
+                if(andFilteringItemList != null && andFilteringItemList.size() > 0){
+                    for(FilteringItem currentFilteringItem:andFilteringItemList){
+                        ongoingReadingWithWhere = ongoingReadingWithWhere.and(CommonOperationUtil.getQueryCondition(m,currentFilteringItem));
+                    }
+                }
+                if(orFilteringItemList != null && orFilteringItemList.size() > 0){
+                    for(FilteringItem currentFilteringItem:orFilteringItemList){
+                        ongoingReadingWithWhere = ongoingReadingWithWhere.or(CommonOperationUtil.getQueryCondition(m,currentFilteringItem));
+                    }
+                }
+                statement = ongoingReadingWithWhere.returning(operationResultName).build();
             }
+        }else{
+            statement = Cypher.match(m).returning(m).limit(queryParameters.getPageSize()).build();
         }
-
-
-
-
-
-        /*
-        if(queryParameters != null){
-
-        }
-        */
-
-
-
-
-
-
-        /*
-        Node m = Cypher.node(labelName).named(operationResultName).withProperties(propertyName, Cypher.literalOf(propertyValue));
-        Statement statement = Cypher.match(m)
-                .returning(m)
-                .limit(matchValue)
-                .build();
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}",rel);
         return rel;
-
-
-
-
-
-        */
-
-        return null;
     }
-
-
-
-
-
-
-
-
 }
