@@ -2,6 +2,14 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filterin
 
 public class SimilarFilteringItem implements FilteringItem {
 
+    public MatchingType getMatchingType() {
+        return matchingType;
+    }
+
+    public void setMatchingType(MatchingType matchingType) {
+        this.matchingType = matchingType;
+    }
+
     public enum MatchingType {
         BeginWith, EndWith, Contain  //NOSONAR
     }
@@ -9,19 +17,19 @@ public class SimilarFilteringItem implements FilteringItem {
     private boolean reverseCondition = false;
     private String attributeName;
     private String attributeValue;
-    private MatchingType matchingType;
+    private MatchingType matchingType = MatchingType.Contain;
     private boolean isCaseSensitive = true;
 
     public SimilarFilteringItem(String attributeName, String attributeValue, MatchingType matchingType) {
         this.attributeName = attributeName;
         this.attributeValue = attributeValue;
-        this.matchingType = matchingType;
+        this.setMatchingType(matchingType);
     }
 
     public SimilarFilteringItem(String attributeName, String attributeValue, MatchingType matchingType, boolean isCaseSensitive) {
         this.attributeName = attributeName;
         this.attributeValue = attributeValue;
-        this.matchingType = matchingType;
+        this.setMatchingType(matchingType);
         this.isCaseSensitive = isCaseSensitive;
     }
 
@@ -30,7 +38,7 @@ public class SimilarFilteringItem implements FilteringItem {
         String filteringValueStr = "";
         String filteringLogic;
         if (isCaseSensitive) {
-            switch (matchingType) {
+            switch (getMatchingType()) {
                 case BeginWith:
                     filteringValueStr = "'" + attributeValue + "%'";
                     break;
@@ -44,7 +52,7 @@ public class SimilarFilteringItem implements FilteringItem {
             filteringLogic = attributeName + " LIKE " + filteringValueStr;
         } else {
             String attributeValueUpperCase = attributeValue.toUpperCase();
-            switch (matchingType) {
+            switch (getMatchingType()) {
                 case BeginWith:
                     filteringValueStr = "'" + attributeValueUpperCase + "%'";
                     break;

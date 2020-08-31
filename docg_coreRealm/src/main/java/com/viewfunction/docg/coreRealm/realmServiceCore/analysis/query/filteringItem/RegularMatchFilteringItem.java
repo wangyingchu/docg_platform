@@ -6,12 +6,12 @@ public class RegularMatchFilteringItem implements FilteringItem{
     private String attributeValue;
     public RegularMatchFilteringItem(String attributeName,String attributeValue){
         this.attributeName=attributeName;
-        this.attributeValue=attributeValue;
+        this.setAttributeValue(attributeValue);
     }
 
     @Override
     public String getFilteringLogic() {
-        String filteringLogic=attributeName+" MATCHES '"+attributeValue+"'";
+        String filteringLogic=attributeName+" MATCHES '"+ getAttributeValue() +"'";
         if(!reverseCondition){
             return filteringLogic;
         }else{
@@ -32,5 +32,13 @@ public class RegularMatchFilteringItem implements FilteringItem{
     @Override
     public boolean isReversedCondition(){
         return reverseCondition;
+    }
+
+    public String getAttributeValue() {
+        return attributeValue;
+    }
+
+    public void setAttributeValue(String attributeValue) {
+        this.attributeValue = attributeValue;
     }
 }

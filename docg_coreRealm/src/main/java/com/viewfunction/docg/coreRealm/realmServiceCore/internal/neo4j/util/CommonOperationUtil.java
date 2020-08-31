@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
@@ -481,5 +482,104 @@ public class CommonOperationUtil {
                 }
             }, updateMetaInfoCql);
         }
+    }
+
+    public static Condition getQueryCondition(Node targetNode, FilteringItem filteringItem){
+        if(filteringItem instanceof BetweenFilteringItem){
+            BetweenFilteringItem currentFilteringItem = (BetweenFilteringItem)filteringItem;
+            String propertyName = currentFilteringItem.getAttributeName();
+            Object fromValue = currentFilteringItem.getAttributeFromValue();
+            Object toValue = currentFilteringItem.getAttributeToValue();
+            if(propertyName != null & fromValue !=null & toValue != null){
+                return targetNode.property(propertyName).gte(Cypher.literalOf(fromValue)).and(
+                        targetNode.property(filteringItem.getAttributeName()).lte(Cypher.literalOf(toValue))
+                );
+            }
+        }
+        else if(filteringItem instanceof EqualFilteringItem){
+            EqualFilteringItem currentFilteringItem = (EqualFilteringItem)filteringItem;
+            String propertyName = currentFilteringItem.getAttributeName();
+            Object propertyValue = currentFilteringItem.getAttributeValue();
+            if(propertyName != null & propertyValue !=null ){
+                return targetNode.property(propertyName).isEqualTo(Cypher.literalOf(propertyValue));
+            }
+        }
+        else if(filteringItem instanceof GreaterThanEqualFilteringItem){
+            GreaterThanEqualFilteringItem currentFilteringItem = (GreaterThanEqualFilteringItem)filteringItem;
+            String propertyName = currentFilteringItem.getAttributeName();
+            Object propertyValue = currentFilteringItem.getAttributeValue();
+            if(propertyName != null & propertyValue !=null ){
+                return targetNode.property(propertyName).gte(Cypher.literalOf(propertyValue));
+            }
+
+        }
+        else if(filteringItem instanceof GreaterThanFilteringItem){
+            GreaterThanFilteringItem currentFilteringItem = (GreaterThanFilteringItem)filteringItem;
+            String propertyName = currentFilteringItem.getAttributeName();
+            Object propertyValue = currentFilteringItem.getAttributeValue();
+            if(propertyName != null & propertyValue !=null ){
+                return targetNode.property(propertyName).gt(Cypher.literalOf(propertyValue));
+            }
+        }
+        else if(filteringItem instanceof InValueFilteringItem){
+
+        }
+        else if(filteringItem instanceof LessThanEqualFilteringItem){
+            LessThanEqualFilteringItem currentFilteringItem = (LessThanEqualFilteringItem)filteringItem;
+            String propertyName = currentFilteringItem.getAttributeName();
+            Object propertyValue = currentFilteringItem.getAttributeValue();
+            if(propertyName != null & propertyValue !=null ){
+                return targetNode.property(propertyName).lte(Cypher.literalOf(propertyValue));
+            }
+        }
+        else if(filteringItem instanceof LessThanFilteringItem){
+            LessThanFilteringItem currentFilteringItem = (LessThanFilteringItem)filteringItem;
+            String propertyName = currentFilteringItem.getAttributeName();
+            Object propertyValue = currentFilteringItem.getAttributeValue();
+            if(propertyName != null & propertyValue !=null ){
+                return targetNode.property(propertyName).lt(Cypher.literalOf(propertyValue));
+            }
+        }
+        else if(filteringItem instanceof NotEqualFilteringItem){
+            NotEqualFilteringItem currentFilteringItem = (NotEqualFilteringItem)filteringItem;
+            String propertyName = currentFilteringItem.getAttributeName();
+            Object propertyValue = currentFilteringItem.getAttributeValue();
+            if(propertyName != null & propertyValue !=null ){
+                return targetNode.property(propertyName).isNotEqualTo(Cypher.literalOf(propertyValue));
+            }
+        }
+        else if(filteringItem instanceof NullValueFilteringItem){
+            NullValueFilteringItem currentFilteringItem = (NullValueFilteringItem)filteringItem;
+            String propertyName = currentFilteringItem.getAttributeName();
+            if(propertyName != null){
+                return targetNode.property(propertyName).isNull();
+            }
+        }
+        else if(filteringItem instanceof RegularMatchFilteringItem){
+            RegularMatchFilteringItem currentFilteringItem = (RegularMatchFilteringItem)filteringItem;
+            String propertyName = currentFilteringItem.getAttributeName();
+            String propertyValue = currentFilteringItem.getAttributeValue();
+            if(propertyName != null & propertyValue !=null ){
+                return targetNode.property(propertyName).matches(Cypher.literalOf(propertyValue));
+            }
+
+        }
+        else if(filteringItem instanceof SimilarFilteringItem){
+            SimilarFilteringItem currentFilteringItem = (SimilarFilteringItem)filteringItem;
+            String propertyName = currentFilteringItem.getAttributeName();
+            Object propertyValue = currentFilteringItem.getAttributeValue();
+            SimilarFilteringItem.MatchingType matchingType = currentFilteringItem.getMatchingType();
+            if(propertyName != null & propertyValue !=null ){
+                switch(matchingType){
+                    case BeginWith:
+                        return targetNode.property(propertyName).startsWith(Cypher.literalOf(propertyValue));
+                    case Contain:
+                        return targetNode.property(propertyName).endsWith(Cypher.literalOf(propertyValue));
+                    case EndWith:
+                        return targetNode.property(propertyName).contains(Cypher.literalOf(propertyValue));
+                }
+            }
+        }
+        return null;
     }
 }

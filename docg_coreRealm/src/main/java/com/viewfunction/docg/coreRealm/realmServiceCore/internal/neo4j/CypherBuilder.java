@@ -696,9 +696,7 @@ public class CypherBuilder {
                     throw e;
                 }
             }else{
-               Cypher.match(m).where(m.property("xxx").startsWith(Cypher.literalOf("aasdd")));
-
-
+                StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere =Cypher.match(m).where(CommonOperationUtil.getQueryCondition(m,defaultFilteringItem));
 
 
             }
