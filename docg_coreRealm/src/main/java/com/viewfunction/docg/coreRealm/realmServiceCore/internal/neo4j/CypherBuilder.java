@@ -1,6 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.SortingItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
@@ -677,6 +678,7 @@ public class CypherBuilder {
     }
 
     public static String matchNodesWithQueryParameters(String labelName, QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException {
+        int defaultReturnRecordNumber = 500;
         Node m = null;
         Statement statement = null;
         if(labelName != null){
@@ -692,6 +694,23 @@ public class CypherBuilder {
             int endPage = queryParameters.getEndPage();
             int pageSize = queryParameters.getPageSize();
             int resultNumber = queryParameters.getResultNumber();
+            boolean isDistinctMode = queryParameters.isDistinctMode();
+            List<SortingItem> sortingItemList = queryParameters.getSortingItems();
+
+            SortItem[] sortItemArray = null;
+            if(sortingItemList.size()>0){
+                sortItemArray = new SortItem[sortingItemList.size()];
+                for(int i = 0; i< sortingItemList.size();i++){
+                    SortingItem currentSortingItem = sortingItemList.get(i);
+                    String attributeName = currentSortingItem.getAttributeName();
+                    QueryParameters.SortingLogic sortingLogic = currentSortingItem.getSortingLogic();
+                    switch(sortingLogic){
+                        case ASC:sortItemArray[i] = Cypher.sort(m.property(attributeName)).ascending();
+                            break;
+                        case DESC:sortItemArray[i] = Cypher.sort(m.property(attributeName)).descending();
+                    }
+                }
+            }
 
             if(startPage!=0){
                 if(startPage<0){
@@ -739,6 +758,10 @@ public class CypherBuilder {
                 }
             }
 
+            if(limitRecordNumber == 0){
+                limitRecordNumber = defaultReturnRecordNumber;
+            }
+
             FilteringItem defaultFilteringItem = queryParameters.getDefaultFilteringItem();
             List<FilteringItem> andFilteringItemList = queryParameters.getAndFilteringItemsList();
             List<FilteringItem> orFilteringItemList = queryParameters.getOrFilteringItemsList();
@@ -751,11 +774,34 @@ public class CypherBuilder {
                     throw e;
                 }else{
                     if(skipRecordNumber != 0){
-                        statement = Cypher.match(m).returning(m).skip(skipRecordNumber).limit(limitRecordNumber).build();
+                        if(isDistinctMode){
+                            if(sortItemArray != null){
+                                statement = Cypher.match(m).returningDistinct(m).orderBy(sortItemArray).skip(skipRecordNumber).limit(limitRecordNumber).build();
+                            }else{
+                                statement = Cypher.match(m).returningDistinct(m).skip(skipRecordNumber).limit(limitRecordNumber).build();
+                            }
+                        }else{
+                            if(sortItemArray != null){
+                                statement = Cypher.match(m).returning(m).orderBy(sortItemArray).skip(skipRecordNumber).limit(limitRecordNumber).build();
+                            }else{
+                                statement = Cypher.match(m).returning(m).skip(skipRecordNumber).limit(limitRecordNumber).build();
+                            }
+                        }
                     }else{
-                        statement = Cypher.match(m).returning(m).limit(limitRecordNumber).build();
+                        if(isDistinctMode){
+                            if(sortItemArray != null){
+                                statement = Cypher.match(m).returningDistinct(m).orderBy(sortItemArray).limit(limitRecordNumber).build();
+                            }else{
+                                statement = Cypher.match(m).returningDistinct(m).limit(limitRecordNumber).build();
+                            }
+                        }else{
+                            if(sortItemArray != null){
+                                statement = Cypher.match(m).returning(m).orderBy(sortItemArray).limit(limitRecordNumber).build();
+                            }else{
+                                statement = Cypher.match(m).returning(m).limit(limitRecordNumber).build();
+                            }
+                        }
                     }
-
                 }
             }else{
                 StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = Cypher.match(m).where(CommonOperationUtil.getQueryCondition(m,defaultFilteringItem));
@@ -770,13 +816,37 @@ public class CypherBuilder {
                     }
                 }
                 if(skipRecordNumber != 0){
-                    statement = ongoingReadingWithWhere.returning(operationResultName).skip(skipRecordNumber).limit(limitRecordNumber).build();
+                    if(isDistinctMode){
+                        if(sortItemArray != null){
+                            statement = ongoingReadingWithWhere.returningDistinct(m).orderBy(sortItemArray).skip(skipRecordNumber).limit(limitRecordNumber).build();
+                        }else{
+                            statement = ongoingReadingWithWhere.returningDistinct(m).skip(skipRecordNumber).limit(limitRecordNumber).build();
+                        }
+                    }else{
+                        if(sortItemArray != null){
+                            statement = ongoingReadingWithWhere.returning(m).orderBy(sortItemArray).skip(skipRecordNumber).limit(limitRecordNumber).build();
+                        }else{
+                            statement = ongoingReadingWithWhere.returning(m).skip(skipRecordNumber).limit(limitRecordNumber).build();
+                        }
+                    }
                 }else{
-                    statement = ongoingReadingWithWhere.returning(operationResultName).limit(limitRecordNumber).build();
+                    if(isDistinctMode){
+                        if(sortItemArray!=null){
+                            statement = ongoingReadingWithWhere.returningDistinct(m).orderBy(sortItemArray).limit(limitRecordNumber).build();
+                        }else{
+                            statement = ongoingReadingWithWhere.returningDistinct(m).limit(limitRecordNumber).build();
+                        }
+                    }else{
+                        if(sortItemArray != null){
+                            statement = ongoingReadingWithWhere.returning(m).orderBy(sortItemArray).limit(limitRecordNumber).build();
+                        }else{
+                            statement = ongoingReadingWithWhere.returning(m).limit(limitRecordNumber).build();
+                        }
+                    }
                 }
             }
         }else{
-            statement = Cypher.match(m).returning(m).limit(5000).build();
+            statement = Cypher.match(m).returning(m).limit(defaultReturnRecordNumber).build();
         }
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}",rel);

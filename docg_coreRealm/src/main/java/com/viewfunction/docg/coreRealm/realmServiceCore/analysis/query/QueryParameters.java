@@ -5,17 +5,16 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filtering
 import java.util.*;
 
 public class QueryParameters {
+
     private int pageSize;
     private int startPage;
     private int endPage;
     private int resultNumber;
     private String entityKind;
     private String customQuerySentence;
-    private boolean distinctMode = true;
-    private List<String> sortAttributes;
+    private boolean distinctMode = false;
+    private List<SortingItem> sortingItems;
     private FilteringItem defaultFilteringItem;
-    private SortingLogic sortingLogic = SortingLogic.ASC;
-    private FilteringLogic integratedFilteringLogic = FilteringLogic.AND;
     public enum FilteringLogic { AND, OR }
     public enum SortingLogic { ASC, DESC }
     private List<FilteringItem> andFilteringItemList;
@@ -24,7 +23,7 @@ public class QueryParameters {
     public QueryParameters() {
         andFilteringItemList = new ArrayList<>();
         orFilteringItemList = new ArrayList<>();
-        sortAttributes = new ArrayList<>();
+        sortingItems = new ArrayList<>();
     }
 
     public String getEntityKind() {
@@ -106,28 +105,12 @@ public class QueryParameters {
         this.distinctMode = distinctMode;
     }
 
-    public List<String> getSortAttributes() {
-        return sortAttributes;
+    public List<SortingItem> getSortingItems() {
+        return sortingItems;
     }
 
-    public void setSortAttributes(List<String> sortAttributes) {
-        this.sortAttributes = sortAttributes;
-    }
-
-    public SortingLogic getSortingLogic() {
-        return sortingLogic;
-    }
-
-    public void setSortingLogic(SortingLogic sortingLogic) {
-        this.sortingLogic = sortingLogic;
-    }
-
-    public FilteringLogic getIntegratedFilteringLogic() {
-        return integratedFilteringLogic;
-    }
-
-    public void setIntegratedFilteringLogic(FilteringLogic integratedFilteringLogic) {
-        this.integratedFilteringLogic = integratedFilteringLogic;
+    public void addSortingAttribute(String sortAttribute,SortingLogic sortingLogic) {
+        this.sortingItems.add(new SortingItem(sortAttribute,sortingLogic));
     }
 
     public String getCustomQuerySentence() {

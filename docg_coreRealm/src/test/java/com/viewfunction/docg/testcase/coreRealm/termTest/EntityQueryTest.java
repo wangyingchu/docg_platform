@@ -8,8 +8,6 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntity
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
-import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
-import com.viewfunction.docg.coreRealm.realmServiceCore.util.cache.ResourceCacheHolder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
@@ -77,6 +75,15 @@ public class EntityQueryTest {
         EntitiesOperationResult addEntitiesResult = _ConceptionKind01.newEntities(conceptionEntityValueList,false);
 
         QueryParameters queryParameters = new QueryParameters();
+        //queryParameters.setDistinctMode(true);
+        //queryParameters.setDistinctMode(false);
+        queryParameters.addSortingAttribute("prop18", QueryParameters.SortingLogic.DESC);
+        queryParameters.addSortingAttribute("prop16", QueryParameters.SortingLogic.ASC);
+
+        queryParameters.setResultNumber(1000);
+        //queryParameters.setPageSize(5);
+        //queryParameters.setStartPage(3);
+        //queryParameters.setEndPage(8);
 
         //FilteringItem defaultFilteringItem = new EqualFilteringItem("attribute1",new Date());
         FilteringItem defaultFilteringItem = new EqualFilteringItem("prop7",Short.valueOf("24"));
