@@ -685,6 +685,8 @@ public class CypherBuilder {
             m = Cypher.anyNode().named(operationResultName);
         }
         if(queryParameters != null){
+            int skipRecordNumber = 0;
+            int limitRecordNumber = 0;
 
             int startPage = queryParameters.getStartPage();
             int endPage = queryParameters.getEndPage();
@@ -694,52 +696,48 @@ public class CypherBuilder {
             if(startPage!=0){
                 if(startPage<0){
                     String exceptionMessage = "start page must great then zero";
-                    throw CimDataEngineException.getInfoExploreException(exceptionMessage);
+                    CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
+                    coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
+                    throw coreRealmServiceEntityExploreException;
                 }
                 if(pageSize<0){
                     String exceptionMessage = "page size must great then zero";
-                    throw CimDataEngineException.getInfoExploreException(exceptionMessage);
+                    CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
+                    coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
+                    throw coreRealmServiceEntityExploreException;
                 }
 
-                int runtimePageSize=pageSize!=0?pageSize:50;
-                int runtimeStartPage=startPage-1;
+                int runtimePageSize = pageSize != 0 ? pageSize : 50;
+                int runtimeStartPage = startPage - 1;
 
-                if(exploreParameters.getEndPage()!=0){
+                if(endPage != 0){
                     //get data from start page to end page, each page has runtimePageSize number of record
-                    if(exploreParameters.getEndPage()<0||exploreParameters.getEndPage()<=exploreParameters.getStartPage()){
+                    if(endPage < 0 || endPage <= startPage){
                         String exceptionMessage = "end page must great than start page";
-                        throw CimDataEngineException.getInfoExploreException(exceptionMessage);
+                        CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
+                        coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
+                        throw coreRealmServiceEntityExploreException;
                     }
-                    int runtimeEndPage=exploreParameters.getEndPage()-1;
-                    querySQLStringBuffer.append(" ");
-                    querySQLStringBuffer.append("SKIP "); //NOSONAR
-                    querySQLStringBuffer.append(runtimePageSize*runtimeStartPage);
-                    querySQLStringBuffer.append(" ");
-                    querySQLStringBuffer.append("LIMIT "); //NOSONAR
-                    querySQLStringBuffer.append((runtimeEndPage-runtimeStartPage)*runtimePageSize);
+                    int runtimeEndPage = endPage-1;
+
+                    skipRecordNumber = runtimePageSize*runtimeStartPage;
+                    limitRecordNumber = (runtimeEndPage-runtimeStartPage)*runtimePageSize;
                 }else{
                     //filter the data before the start page
-                    querySQLStringBuffer.append(" ");
-                    querySQLStringBuffer.append("SKIP "); //NOSONAR
-                    querySQLStringBuffer.append(runtimePageSize*runtimeStartPage);
+                    limitRecordNumber = runtimePageSize*runtimeStartPage;
                 }
             }else{
                 //if there is no page parameters,use resultNumber to control result information number
-                if(exploreParameters.getResultNumber()!=0){
-                    if(exploreParameters.getResultNumber()<0){
+                if(resultNumber != 0){
+                    if(resultNumber < 0){
                         String exceptionMessage = "result number must great then zero";
-                        throw CimDataEngineException.getInfoExploreException(exceptionMessage);
+                        CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
+                        coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
+                        throw coreRealmServiceEntityExploreException;
                     }
-                    querySQLStringBuffer.append(" ");
-                    querySQLStringBuffer.append("LIMIT "); //NOSONAR
-                    querySQLStringBuffer.append(exploreParameters.getResultNumber());
+                    limitRecordNumber = resultNumber;
                 }
             }
-
-
-
-
-
 
             FilteringItem defaultFilteringItem = queryParameters.getDefaultFilteringItem();
             List<FilteringItem> andFilteringItemList = queryParameters.getAndFilteringItemsList();
@@ -752,7 +750,12 @@ public class CypherBuilder {
                     e.setCauseMessage("Default Filtering Item is required");
                     throw e;
                 }else{
-                    statement = Cypher.match(m).returning(m).limit(queryParameters.getPageSize()).build();
+                    if(skipRecordNumber != 0){
+                        statement = Cypher.match(m).returning(m).skip(skipRecordNumber).limit(limitRecordNumber).build();
+                    }else{
+                        statement = Cypher.match(m).returning(m).limit(limitRecordNumber).build();
+                    }
+
                 }
             }else{
                 StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = Cypher.match(m).where(CommonOperationUtil.getQueryCondition(m,defaultFilteringItem));
@@ -766,10 +769,14 @@ public class CypherBuilder {
                         ongoingReadingWithWhere = ongoingReadingWithWhere.or(CommonOperationUtil.getQueryCondition(m,currentFilteringItem));
                     }
                 }
-                statement = ongoingReadingWithWhere.returning(operationResultName).build();
+                if(skipRecordNumber != 0){
+                    statement = ongoingReadingWithWhere.returning(operationResultName).skip(skipRecordNumber).limit(limitRecordNumber).build();
+                }else{
+                    statement = ongoingReadingWithWhere.returning(operationResultName).limit(limitRecordNumber).build();
+                }
             }
         }else{
-            statement = Cypher.match(m).returning(m).limit(queryParameters.getPageSize()).build();
+            statement = Cypher.match(m).returning(m).limit(5000).build();
         }
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}",rel);
