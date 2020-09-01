@@ -685,6 +685,62 @@ public class CypherBuilder {
             m = Cypher.anyNode().named(operationResultName);
         }
         if(queryParameters != null){
+
+            int startPage = queryParameters.getStartPage();
+            int endPage = queryParameters.getEndPage();
+            int pageSize = queryParameters.getPageSize();
+            int resultNumber = queryParameters.getResultNumber();
+
+            if(startPage!=0){
+                if(startPage<0){
+                    String exceptionMessage = "start page must great then zero";
+                    throw CimDataEngineException.getInfoExploreException(exceptionMessage);
+                }
+                if(pageSize<0){
+                    String exceptionMessage = "page size must great then zero";
+                    throw CimDataEngineException.getInfoExploreException(exceptionMessage);
+                }
+
+                int runtimePageSize=pageSize!=0?pageSize:50;
+                int runtimeStartPage=startPage-1;
+
+                if(exploreParameters.getEndPage()!=0){
+                    //get data from start page to end page, each page has runtimePageSize number of record
+                    if(exploreParameters.getEndPage()<0||exploreParameters.getEndPage()<=exploreParameters.getStartPage()){
+                        String exceptionMessage = "end page must great than start page";
+                        throw CimDataEngineException.getInfoExploreException(exceptionMessage);
+                    }
+                    int runtimeEndPage=exploreParameters.getEndPage()-1;
+                    querySQLStringBuffer.append(" ");
+                    querySQLStringBuffer.append("SKIP "); //NOSONAR
+                    querySQLStringBuffer.append(runtimePageSize*runtimeStartPage);
+                    querySQLStringBuffer.append(" ");
+                    querySQLStringBuffer.append("LIMIT "); //NOSONAR
+                    querySQLStringBuffer.append((runtimeEndPage-runtimeStartPage)*runtimePageSize);
+                }else{
+                    //filter the data before the start page
+                    querySQLStringBuffer.append(" ");
+                    querySQLStringBuffer.append("SKIP "); //NOSONAR
+                    querySQLStringBuffer.append(runtimePageSize*runtimeStartPage);
+                }
+            }else{
+                //if there is no page parameters,use resultNumber to control result information number
+                if(exploreParameters.getResultNumber()!=0){
+                    if(exploreParameters.getResultNumber()<0){
+                        String exceptionMessage = "result number must great then zero";
+                        throw CimDataEngineException.getInfoExploreException(exceptionMessage);
+                    }
+                    querySQLStringBuffer.append(" ");
+                    querySQLStringBuffer.append("LIMIT "); //NOSONAR
+                    querySQLStringBuffer.append(exploreParameters.getResultNumber());
+                }
+            }
+
+
+
+
+
+
             FilteringItem defaultFilteringItem = queryParameters.getDefaultFilteringItem();
             List<FilteringItem> andFilteringItemList = queryParameters.getAndFilteringItemsList();
             List<FilteringItem> orFilteringItemList = queryParameters.getOrFilteringItemsList();
