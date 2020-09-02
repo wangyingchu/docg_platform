@@ -43,6 +43,12 @@ public class EntityQueryTest {
             Assert.assertNotNull(_ConceptionKind01);
         }
 
+        List<ConceptionEntityValue> conceptionEntityValueList = new ArrayList<>();
+        for(int i=0 ; i<100 ; i++){
+            conceptionEntityValueList.add(generateRandomConceptionEntityValue());
+        }
+        _ConceptionKind01.newEntities(conceptionEntityValueList,false);
+
         Map<String,Object> newEntityValueMap= new HashMap<>();
         newEntityValueMap.put("prop1",Long.parseLong("12345"));
         newEntityValueMap.put("prop2",Double.parseDouble("12345.789"));
@@ -50,30 +56,21 @@ public class EntityQueryTest {
         newEntityValueMap.put("prop4","thi is s string");
         newEntityValueMap.put("prop5",Boolean.valueOf("true"));
         newEntityValueMap.put("prop6", new BigDecimal("5566778890.223344"));
-        newEntityValueMap.put("prop7", Short.valueOf("24"));
+        newEntityValueMap.put("prop7",Short.valueOf("24"));
         newEntityValueMap.put("prop8", Float.valueOf("1234.66"));
-        newEntityValueMap.put("prop9", new Long[]{1000l,2000l,3000l});
-        newEntityValueMap.put("prop10", new Double[]{1000.1d,2000.2d,3000.3d});
-        newEntityValueMap.put("prop11", new Integer[]{100,200,300});
-        newEntityValueMap.put("prop12", new String[]{"this is str1","这是字符串2"});
-        newEntityValueMap.put("prop13", new Boolean[]{true,true,false,false,true});
-        newEntityValueMap.put("prop14", new BigDecimal[]{new BigDecimal("1234567.890"),new BigDecimal("987654321.12345")});
-        newEntityValueMap.put("prop15", new Short[]{1,2,3,4,5});
-        newEntityValueMap.put("prop16", new Float[]{1000.1f,2000.2f,3000.3f});
-        newEntityValueMap.put("prop17", new Date());
-        newEntityValueMap.put("prop18", new Date[]{new Date(),new Date(),new Date(),new Date()});
-        newEntityValueMap.put("prop19", Byte.valueOf("2"));
-        newEntityValueMap.put("prop20", "this is a byte array value".getBytes());
+        ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValueMap);
+        _ConceptionKind01.newEntity(conceptionEntityValue,false);
 
-        List<ConceptionEntityValue> conceptionEntityValueList = new ArrayList<>();
-        ConceptionEntityValue conceptionEntityValue1 = new ConceptionEntityValue(newEntityValueMap);
-        ConceptionEntityValue conceptionEntityValue2 = new ConceptionEntityValue(newEntityValueMap);
-        ConceptionEntityValue conceptionEntityValue3 = new ConceptionEntityValue(newEntityValueMap);
-        conceptionEntityValueList.add(conceptionEntityValue1);
-        conceptionEntityValueList.add(conceptionEntityValue2);
-        conceptionEntityValueList.add(conceptionEntityValue3);
+        newEntityValueMap.put("prop3",Integer.parseInt("1234"));
+        newEntityValueMap.put("prop5",Boolean.valueOf("false"));
+        conceptionEntityValue = new ConceptionEntityValue(newEntityValueMap);
+        _ConceptionKind01.newEntity(conceptionEntityValue,false);
 
-        EntitiesOperationResult addEntitiesResult = _ConceptionKind01.newEntities(conceptionEntityValueList,false);
+        newEntityValueMap.put("prop2",Double.parseDouble("9983.3211"));
+        newEntityValueMap.put("prop3",Integer.parseInt("4433"));
+        newEntityValueMap.put("prop4","a122 thi is s string 234");
+        conceptionEntityValue = new ConceptionEntityValue(newEntityValueMap);
+        _ConceptionKind01.newEntity(conceptionEntityValue,false);
 
         QueryParameters queryParameters = new QueryParameters();
         //queryParameters.setDistinctMode(true);
@@ -102,8 +99,40 @@ public class EntityQueryTest {
         System.out.println( conceptionEntitiesRetrieveResult.getOperationStatistics().getResultEntitiesCount());
         System.out.println( conceptionEntitiesRetrieveResult.getConceptionEntities());
 
+    }
 
+    private ConceptionEntityValue generateRandomConceptionEntityValue(){
+        Map<String,Object> newEntityValueMap= new HashMap<>();
 
+        long l = (long)(Math.random()*50000);
+        newEntityValueMap.put("prop1",Long.valueOf(l));
+        double d = Math.random();
+        newEntityValueMap.put("prop2",Double.valueOf(d));
+        int i = (int)(Math.random()*1000);
+        newEntityValueMap.put("prop3",Integer.valueOf(i));
+        String str = generateRandomString();
+        newEntityValueMap.put("prop4",str);
+        Random random=new Random();
+        newEntityValueMap.put("prop5",random.nextBoolean());
+        newEntityValueMap.put("prop6",new Date());
+        /*
+        int num = (int)(Math.random()*100+1);
+        int m =39;
+        int n= 10;
+        int num2 = (int)(Math.random()*(m-n+1)+m);
+        */
+        return new ConceptionEntityValue(newEntityValueMap);
+    }
 
+    private String generateRandomString(){
+        String str="abcdef ghijklmnopqrs tuvwxyzABCDEFGH IJKLMNOPQRSTUVWXY Z0123456789";
+        Random random1=new Random();
+        StringBuffer sb=new StringBuffer();
+        for (int i = 0; i < 40; i++) {
+            int number=random1.nextInt(str.length());
+            char charAt = str.charAt(number);
+            sb.append(charAt);
+        }
+        return sb.toString();
     }
 }
