@@ -23,6 +23,10 @@ public class CommonConceptionEntitiesRetrieveResultImpl implements ConceptionEnt
         this.entitiesRetrieveStatistics.setFinishTime(new Date());
     }
 
+    public void addConceptionEntities(List<ConceptionEntity> conceptionEntityList){
+        this.conceptionEntityList.addAll(conceptionEntityList);
+    }
+
     @Override
     public List<ConceptionEntity> getConceptionEntities() {
         return this.conceptionEntityList;

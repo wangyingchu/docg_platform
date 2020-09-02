@@ -316,12 +316,13 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try{
                 String queryCql = CypherBuilder.matchNodesWithQueryParameters(this.conceptionKindName,queryParameters);
-
-
-
-
-
-
+                GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(this.conceptionKindName,workingGraphOperationExecutor);
+                Object queryRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
+                if(queryRes != null){
+                    List<ConceptionEntity> resultConceptionEntityList = (List<ConceptionEntity>)queryRes;
+                    commonConceptionEntitiesRetrieveResultImpl.addConceptionEntities(resultConceptionEntityList);
+                    commonConceptionEntitiesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultConceptionEntityList.size());
+                }
             }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
@@ -339,8 +340,8 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
                 String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(conceptionEntityUID), null, null);
                 GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
                         new GetSingleConceptionEntityTransformer(this.conceptionKindName, this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
-                Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer, queryCql);
-                return newEntityRes != null ? (ConceptionEntity) newEntityRes : null;
+                Object resEntityRes = workingGraphOperationExecutor.executeRead(getSingleConceptionEntityTransformer, queryCql);
+                return resEntityRes != null ? (ConceptionEntity) resEntityRes : null;
             }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
