@@ -75,7 +75,7 @@ public class EntityQueryTest {
         QueryParameters queryParameters = new QueryParameters();
         //queryParameters.setDistinctMode(true);
         //queryParameters.setDistinctMode(false);
-        queryParameters.addSortingAttribute("prop18", QueryParameters.SortingLogic.DESC);
+        queryParameters.addSortingAttribute("prop2", QueryParameters.SortingLogic.DESC);
         queryParameters.addSortingAttribute("prop16", QueryParameters.SortingLogic.ASC);
 
         queryParameters.setResultNumber(1000);
