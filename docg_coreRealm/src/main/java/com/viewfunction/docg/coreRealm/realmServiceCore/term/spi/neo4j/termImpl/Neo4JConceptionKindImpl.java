@@ -350,12 +350,31 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByViewKinds(List<String> attributesViewKindNames, QueryParameters exploreParameters) {
+    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByViewKinds(List<String> attributesViewKindNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException{
+        if(attributesViewKindNames != null && attributesViewKindNames.size()>0){
+
+            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(this.conceptionKindName,exploreParameters,null);
+
+
+        }
         return null;
     }
 
     @Override
-    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNames(List<String> attributeNames, QueryParameters exploreParameters) {
+    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNames(List<String> attributeNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException{
+        if(attributeNames != null && attributeNames.size()>0){
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try {
+                String queryCql = CypherBuilder.matchAttributesWithQueryParameters(this.conceptionKindName,exploreParameters,attributeNames);
+                List<AttributeKind> containsAttributesKinds = getContainsSingleValueAttributeKinds();
+                GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer =
+                        new GetListConceptionEntityValueTransformer(attributeNames,containsAttributesKinds,workingGraphOperationExecutor);
+                Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
+
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
 

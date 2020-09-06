@@ -32,8 +32,8 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
     public EntitiesOperationResult purgeAllEntities() throws CoreRealmServiceRuntimeException;
     public ConceptionEntitiesRetrieveResult getEntities(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
     public ConceptionEntity getEntityByUID(String conceptionEntityUID);
-    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByViewKinds(List<String> attributesViewKindNames, QueryParameters exploreParameters);
-    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNames(List<String> attributeNames, QueryParameters exploreParameters);
+    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByViewKinds(List<String> attributesViewKindNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException;
+    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNames(List<String> attributeNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException;
 
     public boolean attachAttributesViewKind(String attributesViewKindUID) throws CoreRealmServiceRuntimeException;
     public List<AttributesViewKind> getContainsAttributesViewKinds();

@@ -12,7 +12,7 @@ import org.neo4j.driver.types.Node;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetListConceptionEntityTransformer  implements DataTransformer<List<ConceptionEntity>>{
+public class GetListConceptionEntityTransformer implements DataTransformer<List<ConceptionEntity>>{
 
     private GraphOperationExecutor workingGraphOperationExecutor;
     private String targetConceptionKindName;

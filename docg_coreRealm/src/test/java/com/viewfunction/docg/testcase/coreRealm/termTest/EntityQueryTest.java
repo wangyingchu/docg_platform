@@ -99,6 +99,13 @@ public class EntityQueryTest {
         System.out.println( conceptionEntitiesRetrieveResult.getOperationStatistics().getResultEntitiesCount());
         System.out.println( conceptionEntitiesRetrieveResult.getConceptionEntities());
 
+        List<String> attributesNameList = new ArrayList<>();
+        attributesNameList.add("prop3");
+        attributesNameList.add("prop5");
+        attributesNameList.add("propNotExist");
+        _ConceptionKind01.getSingleValueEntityAttributesByAttributeNames(attributesNameList,queryParameters);
+
+
     }
 
     private ConceptionEntityValue generateRandomConceptionEntityValue(){
