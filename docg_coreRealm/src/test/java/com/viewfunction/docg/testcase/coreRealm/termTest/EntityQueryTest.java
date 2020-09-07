@@ -184,6 +184,8 @@ public class EntityQueryTest {
             Assert.assertTrue(entityValueMap.get("prop3") instanceof Integer);
             Assert.assertTrue(entityValueMap.get("prop6") instanceof BigDecimal);
         }
+
+        //testcase for attribute type convert
     }
 
     private ConceptionEntityValue generateRandomConceptionEntityValue(){
