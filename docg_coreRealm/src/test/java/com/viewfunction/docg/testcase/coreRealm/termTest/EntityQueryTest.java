@@ -7,9 +7,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
@@ -98,10 +96,15 @@ public class EntityQueryTest {
         queryParameters.addFilteringItem(new EqualFilteringItem("prop1",Long.parseLong("12345")), QueryParameters.FilteringLogic.OR);
 
         ConceptionEntitiesRetrieveResult conceptionEntitiesRetrieveResult = _ConceptionKind01.getEntities(queryParameters);
-
-        //need test case
-        System.out.println( conceptionEntitiesRetrieveResult.getOperationStatistics().getResultEntitiesCount());
-        System.out.println( conceptionEntitiesRetrieveResult.getConceptionEntities());
+        Assert.assertNotNull(conceptionEntitiesRetrieveResult.getOperationStatistics());
+        Assert.assertNotNull(conceptionEntitiesRetrieveResult.getOperationStatistics().getStartTime());
+        Assert.assertNotNull(conceptionEntitiesRetrieveResult.getOperationStatistics().getFinishTime());
+        Assert.assertNotNull(conceptionEntitiesRetrieveResult.getOperationStatistics().getQueryParameters());
+        Assert.assertTrue(conceptionEntitiesRetrieveResult.getOperationStatistics().getFinishTime().getTime() >
+                        conceptionEntitiesRetrieveResult.getOperationStatistics().getStartTime().getTime());
+        Assert.assertTrue(conceptionEntitiesRetrieveResult.getOperationStatistics().getResultEntitiesCount() >0);
+        Assert.assertNotNull(conceptionEntitiesRetrieveResult.getConceptionEntities());
+        Assert.assertTrue(conceptionEntitiesRetrieveResult.getConceptionEntities().size() >0);
 
         List<String> attributesNameList = new ArrayList<>();
         attributesNameList.add("prop3");
@@ -138,7 +141,49 @@ public class EntityQueryTest {
             Assert.assertTrue(entityValueMap.get("prop_date") instanceof Date);
         }
 
+        String currentViewKindName = "attributesViewKind"+new Date().getTime();
+        AttributesViewKind targetAttributesViewKind = coreRealm.createAttributesViewKind(currentViewKindName,"targetAttributesViewKindADesc",null);
+        AttributeKind attributeKind03 = coreRealm.createAttributeKind("prop3","prop3Desc", AttributeDataType.INT);
+        AttributeKind attributeKind06 = coreRealm.createAttributeKind("prop6","prop6Desc", AttributeDataType.DECIMAL);
+        targetAttributesViewKind.attachAttributeKind(attributeKind03.getAttributeKindUID());
+        targetAttributesViewKind.attachAttributeKind(attributeKind06.getAttributeKindUID());
+        _ConceptionKind01.attachAttributesViewKind(targetAttributesViewKind.getAttributesViewKindUID());
 
+        entitiesAttributesRetrieveResult1 = _ConceptionKind01.getSingleValueEntityAttributesByAttributeNames(attributesNameList,queryParameters);
+        for(ConceptionEntityValue currentConceptionEntityValue:entitiesAttributesRetrieveResult1.getConceptionEntityValues()){
+            String entityUID = currentConceptionEntityValue.getConceptionEntityUID();
+            Map<String,Object> entityValueMap = currentConceptionEntityValue.getEntityAttributesValue();
+            Assert.assertTrue(entityValueMap.get("prop3") instanceof Integer);
+            Assert.assertTrue(entityValueMap.get("prop6") instanceof BigDecimal);
+        }
+
+        List<String> targetAttributesViewKindList = new ArrayList<>();
+        targetAttributesViewKindList.add(currentViewKindName);
+        ConceptionEntitiesAttributesRetrieveResult entitiesAttributesRetrieveResult2 = _ConceptionKind01.getSingleValueEntityAttributesByViewKinds(targetAttributesViewKindList,queryParameters);
+
+        Assert.assertNotNull(entitiesAttributesRetrieveResult2.getOperationStatistics());
+        Assert.assertNotNull(entitiesAttributesRetrieveResult2.getOperationStatistics().getStartTime());
+        Assert.assertNotNull(entitiesAttributesRetrieveResult2.getOperationStatistics().getFinishTime());
+        Assert.assertNotNull(entitiesAttributesRetrieveResult2.getOperationStatistics().getQueryParameters());
+        Assert.assertTrue(entitiesAttributesRetrieveResult2.getOperationStatistics().getFinishTime().getTime() >
+                entitiesAttributesRetrieveResult2.getOperationStatistics().getStartTime().getTime());
+        Assert.assertTrue(entitiesAttributesRetrieveResult2.getOperationStatistics().getResultEntitiesCount()>0);
+        List<ConceptionEntityValue> resEntityValueList02 = entitiesAttributesRetrieveResult2.getConceptionEntityValues();
+        Assert.assertEquals(resEntityValueList01.size(),entitiesAttributesRetrieveResult2.getOperationStatistics().getResultEntitiesCount());
+
+        for(ConceptionEntityValue currentConceptionEntityValue:resEntityValueList02){
+            String entityUID = currentConceptionEntityValue.getConceptionEntityUID();
+            Map<String,Object> entityValueMap = currentConceptionEntityValue.getEntityAttributesValue();
+            Assert.assertNotNull(entityUID);
+            Assert.assertNotNull(entityValueMap);
+            Assert.assertEquals(entityValueMap.size(),2);
+            Assert.assertNotNull(entityValueMap.get("prop3"));
+            Assert.assertNull(entityValueMap.get("prop5"));
+            Assert.assertNotNull(entityValueMap.get("prop6"));
+            Assert.assertNull(entityValueMap.get("prop_date"));
+            Assert.assertTrue(entityValueMap.get("prop3") instanceof Integer);
+            Assert.assertTrue(entityValueMap.get("prop6") instanceof BigDecimal);
+        }
     }
 
     private ConceptionEntityValue generateRandomConceptionEntityValue(){

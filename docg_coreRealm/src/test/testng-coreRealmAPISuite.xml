@@ -41,8 +41,7 @@
         </classes>
     </test>
 
-
-
+    <!-- KindCacheableTest must be the last test case at anytime-->
     <test verbose="9" name="KindCacheableTest">
         <classes>
             <class name="com.viewfunction.docg.testcase.coreRealm.termTest.KindCacheableTest"/>

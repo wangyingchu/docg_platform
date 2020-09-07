@@ -353,10 +353,22 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     @Override
     public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByViewKinds(List<String> attributesViewKindNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException{
         if(attributesViewKindNames != null && attributesViewKindNames.size()>0){
-
-            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(this.conceptionKindName,exploreParameters,null);
-
-
+            List<AttributesViewKind> resultRealAttributesViewKindList = new ArrayList<>();
+            for(String currentTargetViewKindName:attributesViewKindNames){
+                List<AttributesViewKind> currentAttributesViewKinds = getContainsAttributesViewKinds(currentTargetViewKindName);
+                if(currentAttributesViewKinds != null){
+                    resultRealAttributesViewKindList.addAll(currentAttributesViewKinds);
+                }
+            }
+            List<AttributeKind> allResultTargetAttributeKindList = new ArrayList<>();
+            for(AttributesViewKind resultAttributesViewKind:resultRealAttributesViewKindList){
+                List<AttributeKind> currentAttributeKinds = resultAttributesViewKind.getContainsAttributeKinds();
+                if(currentAttributeKinds != null){
+                    allResultTargetAttributeKindList.addAll(currentAttributeKinds);
+                }
+            }
+            List<String> targetAttributeKindNameList = filterSingleValueAttributeKindNames(allResultTargetAttributeKindList);
+           return getSingleValueEntityAttributesByAttributeNames(targetAttributeKindNameList,exploreParameters);
         }
         return null;
     }
@@ -557,6 +569,23 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
+    }
+
+    private List<String> filterSingleValueAttributeKindNames(List<AttributeKind> targetAttributeKindList){
+        List<String> singleValueAttributeKindNames = new ArrayList<>();
+        List<AttributeKind> singleValueAttributesKindsList = getContainsSingleValueAttributeKinds();
+
+        List<String> singleValueAttributesKindNamesList = new ArrayList<>();
+        for(AttributeKind currentAttributeKind:singleValueAttributesKindsList){
+            singleValueAttributesKindNamesList.add(currentAttributeKind.getAttributeKindName());
+        }
+        for(AttributeKind currentTargetAttributeKind:targetAttributeKindList){
+            String currentAttributeKindName = currentTargetAttributeKind.getAttributeKindName();
+            if(singleValueAttributesKindNamesList.contains(currentAttributeKindName)){
+                singleValueAttributeKindNames.add(currentAttributeKindName);
+            }
+        }
+        return singleValueAttributeKindNames;
     }
 
     //internal graphOperationExecutor management logic
