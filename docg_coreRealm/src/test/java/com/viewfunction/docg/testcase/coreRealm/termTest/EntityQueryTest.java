@@ -59,6 +59,7 @@ public class EntityQueryTest {
         newEntityValueMap.put("prop6", new BigDecimal("5566778890.223344"));
         newEntityValueMap.put("prop7",Short.valueOf("24"));
         newEntityValueMap.put("prop8", Float.valueOf("1234.66"));
+        newEntityValueMap.put("prop_date",new Date());
         ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValueMap);
         _ConceptionKind01.newEntity(conceptionEntityValue,false);
 
@@ -107,6 +108,8 @@ public class EntityQueryTest {
         attributesNameList.add("prop5");
         attributesNameList.add("prop6");
         attributesNameList.add("propNotExist");
+        attributesNameList.add("prop_date");
+
         ConceptionEntitiesAttributesRetrieveResult entitiesAttributesRetrieveResult1 = _ConceptionKind01.getSingleValueEntityAttributesByAttributeNames(attributesNameList,queryParameters);
         Assert.assertNotNull(entitiesAttributesRetrieveResult1.getOperationStatistics());
         Assert.assertNotNull(entitiesAttributesRetrieveResult1.getOperationStatistics().getStartTime());
@@ -123,10 +126,16 @@ public class EntityQueryTest {
             Map<String,Object> entityValueMap = currentConceptionEntityValue.getEntityAttributesValue();
             Assert.assertNotNull(entityUID);
             Assert.assertNotNull(entityValueMap);
-
-            System.out.println(entityUID);
-            System.out.println(entityValueMap);
-
+            Assert.assertEquals(entityValueMap.size(),4);
+            Assert.assertNotNull(entityValueMap.get("prop3"));
+            Assert.assertNotNull(entityValueMap.get("prop5"));
+            Assert.assertNotNull(entityValueMap.get("prop6"));
+            Assert.assertNotNull(entityValueMap.get("prop_date"));
+            Assert.assertTrue((Boolean) entityValueMap.get("prop5"));
+            Assert.assertTrue(entityValueMap.get("prop3") instanceof Long);
+            Assert.assertTrue(entityValueMap.get("prop5") instanceof Boolean);
+            Assert.assertTrue(entityValueMap.get("prop6") instanceof Double);
+            Assert.assertTrue(entityValueMap.get("prop_date") instanceof Date);
         }
 
 
