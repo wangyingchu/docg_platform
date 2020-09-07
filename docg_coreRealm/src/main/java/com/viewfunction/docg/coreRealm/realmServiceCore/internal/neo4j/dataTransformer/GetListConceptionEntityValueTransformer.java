@@ -15,15 +15,11 @@ import java.util.*;
 
 public class GetListConceptionEntityValueTransformer implements DataTransformer<List<ConceptionEntityValue>>{
 
-    private GraphOperationExecutor workingGraphOperationExecutor;
-
     private List<AttributeKind> containsAttributeKindList;
     private List<String> returnedAttributeList;
     private Map<String,AttributeDataType> attributeDataTypeMap;
 
-    public GetListConceptionEntityValueTransformer(List<String> returnedAttributeList,List<AttributeKind> containsAttributeKindList,GraphOperationExecutor workingGraphOperationExecutor){
-        this.workingGraphOperationExecutor = workingGraphOperationExecutor;
-
+    public GetListConceptionEntityValueTransformer(List<String> returnedAttributeList,List<AttributeKind> containsAttributeKindList){
         this.containsAttributeKindList = containsAttributeKindList;
         this.returnedAttributeList = returnedAttributeList;
 

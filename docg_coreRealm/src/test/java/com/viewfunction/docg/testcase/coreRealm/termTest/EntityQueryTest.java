@@ -4,6 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryPara
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
@@ -96,14 +97,37 @@ public class EntityQueryTest {
         queryParameters.addFilteringItem(new EqualFilteringItem("prop1",Long.parseLong("12345")), QueryParameters.FilteringLogic.OR);
 
         ConceptionEntitiesRetrieveResult conceptionEntitiesRetrieveResult = _ConceptionKind01.getEntities(queryParameters);
+
+        //need test case
         System.out.println( conceptionEntitiesRetrieveResult.getOperationStatistics().getResultEntitiesCount());
         System.out.println( conceptionEntitiesRetrieveResult.getConceptionEntities());
 
         List<String> attributesNameList = new ArrayList<>();
         attributesNameList.add("prop3");
         attributesNameList.add("prop5");
+        attributesNameList.add("prop6");
         attributesNameList.add("propNotExist");
-        _ConceptionKind01.getSingleValueEntityAttributesByAttributeNames(attributesNameList,queryParameters);
+        ConceptionEntitiesAttributesRetrieveResult entitiesAttributesRetrieveResult1 = _ConceptionKind01.getSingleValueEntityAttributesByAttributeNames(attributesNameList,queryParameters);
+        Assert.assertNotNull(entitiesAttributesRetrieveResult1.getOperationStatistics());
+        Assert.assertNotNull(entitiesAttributesRetrieveResult1.getOperationStatistics().getStartTime());
+        Assert.assertNotNull(entitiesAttributesRetrieveResult1.getOperationStatistics().getFinishTime());
+        Assert.assertNotNull(entitiesAttributesRetrieveResult1.getOperationStatistics().getQueryParameters());
+        Assert.assertTrue(entitiesAttributesRetrieveResult1.getOperationStatistics().getFinishTime().getTime() >
+                entitiesAttributesRetrieveResult1.getOperationStatistics().getStartTime().getTime());
+        Assert.assertTrue(entitiesAttributesRetrieveResult1.getOperationStatistics().getResultEntitiesCount()>0);
+        List<ConceptionEntityValue> resEntityValueList01 = entitiesAttributesRetrieveResult1.getConceptionEntityValues();
+        Assert.assertEquals(resEntityValueList01.size(),entitiesAttributesRetrieveResult1.getOperationStatistics().getResultEntitiesCount());
+
+        for(ConceptionEntityValue currentConceptionEntityValue:resEntityValueList01){
+            String entityUID = currentConceptionEntityValue.getConceptionEntityUID();
+            Map<String,Object> entityValueMap = currentConceptionEntityValue.getEntityAttributesValue();
+            Assert.assertNotNull(entityUID);
+            Assert.assertNotNull(entityValueMap);
+
+            System.out.println(entityUID);
+            System.out.println(entityValueMap);
+
+        }
 
 
     }
@@ -121,7 +145,8 @@ public class EntityQueryTest {
         newEntityValueMap.put("prop4",str);
         Random random=new Random();
         newEntityValueMap.put("prop5",random.nextBoolean());
-        newEntityValueMap.put("prop6",new Date());
+        newEntityValueMap.put("prop6",new BigDecimal(Math.random()));
+        newEntityValueMap.put("prop_date",new Date());
         /*
         int num = (int)(Math.random()*100+1);
         int m =39;
