@@ -4,7 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryPara
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationKindAttachable;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationAttachable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaAttributeFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaConfigItemFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
@@ -14,7 +14,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperatio
 
 import java.util.List;
 
-public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAttributeFeatureSupportable, ClassificationKindAttachable {
+public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAttributeFeatureSupportable, ClassificationAttachable {
     public String getConceptionKindName();
     public String getConceptionKindDesc();
     public Long countConceptionEntities() throws CoreRealmServiceRuntimeException;

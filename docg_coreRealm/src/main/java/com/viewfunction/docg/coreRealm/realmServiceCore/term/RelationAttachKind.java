@@ -1,7 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationKindAttachable;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationAttachable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaAttributeFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaConfigItemFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
@@ -10,7 +10,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachLi
 import java.util.List;
 import java.util.Map;
 
-public interface RelationAttachKind extends MetaConfigItemFeatureSupportable, MetaAttributeFeatureSupportable, ClassificationKindAttachable {
+public interface RelationAttachKind extends MetaConfigItemFeatureSupportable, MetaAttributeFeatureSupportable, ClassificationAttachable {
     public String getRelationAttachKindUID();
     public String getSourceConceptionKindName();
     public String getTargetConceptionKindName();
