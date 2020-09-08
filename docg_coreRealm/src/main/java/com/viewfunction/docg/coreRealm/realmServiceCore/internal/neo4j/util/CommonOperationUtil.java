@@ -67,7 +67,8 @@ public class CommonOperationUtil {
                         propertyValue instanceof Double[]||
                         propertyValue instanceof BigDecimal[]||
                         propertyValue instanceof String[]||
-                        propertyValue instanceof byte[]){
+                        propertyValue instanceof byte[]||
+                        propertyValue instanceof Byte[]){
                     List<Literal> literalList = new ArrayList<>();
 
                     if(propertyValue instanceof Boolean[]){
@@ -121,6 +122,12 @@ public class CommonOperationUtil {
                     if(propertyValue instanceof byte[]){
                         byte[] orgValue = (byte[])propertyValue;
                         for(byte currentValue:orgValue){
+                            literalList.add(Cypher.literalOf(currentValue));
+                        }
+                    }
+                    if(propertyValue instanceof Byte[]){
+                        Byte[] orgValue = (Byte[])propertyValue;
+                        for(Byte currentValue:orgValue){
                             literalList.add(Cypher.literalOf(currentValue));
                         }
                     }
@@ -223,6 +230,7 @@ public class CommonOperationUtil {
                 case STRING: currentAttributeDataType = AttributeDataType.STRING_ARRAY;break;
                 case BINARY: currentAttributeDataType = AttributeDataType.BINARY_ARRAY;break;
                 case DATE: currentAttributeDataType = AttributeDataType.DATE_ARRAY;break;
+                case BYTE: currentAttributeDataType = AttributeDataType.BYTE_ARRAY;break;
             }
         }else{
             currentAttributeDataType = checkAttributeDataType(attributeValueObject);
@@ -276,6 +284,12 @@ public class CommonOperationUtil {
                 List<Byte> byteValueList = (List<Byte>)attributeValueObject;
                 Byte[] returnByteValueArray = byteValueList.toArray(new Byte[byteValueList.size()]);
                 currentAttributeValue.setAttributeValue(returnByteValueArray);
+                needSetAttributeValue = false;
+                break;
+            case BYTE_ARRAY:
+                List<Byte> _ByteValueList = (List<Byte>)attributeValueObject;
+                Byte[] returnByteValueArray2 = _ByteValueList.toArray(new Byte[_ByteValueList.size()]);
+                currentAttributeValue.setAttributeValue(returnByteValueArray2);
                 needSetAttributeValue = false;
                 break;
             case DOUBLE_ARRAY:

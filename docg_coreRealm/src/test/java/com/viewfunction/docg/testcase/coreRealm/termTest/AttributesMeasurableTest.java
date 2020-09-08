@@ -79,6 +79,7 @@ public class AttributesMeasurableTest {
         newEntityValue.put("prop18", new Date[]{new Date(),new Date(),new Date(),new Date()});
         newEntityValue.put("prop19", Byte.valueOf("2"));
         newEntityValue.put("prop20", "this is a byte array value".getBytes());
+        newEntityValue.put("prop21", new Byte[]{Byte.valueOf("1"),Byte.valueOf("3"),Byte.valueOf("5")});
 
         ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValue);
 
@@ -100,7 +101,7 @@ public class AttributesMeasurableTest {
 
         List<String> attributeNameList = _queryResultConceptionEntity.getAttributeNames();
         Assert.assertNotNull(attributeNameList);
-        Assert.assertEquals(attributeNameList.size(),20);
+        Assert.assertEquals(attributeNameList.size(),21);
         List<String> targetAttributeNameList = new ArrayList();
         targetAttributeNameList.add("prop1");targetAttributeNameList.add("prop2");targetAttributeNameList.add("prop3");
         targetAttributeNameList.add("prop4");targetAttributeNameList.add("prop5");targetAttributeNameList.add("prop6");
@@ -108,13 +109,13 @@ public class AttributesMeasurableTest {
         targetAttributeNameList.add("prop10");targetAttributeNameList.add("prop11");targetAttributeNameList.add("prop12");
         targetAttributeNameList.add("prop13");targetAttributeNameList.add("prop14");targetAttributeNameList.add("prop15");
         targetAttributeNameList.add("prop16");targetAttributeNameList.add("prop17");targetAttributeNameList.add("prop18");
-        targetAttributeNameList.add("prop19");targetAttributeNameList.add("prop20");
+        targetAttributeNameList.add("prop19");targetAttributeNameList.add("prop20");targetAttributeNameList.add("prop21");
         for(String attributeName:attributeNameList){
             Assert.assertTrue(targetAttributeNameList.contains(attributeName));
         }
         List<AttributeValue> attributeValueList = _queryResultConceptionEntity.getAttributes();
         Assert.assertNotNull(attributeValueList);
-        Assert.assertEquals(attributeValueList.size(),20);
+        Assert.assertEquals(attributeValueList.size(),21);
         for(AttributeValue currentAttributeValue:attributeValueList){
             String attributeName = currentAttributeValue.getAttributeName();
             AttributeDataType currentAttributeDataType = currentAttributeValue.getAttributeDataType();
@@ -273,6 +274,16 @@ public class AttributesMeasurableTest {
                 Assert.assertNotNull(((Date[])currentAttributeValueObj)[2]);
                 Assert.assertNotNull(((Date[])currentAttributeValueObj)[3]);
             }
+            //neo4j java driver 内部使用Long 来存储 Byte类型数据
+            if(attributeName.equals("prop21")){
+                Assert.assertEquals(currentAttributeDataType,AttributeDataType.LONG_ARRAY);
+                Assert.assertTrue(currentAttributeValueObj instanceof Long[]);
+                Assert.assertEquals(((Long[])currentAttributeValueObj).length,3);
+                Assert.assertTrue(((Long[])currentAttributeValueObj)[0] instanceof Long);
+                Assert.assertEquals(((Long[])currentAttributeValueObj)[0],new Long(1));
+                Assert.assertEquals(((Long[])currentAttributeValueObj)[1],new Long(3));
+                Assert.assertEquals(((Long[])currentAttributeValueObj)[2],new Long(5));
+            }
         }
 
         AttributeValue attributeValueNotExist = _queryResultConceptionEntity.getAttribute("valueNotExost");
@@ -330,6 +341,7 @@ public class AttributesMeasurableTest {
         Assert.assertTrue( _queryResultConceptionEntity.hasAttribute("prop7"));
         Assert.assertTrue( _queryResultConceptionEntity.hasAttribute("prop9"));
         Assert.assertTrue( _queryResultConceptionEntity.hasAttribute("prop20"));
+        Assert.assertTrue( _queryResultConceptionEntity.hasAttribute("prop21"));
         Assert.assertFalse( _queryResultConceptionEntity.hasAttribute("propNotExist"));
 
         AttributeValue newAddedAttributeValue1 = _queryResultConceptionEntity.addAttribute("newBooleanAttribute1",false);
@@ -398,7 +410,12 @@ public class AttributesMeasurableTest {
         Assert.assertNotNull(newAddedAttributeValue10);
         Assert.assertEquals(newAddedAttributeValue10.getAttributeDataType(),AttributeDataType.LONG_ARRAY);
         Assert.assertTrue(newAddedAttributeValue10.getAttributeValue() instanceof  Long[]);
-        //Assert.assertEquals(newAddedAttributeValue10.getAttributeValue(),byteArray);
+
+        Byte[] _ByteArray = new Byte[]{Byte.valueOf("7"),Byte.valueOf("9"),Byte.valueOf("11")};
+        AttributeValue newAddedAttributeValue10B = _queryResultConceptionEntity.addAttribute("newByteArrayAttributeB",_ByteArray);
+        Assert.assertNotNull(newAddedAttributeValue10B);
+        Assert.assertEquals(newAddedAttributeValue10B.getAttributeDataType(),AttributeDataType.LONG_ARRAY);
+        Assert.assertTrue(newAddedAttributeValue10B.getAttributeValue() instanceof  Long[]);
 
         AttributeValue newAddedAttributeValue11 = _queryResultConceptionEntity.addAttribute("newByteAttribute",Byte.valueOf("1"));
         Assert.assertNotNull(newAddedAttributeValue11);
@@ -639,6 +656,13 @@ public class AttributesMeasurableTest {
         Assert.assertEquals(updatedAttributeValue_pro20.getAttributeDataType(),AttributeDataType.LONG_ARRAY);
         Assert.assertEquals(updatedAttributeValue_pro20.getAttributeName(),"prop20");
         Assert.assertNotNull(updatedAttributeValue_pro20.getAttributeValue());
+
+        Byte[] _ByteArray2 = new Byte[]{Byte.valueOf("6"),Byte.valueOf("8"),Byte.valueOf("10")};
+        AttributeValue updatedAttributeValue_pro21 = _queryResultConceptionEntity.updateAttribute("prop21",_ByteArray2);
+        Assert.assertNotNull(updatedAttributeValue_pro21);
+        Assert.assertEquals(updatedAttributeValue_pro21.getAttributeDataType(),AttributeDataType.LONG_ARRAY);
+        Assert.assertEquals(updatedAttributeValue_pro21.getAttributeName(),"prop21");
+        Assert.assertNotNull(updatedAttributeValue_pro21.getAttributeValue());
 
         exceptionShouldBeCaught = false;
         try {

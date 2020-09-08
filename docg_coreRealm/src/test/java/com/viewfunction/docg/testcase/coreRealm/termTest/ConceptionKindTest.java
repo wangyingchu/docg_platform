@@ -217,6 +217,7 @@ public class ConceptionKindTest {
         newEntityValueMap.put("prop18", new Date[]{new Date(),new Date(),new Date(),new Date()});
         newEntityValueMap.put("prop19", Byte.valueOf("2"));
         newEntityValueMap.put("prop20", "this is a byte array value".getBytes());
+        newEntityValueMap.put("prop21", new Byte[]{Byte.valueOf("1"),Byte.valueOf("3"),Byte.valueOf("5")});
 
         List<ConceptionEntityValue> conceptionEntityValueList = new ArrayList<>();
         ConceptionEntityValue conceptionEntityValue1 = new ConceptionEntityValue(newEntityValueMap);
@@ -243,7 +244,7 @@ public class ConceptionKindTest {
         for(String currentEntityUID:addEntitiesResult.getSuccessEntityUIDs()){
             ConceptionEntity currentConceptionEntity = _ConceptionKind01.getEntityByUID(currentEntityUID);
             Assert.assertNotNull(currentConceptionEntity);
-            Assert.assertEquals(currentConceptionEntity.getAttributes().size(),20);
+            Assert.assertEquals(currentConceptionEntity.getAttributes().size(),21);
         }
 
         ConceptionEntity currentConceptionEntity = _ConceptionKind01.getEntityByUID(addEntitiesResult.getSuccessEntityUIDs().get(0));
@@ -256,6 +257,7 @@ public class ConceptionKindTest {
         updateEntityValueMap.put("prop2",Double.parseDouble("10000000.1"));
         updateEntityValueMap.put("prop3",new Date());
         updateEntityValueMap.put("prop3_NotExist",new Date());
+        updateEntityValueMap.put("prop21", new Byte[]{Byte.valueOf("88"),Byte.valueOf("77"),Byte.valueOf("66")});
 
         ConceptionEntityValue conceptionEntityValueForUpdate = new ConceptionEntityValue(updateEntityValueMap);
         conceptionEntityValueForUpdate.setConceptionEntityUID(addEntitiesResult.getSuccessEntityUIDs().get(0));
