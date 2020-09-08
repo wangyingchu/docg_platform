@@ -217,6 +217,7 @@ public class EntityQueryTest {
         newEntityValue.put("prop18", new Date[]{new Date(),new Date(),new Date(),new Date()});
         newEntityValue.put("prop19", Byte.valueOf("2"));
         newEntityValue.put("prop20", "this is a byte array value".getBytes());
+        newEntityValue.put("prop21", new Byte[]{Byte.valueOf("1"),Byte.valueOf("3"),Byte.valueOf("5")});
 
         ConceptionEntityValue conceptionEntityValue2 = new ConceptionEntityValue(newEntityValue);
         ConceptionEntity _ConceptionEntity = _ConceptionKind02.newEntity(conceptionEntityValue2,false);
@@ -243,6 +244,7 @@ public class EntityQueryTest {
         attributesNameList2.add("prop18");
         attributesNameList2.add("prop19");
         attributesNameList2.add("prop20");
+        attributesNameList2.add("prop21");
 
         QueryParameters queryParameters2 = new QueryParameters();
         ConceptionEntitiesAttributesRetrieveResult entitiesAttributesRetrieveResult3 = _ConceptionKind02.getSingleValueEntityAttributesByAttributeNames(attributesNameList2,queryParameters2);
@@ -254,7 +256,7 @@ public class EntityQueryTest {
         Map<String,Object> attributesValueMap = targetConceptionEntityValue.getEntityAttributesValue();
         Assert.assertNotNull(targetConceptionEntityValue.getConceptionEntityUID());
         Assert.assertNotNull(attributesValueMap);
-        Assert.assertEquals(attributesValueMap.size(),20);
+        Assert.assertEquals(attributesValueMap.size(),21);
         Assert.assertTrue(attributesValueMap.get("prop1") instanceof Long);
         Assert.assertTrue(attributesValueMap.get("prop2") instanceof Double);
         Assert.assertTrue(attributesValueMap.get("prop3") instanceof Long);
@@ -275,6 +277,7 @@ public class EntityQueryTest {
         Assert.assertTrue(attributesValueMap.get("prop18") instanceof Date[]);
         Assert.assertTrue(attributesValueMap.get("prop19") instanceof Long);
         Assert.assertTrue(attributesValueMap.get("prop20") instanceof Long[]);
+        Assert.assertTrue(attributesValueMap.get("prop21") instanceof Long[]);
 
         String currentViewKindName2 = "attributesViewKind2"+new Date().getTime();
         AttributesViewKind targetAttributesViewKind2 = coreRealm.createAttributesViewKind(currentViewKindName2,"-",null);
@@ -305,6 +308,7 @@ public class EntityQueryTest {
         AttributeKind attributeKindB018 = coreRealm.createAttributeKind("prop18","-", AttributeDataType.DATE_ARRAY);
         AttributeKind attributeKindB019 = coreRealm.createAttributeKind("prop19","-", AttributeDataType.BYTE);
         AttributeKind attributeKindB020 = coreRealm.createAttributeKind("prop20","-", AttributeDataType.BINARY);
+        AttributeKind attributeKindB021 = coreRealm.createAttributeKind("prop21","-", AttributeDataType.BYTE_ARRAY);
         targetAttributesViewKind2.attachAttributeKind(attributeKindB01.getAttributeKindUID());
         targetAttributesViewKind2.attachAttributeKind(attributeKindB02.getAttributeKindUID());
         targetAttributesViewKind2.attachAttributeKind(attributeKindB03.getAttributeKindUID());
@@ -325,6 +329,7 @@ public class EntityQueryTest {
         targetAttributesViewKind2.attachAttributeKind(attributeKindB018.getAttributeKindUID());
         targetAttributesViewKind2.attachAttributeKind(attributeKindB019.getAttributeKindUID());
         targetAttributesViewKind2.attachAttributeKind(attributeKindB020.getAttributeKindUID());
+        targetAttributesViewKind2.attachAttributeKind(attributeKindB021.getAttributeKindUID());
 
         entitiesAttributesRetrieveResult4 = _ConceptionKind02.getSingleValueEntityAttributesByViewKinds(targetAttributesViewKindList2,queryParameters2);
         List<ConceptionEntityValue> resultConceptionEntityValueList4 = entitiesAttributesRetrieveResult4.getConceptionEntityValues();
@@ -336,7 +341,7 @@ public class EntityQueryTest {
         Assert.assertNotNull(targetConceptionEntityValue2.getConceptionEntityUID());
         Assert.assertNotNull(attributesValueMap2);
 
-        Assert.assertEquals(attributesValueMap2.size(),20);
+        Assert.assertEquals(attributesValueMap2.size(),21);
         Assert.assertTrue(attributesValueMap2.get("prop1") instanceof Long);
         Assert.assertTrue(attributesValueMap2.get("prop2") instanceof Double);
         Assert.assertTrue(attributesValueMap2.get("prop3") instanceof Integer);
@@ -356,7 +361,8 @@ public class EntityQueryTest {
         Assert.assertTrue(attributesValueMap2.get("prop17") instanceof Date);
         Assert.assertTrue(attributesValueMap2.get("prop18") instanceof Date[]);
         Assert.assertTrue(attributesValueMap2.get("prop19") instanceof Byte);
-        Assert.assertTrue(attributesValueMap2.get("prop20") instanceof Byte[]);
+        Assert.assertTrue(attributesValueMap2.get("prop20") instanceof byte[]);
+        Assert.assertTrue(attributesValueMap2.get("prop21") instanceof Byte[]);
     }
 
     private ConceptionEntityValue generateRandomConceptionEntityValue(){

@@ -135,12 +135,18 @@ public class GetListConceptionEntityValueTransformer implements DataTransformer<
                                     returnShortValueArray[i] = longValueList.get(i).shortValue();
                                 }
                                 return returnShortValueArray;
-                            case BINARY:
+                            case BYTE_ARRAY:
                                 Byte[] returnByteValueArray = new Byte[longValueList.size()];
                                 for (int i = 0; i < longValueList.size(); i++) {
                                     returnByteValueArray[i] = longValueList.get(i).byteValue();
                                 }
                                 return returnByteValueArray;
+                            case BINARY:
+                                byte[] returnBinaryValueArray = new byte[longValueList.size()];
+                                for (int i = 0; i < longValueList.size(); i++) {
+                                    returnBinaryValueArray[i] = longValueList.get(i).byteValue();
+                                }
+                                return returnBinaryValueArray;
                         }
                     }else {
                         Long[] returnLongValueArray = new Long[longValueList.size()];
