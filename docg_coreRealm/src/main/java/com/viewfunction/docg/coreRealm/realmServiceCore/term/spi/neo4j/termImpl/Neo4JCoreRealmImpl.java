@@ -392,7 +392,32 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
     @Override
     public Classification createClassification(String classificationName, String classificationDesc) {
-        return null;
+        if(classificationName == null){
+            return null;
+        }
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String checkCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.ClassificationClass,RealmConstant._NameProperty,classificationName,1);
+            Object classificationExistenceRes = workingGraphOperationExecutor.executeRead(new CheckResultExistenceTransformer(),checkCql);
+            if(((Boolean)classificationExistenceRes).booleanValue()){
+                return null;
+            }
+            Map<String,Object> propertiesMap = new HashMap<>();
+            propertiesMap.put(RealmConstant._NameProperty,classificationName);
+            if(classificationDesc != null) {
+                propertiesMap.put(RealmConstant._DescProperty, classificationDesc);
+            }
+            CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
+            String createCql = CypherBuilder.createLabeledNodeWithProperties(RealmConstant.ClassificationClass,propertiesMap);
+            GetSingleClassificationTransformer getSingleClassificationTransformer =
+                    new GetSingleClassificationTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object createClassificationRes = workingGraphOperationExecutor.executeWrite(getSingleClassificationTransformer,createCql);
+            Classification targetClassification = createClassificationRes != null ? (Classification)createClassificationRes : null;
+            executeClassificationCacheOperation(targetClassification,CacheOperationType.INSERT);
+            return targetClassification;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
