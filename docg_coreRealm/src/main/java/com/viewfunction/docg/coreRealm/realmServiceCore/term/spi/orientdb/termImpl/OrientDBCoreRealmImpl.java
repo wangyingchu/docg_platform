@@ -85,4 +85,24 @@ public class OrientDBCoreRealmImpl implements CoreRealm {
     public boolean removeRelationKind(String relationKindName, boolean deleteExistEntities) throws CoreRealmServiceRuntimeException {
         return false;
     }
+
+    @Override
+    public Classification getClassification(String classificationName) {
+        return null;
+    }
+
+    @Override
+    public Classification createClassification(String classificationName, String classificationDesc) {
+        return null;
+    }
+
+    @Override
+    public Classification createClassification(String classificationName, String classificationDesc, String parentClassificationName) throws CoreRealmFunctionNotSupportedException {
+        return null;
+    }
+
+    @Override
+    public boolean removeClassification(String classificationName) throws CoreRealmServiceRuntimeException {
+        return false;
+    }
 }

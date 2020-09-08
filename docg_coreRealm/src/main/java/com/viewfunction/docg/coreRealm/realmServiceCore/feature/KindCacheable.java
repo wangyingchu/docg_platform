@@ -37,7 +37,7 @@ public interface KindCacheable<K,V>{
         }
     }
 
-    public default void executeClassificationKindCacheOperation(Classification classification, CacheOperationType cacheOperationType) {
+    public default void executeClassificationCacheOperation(Classification classification, CacheOperationType cacheOperationType) {
 
     }
 

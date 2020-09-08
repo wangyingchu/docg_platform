@@ -25,4 +25,10 @@ public interface CoreRealm {
     public RelationKind createRelationKind(String relationKindName,String relationKindDesc,String parentRelationKindName)
             throws CoreRealmFunctionNotSupportedException;
     public boolean removeRelationKind(String relationKindName, boolean deleteExistEntities) throws CoreRealmServiceRuntimeException;
+
+    public Classification getClassification(String classificationName);
+    public Classification createClassification(String classificationName,String classificationDesc);
+    public Classification createClassification(String classificationName,String classificationDesc,String parentClassificationName)
+            throws CoreRealmFunctionNotSupportedException;
+    public boolean removeClassification(String classificationName) throws CoreRealmServiceRuntimeException;
 }

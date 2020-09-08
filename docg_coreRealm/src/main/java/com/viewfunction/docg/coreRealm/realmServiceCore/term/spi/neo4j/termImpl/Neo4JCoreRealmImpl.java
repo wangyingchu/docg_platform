@@ -373,6 +373,38 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         }
     }
 
+    @Override
+    public Classification getClassification(String classificationName) {
+        if(classificationName == null){
+            return null;
+        }
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.ClassificationClass,RealmConstant._NameProperty,classificationName,1);
+            GetSingleClassificationTransformer getSingleClassificationTransformer =
+                    new GetSingleClassificationTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object classificationRes = workingGraphOperationExecutor.executeWrite(getSingleClassificationTransformer,queryCql);
+            return classificationRes != null?(Classification)classificationRes:null;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public Classification createClassification(String classificationName, String classificationDesc) {
+        return null;
+    }
+
+    @Override
+    public Classification createClassification(String classificationName, String classificationDesc, String parentClassificationName) throws CoreRealmFunctionNotSupportedException {
+        return null;
+    }
+
+    @Override
+    public boolean removeClassification(String classificationName) throws CoreRealmServiceRuntimeException {
+        return false;
+    }
+
     //internal graphOperationExecutor management logic
     private GraphOperationExecutorHelper graphOperationExecutorHelper;
 
