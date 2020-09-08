@@ -225,10 +225,8 @@ public class Neo4JAttributesMeasurableImpl implements AttributesMeasurable {
     }
 
     @Override
-    public AttributeValue addAttribute(String attributeName, Byte[][] attributeValue) throws CoreRealmServiceRuntimeException {
-        CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
-        exception.setCauseMessage("Neo4J storage implements doesn't support this function");
-        throw exception;
+    public AttributeValue addAttribute(String attributeName, Byte[] attributeValue) throws CoreRealmServiceRuntimeException {
+        return setAttribute(attributeName,attributeValue);
     }
 
     @Override
@@ -332,10 +330,8 @@ public class Neo4JAttributesMeasurableImpl implements AttributesMeasurable {
     }
 
     @Override
-    public AttributeValue updateAttribute(String attributeName, Byte[][] attributeValue) throws CoreRealmServiceRuntimeException {
-        CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
-        exception.setCauseMessage("Neo4J storage implements doesn't support this function");
-        throw exception;
+    public AttributeValue updateAttribute(String attributeName, Byte[] attributeValue) throws CoreRealmServiceRuntimeException {
+        return checkAndUpdateAttribute(attributeName,attributeValue);
     }
 
     @Override
