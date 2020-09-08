@@ -84,7 +84,7 @@ public class GetSingleAttributeKindTransformer implements DataTransformer<Attrib
                             break;
                         case "STRING_ARRAY":attributeDataType = AttributeDataType.STRING_ARRAY;
                             break;
-                        case "BINARY_ARRAY":attributeDataType = AttributeDataType.BINARY_ARRAY;
+                        case "BYTE_ARRAY":attributeDataType = AttributeDataType.BYTE_ARRAY;
                             break;
                         case "DECIMAL_ARRAY":attributeDataType = AttributeDataType.DECIMAL_ARRAY;
                     }

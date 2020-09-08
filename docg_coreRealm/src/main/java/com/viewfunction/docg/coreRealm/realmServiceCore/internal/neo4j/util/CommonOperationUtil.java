@@ -228,9 +228,8 @@ public class CommonOperationUtil {
                 case DOUBLE: currentAttributeDataType = AttributeDataType.DOUBLE_ARRAY;break;
                 case DECIMAL: currentAttributeDataType = AttributeDataType.DECIMAL_ARRAY;break;
                 case STRING: currentAttributeDataType = AttributeDataType.STRING_ARRAY;break;
-                case BINARY: currentAttributeDataType = AttributeDataType.BINARY_ARRAY;break;
-                case DATE: currentAttributeDataType = AttributeDataType.DATE_ARRAY;break;
                 case BYTE: currentAttributeDataType = AttributeDataType.BYTE_ARRAY;break;
+                case DATE: currentAttributeDataType = AttributeDataType.DATE_ARRAY;break;
             }
         }else{
             currentAttributeDataType = checkAttributeDataType(attributeValueObject);
@@ -278,12 +277,6 @@ public class CommonOperationUtil {
                 List<Short> shortValueList = (List<Short>)attributeValueObject;
                 Short[] returnShortValueArray = shortValueList.toArray(new Short[shortValueList.size()]);
                 currentAttributeValue.setAttributeValue(returnShortValueArray);
-                needSetAttributeValue = false;
-                break;
-            case BINARY_ARRAY:
-                List<Byte> byteValueList = (List<Byte>)attributeValueObject;
-                Byte[] returnByteValueArray = byteValueList.toArray(new Byte[byteValueList.size()]);
-                currentAttributeValue.setAttributeValue(returnByteValueArray);
                 needSetAttributeValue = false;
                 break;
             case BYTE_ARRAY:
@@ -469,8 +462,8 @@ public class CommonOperationUtil {
                         return true;
                     }
                     break;
-                case BINARY_ARRAY:
-                    if(dataValue instanceof Byte[][]){
+                case BYTE_ARRAY:
+                    if(dataValue instanceof Byte[]){
                         return true;
                     }
                     break;
