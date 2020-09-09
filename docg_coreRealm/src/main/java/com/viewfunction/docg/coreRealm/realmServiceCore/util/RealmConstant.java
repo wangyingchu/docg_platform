@@ -10,6 +10,7 @@ public interface RealmConstant {
     public final String ConceptionKind_AttributesViewKindRelationClass="DOCG_ConceptionContainsViewKindIs";
     public final String Kind_MetaConfigItemsStorageRelationClass ="DOCG_MetaConfigItemsStorageIs";
     public final String AttributesViewKind_AttributeKindRelationClass="DOCG_ViewContainsAttributeKindIs";
+    public final String Classification_ClassificationRelationClass="DOCG_ParentClassificationIs";
 
     public final String _NameProperty = "name";
     public final String _DescProperty = "description";
@@ -19,5 +20,4 @@ public interface RealmConstant {
     public final String _dataOriginProperty = "dataOrigin";
     public final String _viewKindDataForm = "viewKindDataForm";
     public final String _attributeDataType = "attributeDataType";
-
 }

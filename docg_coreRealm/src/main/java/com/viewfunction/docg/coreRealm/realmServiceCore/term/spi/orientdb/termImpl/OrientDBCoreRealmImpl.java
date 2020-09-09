@@ -97,7 +97,7 @@ public class OrientDBCoreRealmImpl implements CoreRealm {
     }
 
     @Override
-    public Classification createClassification(String classificationName, String classificationDesc, String parentClassificationName) throws CoreRealmFunctionNotSupportedException {
+    public Classification createClassification(String classificationName, String classificationDesc, String parentClassificationName) throws CoreRealmServiceRuntimeException{
         return null;
     }
 

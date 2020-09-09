@@ -165,5 +165,37 @@ public class CoreRealmTest {
             exceptionShouldBeCaught = true;
         }
         Assert.assertTrue(exceptionShouldBeCaught);
+
+        String classificationName01 = "classification001";
+        Classification _Classification01 = coreRealm.getClassification(classificationName01);
+
+        Assert.assertFalse(coreRealm.removeClassification(null));
+        if(_Classification01 != null){
+            boolean removeClassificationResult = coreRealm.removeClassification(classificationName01);
+            Assert.assertTrue(removeClassificationResult);
+            exceptionShouldBeCaught = false;
+            try {
+                coreRealm.removeClassification(classificationName01);
+            }catch (CoreRealmServiceRuntimeException e){
+                exceptionShouldBeCaught = true;
+            }
+            Assert.assertTrue(exceptionShouldBeCaught);
+        }
+
+        _Classification01 = coreRealm.getClassification(classificationName01);
+        Assert.assertNull(_Classification01);
+        _Classification01 = coreRealm.createClassification(classificationName01,classificationName01+"Desc");
+        Assert.assertNotNull(_Classification01);
+        _Classification01 = coreRealm.getClassification(classificationName01);
+        Assert.assertNotNull(_Classification01);
+
+        String classificationName02 = "classification002";
+        Classification _Classification02 = coreRealm.getClassification(classificationName02);
+        if(_Classification02 != null){
+            coreRealm.removeClassification(classificationName02);
+        }
+
+        _Classification02 = coreRealm.createClassification(classificationName02,classificationName02+"Desc",classificationName01);
+        Assert.assertNotNull(_Classification02);
     }
 }

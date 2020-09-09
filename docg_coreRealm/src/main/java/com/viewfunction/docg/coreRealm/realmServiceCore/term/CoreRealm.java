@@ -29,6 +29,6 @@ public interface CoreRealm {
     public Classification getClassification(String classificationName);
     public Classification createClassification(String classificationName,String classificationDesc);
     public Classification createClassification(String classificationName,String classificationDesc,String parentClassificationName)
-            throws CoreRealmFunctionNotSupportedException;
+            throws CoreRealmServiceRuntimeException;
     public boolean removeClassification(String classificationName) throws CoreRealmServiceRuntimeException;
 }

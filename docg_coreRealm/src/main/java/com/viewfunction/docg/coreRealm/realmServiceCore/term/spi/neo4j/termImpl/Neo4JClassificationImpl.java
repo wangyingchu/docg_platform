@@ -14,7 +14,6 @@ public class Neo4JClassificationImpl implements Neo4JClassification {
     private String classificationDesc;
     private String classificationUID;
 
-
     public Neo4JClassificationImpl(String coreRealmName,String classificationName,String classificationDesc,String classificationUID){
         this.coreRealmName = coreRealmName;
         this.classificationName = classificationName;
@@ -23,10 +22,13 @@ public class Neo4JClassificationImpl implements Neo4JClassification {
         this.graphOperationExecutorHelper = new GraphOperationExecutorHelper();
     }
 
+    public String getClassificationUID() {
+        return this.classificationUID;
+    }
 
-
-
-
+    public String getCoreRealmName() {
+        return this.coreRealmName;
+    }
 
     //internal graphOperationExecutor management logic
     private GraphOperationExecutorHelper graphOperationExecutorHelper;
