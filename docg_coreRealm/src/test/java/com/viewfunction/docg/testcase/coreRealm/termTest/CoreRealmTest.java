@@ -197,5 +197,8 @@ public class CoreRealmTest {
 
         _Classification02 = coreRealm.createClassification(classificationName02,classificationName02+"Desc",classificationName01);
         Assert.assertNotNull(_Classification02);
+
+        _Classification02.addAttribute("attribute01","this is a string value");
+        Assert.assertEquals(_Classification02.getAttribute("attribute01").getAttributeValue(),"this is a string value");
     }
 }

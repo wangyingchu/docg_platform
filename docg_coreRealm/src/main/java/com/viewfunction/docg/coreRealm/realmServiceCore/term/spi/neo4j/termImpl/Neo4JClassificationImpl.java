@@ -1,12 +1,13 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureImpl.Neo4JAttributesMeasurableImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JClassification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Neo4JClassificationImpl implements Neo4JClassification {
+public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl implements Neo4JClassification {
 
     private static Logger logger = LoggerFactory.getLogger(Neo4JClassificationImpl.class);
     private String coreRealmName;
@@ -15,6 +16,7 @@ public class Neo4JClassificationImpl implements Neo4JClassification {
     private String classificationUID;
 
     public Neo4JClassificationImpl(String coreRealmName,String classificationName,String classificationDesc,String classificationUID){
+        super(classificationUID);
         this.coreRealmName = coreRealmName;
         this.classificationName = classificationName;
         this.classificationDesc = classificationDesc;

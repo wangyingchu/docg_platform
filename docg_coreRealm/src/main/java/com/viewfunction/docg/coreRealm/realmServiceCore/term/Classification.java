@@ -1,8 +1,9 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.AttributesMeasurable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaAttributeFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaConfigItemFeatureSupportable;
 
-public interface Classification extends MetaConfigItemFeatureSupportable, MetaAttributeFeatureSupportable {
+public interface Classification extends MetaConfigItemFeatureSupportable, MetaAttributeFeatureSupportable, AttributesMeasurable{
 
 }
