@@ -1,11 +1,15 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureImpl.Neo4JAttributesMeasurableImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.Classification;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JClassification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl implements Neo4JClassification {
 
@@ -47,5 +51,50 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
     @Override
     public GraphOperationExecutorHelper getGraphOperationExecutorHelper() {
         return graphOperationExecutorHelper;
+    }
+
+    @Override
+    public String getClassificationName() {
+        return this.classificationName;
+    }
+
+    @Override
+    public String getClassificationDesc() {
+        return this.classificationName;
+    }
+
+    @Override
+    public boolean isRootClassification() {
+        return false;
+    }
+
+    @Override
+    public Classification getParentClassification() {
+        return null;
+    }
+
+    @Override
+    public List<Classification> getChildrenClassifications() {
+        return null;
+    }
+
+    @Override
+    public boolean attachChildClassification(String childClassificationName) throws CoreRealmServiceRuntimeException {
+        return false;
+    }
+
+    @Override
+    public boolean detachChildClassification(String childClassificationName) throws CoreRealmServiceRuntimeException {
+        return false;
+    }
+
+    @Override
+    public Classification createChildClassification(String classificationName, String classificationDesc) {
+        return null;
+    }
+
+    @Override
+    public boolean removeChildClassification(String classificationName) throws CoreRealmServiceRuntimeException {
+        return false;
     }
 }
