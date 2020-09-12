@@ -94,6 +94,13 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
+    public InheritanceTree<ConceptionKind> getOffspringConceptionKinds() throws CoreRealmFunctionNotSupportedException {
+        CoreRealmFunctionNotSupportedException exception = new CoreRealmFunctionNotSupportedException();
+        exception.setCauseMessage("Neo4J storage implements doesn't support this function");
+        throw exception;
+    }
+
+    @Override
     public ConceptionEntity newEntity(ConceptionEntityValue conceptionEntityValue, boolean addPerDefinedRelation) {
         if (conceptionEntityValue != null) {
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
