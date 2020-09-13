@@ -3,7 +3,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.AttributesMeasurable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaAttributeFeatureSupportable;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.InheritanceTree;
+import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 
 import java.util.List;
 
