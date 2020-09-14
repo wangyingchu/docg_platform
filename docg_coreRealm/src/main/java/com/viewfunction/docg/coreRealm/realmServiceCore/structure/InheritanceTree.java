@@ -1,5 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.structure;
 
+import java.util.Collection;
+
 public interface InheritanceTree <T>{
 
     public enum TraversalStrategy{
@@ -14,33 +16,33 @@ public interface InheritanceTree <T>{
     A path in a tree is a sequence of nodes such that any two consecutive nodes in the sequence form an edge.
     */
 
+    boolean isRoot(String nodeUID);
+    String getRootUID();
     T getRoot();
-    T getParent(T n);
-    Iterable<T> getChildren(T n);
-    int numOfChildren(T n);
-    boolean isRoot(T n);
+    T getNode(String nodeUID);
+    String getParentUID(String nodeUID);
+    T getParent(String nodeUID);
+    Collection<String> getChildrenUID(String nodeUID);
+    Collection<T> getChildren(String nodeUID);
+    Collection<T> getSiblings(String nodeUID);
+    int numOfChildren(String nodeUID);
     int size();
-    Iterable<T> path(T n1,T n2);
+    Iterable<T> path(String ancestorNodeUID,String OffspringNodeUID);
+    Iterable<T> traversalTree(String nodeUID,TraversalStrategy traversalStrategy);
 
-    Iterable<T> traversalTree(TraversalStrategy traversalStrategy);
-
-    default Iterable<T> traversalTree(){
-        return traversalTree(TraversalStrategy.BreadthFirst);
+    default Iterable<T> traversalTree(String nodeUID){
+        return traversalTree(nodeUID,TraversalStrategy.BreadthFirst);
     }
 
-    default int depth(T n) {
-        if (isRoot(n)){
+    default boolean isLeafNode(String nodeUID)  {
+        return numOfChildren(nodeUID) == 0;
+    }
+
+    default int depth(String nodeUID) {
+        if (isRoot(nodeUID)){
             return 0;
         } else{
-            return 1 + depth(getParent(n));
+            return 1 + depth(getParentUID(nodeUID));
         }
-    }
-
-    default boolean isInternal(T n) {
-        return numOfChildren(n) > 0;
-    }
-
-    default boolean isExternal(T n)  {
-        return numOfChildren(n) == 0;
     }
 }
