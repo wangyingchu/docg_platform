@@ -2,12 +2,17 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureImpl.Neo4JAttributesMeasurableImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListClassificationTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleClassificationTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.spi.common.structureImpl.CommonInheritanceTreeImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.Classification;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JClassification;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,23 +43,6 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
         return this.coreRealmName;
     }
 
-    //internal graphOperationExecutor management logic
-    private GraphOperationExecutorHelper graphOperationExecutorHelper;
-
-    public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
-        this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
-    }
-
-    @Override
-    public String getEntityUID() {
-        return classificationUID;
-    }
-
-    @Override
-    public GraphOperationExecutorHelper getGraphOperationExecutorHelper() {
-        return graphOperationExecutorHelper;
-    }
-
     @Override
     public String getClassificationName() {
         return this.classificationName;
@@ -67,21 +55,53 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
 
     @Override
     public boolean isRootClassification() {
-        return false;
+        return getParentClassification() == null ? true : false;
     }
 
     @Override
     public Classification getParentClassification() {
-        return null;
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.matchRelatedNodesFromSpecialStartNodes(
+                    CypherBuilder.CypherFunctionType.ID, Long.parseLong(classificationUID),RealmConstant.ClassificationClass,RealmConstant.Classification_ClassificationRelationClass, RelationDirection.TO, null);
+            GetSingleClassificationTransformer getSingleClassificationTransformer =
+                    new GetSingleClassificationTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object classificationRes = workingGraphOperationExecutor.executeWrite(getSingleClassificationTransformer,queryCql);
+            return classificationRes != null?(Classification)classificationRes:null;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
     public List<Classification> getChildClassifications() {
-        return null;
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.matchRelatedNodesFromSpecialStartNodes(
+                    CypherBuilder.CypherFunctionType.ID, Long.parseLong(classificationUID),RealmConstant.ClassificationClass,RealmConstant.Classification_ClassificationRelationClass, RelationDirection.FROM, null);
+            GetListClassificationTransformer getListClassificationTransformer =
+                    new GetListClassificationTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object classificationListRes = workingGraphOperationExecutor.executeWrite(getListClassificationTransformer,queryCql);
+            return classificationListRes != null ? (List<Classification>)classificationListRes : null;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
     public InheritanceTree<Classification> getOffspringClassifications() {
+
+
+        /*
+
+
+        MATCH (sourceNode)<-[:`DOCG_ParentClassificationIs`*]-(operationResult:`DOCG_Classification`) WHERE id(sourceNode) = 2324 RETURN operationResult
+
+        MATCH (sourceNode)<-[relation:`DOCG_ParentClassificationIs`*]-(operationResult:`DOCG_Classification`) WHERE id(sourceNode) = 2324 RETURN operationResult,relation
+
+
+         */
+
 
         CommonInheritanceTreeImpl<Classification> resultInheritanceTree = new CommonInheritanceTreeImpl(this.classificationUID,null);
         return resultInheritanceTree;
@@ -105,5 +125,22 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
     @Override
     public boolean removeChildClassification(String classificationName) throws CoreRealmServiceRuntimeException {
         return false;
+    }
+
+    //internal graphOperationExecutor management logic
+    private GraphOperationExecutorHelper graphOperationExecutorHelper;
+
+    public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
+        this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
+    }
+
+    @Override
+    public String getEntityUID() {
+        return classificationUID;
+    }
+
+    @Override
+    public GraphOperationExecutorHelper getGraphOperationExecutorHelper() {
+        return graphOperationExecutorHelper;
     }
 }

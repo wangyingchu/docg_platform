@@ -9,7 +9,7 @@ import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
 
-public class GetSingleClassificationTransformer  implements DataTransformer<Classification>{
+public class GetSingleClassificationTransformer implements DataTransformer<Classification>{
 
     private GraphOperationExecutor workingGraphOperationExecutor;
     private String currentCoreRealmName;
