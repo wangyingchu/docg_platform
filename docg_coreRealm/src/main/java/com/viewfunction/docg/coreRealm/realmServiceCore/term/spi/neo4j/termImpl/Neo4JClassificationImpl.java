@@ -1,9 +1,12 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureImpl.Neo4JAttributesMeasurableImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListClassificationTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleClassificationTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
@@ -13,6 +16,10 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.Classification;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JClassification;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
+import org.neo4j.driver.Record;
+import org.neo4j.driver.Result;
+import org.neo4j.driver.types.Node;
+import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,20 +97,59 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
 
     @Override
     public InheritanceTree<Classification> getOffspringClassifications() {
+        Table<String,String,Classification> treeElementsTable = HashBasedTable.create();
+        //Classification parentClassification = this.getParentClassification();
+        //String parentClassificationUID = parentClassification != null ? ((Neo4JClassificationImpl)parentClassification).classificationUID : null;
+        //treeElementsTable.put(parentClassificationUID,this.classificationUID,this);
 
+        String currentCoreRealmName = this.coreRealmName;
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            /*
+            MATCH (sourceNode)<-[relation:`DOCG_ParentClassificationIs`*]-(operationResult:`DOCG_Classification`) WHERE id(sourceNode) = 2324 RETURN operationResult,relation
+            */
+            String queryCql = CypherBuilder.matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID, Long.parseLong(classificationUID),
+                    RealmConstant.ClassificationClass,RealmConstant.Classification_ClassificationRelationClass, RelationDirection.FROM,0,0);
+            DataTransformer offspringClassificationsDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    while(result.hasNext()){
+                        Record nodeRecord = result.next();
 
-        /*
+                        Node resultNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
+                        long nodeUID = resultNode.id();
+                        String coreRealmName = currentCoreRealmName;
+                        String classificationName = resultNode.get(RealmConstant._NameProperty).asString();
+                        String classificationDesc = null;
+                        if(resultNode.get(RealmConstant._DescProperty) != null){
+                            classificationDesc = resultNode.get(RealmConstant._DescProperty).asString();
+                        }
+                        String classificationUID = ""+nodeUID;
+                        Neo4JClassificationImpl neo4JClassificationImpl =
+                                new Neo4JClassificationImpl(coreRealmName,classificationName,classificationDesc,classificationUID);
+                        neo4JClassificationImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
 
-
-        MATCH (sourceNode)<-[:`DOCG_ParentClassificationIs`*]-(operationResult:`DOCG_Classification`) WHERE id(sourceNode) = 2324 RETURN operationResult
-
-        MATCH (sourceNode)<-[relation:`DOCG_ParentClassificationIs`*]-(operationResult:`DOCG_Classification`) WHERE id(sourceNode) = 2324 RETURN operationResult,relation
-
-
-         */
-
-
-        CommonInheritanceTreeImpl<Classification> resultInheritanceTree = new CommonInheritanceTreeImpl(this.classificationUID,null);
+                        List<Object> relationships = nodeRecord.get(CypherBuilder.relationResultName).asList();
+                        String parentClassificationUID = null;
+                        for(Object currentRelationship : relationships){
+                            Relationship currentTargetRelationship = (Relationship)currentRelationship;
+                            String startNodeUID = "" + currentTargetRelationship.startNodeId();
+                            String endNodeUID = "" + currentTargetRelationship.endNodeId();
+                            if(startNodeUID.equals(classificationUID)){
+                                parentClassificationUID = endNodeUID;
+                                break;
+                            }
+                        }
+                        treeElementsTable.put(parentClassificationUID,classificationUID,neo4JClassificationImpl);
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeWrite(offspringClassificationsDataTransformer,queryCql);
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        CommonInheritanceTreeImpl<Classification> resultInheritanceTree = new CommonInheritanceTreeImpl(this.classificationUID,treeElementsTable);
         return resultInheritanceTree;
     }
 

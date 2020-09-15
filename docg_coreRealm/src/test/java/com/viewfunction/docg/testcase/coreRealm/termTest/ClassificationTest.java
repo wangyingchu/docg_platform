@@ -1,6 +1,7 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.Classification;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JClassificationImpl;
@@ -118,6 +119,16 @@ public class ClassificationTest {
         List<Classification> _Classification05ChildrenList = _Classification05.getChildClassifications();
         Assert.assertNotNull(_Classification05ChildrenList);
         Assert.assertEquals(_Classification05ChildrenList.size(),2);
+
+        InheritanceTree<Classification> tree01 = _Classification01.getOffspringClassifications();
+        InheritanceTree<Classification> tree02 = _Classification04.getOffspringClassifications();
+
+        Assert.assertNotNull(tree01);
+        Assert.assertNotNull(tree02);
+
+        Assert.assertEquals(tree01.size(),6);
+
+        Assert.assertEquals(tree01.numOfChildren(((Neo4JClassificationImpl)_Classification01).getClassificationUID()),4);
 
     }
 }

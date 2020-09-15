@@ -21,8 +21,7 @@ public class CypherBuilder {
     private static Logger logger = LoggerFactory.getLogger(CypherBuilder.class);
     private static final Renderer cypherRenderer = Renderer.getDefaultRenderer();
     public static final String operationResultName = "operationResult";
-    public static final String neo4jID_propertyName = "identity";
-
+    public static final String relationResultName = "relationResult";
     public enum CypherFunctionType {
         COUNT, ID, KEYS, PROPERTIES, EXISTS
     }
@@ -1009,6 +1008,64 @@ public class CypherBuilder {
         } else {
             statement = Cypher.match(m).returning(returnPropertyArray).limit(defaultReturnRecordNumber).build();
         }
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        return rel;
+    }
+
+    public static String matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherFunctionType sourcePropertyFunctionType, Object sourcePropertyValue,
+                                                                String targetConceptionKind, String relationKind,
+                                                                RelationDirection relationDirection,int minJump,int maxJump) {
+        Node sourceNode = Cypher.anyNode().named("sourceNode");
+        Node resultNodes = Cypher.node(targetConceptionKind).named(operationResultName);
+        StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = null;
+        Relationship resultRelationship = null;
+
+        switch (relationDirection) {
+            case FROM:
+                if(minJump != 0 & maxJump != 0 & maxJump>=minJump) {
+                    resultRelationship = sourceNode.relationshipFrom(resultNodes, relationKind).length(minJump,maxJump).named(relationResultName);
+                }else{
+                    resultRelationship = sourceNode.relationshipFrom(resultNodes, relationKind).unbounded().named(relationResultName);
+                }
+                ongoingReadingWithoutWhere = Cypher.match(resultRelationship);
+                break;
+            case TO:
+                if(minJump != 0 & maxJump != 0 & maxJump>=minJump) {
+                    resultRelationship = sourceNode.relationshipTo(resultNodes, relationKind).length(minJump,maxJump).named(relationResultName);
+                }else{
+                    resultRelationship = sourceNode.relationshipTo(resultNodes, relationKind).unbounded().named(relationResultName);
+                }
+                ongoingReadingWithoutWhere = Cypher.match(resultRelationship);
+                break;
+            case TWO_WAY:
+                if(minJump != 0 & maxJump != 0 & maxJump>=minJump) {
+                    resultRelationship = sourceNode.relationshipBetween(resultNodes, relationKind).length(minJump,maxJump).named(relationResultName);
+                }else{
+                    resultRelationship = sourceNode.relationshipBetween(resultNodes, relationKind).unbounded().named(relationResultName);
+                }
+                ongoingReadingWithoutWhere = Cypher.match(resultRelationship);
+        }
+
+        //resultRelationship.named(relationResultName);
+
+        StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
+        switch (sourcePropertyFunctionType) {
+            case ID:
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
+                break;
+            default:
+        }
+
+        Statement statement;
+        if (ongoingReadingWithWhere != null) {
+            statement = ongoingReadingWithWhere.returning(resultNodes,resultRelationship).build();
+            //statement = ongoingReadingWithWhere.returning(resultNodes).build();
+        } else {
+            statement = ongoingReadingWithoutWhere.returning(resultNodes,resultRelationship).build();
+            //statement = ongoingReadingWithoutWhere.returning(resultNodes).build();
+        }
+
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
