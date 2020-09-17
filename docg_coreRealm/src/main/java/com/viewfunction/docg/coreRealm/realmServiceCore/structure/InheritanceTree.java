@@ -16,33 +16,33 @@ public interface InheritanceTree <T>{
     A path in a tree is a sequence of nodes such that any two consecutive nodes in the sequence form an edge.
     */
 
-    boolean isRoot(String nodeUID);
-    String getRootUID();
+    boolean isRoot(String nodeID);
+    String getRootID();
     T getRoot();
-    T getNode(String nodeUID);
-    String getParentUID(String nodeUID);
-    T getParent(String nodeUID);
-    Collection<String> getChildrenUID(String nodeUID);
-    Collection<T> getChildren(String nodeUID);
-    Collection<T> getSiblings(String nodeUID);
-    int numOfChildren(String nodeUID);
+    T getNode(String nodeID);
+    String getParentID(String nodeID);
+    T getParent(String nodeID);
+    Collection<String> getChildrenID(String nodeID);
+    Collection<T> getChildren(String nodeID);
+    Collection<T> getSiblings(String nodeID);
+    int numOfChildren(String nodeID);
     int size();
-    Iterable<T> path(String ancestorNodeUID,String OffspringNodeUID);
-    Iterable<T> traversalTree(String nodeUID,TraversalStrategy traversalStrategy);
+    Iterable<T> path(String ancestorNodeID,String OffspringNodeID);
+    Iterable<T> traversalTree(String nodeID,TraversalStrategy traversalStrategy);
 
-    default Iterable<T> traversalTree(String nodeUID){
-        return traversalTree(nodeUID,TraversalStrategy.BreadthFirst);
+    default Iterable<T> traversalTree(String nodeID){
+        return traversalTree(nodeID,TraversalStrategy.BreadthFirst);
     }
 
-    default boolean isLeafNode(String nodeUID)  {
-        return numOfChildren(nodeUID) == 0;
+    default boolean isLeafNode(String nodeID)  {
+        return numOfChildren(nodeID) == 0;
     }
 
-    default int depth(String nodeUID) {
-        if (isRoot(nodeUID)){
+    default int depth(String nodeID) {
+        if (isRoot(nodeID)){
             return 0;
         } else{
-            return 1 + depth(getParentUID(nodeUID));
+            return 1 + depth(getParentID(nodeID));
         }
     }
 }

@@ -24,18 +24,18 @@ public class CommonInheritanceTreeImpl<T> implements InheritanceTree<T> {
         this.uidTreeTraverser = new TreeTraverser<String>() {
             @Override
             public Iterable<String> children(String elementUID) {
-                return  getChildrenUID(elementUID) ;
+                return  getChildrenID(elementUID) ;
             }
         };
     }
 
     @Override
-    public boolean isRoot(String nodeUID) {
-        return nodeUID.equals(this.rootNodeUID);
+    public boolean isRoot(String nodeID) {
+        return nodeID.equals(this.rootNodeUID);
     }
 
     @Override
-    public String getRootUID() {
+    public String getRootID() {
         return this.rootNodeUID;
     }
 
@@ -45,8 +45,8 @@ public class CommonInheritanceTreeImpl<T> implements InheritanceTree<T> {
     }
 
     @Override
-    public T getNode(String nodeUID) {
-        Map<String,T> nodeMap = this.treeElementsTable.column(nodeUID);
+    public T getNode(String nodeID) {
+        Map<String,T> nodeMap = this.treeElementsTable.column(nodeID);
         //nodeMap should only have one element
         if(nodeMap != null && nodeMap.size()>0){
             return nodeMap.values().iterator().next();
@@ -55,9 +55,9 @@ public class CommonInheritanceTreeImpl<T> implements InheritanceTree<T> {
     }
 
     @Override
-    public String getParentUID(String nodeUID) {
+    public String getParentID(String nodeID) {
         String parentNodeUID = null;
-        Map<String,T> nodeMap = this.treeElementsTable.column(nodeUID);
+        Map<String,T> nodeMap = this.treeElementsTable.column(nodeID);
         //nodeMap should only have one element
         if(nodeMap != null && nodeMap.size()>0){
             parentNodeUID = nodeMap.keySet().iterator().next();
@@ -66,31 +66,31 @@ public class CommonInheritanceTreeImpl<T> implements InheritanceTree<T> {
     }
 
     @Override
-    public T getParent(String nodeUID){
-        return getNode(getParentUID(nodeUID));
+    public T getParent(String nodeID){
+        return getNode(getParentID(nodeID));
     }
 
     @Override
-    public Collection<String> getChildrenUID(String nodeUID) {
-        Map<String,T> nodeMap = this.treeElementsTable.row(nodeUID);
+    public Collection<String> getChildrenID(String nodeID) {
+        Map<String,T> nodeMap = this.treeElementsTable.row(nodeID);
         return nodeMap != null? nodeMap.keySet() : null;
     }
 
     @Override
-    public Collection<T> getChildren(String nodeUID) {
-        Map<String,T> nodeMap = this.treeElementsTable.row(nodeUID);
+    public Collection<T> getChildren(String nodeID) {
+        Map<String,T> nodeMap = this.treeElementsTable.row(nodeID);
         return nodeMap != null ? nodeMap.values() : null;
     }
 
     @Override
-    public Collection<T> getSiblings(String nodeUID) {
-        String parentNodeUID = getParentUID(nodeUID);
+    public Collection<T> getSiblings(String nodeID) {
+        String parentNodeUID = getParentID(nodeID);
         return getChildren(parentNodeUID);
     }
 
     @Override
-    public int numOfChildren(String nodeUID) {
-        return treeElementsTable.row(nodeUID).size();
+    public int numOfChildren(String nodeID) {
+        return treeElementsTable.row(nodeID).size();
     }
 
     @Override
@@ -99,19 +99,19 @@ public class CommonInheritanceTreeImpl<T> implements InheritanceTree<T> {
     }
 
     @Override
-    public Iterable<T> path(String ancestorNodeUID, String OffspringNodeUID) {
+    public Iterable<T> path(String ancestorNodeID, String OffspringNodeID) {
         List<String> pathNodeUIDList = new ArrayList<>();
-        String currentParentNodeUID = getParentUID(OffspringNodeUID);
+        String currentParentNodeUID = getParentID(OffspringNodeID);
         pathNodeUIDList.add(currentParentNodeUID);
 
         boolean matchedFlag = false;
         boolean needExecuteNextLoop = true;
 
         while(needExecuteNextLoop){
-            currentParentNodeUID = getParentUID(currentParentNodeUID);
-            if(currentParentNodeUID != null & !currentParentNodeUID.equals(ancestorNodeUID) & !currentParentNodeUID.equals(this.rootNodeUID)){
+            currentParentNodeUID = getParentID(currentParentNodeUID);
+            if(currentParentNodeUID != null & !currentParentNodeUID.equals(ancestorNodeID) & !currentParentNodeUID.equals(this.rootNodeUID)){
                 pathNodeUIDList.add(currentParentNodeUID);
-            }else if(currentParentNodeUID != null & currentParentNodeUID.equals(ancestorNodeUID)){
+            }else if(currentParentNodeUID != null & currentParentNodeUID.equals(ancestorNodeID)){
                 matchedFlag = true;
                 needExecuteNextLoop = false;
                 //break;
@@ -135,15 +135,15 @@ public class CommonInheritanceTreeImpl<T> implements InheritanceTree<T> {
     }
 
     @Override
-    public Iterable<T> traversalTree(String nodeUID,TraversalStrategy traversalStrategy) {
+    public Iterable<T> traversalTree(String nodeID, TraversalStrategy traversalStrategy) {
         FluentIterable<String> nodeUIDFluentIterable = null;
         switch(traversalStrategy){
             case BreadthFirst:
-                nodeUIDFluentIterable = this.uidTreeTraverser.breadthFirstTraversal(nodeUID);
+                nodeUIDFluentIterable = this.uidTreeTraverser.breadthFirstTraversal(nodeID);
             case PreOrder:
-                nodeUIDFluentIterable = this.uidTreeTraverser.preOrderTraversal(nodeUID);
+                nodeUIDFluentIterable = this.uidTreeTraverser.preOrderTraversal(nodeID);
             case PostOrder:
-                nodeUIDFluentIterable = this.uidTreeTraverser.postOrderTraversal(nodeUID);
+                nodeUIDFluentIterable = this.uidTreeTraverser.postOrderTraversal(nodeID);
         }
         if(nodeUIDFluentIterable != null) {
             List<T> resultElementList = new LinkedList<>();

@@ -125,10 +125,9 @@ public class ClassificationTest {
 
         Assert.assertNotNull(tree01);
         Assert.assertNotNull(tree02);
-
         Assert.assertEquals(tree01.size(),6);
 
-        Assert.assertEquals(tree01.numOfChildren(((Neo4JClassificationImpl)_Classification01).getClassificationUID()),4);
-
+        Assert.assertEquals(tree01.numOfChildren(classificationName01),4);
+        Assert.assertEquals(tree01.numOfChildren(classificationName05),2);
     }
 }

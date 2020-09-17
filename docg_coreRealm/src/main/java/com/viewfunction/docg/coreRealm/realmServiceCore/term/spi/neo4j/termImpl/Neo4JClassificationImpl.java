@@ -23,7 +23,9 @@ import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl implements Neo4JClassification {
 
@@ -101,6 +103,8 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
         //Classification parentClassification = this.getParentClassification();
         //String parentClassificationUID = parentClassification != null ? ((Neo4JClassificationImpl)parentClassification).classificationUID : null;
         //treeElementsTable.put(parentClassificationUID,this.classificationUID,this);
+        Map<String,String> classificationUID_NameMapping = new HashMap<>();
+        classificationUID_NameMapping.put(this.classificationUID,this.classificationName);
 
         String currentCoreRealmName = this.coreRealmName;
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
@@ -113,34 +117,45 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
             DataTransformer offspringClassificationsDataTransformer = new DataTransformer() {
                 @Override
                 public Object transformResult(Result result) {
-                    while(result.hasNext()){
-                        Record nodeRecord = result.next();
-
-                        Node resultNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
-                        long nodeUID = resultNode.id();
-                        String coreRealmName = currentCoreRealmName;
-                        String classificationName = resultNode.get(RealmConstant._NameProperty).asString();
-                        String classificationDesc = null;
-                        if(resultNode.get(RealmConstant._DescProperty) != null){
-                            classificationDesc = resultNode.get(RealmConstant._DescProperty).asString();
+                    List<Record> recordList = result.list();
+                    if(recordList != null){
+                        for(Record nodeRecord : recordList){
+                            Node resultNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
+                            long nodeUID = resultNode.id();
+                            String classificationName = resultNode.get(RealmConstant._NameProperty).asString();
+                            classificationUID_NameMapping.put(""+nodeUID,classificationName);
                         }
-                        String classificationUID = ""+nodeUID;
-                        Neo4JClassificationImpl neo4JClassificationImpl =
-                                new Neo4JClassificationImpl(coreRealmName,classificationName,classificationDesc,classificationUID);
-                        neo4JClassificationImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
-
-                        List<Object> relationships = nodeRecord.get(CypherBuilder.relationResultName).asList();
-                        String parentClassificationUID = null;
-                        for(Object currentRelationship : relationships){
-                            Relationship currentTargetRelationship = (Relationship)currentRelationship;
-                            String startNodeUID = "" + currentTargetRelationship.startNodeId();
-                            String endNodeUID = "" + currentTargetRelationship.endNodeId();
-                            if(startNodeUID.equals(classificationUID)){
-                                parentClassificationUID = endNodeUID;
-                                break;
+                    }
+                    if(recordList != null){
+                        for(Record nodeRecord : recordList){
+                            Node resultNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
+                            long nodeUID = resultNode.id();
+                            String coreRealmName = currentCoreRealmName;
+                            String classificationName = resultNode.get(RealmConstant._NameProperty).asString();
+                            String classificationDesc = null;
+                            if(resultNode.get(RealmConstant._DescProperty) != null){
+                                classificationDesc = resultNode.get(RealmConstant._DescProperty).asString();
                             }
+                            String classificationUID = ""+nodeUID;
+                            Neo4JClassificationImpl neo4JClassificationImpl =
+                                    new Neo4JClassificationImpl(coreRealmName,classificationName,classificationDesc,classificationUID);
+                            neo4JClassificationImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+
+                            List<Object> relationships = nodeRecord.get(CypherBuilder.relationResultName).asList();
+                            String parentClassificationUID = null;
+                            for(Object currentRelationship : relationships){
+                                Relationship currentTargetRelationship = (Relationship)currentRelationship;
+                                String startNodeUID = "" + currentTargetRelationship.startNodeId();
+                                String endNodeUID = "" + currentTargetRelationship.endNodeId();
+                                if(startNodeUID.equals(classificationUID)){
+                                    parentClassificationUID = endNodeUID;
+                                    break;
+                                }
+                            }
+                            treeElementsTable.put(classificationUID_NameMapping.get(parentClassificationUID),
+                                    classificationUID_NameMapping.get(classificationUID),neo4JClassificationImpl);
+
                         }
-                        treeElementsTable.put(parentClassificationUID,classificationUID,neo4JClassificationImpl);
                     }
                     return null;
                 }
