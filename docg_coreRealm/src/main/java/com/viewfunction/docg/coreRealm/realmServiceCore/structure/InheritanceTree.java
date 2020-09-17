@@ -4,6 +4,8 @@ import java.util.Collection;
 
 public interface InheritanceTree <T>{
 
+    String Virtual_ParentID_Of_Root_Node = "DOCG_Virtual_ParentID_Of_Root_Node";
+
     public enum TraversalStrategy{
         BreadthFirst,PreOrder,PostOrder
     }
@@ -24,6 +26,7 @@ public interface InheritanceTree <T>{
     T getParent(String nodeID);
     Collection<String> getChildrenID(String nodeID);
     Collection<T> getChildren(String nodeID);
+    Collection<String> getSiblingsID(String nodeID);
     Collection<T> getSiblings(String nodeID);
     int numOfChildren(String nodeID);
     int size();

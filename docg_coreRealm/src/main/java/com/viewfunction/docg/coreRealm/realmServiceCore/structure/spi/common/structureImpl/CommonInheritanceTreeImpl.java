@@ -83,9 +83,34 @@ public class CommonInheritanceTreeImpl<T> implements InheritanceTree<T> {
     }
 
     @Override
+    public Collection<String> getSiblingsID(String nodeID) {
+        String parentNodeUID = getParentID(nodeID);
+        Collection<String> siblingsIDCollection = getChildrenID(parentNodeUID);
+        List<String> resultList = new ArrayList<>();
+        Iterator<String> iterator = siblingsIDCollection.iterator();
+        while(iterator.hasNext()){
+            String currentElementID = iterator.next();
+            if(!currentElementID.equals(nodeID)){
+                resultList.add(currentElementID);
+            }
+        }
+        return resultList;
+    }
+
+    @Override
     public Collection<T> getSiblings(String nodeID) {
         String parentNodeUID = getParentID(nodeID);
-        return getChildren(parentNodeUID);
+        Collection<T> siblingsCollection = getChildren(parentNodeUID);
+        List<T> resultList = new ArrayList<>();
+        Iterator<T> iterator = siblingsCollection.iterator();
+        T selfElement = getNode(nodeID);
+        while(iterator.hasNext()){
+            T currentElement = iterator.next();
+            if(currentElement != selfElement){
+                resultList.add(currentElement);
+            }
+        }
+        return resultList;
     }
 
     @Override
@@ -108,6 +133,13 @@ public class CommonInheritanceTreeImpl<T> implements InheritanceTree<T> {
         boolean needExecuteNextLoop = true;
 
         while(needExecuteNextLoop){
+
+
+
+            System.out.println("step");
+
+
+
             currentParentNodeUID = getParentID(currentParentNodeUID);
             if(currentParentNodeUID != null & !currentParentNodeUID.equals(ancestorNodeID) & !currentParentNodeUID.equals(this.rootNodeUID)){
                 pathNodeUIDList.add(currentParentNodeUID);

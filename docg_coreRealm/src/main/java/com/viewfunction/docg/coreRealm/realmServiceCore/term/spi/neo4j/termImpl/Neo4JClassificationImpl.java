@@ -100,9 +100,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
     @Override
     public InheritanceTree<Classification> getOffspringClassifications() {
         Table<String,String,Classification> treeElementsTable = HashBasedTable.create();
-        //Classification parentClassification = this.getParentClassification();
-        //String parentClassificationUID = parentClassification != null ? ((Neo4JClassificationImpl)parentClassification).classificationUID : null;
-        //treeElementsTable.put(parentClassificationUID,this.classificationUID,this);
+        treeElementsTable.put(InheritanceTree.Virtual_ParentID_Of_Root_Node,this.classificationName,this);
         Map<String,String> classificationUID_NameMapping = new HashMap<>();
         classificationUID_NameMapping.put(this.classificationUID,this.classificationName);
 
@@ -164,7 +162,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
-        CommonInheritanceTreeImpl<Classification> resultInheritanceTree = new CommonInheritanceTreeImpl(this.classificationUID,treeElementsTable);
+        CommonInheritanceTreeImpl<Classification> resultInheritanceTree = new CommonInheritanceTreeImpl(this.classificationName,treeElementsTable);
         return resultInheritanceTree;
     }
 
