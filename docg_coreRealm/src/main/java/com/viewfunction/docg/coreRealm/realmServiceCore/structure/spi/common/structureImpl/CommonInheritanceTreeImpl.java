@@ -126,8 +126,8 @@ public class CommonInheritanceTreeImpl<T> implements InheritanceTree<T> {
     @Override
     public Iterable<T> path(String ancestorNodeID, String OffspringNodeID) {
         List<String> pathNodeUIDList = new ArrayList<>();
-        String currentParentNodeUID = getParentID(OffspringNodeID);
-        pathNodeUIDList.add(currentParentNodeUID);
+        //String currentParentNodeUID = getParentID(OffspringNodeID);
+        //pathNodeUIDList.add(currentParentNodeUID);
 
         boolean matchedFlag = false;
         boolean needExecuteNextLoop = true;
@@ -140,19 +140,27 @@ public class CommonInheritanceTreeImpl<T> implements InheritanceTree<T> {
 
 
 
-            currentParentNodeUID = getParentID(currentParentNodeUID);
+            String currentParentNodeUID = getParentID(OffspringNodeID);
+
+            System.out.println(currentParentNodeUID);
+
             if(currentParentNodeUID != null & !currentParentNodeUID.equals(ancestorNodeID) & !currentParentNodeUID.equals(this.rootNodeUID)){
                 pathNodeUIDList.add(currentParentNodeUID);
+
+                System.out.println("step.1");
             }else if(currentParentNodeUID != null & currentParentNodeUID.equals(ancestorNodeID)){
                 matchedFlag = true;
                 needExecuteNextLoop = false;
                 //break;
+                System.out.println("step.2");
             }else if(currentParentNodeUID != null & currentParentNodeUID.equals(this.rootNodeUID)){
                 matchedFlag = false;
                 needExecuteNextLoop = false;
+                System.out.println("step.3");
             }else if(currentParentNodeUID == null){
                 matchedFlag = false;
                 needExecuteNextLoop = false;
+                System.out.println("step.4");
             }
         }
         if(matchedFlag){
