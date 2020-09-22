@@ -114,6 +114,13 @@ public class ClassificationTest {
         _Classification05_1 = coreRealm.createClassification(classificationName05_1,classificationName05_1+"Desc",classificationName05);
         _Classification05_2 = coreRealm.createClassification(classificationName05_2,classificationName05_2+"Desc",classificationName05);
 
+        String classificationName05_1_1 = "classification5_1_1";
+        Classification _Classification05_2_1 = coreRealm.getClassification(classificationName05_1_1);
+        if(_Classification05_2_1 != null){
+            coreRealm.removeClassification(classificationName05_1_1);
+        }
+        _Classification05_2_1 = coreRealm.createClassification(classificationName05_1_1,classificationName05_1_1+"Desc",classificationName05_1);
+
         _Classification01ChildrenList = _Classification01.getChildClassifications();
         Assert.assertNotNull(_Classification01ChildrenList);
         Assert.assertEquals(_Classification01ChildrenList.size(),4);
@@ -127,7 +134,7 @@ public class ClassificationTest {
 
         Assert.assertNotNull(tree01);
         Assert.assertNotNull(tree02);
-        Assert.assertEquals(tree01.size(),7);
+        Assert.assertEquals(tree01.size(),8);
 
         Assert.assertEquals(tree01.numOfChildren(classificationName01),4);
         Assert.assertEquals(tree01.numOfChildren(classificationName05),2);
@@ -135,6 +142,7 @@ public class ClassificationTest {
         Assert.assertEquals(tree01.depth(classificationName01),0);
         Assert.assertEquals(tree01.depth(classificationName05),1);
         Assert.assertEquals(tree01.depth(classificationName05_1),2);
+        Assert.assertEquals(tree01.depth(classificationName05_1_1),3);
 
         Assert.assertTrue(tree01.isLeafNode(classificationName02));
         Assert.assertTrue(tree01.isLeafNode(classificationName03));
@@ -215,7 +223,7 @@ public class ClassificationTest {
         Assert.assertEquals(siblingsIDOfNode5.size(),1);
         Assert.assertEquals(siblingsIDOfNode5.iterator().next(), classificationName05_1);
 
-        Iterable<Classification> pathOfClassification = tree01.path(classificationName01,classificationName05_2);
+        Iterable<Classification> pathOfClassification = tree01.path(classificationName05,classificationName05_1_1);
         Assert.assertNotNull(pathOfClassification);
 
 

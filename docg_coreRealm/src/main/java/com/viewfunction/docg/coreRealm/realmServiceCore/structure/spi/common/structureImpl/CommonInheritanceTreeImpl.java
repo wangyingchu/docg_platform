@@ -124,44 +124,32 @@ public class CommonInheritanceTreeImpl<T> implements InheritanceTree<T> {
     }
 
     @Override
-    public Iterable<T> path(String ancestorNodeID, String OffspringNodeID) {
+    public Iterable<T> path(String ancestorNodeID, String offspringNodeID) {
         List<String> pathNodeUIDList = new ArrayList<>();
-        //String currentParentNodeUID = getParentID(OffspringNodeID);
-        //pathNodeUIDList.add(currentParentNodeUID);
+        pathNodeUIDList.add(offspringNodeID);
 
         boolean matchedFlag = false;
         boolean needExecuteNextLoop = true;
 
+        String currentStartNodeID = offspringNodeID;
         while(needExecuteNextLoop){
-
-
-
-            System.out.println("step");
-
-
-
-            String currentParentNodeUID = getParentID(OffspringNodeID);
-
-            System.out.println(currentParentNodeUID);
-
-            if(currentParentNodeUID != null & !currentParentNodeUID.equals(ancestorNodeID) & !currentParentNodeUID.equals(this.rootNodeUID)){
-                pathNodeUIDList.add(currentParentNodeUID);
-
-                System.out.println("step.1");
-            }else if(currentParentNodeUID != null & currentParentNodeUID.equals(ancestorNodeID)){
-                matchedFlag = true;
-                needExecuteNextLoop = false;
-                //break;
-                System.out.println("step.2");
-            }else if(currentParentNodeUID != null & currentParentNodeUID.equals(this.rootNodeUID)){
+            String currentParentNodeUID = getParentID(currentStartNodeID);
+            if(currentParentNodeUID != null){
+                if(!currentParentNodeUID.equals(Virtual_ParentID_Of_Root_Node)){
+                    pathNodeUIDList.add(currentParentNodeUID);
+                }
+                if(currentParentNodeUID.equals(ancestorNodeID)){
+                    matchedFlag = true;
+                    needExecuteNextLoop = false;
+                }else if(currentParentNodeUID.equals(this.rootNodeUID)){
+                    matchedFlag = true;
+                    needExecuteNextLoop = false;
+                }
+            }else{
                 matchedFlag = false;
                 needExecuteNextLoop = false;
-                System.out.println("step.3");
-            }else if(currentParentNodeUID == null){
-                matchedFlag = false;
-                needExecuteNextLoop = false;
-                System.out.println("step.4");
             }
+            currentStartNodeID = currentParentNodeUID;
         }
         if(matchedFlag){
             List<T> nodeOnPathList = new LinkedList<>();
