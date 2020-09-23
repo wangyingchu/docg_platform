@@ -256,6 +256,38 @@ public class CypherBuilder {
         return rel;
     }
 
+
+
+
+    public static String deleteNodesWithSingleFunctionValueEqual(CypherFunctionType propertyFunctionType, List<Object> propertyValueList) {
+
+
+
+        Node m = Cypher.anyNode().named(operationResultName);
+        StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(m);
+        StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
+        switch (propertyFunctionType) {
+            case ID:
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(m).isEqualTo(  Cypher.listOf( Cypher.literalOf(propertyValueList))                   ));
+                break;
+            default:
+        }
+        Statement statement = null;
+
+            if (ongoingReadingWithWhere != null) {
+                statement = ongoingReadingWithWhere.detachDelete(m).returning(m).build();
+            } else {
+                statement = ongoingReadingWithoutWhere.detachDelete(m).returning(m).build();
+            }
+
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        return rel;
+    }
+
+
+
+
     public static String matchNodePropertiesWithSingleValueEqual(CypherFunctionType propertyFunctionType, Object propertyValue, String[] targetPropertyNames) {
         Node m = Cypher.anyNode().named(operationResultName);
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(m);

@@ -511,6 +511,52 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         }
     }
 
+    @Override
+    public boolean removeClassificationWithOffspring(String classificationName) throws CoreRealmServiceRuntimeException {
+        return false;
+    }
+
+
+    private boolean removeClassification(String classificationName, boolean cascadingDeleteOffspring) throws CoreRealmServiceRuntimeException {
+        if(classificationName == null){
+            return false;
+        }
+        Classification targetClassification = this.getClassification(classificationName);
+        if(targetClassification == null){
+            logger.error("CoreRealm does not contains Classification with name {}.", classificationName);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("CoreRealm does not contains Classification with name " + classificationName + ".");
+            throw exception;
+        }else{
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                if(!cascadingDeleteOffspring) {
+                    String classificationUID = ((Neo4JClassificationImpl) targetClassification).getClassificationUID();
+                    String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.valueOf(classificationUID), null, null);
+                    GetSingleClassificationTransformer getSingleClassificationTransformer =
+                            new GetSingleClassificationTransformer(coreRealmName, this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    Object deletedClassificationRes = workingGraphOperationExecutor.executeWrite(getSingleClassificationTransformer, deleteCql);
+                    Classification resultClassification = deletedClassificationRes != null ? (Classification) deletedClassificationRes : null;
+                    if (resultClassification == null) {
+                        throw new CoreRealmServiceRuntimeException();
+                    } else {
+                        String classificationId = ((Neo4JClassificationImpl) resultClassification).getClassificationUID();
+                        Neo4JClassificationImpl resultNeo4JClassificationImplForCacheOperation = new Neo4JClassificationImpl(coreRealmName, classificationName, null, classificationId);
+                        executeClassificationCacheOperation(resultNeo4JClassificationImplForCacheOperation, CacheOperationType.DELETE);
+                        return true;
+                    }
+                }else{
+
+
+
+                    return false;
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
+    }
+
     //internal graphOperationExecutor management logic
     private GraphOperationExecutorHelper graphOperationExecutorHelper;
 

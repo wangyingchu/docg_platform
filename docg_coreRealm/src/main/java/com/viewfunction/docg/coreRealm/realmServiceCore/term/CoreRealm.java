@@ -31,4 +31,5 @@ public interface CoreRealm {
     public Classification createClassification(String classificationName,String classificationDesc,String parentClassificationName)
             throws CoreRealmServiceRuntimeException;
     public boolean removeClassification(String classificationName) throws CoreRealmServiceRuntimeException;
+    public boolean removeClassificationWithOffspring(String classificationName) throws CoreRealmServiceRuntimeException;
 }
