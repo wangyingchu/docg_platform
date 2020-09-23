@@ -226,13 +226,68 @@ public class ClassificationTest {
         Iterable<Classification> pathOfClassification = tree01.path(classificationName05,classificationName05_1_1);
         Assert.assertNotNull(pathOfClassification);
 
-
         Iterator<Classification> pathIterator = pathOfClassification.iterator();
+        Assert.assertTrue(pathIterator.hasNext());
+        int currentPathStep = 0;
         while(pathIterator.hasNext()){
+            currentPathStep++;
             Classification currentClassification = pathIterator.next();
-            System.out.println(currentClassification.getClassificationName());
+            if(currentPathStep ==1){
+                Assert.assertEquals(currentClassification.getClassificationName(),classificationName05_1_1);
+            }
+            if(currentPathStep ==2){
+                Assert.assertEquals(currentClassification.getClassificationName(),classificationName05_1);
+            }
+            if(currentPathStep ==3){
+                Assert.assertEquals(currentClassification.getClassificationName(),classificationName05);
+            }
         }
-        //Assert.assertEquals(pathOfClassification.iterator(),2);
 
+        pathOfClassification = tree01.path(classificationName02,classificationName05_1_1);
+        Assert.assertNull(pathOfClassification);
+
+        pathOfClassification = tree01.path(classificationName01,classificationName05_1);
+        Assert.assertNotNull(pathOfClassification);
+
+        pathIterator = pathOfClassification.iterator();
+        Assert.assertTrue(pathIterator.hasNext());
+        currentPathStep = 0;
+        while(pathIterator.hasNext()){
+            currentPathStep++;
+            Classification currentClassification = pathIterator.next();
+            if(currentPathStep ==1){
+                Assert.assertEquals(currentClassification.getClassificationName(),classificationName05_1);
+            }
+            if(currentPathStep ==2){
+                Assert.assertEquals(currentClassification.getClassificationName(),classificationName05);
+            }
+            if(currentPathStep ==3){
+                Assert.assertEquals(currentClassification.getClassificationName(),classificationName01);
+            }
+        }
+
+        Iterable<Classification> traverTreeIterator = tree01.traversalTree(classificationName01);
+        Assert.assertNotNull(traverTreeIterator);
+        Iterator<Classification> traverIterator = traverTreeIterator.iterator();
+        Assert.assertNotNull(traverIterator);
+        Assert.assertTrue(traverIterator.hasNext());
+
+        traverTreeIterator = tree01.traversalTree(classificationName01, InheritanceTree.TraversalStrategy.PreOrder);
+        Assert.assertNotNull(traverTreeIterator);
+        traverIterator = traverTreeIterator.iterator();
+        Assert.assertNotNull(traverIterator);
+        Assert.assertTrue(traverIterator.hasNext());
+
+        traverTreeIterator = tree01.traversalTree(classificationName01, InheritanceTree.TraversalStrategy.PostOrder);
+        Assert.assertNotNull(traverTreeIterator);
+        traverIterator = traverTreeIterator.iterator();
+        Assert.assertNotNull(traverIterator);
+        Assert.assertTrue(traverIterator.hasNext());
+
+        Iterable<String> traverTreeIterator2 = tree01.traversalTreeByID(classificationName01);
+        Assert.assertNotNull(traverTreeIterator2);
+
+        Assert.assertNotNull(traverTreeIterator2.iterator());
+        Assert.assertTrue(traverTreeIterator2.iterator().hasNext());
     }
 }

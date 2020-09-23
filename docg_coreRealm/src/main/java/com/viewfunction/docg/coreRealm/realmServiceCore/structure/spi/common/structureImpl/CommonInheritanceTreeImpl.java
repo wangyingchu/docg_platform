@@ -124,7 +124,7 @@ public class CommonInheritanceTreeImpl<T> implements InheritanceTree<T> {
     }
 
     @Override
-    public Iterable<T> path(String ancestorNodeID, String offspringNodeID) {
+    public Iterable<String> pathByID(String ancestorNodeID, String offspringNodeID) {
         List<String> pathNodeUIDList = new ArrayList<>();
         pathNodeUIDList.add(offspringNodeID);
 
@@ -132,6 +132,7 @@ public class CommonInheritanceTreeImpl<T> implements InheritanceTree<T> {
         boolean needExecuteNextLoop = true;
 
         String currentStartNodeID = offspringNodeID;
+        String lastNodeID = offspringNodeID;
         while(needExecuteNextLoop){
             String currentParentNodeUID = getParentID(currentStartNodeID);
             if(currentParentNodeUID != null){
@@ -150,10 +151,25 @@ public class CommonInheritanceTreeImpl<T> implements InheritanceTree<T> {
                 needExecuteNextLoop = false;
             }
             currentStartNodeID = currentParentNodeUID;
+            lastNodeID = currentParentNodeUID;
         }
         if(matchedFlag){
+            if(ancestorNodeID.equals(lastNodeID)){
+                return pathNodeUIDList;
+            }else{
+                return null;
+            }
+        }else{
+            return null;
+        }
+    }
+
+    @Override
+    public Iterable<T> path(String ancestorNodeID, String offspringNodeID) {
+        Iterable<String> pathOfID = pathByID(ancestorNodeID, offspringNodeID);
+        if(pathOfID != null){
             List<T> nodeOnPathList = new LinkedList<>();
-            for(String currentNodeUID : pathNodeUIDList){
+            for(String currentNodeUID : pathOfID){
                 nodeOnPathList.add(getNode(currentNodeUID));
             }
             return nodeOnPathList;
@@ -163,16 +179,24 @@ public class CommonInheritanceTreeImpl<T> implements InheritanceTree<T> {
     }
 
     @Override
-    public Iterable<T> traversalTree(String nodeID, TraversalStrategy traversalStrategy) {
+    public Iterable<String> traversalTreeByID(String nodeID, TraversalStrategy traversalStrategy) {
         FluentIterable<String> nodeUIDFluentIterable = null;
         switch(traversalStrategy){
             case BreadthFirst:
                 nodeUIDFluentIterable = this.uidTreeTraverser.breadthFirstTraversal(nodeID);
+                break;
             case PreOrder:
                 nodeUIDFluentIterable = this.uidTreeTraverser.preOrderTraversal(nodeID);
+                break;
             case PostOrder:
                 nodeUIDFluentIterable = this.uidTreeTraverser.postOrderTraversal(nodeID);
         }
+        return nodeUIDFluentIterable;
+    }
+
+    @Override
+    public Iterable<T> traversalTree(String nodeID, TraversalStrategy traversalStrategy) {
+        Iterable<String> nodeUIDFluentIterable = traversalTreeByID(nodeID,traversalStrategy);
         if(nodeUIDFluentIterable != null) {
             List<T> resultElementList = new LinkedList<>();
             for (String currentNodeUID : nodeUIDFluentIterable) {

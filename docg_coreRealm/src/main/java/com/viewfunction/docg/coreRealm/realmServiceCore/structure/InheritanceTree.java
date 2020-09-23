@@ -30,8 +30,14 @@ public interface InheritanceTree <T>{
     Collection<T> getSiblings(String nodeID);
     int numOfChildren(String nodeID);
     int size();
-    Iterable<T> path(String ancestorNodeID,String OffspringNodeID);
+    Iterable<String> pathByID(String ancestorNodeID, String offspringNodeID);
+    Iterable<T> path(String ancestorNodeID,String offspringNodeID);
+    Iterable<String> traversalTreeByID(String nodeID,TraversalStrategy traversalStrategy);
     Iterable<T> traversalTree(String nodeID,TraversalStrategy traversalStrategy);
+
+    default Iterable<String> traversalTreeByID(String nodeID){
+        return traversalTreeByID(nodeID,TraversalStrategy.BreadthFirst);
+    }
 
     default Iterable<T> traversalTree(String nodeID){
         return traversalTree(nodeID,TraversalStrategy.BreadthFirst);
