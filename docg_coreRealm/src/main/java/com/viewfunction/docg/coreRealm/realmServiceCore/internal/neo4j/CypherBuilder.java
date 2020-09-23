@@ -1047,8 +1047,6 @@ public class CypherBuilder {
                 ongoingReadingWithoutWhere = Cypher.match(resultRelationship);
         }
 
-        //resultRelationship.named(relationResultName);
-
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (sourcePropertyFunctionType) {
             case ID:
@@ -1060,10 +1058,8 @@ public class CypherBuilder {
         Statement statement;
         if (ongoingReadingWithWhere != null) {
             statement = ongoingReadingWithWhere.returning(resultNodes,resultRelationship).build();
-            //statement = ongoingReadingWithWhere.returning(resultNodes).build();
         } else {
             statement = ongoingReadingWithoutWhere.returning(resultNodes,resultRelationship).build();
-            //statement = ongoingReadingWithoutWhere.returning(resultNodes).build();
         }
 
         String rel = cypherRenderer.render(statement);
