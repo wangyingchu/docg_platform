@@ -256,37 +256,45 @@ public class CypherBuilder {
         return rel;
     }
 
-
-
-
     public static String deleteNodesWithSingleFunctionValueEqual(CypherFunctionType propertyFunctionType, List<Object> propertyValueList) {
 
 
+
+
+
+
+        long[] objectArray = new long[2];
+        objectArray[0]=1234l;
+        objectArray[1]=2234l;
+
+        List<Long> s = new ArrayList<>();
+        s.add(12345l);
 
         Node m = Cypher.anyNode().named(operationResultName);
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(m);
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (propertyFunctionType) {
             case ID:
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(m).isEqualTo(  Cypher.listOf( Cypher.literalOf(propertyValueList))                   ));
+                //ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(m).in(Cypher.listOf(Cypher.literalOf(s))));
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(m).in(Cypher.listOf(Cypher.literalOf(s))));
                 break;
             default:
         }
         Statement statement = null;
-
-            if (ongoingReadingWithWhere != null) {
-                statement = ongoingReadingWithWhere.detachDelete(m).returning(m).build();
-            } else {
-                statement = ongoingReadingWithoutWhere.detachDelete(m).returning(m).build();
-            }
-
+        if (ongoingReadingWithWhere != null) {
+            statement = ongoingReadingWithWhere.detachDelete(m).returning(m).build();
+        } else {
+            statement = ongoingReadingWithoutWhere.detachDelete(m).returning(m).build();
+        }
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
+
+
+
+
+
     }
-
-
-
 
     public static String matchNodePropertiesWithSingleValueEqual(CypherFunctionType propertyFunctionType, Object propertyValue, String[] targetPropertyNames) {
         Node m = Cypher.anyNode().named(operationResultName);

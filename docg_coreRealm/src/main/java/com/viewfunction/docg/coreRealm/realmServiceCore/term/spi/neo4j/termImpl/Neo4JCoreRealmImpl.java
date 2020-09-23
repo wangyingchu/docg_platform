@@ -12,10 +12,16 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.N
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 
+import org.neo4j.driver.Record;
+import org.neo4j.driver.Result;
+import org.neo4j.driver.types.Node;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
@@ -513,9 +519,8 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
     @Override
     public boolean removeClassificationWithOffspring(String classificationName) throws CoreRealmServiceRuntimeException {
-        return false;
+        return this.removeClassification(classificationName,true);
     }
-
 
     private boolean removeClassification(String classificationName, boolean cascadingDeleteOffspring) throws CoreRealmServiceRuntimeException {
         if(classificationName == null){
@@ -546,8 +551,27 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                         return true;
                     }
                 }else{
-
-
+                    String classificationUID = ((Neo4JClassificationImpl) targetClassification).getClassificationUID();
+                    String queryCql = CypherBuilder.matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID, Long.parseLong(classificationUID),
+                            RealmConstant.ClassificationClass,RealmConstant.Classification_ClassificationRelationClass, RelationDirection.FROM,0,0);
+                    List<Object> withOffspringClassificationUIDList = new ArrayList<>();
+                    withOffspringClassificationUIDList.add(Long.parseLong(classificationUID));
+                    DataTransformer offspringClassificationsDataTransformer = new DataTransformer() {
+                        @Override
+                        public Object transformResult(Result result) {
+                            List<Record> recordList = result.list();
+                            if(recordList != null){
+                                for(Record nodeRecord : recordList){
+                                    Node resultNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
+                                    long nodeUID = resultNode.id();
+                                    withOffspringClassificationUIDList.add(nodeUID);
+                                }
+                            }
+                            return null;
+                        }
+                    };
+                    workingGraphOperationExecutor.executeWrite(offspringClassificationsDataTransformer,queryCql);
+                    String deleteCql = CypherBuilder.deleteNodesWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, withOffspringClassificationUIDList);
 
                     return false;
                 }

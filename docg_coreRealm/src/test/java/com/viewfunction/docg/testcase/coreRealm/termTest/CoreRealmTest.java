@@ -200,5 +200,32 @@ public class CoreRealmTest {
 
         _Classification02.addAttribute("attribute01","this is a string value");
         Assert.assertEquals(_Classification02.getAttribute("attribute01").getAttributeValue(),"this is a string value");
+
+
+        String classificationName03 = "classification003";
+        Classification _Classification03 = coreRealm.getClassification(classificationName03);
+        if(_Classification03 != null){
+            coreRealm.removeClassification(classificationName03);
+        }
+
+        String classificationName03_1 = "classification003_1";
+        Classification _Classification03_1 = coreRealm.getClassification(classificationName03_1);
+        if(_Classification03_1 != null){
+            coreRealm.removeClassification(classificationName03_1);
+        }
+
+        String classificationName03_1_1 = "classification003_1_1";
+        Classification _Classification03_1_1 = coreRealm.getClassification(classificationName03_1_1);
+        if(_Classification03_1_1 != null){
+            coreRealm.removeClassification(classificationName03_1_1);
+        }
+
+        coreRealm.createClassification(classificationName03,classificationName03+"Desc");
+        coreRealm.createClassification(classificationName03_1,classificationName03_1+"Desc",classificationName03);
+        coreRealm.createClassification(classificationName03_1_1,classificationName03_1_1+"Desc",classificationName03_1);
+
+        coreRealm.removeClassificationWithOffspring(classificationName03);
+
+
     }
 }
