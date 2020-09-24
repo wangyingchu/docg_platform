@@ -201,7 +201,6 @@ public class CoreRealmTest {
         _Classification02.addAttribute("attribute01","this is a string value");
         Assert.assertEquals(_Classification02.getAttribute("attribute01").getAttributeValue(),"this is a string value");
 
-
         String classificationName03 = "classification003";
         Classification _Classification03 = coreRealm.getClassification(classificationName03);
         if(_Classification03 != null){
@@ -224,8 +223,20 @@ public class CoreRealmTest {
         coreRealm.createClassification(classificationName03_1,classificationName03_1+"Desc",classificationName03);
         coreRealm.createClassification(classificationName03_1_1,classificationName03_1_1+"Desc",classificationName03_1);
 
+        Classification targetClassification = coreRealm.getClassification(classificationName03);
+        Assert.assertNotNull(targetClassification);
+        targetClassification = coreRealm.getClassification(classificationName03_1);
+        Assert.assertNotNull(targetClassification);
+        targetClassification = coreRealm.getClassification(classificationName03_1_1);
+        Assert.assertNotNull(targetClassification);
+
         coreRealm.removeClassificationWithOffspring(classificationName03);
 
-
+        targetClassification = coreRealm.getClassification(classificationName03);
+        Assert.assertNull(targetClassification);
+        targetClassification = coreRealm.getClassification(classificationName03_1);
+        Assert.assertNull(targetClassification);
+        targetClassification = coreRealm.getClassification(classificationName03_1_1);
+        Assert.assertNull(targetClassification);
     }
 }

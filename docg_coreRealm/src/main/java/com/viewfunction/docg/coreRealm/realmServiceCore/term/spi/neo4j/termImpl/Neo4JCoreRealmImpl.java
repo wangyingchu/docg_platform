@@ -485,36 +485,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
     @Override
     public boolean removeClassification(String classificationName) throws CoreRealmServiceRuntimeException {
-        if(classificationName == null){
-            return false;
-        }
-        Classification targetClassification = this.getClassification(classificationName);
-        if(targetClassification == null){
-            logger.error("CoreRealm does not contains Classification with name {}.", classificationName);
-            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
-            exception.setCauseMessage("CoreRealm does not contains Classification with name " + classificationName + ".");
-            throw exception;
-        }else{
-            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-            try{
-                String classificationUID = ((Neo4JClassificationImpl)targetClassification).getClassificationUID();
-                String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(classificationUID),null,null);
-                GetSingleClassificationTransformer getSingleClassificationTransformer =
-                        new GetSingleClassificationTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
-                Object deletedClassificationRes = workingGraphOperationExecutor.executeWrite(getSingleClassificationTransformer,deleteCql);
-                Classification resultClassification = deletedClassificationRes != null ? (Classification)deletedClassificationRes : null;
-                if(resultClassification == null){
-                    throw new CoreRealmServiceRuntimeException();
-                }else{
-                    String classificationId = ((Neo4JClassificationImpl)resultClassification).getClassificationUID();
-                    Neo4JClassificationImpl resultNeo4JClassificationImplForCacheOperation = new Neo4JClassificationImpl(coreRealmName,classificationName,null,classificationId);
-                    executeClassificationCacheOperation(resultNeo4JClassificationImplForCacheOperation,CacheOperationType.DELETE);
-                    return true;
-                }
-            }finally {
-                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-            }
-        }
+        return this.removeClassification(classificationName,false);
     }
 
     @Override
@@ -552,9 +523,9 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                     }
                 }else{
                     String classificationUID = ((Neo4JClassificationImpl) targetClassification).getClassificationUID();
+                    List<Object> withOffspringClassificationUIDList = new ArrayList<>();
                     String queryCql = CypherBuilder.matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID, Long.parseLong(classificationUID),
                             RealmConstant.ClassificationClass,RealmConstant.Classification_ClassificationRelationClass, RelationDirection.FROM,0,0);
-                    List<Object> withOffspringClassificationUIDList = new ArrayList<>();
                     withOffspringClassificationUIDList.add(Long.parseLong(classificationUID));
                     DataTransformer offspringClassificationsDataTransformer = new DataTransformer() {
                         @Override
@@ -570,10 +541,35 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                             return null;
                         }
                     };
-                    workingGraphOperationExecutor.executeWrite(offspringClassificationsDataTransformer,queryCql);
-                    String deleteCql = CypherBuilder.deleteNodesWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, withOffspringClassificationUIDList);
+                    workingGraphOperationExecutor.executeRead(offspringClassificationsDataTransformer,queryCql);
 
-                    return false;
+                    List<Object> deletedClassificationUIDList = new ArrayList<>();
+                    String deleteCql = CypherBuilder.deleteNodesWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, withOffspringClassificationUIDList);
+                    DataTransformer deleteOffspringClassificationsDataTransformer = new DataTransformer() {
+                        @Override
+                        public Object transformResult(Result result) {
+                            List<Record> recordList = result.list();
+                            if(recordList != null){
+                                for(Record nodeRecord : recordList){
+                                    Node resultNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
+                                    long nodeUID = resultNode.id();
+                                    deletedClassificationUIDList.add(nodeUID);
+                                }
+                            }
+                            return null;
+                        }
+                    };
+                    workingGraphOperationExecutor.executeWrite(deleteOffspringClassificationsDataTransformer,deleteCql);
+
+                    if(deletedClassificationUIDList.size() == withOffspringClassificationUIDList.size()){
+                        return true;
+                    }else{
+                        logger.error("Not all offspring classifications of Classification {} are successful removed.", classificationName);
+                        CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                        exception.setCauseMessage("Not all offspring classifications of Classification "+classificationName+" are successful removed.");
+                        throw exception;
+
+                    }
                 }
             }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();

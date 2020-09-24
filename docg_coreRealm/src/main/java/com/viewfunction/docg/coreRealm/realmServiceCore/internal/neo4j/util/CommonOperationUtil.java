@@ -532,21 +532,7 @@ public class CommonOperationUtil {
             InValueFilteringItem currentFilteringItem = (InValueFilteringItem)filteringItem;
             String propertyName = currentFilteringItem.getAttributeName();
             List<Object> propertyValue = currentFilteringItem.getAttributeValues();
-            Literal[] listLiteralValue = new Literal[propertyValue.size()];
-            for(int i = 0 ; i < propertyValue.size() ; i++){
-                Object currentValue = propertyValue.get(i);
-                if(currentValue instanceof ZonedDateTime) {
-                    ZonedDateTime targetZonedDateTime = (ZonedDateTime) currentValue;
-                    String targetZonedDateTimeString = targetZonedDateTime.toString();
-                    listLiteralValue[i] = new CustomContentLiteral("datetime('" + targetZonedDateTimeString + "')");
-                }else if(propertyValue instanceof Date){
-                    ZonedDateTime targetZonedDateTime = ZonedDateTime.ofInstant(((Date)propertyValue).toInstant(), systemDefaultZoneId);
-                    String targetZonedDateTimeString = targetZonedDateTime.toString();
-                    listLiteralValue[i] = new CustomContentLiteral("datetime('" + targetZonedDateTimeString + "')");
-                }else{
-                    listLiteralValue[i] = Cypher.literalOf(propertyValue);
-                }
-            }
+            Literal[] listLiteralValue = generateListLiteralValue(propertyValue);
             return targetNode.property(propertyName).in(Cypher.listOf(listLiteralValue));
         }
         else if(filteringItem instanceof LessThanEqualFilteringItem){
@@ -606,5 +592,26 @@ public class CommonOperationUtil {
             }
         }
         return null;
+    }
+
+    public static Literal[] generateListLiteralValue(List<Object> propertyValue){
+        Literal[] listLiteralValue = new Literal[propertyValue.size()];
+        if(propertyValue != null) {
+            for (int i = 0; i < propertyValue.size(); i++) {
+                Object currentValue = propertyValue.get(i);
+                if (currentValue instanceof ZonedDateTime) {
+                    ZonedDateTime targetZonedDateTime = (ZonedDateTime) currentValue;
+                    String targetZonedDateTimeString = targetZonedDateTime.toString();
+                    listLiteralValue[i] = new CustomContentLiteral("datetime('" + targetZonedDateTimeString + "')");
+                } else if (currentValue instanceof Date) {
+                    ZonedDateTime targetZonedDateTime = ZonedDateTime.ofInstant(((Date) currentValue).toInstant(), systemDefaultZoneId);
+                    String targetZonedDateTimeString = targetZonedDateTime.toString();
+                    listLiteralValue[i] = new CustomContentLiteral("datetime('" + targetZonedDateTimeString + "')");
+                } else {
+                    listLiteralValue[i] = Cypher.literalOf(currentValue);
+                }
+            }
+        }
+        return listLiteralValue;
     }
 }
