@@ -2,7 +2,6 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featu
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationAttachable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.EntityRelationable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
@@ -10,9 +9,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import java.util.List;
 import java.util.Map;
 
-public interface Neo4JEntityRelationable extends ClassificationAttachable,Neo4JKeyResourcesRetrievable {
-
-
+public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyResourcesRetrievable {
 
     default public Long countRelations(){
         return null;
@@ -37,13 +34,14 @@ public interface Neo4JEntityRelationable extends ClassificationAttachable,Neo4JK
         return null;
     }
 
-
     default public boolean removeRelation(String relationEntityUID) throws CoreRealmServiceRuntimeException{
         return false;
     }
+
     default public List<String> removeAllRelations(){
         return null;
     }
+
     default public List<String> removeSpecifiedRelations(String relationType,RelationDirection relationDirection) throws CoreRealmServiceRuntimeException{
         return null;
     }
