@@ -18,7 +18,8 @@ public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttr
     public RelationKind getParentRelationKind() throws CoreRealmFunctionNotSupportedException;
     public List<RelationKind> getChildRelationKinds() throws CoreRealmFunctionNotSupportedException;
     public InheritanceTree<RelationKind> getOffspringRelationKinds() throws CoreRealmFunctionNotSupportedException;
-    public Long countRelationEntities(boolean includeDescendant);
+    public Long countRelationEntities();
+    public Long countRelationEntitiesWithOffspring() throws CoreRealmFunctionNotSupportedException;
     public RelationEntitiesRetrieveResult getRelationEntities(QueryParameters queryParameters);
     public EntitiesOperationResult purgeAllRelationEntities() throws CoreRealmServiceRuntimeException;
 }

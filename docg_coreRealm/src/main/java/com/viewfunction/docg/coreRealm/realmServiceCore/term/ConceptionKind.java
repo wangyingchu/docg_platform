@@ -16,6 +16,7 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
     public String getConceptionKindName();
     public String getConceptionKindDesc();
     public Long countConceptionEntities() throws CoreRealmServiceRuntimeException;
+    public Long countConceptionEntitiesWithOffspring() throws CoreRealmFunctionNotSupportedException;
     public List<ConceptionKind> getChildConceptionKinds() throws CoreRealmFunctionNotSupportedException;
     public ConceptionKind getParentConceptionKind() throws CoreRealmFunctionNotSupportedException;
     public InheritanceTree<ConceptionKind> getOffspringConceptionKinds() throws CoreRealmFunctionNotSupportedException;

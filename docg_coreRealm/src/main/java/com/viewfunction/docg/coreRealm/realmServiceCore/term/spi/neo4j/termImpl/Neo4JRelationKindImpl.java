@@ -68,8 +68,15 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
     }
 
     @Override
-    public Long countRelationEntities(boolean includeDescendant) {
+    public Long countRelationEntities() {
         return null;
+    }
+
+    @Override
+    public Long countRelationEntitiesWithOffspring() throws CoreRealmFunctionNotSupportedException {
+        CoreRealmFunctionNotSupportedException exception = new CoreRealmFunctionNotSupportedException();
+        exception.setCauseMessage("Neo4J storage implements doesn't support this function");
+        throw exception;
     }
 
     @Override

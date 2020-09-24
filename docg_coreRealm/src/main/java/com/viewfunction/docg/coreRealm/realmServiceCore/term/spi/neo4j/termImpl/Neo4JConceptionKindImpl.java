@@ -81,6 +81,13 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
+    public Long countConceptionEntitiesWithOffspring() throws CoreRealmFunctionNotSupportedException {
+        CoreRealmFunctionNotSupportedException exception = new CoreRealmFunctionNotSupportedException();
+        exception.setCauseMessage("Neo4J storage implements doesn't support this function");
+        throw exception;
+    }
+
+    @Override
     public List<ConceptionKind> getChildConceptionKinds() throws CoreRealmFunctionNotSupportedException {
         CoreRealmFunctionNotSupportedException exception = new CoreRealmFunctionNotSupportedException();
         exception.setCauseMessage("Neo4J storage implements doesn't support this function");
