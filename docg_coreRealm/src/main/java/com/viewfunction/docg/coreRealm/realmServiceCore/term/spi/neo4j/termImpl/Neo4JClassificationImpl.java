@@ -3,17 +3,21 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.KindCacheable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureImpl.Neo4JAttributesMeasurableImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListClassificationTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleClassificationTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleRelationEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.spi.common.structureImpl.CommonInheritanceTreeImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.Classification;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JClassification;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
@@ -168,22 +172,206 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
 
     @Override
     public boolean attachChildClassification(String childClassificationName) throws CoreRealmServiceRuntimeException {
-        return false;
+        if(childClassificationName == null){
+            return false;
+        }else{
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                Classification childClassification = getClassificationByName(workingGraphOperationExecutor,childClassificationName);
+                if(childClassification == null){
+                    logger.error("Classification with name {} does not exist.", childClassificationName);
+                    CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                    exception.setCauseMessage("Classification with name "+childClassificationName+" does not exist.");
+                    throw exception;
+                }else{
+                    String parentConceptionUID = this.getClassificationUID();
+                    String childConceptionUID = ((Neo4JClassificationImpl)childClassification).getClassificationUID();
+
+                    String queryRelationCql = CypherBuilder.matchRelationshipsByBothNodesId(Long.parseLong(childConceptionUID),Long.parseLong(parentConceptionUID),
+                            RealmConstant.Classification_ClassificationRelationClass);
+                    GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
+                            (RealmConstant.Classification_ClassificationRelationClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    Object existingRelationEntityRes = workingGraphOperationExecutor.executeRead(getSingleRelationEntityTransformer, queryRelationCql);
+                    if(existingRelationEntityRes != null){
+                        return true;
+                    }
+
+                    Map<String,Object> relationPropertiesMap = new HashMap<>();
+                    CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
+                    String createRelationCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(childConceptionUID),Long.parseLong(parentConceptionUID),
+                            RealmConstant.Classification_ClassificationRelationClass,relationPropertiesMap);
+
+                    Object newRelationEntityRes = workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, createRelationCql);
+                    if(newRelationEntityRes == null){
+                        logger.error("Set Classification {}'s parent to Classification {} fail.", childClassificationName,classificationName);
+                        CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                        exception.setCauseMessage("Set Classification "+childClassificationName+"'s parent to Classification "+classificationName+" fail.");
+                        throw exception;
+                    }else{
+                        return true;
+                    }
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
     }
 
     @Override
     public boolean detachChildClassification(String childClassificationName) throws CoreRealmServiceRuntimeException {
-        return false;
+        if(childClassificationName == null){
+            return false;
+        }else{
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                Classification childClassification = getClassificationByName(workingGraphOperationExecutor,childClassificationName);
+                if(childClassification == null){
+                    logger.error("Classification with name {} does not exist.", childClassificationName);
+                    CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                    exception.setCauseMessage("Classification with name "+childClassificationName+" does not exist.");
+                    throw exception;
+                }else{
+                    String parentConceptionUID = this.getClassificationUID();
+                    String childConceptionUID = ((Neo4JClassificationImpl)childClassification).getClassificationUID();
+                    String queryRelationCql = CypherBuilder.matchRelationshipsByBothNodesId(Long.parseLong(childConceptionUID),Long.parseLong(parentConceptionUID),
+                            RealmConstant.Classification_ClassificationRelationClass);
+                    GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
+                            (RealmConstant.Classification_ClassificationRelationClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    Object existingRelationEntityRes = workingGraphOperationExecutor.executeRead(getSingleRelationEntityTransformer, queryRelationCql);
+                    if(existingRelationEntityRes == null){
+                        logger.error("Classification {} is not parent of Classification {}.", getClassificationName(),classificationName);
+                        CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                        exception.setCauseMessage("Classification "+getClassificationName()+" is not parent of Classification "+classificationName+".");
+                        throw exception;
+                    }else{
+                        RelationEntity relationEntity = (RelationEntity)existingRelationEntityRes;
+                        String deleteCql = CypherBuilder.deleteRelationWithSingleFunctionValueEqual(
+                                CypherBuilder.CypherFunctionType.ID,Long.valueOf(relationEntity.getRelationEntityUID()),null,null);
+                        getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
+                                (RealmConstant.Classification_ClassificationRelationClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                        Object deleteRelationEntityRes = workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, deleteCql);
+                        if(deleteRelationEntityRes == null){
+                            logger.error("Internal error occurs during detach child classification {} from {}.",  childClassificationName,this.getClassificationName());
+                            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                            exception.setCauseMessage("Internal error occurs during detach child classification "+childClassificationName+" from "+this.getClassificationName()+".");
+                            throw exception;
+                        }else{
+                            return true;
+                        }
+                    }
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
     }
 
     @Override
-    public Classification createChildClassification(String classificationName, String classificationDesc) {
-        return null;
+    public Classification createChildClassification(String classificationName, String classificationDesc) throws CoreRealmServiceRuntimeException{
+        if(classificationName == null){
+            return null;
+        }else{
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                Classification childClassification = getClassificationByName(workingGraphOperationExecutor,classificationName);
+                if(childClassification != null){
+                    logger.error("Classification with name {} already exist.", classificationName);
+                    CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                    exception.setCauseMessage("Classification with name "+classificationName+" already exist.");
+                    throw exception;
+                }else{
+                    GetSingleClassificationTransformer getSingleClassificationTransformer =
+                            new GetSingleClassificationTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+
+                    Map<String,Object> propertiesMap = new HashMap<>();
+                    propertiesMap.put(RealmConstant._NameProperty,classificationName);
+                    if(classificationDesc != null) {
+                        propertiesMap.put(RealmConstant._DescProperty, classificationDesc);
+                    }
+                    CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
+                    String createCql = CypherBuilder.createLabeledNodeWithProperties(RealmConstant.ClassificationClass,propertiesMap);
+                    Object createClassificationRes = workingGraphOperationExecutor.executeWrite(getSingleClassificationTransformer,createCql);
+                    Classification targetClassification = createClassificationRes != null ? (Classification)createClassificationRes : null;
+                    if(targetClassification != null){
+                        executeClassificationCacheOperation(targetClassification, KindCacheable.CacheOperationType.INSERT);
+
+                        String childConceptionUID = ((Neo4JClassificationImpl)targetClassification).getClassificationUID();
+                        String parentConceptionUID = getClassificationUID();
+                        Map<String,Object> relationPropertiesMap = new HashMap<>();
+                        CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
+                        String createRelationCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(childConceptionUID),Long.parseLong(parentConceptionUID),
+                                RealmConstant.Classification_ClassificationRelationClass,relationPropertiesMap);
+                        GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
+                                (RealmConstant.Classification_ClassificationRelationClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                        Object newRelationEntityRes = workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, createRelationCql);
+                        if(newRelationEntityRes == null){
+                            logger.error("Set Classification {}'s parent to Classification {} fail.", classificationName,getClassificationName());
+                            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                            exception.setCauseMessage("Set Classification "+classificationName+"'s parent to Classification "+getClassificationName()+" fail.");
+                            throw exception;
+                        }
+                        return targetClassification;
+                    }else{
+                        return null;
+                    }
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
     }
 
     @Override
     public boolean removeChildClassification(String classificationName) throws CoreRealmServiceRuntimeException {
-        return false;
+        if(classificationName == null){
+            return false;
+        }else{
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                Classification childClassification = getClassificationByName(workingGraphOperationExecutor,classificationName);
+                if(childClassification == null){
+                    logger.error("Classification with name {} does not exist.", classificationName);
+                    CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                    exception.setCauseMessage("Classification with name "+ classificationName +" does not exist.");
+                    throw exception;
+                }else{
+                    String childConceptionUID = ((Neo4JClassificationImpl)childClassification).getClassificationUID();
+                    String queryRelationCql = CypherBuilder.matchRelationshipsByBothNodesId(Long.parseLong(childConceptionUID),Long.parseLong(getClassificationUID()),
+                            RealmConstant.Classification_ClassificationRelationClass);
+                    GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
+                            (RealmConstant.Classification_ClassificationRelationClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    Object existingRelationEntityRes = workingGraphOperationExecutor.executeRead(getSingleRelationEntityTransformer, queryRelationCql);
+                    if(existingRelationEntityRes == null){
+                        logger.error("Classification {} is not parent of Classification {}.", getClassificationName(),classificationName);
+                        CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                        exception.setCauseMessage("Classification "+getClassificationName()+" is not parent of Classification "+classificationName+".");
+                        throw exception;
+                    }else{
+                        String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.valueOf(childConceptionUID), null, null);
+                        GetSingleClassificationTransformer getSingleClassificationTransformer =
+                                new GetSingleClassificationTransformer(coreRealmName, this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                        Object deletedClassificationRes = workingGraphOperationExecutor.executeWrite(getSingleClassificationTransformer, deleteCql);
+                        Classification resultClassification = deletedClassificationRes != null ? (Classification) deletedClassificationRes : null;
+                        if (resultClassification == null) {
+                            throw new CoreRealmServiceRuntimeException();
+                        } else {
+                            executeClassificationCacheOperation(resultClassification, CacheOperationType.DELETE);
+                            return true;
+                        }
+                    }
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
+    }
+
+    private Classification getClassificationByName(GraphOperationExecutor workingGraphOperationExecutor,String classificationName){
+        String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.ClassificationClass,RealmConstant._NameProperty,classificationName,1);
+        GetSingleClassificationTransformer getSingleClassificationTransformer =
+                new GetSingleClassificationTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+        Object classificationRes = workingGraphOperationExecutor.executeRead(getSingleClassificationTransformer,queryCql);
+        return classificationRes != null ? (Classification)classificationRes : null;
     }
 
     //internal graphOperationExecutor management logic

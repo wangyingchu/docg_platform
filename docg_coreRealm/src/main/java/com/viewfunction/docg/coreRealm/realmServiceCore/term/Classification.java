@@ -18,6 +18,6 @@ public interface Classification extends MetaAttributeFeatureSupportable, Attribu
 
     public boolean attachChildClassification(String childClassificationName) throws CoreRealmServiceRuntimeException;
     public boolean detachChildClassification(String childClassificationName) throws CoreRealmServiceRuntimeException;
-    public Classification createChildClassification(String classificationName,String classificationDesc);
+    public Classification createChildClassification(String classificationName,String classificationDesc) throws CoreRealmServiceRuntimeException;
     public boolean removeChildClassification(String classificationName) throws CoreRealmServiceRuntimeException;
 }

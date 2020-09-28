@@ -473,7 +473,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 if(newRelationEntityRes == null){
                     logger.error("Set Classification {}'s parent to Classification {} fail.", classificationName,parentClassificationName);
                     CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
-                    exception.setCauseMessage("Classification named "+parentClassificationName+" doesn't exist.");
+                    exception.setCauseMessage("Set Classification "+classificationName+"'s parent to Classification "+parentClassificationName+" fail.");
                     throw exception;
                 }
             }

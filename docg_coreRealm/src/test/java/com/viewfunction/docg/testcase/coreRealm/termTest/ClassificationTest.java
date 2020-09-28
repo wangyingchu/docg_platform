@@ -289,5 +289,126 @@ public class ClassificationTest {
 
         Assert.assertNotNull(traverTreeIterator2.iterator());
         Assert.assertTrue(traverTreeIterator2.iterator().hasNext());
+
+        String classificationName0A = "classificationName0A";
+        Classification _Classification0A = coreRealm.getClassification(classificationName0A);
+        if(_Classification0A != null){
+            coreRealm.removeClassification(classificationName0A);
+        }
+        _Classification0A = coreRealm.createClassification(classificationName0A,classificationName0A+"Desc");
+
+        String classificationName0B = "classificationName0B";
+        Classification _Classification0B = coreRealm.getClassification(classificationName0B);
+        if(_Classification0B != null){
+            coreRealm.removeClassification(classificationName0B);
+        }
+        _Classification0B = coreRealm.createClassification(classificationName0B,classificationName0B+"Desc");
+
+        List<Classification> childClassificationList = _Classification0A.getChildClassifications();
+        Assert.assertNotNull(childClassificationList);
+        Assert.assertEquals(childClassificationList.size(),0);
+
+        Classification parentClassification = _Classification0B.getParentClassification();
+        Assert.assertNull(parentClassification);
+
+        boolean attachChildClassificationResult = _Classification0A.attachChildClassification(classificationName0B);
+        Assert.assertTrue(attachChildClassificationResult);
+        attachChildClassificationResult = _Classification0A.attachChildClassification(classificationName0B);
+        Assert.assertTrue(attachChildClassificationResult);
+        attachChildClassificationResult = _Classification0A.attachChildClassification(classificationName0B);
+        Assert.assertTrue(attachChildClassificationResult);
+
+        childClassificationList = _Classification0A.getChildClassifications();
+        Assert.assertNotNull(childClassificationList);
+        Assert.assertEquals(childClassificationList.size(),1);
+
+        parentClassification = _Classification0B.getParentClassification();
+        Assert.assertNotNull(parentClassification);
+
+        Assert.assertEquals(childClassificationList.get(0).getClassificationName(),classificationName0B);
+        Assert.assertEquals(parentClassification.getClassificationName(),classificationName0A);
+
+        boolean detachChildClassificationResult = _Classification0A.detachChildClassification(classificationName0B);
+        Assert.assertTrue(detachChildClassificationResult);
+
+        childClassificationList = _Classification0A.getChildClassifications();
+        Assert.assertNotNull(childClassificationList);
+        Assert.assertEquals(childClassificationList.size(),0);
+
+        parentClassification = _Classification0B.getParentClassification();
+        Assert.assertNull(parentClassification);
+
+        String classificationName0C = "classificationName0C";
+        Classification _Classification0C = coreRealm.getClassification(classificationName0C);
+        if(_Classification0C != null){
+            coreRealm.removeClassification(classificationName0C);
+        }
+
+        _Classification0C = _Classification0A.createChildClassification(classificationName0C,classificationName0C+"DESC");
+        Assert.assertNotNull(_Classification0C);
+
+        childClassificationList = _Classification0A.getChildClassifications();
+        Assert.assertNotNull(childClassificationList);
+        Assert.assertEquals(childClassificationList.size(),1);
+
+        parentClassification = _Classification0C.getParentClassification();
+        Assert.assertNotNull(parentClassification);
+
+        Assert.assertEquals(childClassificationList.get(0).getClassificationName(),classificationName0C);
+        Assert.assertEquals(parentClassification.getClassificationName(),classificationName0A);
+
+        Assert.assertNotNull(coreRealm.getClassification(classificationName0C));
+
+        boolean removeChildClassificationResult = _Classification0A.removeChildClassification(classificationName0C);
+        Assert.assertTrue(removeChildClassificationResult);
+        Assert.assertNull(coreRealm.getClassification(classificationName0C));
+
+        boolean exceptionShouldBeCaught = false;
+        try{
+            _Classification0A.createChildClassification(classificationName05,classificationName0C+"DESC");
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
+
+        exceptionShouldBeCaught = false;
+        try{
+            _Classification0A.removeChildClassification(classificationName0C);
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
+
+        exceptionShouldBeCaught = false;
+        try{
+            _Classification0A.removeChildClassification(classificationName0C+"notExist");
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
+
+        exceptionShouldBeCaught = false;
+        try{
+            _Classification0A.attachChildClassification(classificationName0C+"notExist");
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
+
+        exceptionShouldBeCaught = false;
+        try{
+            _Classification0A.detachChildClassification(classificationName0C+"notExist");
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
+
+        exceptionShouldBeCaught = false;
+        try{
+            _Classification0A.detachChildClassification(classificationName05);
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
     }
 }
