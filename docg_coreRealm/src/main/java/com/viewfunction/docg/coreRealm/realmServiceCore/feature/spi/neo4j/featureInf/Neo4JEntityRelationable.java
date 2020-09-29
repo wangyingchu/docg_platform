@@ -29,6 +29,10 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
     }
 
     default public List<RelationEntity> getAllRelations(){
+
+
+
+
         return null;
     }
 

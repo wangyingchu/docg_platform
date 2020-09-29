@@ -1088,4 +1088,27 @@ public class CypherBuilder {
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
     }
+
+/*
+
+    public static String matchNodesWithQueryParameters(String labelName, QueryParameters queryParameters, CypherFunctionType cypherFunctionType) throws CoreRealmServiceEntityExploreException {
+
+
+    public static String matchRelationshipsByBothNodesId(Long sourceNodeId, Long targetNodeId, String relationKind) {
+        Node sourceNode = Cypher.anyNode().named("sourceNode");
+        Node targetNode = Cypher.anyNode().named("targetNode");
+        Relationship relations = sourceNode.relationshipTo(targetNode, relationKind).named(operationResultName);
+        Statement statement = Cypher.match(relations).where(sourceNode.internalId().isEqualTo(Cypher.literalOf(sourceNodeId))
+                .and(targetNode.internalId().isEqualTo(Cypher.literalOf(targetNodeId)))).returning(relations).build();
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        return rel;
+    }
+*/
+    public static String matchRelationshipsWithQueryParameters(QueryParameters queryParameters, CypherFunctionType cypherFunctionType){
+
+
+
+        return null;
+    }
 }
