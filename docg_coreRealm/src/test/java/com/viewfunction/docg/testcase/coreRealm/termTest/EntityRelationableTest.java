@@ -57,7 +57,13 @@ public class EntityRelationableTest {
         newRelationValue.put("prop5","我是中文string");
 
         _ConceptionEntity1.attachFromRelation(_ConceptionEntity2.getConceptionEntityUID(),"testRelationType01",newRelationValue,true);
-
         _ConceptionEntity1.attachToRelation(_ConceptionEntity2.getConceptionEntityUID(),"testRelationType02",newRelationValue,true);
+
+        //Assert.assertEquals(_ConceptionEntity1.countRelations(),2l);
+
+        _ConceptionEntity1.getAllRelations();
+
+        System.out.println(_ConceptionEntity1.countRelations());
+
     }
 }
