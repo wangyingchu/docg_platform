@@ -65,5 +65,12 @@ public class EntityRelationableTest {
 
         System.out.println(_ConceptionEntity1.countRelations());
 
+
+
+
+
+
+
+
     }
 }
