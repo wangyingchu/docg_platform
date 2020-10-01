@@ -27,7 +27,7 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
 
     static Logger logger = LoggerFactory.getLogger(Neo4JEntityRelationable.class);
 
-    default public Long countRelations(){
+    default public Long countAllRelations(){
         if(this.getEntityUID() != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try {
@@ -102,11 +102,48 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
         return null;
     }
 
-    default public List<RelationEntity> getSpecifiedRelations(QueryParameters exploreParameters, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException{
+    default public Long countAllSpecifiedRelations(String relationType, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException{
+        if (this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                QueryParameters relationshipQueryParameters = new QueryParameters();
+                relationshipQueryParameters.setEntityKind(relationType);
+                boolean ignoreDirection = true;
+                String sourceNodeProperty = null;
+                String targetNodeProperty = null;
+                if(relationDirection != null){
+                    switch (relationDirection){
+                        case FROM:
+                            sourceNodeProperty = getEntityUID();
+                            targetNodeProperty = null;
+                            ignoreDirection = false;
+                            break;
+                        case TO:
+                            sourceNodeProperty = null;
+                            targetNodeProperty = getEntityUID();
+                            ignoreDirection = false;
+                            break;
+                        case TWO_WAY:
+                            sourceNodeProperty = getEntityUID();
+                            targetNodeProperty = null;
+                            ignoreDirection = true;
+                            break;
+                    }
+                }
+                String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,sourceNodeProperty,targetNodeProperty,ignoreDirection,relationshipQueryParameters, CypherBuilder.CypherFunctionType.COUNT);
+                GetLongFormatAggregatedReturnValueTransformer GetLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
+                Long countResult = (Long)workingGraphOperationExecutor.executeRead(GetLongFormatAggregatedReturnValueTransformer,queryCql);
+                return countResult;
+            } catch (CoreRealmServiceEntityExploreException e) {
+                e.printStackTrace();
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
 
-    default public Long countSpecifiedRelations(String relationType, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException{
+    default public List<RelationEntity> getSpecifiedRelations(QueryParameters exploreParameters, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException{
         return null;
     }
 
@@ -132,7 +169,7 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
         return null;
     }
 
-    default public List<String> detachSpecifiedRelations(String relationType, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException{
+    default public List<String> detachAllSpecifiedRelations(String relationType, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException{
         return null;
     }
 

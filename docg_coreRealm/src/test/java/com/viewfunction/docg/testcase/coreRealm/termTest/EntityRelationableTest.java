@@ -55,14 +55,14 @@ public class EntityRelationableTest {
         newRelationValue.put("prop4","thi is s string");
         newRelationValue.put("prop5","我是中文string");
 
-        Assert.assertEquals(_ConceptionEntity1.countRelations(),new Long(0));
-        Assert.assertEquals(_ConceptionEntity2.countRelations(),new Long(0));
+        Assert.assertEquals(_ConceptionEntity1.countAllRelations(),new Long(0));
+        Assert.assertEquals(_ConceptionEntity2.countAllRelations(),new Long(0));
         Assert.assertEquals(_ConceptionEntity1.getAllRelations().size(),0);
 
         RelationEntity relationEntity01 = _ConceptionEntity1.attachFromRelation(_ConceptionEntity2.getConceptionEntityUID(),"testRelationType01",newRelationValue,true);
 
-        Assert.assertEquals(_ConceptionEntity1.countRelations(),new Long(1));
-        Assert.assertEquals(_ConceptionEntity2.countRelations(),new Long(1));
+        Assert.assertEquals(_ConceptionEntity1.countAllRelations(),new Long(1));
+        Assert.assertEquals(_ConceptionEntity2.countAllRelations(),new Long(1));
         Assert.assertEquals(_ConceptionEntity1.getAllRelations().size(),1);
 
         Assert.assertEquals(_ConceptionEntity1.getAllRelations().get(0).getRelationEntityUID(),relationEntity01.getRelationEntityUID());
@@ -71,8 +71,8 @@ public class EntityRelationableTest {
 
         RelationEntity relationEntity02 = _ConceptionEntity1.attachToRelation(_ConceptionEntity2.getConceptionEntityUID(),"testRelationType02",newRelationValue,true);
 
-        Assert.assertEquals(_ConceptionEntity1.countRelations(),new Long(2));
-        Assert.assertEquals(_ConceptionEntity2.countRelations(),new Long(2));
+        Assert.assertEquals(_ConceptionEntity1.countAllRelations(),new Long(2));
+        Assert.assertEquals(_ConceptionEntity2.countAllRelations(),new Long(2));
         Assert.assertEquals(_ConceptionEntity1.getAllRelations().size(),2);
 
         List<RelationEntity> relationEntityList1 = _ConceptionEntity1.getAllSpecifiedRelations(null, RelationDirection.TWO_WAY);
@@ -86,15 +86,19 @@ public class EntityRelationableTest {
 
         relationEntityList1 = _ConceptionEntity1.getAllSpecifiedRelations("RelationKindNotExist", RelationDirection.TWO_WAY);
         Assert.assertEquals(relationEntityList1.size(),0);
+        Assert.assertEquals(_ConceptionEntity1.countAllSpecifiedRelations("RelationKindNotExist", RelationDirection.TWO_WAY),new Long(0));
 
         relationEntityList1 = _ConceptionEntity1.getAllSpecifiedRelations("testRelationType01", RelationDirection.TWO_WAY);
         Assert.assertEquals(relationEntityList1.size(),1);
+        Assert.assertEquals(_ConceptionEntity1.countAllSpecifiedRelations("testRelationType01", RelationDirection.TWO_WAY),new Long(1));
 
         relationEntityList1 = _ConceptionEntity1.getAllSpecifiedRelations("testRelationType01", RelationDirection.FROM);
         Assert.assertEquals(relationEntityList1.size(),1);
+        Assert.assertEquals(_ConceptionEntity1.countAllSpecifiedRelations("testRelationType01", RelationDirection.FROM),new Long(1));
 
         relationEntityList1 = _ConceptionEntity1.getAllSpecifiedRelations("testRelationType01", RelationDirection.TO);
         Assert.assertEquals(relationEntityList1.size(),0);
+        Assert.assertEquals(_ConceptionEntity1.countAllSpecifiedRelations("testRelationType01", RelationDirection.TO),new Long(0));
 
     }
 }
