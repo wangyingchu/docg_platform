@@ -1093,8 +1093,7 @@ public class CypherBuilder {
                                                                QueryParameters relationshipQueryParameters, CypherFunctionType returnFunctionType) throws CoreRealmServiceEntityExploreException {
         if(nodePropertyFunctionType == null){
             return null;
-        }else{
-
+        }else {
             Node sourceNode = null;
             Node targetNode = null;
             switch (nodePropertyFunctionType) {
@@ -1103,30 +1102,30 @@ public class CypherBuilder {
                     targetNode = Cypher.anyNode().named("targetNode");
                     break;
                 case LABEL:
-                    if(sourceNodeProperty != null){
+                    if (sourceNodeProperty != null) {
                         sourceNode = Cypher.node(sourceNodeProperty).named("sourceNode");
-                    }else{
+                    } else {
                         sourceNode = Cypher.anyNode().named("sourceNode");
                     }
-                    if(targetNodeProperty != null){
+                    if (targetNodeProperty != null) {
                         sourceNode = Cypher.node(targetNodeProperty).named("targetNode");
-                    }else{
+                    } else {
                         targetNode = Cypher.anyNode().named("targetNode");
                     }
                     break;
             }
 
             Relationship relations;
-            if(relationshipQueryParameters != null && relationshipQueryParameters.getEntityKind() != null){
-                if(ignoreDirection & (sourceNodeProperty == null | targetNodeProperty == null)){
+            if (relationshipQueryParameters != null && relationshipQueryParameters.getEntityKind() != null) {
+                if (ignoreDirection & (sourceNodeProperty == null | targetNodeProperty == null)) {
                     relations = sourceNode.relationshipBetween(targetNode, relationshipQueryParameters.getEntityKind()).named(operationResultName);
-                }else{
+                } else {
                     relations = sourceNode.relationshipTo(targetNode, relationshipQueryParameters.getEntityKind()).named(operationResultName);
                 }
-            }else{
-                if(ignoreDirection & (sourceNodeProperty == null | targetNodeProperty == null)){
+            } else {
+                if (ignoreDirection & (sourceNodeProperty == null | targetNodeProperty == null)) {
                     relations = sourceNode.relationshipBetween(targetNode).named(operationResultName);
-                }else{
+                } else {
                     relations = sourceNode.relationshipTo(targetNode).named(operationResultName);
                 }
             }
@@ -1135,74 +1134,129 @@ public class CypherBuilder {
             StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
             switch (nodePropertyFunctionType) {
                 case ID:
-                    if(sourceNodeProperty != null){
+                    if (sourceNodeProperty != null) {
                         ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(Long.parseLong(sourceNodeProperty))));
                     }
-                    if(targetNodeProperty != null){
-                        if(ongoingReadingWithWhere != null){
+                    if (targetNodeProperty != null) {
+                        if (ongoingReadingWithWhere != null) {
                             ongoingReadingWithWhere = ongoingReadingWithWhere.and(Functions.id(targetNode).isEqualTo(Cypher.literalOf(Long.parseLong(targetNodeProperty))));
-                        }else{
+                        } else {
                             ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(targetNode).isEqualTo(Cypher.literalOf(Long.parseLong(targetNodeProperty))));
                         }
                     }
                     break;
             }
 
-            Statement statement = null;
+            if (relationshipQueryParameters != null) {
+                FilteringItem defaultFilteringItem = relationshipQueryParameters.getDefaultFilteringItem();
+                List<FilteringItem> andFilteringItemList = relationshipQueryParameters.getAndFilteringItemsList();
+                List<FilteringItem> orFilteringItemList = relationshipQueryParameters.getOrFilteringItemsList();
+                if (defaultFilteringItem == null) {
+                    if ((andFilteringItemList != null && andFilteringItemList.size() > 0) ||
+                            (orFilteringItemList != null && orFilteringItemList.size() > 0)) {
+                        logger.error("Default Filtering Item is required");
+                        CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+                        e.setCauseMessage("Default Filtering Item is required");
+                        throw e;
+                    }
+                } else {
+                    ongoingReadingWithWhere = ongoingReadingWithWhere.and(CommonOperationUtil.getQueryCondition(relations, defaultFilteringItem));
+                    if (andFilteringItemList != null && andFilteringItemList.size() > 0) {
+                        for (FilteringItem currentFilteringItem : andFilteringItemList) {
+                            ongoingReadingWithWhere = ongoingReadingWithWhere.and(CommonOperationUtil.getQueryCondition(relations, currentFilteringItem));
+                        }
+                    }
+                    if (orFilteringItemList != null && orFilteringItemList.size() > 0) {
+                        for (FilteringItem currentFilteringItem : orFilteringItemList) {
+                            ongoingReadingWithWhere = ongoingReadingWithWhere.or(CommonOperationUtil.getQueryCondition(relations, currentFilteringItem));
+                        }
+                    }
+                }
+            }
+
+            boolean isDistinct = false;
+            if(relationshipQueryParameters != null){
+                isDistinct = relationshipQueryParameters.isDistinctMode();
+            }
+
+            StatementBuilder.OngoingReadingAndReturn activeOngoingReadingAndReturn = null;
+
             if (returnFunctionType != null) {
                 switch (returnFunctionType) {
                     case KEYS:
                         if (ongoingReadingWithWhere != null) {
-                            statement = ongoingReadingWithWhere.returning(Functions2.keys(relations)).build();
+                            if(isDistinct){
+                                activeOngoingReadingAndReturn = ongoingReadingWithWhere.returningDistinct(Functions2.keys(relations));
+                            }else{
+                                activeOngoingReadingAndReturn = ongoingReadingWithWhere.returning(Functions2.keys(relations));
+                            }
                         } else {
-                            statement = ongoingReadingWithoutWhere.returning(Functions2.keys(relations)).build();
+                            if(isDistinct){
+                                activeOngoingReadingAndReturn = ongoingReadingWithoutWhere.returningDistinct(Functions2.keys(relations));
+                            }else{
+                                activeOngoingReadingAndReturn = ongoingReadingWithoutWhere.returning(Functions2.keys(relations));
+                            }
                         }
                         break;
                     case PROPERTIES:
                         if (ongoingReadingWithWhere != null) {
-                            statement = ongoingReadingWithWhere.returning(Functions2.properties(relations)).build();
+                            if(isDistinct){
+                                activeOngoingReadingAndReturn = ongoingReadingWithWhere.returningDistinct(Functions2.properties(relations));
+                            }else{
+                                activeOngoingReadingAndReturn = ongoingReadingWithWhere.returning(Functions2.properties(relations));
+                            }
                         } else {
-                            statement = ongoingReadingWithoutWhere.returning(Functions2.properties(relations)).build();
+                            if(isDistinct){
+                                activeOngoingReadingAndReturn = ongoingReadingWithoutWhere.returningDistinct(Functions2.properties(relations));
+                            }else{
+                                activeOngoingReadingAndReturn = ongoingReadingWithoutWhere.returning(Functions2.properties(relations));
+                            }
                         }
                         break;
                     case COUNT:
                         if (ongoingReadingWithWhere != null) {
-                            statement = ongoingReadingWithWhere.returning(Functions2.count(relations)).build();
+                            if(isDistinct){
+                                activeOngoingReadingAndReturn = ongoingReadingWithWhere.returningDistinct(Functions2.count(relations));
+                            }else{
+                                activeOngoingReadingAndReturn = ongoingReadingWithWhere.returning(Functions2.count(relations));
+                            }
                         } else {
-                            statement = ongoingReadingWithoutWhere.returning(Functions2.count(relations)).build();
+                            if(isDistinct){
+                                activeOngoingReadingAndReturn = ongoingReadingWithoutWhere.returningDistinct(Functions2.count(relations));
+                            }else{
+                                activeOngoingReadingAndReturn = ongoingReadingWithoutWhere.returning(Functions2.count(relations));
+                            }
                         }
                         break;
                 }
             } else {
                 if (ongoingReadingWithWhere != null) {
-                    statement = ongoingReadingWithWhere.returning(relations).build();
+                    if(isDistinct){
+                        activeOngoingReadingAndReturn = ongoingReadingWithWhere.returningDistinct(relations);
+                    }else{
+                        activeOngoingReadingAndReturn = ongoingReadingWithWhere.returning(relations);
+                    }
                 } else {
-                    statement = ongoingReadingWithoutWhere.returning(relations).build();
+                    if(isDistinct){
+                        activeOngoingReadingAndReturn = ongoingReadingWithoutWhere.returningDistinct(relations);
+                    }else{
+                        activeOngoingReadingAndReturn = ongoingReadingWithoutWhere.returning(relations);
+                    }
                 }
             }
 
-
-
-
-
-
-
-
-
             int defaultReturnRecordNumber = 500;
+            int skipRecordNumber = 0;
+            int limitRecordNumber = 0;
+            SortItem[] sortItemArray = null;
 
             if (relationshipQueryParameters != null) {
-                int skipRecordNumber = 0;
-                int limitRecordNumber = 0;
-
                 int startPage = relationshipQueryParameters.getStartPage();
                 int endPage = relationshipQueryParameters.getEndPage();
                 int pageSize = relationshipQueryParameters.getPageSize();
                 int resultNumber = relationshipQueryParameters.getResultNumber();
-                boolean isDistinctMode = relationshipQueryParameters.isDistinctMode();
                 List<SortingItem> sortingItemList = relationshipQueryParameters.getSortingItems();
 
-                SortItem[] sortItemArray = null;
                 if (sortingItemList.size() > 0) {
                     sortItemArray = new SortItem[sortingItemList.size()];
                     for (int i = 0; i < sortingItemList.size(); i++) {
@@ -1264,275 +1318,27 @@ public class CypherBuilder {
                         limitRecordNumber = resultNumber;
                     }
                 }
-
                 if (limitRecordNumber == 0) {
                     limitRecordNumber = defaultReturnRecordNumber;
                 }
-
-
             }
 
-/*
-
-
-
-
-
-                StatementBuilder.OngoingReadingAndReturn activeOngoingReadingAndReturn;
-                if (returnedFunctionValue != null) {
-                    if (isDistinctMode) {
-                        activeOngoingReadingAndReturn = Cypher.match(m).returningDistinct(returnedFunctionValue);
-                    } else {
-                        activeOngoingReadingAndReturn = Cypher.match(m).returning(returnedFunctionValue);
-                    }
+            Statement statement = null;
+            if (limitRecordNumber != 0) {
+                if (sortItemArray != null && returnFunctionType == null) {
+                    //Function can not use together with sort in this case
+                    statement = activeOngoingReadingAndReturn.orderBy(sortItemArray).skip(skipRecordNumber).limit(limitRecordNumber).build();
                 } else {
-                    if (isDistinctMode) {
-                        activeOngoingReadingAndReturn = Cypher.match(m).returningDistinct(m);
-                    } else {
-                        activeOngoingReadingAndReturn = Cypher.match(m).returning(m);
-                    }
-                }
-
-                FilteringItem defaultFilteringItem = relationshipQueryParameters.getDefaultFilteringItem();
-                List<FilteringItem> andFilteringItemList = relationshipQueryParameters.getAndFilteringItemsList();
-                List<FilteringItem> orFilteringItemList = relationshipQueryParameters.getOrFilteringItemsList();
-                if (defaultFilteringItem == null) {
-                    if ((andFilteringItemList != null && andFilteringItemList.size() > 0) ||
-                            (orFilteringItemList != null && orFilteringItemList.size() > 0)) {
-                        logger.error("Default Filtering Item is required");
-                        CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
-                        e.setCauseMessage("Default Filtering Item is required");
-                        throw e;
-                    }
-                } else {
-                    StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = Cypher.match(m).where(CommonOperationUtil.getQueryCondition(relations, defaultFilteringItem));
-                    if (andFilteringItemList != null && andFilteringItemList.size() > 0) {
-                        for (FilteringItem currentFilteringItem : andFilteringItemList) {
-                            ongoingReadingWithWhere = ongoingReadingWithWhere.and(CommonOperationUtil.getQueryCondition(m, currentFilteringItem));
-                        }
-                    }
-                    if (orFilteringItemList != null && orFilteringItemList.size() > 0) {
-                        for (FilteringItem currentFilteringItem : orFilteringItemList) {
-                            ongoingReadingWithWhere = ongoingReadingWithWhere.or(CommonOperationUtil.getQueryCondition(m, currentFilteringItem));
-                        }
-                    }
-                    if (returnedFunctionValue != null) {
-                        if (isDistinctMode) {
-                            activeOngoingReadingAndReturn = ongoingReadingWithWhere.returningDistinct(returnedFunctionValue);
-                        } else {
-                            activeOngoingReadingAndReturn = ongoingReadingWithWhere.returning(returnedFunctionValue);
-                        }
-                    } else {
-                        if (isDistinctMode) {
-                            activeOngoingReadingAndReturn = ongoingReadingWithWhere.returningDistinct(m);
-                        } else {
-                            activeOngoingReadingAndReturn = ongoingReadingWithWhere.returning(m);
-                        }
-                    }
-                }
-
-                if (skipRecordNumber != 0) {
-                    if (sortItemArray != null && returnedFunctionValue == null) {
-                        //Function can not use together with sort in this case
-                        statement = activeOngoingReadingAndReturn.orderBy(sortItemArray).skip(skipRecordNumber).limit(limitRecordNumber).build();
-                    } else {
-                        statement = activeOngoingReadingAndReturn.skip(skipRecordNumber).limit(limitRecordNumber).build();
-                    }
-                } else {
-                    if (sortItemArray != null && returnedFunctionValue == null) {
-                        //Function can not use together with sort in this case
-                        statement = activeOngoingReadingAndReturn.orderBy(sortItemArray).limit(limitRecordNumber).build();
-                    } else {
-                        statement = activeOngoingReadingAndReturn.limit(limitRecordNumber).build();
-                    }
+                    statement = activeOngoingReadingAndReturn.skip(skipRecordNumber).limit(limitRecordNumber).build();
                 }
             } else {
-                statement = Cypher.match(m).returning(m).limit(defaultReturnRecordNumber).build();
+                if (sortItemArray != null && returnFunctionType == null) {
+                    //Function can not use together with sort in this case
+                    statement = activeOngoingReadingAndReturn.orderBy(sortItemArray).limit(limitRecordNumber).build();
+                } else {
+                    statement = activeOngoingReadingAndReturn.build();
+                }
             }
-
-
-
-*/
-
-
-
-
-
-
-
-/*
-
-            int defaultReturnRecordNumber = 500;
-
-            if (relationshipQueryParameters != null) {
-                int skipRecordNumber = 0;
-                int limitRecordNumber = 0;
-
-                int startPage = relationshipQueryParameters.getStartPage();
-                int endPage = relationshipQueryParameters.getEndPage();
-                int pageSize = relationshipQueryParameters.getPageSize();
-                int resultNumber = relationshipQueryParameters.getResultNumber();
-                boolean isDistinctMode = relationshipQueryParameters.isDistinctMode();
-                List<SortingItem> sortingItemList = relationshipQueryParameters.getSortingItems();
-
-                SortItem[] sortItemArray = null;
-                if (sortingItemList.size() > 0) {
-                    sortItemArray = new SortItem[sortingItemList.size()];
-                    for (int i = 0; i < sortingItemList.size(); i++) {
-                        SortingItem currentSortingItem = sortingItemList.get(i);
-                        String attributeName = currentSortingItem.getAttributeName();
-                        QueryParameters.SortingLogic sortingLogic = currentSortingItem.getSortingLogic();
-                        switch (sortingLogic) {
-                            case ASC:
-                                sortItemArray[i] = Cypher.sort(relations.property(attributeName)).ascending();
-                                break;
-                            case DESC:
-                                sortItemArray[i] = Cypher.sort(relations.property(attributeName)).descending();
-                        }
-                    }
-                }
-
-                if (startPage != 0) {
-                    if (startPage < 0) {
-                        String exceptionMessage = "start page must great then zero";
-                        CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
-                        coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
-                        throw coreRealmServiceEntityExploreException;
-                    }
-                    if (pageSize < 0) {
-                        String exceptionMessage = "page size must great then zero";
-                        CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
-                        coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
-                        throw coreRealmServiceEntityExploreException;
-                    }
-
-                    int runtimePageSize = pageSize != 0 ? pageSize : 50;
-                    int runtimeStartPage = startPage - 1;
-
-                    if (endPage != 0) {
-                        //get data from start page to end page, each page has runtimePageSize number of record
-                        if (endPage < 0 || endPage <= startPage) {
-                            String exceptionMessage = "end page must great than start page";
-                            CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
-                            coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
-                            throw coreRealmServiceEntityExploreException;
-                        }
-                        int runtimeEndPage = endPage - 1;
-
-                        skipRecordNumber = runtimePageSize * runtimeStartPage;
-                        limitRecordNumber = (runtimeEndPage - runtimeStartPage) * runtimePageSize;
-                    } else {
-                        //filter the data before the start page
-                        limitRecordNumber = runtimePageSize * runtimeStartPage;
-                    }
-                } else {
-                    //if there is no page parameters,use resultNumber to control result information number
-                    if (resultNumber != 0) {
-                        if (resultNumber < 0) {
-                            String exceptionMessage = "result number must great then zero";
-                            CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
-                            coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
-                            throw coreRealmServiceEntityExploreException;
-                        }
-                        limitRecordNumber = resultNumber;
-                    }
-                }
-
-                if (limitRecordNumber == 0) {
-                    limitRecordNumber = defaultReturnRecordNumber;
-                }
-
-                StatementBuilder.OngoingReadingAndReturn activeOngoingReadingAndReturn;
-                if (returnedFunctionValue != null) {
-                    if (isDistinctMode) {
-                        activeOngoingReadingAndReturn = Cypher.match(m).returningDistinct(returnedFunctionValue);
-                    } else {
-                        activeOngoingReadingAndReturn = Cypher.match(m).returning(returnedFunctionValue);
-                    }
-                } else {
-                    if (isDistinctMode) {
-                        activeOngoingReadingAndReturn = Cypher.match(m).returningDistinct(m);
-                    } else {
-                        activeOngoingReadingAndReturn = Cypher.match(m).returning(m);
-                    }
-                }
-
-                FilteringItem defaultFilteringItem = relationshipQueryParameters.getDefaultFilteringItem();
-                List<FilteringItem> andFilteringItemList = relationshipQueryParameters.getAndFilteringItemsList();
-                List<FilteringItem> orFilteringItemList = relationshipQueryParameters.getOrFilteringItemsList();
-                if (defaultFilteringItem == null) {
-                    if ((andFilteringItemList != null && andFilteringItemList.size() > 0) ||
-                            (orFilteringItemList != null && orFilteringItemList.size() > 0)) {
-                        logger.error("Default Filtering Item is required");
-                        CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
-                        e.setCauseMessage("Default Filtering Item is required");
-                        throw e;
-                    }
-                } else {
-                    StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = Cypher.match(m).where(CommonOperationUtil.getQueryCondition(m, defaultFilteringItem));
-                    if (andFilteringItemList != null && andFilteringItemList.size() > 0) {
-                        for (FilteringItem currentFilteringItem : andFilteringItemList) {
-                            ongoingReadingWithWhere = ongoingReadingWithWhere.and(CommonOperationUtil.getQueryCondition(m, currentFilteringItem));
-                        }
-                    }
-                    if (orFilteringItemList != null && orFilteringItemList.size() > 0) {
-                        for (FilteringItem currentFilteringItem : orFilteringItemList) {
-                            ongoingReadingWithWhere = ongoingReadingWithWhere.or(CommonOperationUtil.getQueryCondition(m, currentFilteringItem));
-                        }
-                    }
-                    if (returnedFunctionValue != null) {
-                        if (isDistinctMode) {
-                            activeOngoingReadingAndReturn = ongoingReadingWithWhere.returningDistinct(returnedFunctionValue);
-                        } else {
-                            activeOngoingReadingAndReturn = ongoingReadingWithWhere.returning(returnedFunctionValue);
-                        }
-                    } else {
-                        if (isDistinctMode) {
-                            activeOngoingReadingAndReturn = ongoingReadingWithWhere.returningDistinct(m);
-                        } else {
-                            activeOngoingReadingAndReturn = ongoingReadingWithWhere.returning(m);
-                        }
-                    }
-                }
-
-                if (skipRecordNumber != 0) {
-                    if (sortItemArray != null && returnedFunctionValue == null) {
-                        //Function can not use together with sort in this case
-                        statement = activeOngoingReadingAndReturn.orderBy(sortItemArray).skip(skipRecordNumber).limit(limitRecordNumber).build();
-                    } else {
-                        statement = activeOngoingReadingAndReturn.skip(skipRecordNumber).limit(limitRecordNumber).build();
-                    }
-                } else {
-                    if (sortItemArray != null && returnedFunctionValue == null) {
-                        //Function can not use together with sort in this case
-                        statement = activeOngoingReadingAndReturn.orderBy(sortItemArray).limit(limitRecordNumber).build();
-                    } else {
-                        statement = activeOngoingReadingAndReturn.limit(limitRecordNumber).build();
-                    }
-                }
-            } else {
-                statement = Cypher.match(m).returning(m).limit(defaultReturnRecordNumber).build();
-            }
-
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
             String rel = cypherRenderer.render(statement);
             logger.debug("Generated Cypher Statement: {}", rel);

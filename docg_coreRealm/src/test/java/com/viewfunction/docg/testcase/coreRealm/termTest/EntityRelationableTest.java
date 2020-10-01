@@ -1,5 +1,8 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
@@ -99,6 +102,31 @@ public class EntityRelationableTest {
         relationEntityList1 = _ConceptionEntity1.getAllSpecifiedRelations("testRelationType01", RelationDirection.TO);
         Assert.assertEquals(relationEntityList1.size(),0);
         Assert.assertEquals(_ConceptionEntity1.countAllSpecifiedRelations("testRelationType01", RelationDirection.TO),new Long(0));
+
+        QueryParameters queryParameters1 = new QueryParameters();
+
+        FilteringItem defaultFilteringItem = new EqualFilteringItem("prop1",10000l);
+        queryParameters1.setDefaultFilteringItem(defaultFilteringItem);
+        FilteringItem orFilteringItem = new EqualFilteringItem("prop3",50);
+        queryParameters1.addFilteringItem(orFilteringItem, QueryParameters.FilteringLogic.OR);
+        queryParameters1.addSortingAttribute("prop4", QueryParameters.SortingLogic.ASC);
+
+        List<RelationEntity> relationEntityList2 = _ConceptionEntity1.getSpecifiedRelations(queryParameters1,RelationDirection.TWO_WAY);
+        Assert.assertEquals(relationEntityList2.size(),4);
+        Long countSpecifiedRelations = _ConceptionEntity1.countSpecifiedRelations(queryParameters1,RelationDirection.TWO_WAY);
+        Assert.assertEquals(countSpecifiedRelations,new Long(4));
+
+        queryParameters1.setDistinctMode(true);
+        relationEntityList2 = _ConceptionEntity1.getSpecifiedRelations(queryParameters1,RelationDirection.TWO_WAY);
+        Assert.assertEquals(relationEntityList2.size(),2);
+        countSpecifiedRelations = _ConceptionEntity1.countSpecifiedRelations(queryParameters1,RelationDirection.TWO_WAY);
+        Assert.assertEquals(countSpecifiedRelations,new Long(2));
+
+
+        //queryParameters1.setResultNumber(10000000); //?? not work??
+        //queryParameters1.setEntityKind("NOTEXIST");
+        //queryParameters1.setStartPage(1);
+        //queryParameters1.setEndPage(10);
 
     }
 }

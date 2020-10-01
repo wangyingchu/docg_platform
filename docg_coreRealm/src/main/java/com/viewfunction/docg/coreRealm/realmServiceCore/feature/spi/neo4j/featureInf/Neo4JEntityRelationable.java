@@ -37,6 +37,7 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
                 return countResult;
             } catch (CoreRealmServiceEntityExploreException e) {
                 e.printStackTrace();
+                logger.error(e.getMessage());
             }finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }
@@ -54,6 +55,7 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
                 return relationEntityList != null ? (List<RelationEntity>)relationEntityList : null;
             } catch (CoreRealmServiceEntityExploreException e) {
                 e.printStackTrace();
+                logger.error(e.getMessage());
             }finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }
@@ -95,6 +97,7 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
                 return relationEntityList != null ? (List<RelationEntity>)relationEntityList : null;
             } catch (CoreRealmServiceEntityExploreException e) {
                 e.printStackTrace();
+                logger.error(e.getMessage());
             }finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }
@@ -136,6 +139,7 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
                 return countResult;
             } catch (CoreRealmServiceEntityExploreException e) {
                 e.printStackTrace();
+                logger.error(e.getMessage());
             }finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }
@@ -144,10 +148,82 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
     }
 
     default public Long countSpecifiedRelations(QueryParameters exploreParameters, RelationDirection relationDirection)  throws CoreRealmServiceRuntimeException{
+        if (this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                boolean ignoreDirection = true;
+                String sourceNodeProperty = null;
+                String targetNodeProperty = null;
+                if(relationDirection != null){
+                    switch (relationDirection){
+                        case FROM:
+                            sourceNodeProperty = getEntityUID();
+                            targetNodeProperty = null;
+                            ignoreDirection = false;
+                            break;
+                        case TO:
+                            sourceNodeProperty = null;
+                            targetNodeProperty = getEntityUID();
+                            ignoreDirection = false;
+                            break;
+                        case TWO_WAY:
+                            sourceNodeProperty = getEntityUID();
+                            targetNodeProperty = null;
+                            ignoreDirection = true;
+                            break;
+                    }
+                }
+                String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,sourceNodeProperty,targetNodeProperty,ignoreDirection,exploreParameters,CypherBuilder.CypherFunctionType.COUNT);
+                GetLongFormatAggregatedReturnValueTransformer GetLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
+                Long countResult = (Long)workingGraphOperationExecutor.executeRead(GetLongFormatAggregatedReturnValueTransformer,queryCql);
+                return countResult;
+            } catch (CoreRealmServiceEntityExploreException e) {
+                e.printStackTrace();
+                logger.error(e.getMessage());
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
 
     default public List<RelationEntity> getSpecifiedRelations(QueryParameters exploreParameters, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException{
+        if (this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                boolean ignoreDirection = true;
+                String sourceNodeProperty = null;
+                String targetNodeProperty = null;
+                if(relationDirection != null){
+                    switch (relationDirection){
+                        case FROM:
+                            sourceNodeProperty = getEntityUID();
+                            targetNodeProperty = null;
+                            ignoreDirection = false;
+                            break;
+                        case TO:
+                            sourceNodeProperty = null;
+                            targetNodeProperty = getEntityUID();
+                            ignoreDirection = false;
+                            break;
+                        case TWO_WAY:
+                            sourceNodeProperty = getEntityUID();
+                            targetNodeProperty = null;
+                            ignoreDirection = true;
+                            break;
+                    }
+                }
+                String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,sourceNodeProperty,targetNodeProperty,ignoreDirection,exploreParameters,null);
+                GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(null,workingGraphOperationExecutor);
+                Object relationEntityList = workingGraphOperationExecutor.executeRead(getListRelationEntityTransformer,queryCql);
+                return relationEntityList != null ? (List<RelationEntity>)relationEntityList : null;
+            } catch (CoreRealmServiceEntityExploreException e) {
+                e.printStackTrace();
+                logger.error(e.getMessage());
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
 
