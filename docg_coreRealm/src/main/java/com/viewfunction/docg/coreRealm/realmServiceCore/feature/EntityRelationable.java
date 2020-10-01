@@ -11,6 +11,7 @@ import java.util.Map;
 public interface EntityRelationable {
     public Long countAllRelations();
     public Long countAllSpecifiedRelations(String relationType, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException;
+    public Long countSpecifiedRelations(QueryParameters exploreParameters, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException;
     public List<RelationEntity> getAllRelations();
     public List<RelationEntity> getAllSpecifiedRelations(String relationKind, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException;
     public List<RelationEntity> getSpecifiedRelations(QueryParameters exploreParameters, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException;
@@ -19,4 +20,5 @@ public interface EntityRelationable {
     public boolean detachRelation(String relationEntityUID) throws CoreRealmServiceRuntimeException;
     public List<String> detachAllRelations();
     public List<String> detachAllSpecifiedRelations(String relationType, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException;
+    public List<String> detachSpecifiedRelations(QueryParameters exploreParameters, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException;
 }

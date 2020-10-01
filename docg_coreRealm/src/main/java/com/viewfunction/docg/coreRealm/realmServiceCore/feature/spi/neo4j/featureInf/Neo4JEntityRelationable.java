@@ -143,6 +143,10 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
         return null;
     }
 
+    default public Long countSpecifiedRelations(QueryParameters exploreParameters, RelationDirection relationDirection)  throws CoreRealmServiceRuntimeException{
+        return null;
+    }
+
     default public List<RelationEntity> getSpecifiedRelations(QueryParameters exploreParameters, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException{
         return null;
     }
@@ -170,6 +174,10 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
     }
 
     default public List<String> detachAllSpecifiedRelations(String relationType, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException{
+        return null;
+    }
+
+    default public List<String> detachSpecifiedRelations(QueryParameters exploreParameters, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException{
         return null;
     }
 
