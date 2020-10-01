@@ -35,7 +35,6 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
                 GetLongFormatAggregatedReturnValueTransformer GetLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
                 Long countResult = (Long)workingGraphOperationExecutor.executeRead(GetLongFormatAggregatedReturnValueTransformer,queryCql);
                 return countResult;
-
             } catch (CoreRealmServiceEntityExploreException e) {
                 e.printStackTrace();
             }finally {
@@ -63,6 +62,43 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
     }
 
     default public List<RelationEntity> getAllSpecifiedRelations(String relationKind, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException{
+        if (this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                QueryParameters relationshipQueryParameters = new QueryParameters();
+                relationshipQueryParameters.setEntityKind(relationKind);
+                boolean ignoreDirection = true;
+                String sourceNodeProperty = null;
+                String targetNodeProperty = null;
+                if(relationDirection != null){
+                    switch (relationDirection){
+                        case FROM:
+                            sourceNodeProperty = getEntityUID();
+                            targetNodeProperty = null;
+                            ignoreDirection = false;
+                            break;
+                        case TO:
+                            sourceNodeProperty = null;
+                            targetNodeProperty = getEntityUID();
+                            ignoreDirection = false;
+                            break;
+                        case TWO_WAY:
+                            sourceNodeProperty = getEntityUID();
+                            targetNodeProperty = null;
+                            ignoreDirection = true;
+                            break;
+                    }
+                }
+                String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,sourceNodeProperty,targetNodeProperty,ignoreDirection,relationshipQueryParameters, null);
+                GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(null,workingGraphOperationExecutor);
+                Object relationEntityList = workingGraphOperationExecutor.executeRead(getListRelationEntityTransformer,queryCql);
+                return relationEntityList != null ? (List<RelationEntity>)relationEntityList : null;
+            } catch (CoreRealmServiceEntityExploreException e) {
+                e.printStackTrace();
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
 
