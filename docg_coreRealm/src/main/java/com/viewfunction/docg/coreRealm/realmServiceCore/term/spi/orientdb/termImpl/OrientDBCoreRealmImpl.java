@@ -117,4 +117,14 @@ public class OrientDBCoreRealmImpl implements CoreRealm {
     public boolean removeClassificationWithOffspring(String classificationName) throws CoreRealmServiceRuntimeException {
         return false;
     }
+
+    @Override
+    public void openGlobalSession() {
+
+    }
+
+    @Override
+    public void closeGlobalSession() {
+
+    }
 }

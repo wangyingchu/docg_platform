@@ -35,4 +35,7 @@ public interface CoreRealm {
             throws CoreRealmServiceRuntimeException;
     public boolean removeClassification(String classificationName) throws CoreRealmServiceRuntimeException;
     public boolean removeClassificationWithOffspring(String classificationName) throws CoreRealmServiceRuntimeException;
+
+    public void openGlobalSession();
+    public void closeGlobalSession();
 }

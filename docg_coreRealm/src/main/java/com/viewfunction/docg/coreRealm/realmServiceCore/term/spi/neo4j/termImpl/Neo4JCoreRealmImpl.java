@@ -536,6 +536,20 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         return this.removeClassification(classificationName,true);
     }
 
+    @Override
+    public void openGlobalSession() {
+        GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
+        this.setGlobalGraphOperationExecutor(graphOperationExecutor);
+    }
+
+    @Override
+    public void closeGlobalSession() {
+        if(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor() != null){
+            this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor().close();
+            this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(null);
+        }
+    }
+
     private boolean removeClassification(String classificationName, boolean cascadingDeleteOffspring) throws CoreRealmServiceRuntimeException {
         if(classificationName == null){
             return false;

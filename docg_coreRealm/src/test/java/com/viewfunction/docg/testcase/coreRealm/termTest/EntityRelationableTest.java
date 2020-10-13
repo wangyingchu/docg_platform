@@ -127,7 +127,7 @@ public class EntityRelationableTest {
         countSpecifiedRelations = _ConceptionEntity1.countSpecifiedRelations(queryParameters1,RelationDirection.TWO_WAY);
         //Assert.assertEquals(countSpecifiedRelations,new Long(2));
 
-        //use batch operation mode
+        //use batch operation mode way 1
         GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
         CoreRealm coreRealm2 = RealmTermFactory.getDefaultCoreRealm();
         ((Neo4JCoreRealmImpl)coreRealm2).setGlobalGraphOperationExecutor(graphOperationExecutor);
@@ -206,10 +206,80 @@ public class EntityRelationableTest {
             graphOperationExecutor.close();
         }
 
-        //queryParameters1.setResultNumber(10000000); //?? not work??
-        //queryParameters1.setEntityKind("NOTEXIST");
-        //queryParameters1.setStartPage(1);
-        //queryParameters1.setEndPage(10);
+        //use batch operation mode way 2
+        CoreRealm coreRealm3 = RealmTermFactory.getDefaultCoreRealm();
+        coreRealm3.openGlobalSession();
 
+            _ConceptionKind01 = coreRealm3.getConceptionKind(testConceptionKindName);
+            Map<String,Object> newEntityValue3= new HashMap<>();
+            newEntityValue3.put("prop1ForRelTest","ConceptionEntity3");
+            ConceptionEntityValue conceptionEntityValue3 = new ConceptionEntityValue(newEntityValue3);
+            ConceptionEntity _ConceptionEntity3 = _ConceptionKind01.newEntity(conceptionEntityValue3,false);
+
+            Map<String,Object> newEntityValue4= new HashMap<>();
+            newEntityValue4.put("prop1ForRelTest","ConceptionEntity4");
+            ConceptionEntityValue conceptionEntityValue4 = new ConceptionEntityValue(newEntityValue4);
+            ConceptionEntity _ConceptionEntity4 = _ConceptionKind01.newEntity(conceptionEntityValue4,false);
+
+            for(int i = 0; i<100;i++){
+                Map<String,Object> relationValue= new HashMap<>();
+                relationValue.put("prop1",10000l+i);
+                relationValue.put("prop2",190.22d+i);
+                relationValue.put("prop3",50+i);
+                relationValue.put("prop4","thi is s stringA"+i);
+                _ConceptionEntity3.attachFromRelation(_ConceptionEntity4.getConceptionEntityUID(),"testRelationTypeA",relationValue,true);
+            }
+
+            for(int i = 0; i<100;i++){
+                Map<String,Object> relationValue= new HashMap<>();
+                relationValue.put("prop2",1000.22d+i);
+                relationValue.put("prop3",600+i);
+                relationValue.put("prop4","thi is s stringB"+i);
+                _ConceptionEntity3.attachToRelation(_ConceptionEntity4.getConceptionEntityUID(),"testRelationTypeA",relationValue,true);
+            }
+
+            for(int i = 0; i<50;i++){
+                Map<String,Object> relationValue= new HashMap<>();
+                relationValue.put("prop1",10000l+i);
+                relationValue.put("prop2",190.22d+i);
+                relationValue.put("prop3",100000+i);
+                relationValue.put("prop4","thi is s stringA"+i);
+                _ConceptionEntity3.attachFromRelation(_ConceptionEntity4.getConceptionEntityUID(),"testRelationTypeB",relationValue,true);
+            }
+
+            for(int i = 0; i<50;i++){
+                Map<String,Object> relationValue= new HashMap<>();
+                relationValue.put("prop2",1000.22d+i);
+                relationValue.put("prop3",50000+i);
+                relationValue.put("prop4","thi is s stringB"+i);
+                _ConceptionEntity3.attachFromRelation(_ConceptionEntity4.getConceptionEntityUID(),"testRelationTypeB",relationValue,true);
+            }
+
+            QueryParameters queryParameters2 = new QueryParameters();
+
+            FilteringItem defaultFilteringItem2 = new EqualFilteringItem("prop1",10000l);
+            queryParameters2.setDefaultFilteringItem(defaultFilteringItem2);
+            List<RelationEntity> relationEntityList3 = _ConceptionEntity3.getSpecifiedRelations(queryParameters2,RelationDirection.TWO_WAY);
+            Assert.assertEquals(relationEntityList3.size(),2);
+            Assert.assertEquals(_ConceptionEntity3.countSpecifiedRelations(queryParameters2,RelationDirection.TWO_WAY),new Long("2"));
+            Assert.assertEquals(_ConceptionEntity4.countSpecifiedRelations(queryParameters2,RelationDirection.TWO_WAY),new Long("2"));
+
+            FilteringItem defaultFilteringItem3 = new GreaterThanFilteringItem("prop3",50019);
+            queryParameters2.setDefaultFilteringItem(defaultFilteringItem3);
+            relationEntityList3 = _ConceptionEntity3.getSpecifiedRelations(queryParameters2,RelationDirection.FROM);
+            Assert.assertEquals(relationEntityList3.size(),80);
+            Assert.assertEquals(_ConceptionEntity3.countSpecifiedRelations(queryParameters2,RelationDirection.FROM),new Long("80"));
+            Assert.assertEquals(_ConceptionEntity3.countSpecifiedRelations(queryParameters2,RelationDirection.TO),new Long("0"));
+            Assert.assertEquals(_ConceptionEntity3.countSpecifiedRelations(queryParameters2,RelationDirection.TWO_WAY),new Long("80"));
+
+            FilteringItem andFilteringItem1 = new LessThanFilteringItem("prop2",1037);
+            queryParameters2.addFilteringItem(andFilteringItem1, QueryParameters.FilteringLogic.AND);
+            relationEntityList3 = _ConceptionEntity3.getSpecifiedRelations(queryParameters2,RelationDirection.FROM);
+            Assert.assertEquals(relationEntityList3.size(),67);
+            Assert.assertEquals(_ConceptionEntity3.countSpecifiedRelations(queryParameters2,RelationDirection.FROM),new Long("67"));
+            Assert.assertEquals(_ConceptionEntity3.countSpecifiedRelations(queryParameters2,RelationDirection.TO),new Long("0"));
+            Assert.assertEquals(_ConceptionEntity3.countSpecifiedRelations(queryParameters2,RelationDirection.TWO_WAY),new Long("67"));
+
+        coreRealm3.closeGlobalSession();
     }
 }
