@@ -4,6 +4,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunct
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 
+import java.util.List;
+
 public interface CoreRealm {
     public CoreRealmStorageImplTech getStorageImplTech();
     public ConceptionKind getConceptionKind(String conceptionKindName);
@@ -19,6 +21,7 @@ public interface CoreRealm {
     public AttributeKind getAttributeKind(String attributeKindUID);
     public AttributeKind createAttributeKind(String attributeKindName,String attributeKindDesc, AttributeDataType attributeDataType);
     public boolean removeAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException;
+    public List<AttributeKind> getAttributeKinds(String attributeKindName,String attributeKindDesc,AttributeDataType attributeDataType);
 
     public RelationKind getRelationKind(String relationKindName);
     public RelationKind createRelationKind(String relationKindName,String relationKindDesc);

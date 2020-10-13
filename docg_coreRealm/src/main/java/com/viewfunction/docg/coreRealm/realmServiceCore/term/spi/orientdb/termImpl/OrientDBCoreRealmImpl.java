@@ -5,6 +5,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 
+import java.util.List;
+
 public class OrientDBCoreRealmImpl implements CoreRealm {
 
     public OrientDBCoreRealmImpl(String coreRealmName){}
@@ -64,6 +66,11 @@ public class OrientDBCoreRealmImpl implements CoreRealm {
     @Override
     public boolean removeAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException {
         return false;
+    }
+
+    @Override
+    public List<AttributeKind> getAttributeKinds(String attributeKindName, String attributeKindDesc, AttributeDataType attributeDataType) {
+        return null;
     }
 
     @Override

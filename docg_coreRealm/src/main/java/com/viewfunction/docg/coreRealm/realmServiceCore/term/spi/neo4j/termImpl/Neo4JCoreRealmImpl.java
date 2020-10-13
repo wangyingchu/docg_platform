@@ -1,6 +1,9 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
@@ -286,6 +289,46 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             exception.setCauseMessage("AttributeKind does not contains entity with UID " + attributeKindUID + ".");
             throw exception;
         }
+    }
+
+    @Override
+    public List<AttributeKind> getAttributeKinds(String attributeKindName, String attributeKindDesc, AttributeDataType attributeDataType) {
+        boolean alreadyHaveDefaultFilteringItem = false;
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(1000000);
+        if(attributeKindName != null){
+            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant._NameProperty,attributeKindName));
+            alreadyHaveDefaultFilteringItem = true;
+        }
+        if(attributeKindDesc != null){
+            if(alreadyHaveDefaultFilteringItem){
+                queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant._DescProperty,attributeKindDesc), QueryParameters.FilteringLogic.AND);
+            }else{
+                queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant._DescProperty,attributeKindDesc));
+                alreadyHaveDefaultFilteringItem = true;
+            }
+        }
+        if(attributeDataType != null){
+            if(alreadyHaveDefaultFilteringItem){
+                queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant._attributeDataType,attributeDataType.toString()), QueryParameters.FilteringLogic.AND);
+            }else{
+                queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant._attributeDataType,attributeDataType.toString()));
+            }
+        }
+        try {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.AttributeKindClass,queryParameters,null);
+                GetListAttributeKindTransformer getListAttributeKindTransformer = new GetListAttributeKindTransformer(RealmConstant.AttributeKindClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object attributeKindsRes = workingGraphOperationExecutor.executeWrite(getListAttributeKindTransformer,queryCql);
+                return attributeKindsRes != null ? (List<AttributeKind>) attributeKindsRes : null;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override

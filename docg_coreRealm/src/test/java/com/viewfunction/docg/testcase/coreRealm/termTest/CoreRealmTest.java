@@ -10,6 +10,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import java.util.List;
+
 public class CoreRealmTest {
 
     private static String testRealmName = "UNIT_TEST_Realm";
@@ -238,5 +240,27 @@ public class CoreRealmTest {
         Assert.assertNull(targetClassification);
         targetClassification = coreRealm.getClassification(classificationName03_1_1);
         Assert.assertNull(targetClassification);
+
+        List<AttributeKind> attributeKindList = coreRealm.getAttributeKinds(null,null,null);
+
+        System.out.println(attributeKindList.size());
+        Assert.assertTrue(attributeKindList.size()>0);
+        attributeKindList = coreRealm.getAttributeKinds("attributeKind01",null,null);
+        Assert.assertTrue(attributeKindList.size()>0);
+        attributeKindList = coreRealm.getAttributeKinds(null,"attributeKind01Desc",null);
+        Assert.assertTrue(attributeKindList.size()>0);
+        attributeKindList = coreRealm.getAttributeKinds("attributeKind01","attributeKind01Desc",null);
+        Assert.assertTrue(attributeKindList.size()>0);
+        attributeKindList = coreRealm.getAttributeKinds("attributeKind01","attributeKind01DescNOTEXIST",null);
+        Assert.assertTrue(attributeKindList.size()==0);
+        attributeKindList = coreRealm.getAttributeKinds("attributeKind01","attributeKind01Desc",AttributeDataType.BINARY);
+        Assert.assertTrue(attributeKindList.size()==0);
+        attributeKindList = coreRealm.getAttributeKinds("attributeKind01","attributeKind01Desc",AttributeDataType.BOOLEAN);
+        Assert.assertTrue(attributeKindList.size()>0);
+
+        Assert.assertEquals(attributeKindList.get(0).getAttributeKindName(),"attributeKind01");
+        Assert.assertEquals(attributeKindList.get(0).getAttributeKindDesc(),"attributeKind01Desc");
+        Assert.assertEquals(attributeKindList.get(0).getAttributeDataType(),AttributeDataType.BOOLEAN);
+
     }
 }
