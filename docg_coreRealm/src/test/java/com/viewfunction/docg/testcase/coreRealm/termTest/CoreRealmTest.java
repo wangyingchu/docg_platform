@@ -242,8 +242,6 @@ public class CoreRealmTest {
         Assert.assertNull(targetClassification);
 
         List<AttributeKind> attributeKindList = coreRealm.getAttributeKinds(null,null,null);
-
-        System.out.println(attributeKindList.size());
         Assert.assertTrue(attributeKindList.size()>0);
         attributeKindList = coreRealm.getAttributeKinds("attributeKind01",null,null);
         Assert.assertTrue(attributeKindList.size()>0);
@@ -262,5 +260,21 @@ public class CoreRealmTest {
         Assert.assertEquals(attributeKindList.get(0).getAttributeKindDesc(),"attributeKind01Desc");
         Assert.assertEquals(attributeKindList.get(0).getAttributeDataType(),AttributeDataType.BOOLEAN);
 
+        coreRealm.createAttributesViewKind("attributesViewKind03","attributesViewKind03Desc",AttributesViewKind.AttributesViewKindDataForm.LIST_VALUE);
+
+        List<AttributesViewKind> attributesViewKindList = coreRealm.getAttributesViewKinds(null,null,null);
+        Assert.assertTrue(attributesViewKindList.size()>0);
+        attributesViewKindList = coreRealm.getAttributesViewKinds("attributesViewKind03",null,null);
+        Assert.assertTrue(attributesViewKindList.size()>0);
+        attributesViewKindList = coreRealm.getAttributesViewKinds(null,"attributesViewKind03Desc",null);
+        Assert.assertTrue(attributesViewKindList.size()>0);
+        attributesViewKindList = coreRealm.getAttributesViewKinds("attributesViewKind03","attributesViewKind03Desc",null);
+        Assert.assertTrue(attributesViewKindList.size()>0);
+        attributesViewKindList = coreRealm.getAttributesViewKinds("attributesViewKind03","attributesViewKind03DescNOTEXIST",null);
+        Assert.assertTrue(attributesViewKindList.size()==0);
+        attributesViewKindList = coreRealm.getAttributesViewKinds("attributesViewKind03","attributesViewKind03Desc",AttributesViewKind.AttributesViewKindDataForm.SINGLE_VALUE);
+        Assert.assertTrue(attributesViewKindList.size()==0);
+        attributesViewKindList = coreRealm.getAttributesViewKinds("attributesViewKind03","attributesViewKind03Desc",AttributesViewKind.AttributesViewKindDataForm.LIST_VALUE);
+        Assert.assertTrue(attributesViewKindList.size()>0);
     }
 }

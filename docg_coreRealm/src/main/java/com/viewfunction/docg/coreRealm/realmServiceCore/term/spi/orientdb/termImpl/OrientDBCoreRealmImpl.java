@@ -54,6 +54,11 @@ public class OrientDBCoreRealmImpl implements CoreRealm {
     }
 
     @Override
+    public List<AttributesViewKind> getAttributesViewKinds(String attributesViewKindName, String attributesViewKindDesc, AttributesViewKind.AttributesViewKindDataForm attributesViewKindDataForm) {
+        return null;
+    }
+
+    @Override
     public AttributeKind getAttributeKind(String attributeKindUID) {
         return null;
     }

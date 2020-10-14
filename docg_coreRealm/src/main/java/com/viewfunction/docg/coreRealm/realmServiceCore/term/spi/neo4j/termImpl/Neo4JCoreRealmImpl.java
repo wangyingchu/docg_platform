@@ -217,6 +217,47 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
+    public List<AttributesViewKind> getAttributesViewKinds(String attributesViewKindName, String attributesViewKindDesc, AttributesViewKind.AttributesViewKindDataForm attributesViewKindDataForm) {
+        boolean alreadyHaveDefaultFilteringItem = false;
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(1000000);
+        if(attributesViewKindName != null){
+            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant._NameProperty,attributesViewKindName));
+            alreadyHaveDefaultFilteringItem = true;
+        }
+        if(attributesViewKindDesc != null){
+            if(alreadyHaveDefaultFilteringItem){
+                queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant._DescProperty,attributesViewKindDesc), QueryParameters.FilteringLogic.AND);
+            }else{
+                queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant._DescProperty,attributesViewKindDesc));
+                alreadyHaveDefaultFilteringItem = true;
+            }
+        }
+        if(attributesViewKindDataForm != null){
+            if(alreadyHaveDefaultFilteringItem){
+                queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant._viewKindDataForm,attributesViewKindDataForm.toString()), QueryParameters.FilteringLogic.AND);
+            }else{
+                queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant._viewKindDataForm,attributesViewKindDataForm.toString()));
+            }
+        }
+        try {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.AttributesViewKindClass,queryParameters,null);
+                GetListAttributesViewKindTransformer getListAttributesViewKindTransformer =
+                        new GetListAttributesViewKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object attributesViewKindsRes = workingGraphOperationExecutor.executeWrite(getListAttributesViewKindTransformer,queryCql);
+                return attributesViewKindsRes != null ? (List<AttributesViewKind>) attributesViewKindsRes : null;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public AttributeKind getAttributeKind(String attributeKindUID) {
         if(attributeKindUID == null){
             return null;
@@ -319,7 +360,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try{
                 String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.AttributeKindClass,queryParameters,null);
-                GetListAttributeKindTransformer getListAttributeKindTransformer = new GetListAttributeKindTransformer(RealmConstant.AttributeKindClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                GetListAttributeKindTransformer getListAttributeKindTransformer = new GetListAttributeKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object attributeKindsRes = workingGraphOperationExecutor.executeWrite(getListAttributeKindTransformer,queryCql);
                 return attributeKindsRes != null ? (List<AttributeKind>) attributeKindsRes : null;
             }finally {
