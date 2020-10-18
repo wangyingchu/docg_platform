@@ -31,13 +31,18 @@ public class GetListConceptionEntityTransformer implements DataTransformer<List<
             List<String> allConceptionKindNames = Lists.newArrayList(resultNode.labels());
             boolean isMatchedConceptionKind = true;
             if(allConceptionKindNames.size()>0){
-                isMatchedConceptionKind = allConceptionKindNames.contains(targetConceptionKindName);
+                if(targetConceptionKindName != null){
+                    isMatchedConceptionKind = allConceptionKindNames.contains(targetConceptionKindName);
+                }else{
+                    isMatchedConceptionKind = true;
+                }
             }
             if(isMatchedConceptionKind){
                 long nodeUID = resultNode.id();
                 String conceptionEntityUID = ""+nodeUID;
+                String resultConceptionKindName = targetConceptionKindName != null? targetConceptionKindName:allConceptionKindNames.get(0);
                 Neo4JConceptionEntityImpl neo4jConceptionEntityImpl =
-                        new Neo4JConceptionEntityImpl(targetConceptionKindName,conceptionEntityUID);
+                        new Neo4JConceptionEntityImpl(resultConceptionKindName,conceptionEntityUID);
                 neo4jConceptionEntityImpl.setAllConceptionKindNames(allConceptionKindNames);
                 neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
                 conceptionEntityList.add(neo4jConceptionEntityImpl);

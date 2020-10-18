@@ -281,5 +281,64 @@ public class EntityRelationableTest {
             Assert.assertEquals(_ConceptionEntity3.countSpecifiedRelations(queryParameters2,RelationDirection.TWO_WAY),new Long("67"));
 
         coreRealm3.closeGlobalSession();
+
+        ConceptionKind _ConceptionKind0A = coreRealm.getConceptionKind(testConceptionKindName+"A");
+        if(_ConceptionKind0A != null){
+            coreRealm.removeConceptionKind(testConceptionKindName+"A",true);
+        }
+        _ConceptionKind0A = coreRealm.getConceptionKind(testConceptionKindName+"A");
+        if(_ConceptionKind0A == null){
+            _ConceptionKind0A = coreRealm.createConceptionKind(testConceptionKindName+"A","TestConceptionKindADesc+中文描述");
+        }
+
+        ConceptionKind _ConceptionKind0B = coreRealm.getConceptionKind(testConceptionKindName+"B");
+        if(_ConceptionKind0B != null){
+            coreRealm.removeConceptionKind(testConceptionKindName+"B",true);
+        }
+        _ConceptionKind0B = coreRealm.getConceptionKind(testConceptionKindName+"B");
+        if(_ConceptionKind0B == null){
+            _ConceptionKind0B = coreRealm.createConceptionKind(testConceptionKindName+"B","TestConceptionKindADesc+中文描述");
+        }
+
+        ConceptionKind _ConceptionKind0C = coreRealm.getConceptionKind(testConceptionKindName+"C");
+        if(_ConceptionKind0C != null){
+            coreRealm.removeConceptionKind(testConceptionKindName+"C",true);
+        }
+        _ConceptionKind0C = coreRealm.getConceptionKind(testConceptionKindName+"C");
+        if(_ConceptionKind0C == null){
+            _ConceptionKind0C = coreRealm.createConceptionKind(testConceptionKindName+"C","TestConceptionKindADesc+中文描述");
+        }
+
+        Map<String,Object> newEntityValueCommon= new HashMap<>();
+        newEntityValueCommon.put("prop1","fromEntity");
+        ConceptionEntityValue conceptionEntityValueCommon1 = new ConceptionEntityValue(newEntityValueCommon);
+        ConceptionEntity _ConceptionEntityA = _ConceptionKind0A.newEntity(conceptionEntityValueCommon1,false);
+
+        ConceptionEntity _ConceptionEntityB1 = _ConceptionKind0B.newEntity(conceptionEntityValueCommon1,false);
+        ConceptionEntity _ConceptionEntityB2 = _ConceptionKind0B.newEntity(conceptionEntityValueCommon1,false);
+
+        ConceptionEntity _ConceptionEntityC1 = _ConceptionKind0C.newEntity(conceptionEntityValueCommon1,false);
+        ConceptionEntity _ConceptionEntityC2 = _ConceptionKind0C.newEntity(conceptionEntityValueCommon1,false);
+        ConceptionEntity _ConceptionEntityC3 = _ConceptionKind0C.newEntity(conceptionEntityValueCommon1,false);
+
+        _ConceptionEntityA.attachFromRelation(_ConceptionEntityB1.getConceptionEntityUID(),"testRelationTypeType1",null,true);
+        _ConceptionEntityA.attachFromRelation(_ConceptionEntityB2.getConceptionEntityUID(),"testRelationTypeType1",null,true);
+        _ConceptionEntityA.attachFromRelation(_ConceptionEntityC1.getConceptionEntityUID(),"testRelationTypeType1",null,true);
+        _ConceptionEntityA.attachFromRelation(_ConceptionEntityC3.getConceptionEntityUID(),"testRelationTypeType2",null,true);
+        _ConceptionEntityB1.attachFromRelation(_ConceptionEntityC2.getConceptionEntityUID(),"testRelationTypeType1",null,true);
+        _ConceptionEntityB2.attachFromRelation(_ConceptionEntityB1.getConceptionEntityUID(),"testRelationTypeType1",null,true);
+
+        List<ConceptionEntity> resultListConceptionEntityList = _ConceptionEntityA.getRelatedConceptionEntities(null,"testRelationTypeType1",RelationDirection.TWO_WAY,2);
+        System.out.println(resultListConceptionEntityList);
+
+        Assert.assertEquals(resultListConceptionEntityList.size(),4);
+        for(ConceptionEntity currentConceptionEntity:resultListConceptionEntityList){
+            System.out.println(currentConceptionEntity.getConceptionKindName());
+            System.out.println(currentConceptionEntity.getConceptionEntityUID());
+
+
+
+        }
+
     }
 }

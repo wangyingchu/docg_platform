@@ -1038,7 +1038,7 @@ public class CypherBuilder {
                                                                 String targetConceptionKind, String relationKind,
                                                                 RelationDirection relationDirection,int minJump,int maxJump) {
         Node sourceNode = Cypher.anyNode().named("sourceNode");
-        Node resultNodes = Cypher.node(targetConceptionKind).named(operationResultName);
+        Node resultNodes = targetConceptionKind != null ? Cypher.node(targetConceptionKind).named(operationResultName):Cypher.anyNode().named(operationResultName);
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = null;
         Relationship resultRelationship = null;
 
