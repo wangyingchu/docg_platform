@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.Set;
 
 public class CypherBuilder {
 
@@ -1377,30 +1378,7 @@ public class CypherBuilder {
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public static String StatistNodesWithQueryParametersAndStatisticFunctions(String labelName, QueryParameters queryParameters, CypherFunctionType cypherFunctionType, Map<String, StatisticalAndEvaluable.StatisticFunction> statisticCondition) throws CoreRealmServiceEntityExploreException {
-        int defaultReturnRecordNumber = 500;
+    public static String statistNodesWithQueryParametersAndStatisticFunctions(String labelName, QueryParameters queryParameters, Map<String, StatisticalAndEvaluable.StatisticFunction> statisticConditions) throws CoreRealmServiceEntityExploreException {
         Node m = null;
         Statement statement = null;
         if (labelName != null) {
@@ -1409,172 +1387,79 @@ public class CypherBuilder {
             m = Cypher.anyNode().named(operationResultName);
         }
 
-        Expression returnedFunctionValue = null;
-        if (cypherFunctionType != null) {
-            switch (cypherFunctionType) {
-                case COUNT:
-                    returnedFunctionValue = Functions.count(m);
+        Expression[] returnedFunctionValue = new Expression[statisticConditions.size()];
+        Set<String> keySet = statisticConditions.keySet();
+        int currentStatisticConditionIndex = 0;
+        for(String currentKey : keySet){
+            Expression currentStatisticFunctionValue = null;
+            StatisticalAndEvaluable.StatisticFunction currentStatisticFunction = statisticConditions.get(currentKey);
+            switch(currentStatisticFunction){
+                case AVG:
+                    currentStatisticFunctionValue = Functions.avg(m.property(currentKey));
                     break;
-                case ID:
-                    returnedFunctionValue = Functions.id(m);
+                case MAX:
+                    currentStatisticFunctionValue = Functions.max(m.property(currentKey));
+                    break;
+                case MIN:
+                    currentStatisticFunctionValue = Functions.min(m.property(currentKey));
+                    break;
+                case SUM:
+                    currentStatisticFunctionValue = Functions.sum(m.property(currentKey));
+                    break;
+                case COUNT:
+                    currentStatisticFunctionValue = Functions.count(m.property(currentKey));
+                    break;
+                case STDEV:
+                    currentStatisticFunctionValue = Functions.stDev(m.property(currentKey));
                     break;
             }
+            returnedFunctionValue[currentStatisticConditionIndex] = currentStatisticFunctionValue;
+            currentStatisticConditionIndex++;
         }
 
-        if (queryParameters != null) {
-            int skipRecordNumber = 0;
-            int limitRecordNumber = 0;
+        boolean isDistinctMode = queryParameters.isDistinctMode();
 
-            int startPage = queryParameters.getStartPage();
-            int endPage = queryParameters.getEndPage();
-            int pageSize = queryParameters.getPageSize();
-            int resultNumber = queryParameters.getResultNumber();
-            boolean isDistinctMode = queryParameters.isDistinctMode();
+        StatementBuilder.OngoingReadingAndReturn activeOngoingReadingAndReturn = null;
 
+        if (isDistinctMode) {
+            activeOngoingReadingAndReturn = Cypher.match(m).returningDistinct(returnedFunctionValue);
+        } else {
+            activeOngoingReadingAndReturn = Cypher.match(m).returning(returnedFunctionValue);
+        }
 
-
-
-
-            if (startPage != 0) {
-                if (startPage < 0) {
-                    String exceptionMessage = "start page must great then zero";
-                    CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
-                    coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
-                    throw coreRealmServiceEntityExploreException;
-                }
-                if (pageSize < 0) {
-                    String exceptionMessage = "page size must great then zero";
-                    CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
-                    coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
-                    throw coreRealmServiceEntityExploreException;
-                }
-
-                int runtimePageSize = pageSize != 0 ? pageSize : 50;
-                int runtimeStartPage = startPage - 1;
-
-                if (endPage != 0) {
-                    //get data from start page to end page, each page has runtimePageSize number of record
-                    if (endPage < 0 || endPage <= startPage) {
-                        String exceptionMessage = "end page must great than start page";
-                        CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
-                        coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
-                        throw coreRealmServiceEntityExploreException;
-                    }
-                    int runtimeEndPage = endPage - 1;
-
-                    skipRecordNumber = runtimePageSize * runtimeStartPage;
-                    limitRecordNumber = (runtimeEndPage - runtimeStartPage) * runtimePageSize;
-                } else {
-                    //filter the data before the start page
-                    limitRecordNumber = runtimePageSize * runtimeStartPage;
-                }
-            } else {
-                //if there is no page parameters,use resultNumber to control result information number
-                if (resultNumber != 0) {
-                    if (resultNumber < 0) {
-                        String exceptionMessage = "result number must great then zero";
-                        CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
-                        coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
-                        throw coreRealmServiceEntityExploreException;
-                    }
-                    limitRecordNumber = resultNumber;
-                }
-            }
-
-            if (limitRecordNumber == 0) {
-                limitRecordNumber = defaultReturnRecordNumber;
-            }
-
-            StatementBuilder.OngoingReadingAndReturn activeOngoingReadingAndReturn;
-            if (returnedFunctionValue != null) {
-                if (isDistinctMode) {
-                    activeOngoingReadingAndReturn = Cypher.match(m).returningDistinct(returnedFunctionValue);
-                } else {
-                    activeOngoingReadingAndReturn = Cypher.match(m).returning(returnedFunctionValue);
-                }
-            } else {
-                if (isDistinctMode) {
-                    activeOngoingReadingAndReturn = Cypher.match(m).returningDistinct(m);
-                } else {
-                    activeOngoingReadingAndReturn = Cypher.match(m).returning(m);
-                }
-            }
-
-            FilteringItem defaultFilteringItem = queryParameters.getDefaultFilteringItem();
-            List<FilteringItem> andFilteringItemList = queryParameters.getAndFilteringItemsList();
-            List<FilteringItem> orFilteringItemList = queryParameters.getOrFilteringItemsList();
-            if (defaultFilteringItem == null) {
-                if ((andFilteringItemList != null && andFilteringItemList.size() > 0) ||
-                        (orFilteringItemList != null && orFilteringItemList.size() > 0)) {
-                    logger.error("Default Filtering Item is required");
-                    CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
-                    e.setCauseMessage("Default Filtering Item is required");
-                    throw e;
-                }
-            } else {
-                StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = Cypher.match(m).where(CommonOperationUtil.getQueryCondition(m, defaultFilteringItem));
-                if (andFilteringItemList != null && andFilteringItemList.size() > 0) {
-                    for (FilteringItem currentFilteringItem : andFilteringItemList) {
-                        ongoingReadingWithWhere = ongoingReadingWithWhere.and(CommonOperationUtil.getQueryCondition(m, currentFilteringItem));
-                    }
-                }
-                if (orFilteringItemList != null && orFilteringItemList.size() > 0) {
-                    for (FilteringItem currentFilteringItem : orFilteringItemList) {
-                        ongoingReadingWithWhere = ongoingReadingWithWhere.or(CommonOperationUtil.getQueryCondition(m, currentFilteringItem));
-                    }
-                }
-                if (returnedFunctionValue != null) {
-                    if (isDistinctMode) {
-                        activeOngoingReadingAndReturn = ongoingReadingWithWhere.returningDistinct(returnedFunctionValue);
-                    } else {
-                        activeOngoingReadingAndReturn = ongoingReadingWithWhere.returning(returnedFunctionValue);
-                    }
-                } else {
-                    if (isDistinctMode) {
-                        activeOngoingReadingAndReturn = ongoingReadingWithWhere.returningDistinct(m);
-                    } else {
-                        activeOngoingReadingAndReturn = ongoingReadingWithWhere.returning(m);
-                    }
-                }
-            }
-
-            if (skipRecordNumber != 0) {
-                //if (sortItemArray != null && returnedFunctionValue == null) {
-                    //Function can not use together with sort in this case
-                //    statement = activeOngoingReadingAndReturn.orderBy(sortItemArray).skip(skipRecordNumber).limit(limitRecordNumber).build();
-                //} else {
-                    statement = activeOngoingReadingAndReturn.skip(skipRecordNumber).limit(limitRecordNumber).build();
-               // }
-            } else {
-                //if (sortItemArray != null && returnedFunctionValue == null) {
-                    //Function can not use together with sort in this case
-                //    statement = activeOngoingReadingAndReturn.orderBy(sortItemArray).limit(limitRecordNumber).build();
-                //} else {
-                    statement = activeOngoingReadingAndReturn.limit(limitRecordNumber).build();
-                //}
+        FilteringItem defaultFilteringItem = queryParameters.getDefaultFilteringItem();
+        List<FilteringItem> andFilteringItemList = queryParameters.getAndFilteringItemsList();
+        List<FilteringItem> orFilteringItemList = queryParameters.getOrFilteringItemsList();
+        if (defaultFilteringItem == null) {
+            if ((andFilteringItemList != null && andFilteringItemList.size() > 0) ||
+                    (orFilteringItemList != null && orFilteringItemList.size() > 0)) {
+                logger.error("Default Filtering Item is required");
+                CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+                e.setCauseMessage("Default Filtering Item is required");
+                throw e;
             }
         } else {
-            statement = Cypher.match(m).returning(m).limit(defaultReturnRecordNumber).build();
+            StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = Cypher.match(m).where(CommonOperationUtil.getQueryCondition(m, defaultFilteringItem));
+            if (andFilteringItemList != null && andFilteringItemList.size() > 0) {
+                for (FilteringItem currentFilteringItem : andFilteringItemList) {
+                    ongoingReadingWithWhere = ongoingReadingWithWhere.and(CommonOperationUtil.getQueryCondition(m, currentFilteringItem));
+                }
+            }
+            if (orFilteringItemList != null && orFilteringItemList.size() > 0) {
+                for (FilteringItem currentFilteringItem : orFilteringItemList) {
+                    ongoingReadingWithWhere = ongoingReadingWithWhere.or(CommonOperationUtil.getQueryCondition(m, currentFilteringItem));
+                }
+            }
+            if (isDistinctMode) {
+                activeOngoingReadingAndReturn = ongoingReadingWithWhere.returningDistinct(returnedFunctionValue);
+            } else {
+                activeOngoingReadingAndReturn = ongoingReadingWithWhere.returning(returnedFunctionValue);
+            }
         }
+        statement = activeOngoingReadingAndReturn.build();
+
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

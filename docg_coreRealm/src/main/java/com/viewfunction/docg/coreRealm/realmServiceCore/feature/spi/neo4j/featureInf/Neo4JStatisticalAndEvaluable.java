@@ -1,70 +1,62 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.StatisticalAndEvaluable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleAttributeValueTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
+import org.neo4j.driver.Record;
+import org.neo4j.driver.Result;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Neo4JKeyResourcesRetrievable{
 
-    default Map<String,Double> statisticNumericalAttributes(QueryParameters queryParameters, Map<String, StatisticFunction> statisticCondition){
+    default Map<String,Number> statisticNumericalAttributes(QueryParameters queryParameters, Map<String, StatisticFunction> statisticConditions) throws CoreRealmServiceEntityExploreException {
         if (this.getEntityUID() != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try {
+                String checkCql = CypherBuilder.matchNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.getEntityUID()),new String[]{RealmConstant._NameProperty});
+                GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._NameProperty);
+                Object resultRes = workingGraphOperationExecutor.executeRead(getSingleAttributeValueTransformer,checkCql);
+                String statisticTargetLabel = ((AttributeValue)resultRes).getAttributeValue().toString();
 
-                String checkCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(this.getEntityUID()), CypherBuilder.CypherFunctionType.LABEL, null);
+                QueryParameters realQueryParameters = queryParameters != null ?queryParameters:new QueryParameters();
+                String statisticCql = CypherBuilder.statistNodesWithQueryParametersAndStatisticFunctions(statisticTargetLabel,realQueryParameters,statisticConditions);
 
+                DataTransformer resultHandleDataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        if(result.hasNext()){
+                            Map<String,Number> resultStatisticMap = new HashMap<>();
+                            Record returnRecord = result.next();
+                            Map<String,Object> returnValueMap = returnRecord.asMap();
+                            Set<String> keySet = returnValueMap.keySet();
+                            for(String currentKey : keySet){
+                                String currentStatisticKey = currentKey.replace(CypherBuilder.operationResultName+".","");
+                                Number currentStatisticValue = (Number)returnValueMap.get(currentKey);
+                                resultStatisticMap.put(currentStatisticKey,currentStatisticValue);
+                            }
+                            return resultStatisticMap;
+                        }
+                        return null;
+                    }
+                };
 
-
-
-
+                Object statisticCqlRes = workingGraphOperationExecutor.executeRead(resultHandleDataTransformer,statisticCql);
+                if(statisticCqlRes != null){
+                    return (Map<String,Number>)statisticCqlRes;
+                }
             } finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }
         }
-        System.out.println("statisticNumericalAttributes");
         return null;
     }
-
-            /*
-                case COUNT:
-                    if (ongoingReadingWithWhere != null) {
-                        statement = ongoingReadingWithWhere.returning(Functions.count(m.property(additionalPropertyName))).build();
-                    } else {
-                        statement = ongoingReadingWithoutWhere.returning(Functions.count(m.property(additionalPropertyName))).build();
-                    }
-                case AVG:
-                    if (ongoingReadingWithWhere != null) {
-                        statement = ongoingReadingWithWhere.returning(Functions.avg(m.property(additionalPropertyName))).build();
-                    } else {
-                        statement = ongoingReadingWithoutWhere.returning(Functions.avg(m.property(additionalPropertyName))).build();
-                    }
-                case MAX:
-                    if (ongoingReadingWithWhere != null) {
-                        statement = ongoingReadingWithWhere.returning(Functions.max(m.property(additionalPropertyName))).build();
-                    } else {
-                        statement = ongoingReadingWithoutWhere.returning(Functions.max(m.property(additionalPropertyName))).build();
-                    }
-                case MIN:
-                    if (ongoingReadingWithWhere != null) {
-                        statement = ongoingReadingWithWhere.returning(Functions.min(m.property(additionalPropertyName))).build();
-                    } else {
-                        statement = ongoingReadingWithoutWhere.returning(Functions.min(m.property(additionalPropertyName))).build();
-                    }
-                case STDEV:
-                    if (ongoingReadingWithWhere != null) {
-                        statement = ongoingReadingWithWhere.returning(Functions.stDev(m.property(additionalPropertyName))).build();
-                    } else {
-                        statement = ongoingReadingWithoutWhere.returning(Functions.stDev(m.property(additionalPropertyName))).build();
-                    }
-                case SUM:
-                    if (ongoingReadingWithWhere != null) {
-                        statement = ongoingReadingWithWhere.returning(Functions.sum(m.property(additionalPropertyName))).build();
-                    } else {
-                        statement = ongoingReadingWithoutWhere.returning(Functions.sum(m.property(additionalPropertyName))).build();
-                    }
-            */
-
 }
