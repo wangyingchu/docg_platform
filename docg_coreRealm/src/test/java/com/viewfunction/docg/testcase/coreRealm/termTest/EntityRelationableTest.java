@@ -335,10 +335,22 @@ public class EntityRelationableTest {
         for(ConceptionEntity currentConceptionEntity:resultListConceptionEntityList){
             System.out.println(currentConceptionEntity.getConceptionKindName());
             System.out.println(currentConceptionEntity.getConceptionEntityUID());
+            Assert.assertNotNull(currentConceptionEntity.getConceptionEntityUID());
+            Assert.assertNotNull(currentConceptionEntity.getConceptionKindName());
 
+            if(currentConceptionEntity.getConceptionKindName().equals("TestConceptionKindForRelationableTestB")){
+                Assert.assertTrue(
+                currentConceptionEntity.getConceptionEntityUID().equals(_ConceptionEntityB1.getConceptionEntityUID()) |
+                        currentConceptionEntity.getConceptionEntityUID().equals(_ConceptionEntityB2.getConceptionEntityUID())
+                );
+            }
 
-
+            if(currentConceptionEntity.getConceptionKindName().equals("TestConceptionKindForRelationableTestC")){
+                Assert.assertTrue(
+                        currentConceptionEntity.getConceptionEntityUID().equals(_ConceptionEntityC1.getConceptionEntityUID()) |
+                                currentConceptionEntity.getConceptionEntityUID().equals(_ConceptionEntityC2.getConceptionEntityUID())
+                );
+            }
         }
-
     }
 }

@@ -623,7 +623,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                     String classificationUID = ((Neo4JClassificationImpl) targetClassification).getClassificationUID();
                     List<Object> withOffspringClassificationUIDList = new ArrayList<>();
                     String queryCql = CypherBuilder.matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID, Long.parseLong(classificationUID),
-                            RealmConstant.ClassificationClass,RealmConstant.Classification_ClassificationRelationClass, RelationDirection.FROM,0,0);
+                            RealmConstant.ClassificationClass,RealmConstant.Classification_ClassificationRelationClass, RelationDirection.FROM,0,0, CypherBuilder.ReturnRelationableDataType.BOTH);
                     withOffspringClassificationUIDList.add(Long.parseLong(classificationUID));
                     DataTransformer offspringClassificationsDataTransformer = new DataTransformer() {
                         @Override

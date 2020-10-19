@@ -26,6 +26,10 @@ public class CypherBuilder {
         COUNT, ID, KEYS, PROPERTIES, EXISTS, LABEL
     }
 
+    public enum ReturnRelationableDataType{
+        BOTH,RELATION,NODE
+    }
+
     private static final ZoneId systemDefaultZoneId = ZoneId.systemDefault();
 
     public static String matchLabelWithSinglePropertyValue(String labelName, String propertyName, Object propertyValue, int matchValue) {
@@ -1036,7 +1040,7 @@ public class CypherBuilder {
 
     public static String matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherFunctionType sourcePropertyFunctionType, Object sourcePropertyValue,
                                                                 String targetConceptionKind, String relationKind,
-                                                                RelationDirection relationDirection,int minJump,int maxJump) {
+                                                                RelationDirection relationDirection,int minJump,int maxJump,ReturnRelationableDataType returnRelationableDataType) {
         Node sourceNode = Cypher.anyNode().named("sourceNode");
         Node resultNodes = targetConceptionKind != null ? Cypher.node(targetConceptionKind).named(operationResultName):Cypher.anyNode().named(operationResultName);
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = null;
@@ -1076,11 +1080,31 @@ public class CypherBuilder {
             default:
         }
 
-        Statement statement;
+        Statement statement = null;
         if (ongoingReadingWithWhere != null) {
-            statement = ongoingReadingWithWhere.returning(resultNodes,resultRelationship).build();
+            switch(returnRelationableDataType){
+                case BOTH:
+                    statement = ongoingReadingWithWhere.returning(resultNodes,resultRelationship).build();
+                    break;
+                case NODE:
+                    statement = ongoingReadingWithWhere.returningDistinct(resultNodes).build();
+                    break;
+                case RELATION:
+                    statement = ongoingReadingWithWhere.returningDistinct(resultRelationship).build();
+                    break;
+            }
         } else {
-            statement = ongoingReadingWithoutWhere.returning(resultNodes,resultRelationship).build();
+            switch(returnRelationableDataType){
+                case BOTH:
+                    statement = ongoingReadingWithoutWhere.returning(resultNodes,resultRelationship).build();
+                    break;
+                case NODE:
+                    statement = ongoingReadingWithoutWhere.returningDistinct(resultNodes).build();
+                    break;
+                case RELATION:
+                    statement = ongoingReadingWithoutWhere.returningDistinct(resultRelationship).build();
+                    break;
+            }
         }
 
         String rel = cypherRenderer.render(statement);
