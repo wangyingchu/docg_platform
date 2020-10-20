@@ -498,9 +498,15 @@ public class CommonOperationUtil {
             Object fromValue = currentFilteringItem.getAttributeFromValue();
             Object toValue = currentFilteringItem.getAttributeToValue();
             if(propertyName != null & fromValue !=null & toValue != null){
-                return targetPropertyContainer.property(propertyName).gte(Cypher.literalOf(fromValue)).and(
-                        targetPropertyContainer.property(filteringItem.getAttributeName()).lte(Cypher.literalOf(toValue))
-                );
+                if(filteringItem.isReversedCondition()){
+                    return targetPropertyContainer.property(propertyName).lt(Cypher.literalOf(fromValue)).or(
+                            targetPropertyContainer.property(filteringItem.getAttributeName()).gt(Cypher.literalOf(toValue))
+                    );
+                }else{
+                    return targetPropertyContainer.property(propertyName).gte(Cypher.literalOf(fromValue)).and(
+                            targetPropertyContainer.property(filteringItem.getAttributeName()).lte(Cypher.literalOf(toValue))
+                    );
+                }
             }
         }
         else if(filteringItem instanceof EqualFilteringItem){
@@ -508,7 +514,11 @@ public class CommonOperationUtil {
             String propertyName = currentFilteringItem.getAttributeName();
             Object propertyValue = currentFilteringItem.getAttributeValue();
             if(propertyName != null & propertyValue !=null ){
-                return targetPropertyContainer.property(propertyName).isEqualTo(Cypher.literalOf(propertyValue));
+                if(filteringItem.isReversedCondition()){
+                    return targetPropertyContainer.property(propertyName).isNotEqualTo(Cypher.literalOf(propertyValue));
+                }else{
+                    return targetPropertyContainer.property(propertyName).isEqualTo(Cypher.literalOf(propertyValue));
+                }
             }
         }
         else if(filteringItem instanceof GreaterThanEqualFilteringItem){
@@ -516,16 +526,23 @@ public class CommonOperationUtil {
             String propertyName = currentFilteringItem.getAttributeName();
             Object propertyValue = currentFilteringItem.getAttributeValue();
             if(propertyName != null & propertyValue !=null ){
-                return targetPropertyContainer.property(propertyName).gte(Cypher.literalOf(propertyValue));
+                if(filteringItem.isReversedCondition()){
+                    return targetPropertyContainer.property(propertyName).lt(Cypher.literalOf(propertyValue));
+                }else{
+                    return targetPropertyContainer.property(propertyName).gte(Cypher.literalOf(propertyValue));
+                }
             }
-
         }
         else if(filteringItem instanceof GreaterThanFilteringItem){
             GreaterThanFilteringItem currentFilteringItem = (GreaterThanFilteringItem)filteringItem;
             String propertyName = currentFilteringItem.getAttributeName();
             Object propertyValue = currentFilteringItem.getAttributeValue();
             if(propertyName != null & propertyValue !=null ){
-                return targetPropertyContainer.property(propertyName).gt(Cypher.literalOf(propertyValue));
+                if(filteringItem.isReversedCondition()){
+                    return targetPropertyContainer.property(propertyName).lte(Cypher.literalOf(propertyValue));
+                }else{
+                    return targetPropertyContainer.property(propertyName).gt(Cypher.literalOf(propertyValue));
+                }
             }
         }
         else if(filteringItem instanceof InValueFilteringItem){
@@ -533,14 +550,22 @@ public class CommonOperationUtil {
             String propertyName = currentFilteringItem.getAttributeName();
             List<Object> propertyValue = currentFilteringItem.getAttributeValues();
             Literal[] listLiteralValue = generateListLiteralValue(propertyValue);
-            return targetPropertyContainer.property(propertyName).in(Cypher.listOf(listLiteralValue));
+            if(filteringItem.isReversedCondition()){
+                return targetPropertyContainer.property(propertyName).in(Cypher.listOf(listLiteralValue)).not();
+            }else{
+                return targetPropertyContainer.property(propertyName).in(Cypher.listOf(listLiteralValue));
+            }
         }
         else if(filteringItem instanceof LessThanEqualFilteringItem){
             LessThanEqualFilteringItem currentFilteringItem = (LessThanEqualFilteringItem)filteringItem;
             String propertyName = currentFilteringItem.getAttributeName();
             Object propertyValue = currentFilteringItem.getAttributeValue();
             if(propertyName != null & propertyValue !=null ){
-                return targetPropertyContainer.property(propertyName).lte(Cypher.literalOf(propertyValue));
+                if(filteringItem.isReversedCondition()){
+                    return targetPropertyContainer.property(propertyName).gt(Cypher.literalOf(propertyValue));
+                }else{
+                    return targetPropertyContainer.property(propertyName).lte(Cypher.literalOf(propertyValue));
+                }
             }
         }
         else if(filteringItem instanceof LessThanFilteringItem){
@@ -548,7 +573,11 @@ public class CommonOperationUtil {
             String propertyName = currentFilteringItem.getAttributeName();
             Object propertyValue = currentFilteringItem.getAttributeValue();
             if(propertyName != null & propertyValue !=null ){
-                return targetPropertyContainer.property(propertyName).lt(Cypher.literalOf(propertyValue));
+                if(filteringItem.isReversedCondition()){
+                    return targetPropertyContainer.property(propertyName).gte(Cypher.literalOf(propertyValue));
+                }else{
+                    return targetPropertyContainer.property(propertyName).lt(Cypher.literalOf(propertyValue));
+                }
             }
         }
         else if(filteringItem instanceof NotEqualFilteringItem){
@@ -556,14 +585,22 @@ public class CommonOperationUtil {
             String propertyName = currentFilteringItem.getAttributeName();
             Object propertyValue = currentFilteringItem.getAttributeValue();
             if(propertyName != null & propertyValue !=null ){
-                return targetPropertyContainer.property(propertyName).isNotEqualTo(Cypher.literalOf(propertyValue));
+                if(filteringItem.isReversedCondition()){
+                    return targetPropertyContainer.property(propertyName).isEqualTo(Cypher.literalOf(propertyValue));
+                }else{
+                    return targetPropertyContainer.property(propertyName).isNotEqualTo(Cypher.literalOf(propertyValue));
+                }
             }
         }
         else if(filteringItem instanceof NullValueFilteringItem){
             NullValueFilteringItem currentFilteringItem = (NullValueFilteringItem)filteringItem;
             String propertyName = currentFilteringItem.getAttributeName();
             if(propertyName != null){
-                return targetPropertyContainer.property(propertyName).isNull();
+                if(filteringItem.isReversedCondition()){
+                    return targetPropertyContainer.property(propertyName).isNotNull();
+                }else{
+                    return targetPropertyContainer.property(propertyName).isNull();
+                }
             }
         }
         else if(filteringItem instanceof RegularMatchFilteringItem){
@@ -571,9 +608,12 @@ public class CommonOperationUtil {
             String propertyName = currentFilteringItem.getAttributeName();
             String propertyValue = currentFilteringItem.getAttributeValue();
             if(propertyName != null & propertyValue !=null ){
-                return targetPropertyContainer.property(propertyName).matches(Cypher.literalOf(propertyValue));
+                if(filteringItem.isReversedCondition()){
+                    return targetPropertyContainer.property(propertyName).matches(Cypher.literalOf(propertyValue)).not();
+                }else{
+                    return targetPropertyContainer.property(propertyName).matches(Cypher.literalOf(propertyValue));
+                }
             }
-
         }
         else if(filteringItem instanceof SimilarFilteringItem){
             SimilarFilteringItem currentFilteringItem = (SimilarFilteringItem)filteringItem;
@@ -581,13 +621,24 @@ public class CommonOperationUtil {
             Object propertyValue = currentFilteringItem.getAttributeValue();
             SimilarFilteringItem.MatchingType matchingType = currentFilteringItem.getMatchingType();
             if(propertyName != null & propertyValue !=null ){
-                switch(matchingType){
-                    case BeginWith:
-                        return targetPropertyContainer.property(propertyName).startsWith(Cypher.literalOf(propertyValue));
-                    case Contain:
-                        return targetPropertyContainer.property(propertyName).endsWith(Cypher.literalOf(propertyValue));
-                    case EndWith:
-                        return targetPropertyContainer.property(propertyName).contains(Cypher.literalOf(propertyValue));
+                if(filteringItem.isReversedCondition()){
+                    switch(matchingType){
+                        case BeginWith:
+                            return targetPropertyContainer.property(propertyName).startsWith(Cypher.literalOf(propertyValue)).not();
+                        case Contain:
+                            return targetPropertyContainer.property(propertyName).endsWith(Cypher.literalOf(propertyValue)).not();
+                        case EndWith:
+                            return targetPropertyContainer.property(propertyName).contains(Cypher.literalOf(propertyValue)).not();
+                    }
+                }else{
+                    switch(matchingType){
+                        case BeginWith:
+                            return targetPropertyContainer.property(propertyName).startsWith(Cypher.literalOf(propertyValue));
+                        case Contain:
+                            return targetPropertyContainer.property(propertyName).endsWith(Cypher.literalOf(propertyValue));
+                        case EndWith:
+                            return targetPropertyContainer.property(propertyName).contains(Cypher.literalOf(propertyValue));
+                    }
                 }
             }
         }

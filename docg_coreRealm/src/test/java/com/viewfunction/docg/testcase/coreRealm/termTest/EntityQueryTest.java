@@ -106,6 +106,15 @@ public class EntityQueryTest {
         Assert.assertNotNull(conceptionEntitiesRetrieveResult.getConceptionEntities());
         Assert.assertTrue(conceptionEntitiesRetrieveResult.getConceptionEntities().size() >0);
 
+        QueryParameters nullValueQueryParameters = new QueryParameters();
+        NullValueFilteringItem nullValueFilteringItem = new NullValueFilteringItem("propertyNotExist");
+        nullValueQueryParameters.setDefaultFilteringItem(nullValueFilteringItem);
+        conceptionEntitiesRetrieveResult = _ConceptionKind01.getEntities(nullValueQueryParameters);
+        Assert.assertTrue(conceptionEntitiesRetrieveResult.getConceptionEntities().size() >0);
+        nullValueFilteringItem.reverseCondition();
+        conceptionEntitiesRetrieveResult = _ConceptionKind01.getEntities(nullValueQueryParameters);
+        Assert.assertTrue(conceptionEntitiesRetrieveResult.getConceptionEntities().size() ==0);
+
         List<String> attributesNameList = new ArrayList<>();
         attributesNameList.add("prop3");
         attributesNameList.add("prop5");

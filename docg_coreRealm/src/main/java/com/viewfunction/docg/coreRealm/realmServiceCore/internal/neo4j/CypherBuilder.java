@@ -203,6 +203,7 @@ public class CypherBuilder {
                     } else {
                         statement = ongoingReadingWithoutWhere.returning(Functions.exists(m.property(additionalPropertyName))).build();
                     }
+                    break;
                 case LABEL:
                     if (ongoingReadingWithWhere != null) {
                         statement = ongoingReadingWithWhere.returning(Functions.labels(m)).build();
