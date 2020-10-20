@@ -1379,7 +1379,7 @@ public class CypherBuilder {
         }
     }
 
-    public static String statistNodesWithQueryParametersAndStatisticFunctions(String labelName, QueryParameters queryParameters, Map<String, StatisticalAndEvaluable.StatisticFunction> statisticConditions) throws CoreRealmServiceEntityExploreException {
+    public static String statistNodesWithQueryParametersAndStatisticFunctions(String labelName, QueryParameters queryParameters, Map<String, StatisticalAndEvaluable.StatisticFunction> statisticConditions,String groupByProperty) throws CoreRealmServiceEntityExploreException {
         Node m = null;
         Statement statement = null;
         if (labelName != null) {
@@ -1388,7 +1388,7 @@ public class CypherBuilder {
             m = Cypher.anyNode().named(operationResultName);
         }
 
-        Expression[] returnedFunctionValue = new Expression[statisticConditions.size()];
+        Expression[] returnedFunctionValue = groupByProperty != null ? new Expression[statisticConditions.size()+1] : new Expression[statisticConditions.size()];
         Set<String> keySet = statisticConditions.keySet();
         int currentStatisticConditionIndex = 0;
         for(String currentKey : keySet){
@@ -1416,6 +1416,9 @@ public class CypherBuilder {
             }
             returnedFunctionValue[currentStatisticConditionIndex] = currentStatisticFunctionValue;
             currentStatisticConditionIndex++;
+        }
+        if(groupByProperty != null){
+            returnedFunctionValue[currentStatisticConditionIndex] = m.property(groupByProperty);
         }
 
         boolean isDistinctMode = queryParameters.isDistinctMode();
