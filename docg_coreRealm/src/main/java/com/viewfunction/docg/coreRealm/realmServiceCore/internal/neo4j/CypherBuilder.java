@@ -6,6 +6,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filtering
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.StatisticalAndEvaluable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.NumericalAttributeStatisticCondition;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import org.neo4j.cypherdsl.core.*;
 import org.neo4j.cypherdsl.core.renderer.Renderer;
@@ -1379,7 +1380,7 @@ public class CypherBuilder {
         }
     }
 
-    public static String statistNodesWithQueryParametersAndStatisticFunctions(String labelName, QueryParameters queryParameters, Map<String, StatisticalAndEvaluable.StatisticFunction> statisticConditions,String groupByProperty) throws CoreRealmServiceEntityExploreException {
+    public static String statistNodesWithQueryParametersAndStatisticFunctions(String labelName, QueryParameters queryParameters, List<NumericalAttributeStatisticCondition> statisticConditions, String groupByProperty) throws CoreRealmServiceEntityExploreException {
         Node m = null;
         Statement statement = null;
         if (labelName != null) {
@@ -1389,11 +1390,11 @@ public class CypherBuilder {
         }
 
         Expression[] returnedFunctionValue = groupByProperty != null ? new Expression[statisticConditions.size()+1] : new Expression[statisticConditions.size()];
-        Set<String> keySet = statisticConditions.keySet();
         int currentStatisticConditionIndex = 0;
-        for(String currentKey : keySet){
+        for(NumericalAttributeStatisticCondition currentNumericalAttributeStatisticCondition : statisticConditions){
             Expression currentStatisticFunctionValue = null;
-            StatisticalAndEvaluable.StatisticFunction currentStatisticFunction = statisticConditions.get(currentKey);
+            String currentKey = currentNumericalAttributeStatisticCondition.getAttributeName();
+            StatisticalAndEvaluable.StatisticFunction currentStatisticFunction = currentNumericalAttributeStatisticCondition.getStatisticFunction();
             switch(currentStatisticFunction){
                 case AVG:
                     currentStatisticFunctionValue = Functions.avg(m.property(currentKey));

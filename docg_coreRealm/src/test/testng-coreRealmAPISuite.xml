@@ -45,9 +45,14 @@
             <class name="com.viewfunction.docg.testcase.coreRealm.termTest.EntityRelationableTest"/>
         </classes>
     </test>
+    <test verbose="10" name="StatisticalAndEvaluableTest">
+        <classes>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.StatisticalAndEvaluableTest"/>
+        </classes>
+    </test>
 
     <!-- KindCacheableTest must be the last test case at anytime-->
-    <test verbose="10" name="KindCacheableTest">
+    <test verbose="11" name="KindCacheableTest">
         <classes>
             <class name="com.viewfunction.docg.testcase.coreRealm.termTest.KindCacheableTest"/>
         </classes>

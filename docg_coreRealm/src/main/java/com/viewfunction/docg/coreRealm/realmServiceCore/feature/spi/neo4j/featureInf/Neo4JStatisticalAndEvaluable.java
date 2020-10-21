@@ -9,6 +9,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleAttributeValueTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GroupNumericalAttributesStatisticResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.NumericalAttributeStatisticCondition;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
@@ -17,7 +18,7 @@ import java.util.*;
 
 public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Neo4JKeyResourcesRetrievable{
 
-    default Map<String,Number> statisticNumericalAttributes(QueryParameters queryParameters, Map<String, StatisticFunction> statisticConditions) throws CoreRealmServiceEntityExploreException {
+    default Map<String,Number> statisticNumericalAttributes(QueryParameters queryParameters, List<NumericalAttributeStatisticCondition> statisticConditions) throws CoreRealmServiceEntityExploreException {
         if (this.getEntityUID() != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try {
@@ -61,7 +62,7 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
 
     default List<GroupNumericalAttributesStatisticResult> statisticNumericalAttributesByGroup(String groupByAttribute,
                                                                                               QueryParameters queryParameters,
-                                                                                              Map<String, StatisticFunction> statisticCondition)  throws CoreRealmServiceEntityExploreException{
+                                                                                              List<NumericalAttributeStatisticCondition> statisticConditions)  throws CoreRealmServiceEntityExploreException{
         if (this.getEntityUID() != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try {
@@ -71,7 +72,7 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
                 String statisticTargetLabel = ((AttributeValue)resultRes).getAttributeValue().toString();
 
                 QueryParameters realQueryParameters = queryParameters != null ?queryParameters:new QueryParameters();
-                String statisticCql = CypherBuilder.statistNodesWithQueryParametersAndStatisticFunctions(statisticTargetLabel,realQueryParameters,statisticCondition,groupByAttribute);
+                String statisticCql = CypherBuilder.statistNodesWithQueryParametersAndStatisticFunctions(statisticTargetLabel,realQueryParameters,statisticConditions,groupByAttribute);
 
                 DataTransformer resultHandleDataTransformer = new DataTransformer() {
                     @Override
