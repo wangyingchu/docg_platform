@@ -27,8 +27,6 @@ public interface Neo4JClassificationAttachable extends ClassificationAttachable,
 
     default RelationEntity attachClassification(RelationAttachInfo relationAttachInfo, String classificationName) throws CoreRealmServiceRuntimeException{
         if(this.getEntityUID() != null){
-
-
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try{
                 Classification targetClassification = getClassificationByName(workingGraphOperationExecutor,classificationName);
@@ -81,6 +79,13 @@ public interface Neo4JClassificationAttachable extends ClassificationAttachable,
     }
 
     default boolean detachClassification(String classificationName, String relationKindName, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException {
+        if(this.getEntityUID() != null){
+
+
+
+
+
+        }
         GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
         try{
             Classification targetClassification = getClassificationByName(workingGraphOperationExecutor,classificationName);
@@ -156,7 +161,7 @@ public interface Neo4JClassificationAttachable extends ClassificationAttachable,
             throw exception;
         }
     }
-
+/*
     private RelationEntity getRelationEntityWithClassification(GraphOperationExecutor workingGraphOperationExecutor,Classification targetClassification,String relationKind, RelationDirection relationDirection){
         if(targetClassification != null) {
             Neo4JClassificationImpl neo4JClassificationImpl = (Neo4JClassificationImpl) targetClassification;
@@ -180,4 +185,5 @@ public interface Neo4JClassificationAttachable extends ClassificationAttachable,
         }
         return null;
     }
+    */
 }
