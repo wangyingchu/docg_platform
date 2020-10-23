@@ -9,8 +9,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import java.util.List;
 
 public interface ClassificationAttachable {
-    RelationEntity attachClassification(RelationAttachInfo relationAttachInfo, String classificationEntityUID) throws CoreRealmServiceRuntimeException;
-    boolean detachClassification(String classificationEntityUID, String relationKindName, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException ;
+    RelationEntity attachClassification(RelationAttachInfo relationAttachInfo, String classificationName) throws CoreRealmServiceRuntimeException;
+    boolean detachClassification(String classificationName, String relationKindName, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException ;
     List<Classification> getAttachedClassifications(String relationKindName, RelationDirection relationDirection);
 }
 
