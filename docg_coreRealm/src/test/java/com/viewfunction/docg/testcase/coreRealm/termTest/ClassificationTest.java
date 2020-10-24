@@ -1,9 +1,10 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.Classification;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JClassificationImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
@@ -11,9 +12,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class ClassificationTest {
 
@@ -410,5 +409,114 @@ public class ClassificationTest {
             exceptionShouldBeCaught = true;
         }
         Assert.assertTrue(exceptionShouldBeCaught);
+
+        ConceptionKind _ConceptionKind01 = coreRealm.getConceptionKind("testConceptionKindForClassification");
+        if(_ConceptionKind01 != null){
+            coreRealm.removeConceptionKind("testConceptionKindForClassification",true);
+        }
+        _ConceptionKind01 = coreRealm.getConceptionKind("testConceptionKindForClassification");
+        if(_ConceptionKind01 == null){
+            _ConceptionKind01 = coreRealm.createConceptionKind("testConceptionKindForClassification","TestConceptionKindADesc+中文描述");
+            Assert.assertNotNull(_ConceptionKind01);
+        }
+
+        Map<String,Object> relationDataMap = new HashMap<>();
+
+        RelationAttachInfo relationAttachInfo = new RelationAttachInfo();
+        relationAttachInfo.setRelationKind("relationTypeForClassificationTest01");
+        relationAttachInfo.setRelationDirection(RelationDirection.FROM);
+        relationAttachInfo.setRelationData(relationDataMap);
+
+        RelationEntity resultRelationEntity01 = _ConceptionKind01.attachClassification(relationAttachInfo,classificationName05_1);
+        Assert.assertNotNull(resultRelationEntity01);
+        resultRelationEntity01 = _ConceptionKind01.attachClassification(relationAttachInfo,classificationName05_1);
+        Assert.assertNull(resultRelationEntity01);
+
+        relationAttachInfo.setRelationKind("relationTypeForClassificationTest02");
+        resultRelationEntity01 = _ConceptionKind01.attachClassification(relationAttachInfo,classificationName05_2);
+        Assert.assertNotNull(resultRelationEntity01);
+
+        relationAttachInfo.setRelationDirection(RelationDirection.TO);
+        resultRelationEntity01 = _ConceptionKind01.attachClassification(relationAttachInfo,classificationName05_1_1);
+        Assert.assertNotNull(resultRelationEntity01);
+
+        exceptionShouldBeCaught = false;
+        try{
+            _ConceptionKind01.attachClassification(relationAttachInfo,classificationName05_1+"NotExist");
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
+
+        List<Classification> attachedClassificationList = _ConceptionKind01.getAttachedClassifications("relationTypeForClassificationTest01",RelationDirection.TWO_WAY);
+        Assert.assertNotNull(attachedClassificationList);
+        Assert.assertEquals(attachedClassificationList.size(),1);
+        Assert.assertEquals(attachedClassificationList.get(0).getClassificationName(),classificationName05_1);
+        attachedClassificationList = _ConceptionKind01.getAttachedClassifications("relationTypeForClassificationTest01",RelationDirection.FROM);
+        Assert.assertNotNull(attachedClassificationList);
+        Assert.assertEquals(attachedClassificationList.size(),1);
+        Assert.assertEquals(attachedClassificationList.get(0).getClassificationName(),classificationName05_1);
+        attachedClassificationList = _ConceptionKind01.getAttachedClassifications("relationTypeForClassificationTest01",RelationDirection.TO);
+        Assert.assertNotNull(attachedClassificationList);
+        Assert.assertEquals(attachedClassificationList.size(),0);
+
+        attachedClassificationList = _ConceptionKind01.getAttachedClassifications("relationTypeForClassificationTest02",RelationDirection.TWO_WAY);
+        Assert.assertNotNull(attachedClassificationList);
+        Assert.assertEquals(attachedClassificationList.size(),2);
+
+        attachedClassificationList = _ConceptionKind01.getAttachedClassifications("relationTypeForClassificationTest02",RelationDirection.FROM);
+        Assert.assertNotNull(attachedClassificationList);
+        Assert.assertEquals(attachedClassificationList.size(),1);
+        Assert.assertEquals(attachedClassificationList.get(0).getClassificationName(),classificationName05_2);
+
+        attachedClassificationList = _ConceptionKind01.getAttachedClassifications("relationTypeForClassificationTest02",RelationDirection.TO);
+        Assert.assertNotNull(attachedClassificationList);
+        Assert.assertEquals(attachedClassificationList.size(),1);
+        Assert.assertEquals(attachedClassificationList.get(0).getClassificationName(),classificationName05_1_1);
+
+        boolean detachClassificationResult = _ConceptionKind01.detachClassification(classificationName05_1,"relationTypeForClassificationTest01",RelationDirection.TO);
+        Assert.assertFalse(detachClassificationResult);
+        detachClassificationResult = _ConceptionKind01.detachClassification(classificationName05_1,"relationTypeForClassificationTest01",RelationDirection.FROM);
+        Assert.assertTrue(detachClassificationResult);
+        attachedClassificationList = _ConceptionKind01.getAttachedClassifications("relationTypeForClassificationTest01",RelationDirection.FROM);
+        Assert.assertEquals(attachedClassificationList.size(),0);
+        detachClassificationResult = _ConceptionKind01.detachClassification(classificationName05_1,"relationTypeForClassificationTest01",RelationDirection.FROM);
+        Assert.assertFalse(detachClassificationResult);
+
+        exceptionShouldBeCaught = false;
+        try{
+            _ConceptionKind01.detachClassification(classificationName05_1_1,"relationTypeForClassificationTest02",RelationDirection.TWO_WAY);
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
+
+        detachClassificationResult = _ConceptionKind01.detachClassification(classificationName05_2,"relationTypeForClassificationTest02",RelationDirection.FROM);
+        Assert.assertTrue(detachClassificationResult);
+
+        attachedClassificationList = _ConceptionKind01.getAttachedClassifications("relationTypeForClassificationTest02",RelationDirection.TWO_WAY);
+        Assert.assertNotNull(attachedClassificationList);
+        Assert.assertEquals(attachedClassificationList.size(),1);
+
+        Map<String,Object> newEntityValue= new HashMap<>();
+        newEntityValue.put("prop1",10000l);
+        newEntityValue.put("prop2",190.22d);
+        newEntityValue.put("prop3",50);
+        newEntityValue.put("prop4","thi is s string");
+        newEntityValue.put("prop5","我是中文string");
+
+        ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValue);
+        ConceptionEntity _ConceptionEntity01 = _ConceptionKind01.newEntity(conceptionEntityValue,false);
+
+        RelationEntity _RelationEntity2 = _ConceptionEntity01.attachClassification(relationAttachInfo,classificationName03);
+        Assert.assertNotNull(_RelationEntity2);
+        attachedClassificationList = _ConceptionEntity01.getAttachedClassifications("relationTypeForClassificationTest02",RelationDirection.TO);
+        Assert.assertNotNull(attachedClassificationList);
+        Assert.assertEquals(attachedClassificationList.size(),1);
+        Assert.assertEquals(attachedClassificationList.get(0).getClassificationName(),classificationName03);
+
+        Classification relatedClassification = attachedClassificationList.get(0);
+        relatedClassification.addAttribute("FireProtectionZoneDisplayColor","#CE0000");
+        Assert.assertEquals(relatedClassification.getAttribute("FireProtectionZoneDisplayColor").getAttributeValue(),"#CE0000");
     }
 }

@@ -162,7 +162,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
                     return null;
                 }
             };
-            workingGraphOperationExecutor.executeWrite(offspringClassificationsDataTransformer,queryCql);
+            workingGraphOperationExecutor.executeRead(offspringClassificationsDataTransformer,queryCql);
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
