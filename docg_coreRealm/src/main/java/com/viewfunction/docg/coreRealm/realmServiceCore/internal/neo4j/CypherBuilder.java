@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.Set;
 
 public class CypherBuilder {
 
@@ -529,6 +528,85 @@ public class CypherBuilder {
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
     }
+
+    public static String matchRelationWithSingleFunctionValueEqual(CypherFunctionType propertyFunctionType, Object propertyValue, CypherFunctionType returnFunctionType, String additionalPropertyName) {
+        Node sourceNode = Cypher.anyNode().named("sourceNode");
+        Node targetNode = Cypher.anyNode().named("targetNode");
+        Relationship relation = sourceNode.relationshipBetween(targetNode).named(operationResultName);
+        StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(relation);
+        StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
+        switch (propertyFunctionType) {
+            case ID:
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(relation).isEqualTo(Cypher.literalOf(propertyValue)));
+                break;
+            default:
+        }
+        Statement statement = null;
+        if (returnFunctionType != null) {
+            switch (returnFunctionType) {
+                case KEYS:
+                    if (ongoingReadingWithWhere != null) {
+                        statement = ongoingReadingWithWhere.returning(Functions2.keys(relation)).build();
+                    } else {
+                        statement = ongoingReadingWithoutWhere.returning(Functions2.keys(relation)).build();
+                    }
+                    break;
+                case PROPERTIES:
+                    if (ongoingReadingWithWhere != null) {
+                        statement = ongoingReadingWithWhere.returning(Functions2.properties(relation)).build();
+                    } else {
+                        statement = ongoingReadingWithoutWhere.returning(Functions2.properties(relation)).build();
+                    }
+                    break;
+                case EXISTS:
+                    if (ongoingReadingWithWhere != null) {
+                        statement = ongoingReadingWithWhere.returning(Functions.exists(relation.property(additionalPropertyName))).build();
+                    } else {
+                        statement = ongoingReadingWithoutWhere.returning(Functions.exists(relation.property(additionalPropertyName))).build();
+                    }
+                    break;
+                case LABEL:
+                    if (ongoingReadingWithWhere != null) {
+                        statement = ongoingReadingWithWhere.returning(Functions.type(relation)).build();
+                    } else {
+                        statement = ongoingReadingWithoutWhere.returning(Functions.type(relation)).build();
+                    }
+            }
+        } else {
+            if (ongoingReadingWithWhere != null) {
+                statement = ongoingReadingWithWhere.returning(relation).build();
+            } else {
+                statement = ongoingReadingWithoutWhere.returning(relation).build();
+            }
+        }
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        return rel;
+    }
+
+/*
+    public static String deleteNodesWithSingleFunctionValueEqual(CypherFunctionType propertyFunctionType, List<Object> propertyValue) {
+        Literal[] listLiteralValue = CommonOperationUtil.generateListLiteralValue(propertyValue);
+        Node m = Cypher.anyNode().named(operationResultName);
+        StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(m);
+        StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
+        switch (propertyFunctionType) {
+            case ID:
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(m).in(Cypher.listOf(listLiteralValue)));
+                break;
+            default:
+        }
+        Statement statement = null;
+        if (ongoingReadingWithWhere != null) {
+            statement = ongoingReadingWithWhere.detachDelete(m).returning(m).build();
+        } else {
+            statement = ongoingReadingWithoutWhere.detachDelete(m).returning(m).build();
+        }
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        return rel;
+    }
+    */
 
     public static String mergeRelatedNodesFromSpecialStartNodes(CypherFunctionType sourcePropertyFunctionType, Object sourcePropertyValue,
                                                                 String targetConceptionKind, String relationKind,

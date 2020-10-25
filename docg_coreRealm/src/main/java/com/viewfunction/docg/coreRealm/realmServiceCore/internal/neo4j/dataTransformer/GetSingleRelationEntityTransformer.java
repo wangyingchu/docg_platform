@@ -25,7 +25,12 @@ public class GetSingleRelationEntityTransformer implements DataTransformer<Relat
             if(nodeRecord != null){
                 Relationship resultRelationship = nodeRecord.get(CypherBuilder.operationResultName).asRelationship();
                 String relationType = resultRelationship.type();
-                boolean isMatchedKind = relationType.equals(targetRelationKindName)? true : false;
+                boolean isMatchedKind;
+                if(this.targetRelationKindName == null){
+                    isMatchedKind = true;
+                }else{
+                    isMatchedKind = relationType.equals(targetRelationKindName)? true : false;
+                }
                 if(isMatchedKind){
                     long relationUID = resultRelationship.id();
                     String relationEntityUID = ""+relationUID;

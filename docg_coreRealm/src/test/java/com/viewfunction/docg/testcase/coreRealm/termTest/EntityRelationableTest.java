@@ -352,5 +352,15 @@ public class EntityRelationableTest {
                 );
             }
         }
+
+
+        RelationEntity resultRelationEntity = _ConceptionEntityA.attachFromRelation(_ConceptionEntityB2.getConceptionEntityUID(),"detachRelTestRelation",null,false);
+        System.out.println(resultRelationEntity);
+        System.out.println(resultRelationEntity.getRelationEntityUID());
+
+        boolean detachResult = _ConceptionEntityA.detachRelation(resultRelationEntity.getRelationEntityUID());
+        //Assert.assertTrue(detachResult);
+
+
     }
 }
