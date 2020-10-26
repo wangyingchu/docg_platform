@@ -243,13 +243,13 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
         if (this.getEntityUID() != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try {
-                String queryCql = CypherBuilder.matchRelationWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,relationEntityUID,null,null);
+                String queryCql = CypherBuilder.matchRelationWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(relationEntityUID),null,null);
                 GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer(null,workingGraphOperationExecutor);
                 Object relationEntityRes = workingGraphOperationExecutor.executeRead(getSingleRelationEntityTransformer,queryCql);
                 RelationEntity relationEntity = relationEntityRes != null ? (RelationEntity)relationEntityRes : null;
                 if(relationEntity != null){
                     if(this.getEntityUID().equals(relationEntity.getFromConceptionEntityUID()) || this.getEntityUID().equals(relationEntity.getToConceptionEntityUID())){
-                        String removeCql = CypherBuilder.deleteRelationWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,relationEntityUID,null,null);
+                        String removeCql = CypherBuilder.deleteRelationWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(relationEntityUID),null,null);
                         relationEntityRes = workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer,removeCql);
                         relationEntity = relationEntityRes != null ? (RelationEntity)relationEntityRes : null;
                         if(relationEntity != null & relationEntity.getRelationEntityUID().equals(relationEntityUID)){

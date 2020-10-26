@@ -329,7 +329,6 @@ public class EntityRelationableTest {
         _ConceptionEntityB2.attachFromRelation(_ConceptionEntityB1.getConceptionEntityUID(),"testRelationTypeType1",null,true);
 
         List<ConceptionEntity> resultListConceptionEntityList = _ConceptionEntityA.getRelatedConceptionEntities(null,"testRelationTypeType1",RelationDirection.TWO_WAY,2);
-        System.out.println(resultListConceptionEntityList);
 
         Assert.assertEquals(resultListConceptionEntityList.size(),4);
         for(ConceptionEntity currentConceptionEntity:resultListConceptionEntityList){
@@ -353,14 +352,19 @@ public class EntityRelationableTest {
             }
         }
 
-
         RelationEntity resultRelationEntity = _ConceptionEntityA.attachFromRelation(_ConceptionEntityB2.getConceptionEntityUID(),"detachRelTestRelation",null,false);
-        System.out.println(resultRelationEntity);
-        System.out.println(resultRelationEntity.getRelationEntityUID());
-
+        RelationEntity resultRelationEntity2 = _ConceptionEntityB1.attachFromRelation(_ConceptionEntityB2.getConceptionEntityUID(),"detachRelTestRelation",null,false);
         boolean detachResult = _ConceptionEntityA.detachRelation(resultRelationEntity.getRelationEntityUID());
-        //Assert.assertTrue(detachResult);
+        Assert.assertTrue(detachResult);
 
-
+        detachResult = _ConceptionEntityA.detachRelation(resultRelationEntity2.getRelationEntityUID());
+        Assert.assertFalse(detachResult);
+        boolean exceptionShouldBeCaught = false;
+        try{
+            _ConceptionEntityA.detachRelation(resultRelationEntity.getRelationEntityUID());
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
     }
 }
