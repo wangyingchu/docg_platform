@@ -374,15 +374,9 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
             try {
                 String queryCql = CypherBuilder.matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID, Long.parseLong(getEntityUID()),
                         targetConceptionKind,relationKind, relationDirection,1,maxJump, CypherBuilder.ReturnRelationableDataType.COUNT_NODE);
-
-                System.out.println(queryCql);System.out.println(queryCql);System.out.println(queryCql);
-
-                //GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(targetConceptionKind,workingGraphOperationExecutor);
-                //Object relationEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
-                //return relationEntityList != null ? (List<ConceptionEntity>)relationEntityList : null;
-
-
-
+                GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count","DISTINCT");
+                Object countResultResp = workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer,queryCql);
+                return countResultResp != null ? (Long)countResultResp : null;
             }finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }

@@ -32,7 +32,7 @@ public class EntityRelationableTest {
     }
 
     @Test
-    public void testClassificationFunction() throws CoreRealmServiceRuntimeException {
+    public void testEntityRelationableFunction() throws CoreRealmServiceRuntimeException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
 
@@ -348,15 +348,8 @@ public class EntityRelationableTest {
             }
         }
 
-
-
-
-
-       // Long countRelatedNodesNumber = _ConceptionEntityA.countRelatedConceptionEntities(null,"testRelationTypeType1",RelationDirection.TWO_WAY,2);
-       // Assert.assertEquals(countRelatedNodesNumber,new Long("4"));
-
-
-
+        Long countRelatedNodesNumber = _ConceptionEntityA.countRelatedConceptionEntities(null,"testRelationTypeType1",RelationDirection.TWO_WAY,2);
+        Assert.assertEquals(countRelatedNodesNumber,new Long("4"));
 
         RelationEntity resultRelationEntity = _ConceptionEntityA.attachFromRelation(_ConceptionEntityB2.getConceptionEntityUID(),"detachRelTestRelation",null,false);
         RelationEntity resultRelationEntity2 = _ConceptionEntityB1.attachFromRelation(_ConceptionEntityB2.getConceptionEntityUID(),"detachRelTestRelation",null,false);

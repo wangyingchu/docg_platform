@@ -1180,6 +1180,12 @@ public class CypherBuilder {
                 case RELATION:
                     statement = ongoingReadingWithWhere.returningDistinct(resultRelationship).build();
                     break;
+                case COUNT_NODE:
+                    statement = ongoingReadingWithWhere.returning(Functions.countDistinct(resultNodes)).build();
+                    break;
+                case COUNT_RELATION:
+                    statement = ongoingReadingWithWhere.returningDistinct(Functions2.count(resultRelationship)).build();
+                    break;
             }
         } else {
             switch(returnRelationableDataType){
@@ -1193,7 +1199,7 @@ public class CypherBuilder {
                     statement = ongoingReadingWithoutWhere.returningDistinct(resultRelationship).build();
                     break;
                 case COUNT_NODE:
-                    statement = ongoingReadingWithoutWhere.returningDistinct(Functions.count(resultNodes)).build();
+                    statement = ongoingReadingWithoutWhere.returning(Functions.countDistinct(resultNodes)).build();
                     break;
                 case COUNT_RELATION:
                     statement = ongoingReadingWithoutWhere.returningDistinct(Functions2.count(resultRelationship)).build();
