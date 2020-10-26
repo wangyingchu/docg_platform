@@ -14,9 +14,13 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JRelationEntityImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 
+import org.neo4j.driver.Record;
+import org.neo4j.driver.Result;
+import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +71,7 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
             try {
                 QueryParameters relationshipQueryParameters = new QueryParameters();
                 relationshipQueryParameters.setEntityKind(relationKind);
+                relationshipQueryParameters.setResultNumber(10000000);
                 boolean ignoreDirection = true;
                 String sourceNodeProperty = null;
                 String targetNodeProperty = null;
@@ -109,6 +114,7 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
             try {
                 QueryParameters relationshipQueryParameters = new QueryParameters();
                 relationshipQueryParameters.setEntityKind(relationType);
+                relationshipQueryParameters.setResultNumber(10000000);
                 boolean ignoreDirection = true;
                 String sourceNodeProperty = null;
                 String targetNodeProperty = null;
@@ -278,18 +284,109 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
     }
 
     default public List<String> detachAllRelations(){
+        if (this.getEntityUID() != null) {
+            String queryCql = null;
+            try {
+                queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID, getEntityUID(), null, true, null, null);
+                return batchDetachRelations(queryCql);
+            } catch (CoreRealmServiceEntityExploreException e) {
+                e.printStackTrace();
+            }
+        }
         return null;
     }
 
     default public List<String> detachAllSpecifiedRelations(String relationType, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException{
+        if (this.getEntityUID() != null) {
+            try {
+                QueryParameters relationshipQueryParameters = new QueryParameters();
+                relationshipQueryParameters.setEntityKind(relationType);
+                relationshipQueryParameters.setResultNumber(10000000);
+                boolean ignoreDirection = true;
+                String sourceNodeProperty = null;
+                String targetNodeProperty = null;
+                if(relationDirection != null){
+                    switch (relationDirection){
+                        case FROM:
+                            sourceNodeProperty = getEntityUID();
+                            targetNodeProperty = null;
+                            ignoreDirection = false;
+                            break;
+                        case TO:
+                            sourceNodeProperty = null;
+                            targetNodeProperty = getEntityUID();
+                            ignoreDirection = false;
+                            break;
+                        case TWO_WAY:
+                            sourceNodeProperty = getEntityUID();
+                            targetNodeProperty = null;
+                            ignoreDirection = true;
+                            break;
+                    }
+                }
+                String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,sourceNodeProperty,targetNodeProperty,ignoreDirection,relationshipQueryParameters, null);
+                return batchDetachRelations(queryCql);
+                //return null;
+            } catch (CoreRealmServiceEntityExploreException e) {
+                e.printStackTrace();
+            }
+        }
         return null;
     }
 
     default public List<String> detachSpecifiedRelations(QueryParameters exploreParameters, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException{
+        if (this.getEntityUID() != null) {
+            try {
+                boolean ignoreDirection = true;
+                String sourceNodeProperty = null;
+                String targetNodeProperty = null;
+                if(relationDirection != null){
+                    switch (relationDirection){
+                        case FROM:
+                            sourceNodeProperty = getEntityUID();
+                            targetNodeProperty = null;
+                            ignoreDirection = false;
+                            break;
+                        case TO:
+                            sourceNodeProperty = null;
+                            targetNodeProperty = getEntityUID();
+                            ignoreDirection = false;
+                            break;
+                        case TWO_WAY:
+                            sourceNodeProperty = getEntityUID();
+                            targetNodeProperty = null;
+                            ignoreDirection = true;
+                            break;
+                    }
+                }
+                String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,sourceNodeProperty,targetNodeProperty,ignoreDirection,exploreParameters,null);
+                return batchDetachRelations(queryCql);
+            } catch (CoreRealmServiceEntityExploreException e) {
+                e.printStackTrace();
+            }
+        }
         return null;
     }
 
     default Long countRelatedConceptionEntities(String targetConceptionKind, String relationKind, RelationDirection relationDirection, int maxJump) {
+        if (this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                String queryCql = CypherBuilder.matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID, Long.parseLong(getEntityUID()),
+                        targetConceptionKind,relationKind, relationDirection,1,maxJump, CypherBuilder.ReturnRelationableDataType.COUNT_NODE);
+
+                System.out.println(queryCql);System.out.println(queryCql);System.out.println(queryCql);
+
+                //GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(targetConceptionKind,workingGraphOperationExecutor);
+                //Object relationEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
+                //return relationEntityList != null ? (List<ConceptionEntity>)relationEntityList : null;
+
+
+
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
 
@@ -353,5 +450,57 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
         }finally {
             getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
         }
+    }
+
+    private List<String> batchDetachRelations(String relationQueryCql){
+        if (this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                String queryCql = relationQueryCql;
+                List<Object> relationEntitiesUIDList = new ArrayList<>();
+                DataTransformer queryRelationshipOperationDataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        if (result.hasNext()) {
+                            while (result.hasNext()) {
+                                Record nodeRecord = result.next();
+                                if (nodeRecord != null) {
+                                    Relationship resultRelationship = nodeRecord.get(CypherBuilder.operationResultName).asRelationship();
+                                    Long relationEntityUID = resultRelationship.id();
+                                    relationEntitiesUIDList.add(relationEntityUID);
+                                }
+                            }
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(queryRelationshipOperationDataTransformer, queryCql);
+                String detachCql = CypherBuilder.deleteRelationsWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, relationEntitiesUIDList);
+                DataTransformer detachRelationshipOperationDataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        List<String> resultEntitiesUIDList = new ArrayList<>();
+                        if (result.hasNext()) {
+                            while (result.hasNext()) {
+                                Record nodeRecord = result.next();
+                                if (nodeRecord != null) {
+                                    Relationship resultRelationship = nodeRecord.get(CypherBuilder.operationResultName).asRelationship();
+                                    Long relationEntityUID = resultRelationship.id();
+                                    resultEntitiesUIDList.add("" + relationEntityUID);
+                                }
+                            }
+                        }
+                        return resultEntitiesUIDList;
+                    }
+                };
+                Object detachResult = workingGraphOperationExecutor.executeWrite(detachRelationshipOperationDataTransformer, detachCql);
+                if (detachResult != null) {
+                    return (List<String>) detachResult;
+                }
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
     }
 }

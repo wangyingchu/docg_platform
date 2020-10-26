@@ -29,7 +29,7 @@ public class CypherBuilder {
     }
 
     public enum ReturnRelationableDataType{
-        BOTH,RELATION,NODE
+        BOTH,RELATION,NODE,COUNT_NODE,COUNT_RELATION
     }
 
     private static final ZoneId systemDefaultZoneId = ZoneId.systemDefault();
@@ -584,10 +584,11 @@ public class CypherBuilder {
         return rel;
     }
 
-/*
-    public static String deleteNodesWithSingleFunctionValueEqual(CypherFunctionType propertyFunctionType, List<Object> propertyValue) {
+    public static String deleteRelationsWithSingleFunctionValueEqual(CypherFunctionType propertyFunctionType, List<Object> propertyValue) {
         Literal[] listLiteralValue = CommonOperationUtil.generateListLiteralValue(propertyValue);
-        Node m = Cypher.anyNode().named(operationResultName);
+        Node sourceNode = Cypher.anyNode().named("sourceNode");
+        Node targetNode = Cypher.anyNode().named("targetNode");
+        Relationship m = sourceNode.relationshipBetween(targetNode).named(operationResultName);
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(m);
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (propertyFunctionType) {
@@ -598,15 +599,14 @@ public class CypherBuilder {
         }
         Statement statement = null;
         if (ongoingReadingWithWhere != null) {
-            statement = ongoingReadingWithWhere.detachDelete(m).returning(m).build();
+            statement = ongoingReadingWithWhere.delete(m).returningDistinct(m).build();
         } else {
-            statement = ongoingReadingWithoutWhere.detachDelete(m).returning(m).build();
+            statement = ongoingReadingWithoutWhere.delete(m).returningDistinct(m).build();
         }
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
     }
-    */
 
     public static String mergeRelatedNodesFromSpecialStartNodes(CypherFunctionType sourcePropertyFunctionType, Object sourcePropertyValue,
                                                                 String targetConceptionKind, String relationKind,
@@ -1191,6 +1191,12 @@ public class CypherBuilder {
                     break;
                 case RELATION:
                     statement = ongoingReadingWithoutWhere.returningDistinct(resultRelationship).build();
+                    break;
+                case COUNT_NODE:
+                    statement = ongoingReadingWithoutWhere.returningDistinct(Functions.count(resultNodes)).build();
+                    break;
+                case COUNT_RELATION:
+                    statement = ongoingReadingWithoutWhere.returningDistinct(Functions2.count(resultRelationship)).build();
                     break;
             }
         }

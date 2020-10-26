@@ -332,18 +332,14 @@ public class EntityRelationableTest {
 
         Assert.assertEquals(resultListConceptionEntityList.size(),4);
         for(ConceptionEntity currentConceptionEntity:resultListConceptionEntityList){
-            System.out.println(currentConceptionEntity.getConceptionKindName());
-            System.out.println(currentConceptionEntity.getConceptionEntityUID());
             Assert.assertNotNull(currentConceptionEntity.getConceptionEntityUID());
             Assert.assertNotNull(currentConceptionEntity.getConceptionKindName());
-
             if(currentConceptionEntity.getConceptionKindName().equals("TestConceptionKindForRelationableTestB")){
                 Assert.assertTrue(
                 currentConceptionEntity.getConceptionEntityUID().equals(_ConceptionEntityB1.getConceptionEntityUID()) |
                         currentConceptionEntity.getConceptionEntityUID().equals(_ConceptionEntityB2.getConceptionEntityUID())
                 );
             }
-
             if(currentConceptionEntity.getConceptionKindName().equals("TestConceptionKindForRelationableTestC")){
                 Assert.assertTrue(
                         currentConceptionEntity.getConceptionEntityUID().equals(_ConceptionEntityC1.getConceptionEntityUID()) |
@@ -351,6 +347,16 @@ public class EntityRelationableTest {
                 );
             }
         }
+
+
+
+
+
+       // Long countRelatedNodesNumber = _ConceptionEntityA.countRelatedConceptionEntities(null,"testRelationTypeType1",RelationDirection.TWO_WAY,2);
+       // Assert.assertEquals(countRelatedNodesNumber,new Long("4"));
+
+
+
 
         RelationEntity resultRelationEntity = _ConceptionEntityA.attachFromRelation(_ConceptionEntityB2.getConceptionEntityUID(),"detachRelTestRelation",null,false);
         RelationEntity resultRelationEntity2 = _ConceptionEntityB1.attachFromRelation(_ConceptionEntityB2.getConceptionEntityUID(),"detachRelTestRelation",null,false);
@@ -366,5 +372,48 @@ public class EntityRelationableTest {
             exceptionShouldBeCaught = true;
         }
         Assert.assertTrue(exceptionShouldBeCaught);
+
+        List<String> detachAllRelationsResult = _ConceptionEntityA.detachAllRelations();
+        Assert.assertNotNull(detachAllRelationsResult);
+        Assert.assertEquals(detachAllRelationsResult.size(),4);
+        Assert.assertEquals(_ConceptionEntityA.getAllRelations().size(),0);
+
+        _ConceptionEntityA.attachFromRelation(_ConceptionEntityB1.getConceptionEntityUID(),"testRelationTypeType1",null,true);
+        _ConceptionEntityA.attachFromRelation(_ConceptionEntityB2.getConceptionEntityUID(),"testRelationTypeType1",null,true);
+        _ConceptionEntityA.attachFromRelation(_ConceptionEntityC1.getConceptionEntityUID(),"testRelationTypeType1",null,true);
+        _ConceptionEntityA.attachFromRelation(_ConceptionEntityC3.getConceptionEntityUID(),"testRelationTypeType2",null,true);
+
+        detachAllRelationsResult = _ConceptionEntityA.detachAllSpecifiedRelations("testRelationTypeType1",RelationDirection.TO);
+        Assert.assertNotNull(detachAllRelationsResult);
+        Assert.assertEquals(detachAllRelationsResult.size(),0);
+
+        detachAllRelationsResult = _ConceptionEntityA.detachAllSpecifiedRelations("testRelationTypeType1",RelationDirection.FROM);
+        Assert.assertNotNull(detachAllRelationsResult);
+        Assert.assertEquals(detachAllRelationsResult.size(),3);
+
+        _ConceptionEntityA.attachFromRelation(_ConceptionEntityB1.getConceptionEntityUID(),"testRelationTypeType1",null,true);
+        _ConceptionEntityA.attachFromRelation(_ConceptionEntityB2.getConceptionEntityUID(),"testRelationTypeType1",null,true);
+        _ConceptionEntityA.attachFromRelation(_ConceptionEntityC1.getConceptionEntityUID(),"testRelationTypeType1",null,true);
+        _ConceptionEntityA.attachFromRelation(_ConceptionEntityC3.getConceptionEntityUID(),"testRelationTypeType2",null,true);
+
+        detachAllRelationsResult = _ConceptionEntityA.detachAllSpecifiedRelations("testRelationTypeType1",RelationDirection.TWO_WAY);
+        Assert.assertNotNull(detachAllRelationsResult);
+        Assert.assertEquals(detachAllRelationsResult.size(),3);
+
+        detachAllRelationsResult = _ConceptionEntityC3.detachAllSpecifiedRelations("testRelationTypeType2",RelationDirection.TO);
+        Assert.assertNotNull(detachAllRelationsResult);
+        Assert.assertEquals(detachAllRelationsResult.size(),2);
+
+        _ConceptionEntityA.attachFromRelation(_ConceptionEntityB1.getConceptionEntityUID(),"testRelationTypeType1",null,true);
+        _ConceptionEntityA.attachFromRelation(_ConceptionEntityB2.getConceptionEntityUID(),"testRelationTypeType1",null,true);
+        _ConceptionEntityA.attachFromRelation(_ConceptionEntityC1.getConceptionEntityUID(),"testRelationTypeType1",null,true);
+        _ConceptionEntityA.attachFromRelation(_ConceptionEntityC3.getConceptionEntityUID(),"testRelationTypeType2",null,true);
+
+        QueryParameters exploreParameters = new QueryParameters();
+        exploreParameters.setEntityKind("testRelationTypeType1");
+        exploreParameters.setResultNumber(2);
+        detachAllRelationsResult = _ConceptionEntityA.detachSpecifiedRelations(exploreParameters,RelationDirection.TWO_WAY);
+        Assert.assertNotNull(detachAllRelationsResult);
+        Assert.assertEquals(detachAllRelationsResult.size(),2);
     }
 }
