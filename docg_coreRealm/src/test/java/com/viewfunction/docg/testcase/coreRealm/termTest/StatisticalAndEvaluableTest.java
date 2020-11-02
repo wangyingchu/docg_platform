@@ -7,9 +7,9 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.StatisticalAndEvaluable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GroupNumericalAttributesStatisticResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.NumericalAttributeStatisticCondition;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 import org.testng.Assert;
@@ -47,6 +47,22 @@ public class StatisticalAndEvaluableTest {
 
         ConceptionKind _ConceptionKind01 = coreRealm.getConceptionKind(testConceptionKindName+"ForSTAAndEva");
 
+        Classification classification0 = coreRealm.getClassification("Classification0");
+        if(classification0 == null){
+            coreRealm.createClassification("Classification0","Classification0Desc");
+        }
+        Classification classification1 = coreRealm.getClassification("Classification1");
+        if(classification1 == null){
+            coreRealm.createClassification("Classification1","Classification1Desc");
+        }
+        Classification classification2 = coreRealm.getClassification("Classification2");
+        if(classification2 == null){
+            coreRealm.createClassification("Classification2","Classification2Desc");
+        }
+        RelationAttachInfo relationAttachInfo = new RelationAttachInfo();
+        relationAttachInfo.setRelationKind("RelationKind0001");
+        relationAttachInfo.setRelationDirection(RelationDirection.FROM);
+
         if(_ConceptionKind01 == null){
             _ConceptionKind01 = coreRealm.createConceptionKind(testConceptionKindName+"ForSTAAndEva","testKind01Desc+中文描述");
             Assert.assertNotNull(_ConceptionKind01);
@@ -76,7 +92,22 @@ public class StatisticalAndEvaluableTest {
                 }
 
                 ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValue);
-                _ConceptionKind01.newEntity(conceptionEntityValue,false);
+                ConceptionEntity currentEntity = _ConceptionKind01.newEntity(conceptionEntityValue,false);
+                try {
+                    if(i<20){
+                        currentEntity.attachClassification(relationAttachInfo,"Classification1");
+                    }else if(i<40){
+                        currentEntity.attachClassification(relationAttachInfo,"Classification0");
+                    }else if(i<60){
+                        currentEntity.attachClassification(relationAttachInfo,"Classification2");
+                    }else if(i<80){
+                        currentEntity.attachClassification(relationAttachInfo,"Classification1");
+                    }else{
+                        currentEntity.attachClassification(relationAttachInfo,"Classification0");
+                    }
+                } catch (CoreRealmServiceRuntimeException e) {
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -138,5 +169,40 @@ public class StatisticalAndEvaluableTest {
         }
 
         coreRealm.closeGlobalSession();
+
+        CoreRealm coreRealm2 = RealmTermFactory.getDefaultCoreRealm();
+        ConceptionKind _ConceptionKind2 = coreRealm2.getConceptionKind(testConceptionKindName+"ForSTAAndEva");
+        Map<String,List<ConceptionEntity>> staticClassificationResult = _ConceptionKind2.statisticRelatedClassifications(null,"RelationKind0001", RelationDirection.TO);
+
+        Assert.assertEquals(staticClassificationResult.keySet().size(),3);
+        Assert.assertTrue(staticClassificationResult.containsKey("Classification0"));
+        Assert.assertTrue(staticClassificationResult.containsKey("Classification1"));
+        Assert.assertTrue(staticClassificationResult.containsKey("Classification2"));
+
+        int entityNumber = staticClassificationResult.get("Classification0").size()+
+                staticClassificationResult.get("Classification1").size()+
+                staticClassificationResult.get("Classification2").size();
+        Assert.assertEquals(entityNumber,100);
+
+        ConceptionEntity _ConceptionEntity01 = staticClassificationResult.get("Classification0").get(0);
+        Assert.assertEquals(_ConceptionEntity01.getConceptionKindName(),testConceptionKindName+"ForSTAAndEva");
+        List<Classification> resultClassificationList01 = _ConceptionEntity01.getAttachedClassifications("RelationKind0001", RelationDirection.FROM);
+        Assert.assertEquals(resultClassificationList01.get(0).getClassificationName(),"Classification0");
+
+        ConceptionEntity _ConceptionEntity02 = staticClassificationResult.get("Classification1").get(0);
+        Assert.assertEquals(_ConceptionEntity02.getConceptionKindName(),testConceptionKindName+"ForSTAAndEva");
+        List<Classification> resultClassificationList02 = _ConceptionEntity02.getAttachedClassifications("RelationKind0001", RelationDirection.FROM);
+        Assert.assertEquals(resultClassificationList02.get(0).getClassificationName(),"Classification1");
+
+        ConceptionEntity _ConceptionEntity03 = staticClassificationResult.get("Classification2").get(0);
+        Assert.assertEquals(_ConceptionEntity03.getConceptionKindName(),testConceptionKindName+"ForSTAAndEva");
+        List<Classification> resultClassificationList03 = _ConceptionEntity03.getAttachedClassifications("RelationKind0001", RelationDirection.FROM);
+        Assert.assertEquals(resultClassificationList03.get(0).getClassificationName(),"Classification2");
+
+        staticClassificationResult = _ConceptionKind2.statisticRelatedClassifications(null,"RelationKind0001", RelationDirection.FROM);
+        Assert.assertEquals(staticClassificationResult.keySet().size(),0);
+
+        staticClassificationResult = _ConceptionKind2.statisticRelatedClassifications(null,"RelationKind0001", RelationDirection.TWO_WAY);
+        Assert.assertEquals(staticClassificationResult.keySet().size(),3);
     }
 }

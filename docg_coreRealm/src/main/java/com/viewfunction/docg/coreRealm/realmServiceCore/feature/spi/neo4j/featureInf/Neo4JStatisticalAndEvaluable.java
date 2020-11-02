@@ -1,18 +1,26 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf;
 
+import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.StatisticalAndEvaluable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListObjectValueTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleAttributeValueTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GroupNumericalAttributesStatisticResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.NumericalAttributeStatisticCondition;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionEntityImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
+
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
+import org.neo4j.driver.types.Node;
 
 import java.util.*;
 
@@ -109,6 +117,77 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
             } finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }
+        }
+        return null;
+    }
+
+    default public Map<String,List<ConceptionEntity>> statisticRelatedClassifications(QueryParameters queryParameters, String relationKindName, RelationDirection relationDirection){
+        if (this.getEntityUID() != null) {
+            Map<String,List<ConceptionEntity>> resultMap = new HashMap<>();
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                String checkCql = CypherBuilder.matchNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.getEntityUID()),new String[]{RealmConstant._NameProperty});
+                GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._NameProperty);
+                Object resultRes = workingGraphOperationExecutor.executeRead(getSingleAttributeValueTransformer,checkCql);
+                String statisticTargetLabel = ((AttributeValue)resultRes).getAttributeValue().toString();
+
+                QueryParameters inputQueryParameters;
+                if(queryParameters != null){
+                    inputQueryParameters = queryParameters;
+                }else{
+                    inputQueryParameters = new QueryParameters();
+                    inputQueryParameters.setResultNumber(10000000);
+                }
+                String queryEntitiesIDCql = CypherBuilder.matchNodesWithQueryParameters(statisticTargetLabel,inputQueryParameters, CypherBuilder.CypherFunctionType.ID);
+                GetListObjectValueTransformer<Long> longListValueTransformer = new GetListObjectValueTransformer<Long>("id");
+                Object idList = workingGraphOperationExecutor.executeRead(longListValueTransformer,queryEntitiesIDCql);
+
+                List<Long> resultEntitiesIDList = idList != null? (List<Long>)idList : null;
+
+                if(resultEntitiesIDList != null){
+                    String queryPairsCql = CypherBuilder.matchRelatedPairFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID,
+                            CommonOperationUtil.formatListLiteralValue(resultEntitiesIDList),RealmConstant.ClassificationClass,relationKindName,relationDirection);
+                    DataTransformer pairRelationDataTransformer = new DataTransformer() {
+                        @Override
+                        public Object transformResult(Result result) {
+                            while(result.hasNext()){
+                                Record record = result.next();
+                                if(record.containsKey(CypherBuilder.operationResultName) && record.containsKey(CypherBuilder.sourceNodeName)){
+                                    Node classificationNode = record.get(CypherBuilder.operationResultName).asNode();
+                                    Node entityNode = record.get(CypherBuilder.sourceNodeName).asNode();
+                                    List<String> classificationLabelNames = Lists.newArrayList(classificationNode.labels());
+                                    List<String> entityLabelNames = Lists.newArrayList(entityNode.labels());
+
+                                    if(classificationLabelNames.contains(RealmConstant.ClassificationClass) && entityLabelNames.contains(statisticTargetLabel)){
+                                        String classificationName = classificationNode.get(RealmConstant._NameProperty).asString();
+                                        if(!resultMap.containsKey(classificationName)){
+                                            resultMap.put(classificationName,new ArrayList<ConceptionEntity>());
+                                        }
+                                        List<ConceptionEntity> classificationRelatedEntityList = resultMap.get(classificationName);
+
+                                        long nodeUID = entityNode.id();
+                                        String conceptionEntityUID = ""+nodeUID;
+                                        String resultConceptionKindName = statisticTargetLabel != null ? statisticTargetLabel : entityLabelNames.get(0);
+                                        Neo4JConceptionEntityImpl neo4jConceptionEntityImpl =
+                                                new Neo4JConceptionEntityImpl(resultConceptionKindName,conceptionEntityUID);
+                                        neo4jConceptionEntityImpl.setAllConceptionKindNames(entityLabelNames);
+                                        //below logic will lead to a session already closed error, need check in depth
+                                        //neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+                                        classificationRelatedEntityList.add(neo4jConceptionEntityImpl);
+                                    }
+                                }
+                            }
+                            return null;
+                        }
+                    };
+                    workingGraphOperationExecutor.executeRead(pairRelationDataTransformer,queryPairsCql);
+                }
+            } catch (CoreRealmServiceEntityExploreException e) {
+                e.printStackTrace();
+            } finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+            return resultMap;
         }
         return null;
     }

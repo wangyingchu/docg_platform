@@ -665,4 +665,12 @@ public class CommonOperationUtil {
         }
         return listLiteralValue;
     }
+
+    public static List<Literal> formatListLiteralValue(List<Long> propertyValue){
+        List<Literal> literalList = new ArrayList<>();
+        for(Long currentLongValue:propertyValue){
+            literalList.add(Cypher.literalOf(currentLongValue));
+        }
+        return literalList;
+    }
 }

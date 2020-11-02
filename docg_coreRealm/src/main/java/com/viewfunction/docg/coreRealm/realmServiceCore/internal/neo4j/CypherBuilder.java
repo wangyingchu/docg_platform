@@ -24,6 +24,9 @@ public class CypherBuilder {
     private static final Renderer cypherRenderer = Renderer.getDefaultRenderer();
     public static final String operationResultName = "operationResult";
     public static final String relationResultName = "relationResult";
+    public static final String sourceNodeName = "sourceNode";
+    public static final String targetNodeName = "targetNode";
+
     public enum CypherFunctionType {
         COUNT, ID, KEYS, PROPERTIES, EXISTS, LABEL
     }
@@ -398,7 +401,7 @@ public class CypherBuilder {
     public static String matchRelatedNodesFromSpecialStartNodes(CypherFunctionType sourcePropertyFunctionType, Object sourcePropertyValue,
                                                                 String targetConceptionKind, String relationKind,
                                                                 RelationDirection relationDirection, CypherFunctionType returnFunctionType) {
-        Node sourceNode = Cypher.anyNode().named("sourceNode");
+        Node sourceNode = Cypher.anyNode().named(sourceNodeName);
         Node resultNodes = Cypher.node(targetConceptionKind).named(operationResultName);
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = null;
         switch (relationDirection) {
@@ -452,9 +455,49 @@ public class CypherBuilder {
         return rel;
     }
 
+    public static String matchRelatedPairFromSpecialStartNodes(CypherFunctionType sourcePropertyFunctionType, Object sourcePropertyValue,
+                                                                String targetConceptionKind, String relationKind, RelationDirection relationDirection) {
+        Node sourceNode = Cypher.anyNode().named(sourceNodeName);
+        Node resultNodes = Cypher.node(targetConceptionKind).named(operationResultName);
+        StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = null;
+        switch (relationDirection) {
+            case FROM:
+                ongoingReadingWithoutWhere = Cypher.match(sourceNode.relationshipFrom(resultNodes, relationKind));
+                break;
+            case TO:
+                ongoingReadingWithoutWhere = Cypher.match(sourceNode.relationshipTo(resultNodes, relationKind));
+                break;
+            case TWO_WAY:
+                ongoingReadingWithoutWhere = Cypher.match(sourceNode.relationshipBetween(resultNodes, relationKind));
+        }
+
+        StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
+        switch (sourcePropertyFunctionType) {
+            case ID:
+                if(sourcePropertyValue instanceof List){
+                    ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).in(Cypher.literalOf(sourcePropertyValue)));
+                }else{
+                    ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
+                }
+                break;
+            default:
+        }
+
+        Statement statement = null;
+        if (ongoingReadingWithWhere != null) {
+            statement = ongoingReadingWithWhere.returning(resultNodes,sourceNode).build();
+        } else {
+            statement = ongoingReadingWithoutWhere.returning(resultNodes,sourceNode).build();
+        }
+
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        return rel;
+    }
+
     public static String createNodesRelationshipByIdMatch(Long sourceNodeId, Long targetNodeId, String relationKind, Map<String, Object> relationProperties) {
-        Node sourceNode = Cypher.anyNode().named("sourceNode");
-        Node targetNode = Cypher.anyNode().named("targetNode");
+        Node sourceNode = Cypher.anyNode().named(sourceNodeName);
+        Node targetNode = Cypher.anyNode().named(targetNodeName);
         Relationship relation;
         if (relationProperties != null && relationProperties.size() > 0) {
             MapExpression targetMapExpression = Cypher.mapOf(CommonOperationUtil.generatePropertiesValueArray(relationProperties));
@@ -471,8 +514,8 @@ public class CypherBuilder {
     }
 
     public static String matchRelationshipsByBothNodesId(Long sourceNodeId, Long targetNodeId, String relationKind) {
-        Node sourceNode = Cypher.anyNode().named("sourceNode");
-        Node targetNode = Cypher.anyNode().named("targetNode");
+        Node sourceNode = Cypher.anyNode().named(sourceNodeName);
+        Node targetNode = Cypher.anyNode().named(targetNodeName);
         Relationship relations = sourceNode.relationshipTo(targetNode, relationKind).named(operationResultName);
         Statement statement = Cypher.match(relations).where(sourceNode.internalId().isEqualTo(Cypher.literalOf(sourceNodeId))
                 .and(targetNode.internalId().isEqualTo(Cypher.literalOf(targetNodeId)))).returning(relations).build();
@@ -482,8 +525,8 @@ public class CypherBuilder {
     }
 
     public static String deleteRelationWithSingleFunctionValueEqual(CypherFunctionType propertyFunctionType, Object propertyValue, CypherFunctionType returnFunctionType, String additionalPropertyName) {
-        Node sourceNode = Cypher.anyNode().named("sourceNode");
-        Node targetNode = Cypher.anyNode().named("targetNode");
+        Node sourceNode = Cypher.anyNode().named(sourceNodeName);
+        Node targetNode = Cypher.anyNode().named(targetNodeName);
         Relationship relation = sourceNode.relationshipBetween(targetNode).named(operationResultName);
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(relation);
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
@@ -530,8 +573,8 @@ public class CypherBuilder {
     }
 
     public static String matchRelationWithSingleFunctionValueEqual(CypherFunctionType propertyFunctionType, Object propertyValue, CypherFunctionType returnFunctionType, String additionalPropertyName) {
-        Node sourceNode = Cypher.anyNode().named("sourceNode");
-        Node targetNode = Cypher.anyNode().named("targetNode");
+        Node sourceNode = Cypher.anyNode().named(sourceNodeName);
+        Node targetNode = Cypher.anyNode().named(targetNodeName);
         Relationship relation = sourceNode.relationshipBetween(targetNode).named(operationResultName);
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(relation);
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
@@ -586,8 +629,8 @@ public class CypherBuilder {
 
     public static String deleteRelationsWithSingleFunctionValueEqual(CypherFunctionType propertyFunctionType, List<Object> propertyValue) {
         Literal[] listLiteralValue = CommonOperationUtil.generateListLiteralValue(propertyValue);
-        Node sourceNode = Cypher.anyNode().named("sourceNode");
-        Node targetNode = Cypher.anyNode().named("targetNode");
+        Node sourceNode = Cypher.anyNode().named(sourceNodeName);
+        Node targetNode = Cypher.anyNode().named(targetNodeName);
         Relationship m = sourceNode.relationshipBetween(targetNode).named(operationResultName);
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(m);
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
@@ -611,7 +654,7 @@ public class CypherBuilder {
     public static String mergeRelatedNodesFromSpecialStartNodes(CypherFunctionType sourcePropertyFunctionType, Object sourcePropertyValue,
                                                                 String targetConceptionKind, String relationKind,
                                                                 RelationDirection relationDirection, CypherFunctionType returnFunctionType) {
-        Node sourceNode = Cypher.anyNode().named("sourceNode");
+        Node sourceNode = Cypher.anyNode().named(sourceNodeName);
         Node resultNodes = Cypher.node(targetConceptionKind).named(operationResultName);
 
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(sourceNode);
@@ -672,7 +715,7 @@ public class CypherBuilder {
                                                                      Map<String, Object> targetEntityProperties,
                                                                      CypherFunctionType returnFunctionType) {
         //Cypher.match(finalChain).where(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
-        Node sourceNode = Cypher.anyNode().named("sourceNode");
+        Node sourceNode = Cypher.anyNode().named(sourceNodeName);
         Node middleNode;
         MapExpression middleNodeEntityMapExpression = middleEntityProperties != null ?
                 Cypher.mapOf(CommonOperationUtil.generatePropertiesValueArray(middleEntityProperties)) : null;
@@ -1129,7 +1172,7 @@ public class CypherBuilder {
     public static String matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherFunctionType sourcePropertyFunctionType, Object sourcePropertyValue,
                                                                 String targetConceptionKind, String relationKind,
                                                                 RelationDirection relationDirection,int minJump,int maxJump,ReturnRelationableDataType returnRelationableDataType) {
-        Node sourceNode = Cypher.anyNode().named("sourceNode");
+        Node sourceNode = Cypher.anyNode().named(sourceNodeName);
         Node resultNodes = targetConceptionKind != null ? Cypher.node(targetConceptionKind).named(operationResultName):Cypher.anyNode().named(operationResultName);
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = null;
         Relationship resultRelationship = null;
@@ -1222,19 +1265,19 @@ public class CypherBuilder {
             Node targetNode = null;
             switch (nodePropertyFunctionType) {
                 case ID:
-                    sourceNode = Cypher.anyNode().named("sourceNode");
-                    targetNode = Cypher.anyNode().named("targetNode");
+                    sourceNode = Cypher.anyNode().named(sourceNodeName);
+                    targetNode = Cypher.anyNode().named(targetNodeName);
                     break;
                 case LABEL:
                     if (sourceNodeProperty != null) {
-                        sourceNode = Cypher.node(sourceNodeProperty).named("sourceNode");
+                        sourceNode = Cypher.node(sourceNodeProperty).named(sourceNodeName);
                     } else {
-                        sourceNode = Cypher.anyNode().named("sourceNode");
+                        sourceNode = Cypher.anyNode().named(sourceNodeName);
                     }
                     if (targetNodeProperty != null) {
-                        sourceNode = Cypher.node(targetNodeProperty).named("targetNode");
+                        sourceNode = Cypher.node(targetNodeProperty).named(targetNodeName);
                     } else {
-                        targetNode = Cypher.anyNode().named("targetNode");
+                        targetNode = Cypher.anyNode().named(targetNodeName);
                     }
                     break;
             }
