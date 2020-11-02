@@ -26,6 +26,7 @@ import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -367,6 +368,18 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
 
     @Override
     public List<ConceptionKind> getRelatedConceptionKind(String relationKindName, RelationDirection relationDirection, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException {
+        if(classificationName == null){
+            return null;
+        }else{
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                Classification childClassification = getClassificationByName(workingGraphOperationExecutor,classificationName);
+
+
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
 
@@ -388,6 +401,46 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
     @Override
     public List<ConceptionEntity> getRelatedConceptionEntity(String relationKindName, RelationDirection relationDirection, QueryParameters queryParameters, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException {
         return null;
+    }
+
+    private List<Long> getTargetClassificationsUIDList(GraphOperationExecutor workingGraphOperationExecutor,String classificationName,boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException{
+        Classification childClassification = getClassificationByName(workingGraphOperationExecutor,classificationName);
+        if(childClassification == null){
+            logger.error("Classification with name {} does not exist.", classificationName);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("Classification with name "+ classificationName +" does not exist.");
+            throw exception;
+        }
+        if(includeOffspringClassifications & offspringLevel < 1){
+            logger.error("Classification Offspring Level must great or equal 1, current value is {}.", offspringLevel);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("Classification Offspring Level must great or equal 1, current value is "+ offspringLevel +".");
+            throw exception;
+        }
+        List<Long> classificationsUIDList = new ArrayList<>();
+        classificationsUIDList.add(Long.parseLong(this.classificationUID));
+
+        String queryCql = CypherBuilder.matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID, Long.parseLong(classificationUID),
+                RealmConstant.ClassificationClass,RealmConstant.Classification_ClassificationRelationClass, RelationDirection.FROM,1,offspringLevel, CypherBuilder.ReturnRelationableDataType.NODE);
+
+        DataTransformer offspringClassificationsDataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record record = result.next();
+
+                    Node classificationNode = record.get(CypherBuilder.operationResultName).asNode();
+
+
+                }
+                return null;
+            }
+        };
+        workingGraphOperationExecutor.executeRead(offspringClassificationsDataTransformer,queryCql);
+
+
+
+        return classificationsUIDList;
     }
 
     private Classification getClassificationByName(GraphOperationExecutor workingGraphOperationExecutor,String classificationName){
