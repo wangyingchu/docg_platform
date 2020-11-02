@@ -23,3 +23,74 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
 
 **分类**（*Classification*）：代表一类客观存在的，不依赖具体的业务和分析目标而变化的实体对象，例如时间，行政区划，建筑类型分类等。它普遍性的与特定领域模型中的各种概念类型的实体对象产生交互，是在领域模型中进行多维数据分析的一个重要目标。
 
+
+
+各个术语代表的对象间的基本交互关系说明如下：
+
+
+
+
+
+
+
+​	1. 一个概念类型（*ConceptionKind*）可以和不限数量的属性视图类型（*AttributesViewKind*）相关联，这些关联定义了一个概念类型中所能表述的所有不同业务类型的属性的集合。
+
+​	2. 一个属性视图类型（*AttributesViewKind*）可以和不限数量的属性类型（*AttributeKind*）相关联，这些关联定义了一个属性视图类型中能够包含的所有属性的详细定义。
+
+​	3. 针对一个概念类型（*ConceptionKind*）能够创建不限数量的概念实体（*ConceptionEntity*）。这些概念实体中包含的数据种类严格遵循 概念类型中的定义。表示真实世界中的一个特定类型的事物的数字化镜像。
+
+​	4. 根据所属的概念类型中关联的属性视图类型（*AttributesViewKind*），一个概念实体（*ConceptionEntity*）中包含相应数量的属性（*AttributeKind*）。
+
+​	5. 根据所属的属性视图类型，一个属性视图（*AttributesViewKind*）中包含相应数量的属性值（*AttributeKind*）。
+
+​	6. 使用关系类型（*RelationKind*）来描述业务领域模型中需要表述的概念实体之间的各种不同性质、不同类型的抽象关联关系的定义。在一个领域模型中可以定义不限数量的关系类型来描述各类实体间的复杂抽象关系。使用关系实体（*RelationEntity*）来表达领域模型中真实存在的实体对象之间的实际关系。在一个领域模型中可以包含任意数量的关系实体。每一个关系实体都必须属于一个特定的关系类型。每一个关系实体都具有方向，必须指向一个源概念实体和一个目标概念实体。
+
+​	7. 在业务领域模型中可以为任意两个指定的概念类型（*ConceptionKind*）指定一个特定的关系类型（*RelationKind*）。从而能够在创建概念实体（*ConceptionEntity*）时自动的创建该关系类型的关系实体。通过访问任何概念实体（*ConceptionEntity*）均可获取到与其相关联的所有关系实体（*RelationEntity*），进而获取到通过该关系实体与其相关的另一个领域模型中的概念实体。
+
+​	8. 通过使用分类（*Classification*）这一概念来表述业务领域模型中需要进行全局分析的各类业务维度（例如时间，空间等）。在一个领域模型中可以定义任意数量的分类。领域模型中的所有概念类型（*ConceptionKind*）、概念实体（*ConceptionEntity*）、关系类型（*RelationKind*）、属性视图类型（*AttributesViewKind*）和*属性类型*（*AttributeKind*）均可使用任何关系类型与这些分类建立关联关系。
+
+
+
+#### ➜ SDK
+
+**JAVA SDK**
+
+*数据建模类对象*
+
+- InfoObjectDefs：定义，维护对象类型定义
+- DatasetDefs：定义，维护属性集类型定义
+- PropertyTypeDefs：定义，维护属性类型定义
+- RelationTypeDefs：定义，维护属性类型定义
+- RelationshipDefs：定义，维护对象类型定义间的关联关系
+- IndustryTypes：定义，维护行业分类定义
+- GlobalDimensionTypes：定义，维护全局维度类型
+
+*数据操作类对象*
+
+- InfoObjectDef：对指定对象类型定义中的实例数据执行CRUD操作
+- GlobalDimensionType：对指定全局维度类型定义中的数据执行CRUD操作
+- Dataset：对特定对象类型实例中链接的集合类属性集中的数据执行CRUD操作
+
+代码示例
+
+创建属性类型定义
+
+```java
+CIMModelCore targetCIMModelCore = ModelAPIComponentFactory.getCIMModelCore("SPACEName","TenantName");
+
+PropertyTypeDefs propertyTypeDefs = targetCIMModelCore.getPropertyTypeDefs();
+
+PropertyTypeVO propertyTypeVO1=new PropertyTypeVO();
+propertyTypeVO1.setPropertyTypeName("Property1");
+propertyTypeVO1.setPropertyTypeDesc("PropertyDesc1");
+propertyTypeVO1.setPropertyFieldDataClassify("STRING");
+
+Map<String,Object> addConfigItem=new HashMap<>();
+Date additionalItemDateValue=new Date();
+propertyTypeVO1.setAdditionalConfigItems(addConfigItem);
+addConfigItem.put("config1",10000);
+addConfigItem.put("config2",additionalItemDateValue);
+
+PropertyTypeDef propertyTypeDef1 = propertyTypeDefs.addPropertyTypeDef(propertyTypeVO1);    
+```
+
