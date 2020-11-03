@@ -171,8 +171,7 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
                                         Neo4JConceptionEntityImpl neo4jConceptionEntityImpl =
                                                 new Neo4JConceptionEntityImpl(resultConceptionKindName,conceptionEntityUID);
                                         neo4jConceptionEntityImpl.setAllConceptionKindNames(entityLabelNames);
-                                        //below logic will lead to a session already closed error, need check in depth
-                                        //neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+                                        neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
                                         classificationRelatedEntityList.add(neo4jConceptionEntityImpl);
                                     }
                                 }

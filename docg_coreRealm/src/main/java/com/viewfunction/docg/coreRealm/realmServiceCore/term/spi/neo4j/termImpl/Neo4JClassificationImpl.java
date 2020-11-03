@@ -1,6 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
@@ -373,7 +374,13 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
         }else{
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try{
-                Classification childClassification = getClassificationByName(workingGraphOperationExecutor,classificationName);
+                //Classification childClassification = getClassificationByName(workingGraphOperationExecutor,classificationName);
+                List<Long> targetClassificationUIDsList = getTargetClassificationsUIDList(workingGraphOperationExecutor,includeOffspringClassifications,offspringLevel);
+
+                System.out.println(targetClassificationUIDsList);
+
+
+
 
 
             }finally {
@@ -403,7 +410,8 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
         return null;
     }
 
-    private List<Long> getTargetClassificationsUIDList(GraphOperationExecutor workingGraphOperationExecutor,String classificationName,boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException{
+    private List<Long> getTargetClassificationsUIDList(GraphOperationExecutor workingGraphOperationExecutor,boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException{
+        /*
         Classification childClassification = getClassificationByName(workingGraphOperationExecutor,classificationName);
         if(childClassification == null){
             logger.error("Classification with name {} does not exist.", classificationName);
@@ -411,6 +419,8 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
             exception.setCauseMessage("Classification with name "+ classificationName +" does not exist.");
             throw exception;
         }
+        */
+
         if(includeOffspringClassifications & offspringLevel < 1){
             logger.error("Classification Offspring Level must great or equal 1, current value is {}.", offspringLevel);
             CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
@@ -428,18 +438,20 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
             public Object transformResult(Result result) {
                 while(result.hasNext()){
                     Record record = result.next();
-
                     Node classificationNode = record.get(CypherBuilder.operationResultName).asNode();
-
-
+                    List<String> allLabelNames = Lists.newArrayList(classificationNode.labels());
+                    boolean isMatchedKind = false;
+                    if(allLabelNames.size()>0){
+                        isMatchedKind = allLabelNames.contains(RealmConstant.ClassificationClass);
+                    }
+                    if(isMatchedKind){
+                        classificationsUIDList.add(classificationNode.id());
+                    }
                 }
                 return null;
             }
         };
         workingGraphOperationExecutor.executeRead(offspringClassificationsDataTransformer,queryCql);
-
-
-
         return classificationsUIDList;
     }
 

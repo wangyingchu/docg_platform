@@ -518,5 +518,8 @@ public class ClassificationTest {
         Classification relatedClassification = attachedClassificationList.get(0);
         relatedClassification.addAttribute("FireProtectionZoneDisplayColor","#CE0000");
         Assert.assertEquals(relatedClassification.getAttribute("FireProtectionZoneDisplayColor").getAttributeValue(),"#CE0000");
+
+        relatedClassification.getRelatedConceptionKind("ssss",RelationDirection.TWO_WAY,true,3);
+
     }
 }

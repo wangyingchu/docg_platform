@@ -146,7 +146,7 @@ public interface Neo4JClassificationAttachable extends ClassificationAttachable,
                 }
                 String queryCql = CypherBuilder.matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID, Long.parseLong(this.getEntityUID()),
                         RealmConstant.ClassificationClass,relationKindName, realRelationDirection,0,0, CypherBuilder.ReturnRelationableDataType.BOTH);
-                GetListClassificationTransformer getListClassificationTransformer = new GetListClassificationTransformer(null,workingGraphOperationExecutor);
+                GetListClassificationTransformer getListClassificationTransformer = new GetListClassificationTransformer(null,getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
                 Object queryClassificationRes = workingGraphOperationExecutor.executeRead(getListClassificationTransformer,queryCql);
 
                 if(queryClassificationRes != null){
@@ -161,7 +161,7 @@ public interface Neo4JClassificationAttachable extends ClassificationAttachable,
 
     private Classification getClassificationByName(GraphOperationExecutor workingGraphOperationExecutor,String classificationName) throws CoreRealmServiceRuntimeException{
         String checkCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.ClassificationClass,RealmConstant._NameProperty,classificationName,1);
-        GetSingleClassificationTransformer getSingleClassificationTransformer = new GetSingleClassificationTransformer(null,workingGraphOperationExecutor);
+        GetSingleClassificationTransformer getSingleClassificationTransformer = new GetSingleClassificationTransformer(null,getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
         Object existClassificationRes = workingGraphOperationExecutor.executeRead(getSingleClassificationTransformer,checkCql);
         if(existClassificationRes != null){
             return (Classification)existClassificationRes;
