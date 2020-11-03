@@ -57,19 +57,18 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
 
 *数据建模类对象*
 
-- InfoObjectDefs：定义，维护对象类型定义
-- DatasetDefs：定义，维护属性集类型定义
-- PropertyTypeDefs：定义，维护属性类型定义
-- RelationTypeDefs：定义，维护属性类型定义
-- RelationshipDefs：定义，维护对象类型定义间的关联关系
-- IndustryTypes：定义，维护行业分类定义
-- GlobalDimensionTypes：定义，维护全局维度类型
+- CoreRealm：定义，维护业务领域模型中的各类对象
+- ConceptionKind：定义，维护概念类型
+- AttributesViewKind：定义，维护属性视图类型
+- AttributeKind：定义，维护属性类型
+- RelationKind：定义，维护关系类型
+- RelationAttachKind：定义，维护基本关联关系创建规则
 
 *数据操作类对象*
 
-- InfoObjectDef：对指定对象类型定义中的实例数据执行CRUD操作
-- GlobalDimensionType：对指定全局维度类型定义中的数据执行CRUD操作
-- Dataset：对特定对象类型实例中链接的集合类属性集中的数据执行CRUD操作
+- ConceptionEntity：对指定概念类型中的概念实体数据执行CRUD操作
+- RelationEntity：对指定关系类型中的关系实体数据执行CRUD操作
+- Classification：对领域模型中的各类分类数据执行CRUD与关联分析操作
 
 代码示例
 
