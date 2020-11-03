@@ -9,10 +9,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.KindCacheable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureImpl.Neo4JAttributesMeasurableImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListClassificationTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleClassificationTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleRelationEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
@@ -374,35 +371,77 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
         }else{
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try{
-                //Classification childClassification = getClassificationByName(workingGraphOperationExecutor,classificationName);
                 List<Long> targetClassificationUIDsList = getTargetClassificationsUIDList(workingGraphOperationExecutor,includeOffspringClassifications,offspringLevel);
-
-                System.out.println(targetClassificationUIDsList);
-
-
-
-
-
+                String queryPairsCql = CypherBuilder.matchRelatedPairFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID,
+                        CommonOperationUtil.formatListLiteralValue(targetClassificationUIDsList),RealmConstant.ConceptionKindClass,relationKindName,relationDirection);
+                GetListConceptionKindTransformer getListConceptionKindTransformer = new GetListConceptionKindTransformer(this.coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object queryRes = workingGraphOperationExecutor.executeRead(getListConceptionKindTransformer,queryPairsCql);
+                List<ConceptionKind> resultList = queryRes != null ? (List<ConceptionKind>)queryRes: new ArrayList<>();
+                return resultList;
             }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
         }
-        return null;
     }
 
     @Override
     public List<RelationKind> getRelatedRelationKind(String relationKindName, RelationDirection relationDirection, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException {
-        return null;
+        if(classificationName == null){
+            return null;
+        }else{
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                List<Long> targetClassificationUIDsList = getTargetClassificationsUIDList(workingGraphOperationExecutor,includeOffspringClassifications,offspringLevel);
+                String queryPairsCql = CypherBuilder.matchRelatedPairFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID,
+                        CommonOperationUtil.formatListLiteralValue(targetClassificationUIDsList),RealmConstant.RelationKindClass,relationKindName,relationDirection);
+                GetListRelationKindTransformer getListRelationKindTransformer = new GetListRelationKindTransformer(this.coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object queryRes = workingGraphOperationExecutor.executeRead(getListRelationKindTransformer,queryPairsCql);
+                List<RelationKind> resultList = queryRes != null ? (List<RelationKind>)queryRes: new ArrayList<>();
+                return resultList;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
     }
 
     @Override
     public List<AttributeKind> getRelatedAttributeKind(String relationKindName, RelationDirection relationDirection, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException {
-        return null;
+        if(classificationName == null){
+            return null;
+        }else{
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                List<Long> targetClassificationUIDsList = getTargetClassificationsUIDList(workingGraphOperationExecutor,includeOffspringClassifications,offspringLevel);
+                String queryPairsCql = CypherBuilder.matchRelatedPairFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID,
+                        CommonOperationUtil.formatListLiteralValue(targetClassificationUIDsList),RealmConstant.AttributeKindClass,relationKindName,relationDirection);
+                GetListAttributeKindTransformer getListAttributeKindTransformer = new GetListAttributeKindTransformer(this.coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object queryRes = workingGraphOperationExecutor.executeRead(getListAttributeKindTransformer,queryPairsCql);
+                List<AttributeKind> resultList = queryRes != null ? (List<AttributeKind>)queryRes: new ArrayList<>();
+                return resultList;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
     }
 
     @Override
     public List<AttributesViewKind> getRelatedAttributesViewKind(String relationKindName, RelationDirection relationDirection, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException {
-        return null;
+        if(classificationName == null){
+            return null;
+        }else{
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                List<Long> targetClassificationUIDsList = getTargetClassificationsUIDList(workingGraphOperationExecutor,includeOffspringClassifications,offspringLevel);
+                String queryPairsCql = CypherBuilder.matchRelatedPairFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID,
+                        CommonOperationUtil.formatListLiteralValue(targetClassificationUIDsList),RealmConstant.AttributesViewKindClass,relationKindName,relationDirection);
+                GetListAttributesViewKindTransformer getListAttributesViewKindTransformer = new GetListAttributesViewKindTransformer(this.coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object queryRes = workingGraphOperationExecutor.executeRead(getListAttributesViewKindTransformer,queryPairsCql);
+                List<AttributesViewKind> resultList = queryRes != null ? (List<AttributesViewKind>)queryRes: new ArrayList<>();
+                return resultList;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
     }
 
     @Override
@@ -411,16 +450,6 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
     }
 
     private List<Long> getTargetClassificationsUIDList(GraphOperationExecutor workingGraphOperationExecutor,boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException{
-        /*
-        Classification childClassification = getClassificationByName(workingGraphOperationExecutor,classificationName);
-        if(childClassification == null){
-            logger.error("Classification with name {} does not exist.", classificationName);
-            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
-            exception.setCauseMessage("Classification with name "+ classificationName +" does not exist.");
-            throw exception;
-        }
-        */
-
         if(includeOffspringClassifications & offspringLevel < 1){
             logger.error("Classification Offspring Level must great or equal 1, current value is {}.", offspringLevel);
             CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();

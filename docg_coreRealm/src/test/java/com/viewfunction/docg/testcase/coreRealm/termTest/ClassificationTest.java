@@ -519,7 +519,25 @@ public class ClassificationTest {
         relatedClassification.addAttribute("FireProtectionZoneDisplayColor","#CE0000");
         Assert.assertEquals(relatedClassification.getAttribute("FireProtectionZoneDisplayColor").getAttributeValue(),"#CE0000");
 
-        relatedClassification.getRelatedConceptionKind("ssss",RelationDirection.TWO_WAY,true,3);
+        Classification rootClassification =coreRealm.getClassification("classification1");
+        List<ConceptionKind> relatedConceptionKindList = rootClassification.getRelatedConceptionKind("relationTypeForClassificationTest02",RelationDirection.TO,true,3);
+        Assert.assertNotNull(relatedConceptionKindList);
+        Assert.assertEquals(relatedConceptionKindList.size(),1);
+        Assert.assertEquals(relatedConceptionKindList.get(0).getConceptionKindName(),"testConceptionKindForClassification");
+        relatedConceptionKindList = rootClassification.getRelatedConceptionKind("relationTypeForClassificationTest02",RelationDirection.TO,true,2);
+        Assert.assertNotNull(relatedConceptionKindList);
+        Assert.assertEquals(relatedConceptionKindList.size(),0);
+        relatedConceptionKindList = rootClassification.getRelatedConceptionKind("relationTypeForClassificationTest02",RelationDirection.FROM,true,3);
+        Assert.assertNotNull(relatedConceptionKindList);
+        Assert.assertEquals(relatedConceptionKindList.size(),0);
+
+
+
+
+
+
+
+
 
     }
 }
