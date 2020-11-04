@@ -626,18 +626,18 @@ public class CommonOperationUtil {
                         case BeginWith:
                             return targetPropertyContainer.property(propertyName).startsWith(Cypher.literalOf(propertyValue)).not();
                         case Contain:
-                            return targetPropertyContainer.property(propertyName).endsWith(Cypher.literalOf(propertyValue)).not();
-                        case EndWith:
                             return targetPropertyContainer.property(propertyName).contains(Cypher.literalOf(propertyValue)).not();
+                        case EndWith:
+                            return targetPropertyContainer.property(propertyName).endsWith(Cypher.literalOf(propertyValue)).not();
                     }
                 }else{
                     switch(matchingType){
                         case BeginWith:
                             return targetPropertyContainer.property(propertyName).startsWith(Cypher.literalOf(propertyValue));
                         case Contain:
-                            return targetPropertyContainer.property(propertyName).endsWith(Cypher.literalOf(propertyValue));
-                        case EndWith:
                             return targetPropertyContainer.property(propertyName).contains(Cypher.literalOf(propertyValue));
+                        case EndWith:
+                            return targetPropertyContainer.property(propertyName).endsWith(Cypher.literalOf(propertyValue));
                     }
                 }
             }
