@@ -531,13 +531,56 @@ public class ClassificationTest {
         Assert.assertNotNull(relatedConceptionKindList);
         Assert.assertEquals(relatedConceptionKindList.size(),0);
 
+        AttributesViewKind targetAttributesViewKind = coreRealm.createAttributesViewKind("testAttributesViewKindForClassification","testAttributesViewKindForClassificationDesc",null);
+        relationAttachInfo.setRelationDirection(RelationDirection.FROM);
+        resultRelationEntity01 = targetAttributesViewKind.attachClassification(relationAttachInfo,classificationName05_1_1);
+        Assert.assertNotNull(resultRelationEntity01);
+        List<AttributesViewKind> relatedAttributesViewKindList = rootClassification.getRelatedAttributesViewKind("relationTypeForClassificationTest02",RelationDirection.FROM,true,3);
+        Assert.assertNotNull(relatedAttributesViewKindList);
+        Assert.assertEquals(relatedAttributesViewKindList.size(),1);
+        Assert.assertEquals(relatedAttributesViewKindList.get(0).getAttributesViewKindName(),"testAttributesViewKindForClassification");
+        relatedAttributesViewKindList = rootClassification.getRelatedAttributesViewKind("relationTypeForClassificationTest02",RelationDirection.FROM,true,2);
+        Assert.assertNotNull(relatedAttributesViewKindList);
+        Assert.assertEquals(relatedAttributesViewKindList.size(),0);
+        relatedAttributesViewKindList = rootClassification.getRelatedAttributesViewKind("relationTypeForClassificationTest02",RelationDirection.TO,true,3);
+        Assert.assertNotNull(relatedAttributesViewKindList);
+        Assert.assertEquals(relatedAttributesViewKindList.size(),0);
 
+        RelationKind _RelationKind01 = coreRealm.getRelationKind("testRelationKindForClassification");
+        if(_RelationKind01 != null){
+            coreRealm.removeRelationKind("testRelationKindForClassification",true);
+        }
+        _RelationKind01 = coreRealm.getRelationKind("testRelationKindForClassification");
+        if(_RelationKind01 == null){
+            _RelationKind01 = coreRealm.createRelationKind("testRelationKindForClassification","testRelationKindForClassification+中文描述");
+            Assert.assertNotNull(_RelationKind01);
+        }
+        resultRelationEntity01 = _RelationKind01.attachClassification(relationAttachInfo,classificationName05_1_1);
+        Assert.assertNotNull(resultRelationEntity01);
+        List<RelationKind> relatedRelationKindList = rootClassification.getRelatedRelationKind("relationTypeForClassificationTest02",RelationDirection.FROM,true,3);
+        Assert.assertNotNull(relatedRelationKindList);
+        Assert.assertEquals(relatedRelationKindList.size(),1);
+        Assert.assertEquals(relatedRelationKindList.get(0).getRelationKindName(),"testRelationKindForClassification");
+        relatedRelationKindList = rootClassification.getRelatedRelationKind("relationTypeForClassificationTest02",RelationDirection.FROM,true,2);
+        Assert.assertNotNull(relatedRelationKindList);
+        Assert.assertEquals(relatedRelationKindList.size(),0);
+        relatedRelationKindList = rootClassification.getRelatedRelationKind("relationTypeForClassificationTest02",RelationDirection.TO,true,3);
+        Assert.assertNotNull(relatedRelationKindList);
+        Assert.assertEquals(relatedRelationKindList.size(),0);
 
-
-
-
-
-
-
+        AttributeKind targetAttributeKind = coreRealm.createAttributeKind("testAttributeKindForClassification","testAttributeKindForClassificationDesc",AttributeDataType.BOOLEAN);
+        relationAttachInfo.setRelationDirection(RelationDirection.FROM);
+        resultRelationEntity01 = targetAttributeKind.attachClassification(relationAttachInfo,classificationName05_1_1);
+        Assert.assertNotNull(resultRelationEntity01);
+        List<AttributeKind> relatedAttributeKindList = rootClassification.getRelatedAttributeKind("relationTypeForClassificationTest02",RelationDirection.FROM,true,3);
+        Assert.assertNotNull(relatedAttributeKindList);
+        Assert.assertEquals(relatedAttributeKindList.size(),1);
+        Assert.assertEquals(relatedAttributeKindList.get(0).getAttributeKindName(),"testAttributeKindForClassification");
+        relatedAttributeKindList = rootClassification.getRelatedAttributeKind("relationTypeForClassificationTest02",RelationDirection.FROM,true,2);
+        Assert.assertNotNull(relatedAttributeKindList);
+        Assert.assertEquals(relatedAttributeKindList.size(),0);
+        relatedAttributeKindList = rootClassification.getRelatedAttributeKind("relationTypeForClassificationTest02",RelationDirection.TO,true,3);
+        Assert.assertNotNull(relatedAttributeKindList);
+        Assert.assertEquals(relatedAttributeKindList.size(),0);
     }
 }
