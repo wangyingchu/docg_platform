@@ -332,7 +332,8 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try{
                 String queryCql = CypherBuilder.matchNodesWithQueryParameters(this.conceptionKindName,queryParameters,null);
-                GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(this.conceptionKindName,workingGraphOperationExecutor);
+                GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(this.conceptionKindName,
+                        this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object queryRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
                 if(queryRes != null){
                     List<ConceptionEntity> resultConceptionEntityList = (List<ConceptionEntity>)queryRes;

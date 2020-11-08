@@ -151,6 +151,30 @@ public class CypherBuilder {
         return rel;
     }
 
+    public static String matchRelationWithSinglePropertyValueAndFunction(String relationKind, CypherFunctionType cypherFunctionType, String propertyName, Object propertyValue) {
+        Relationship r;
+        Node sourceNode = Cypher.anyNode().named(sourceNodeName);
+        Node targetNodes = Cypher.anyNode().named(targetNodeName);
+        if (propertyName != null) {
+            r = sourceNode.relationshipTo(targetNodes, relationKind).named(operationResultName).withProperties(propertyName, Cypher.literalOf(propertyValue));
+        } else {
+            r = sourceNode.relationshipTo(targetNodes, relationKind).named(operationResultName);
+        }
+        StatementBuilder.OngoingReadingWithoutWhere currentOngoingReadingWithoutWhere = Cypher.match(r);
+        StatementBuilder.OngoingReadingAndReturn ongoingReadingAndReturn;
+        switch (cypherFunctionType) {
+            case COUNT:
+                ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.returning(Functions2.count(r));
+                break;
+            default:
+                ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.returning(r);
+        }
+        Statement statement = ongoingReadingAndReturn.build();
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        return rel;
+    }
+
     public static String deleteLabelWithSinglePropertyValueAndFunction(String labelName, CypherFunctionType cypherFunctionType, String propertyName, Object propertyValue) {
         Node m;
         if (propertyName != null) {
@@ -166,6 +190,31 @@ public class CypherBuilder {
                 break;
             default:
                 ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.detachDelete(m).returning(m);
+        }
+        Statement statement = ongoingReadingAndReturn.build();
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        return rel;
+    }
+
+    public static String deleteRelationTypeWithSinglePropertyValueAndFunction(String relationTypeName, CypherFunctionType cypherFunctionType, String propertyName, Object propertyValue) {
+        Node sourceNode = Cypher.anyNode().named(sourceNodeName);
+        Node targetNode = Cypher.anyNode().named(targetNodeName);
+        Relationship relation;
+        if (propertyName != null) {
+            relation = sourceNode.relationshipBetween(targetNode,relationTypeName).named(operationResultName).withProperties(propertyName, Cypher.literalOf(propertyValue));
+        } else {
+            relation = sourceNode.relationshipBetween(targetNode,relationTypeName).named(operationResultName);
+        }
+        StatementBuilder.OngoingReadingWithoutWhere currentOngoingReadingWithoutWhere = Cypher.match(relation);
+        StatementBuilder.OngoingReadingAndReturn ongoingReadingAndReturn;
+        switch (cypherFunctionType) {
+            case COUNT:
+                CustomContentLiteral returningText = new CustomContentLiteral("count(DISTINCT operationResult)");
+                ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.delete(relation).returning(returningText);
+                break;
+            default:
+                ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.delete(relation).returningDistinct(relation);
         }
         Statement statement = ongoingReadingAndReturn.build();
         String rel = cypherRenderer.render(statement);
@@ -1327,8 +1376,12 @@ public class CypherBuilder {
                         throw e;
                     }
                 } else {
-                    ongoingReadingWithWhere = ongoingReadingWithWhere.and(CommonOperationUtil.getQueryCondition(relations, defaultFilteringItem));
-                    if (andFilteringItemList != null && andFilteringItemList.size() > 0) {
+                    if(ongoingReadingWithWhere != null){
+                        ongoingReadingWithWhere = ongoingReadingWithWhere.and(CommonOperationUtil.getQueryCondition(relations, defaultFilteringItem));
+                    }else{
+                        ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(CommonOperationUtil.getQueryCondition(relations, defaultFilteringItem));
+                    }
+                    if(andFilteringItemList != null && andFilteringItemList.size() > 0) {
                         for (FilteringItem currentFilteringItem : andFilteringItemList) {
                             ongoingReadingWithWhere = ongoingReadingWithWhere.and(CommonOperationUtil.getQueryCondition(relations, currentFilteringItem));
                         }

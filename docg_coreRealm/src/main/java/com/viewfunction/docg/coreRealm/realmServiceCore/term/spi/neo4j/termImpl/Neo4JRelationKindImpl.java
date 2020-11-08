@@ -2,12 +2,19 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListRelationEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetLongFormatAggregatedReturnValueTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonRelationEntitiesRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntitiesRetrieveResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JRelationKind;
 
@@ -68,8 +75,20 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
     }
 
     @Override
-    public Long countRelationEntities() {
-        return null;
+    public Long countRelationEntities() throws CoreRealmServiceRuntimeException{
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            String queryCql = CypherBuilder.matchRelationWithSinglePropertyValueAndFunction(getRelationKindName(), CypherBuilder.CypherFunctionType.COUNT, null, null);
+            GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
+            Object countRelationEntitiesRes = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer, queryCql);
+            if (countRelationEntitiesRes == null) {
+                throw new CoreRealmServiceRuntimeException();
+            } else {
+                return (Long) countRelationEntitiesRes;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
@@ -80,13 +99,54 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
     }
 
     @Override
-    public RelationEntitiesRetrieveResult getRelationEntities(QueryParameters queryParameters) {
+    public RelationEntitiesRetrieveResult getRelationEntities(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException {
+        if (queryParameters != null) {
+            CommonRelationEntitiesRetrieveResultImpl commonRelationEntitiesRetrieveResultImpl = new CommonRelationEntitiesRetrieveResultImpl();
+            commonRelationEntitiesRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                queryParameters.setEntityKind(this.relationKindName);
+                String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,
+                        null,null,true,queryParameters,null);
+                GetListRelationEntityTransformer getListRelationEntityTransformer =
+                        new GetListRelationEntityTransformer(this.relationKindName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object queryRes = workingGraphOperationExecutor.executeRead(getListRelationEntityTransformer,queryCql);
+                if(queryRes != null){
+                    List<RelationEntity> resultConceptionEntityList = (List<RelationEntity>)queryRes;
+                    commonRelationEntitiesRetrieveResultImpl.addRelationEntities(resultConceptionEntityList);
+                    commonRelationEntitiesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultConceptionEntityList.size());
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            commonRelationEntitiesRetrieveResultImpl.finishEntitiesRetrieving();
+            return commonRelationEntitiesRetrieveResultImpl;
+        }
         return null;
     }
 
     @Override
     public EntitiesOperationResult purgeAllRelationEntities() throws CoreRealmServiceRuntimeException {
-        return null;
+        CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String deleteCql = CypherBuilder.deleteRelationTypeWithSinglePropertyValueAndFunction(this.relationKindName,
+                    CypherBuilder.CypherFunctionType.COUNT,null,null);
+            GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer =
+                    new GetLongFormatAggregatedReturnValueTransformer("count","DISTINCT");
+            Object deleteResultObject = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer,deleteCql);
+            if(deleteResultObject == null){
+                throw new CoreRealmServiceRuntimeException();
+            }else{
+                commonEntitiesOperationResultImpl.getOperationStatistics().setSuccessItemsCount((Long)deleteResultObject);
+                commonEntitiesOperationResultImpl.getOperationStatistics().
+                        setOperationSummary("purgeAllRelationEntities operation for relationKind "+this.relationKindName+" success.");
+            }
+            commonEntitiesOperationResultImpl.finishEntitiesOperation();
+            return commonEntitiesOperationResultImpl;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     //internal graphOperationExecutor management logic

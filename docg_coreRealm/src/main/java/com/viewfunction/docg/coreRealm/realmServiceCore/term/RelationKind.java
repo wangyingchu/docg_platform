@@ -2,6 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationAttachable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaAttributeFeatureSupportable;
@@ -18,8 +19,8 @@ public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttr
     public RelationKind getParentRelationKind() throws CoreRealmFunctionNotSupportedException;
     public List<RelationKind> getChildRelationKinds() throws CoreRealmFunctionNotSupportedException;
     public InheritanceTree<RelationKind> getOffspringRelationKinds() throws CoreRealmFunctionNotSupportedException;
-    public Long countRelationEntities();
+    public Long countRelationEntities() throws CoreRealmServiceRuntimeException;
     public Long countRelationEntitiesWithOffspring() throws CoreRealmFunctionNotSupportedException;
-    public RelationEntitiesRetrieveResult getRelationEntities(QueryParameters queryParameters);
+    public RelationEntitiesRetrieveResult getRelationEntities(QueryParameters queryParameters)  throws CoreRealmServiceEntityExploreException;
     public EntitiesOperationResult purgeAllRelationEntities() throws CoreRealmServiceRuntimeException;
 }
