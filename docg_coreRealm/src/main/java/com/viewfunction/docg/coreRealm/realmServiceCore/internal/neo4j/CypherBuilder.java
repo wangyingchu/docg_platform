@@ -8,6 +8,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.StatisticalAndEv
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.NumericalAttributeStatisticCondition;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.cypherdsl.core.*;
 import org.neo4j.cypherdsl.core.renderer.Renderer;
 
@@ -558,13 +559,25 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = null;
         switch (relationDirection) {
             case FROM:
-                ongoingReadingWithoutWhere = Cypher.match(sourceNode.relationshipFrom(resultNodes, relationKind));
+                if(relationKind != null){
+                    ongoingReadingWithoutWhere = Cypher.match(sourceNode.relationshipFrom(resultNodes, relationKind));
+                }else{
+                    ongoingReadingWithoutWhere = Cypher.match(sourceNode.relationshipFrom(resultNodes));
+                }
                 break;
             case TO:
-                ongoingReadingWithoutWhere = Cypher.match(sourceNode.relationshipTo(resultNodes, relationKind));
+                if(relationKind != null){
+                    ongoingReadingWithoutWhere = Cypher.match(sourceNode.relationshipTo(resultNodes, relationKind));
+                }else{
+                    ongoingReadingWithoutWhere = Cypher.match(sourceNode.relationshipTo(resultNodes));
+                }
                 break;
             case TWO_WAY:
-                ongoingReadingWithoutWhere = Cypher.match(sourceNode.relationshipBetween(resultNodes, relationKind));
+                if(relationKind != null){
+                    ongoingReadingWithoutWhere = Cypher.match(sourceNode.relationshipBetween(resultNodes, relationKind));
+                }else{
+                    ongoingReadingWithoutWhere = Cypher.match(sourceNode.relationshipBetween(resultNodes));
+                }
         }
 
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
@@ -711,8 +724,23 @@ public class CypherBuilder {
             }
         }else{
             if (ongoingReadingWithWhere != null) {
+                ongoingReadingWithWhere.
+                        and(resultNodes.hasLabels(RealmConstant.ConceptionKindClass).not()).
+                        and(resultNodes.hasLabels(RealmConstant.AttributesViewKindClass).not()).
+                        and(resultNodes.hasLabels(RealmConstant.AttributeKindClass).not()).
+                        and(resultNodes.hasLabels(RealmConstant.RelationKindClass).not()).
+                        and(resultNodes.hasLabels(RealmConstant.MetaConfigItemsStorageClass).not()).
+                        and(resultNodes.hasLabels(RealmConstant.ClassificationClass).not());
                 statement = ongoingReadingWithWhere.returning(resultNodes,sourceNode).build();
             } else {
+                ongoingReadingWithoutWhere.
+                        where(resultNodes.hasLabels(RealmConstant.ConceptionKindClass).not()).
+                        and(resultNodes.hasLabels(RealmConstant.AttributesViewKindClass).not()).
+                        and(resultNodes.hasLabels(RealmConstant.AttributeKindClass).not()).
+                        and(resultNodes.hasLabels(RealmConstant.RelationKindClass).not()).
+                        and(resultNodes.hasLabels(RealmConstant.MetaConfigItemsStorageClass).not()).
+                        and(resultNodes.hasLabels(RealmConstant.ClassificationClass).not())
+                        .returning(resultNodes,sourceNode).build();
                 statement = ongoingReadingWithoutWhere.returning(resultNodes,sourceNode).build();
             }
         }

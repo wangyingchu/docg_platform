@@ -631,6 +631,37 @@ public class ClassificationTest {
         Assert.assertNotNull(relatedEntitiesList);
         Assert.assertEquals(relatedEntitiesList.size(),10);
 
-        //rootClassification.getRelatedConceptionEntity("relationTypeForClassificationTest02",RelationDirection.FROM,null,true,2);
+        ConceptionKind _ConceptionKind02 = coreRealm.getConceptionKind("testConceptionKindForClassification2");
+        if(_ConceptionKind02 != null){
+            coreRealm.removeConceptionKind("testConceptionKindForClassification2",true);
+        }
+        _ConceptionKind02 = coreRealm.getConceptionKind("testConceptionKindForClassification2");
+        if(_ConceptionKind02 == null){
+            _ConceptionKind02 = coreRealm.createConceptionKind("testConceptionKindForClassification2","TestConceptionKindADesc+中文描述");
+            Assert.assertNotNull(_ConceptionKind02);
+        }
+        for(int i=0;i<5;i++){
+            ConceptionEntityValue conceptionEntityValue2 = new ConceptionEntityValue(newEntityValue2);
+            ConceptionEntity _ConceptionEntity01_2 = _ConceptionKind02.newEntity(conceptionEntityValue2,false);
+            _ConceptionEntity01_2.attachClassification(relationAttachInfo,"classification1");
+        }
+        relatedEntitiesList = rootClassification.getRelatedConceptionEntity("relationTypeForClassificationTest02",RelationDirection.FROM,null,true,2);
+        Assert.assertNotNull(relatedEntitiesList);
+        Assert.assertEquals(relatedEntitiesList.size(),15);
+
+        for(int i=0;i<5;i++){
+            relationAttachInfo.setRelationKind("relationTypeForClassificationTest03");
+            ConceptionEntityValue conceptionEntityValue2 = new ConceptionEntityValue(newEntityValue2);
+            ConceptionEntity _ConceptionEntity01_2 = _ConceptionKind02.newEntity(conceptionEntityValue2,false);
+            _ConceptionEntity01_2.attachClassification(relationAttachInfo,"classification1");
+        }
+
+        relatedEntitiesList = rootClassification.getRelatedConceptionEntity("relationTypeForClassificationTest02",RelationDirection.FROM,null,true,2);
+        Assert.assertNotNull(relatedEntitiesList);
+        Assert.assertEquals(relatedEntitiesList.size(),15);
+
+        relatedEntitiesList = rootClassification.getRelatedConceptionEntity(null,RelationDirection.FROM,null,true,2);
+        Assert.assertNotNull(relatedEntitiesList);
+        Assert.assertEquals(relatedEntitiesList.size(),20);
     }
 }
