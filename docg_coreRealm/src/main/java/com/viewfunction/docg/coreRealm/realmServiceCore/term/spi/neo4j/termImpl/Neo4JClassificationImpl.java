@@ -4,6 +4,7 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.KindCacheable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureImpl.Neo4JAttributesMeasurableImpl;
@@ -445,8 +446,55 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
     }
 
     @Override
-    public List<ConceptionEntity> getRelatedConceptionEntity(String relationKindName, RelationDirection relationDirection, QueryParameters queryParameters, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException {
-        return null;
+    public List<ConceptionEntity> getRelatedConceptionEntity(String relationKindName, RelationDirection relationDirection, QueryParameters queryParameters, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        if(classificationName == null){
+            return null;
+        }else{
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                List<ConceptionEntity> conceptionEntityList = new ArrayList<>();
+                List<Long> targetClassificationUIDsList = getTargetClassificationsUIDList(workingGraphOperationExecutor,includeOffspringClassifications,offspringLevel);
+                String queryPairsCql = CypherBuilder.matchRelatedNodesFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID,
+                        CommonOperationUtil.formatListLiteralValue(targetClassificationUIDsList),queryParameters,relationKindName,relationDirection);
+                DataTransformer offspringClassificationsDataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        while(result.hasNext()){
+                            Record record = result.next();
+                            Node conceptionEntityNode = record.get(CypherBuilder.operationResultName).asNode();
+                            //Node classificationNode = record.get(CypherBuilder.sourceNodeName).asNode();
+                            String currentEntityKind = null;
+                            List<String> allLabelNames = Lists.newArrayList(conceptionEntityNode.labels());
+                            if(queryParameters != null && queryParameters.getEntityKind() != null){
+                                boolean isMatchedKind = false;
+                                if(allLabelNames.size()>0){
+                                    isMatchedKind = allLabelNames.contains( queryParameters.getEntityKind());
+                                }
+                                if(isMatchedKind){
+                                    currentEntityKind = queryParameters.getEntityKind();
+                                }
+                            }else{
+                                currentEntityKind = allLabelNames.get(0);
+                            }
+                            if(currentEntityKind != null){
+                                long nodeUID = conceptionEntityNode.id();
+                                String conceptionEntityUID = ""+nodeUID;
+                                Neo4JConceptionEntityImpl neo4jConceptionEntityImpl =
+                                        new Neo4JConceptionEntityImpl(currentEntityKind,conceptionEntityUID);
+                                neo4jConceptionEntityImpl.setAllConceptionKindNames(allLabelNames);
+                                neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                                conceptionEntityList.add(neo4jConceptionEntityImpl);
+                            }
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(offspringClassificationsDataTransformer,queryPairsCql);
+                return conceptionEntityList;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
     }
 
     private List<Long> getTargetClassificationsUIDList(GraphOperationExecutor workingGraphOperationExecutor,boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException{

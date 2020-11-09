@@ -1,5 +1,8 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachInfo;
@@ -26,7 +29,7 @@ public class ClassificationTest {
     }
 
     @Test
-    public void testClassificationFunction() throws CoreRealmServiceRuntimeException {
+    public void testClassificationFunction() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
 
@@ -582,5 +585,52 @@ public class ClassificationTest {
         relatedAttributeKindList = rootClassification.getRelatedAttributeKind("relationTypeForClassificationTest02",RelationDirection.TO,true,3);
         Assert.assertNotNull(relatedAttributeKindList);
         Assert.assertEquals(relatedAttributeKindList.size(),0);
+
+        Map<String,Object> newEntityValue2= new HashMap<>();
+        newEntityValue2.put("propA",50000l);
+        for(int i=0;i<10;i++){
+            ConceptionEntityValue conceptionEntityValue2 = new ConceptionEntityValue(newEntityValue2);
+            ConceptionEntity _ConceptionEntity01_2 = _ConceptionKind01.newEntity(conceptionEntityValue2,false);
+            _ConceptionEntity01_2.attachClassification(relationAttachInfo,"classification1");
+        }
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setEntityKind("testConceptionKindForClassification");
+
+        List<ConceptionEntity> relatedEntitiesList =  rootClassification.getRelatedConceptionEntity("relationTypeForClassificationTest02",RelationDirection.FROM,queryParameters,true,4);
+        Assert.assertNotNull(relatedEntitiesList);
+        Assert.assertEquals(relatedEntitiesList.size(),10);
+        for(ConceptionEntity currentConceptionEntity:relatedEntitiesList){
+            Assert.assertEquals(currentConceptionEntity.getConceptionKindName(),"testConceptionKindForClassification");
+        }
+
+        queryParameters.setResultNumber(5);
+        relatedEntitiesList = rootClassification.getRelatedConceptionEntity("relationTypeForClassificationTest02",RelationDirection.FROM,queryParameters,true,4);
+        Assert.assertNotNull(relatedEntitiesList);
+        Assert.assertEquals(relatedEntitiesList.size(),5);
+
+        queryParameters.setDefaultFilteringItem(new EqualFilteringItem("propA", 60000l));
+        relatedEntitiesList = rootClassification.getRelatedConceptionEntity("relationTypeForClassificationTest02",RelationDirection.FROM,queryParameters,true,4);
+        Assert.assertNotNull(relatedEntitiesList);
+        Assert.assertEquals(relatedEntitiesList.size(),0);
+
+        for(int i=0;i<10;i++){
+            ConceptionEntityValue conceptionEntityValue2 = new ConceptionEntityValue(newEntityValue2);
+            ConceptionEntity _ConceptionEntity01_2 = _ConceptionKind01.newEntity(conceptionEntityValue2,false);
+            _ConceptionEntity01_2.attachClassification(relationAttachInfo,"classification5_1_1");
+        }
+
+        queryParameters = new QueryParameters();
+        queryParameters.setEntityKind("testConceptionKindForClassification");
+
+        relatedEntitiesList =  rootClassification.getRelatedConceptionEntity("relationTypeForClassificationTest02",RelationDirection.FROM,queryParameters,true,4);
+        Assert.assertNotNull(relatedEntitiesList);
+        Assert.assertEquals(relatedEntitiesList.size(),20);
+
+        relatedEntitiesList =  rootClassification.getRelatedConceptionEntity("relationTypeForClassificationTest02",RelationDirection.FROM,queryParameters,true,2);
+        Assert.assertNotNull(relatedEntitiesList);
+        Assert.assertEquals(relatedEntitiesList.size(),10);
+
+        //rootClassification.getRelatedConceptionEntity("relationTypeForClassificationTest02",RelationDirection.FROM,null,true,2);
     }
 }
