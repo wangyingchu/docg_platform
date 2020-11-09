@@ -75,6 +75,11 @@ public class Neo4JAttributesViewKindImpl implements Neo4JAttributesViewKind {
 
     @Override
     public boolean attachAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException{
+        return attachAttributeKind(attributeKindUID,null);
+    }
+
+    @Override
+    public boolean attachAttributeKind(String attributeKindUID, Map<String, Object> properties) throws CoreRealmServiceRuntimeException {
         if(attributeKindUID == null){
             return false;
         }
@@ -94,7 +99,7 @@ public class Neo4JAttributesViewKindImpl implements Neo4JAttributesViewKind {
                     return true;
                 }
 
-                Map<String,Object> relationPropertiesMap = new HashMap<>();
+                Map<String,Object> relationPropertiesMap = properties != null ? properties:new HashMap<>();
                 CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
                 String createCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(attributesViewKindUID),Long.parseLong(attributeKindUID),
                         RealmConstant.AttributesViewKind_AttributeKindRelationClass,relationPropertiesMap);
@@ -116,6 +121,66 @@ public class Neo4JAttributesViewKindImpl implements Neo4JAttributesViewKind {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
     }
+
+    @Override
+    public List<String> setAttributeKindAttachMetaInfo(String attributeKindUID, Map<String,Object> properties) {
+        if(attributeKindUID == null){
+            return null;
+        }
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryRelationCql = CypherBuilder.matchRelationshipsByBothNodesId(Long.parseLong(attributeKindUID),Long.parseLong(this.attributesViewKindUID),RealmConstant.AttributesViewKind_AttributeKindRelationClass);
+            GetSingleRelationEntityTransformer getSingleRelationEntityTransformer =
+                    new GetSingleRelationEntityTransformer(RealmConstant.AttributesViewKind_AttributeKindRelationClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object existingRelationEntityRes = workingGraphOperationExecutor.executeRead(getSingleRelationEntityTransformer, queryRelationCql);
+            if(existingRelationEntityRes == null){
+                return null;
+            }else{
+                RelationEntity targetRelationEntity = (RelationEntity)existingRelationEntityRes;
+                return targetRelationEntity.addNewOrUpdateAttributes(properties);
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public boolean removeAttributeKindAttachMetaInfo(String attributeKindUID, String metaPropertyName) throws CoreRealmServiceRuntimeException {
+        if(attributeKindUID == null){
+            return false;
+        }
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryRelationCql = CypherBuilder.matchRelationshipsByBothNodesId(Long.parseLong(attributeKindUID),Long.parseLong(this.attributesViewKindUID),RealmConstant.AttributesViewKind_AttributeKindRelationClass);
+            GetSingleRelationEntityTransformer getSingleRelationEntityTransformer =
+                    new GetSingleRelationEntityTransformer(RealmConstant.AttributesViewKind_AttributeKindRelationClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object existingRelationEntityRes = workingGraphOperationExecutor.executeRead(getSingleRelationEntityTransformer, queryRelationCql);
+            if(existingRelationEntityRes == null){
+                return false;
+            }else{
+                RelationEntity targetRelationEntity = (RelationEntity)existingRelationEntityRes;
+                return targetRelationEntity.removeAttribute(metaPropertyName);
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public Map<String, Object> getAttributeKindsAttachMetaInfo(String attributeKindUID, String metaPropertyName) {
+        return null;
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public boolean detachAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException{
@@ -187,7 +252,6 @@ public class Neo4JAttributesViewKindImpl implements Neo4JAttributesViewKind {
             GetListConceptionKindTransformer getListConceptionKindTransformer = new GetListConceptionKindTransformer(this.coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object conceptionKindsRes = workingGraphOperationExecutor.executeWrite(getListConceptionKindTransformer,queryCql);
             return conceptionKindsRes != null ? (List<ConceptionKind>) conceptionKindsRes : null;
-
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
