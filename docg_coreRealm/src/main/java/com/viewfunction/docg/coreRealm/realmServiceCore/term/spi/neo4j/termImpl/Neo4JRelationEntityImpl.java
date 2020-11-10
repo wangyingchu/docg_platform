@@ -13,7 +13,7 @@ public class Neo4JRelationEntityImpl extends Neo4JAttributesMeasurableImpl imple
     private String toEntityUID;
 
     public Neo4JRelationEntityImpl(String relationKindName, String relationEntityUID, String fromEntityUID, String toEntityUID){
-        super(relationEntityUID);
+        super(relationEntityUID,true);
         this.relationKindName = relationKindName;
         this.relationEntityUID = relationEntityUID;
         this.fromEntityUID = fromEntityUID;

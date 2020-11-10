@@ -505,6 +505,48 @@ public class CypherBuilder {
         return rel;
     }
 
+    public static String matchRelatedNodeAndRelationPairsFromSpecialStartNodes(CypherFunctionType sourcePropertyFunctionType, Object sourcePropertyValue,
+                                                                String targetConceptionKind, String relationKind, RelationDirection relationDirection) {
+        Node sourceNode = Cypher.anyNode().named(sourceNodeName);
+        Node resultNodes = Cypher.node(targetConceptionKind).named(operationResultName);
+        StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = null;
+        Relationship relations = null;
+
+        switch (relationDirection) {
+            case FROM:
+                relations = sourceNode.relationshipFrom(resultNodes, relationKind).named(relationResultName);
+                ongoingReadingWithoutWhere = Cypher.match(relations);
+                break;
+            case TO:
+                relations = sourceNode.relationshipTo(resultNodes, relationKind).named(relationResultName);
+                ongoingReadingWithoutWhere = Cypher.match(relations);
+                break;
+            case TWO_WAY:
+                relations = sourceNode.relationshipBetween(resultNodes, relationKind).named(relationResultName);
+                ongoingReadingWithoutWhere = Cypher.match(relations);
+        }
+
+        StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
+        switch (sourcePropertyFunctionType) {
+            case ID:
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
+                break;
+            default:
+        }
+
+        Statement statement;
+
+        if (ongoingReadingWithWhere != null) {
+            statement = ongoingReadingWithWhere.returning(resultNodes,relations).build();
+        } else {
+            statement = ongoingReadingWithoutWhere.returning(resultNodes,relations).build();
+        }
+
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        return rel;
+    }
+
     public static String matchRelatedPairFromSpecialStartNodes(CypherFunctionType sourcePropertyFunctionType, Object sourcePropertyValue,
                                                                 String targetConceptionKind, String relationKind, RelationDirection relationDirection) {
         Node sourceNode = Cypher.anyNode().named(sourceNodeName);
@@ -843,37 +885,37 @@ public class CypherBuilder {
             switch (returnFunctionType) {
                 case KEYS:
                     if (ongoingReadingWithWhere != null) {
-                        statement = ongoingReadingWithWhere.returning(Functions2.keys(relation)).build();
+                        statement = ongoingReadingWithWhere.returningDistinct(Functions2.keys(relation)).build();
                     } else {
-                        statement = ongoingReadingWithoutWhere.returning(Functions2.keys(relation)).build();
+                        statement = ongoingReadingWithoutWhere.returningDistinct(Functions2.keys(relation)).build();
                     }
                     break;
                 case PROPERTIES:
                     if (ongoingReadingWithWhere != null) {
-                        statement = ongoingReadingWithWhere.returning(Functions2.properties(relation)).build();
+                        statement = ongoingReadingWithWhere.returningDistinct(Functions2.properties(relation)).build();
                     } else {
-                        statement = ongoingReadingWithoutWhere.returning(Functions2.properties(relation)).build();
+                        statement = ongoingReadingWithoutWhere.returningDistinct(Functions2.properties(relation)).build();
                     }
                     break;
                 case EXISTS:
                     if (ongoingReadingWithWhere != null) {
-                        statement = ongoingReadingWithWhere.returning(Functions.exists(relation.property(additionalPropertyName))).build();
+                        statement = ongoingReadingWithWhere.returningDistinct(Functions.exists(relation.property(additionalPropertyName))).build();
                     } else {
-                        statement = ongoingReadingWithoutWhere.returning(Functions.exists(relation.property(additionalPropertyName))).build();
+                        statement = ongoingReadingWithoutWhere.returningDistinct(Functions.exists(relation.property(additionalPropertyName))).build();
                     }
                     break;
                 case LABEL:
                     if (ongoingReadingWithWhere != null) {
-                        statement = ongoingReadingWithWhere.returning(Functions.type(relation)).build();
+                        statement = ongoingReadingWithWhere.returningDistinct(Functions.type(relation)).build();
                     } else {
-                        statement = ongoingReadingWithoutWhere.returning(Functions.type(relation)).build();
+                        statement = ongoingReadingWithoutWhere.returningDistinct(Functions.type(relation)).build();
                     }
             }
         } else {
             if (ongoingReadingWithWhere != null) {
-                statement = ongoingReadingWithWhere.returning(relation).build();
+                statement = ongoingReadingWithWhere.returningDistinct(relation).build();
             } else {
-                statement = ongoingReadingWithoutWhere.returning(relation).build();
+                statement = ongoingReadingWithoutWhere.returningDistinct(relation).build();
             }
         }
         String rel = cypherRenderer.render(statement);

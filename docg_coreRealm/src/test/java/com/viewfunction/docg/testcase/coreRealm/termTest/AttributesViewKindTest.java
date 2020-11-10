@@ -8,7 +8,10 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AttributesViewKindTest {
 
@@ -142,5 +145,31 @@ public class AttributesViewKindTest {
         containerConceptionKindList = targetAttributesViewKind.getContainerConceptionKinds();
         Assert.assertNotNull(containerConceptionKindList);
         Assert.assertEquals(containerConceptionKindList.size(),0);
+
+        targetAttributesViewKind.detachAttributeKind(attributeKind02.getAttributeKindUID());
+        targetAttributesViewKind.detachAttributeKind(attributeKind03.getAttributeKindUID());
+
+        Map<String,Object> attachMetaInfoMap = new HashMap<>();
+        attachMetaInfoMap.put("attr01",1);
+        attachMetaInfoMap.put("attr02",new Date());
+        attachMetaInfoMap.put("attr03","this is string");
+        boolean attachResult = targetAttributesViewKind.attachAttributeKind(attributeKind02.getAttributeKindUID(),attachMetaInfoMap);
+        Assert.assertTrue(attachResult);
+
+
+       // Assert.assertEquals(targetAttributesViewKind.getAttributeKindAttachMetaInfo(attributeKind02.getAttributeKindUID(),"attr01"),1);
+
+ /*
+
+        attachMetaInfoMap.put("attr01",2);
+        attachMetaInfoMap.put("attr02",new Date());
+        attachMetaInfoMap.put("attr03","this is string2");
+        attachMetaInfoMap.put("attr04",true);
+        attachResult = targetAttributesViewKind.attachAttributeKind(attributeKind03.getAttributeKindUID(),attachMetaInfoMap);
+        Assert.assertTrue(attachResult);
+*/
+
+
+
     }
 }

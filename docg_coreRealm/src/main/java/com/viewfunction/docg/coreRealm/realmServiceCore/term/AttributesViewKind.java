@@ -19,7 +19,8 @@ public interface AttributesViewKind extends MetaConfigItemFeatureSupportable, Me
     public boolean attachAttributeKind(String attributeKindUID, Map<String,Object> properties) throws CoreRealmServiceRuntimeException;
     public List<String> setAttributeKindAttachMetaInfo(String attributeKindUID,Map<String,Object> properties);
     public boolean removeAttributeKindAttachMetaInfo(String attributeKindUID,String metaPropertyName) throws CoreRealmServiceRuntimeException;
-    public Map<String,Object> getAttributeKindsAttachMetaInfo(String attributeKindUID,String metaPropertyName);
+    public Map<String,Object> getAttributeKindsAttachMetaInfo(String metaPropertyName);
+    public Object getAttributeKindAttachMetaInfo(String attributeKindUID,String metaPropertyName);
     public boolean detachAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException;
     public List<AttributeKind> getContainsAttributeKinds();
     public List<ConceptionKind> getContainerConceptionKinds();
