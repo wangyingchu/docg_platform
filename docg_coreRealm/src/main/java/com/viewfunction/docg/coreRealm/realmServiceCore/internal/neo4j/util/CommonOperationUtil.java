@@ -477,11 +477,16 @@ public class CommonOperationUtil {
         return false;
     }
 
-    public static void updateEntityMetaAttributes(GraphOperationExecutor workingGraphOperationExecutor,String entityUID){
+    public static void updateEntityMetaAttributes(GraphOperationExecutor workingGraphOperationExecutor,String entityUID,boolean isRelationEntity){
         if (entityUID != null) {
             Map<String,Object> metaAttributesMap = new HashMap<>();
             metaAttributesMap.put(RealmConstant._lastModifyDateProperty,new Date());
-            String updateMetaInfoCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(entityUID),metaAttributesMap);
+            String updateMetaInfoCql;
+            if(isRelationEntity){
+                updateMetaInfoCql = CypherBuilder.setRelationPropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(entityUID),metaAttributesMap);
+            }else{
+                updateMetaInfoCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(entityUID),metaAttributesMap);
+            }
             workingGraphOperationExecutor.executeWrite(new DataTransformer() {
                 @Override
                 public Object transformResult(Result result) {

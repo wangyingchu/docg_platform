@@ -369,6 +369,33 @@ public class CypherBuilder {
         return rel;
     }
 
+    public static String matchRelationPropertiesWithSingleValueEqual(CypherFunctionType propertyFunctionType, Object propertyValue, String[] targetPropertyNames) {
+        Node sourceNode = Cypher.anyNode().named(sourceNodeName);
+        Node targetNodes = Cypher.anyNode().named(targetNodeName);
+        Relationship r = sourceNode.relationshipBetween(targetNodes).named(operationResultName);
+        StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(r);
+        StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
+        switch (propertyFunctionType) {
+            case ID:
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(r).isEqualTo(Cypher.literalOf(propertyValue)));
+                break;
+            default:
+        }
+        Statement statement;
+        if (targetPropertyNames != null && targetPropertyNames.length > 0) {
+            Property[] targetPropertiesArray = new Property[targetPropertyNames.length];
+            for (int i = 0; i < targetPropertyNames.length; i++) {
+                targetPropertiesArray[i] = r.property(targetPropertyNames[i]);
+            }
+            statement = ongoingReadingWithWhere.returningDistinct(targetPropertiesArray).build();
+        } else {
+            statement = ongoingReadingWithWhere.returningDistinct(r).build();
+        }
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        return rel;
+    }
+
     public static String setNodePropertiesWithSingleValueEqual(CypherFunctionType propertyFunctionType, Object propertyValue, Map<String, Object> originalTargetPropertiesMap) {
         Node m = Cypher.anyNode().named(operationResultName);
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(m);
@@ -422,6 +449,61 @@ public class CypherBuilder {
         return rel;
     }
 
+    public static String setRelationPropertiesWithSingleValueEqual(CypherFunctionType propertyFunctionType, Object propertyValue, Map<String, Object> originalTargetPropertiesMap) {
+        Node sourceNode = Cypher.anyNode().named(sourceNodeName);
+        Node targetNodes = Cypher.anyNode().named(targetNodeName);
+        Relationship r = sourceNode.relationshipBetween(targetNodes).named(operationResultName);
+        StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(r);
+        StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
+        switch (propertyFunctionType) {
+            case ID:
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(r).isEqualTo(Cypher.literalOf(propertyValue)));
+                break;
+            default:
+        }
+        Statement statement;
+        Map<String, Object> targetPropertiesMap = CommonOperationUtil.reformatPropertyValues(originalTargetPropertiesMap);
+        if (targetPropertiesMap != null && targetPropertiesMap.size() > 0) {
+            Expression[] targetPropertiesArray = new Expression[targetPropertiesMap.size()];
+            Property[] targetNewAddPropertiesArray = new Property[targetPropertiesMap.size()];
+            Object[] keysObjectArray = targetPropertiesMap.keySet().toArray();
+            for (int i = 0; i < keysObjectArray.length; i++) {
+                String currentKey = keysObjectArray[i].toString();
+                Object currentValue = targetPropertiesMap.get(currentKey);
+                targetNewAddPropertiesArray[i] = r.property(currentKey);
+
+                if (currentValue instanceof ZonedDateTime) {
+                    ZonedDateTime targetZonedDateTime = (ZonedDateTime) currentValue;
+                    String targetZonedDateTimeString = targetZonedDateTime.toString();
+                    targetPropertiesArray[i] = r.property(currentKey).to(Functions2.datetime(Cypher.literalOf(targetZonedDateTimeString)));
+                } else if (currentValue instanceof Date) {
+                    ZonedDateTime targetZonedDateTime = ZonedDateTime.ofInstant(((Date) currentValue).toInstant(), systemDefaultZoneId);
+                    String targetZonedDateTimeString = targetZonedDateTime.toString();
+                    targetPropertiesArray[i] = r.property(currentKey).to(Functions2.datetime(Cypher.literalOf(targetZonedDateTimeString)));
+                } else if (currentValue instanceof CharSequence || currentValue instanceof Number ||
+                        currentValue instanceof Iterable || currentValue instanceof Boolean) {
+                    targetPropertiesArray[i] = r.property(currentKey).to(Cypher.literalOf(currentValue));
+                } else if (currentValue instanceof Date[]) {
+                    Date[] dateValueArray = (Date[]) currentValue;
+                    Expression[] dataValueExpressArray = new Expression[dateValueArray.length];
+                    for (int j = 0; j < dateValueArray.length; j++) {
+                        Date currentInnerValue = dateValueArray[j];
+                        ZonedDateTime targetZonedDateTime = ZonedDateTime.ofInstant(currentInnerValue.toInstant(), systemDefaultZoneId);
+                        String targetZonedDateTimeString = targetZonedDateTime.toString();
+                        dataValueExpressArray[j] = Functions2.datetime(Cypher.literalOf(targetZonedDateTimeString));
+                    }
+                    targetPropertiesArray[i] = r.property(currentKey).to(Cypher.listOf(dataValueExpressArray));
+                }
+            }
+            statement = ongoingReadingWithWhere.set(targetPropertiesArray).returningDistinct(targetNewAddPropertiesArray).build();
+        } else {
+            statement = ongoingReadingWithWhere.returningDistinct(r).build();
+        }
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        return rel;
+    }
+
     public static String removeNodePropertiesWithSingleValueEqual(CypherFunctionType propertyFunctionType, Object propertyValue, List<String> targetPropertiesList) {
         Node m = Cypher.anyNode().named(operationResultName);
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(m);
@@ -442,6 +524,34 @@ public class CypherBuilder {
             statement = ongoingReadingWithWhere.remove(targetPropertiesRemoveArray).returning(Functions2.keys(m)).build();
         } else {
             statement = ongoingReadingWithWhere.returning(m).build();
+        }
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        return rel;
+    }
+
+    public static String removeRelationPropertiesWithSingleValueEqual(CypherFunctionType propertyFunctionType, Object propertyValue, List<String> targetPropertiesList) {
+        Node sourceNode = Cypher.anyNode().named(sourceNodeName);
+        Node targetNodes = Cypher.anyNode().named(targetNodeName);
+        Relationship r = sourceNode.relationshipBetween(targetNodes).named(operationResultName);
+        StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(r);
+        StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
+        switch (propertyFunctionType) {
+            case ID:
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(r).isEqualTo(Cypher.literalOf(propertyValue)));
+                break;
+            default:
+        }
+        Statement statement;
+        if (targetPropertiesList != null && targetPropertiesList.size() > 0) {
+            Property[] targetPropertiesRemoveArray = new Property[targetPropertiesList.size()];
+            for (int i = 0; i < targetPropertiesList.size(); i++) {
+                String currentPropertyName = targetPropertiesList.get(i);
+                targetPropertiesRemoveArray[i] = r.property(currentPropertyName);
+            }
+            statement = ongoingReadingWithWhere.remove(targetPropertiesRemoveArray).returningDistinct(Functions2.keys(r)).build();
+        } else {
+            statement = ongoingReadingWithWhere.returningDistinct(r).build();
         }
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}", rel);

@@ -12,6 +12,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
+import org.neo4j.driver.types.Node;
+import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,7 +130,7 @@ public class Neo4JAttributesViewKindImpl implements Neo4JAttributesViewKind {
         }
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
-            String queryRelationCql = CypherBuilder.matchRelationshipsByBothNodesId(Long.parseLong(attributeKindUID),Long.parseLong(this.attributesViewKindUID),RealmConstant.AttributesViewKind_AttributeKindRelationClass);
+            String queryRelationCql = CypherBuilder.matchRelationshipsByBothNodesId(Long.parseLong(this.attributesViewKindUID),Long.parseLong(attributeKindUID),RealmConstant.AttributesViewKind_AttributeKindRelationClass);
             GetSingleRelationEntityTransformer getSingleRelationEntityTransformer =
                     new GetSingleRelationEntityTransformer(RealmConstant.AttributesViewKind_AttributeKindRelationClass,workingGraphOperationExecutor);
             Object existingRelationEntityRes = workingGraphOperationExecutor.executeRead(getSingleRelationEntityTransformer, queryRelationCql);
@@ -150,7 +152,7 @@ public class Neo4JAttributesViewKindImpl implements Neo4JAttributesViewKind {
         }
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
-            String queryRelationCql = CypherBuilder.matchRelationshipsByBothNodesId(Long.parseLong(attributeKindUID),Long.parseLong(this.attributesViewKindUID),RealmConstant.AttributesViewKind_AttributeKindRelationClass);
+            String queryRelationCql = CypherBuilder.matchRelationshipsByBothNodesId(Long.parseLong(this.attributesViewKindUID),Long.parseLong(attributeKindUID),RealmConstant.AttributesViewKind_AttributeKindRelationClass);
             GetSingleRelationEntityTransformer getSingleRelationEntityTransformer =
                     new GetSingleRelationEntityTransformer(RealmConstant.AttributesViewKind_AttributeKindRelationClass,workingGraphOperationExecutor);
             Object existingRelationEntityRes = workingGraphOperationExecutor.executeRead(getSingleRelationEntityTransformer, queryRelationCql);
@@ -169,29 +171,35 @@ public class Neo4JAttributesViewKindImpl implements Neo4JAttributesViewKind {
     public Map<String, Object> getAttributeKindsAttachMetaInfo(String metaPropertyName) {
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
+            Map<String, Object> resultValueMap = new HashMap<>();
             String queryRelationCql = CypherBuilder.matchRelatedNodeAndRelationPairsFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID,
-                    Long.parseLong(this.attributesViewKindUID),RealmConstant.AttributeKindClass,RealmConstant.AttributesViewKind_AttributeKindRelationClass,RelationDirection.FROM);
-
+                    Long.parseLong(this.attributesViewKindUID),RealmConstant.AttributeKindClass,RealmConstant.AttributesViewKind_AttributeKindRelationClass,RelationDirection.TO);
             DataTransformer dataTransformer = new DataTransformer() {
                 @Override
                 public Object transformResult(Result result) {
                     while(result.hasNext()){
                         Record nodeRecord = result.next();
-                        System.out.println(nodeRecord);
+                        Node attributeKindNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
+                        Relationship attachMetaInfoRelation = nodeRecord.get(CypherBuilder.relationResultName).asRelationship();
 
-
-
-
-
+                        long relationUID = attachMetaInfoRelation.id();
+                        String relationEntityUID = ""+relationUID;
+                        String fromEntityUID = ""+attachMetaInfoRelation.startNodeId();
+                        String toEntityUID = ""+attachMetaInfoRelation.endNodeId();
+                        Neo4JRelationEntityImpl neo4jRelationEntityImpl =
+                                new Neo4JRelationEntityImpl(RealmConstant.AttributesViewKind_AttributeKindRelationClass,relationEntityUID,fromEntityUID,toEntityUID);
+                        neo4jRelationEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+                        Object propertyValue = neo4jRelationEntityImpl.getAttribute(metaPropertyName).getAttributeValue();
+                        resultValueMap.put(""+attributeKindNode.id(),propertyValue);
                     }
                     return null;
                 }
             };
             workingGraphOperationExecutor.executeRead(dataTransformer,queryRelationCql);
+            return resultValueMap;
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
-        return null;
     }
 
     @Override

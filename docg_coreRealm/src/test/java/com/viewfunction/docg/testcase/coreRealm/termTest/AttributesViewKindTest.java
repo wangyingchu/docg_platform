@@ -156,10 +156,9 @@ public class AttributesViewKindTest {
         boolean attachResult = targetAttributesViewKind.attachAttributeKind(attributeKind02.getAttributeKindUID(),attachMetaInfoMap);
         Assert.assertTrue(attachResult);
 
-
-       // Assert.assertEquals(targetAttributesViewKind.getAttributeKindAttachMetaInfo(attributeKind02.getAttributeKindUID(),"attr01"),1);
-
- /*
+        Assert.assertEquals(targetAttributesViewKind.getAttributeKindAttachMetaInfo(attributeKind02.getAttributeKindUID(),"attr01"),1l);
+        Assert.assertEquals(targetAttributesViewKind.getAttributeKindAttachMetaInfo(attributeKind02.getAttributeKindUID(),"attr03"),"this is string");
+        Assert.assertNotNull(targetAttributesViewKind.getAttributeKindAttachMetaInfo(attributeKind02.getAttributeKindUID(),"attr02"));
 
         attachMetaInfoMap.put("attr01",2);
         attachMetaInfoMap.put("attr02",new Date());
@@ -167,9 +166,40 @@ public class AttributesViewKindTest {
         attachMetaInfoMap.put("attr04",true);
         attachResult = targetAttributesViewKind.attachAttributeKind(attributeKind03.getAttributeKindUID(),attachMetaInfoMap);
         Assert.assertTrue(attachResult);
-*/
 
+        Assert.assertNotNull(targetAttributesViewKind.getAttributeKindAttachMetaInfo(attributeKind03.getAttributeKindUID(),"attr04"));
+        Assert.assertTrue(targetAttributesViewKind.removeAttributeKindAttachMetaInfo(attributeKind03.getAttributeKindUID(),"attr04"));
+        Assert.assertNull(targetAttributesViewKind.getAttributeKindAttachMetaInfo(attributeKind03.getAttributeKindUID(),"attr04"));
 
+        exceptionShouldBeCaught = false;
+        try{
+            targetAttributesViewKind.removeAttributeKindAttachMetaInfo(attributeKind03.getAttributeKindUID(),"attr04");
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
 
+        Assert.assertNull(targetAttributesViewKind.getAttributeKindAttachMetaInfo(attributeKind03.getAttributeKindUID(),"attr05"));
+        Assert.assertNull(targetAttributesViewKind.getAttributeKindAttachMetaInfo(attributeKind03.getAttributeKindUID(),"attr06"));
+
+        Map<String,Object> attachMetaInfoMap2 = new HashMap<>();
+        attachMetaInfoMap2.put("attr05",1000);
+        attachMetaInfoMap2.put("attr06","attr06value");
+
+        List<String> addResult = targetAttributesViewKind.setAttributeKindAttachMetaInfo(attributeKind03.getAttributeKindUID(),attachMetaInfoMap2);
+        Assert.assertNotNull(addResult);
+        Assert.assertEquals(addResult.size(),2);
+        Assert.assertTrue(addResult.contains("attr05"));
+        Assert.assertTrue(addResult.contains("attr06"));
+        Assert.assertEquals(targetAttributesViewKind.getAttributeKindAttachMetaInfo(attributeKind03.getAttributeKindUID(),"attr05"),1000l);
+        Assert.assertEquals(targetAttributesViewKind.getAttributeKindAttachMetaInfo(attributeKind03.getAttributeKindUID(),"attr06"),"attr06value");
+
+        Map<String,Object> metaInfoMap = targetAttributesViewKind.getAttributeKindsAttachMetaInfo("attr01");
+        Assert.assertNotNull(metaInfoMap);
+        Assert.assertEquals(metaInfoMap.size(),2);
+        Assert.assertTrue(metaInfoMap.containsKey(attributeKind02.getAttributeKindUID()));
+        Assert.assertTrue(metaInfoMap.containsKey(attributeKind03.getAttributeKindUID()));
+        Assert.assertEquals(metaInfoMap.get(attributeKind02.getAttributeKindUID()),1l);
+        Assert.assertEquals(metaInfoMap.get(attributeKind03.getAttributeKindUID()),2l);
     }
 }
