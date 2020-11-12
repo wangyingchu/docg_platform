@@ -140,7 +140,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
                             String classificationUID = ""+nodeUID;
                             Neo4JClassificationImpl neo4JClassificationImpl =
                                     new Neo4JClassificationImpl(coreRealmName,classificationName,classificationDesc,classificationUID);
-                            neo4JClassificationImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+                            neo4JClassificationImpl.setGlobalGraphOperationExecutor(graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
 
                             List<Object> relationships = nodeRecord.get(CypherBuilder.relationResultName).asList();
                             String parentClassificationUID = null;
@@ -544,6 +544,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
     private GraphOperationExecutorHelper graphOperationExecutorHelper;
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
+        super.setGlobalGraphOperationExecutor(graphOperationExecutor);
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }
 

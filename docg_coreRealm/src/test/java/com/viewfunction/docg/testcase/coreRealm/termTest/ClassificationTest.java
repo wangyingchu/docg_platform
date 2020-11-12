@@ -32,6 +32,7 @@ public class ClassificationTest {
     public void testClassificationFunction() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
+        coreRealm.openGlobalSession();
 
         String classificationName01 = "classification1";
         Classification _Classification01 = coreRealm.getClassification(classificationName01);
@@ -518,10 +519,6 @@ public class ClassificationTest {
         Assert.assertEquals(attachedClassificationList.size(),1);
         Assert.assertEquals(attachedClassificationList.get(0).getClassificationName(),classificationName03);
 
-        Classification relatedClassification = attachedClassificationList.get(0);
-        relatedClassification.addAttribute("FireProtectionZoneDisplayColor","#CE0000");
-        Assert.assertEquals(relatedClassification.getAttribute("FireProtectionZoneDisplayColor").getAttributeValue(),"#CE0000");
-
         Classification rootClassification =coreRealm.getClassification("classification1");
         List<ConceptionKind> relatedConceptionKindList = rootClassification.getRelatedConceptionKind("relationTypeForClassificationTest02",RelationDirection.TO,true,3);
         Assert.assertNotNull(relatedConceptionKindList);
@@ -663,5 +660,11 @@ public class ClassificationTest {
         relatedEntitiesList = rootClassification.getRelatedConceptionEntity(null,RelationDirection.FROM,null,true,2);
         Assert.assertNotNull(relatedEntitiesList);
         Assert.assertEquals(relatedEntitiesList.size(),20);
+
+        Classification relatedClassification = attachedClassificationList.get(0);
+        relatedClassification.addAttribute("FireProtectionZoneDisplayColor","#CE0000");
+        Assert.assertEquals(relatedClassification.getAttribute("FireProtectionZoneDisplayColor").getAttributeValue(),"#CE0000");
+
+        coreRealm.closeGlobalSession();
     }
 }
