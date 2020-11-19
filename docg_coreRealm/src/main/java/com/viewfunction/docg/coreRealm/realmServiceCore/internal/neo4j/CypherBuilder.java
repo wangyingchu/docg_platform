@@ -36,6 +36,10 @@ public class CypherBuilder {
         BOTH,RELATION,NODE,COUNT_NODE,COUNT_RELATION
     }
 
+    public enum LabelOperationType{
+        ADD,REMOVE
+    }
+
     private static final ZoneId systemDefaultZoneId = ZoneId.systemDefault();
 
     public static String matchLabelWithSinglePropertyValue(String labelName, String propertyName, Object propertyValue, int matchValue) {
@@ -448,6 +452,39 @@ public class CypherBuilder {
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
     }
+
+
+
+
+
+
+    public static String modifyNodeLabelsWithSingleValueEqual(CypherFunctionType propertyFunctionType, Object propertyValue, LabelOperationType labelOperationType,String[] labelsArray) {
+        Node m = Cypher.anyNode().named(operationResultName);
+        StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(m);
+        StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
+        switch (propertyFunctionType) {
+            case ID:
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(m).isEqualTo(Cypher.literalOf(propertyValue)));
+                break;
+            default:
+        }
+        Statement statement = null;
+        switch(labelOperationType){
+            case ADD:
+                statement = ongoingReadingWithWhere.with(operationResultName).set(m,labelsArray).returning(operationResultName).build();
+                break;
+            case REMOVE:
+                statement = ongoingReadingWithWhere.with(operationResultName).remove(m,labelsArray).returning(operationResultName).build();
+                break;
+        }
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        return rel;
+    }
+
+
+
+
 
     public static String setRelationPropertiesWithSingleValueEqual(CypherFunctionType propertyFunctionType, Object propertyValue, Map<String, Object> originalTargetPropertiesMap) {
         Node sourceNode = Cypher.anyNode().named(sourceNodeName);
