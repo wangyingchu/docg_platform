@@ -5,6 +5,6 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 public interface MultiKindsSupportable {
 
     public boolean joinKinds(String[] newKindNames) throws CoreRealmServiceRuntimeException;
-    public boolean retreatFromKind(String kindName);
+    public boolean retreatFromKind(String kindName) throws CoreRealmServiceRuntimeException;
 
 }

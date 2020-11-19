@@ -72,24 +72,11 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
 
 代码示例
 
-创建属性类型定义
+创建概念类型
 
 ```java
-CIMModelCore targetCIMModelCore = ModelAPIComponentFactory.getCIMModelCore("SPACEName","TenantName");
 
-PropertyTypeDefs propertyTypeDefs = targetCIMModelCore.getPropertyTypeDefs();
 
-PropertyTypeVO propertyTypeVO1=new PropertyTypeVO();
-propertyTypeVO1.setPropertyTypeName("Property1");
-propertyTypeVO1.setPropertyTypeDesc("PropertyDesc1");
-propertyTypeVO1.setPropertyFieldDataClassify("STRING");
-
-Map<String,Object> addConfigItem=new HashMap<>();
-Date additionalItemDateValue=new Date();
-propertyTypeVO1.setAdditionalConfigItems(addConfigItem);
-addConfigItem.put("config1",10000);
-addConfigItem.put("config2",additionalItemDateValue);
-
-PropertyTypeDef propertyTypeDef1 = propertyTypeDefs.addPropertyTypeDef(propertyTypeVO1);    
+   
 ```
 
