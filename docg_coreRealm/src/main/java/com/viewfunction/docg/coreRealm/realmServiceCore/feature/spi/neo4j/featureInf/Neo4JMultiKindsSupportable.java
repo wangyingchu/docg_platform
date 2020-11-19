@@ -61,10 +61,39 @@ public interface Neo4JMultiKindsSupportable extends MultiKindsSupportable,Neo4JK
         return false;
     }
 
-
     default boolean retreatFromKind(String kindName) throws CoreRealmServiceRuntimeException{
         if(this.getEntityUID() != null){
-
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                String[] kindNamesArray = new String[]{kindName};
+                String updateKindsCql = CypherBuilder.modifyNodeLabelsWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,
+                        Long.parseLong(this.getEntityUID()), CypherBuilder.LabelOperationType.REMOVE,kindNamesArray);
+                DataTransformer<Boolean> updateKindDataTransformer = new DataTransformer(){
+                    @Override
+                    public Object transformResult(Result result) {
+                        if(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            if(nodeRecord != null){
+                                Node resultNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
+                                List<String> allConceptionKindNames = Lists.newArrayList(resultNode.labels());
+                                if(allConceptionKindNames.contains(kindName)){
+                                    return false;
+                                }else{
+                                    return true;
+                                }
+                            }
+                        }
+                        return false;
+                    }
+                };
+                Object operationResult = workingGraphOperationExecutor.executeWrite(updateKindDataTransformer,updateKindsCql);
+                if(operationResult != null){
+                    Boolean res = (Boolean)operationResult;
+                    return res;
+                }
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
         }
         return false;
     }

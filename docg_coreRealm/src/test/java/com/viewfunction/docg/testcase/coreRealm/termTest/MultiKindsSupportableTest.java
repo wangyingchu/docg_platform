@@ -59,5 +59,13 @@ public class MultiKindsSupportableTest {
         Assert.assertTrue(_ConceptionEntity1.getAllConceptionKindNames().contains("newKind001"));
         Assert.assertTrue(_ConceptionEntity1.getAllConceptionKindNames().contains("newKind002"));
         Assert.assertTrue(_ConceptionEntity1.getAllConceptionKindNames().contains(testConceptionKindName));
+
+        boolean retreatResult = _ConceptionEntity1.retreatFromKind("newKind001");
+        Assert.assertTrue(retreatResult);
+        _ConceptionEntity1 = _ConceptionKind01.getEntityByUID(_ConceptionEntity1.getConceptionEntityUID());
+        Assert.assertEquals(_ConceptionEntity1.getAllConceptionKindNames().size(),2);
+        Assert.assertFalse(_ConceptionEntity1.getAllConceptionKindNames().contains("newKind001"));
+        Assert.assertTrue(_ConceptionEntity1.getAllConceptionKindNames().contains("newKind002"));
+        Assert.assertTrue(_ConceptionEntity1.getAllConceptionKindNames().contains(testConceptionKindName));
     }
 }
