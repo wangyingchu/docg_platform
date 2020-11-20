@@ -148,7 +148,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try {
-                String createCql = CypherBuilder.createMultiLabeledNodesWithProperties(this.conceptionKindName, attributesValueMap);
+                String createCql = CypherBuilder.createMultiLabeledNodesWithProperties(new String[]{this.conceptionKindName}, attributesValueMap);
                 GetMapFormatAggregatedReturnValueTransformer getMapFormatAggregatedReturnValueTransformer =
                         new GetMapFormatAggregatedReturnValueTransformer();
                 Object newEntityRes = workingGraphOperationExecutor.executeWrite(getMapFormatAggregatedReturnValueTransformer, createCql);

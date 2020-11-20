@@ -120,18 +120,29 @@ public class CypherBuilder {
         return propertiesArray;
     }
 
-    public static String createMultiLabeledNodesWithProperties(String labelName, List<Map<String, Object>> propertiesList) {
+    public static String createMultiLabeledNodesWithProperties(String[] labelNames, List<Map<String, Object>> propertiesList) {
+        String primaryLabel = labelNames[0];
+        List<String> additionalLabels = null;
+        if(labelNames.length>1){
+            additionalLabels = new ArrayList<>();
+            for(int i= 1;i<labelNames.length;i++){
+                additionalLabels.add(labelNames[i]);
+            }
+        }
+
         if (propertiesList != null && propertiesList.size() > 0) {
             Node[] targetNodeArray = new Node[propertiesList.size()];
             Map<String, Object> currentPropertyMap = propertiesList.get(0);
             MapExpression targetMapExpression = Cypher.mapOf(CommonOperationUtil.generatePropertiesValueArray(currentPropertyMap));
-            Node m = Cypher.node(labelName).named(operationResultName + 0).withProperties(targetMapExpression);
+            Node m = additionalLabels != null ? Cypher.node(primaryLabel,additionalLabels).named(operationResultName + 0).withProperties(targetMapExpression):
+                    Cypher.node(primaryLabel).named(operationResultName + 0).withProperties(targetMapExpression);
             targetNodeArray[0] = m;
             StatementBuilder.OngoingUpdate currentOngoingUpdate = Cypher.create(targetNodeArray[0]);
             for (int i = 1; i < propertiesList.size(); i++) {
                 currentPropertyMap = propertiesList.get(i);
                 targetMapExpression = Cypher.mapOf(CommonOperationUtil.generatePropertiesValueArray(currentPropertyMap));
-                Node currentN = Cypher.node(labelName).named(operationResultName + i).withProperties(targetMapExpression);
+                Node currentN = additionalLabels != null ? Cypher.node(primaryLabel,additionalLabels).named(operationResultName + i).withProperties(targetMapExpression):
+                        Cypher.node(primaryLabel).named(operationResultName + i).withProperties(targetMapExpression);
                 targetNodeArray[i] = currentN;
                 currentOngoingUpdate = currentOngoingUpdate.create(targetNodeArray[i]);
             }

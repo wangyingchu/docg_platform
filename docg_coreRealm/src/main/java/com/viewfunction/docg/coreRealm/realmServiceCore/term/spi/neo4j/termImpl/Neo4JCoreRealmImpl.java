@@ -12,6 +12,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.Comm
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JCoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
@@ -24,10 +25,8 @@ import org.neo4j.driver.types.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
@@ -579,77 +578,88 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         return this.removeClassification(classificationName,true);
     }
 
-
-
-
-
-
-
-
-
-
-
-
     @Override
-    public ConceptionEntity newMultiConceptionEntity(String[] conceptionKindNames, ConceptionEntityValue conceptionEntityValue, boolean addPerDefinedRelation) {
-
-
-/*
-
+    public ConceptionEntity newMultiConceptionEntity(String[] conceptionKindNames, ConceptionEntityValue conceptionEntityValue, boolean addPerDefinedRelation) throws CoreRealmServiceRuntimeException {
+        if(conceptionKindNames == null || conceptionKindNames.length == 0){
+            logger.error("At least one Conception Kind Name is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("At least one Conception Kind Name is required.");
+            throw exception;
+        }
         if (conceptionEntityValue != null) {
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try {
                 Map<String, Object> propertiesMap = conceptionEntityValue.getEntityAttributesValue() != null ?
                         conceptionEntityValue.getEntityAttributesValue() : new HashMap<>();
                 CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
-                String createCql = CypherBuilder.createLabeledNodeWithProperties(this.conceptionKindName, propertiesMap);
+                String createCql = CypherBuilder.createLabeledNodeWithProperties(conceptionKindNames, propertiesMap);
                 GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
-                        new GetSingleConceptionEntityTransformer(this.conceptionKindName, this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                        new GetSingleConceptionEntityTransformer(conceptionKindNames[0], this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer, createCql);
                 return newEntityRes != null ? (ConceptionEntity) newEntityRes : null;
             }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
         }
-  */
-
-
-
-        return null;
-
-
-
-
-
-
-
-    }
-
-    @Override
-    public ConceptionEntity newMultiConceptionEntity(String[] conceptionKindNames, ConceptionEntityValue conceptionEntityValue, List<RelationAttachKind> relationAttachKindList) {
         return null;
     }
 
     @Override
-    public EntitiesOperationResult newMultiConceptionEntities(String[] conceptionKindNames, List<ConceptionEntityValue> conceptionEntityValues, boolean addPerDefinedRelation) {
+    public ConceptionEntity newMultiConceptionEntity(String[] conceptionKindNames, ConceptionEntityValue conceptionEntityValue, List<RelationAttachKind> relationAttachKindList) throws CoreRealmServiceRuntimeException {
+        return newMultiConceptionEntity(conceptionKindNames,conceptionEntityValue,false);
+    }
+
+    @Override
+    public EntitiesOperationResult newMultiConceptionEntities(String[] conceptionKindNames, List<ConceptionEntityValue> conceptionEntityValues, boolean addPerDefinedRelation) throws CoreRealmServiceRuntimeException {
+        if(conceptionKindNames == null || conceptionKindNames.length == 0){
+            logger.error("At least one Conception Kind Name is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("At least one Conception Kind Name is required.");
+            throw exception;
+        }
+
+        if(conceptionEntityValues !=null && conceptionEntityValues.size()>0){
+            CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
+
+            ZonedDateTime currentDateTime = ZonedDateTime.now();
+            List<Map<String,Object>> attributesValueMap = new ArrayList<>();
+            for(ConceptionEntityValue currentConceptionEntityValue:conceptionEntityValues){
+                Map<String,Object> currentDateAttributesMap = currentConceptionEntityValue.getEntityAttributesValue();
+                CommonOperationUtil.generateEntityMetaAttributes(currentDateAttributesMap,currentDateTime);
+                attributesValueMap.add(currentDateAttributesMap);
+            }
+
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try {
+                String createCql = CypherBuilder.createMultiLabeledNodesWithProperties(conceptionKindNames, attributesValueMap);
+                GetMapFormatAggregatedReturnValueTransformer getMapFormatAggregatedReturnValueTransformer =
+                        new GetMapFormatAggregatedReturnValueTransformer();
+                Object newEntityRes = workingGraphOperationExecutor.executeWrite(getMapFormatAggregatedReturnValueTransformer, createCql);
+                if(newEntityRes!=null){
+                    Map<String, Node> resultNodesMap = (Map<String, Node>)newEntityRes;
+                    Iterator<Map.Entry<String,Node>> iter = resultNodesMap.entrySet().iterator();
+                    while(iter.hasNext()){
+                        Map.Entry<String,Node> entry = iter.next();
+                        Node value = entry.getValue();
+                        commonEntitiesOperationResultImpl.getSuccessEntityUIDs().add(""+value.id());
+                    }
+                    commonEntitiesOperationResultImpl.getOperationStatistics().setSuccessItemsCount(resultNodesMap.size());
+                    commonEntitiesOperationResultImpl.getOperationStatistics().
+                            setOperationSummary("newEntities operation for multi conceptionKind success.");
+                }
+                commonEntitiesOperationResultImpl.finishEntitiesOperation();
+                return commonEntitiesOperationResultImpl;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
 
     @Override
-    public EntitiesOperationResult newMultiConceptionEntities(String[] conceptionKindNames, List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList) {
-        return null;
+    public EntitiesOperationResult newMultiConceptionEntities(String[] conceptionKindNames, List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList) throws CoreRealmServiceRuntimeException {
+        return newMultiConceptionEntities(conceptionKindNames,conceptionEntityValues,false);
     }
-
-
-
-
-
-
-
-
-
-
-
 
     @Override
     public void openGlobalSession() {

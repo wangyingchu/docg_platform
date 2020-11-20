@@ -2,6 +2,7 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
@@ -10,7 +11,9 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MultiConceptionKindsSupportableTest {
@@ -114,5 +117,38 @@ public class MultiConceptionKindsSupportableTest {
             exceptionShouldBeCaught = true;
         }
         Assert.assertTrue(exceptionShouldBeCaught);
+
+        _ConceptionKind01.purgeAllEntities();
+        _ConceptionKind02.purgeAllEntities();
+        Assert.assertEquals(_ConceptionKind02.countConceptionEntities(),new Long("0"));
+        Assert.assertEquals(_ConceptionKind01.countConceptionEntities(),new Long("0"));
+
+        String[] newMultiConceptionTypeNamesArray = new String[]{_ConceptionKind01.getConceptionKindName(),_ConceptionKind02.getConceptionKindName()};
+
+        ConceptionEntity _ConceptionEntity3 = coreRealm.newMultiConceptionEntity(newMultiConceptionTypeNamesArray,conceptionEntityValue1,false);
+        Assert.assertNotNull(_ConceptionEntity3);
+        Assert.assertEquals(_ConceptionEntity3.getConceptionKindName(),_ConceptionKind01.getConceptionKindName());
+        Assert.assertEquals(_ConceptionEntity3.getAllConceptionKindNames().size(),2);
+        Assert.assertTrue(_ConceptionEntity3.getAllConceptionKindNames().contains(_ConceptionKind01.getConceptionKindName()));
+        Assert.assertTrue(_ConceptionEntity3.getAllConceptionKindNames().contains(_ConceptionKind02.getConceptionKindName()));
+
+        Assert.assertEquals(_ConceptionKind02.countConceptionEntities(),new Long("1"));
+        Assert.assertEquals(_ConceptionKind01.countConceptionEntities(),new Long("1"));
+
+        _ConceptionKind01.purgeAllEntities();
+        _ConceptionKind02.purgeAllEntities();
+        Assert.assertEquals(_ConceptionKind02.countConceptionEntities(),new Long("0"));
+        Assert.assertEquals(_ConceptionKind01.countConceptionEntities(),new Long("0"));
+
+        List<ConceptionEntityValue> valueList = new ArrayList<>();
+        valueList.add(conceptionEntityValue1);
+        valueList.add(conceptionEntityValue2);
+
+        EntitiesOperationResult entitiesOperationResult = coreRealm.newMultiConceptionEntities(newMultiConceptionTypeNamesArray,valueList,false);
+        Assert.assertEquals(entitiesOperationResult.getSuccessEntityUIDs().size(),2);
+        Assert.assertEquals(entitiesOperationResult.getOperationStatistics().getSuccessItemsCount(),2l);
+
+        Assert.assertEquals(_ConceptionKind02.countConceptionEntities(),new Long("2"));
+        Assert.assertEquals(_ConceptionKind01.countConceptionEntities(),new Long("2"));
     }
 }
