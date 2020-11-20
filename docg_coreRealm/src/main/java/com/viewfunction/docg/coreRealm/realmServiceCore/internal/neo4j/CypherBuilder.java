@@ -453,11 +453,6 @@ public class CypherBuilder {
         return rel;
     }
 
-
-
-
-
-
     public static String modifyNodeLabelsWithSingleValueEqual(CypherFunctionType propertyFunctionType, Object propertyValue, LabelOperationType labelOperationType,String[] labelsArray) {
         Node m = Cypher.anyNode().named(operationResultName);
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(m);
@@ -481,10 +476,6 @@ public class CypherBuilder {
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
     }
-
-
-
-
 
     public static String setRelationPropertiesWithSingleValueEqual(CypherFunctionType propertyFunctionType, Object propertyValue, Map<String, Object> originalTargetPropertiesMap) {
         Node sourceNode = Cypher.anyNode().named(sourceNodeName);

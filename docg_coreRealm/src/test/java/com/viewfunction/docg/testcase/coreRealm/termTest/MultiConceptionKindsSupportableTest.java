@@ -13,7 +13,7 @@ import org.testng.annotations.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MultiKindsSupportableTest {
+public class MultiConceptionKindsSupportableTest {
 
     private static String testRealmName = "UNIT_TEST_Realm";
     private static String testConceptionKindName = "TestConceptionKindMultiKindsSupportableTest";
@@ -51,7 +51,7 @@ public class MultiKindsSupportableTest {
         Assert.assertEquals(_ConceptionEntity1.getAllConceptionKindNames().size(),1);
 
         String[] newKindNamesArray = new String[]{"newKind001","newKind002"};
-        boolean joinResult = _ConceptionEntity1.joinKinds(newKindNamesArray);
+        boolean joinResult = _ConceptionEntity1.joinConceptionKinds(newKindNamesArray);
         Assert.assertTrue(joinResult);
 
         _ConceptionEntity1 = _ConceptionKind01.getEntityByUID(_ConceptionEntity1.getConceptionEntityUID());
@@ -60,12 +60,44 @@ public class MultiKindsSupportableTest {
         Assert.assertTrue(_ConceptionEntity1.getAllConceptionKindNames().contains("newKind002"));
         Assert.assertTrue(_ConceptionEntity1.getAllConceptionKindNames().contains(testConceptionKindName));
 
-        boolean retreatResult = _ConceptionEntity1.retreatFromKind("newKind001");
+        boolean retreatResult = _ConceptionEntity1.retreatFromConceptionKind("newKind001");
         Assert.assertTrue(retreatResult);
         _ConceptionEntity1 = _ConceptionKind01.getEntityByUID(_ConceptionEntity1.getConceptionEntityUID());
         Assert.assertEquals(_ConceptionEntity1.getAllConceptionKindNames().size(),2);
         Assert.assertFalse(_ConceptionEntity1.getAllConceptionKindNames().contains("newKind001"));
         Assert.assertTrue(_ConceptionEntity1.getAllConceptionKindNames().contains("newKind002"));
         Assert.assertTrue(_ConceptionEntity1.getAllConceptionKindNames().contains(testConceptionKindName));
+
+        boolean exceptionShouldBeCaught = false;
+        try{
+            _ConceptionEntity2.retreatFromConceptionKind("newKind001");
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
+
+        exceptionShouldBeCaught = false;
+        try{
+            _ConceptionEntity1.retreatFromConceptionKind(null);
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
+
+        exceptionShouldBeCaught = false;
+        try{
+            _ConceptionEntity1.joinConceptionKinds(null);
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
+
+        exceptionShouldBeCaught = false;
+        try{
+            _ConceptionEntity1.joinConceptionKinds(new String[]{});
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
     }
 }
