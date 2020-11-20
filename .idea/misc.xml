@@ -5,6 +5,7 @@
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/docg_coreRealm/pom.xml" />
+        <option value="$PROJECT_DIR$/docg_relationManage/pom.xml" />
       </list>
     </option>
   </component>
