@@ -47,12 +47,25 @@ public class MultiConceptionKindsSupportableTest {
         newEntityValue2.put("prop1","toEntity");
         ConceptionEntityValue conceptionEntityValue2 = new ConceptionEntityValue(newEntityValue2);
         ConceptionEntity _ConceptionEntity2 = _ConceptionKind01.newEntity(conceptionEntityValue2,false);
-
         Assert.assertEquals(_ConceptionEntity1.getAllConceptionKindNames().size(),1);
+
+        ConceptionKind _ConceptionKind02 = coreRealm.getConceptionKind("newKind001");
+        if(_ConceptionKind02 != null){
+            coreRealm.removeConceptionKind("newKind001",true);
+        }
+        _ConceptionKind02 = coreRealm.getConceptionKind("newKind001");
+        if(_ConceptionKind02 == null){
+            _ConceptionKind02 = coreRealm.createConceptionKind("newKind001","TestConceptionKindADesc+中文描述");
+        }
+
+        Assert.assertEquals(_ConceptionKind02.countConceptionEntities(),new Long("0"));
+        Assert.assertEquals(_ConceptionKind01.countConceptionEntities(),new Long("2"));
 
         String[] newKindNamesArray = new String[]{"newKind001","newKind002"};
         boolean joinResult = _ConceptionEntity1.joinConceptionKinds(newKindNamesArray);
         Assert.assertTrue(joinResult);
+        Assert.assertEquals(_ConceptionKind02.countConceptionEntities(),new Long("1"));
+        Assert.assertEquals(_ConceptionKind01.countConceptionEntities(),new Long("2"));
 
         _ConceptionEntity1 = _ConceptionKind01.getEntityByUID(_ConceptionEntity1.getConceptionEntityUID());
         Assert.assertEquals(_ConceptionEntity1.getAllConceptionKindNames().size(),3);
@@ -67,6 +80,8 @@ public class MultiConceptionKindsSupportableTest {
         Assert.assertFalse(_ConceptionEntity1.getAllConceptionKindNames().contains("newKind001"));
         Assert.assertTrue(_ConceptionEntity1.getAllConceptionKindNames().contains("newKind002"));
         Assert.assertTrue(_ConceptionEntity1.getAllConceptionKindNames().contains(testConceptionKindName));
+        Assert.assertEquals(_ConceptionKind02.countConceptionEntities(),new Long("0"));
+        Assert.assertEquals(_ConceptionKind01.countConceptionEntities(),new Long("2"));
 
         boolean exceptionShouldBeCaught = false;
         try{

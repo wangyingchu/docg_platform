@@ -2,6 +2,8 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.orientdb.termI
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 
@@ -121,6 +123,26 @@ public class OrientDBCoreRealmImpl implements CoreRealm {
     @Override
     public boolean removeClassificationWithOffspring(String classificationName) throws CoreRealmServiceRuntimeException {
         return false;
+    }
+
+    @Override
+    public ConceptionEntity newMultiConceptionEntity(String[] conceptionKindNames, ConceptionEntityValue conceptionEntityValue, boolean addPerDefinedRelation) {
+        return null;
+    }
+
+    @Override
+    public ConceptionEntity newMultiConceptionEntity(String[] conceptionKindNames, ConceptionEntityValue conceptionEntityValue, List<RelationAttachKind> relationAttachKindList) {
+        return null;
+    }
+
+    @Override
+    public EntitiesOperationResult newMultiConceptionEntities(String[] conceptionKindNames, List<ConceptionEntityValue> conceptionEntityValues, boolean addPerDefinedRelation) {
+        return null;
+    }
+
+    @Override
+    public EntitiesOperationResult newMultiConceptionEntities(String[] conceptionKindNames, List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList) {
+        return null;
     }
 
     @Override

@@ -10,6 +10,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JCoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
@@ -81,7 +83,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 propertiesMap.put(RealmConstant._DescProperty, conceptionKindDesc);
             }
             CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
-            String createCql = CypherBuilder.createLabeledNodeWithProperties(RealmConstant.ConceptionKindClass,propertiesMap);
+            String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.ConceptionKindClass},propertiesMap);
             GetSingleConceptionKindTransformer getSingleConceptionKindTransformer =
                     new GetSingleConceptionKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object createConceptionKindRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionKindTransformer,createCql);
@@ -172,7 +174,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 propertiesMap.put(RealmConstant._viewKindDataForm, AttributesViewKind.AttributesViewKindDataForm.SINGLE_VALUE.toString());
             }
             CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
-            String createCql = CypherBuilder.createLabeledNodeWithProperties(RealmConstant.AttributesViewKindClass,propertiesMap);
+            String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.AttributesViewKindClass},propertiesMap);
 
             GetSingleAttributesViewKindTransformer getSingleAttributesViewKindTransformer =
                     new GetSingleAttributesViewKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
@@ -288,7 +290,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             }
             propertiesMap.put(RealmConstant._attributeDataType, attributeDataType.toString());
             CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
-            String createCql = CypherBuilder.createLabeledNodeWithProperties(RealmConstant.AttributeKindClass,propertiesMap);
+            String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.AttributeKindClass},propertiesMap);
 
             GetSingleAttributeKindTransformer getSingleAttributeKindTransformer =
                     new GetSingleAttributeKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
@@ -407,7 +409,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 propertiesMap.put(RealmConstant._DescProperty, relationKindDesc);
             }
             CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
-            String createCql = CypherBuilder.createLabeledNodeWithProperties(RealmConstant.RelationKindClass,propertiesMap);
+            String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.RelationKindClass},propertiesMap);
             GetSingleRelationKindTransformer getSingleRelationKindTransformer =
                     new GetSingleRelationKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object createRelationKindRes = workingGraphOperationExecutor.executeWrite(getSingleRelationKindTransformer,createCql);
@@ -498,7 +500,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 propertiesMap.put(RealmConstant._DescProperty, classificationDesc);
             }
             CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
-            String createCql = CypherBuilder.createLabeledNodeWithProperties(RealmConstant.ClassificationClass,propertiesMap);
+            String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.ClassificationClass},propertiesMap);
             GetSingleClassificationTransformer getSingleClassificationTransformer =
                     new GetSingleClassificationTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object createClassificationRes = workingGraphOperationExecutor.executeWrite(getSingleClassificationTransformer,createCql);
@@ -539,7 +541,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 propertiesMap.put(RealmConstant._DescProperty, classificationDesc);
             }
             CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
-            String createCql = CypherBuilder.createLabeledNodeWithProperties(RealmConstant.ClassificationClass,propertiesMap);
+            String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.ClassificationClass},propertiesMap);
             Object createClassificationRes = workingGraphOperationExecutor.executeWrite(getSingleClassificationTransformer,createCql);
             Classification targetClassification = createClassificationRes != null ? (Classification)createClassificationRes : null;
             if(targetClassification != null){
@@ -576,6 +578,78 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     public boolean removeClassificationWithOffspring(String classificationName) throws CoreRealmServiceRuntimeException {
         return this.removeClassification(classificationName,true);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+    @Override
+    public ConceptionEntity newMultiConceptionEntity(String[] conceptionKindNames, ConceptionEntityValue conceptionEntityValue, boolean addPerDefinedRelation) {
+
+
+/*
+
+        if (conceptionEntityValue != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try {
+                Map<String, Object> propertiesMap = conceptionEntityValue.getEntityAttributesValue() != null ?
+                        conceptionEntityValue.getEntityAttributesValue() : new HashMap<>();
+                CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
+                String createCql = CypherBuilder.createLabeledNodeWithProperties(this.conceptionKindName, propertiesMap);
+                GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                        new GetSingleConceptionEntityTransformer(this.conceptionKindName, this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer, createCql);
+                return newEntityRes != null ? (ConceptionEntity) newEntityRes : null;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
+  */
+
+
+
+        return null;
+
+
+
+
+
+
+
+    }
+
+    @Override
+    public ConceptionEntity newMultiConceptionEntity(String[] conceptionKindNames, ConceptionEntityValue conceptionEntityValue, List<RelationAttachKind> relationAttachKindList) {
+        return null;
+    }
+
+    @Override
+    public EntitiesOperationResult newMultiConceptionEntities(String[] conceptionKindNames, List<ConceptionEntityValue> conceptionEntityValues, boolean addPerDefinedRelation) {
+        return null;
+    }
+
+    @Override
+    public EntitiesOperationResult newMultiConceptionEntities(String[] conceptionKindNames, List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList) {
+        return null;
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public void openGlobalSession() {

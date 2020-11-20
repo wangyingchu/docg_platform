@@ -288,7 +288,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
                         propertiesMap.put(RealmConstant._DescProperty, classificationDesc);
                     }
                     CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
-                    String createCql = CypherBuilder.createLabeledNodeWithProperties(RealmConstant.ClassificationClass,propertiesMap);
+                    String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.ClassificationClass},propertiesMap);
                     Object createClassificationRes = workingGraphOperationExecutor.executeWrite(getSingleClassificationTransformer,createCql);
                     Classification targetClassification = createClassificationRes != null ? (Classification)createClassificationRes : null;
                     if(targetClassification != null){

@@ -53,14 +53,24 @@ public class CypherBuilder {
         return rel;
     }
 
-    public static String createLabeledNodeWithProperties(String labelName, Map<String, Object> properties) {
-        Node m = Cypher.node(labelName).named(operationResultName);
+    public static String createLabeledNodeWithProperties(String[] labelNames, Map<String, Object> properties) {
+        String primaryLabel = labelNames[0];
+        List<String> additionalLabels = null;
+        if(labelNames.length>1){
+            additionalLabels = new ArrayList<>();
+            for(int i= 1;i<labelNames.length;i++){
+                additionalLabels.add(labelNames[i]);
+            }
+        }
+        Node m = additionalLabels != null ? Cypher.node(primaryLabel,additionalLabels).named(operationResultName):
+                Cypher.node(primaryLabel).named(operationResultName);
         Statement statement;
         if (properties != null && properties.size() > 0) {
             Operation[] propertiesArray = getPropertiesSettingArray(m, properties);
             statement = Cypher.create(m).set(propertiesArray).returning(m).build();
         } else {
-            m = Cypher.node(labelName).named(operationResultName);
+            m = additionalLabels != null ? Cypher.node(primaryLabel,additionalLabels).named(operationResultName):
+                    Cypher.node(primaryLabel).named(operationResultName);
             statement = Cypher.create(m).returning(m).build();
         }
         String rel = cypherRenderer.render(statement);

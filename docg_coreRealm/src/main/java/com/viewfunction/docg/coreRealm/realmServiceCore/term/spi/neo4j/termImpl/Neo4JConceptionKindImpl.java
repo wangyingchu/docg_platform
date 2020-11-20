@@ -116,7 +116,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
                 Map<String, Object> propertiesMap = conceptionEntityValue.getEntityAttributesValue() != null ?
                         conceptionEntityValue.getEntityAttributesValue() : new HashMap<>();
                 CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
-                String createCql = CypherBuilder.createLabeledNodeWithProperties(this.conceptionKindName, propertiesMap);
+                String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{this.conceptionKindName}, propertiesMap);
                 GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
                         new GetSingleConceptionEntityTransformer(this.conceptionKindName, this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer, createCql);
