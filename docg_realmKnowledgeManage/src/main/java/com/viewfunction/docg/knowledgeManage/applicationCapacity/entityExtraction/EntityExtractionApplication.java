@@ -1,8 +1,8 @@
-package com.viewfunction.docg.relationManage.applicationCapacity.relationManager;
+package com.viewfunction.docg.knowledgeManage.applicationCapacity.entityExtraction;
 
-import com.viewfunction.docg.relationManage.consoleApplication.feature.BaseApplication;
+import com.viewfunction.docg.knowledgeManage.consoleApplication.feature.BaseApplication;
 
-public class RelationManagerApplication implements BaseApplication {
+public class EntityExtractionApplication implements BaseApplication {
     @Override
     public boolean initApplication() {
         return true;

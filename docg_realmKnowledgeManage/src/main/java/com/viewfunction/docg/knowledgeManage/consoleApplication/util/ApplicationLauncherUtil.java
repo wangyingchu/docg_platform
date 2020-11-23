@@ -1,4 +1,4 @@
-package com.viewfunction.docg.relationManage.consoleApplication.util;
+package com.viewfunction.docg.knowledgeManage.consoleApplication.util;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

@@ -1,9 +1,9 @@
-package com.viewfunction.docg.relationManage.consoleApplication;
+package com.viewfunction.docg.knowledgeManage.consoleApplication;
 
-import com.viewfunction.docg.relationManage.consoleApplication.exception.ApplicationInitException;
-import com.viewfunction.docg.relationManage.consoleApplication.feature.BaseApplication;
+import com.viewfunction.docg.knowledgeManage.consoleApplication.exception.ApplicationInitException;
+import com.viewfunction.docg.knowledgeManage.consoleApplication.feature.BaseApplication;
 
-import com.viewfunction.docg.relationManage.consoleApplication.util.ApplicationLauncherUtil;
+import com.viewfunction.docg.knowledgeManage.consoleApplication.util.ApplicationLauncherUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,11 +12,8 @@ import java.util.Scanner;
 public class ApplicationLauncher {
 
     private static BaseApplication consoleApplication;
-
     private static boolean applicationRunningFlag = true;
-
     private static boolean applicationAbnormalCloseFlag = true;
-
     private static Logger logger = LoggerFactory.getLogger(ApplicationLauncher.class);
 
     private static void stopApplication() {

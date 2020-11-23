@@ -1,4 +1,4 @@
-package com.viewfunction.docg.relationManage.consoleApplication.feature;
+package com.viewfunction.docg.knowledgeManage.consoleApplication.feature;
 
 public interface BaseApplication {
 
