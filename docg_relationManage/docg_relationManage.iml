@@ -35,5 +35,14 @@
     <orderEntry type="library" name="Maven: com.sun.xml.fastinfoset:FastInfoset:1.2.15" level="project" />
     <orderEntry type="library" name="Maven: javax.activation:javax.activation-api:1.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.ehcache:ehcache-clustered:3.8.1" level="project" />
+    <orderEntry type="library" name="Maven: com.beust:jcommander:1.78" level="project" />
+    <orderEntry type="library" name="Maven: org.drools:drools-core:7.46.0.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.kie:kie-api:7.46.0.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.kie.soup:kie-soup-maven-support:7.46.0.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.kie:kie-internal:7.46.0.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.kie.soup:kie-soup-xstream:7.46.0.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.drools:drools-core-reflective:7.46.0.Final" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.drools:drools-core-dynamic:7.46.0.Final" level="project" />
+    <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.11" level="project" />
   </component>
 </module>
