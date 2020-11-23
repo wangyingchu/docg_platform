@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.viewfunction</groupId>
-    <artifactId>docg_relationManage</artifactId>
+    <artifactId>docg_realmKnowledgeManage</artifactId>
     <version>0.5</version>
 
     <dependencies>
@@ -25,7 +25,7 @@
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-core</artifactId>
-            <version>7.46.0.Final</version>
+            <version>7.45.0.Final</version>
         </dependency>
 
     </dependencies>
