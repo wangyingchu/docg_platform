@@ -1,4 +1,4 @@
-package com.viewfunction.docg.relationManage.applicationFeature.relationManager;
+package com.viewfunction.docg.relationManage.applicationCapacity.relationManager;
 
 import com.viewfunction.docg.relationManage.consoleApplication.feature.BaseApplication;
 

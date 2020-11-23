@@ -1,6 +1,6 @@
 package com.viewfunction.docg.relationManage.consoleApplication;
 
-import com.viewfunction.docg.relationManage.applicationFeature.relationManager.RelationManagerApplication;
+import com.viewfunction.docg.relationManage.applicationCapacity.relationManager.RelationManagerApplication;
 import com.viewfunction.docg.relationManage.consoleApplication.feature.BaseApplication;
 
 public class ApplicationCapacityRegistry {
