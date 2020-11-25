@@ -16,7 +16,7 @@ public class RelationExtractionCommandOptions {
     @Parameter(names = "-linker", description = "relation linker id")
     private String linkerId;
 
-    @Parameter(names = "-extraction", description = "relation extraction logic id")
+    @Parameter(names = "-extra", description = "relation extraction logic id")
     private String extractionId;
 
     public boolean isMultimode() {

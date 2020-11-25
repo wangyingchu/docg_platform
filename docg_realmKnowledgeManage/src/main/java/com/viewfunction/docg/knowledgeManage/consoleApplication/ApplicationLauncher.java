@@ -18,8 +18,8 @@ public class ApplicationLauncher {
 
     private static void stopApplication() {
         applicationAbnormalCloseFlag = false;
-        boolean showdownApplicationResult = consoleApplication.shutdownApplication();
-        if (!showdownApplicationResult) {
+        boolean shutdownApplicationResult = consoleApplication.shutdownApplication();
+        if (!shutdownApplicationResult) {
             logger.error("Clean Application Resource Error");
         }
         applicationRunningFlag = false;
