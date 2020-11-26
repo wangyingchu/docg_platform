@@ -1,17 +1,18 @@
-package rules;
+package relationExtractionRules;
 import com.viewfunction.docg.knowledgeManage.applicationService.ruleEngine.RuleEngineService.Message
-rule "Hello World"
+
+rule "Hello World2"
   when
     m : Message( status == Message.HELLO, message : message )
   then
-    System.out.println( message );
+    System.out.println( message+"2222" );
     modify ( m ) { message = "Goodbye cruel world",
                    status = Message.GOODBYE };
 end
 
-rule "Good Bye"
+rule "Good Bye2"
   when
     Message( status == Message.GOODBYE, message : message )
   then
-    System.out.println( message );
+    System.out.println( message+"2222" );
 end

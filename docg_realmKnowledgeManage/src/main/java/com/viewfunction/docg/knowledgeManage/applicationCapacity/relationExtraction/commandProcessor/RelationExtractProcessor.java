@@ -3,12 +3,14 @@ package com.viewfunction.docg.knowledgeManage.applicationCapacity.relationExtrac
 import com.beust.jcommander.JCommander;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.knowledgeManage.applicationService.ruleEngine.RuleEngineService;
+import com.viewfunction.docg.knowledgeManage.applicationService.ruleEngine.RuleFactsGenerator;
 import com.viewfunction.docg.knowledgeManage.consoleApplication.feature.BaseCommandProcessor;
+import org.kie.api.runtime.KieSession;
 
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
-public class RelationExtractProcessor implements BaseCommandProcessor {
+public class RelationExtractProcessor implements BaseCommandProcessor, RuleFactsGenerator {
 
     private CoreRealm coreRealm;
     private ExecutorService executor;
@@ -47,6 +49,11 @@ public class RelationExtractProcessor implements BaseCommandProcessor {
     private void processRelationExtractionLogic(String extractionId,String linkerId,boolean useMultiMode){
         //execute relation extraction logic chain
         //chain step 1, execute rule engine logic
-        RuleEngineService.executeRuleLogic(this.coreRealm,this.commandContextDataMap,extractionId,linkerId);
+        RuleEngineService.executeRuleLogic(this.coreRealm,this.commandContextDataMap,extractionId,linkerId,this);
+    }
+
+    @Override
+    public void generateRuleFacts(KieSession kSession, CoreRealm coreRealm, Map<Object, Object> commandContextDataMap, String extractionId, String linkerId) {
+
     }
 }

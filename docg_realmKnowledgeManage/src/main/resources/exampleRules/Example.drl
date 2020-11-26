@@ -1,0 +1,9 @@
+package exampleRules;
+import com.viewfunction.docg.knowledgeManage.applicationService.common.BaseRealmEntity
+
+rule "Hello World"
+  when
+    bre:BaseRealmEntity("MATCHED" == bre.get("exampleProp1"), message:bre.get("exampleProp2"))
+  then
+    System.out.println( bre.get("exampleProp2") + bre.getEntityUID());
+end
