@@ -2,6 +2,7 @@ package com.viewfunction.docg.knowledgeManage.applicationCapacity.relationExtrac
 
 import com.beust.jcommander.JCommander;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.knowledgeManage.applicationService.common.BaseRealmEntity;
 import com.viewfunction.docg.knowledgeManage.applicationService.ruleEngine.RuleEngineService;
 import com.viewfunction.docg.knowledgeManage.applicationService.ruleEngine.RuleFactsGenerator;
 import com.viewfunction.docg.knowledgeManage.consoleApplication.feature.BaseCommandProcessor;
@@ -43,7 +44,8 @@ public class RelationExtractProcessor implements BaseCommandProcessor, RuleFacts
     }
 
     private boolean validateExtractionId(String extractionId){
-        return true;
+       //return true;
+        return RuleEngineService.validateKieBaseExistence(extractionId);
     }
 
     private void processRelationExtractionLogic(String extractionId,String linkerId,boolean useMultiMode){
@@ -54,6 +56,11 @@ public class RelationExtractProcessor implements BaseCommandProcessor, RuleFacts
 
     @Override
     public void generateRuleFacts(KieSession kSession, CoreRealm coreRealm, Map<Object, Object> commandContextDataMap, String extractionId, String linkerId) {
-
+        //if(extractionId.equals("sp")){
+            BaseRealmEntity _BaseRealmEntity = new BaseRealmEntity("uid001",coreRealm);
+            _BaseRealmEntity.set("exampleProp1","MATCHED");
+            _BaseRealmEntity.set("exampleProp2","NOTMATCHED");
+            kSession.insert(_BaseRealmEntity);
+        //}
     }
 }

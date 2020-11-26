@@ -3,7 +3,8 @@ import com.viewfunction.docg.knowledgeManage.applicationService.common.BaseRealm
 
 rule "Hello World"
   when
-    bre:BaseRealmEntity("MATCHED" == bre.get("exampleProp1"), message:bre.get("exampleProp2"))
+    bre:BaseRealmEntity("MATCHED" == bre.get("exampleProp1"))
   then
     System.out.println( bre.get("exampleProp2") + bre.getEntityUID());
+    bre.link(null,null,null);
 end

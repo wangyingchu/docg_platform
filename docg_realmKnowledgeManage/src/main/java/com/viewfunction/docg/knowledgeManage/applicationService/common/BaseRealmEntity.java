@@ -13,8 +13,8 @@ public class BaseRealmEntity {
 
     public BaseRealmEntity() {}
 
-    public BaseRealmEntity(String entityUIDID, CoreRealm coreRealm) {
-        this.setEntityUID(entityUIDID);
+    public BaseRealmEntity(String entityUID, CoreRealm coreRealm) {
+        this.setEntityUID(entityUID);
         this.setCoreRealm(coreRealm);
     }
 
@@ -49,6 +49,7 @@ public class BaseRealmEntity {
     }
 
     public void link(BaseRealmEntity destBaseRealmEntity, String relationTypeName,Map<String,Object> relationData) {
+        System.out.println("do link operation");
         /*
         try {
             this.getFact().addToRelation(dastfact.getFact(),relationTypeName,false);

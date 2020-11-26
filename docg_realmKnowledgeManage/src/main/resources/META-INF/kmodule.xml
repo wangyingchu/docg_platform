@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <kmodule xmlns="http://jboss.org/kie/6.0.0/kmodule">
-    <kbase name="docgRelationExtractionKB" packages="relationExtractionRules">
+    <kbase name="docgre" packages="relationExtractionRules">
         <ksession name="docgRelationExtractionKS"/>
     </kbase>
-    <kbase name="exampleRulesKB" packages="exampleRules">
+    <kbase name="example" packages="exampleRules">
         <ksession name="exampleRulesKS"/>
     </kbase>
 </kmodule>
