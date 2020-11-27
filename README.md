@@ -23,8 +23,6 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
 
 **分类**（*Classification*）：代表一类客观存在的，不依赖具体的业务和分析目标而变化的实体对象，例如时间，行政区划，建筑类型分类等。它普遍性的与特定领域模型中的各种概念类型的实体对象产生交互，是在领域模型中进行多维数据分析的一个重要目标。
 
-
-
 各个术语代表的对象间的基本交互关系说明如下：
 
 ![image](documentPic/modelStructure.png)
@@ -70,18 +68,49 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
 - RelationEntity：对指定关系类型中的关系实体数据执行CRUD操作
 - Classification：对领域模型中的各类分类数据执行CRUD与关联分析操作
 
+**对象方法概述**
 
+**CoreRealm**
 
-*对象方法概述*
-
-CoreRealm
 ---
 
+```java
+获取底层图数据库的实现技术，可能的类型有 NEO4J 或 ORIENTDB
+public CoreRealmStorageImplTech getStorageImplTech();
 
-代码示例
+根据名称获取概念类型对象
+public ConceptionKind getConceptionKind(String conceptionKindName);
 
-```
+public ConceptionKind createConceptionKind(String conceptionKindName,String conceptionKindDesc);
+public ConceptionKind createConceptionKind(String conceptionKindName,String conceptionKindDesc,String parentConceptionKindName)
+            throws CoreRealmFunctionNotSupportedException;
+public boolean removeConceptionKind(String conceptionKindName,boolean deleteExistEntities) throws CoreRealmServiceRuntimeException;
+public AttributesViewKind getAttributesViewKind(String attributesViewKindUID);
+public AttributesViewKind createAttributesViewKind(String attributesViewKindName,String attributesViewKindDesc, AttributesViewKind.AttributesViewKindDataForm attributesViewKindDataForm);
+public boolean removeAttributesViewKind(String attributesViewKindUID) throws CoreRealmServiceRuntimeException;
+public List<AttributesViewKind> getAttributesViewKinds(String attributesViewKindName, String attributesViewKindDesc, AttributesViewKind.AttributesViewKindDataForm attributesViewKindDataForm);
+public AttributeKind getAttributeKind(String attributeKindUID);
+public AttributeKind createAttributeKind(String attributeKindName,String attributeKindDesc, AttributeDataType attributeDataType);
+public boolean removeAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException;
+public List<AttributeKind> getAttributeKinds(String attributeKindName,String attributeKindDesc,AttributeDataType attributeDataType);
+public RelationKind getRelationKind(String relationKindName);
+public RelationKind createRelationKind(String relationKindName,String relationKindDesc);
+public RelationKind createRelationKind(String relationKindName,String relationKindDesc,String parentRelationKindName)
+            throws CoreRealmFunctionNotSupportedException;
+public boolean removeRelationKind(String relationKindName, boolean deleteExistEntities) throws CoreRealmServiceRuntimeException;
+public Classification getClassification(String classificationName);
+public Classification createClassification(String classificationName,String classificationDesc);
+public Classification createClassification(String classificationName,String classificationDesc,String parentClassificationName)
+            throws CoreRealmServiceRuntimeException;
+public boolean removeClassification(String classificationName) throws CoreRealmServiceRuntimeException;
+public boolean removeClassificationWithOffspring(String classificationName) throws CoreRealmServiceRuntimeException;
 
+public ConceptionEntity newMultiConceptionEntity(String[] conceptionKindNames,ConceptionEntityValue conceptionEntityValue, boolean addPerDefinedRelation) throws CoreRealmServiceRuntimeException;
+public ConceptionEntity newMultiConceptionEntity(String[] conceptionKindNames,ConceptionEntityValue conceptionEntityValue,List<RelationAttachKind> relationAttachKindList) throws CoreRealmServiceRuntimeException;
+public EntitiesOperationResult newMultiConceptionEntities(String[] conceptionKindNames,List<ConceptionEntityValue> conceptionEntityValues, boolean addPerDefinedRelation) throws CoreRealmServiceRuntimeException;
+public EntitiesOperationResult newMultiConceptionEntities(String[] conceptionKindNames,List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList) throws CoreRealmServiceRuntimeException;
+public void openGlobalSession();
+public void closeGlobalSession();
 ```
 
 ```java
