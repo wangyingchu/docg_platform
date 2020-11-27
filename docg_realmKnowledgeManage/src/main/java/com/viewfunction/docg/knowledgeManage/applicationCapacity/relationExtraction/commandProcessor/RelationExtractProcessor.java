@@ -44,7 +44,6 @@ public class RelationExtractProcessor implements BaseCommandProcessor, RuleFacts
     }
 
     private boolean validateExtractionId(String extractionId){
-       //return true;
         return RuleEngineService.validateKieBaseExistence(extractionId);
     }
 

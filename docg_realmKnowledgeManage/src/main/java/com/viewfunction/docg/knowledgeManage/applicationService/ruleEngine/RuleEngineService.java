@@ -35,16 +35,12 @@ public class RuleEngineService {
         return kc.getKieBaseNames().contains(kieBaseName);
     }
 
-    //https://docs.jboss.org/drools/release/7.46.0.Final/drools-docs/html_single/index.html#decision-examples-IDE-con_drools-examples
+
     public static void executeRuleLogic(CoreRealm coreRealm, Map<Object,Object> commandContextDataMap,String extractionId, String linkerId,RuleFactsGenerator ruleFactsGenerator){
         KieServices ks = KieServices.Factory.get();
         KieContainer kc = ks.getKieClasspathContainer();
         //KieSession kSession = kc.newKieSession("docgRelationExtractionKS");
-        //
-        //System.out.println(kc.getKieSessionModel("exampleRulesKS"));
-        //System.out.println(kc.getKieSessionModel("exampleRulesKS2"));
         KieSession kSession = kc.getKieBase(extractionId).newKieSession();
-        //KieSession kSession = kc.newKieSession("exampleRulesKS");
         /*
         // Insert facts into the KIE session.
         final Message message = new Message();
@@ -52,9 +48,7 @@ public class RuleEngineService {
         message.setStatus( Message.HELLO );
         ksession.insert( message );
         */
-
         ruleFactsGenerator.generateRuleFacts(kSession,coreRealm,commandContextDataMap,extractionId,linkerId);
-
         // Fire the rules.
         kSession.fireAllRules();
         // Fire the rules.
