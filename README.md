@@ -75,7 +75,6 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
 ---
 
 ```java
-  
 /**
  * 获取底层图数据库的实现技术，可能的类型有 NEO4J 或 ORIENTDB
  *
@@ -94,6 +93,14 @@ public CoreRealmStorageImplTech getStorageImplTech();
 */
 public ConceptionKind getConceptionKind(String conceptionKindName);
 
+/**
+ * 根据创建新的概念类型对象
+ *
+ * @param conceptionKindName String 需要创建的概念类型名称，不能与已有概念类型重名
+ * @param conceptionKindDesc String 需要创建的概念类型描述
+ *
+ * @return 概念类型对象
+*/
 public ConceptionKind createConceptionKind(String conceptionKindName,String conceptionKindDesc);
 public ConceptionKind createConceptionKind(String conceptionKindName,String conceptionKindDesc,String parentConceptionKindName)
             throws CoreRealmFunctionNotSupportedException;
