@@ -14,33 +14,222 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTre
 import java.util.List;
 
 public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAttributeFeatureSupportable, ClassificationAttachable, StatisticalAndEvaluable {
+    /**
+     * 获取当前概念类型对象名称
+     *
+     * @return 概念类型对象名称
+     */
     public String getConceptionKindName();
+
+    /**
+     * 获取当前概念类型对象描述
+     *
+     * @return 概念类型对象描述
+     */
     public String getConceptionKindDesc();
+
+    /**
+     * 计算当前概念类型的所有概念实体数量
+     *
+     * @return 概念实体数量
+     */
     public Long countConceptionEntities() throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 计算当前概念类型（包含所有后代概念类型）的所有概念实体数量，该方法在 NEO4J 实现类型下无效
+     *
+     * @return 概念实体数量
+     */
     public Long countConceptionEntitiesWithOffspring() throws CoreRealmFunctionNotSupportedException;
+
+    /**
+     * 获取当前概念类型的所有子概念类型对象，该方法在 NEO4J 实现类型下无效
+     *
+     * @return 概念类型对象列表
+     */
     public List<ConceptionKind> getChildConceptionKinds() throws CoreRealmFunctionNotSupportedException;
+
+    /**
+     * 获取当前概念类型的父概念类型对象，该方法在 NEO4J 实现类型下无效
+     *
+     * @return 概念类型对象
+     */
     public ConceptionKind getParentConceptionKind() throws CoreRealmFunctionNotSupportedException;
+
+    /**
+     * 获取当前概念类型的所有后代概念类型对象，该方法在 NEO4J 实现类型下无效
+     *
+     * @return 概念类型对象继承树
+     */
     public InheritanceTree<ConceptionKind> getOffspringConceptionKinds() throws CoreRealmFunctionNotSupportedException;
 
+    /**
+     * 创建一个属于当前概念类型的概念实体对象
+     *
+     * @param conceptionEntityValue ConceptionEntityValue 概念实体属性值
+     * @param addPerDefinedRelation boolean 是否根据预定义的关联逻辑建立关系链接
+     *
+     * @return 概念实体对象
+     */
     public ConceptionEntity newEntity(ConceptionEntityValue conceptionEntityValue, boolean addPerDefinedRelation);
+
+    /**
+     * 创建一个属于当前概念类型的概念实体对象
+     *
+     * @param conceptionEntityValue ConceptionEntityValue 概念实体属性值
+     * @param relationAttachKindList List<RelationAttachKind> 建立链接所需的关系附着规则类型列表
+     *
+     * @return 概念实体对象
+     */
     public ConceptionEntity newEntity(ConceptionEntityValue conceptionEntityValue,List<RelationAttachKind> relationAttachKindList);
+
+    /**
+     * 创建多个属于当前概念类型的概念实体对象
+     * @param conceptionEntityValues List<ConceptionEntityValue> 概念实体属性值列表
+     * @param addPerDefinedRelation boolean 是否根据预定义的关联逻辑建立关系链接
+     *
+     * @return 实体对象操作返回结果
+     */
     public EntitiesOperationResult newEntities(List<ConceptionEntityValue> conceptionEntityValues, boolean addPerDefinedRelation);
+
+    /**
+     * 创建多个属于当前概念类型的概念实体对象
+     *
+     * @param conceptionEntityValues List<ConceptionEntityValue> 概念实体属性值列表
+     * @param relationAttachKindList List<RelationAttachKind> 建立链接所需的关系附着规则类型列表
+     *
+     * @return 实体对象操作返回结果
+     */
     public EntitiesOperationResult newEntities(List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList);
+
+    /**
+     * 更新一个当前概念类型的概念实体对象的属性信息
+     *
+     * @param conceptionEntityValueForUpdate ConceptionEntityValue 需要更新的概念实体信息
+     *
+     * @return 更新后的概念实体对象
+     */
     public ConceptionEntity updateEntity(ConceptionEntityValue conceptionEntityValueForUpdate) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新多个当前概念类型的概念实体对象的属性信息
+     *
+     * @param entityValues List<ConceptionEntityValue> 需要更新的概念实体信息
+     *
+     * @return 实体对象操作返回结果
+     */
     public EntitiesOperationResult updateEntities(List<ConceptionEntityValue> entityValues);
+
+    /**
+     * 删除一个当前概念类型的概念实体对象
+     *
+     * @param conceptionEntityUID String 需要删除的概念实体的唯一ID
+     *
+     * @return 如操作成功，返回结果为 true
+     */
     public boolean deleteEntity(String conceptionEntityUID) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新多个当前概念类型的概念实体对象
+     *
+     * @param conceptionEntityUIDs List<String> 需要删除的概念实体的唯一ID列表
+     *
+     * @return 实体对象操作返回结果
+     */
     public EntitiesOperationResult deleteEntities(List<String> conceptionEntityUIDs) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 删除当前概念类型的所有概念实体
+     *
+     * @return 实体对象操作返回结果
+     */
     public EntitiesOperationResult purgeAllEntities() throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 查询符合过滤条件的当前概念类型的概念实体对象
+     *
+     * @param queryParameters QueryParameters 查询过滤条件
+     *
+     * @return 概念实体查询结果集
+     */
     public ConceptionEntitiesRetrieveResult getEntities(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 根据唯一ID获取当前概念类型的概念实体对象
+     *
+     * @param conceptionEntityUID String 需要获取的概念实体唯一ID
+     *
+     * @return 概念实体对象
+     */
     public ConceptionEntity getEntityByUID(String conceptionEntityUID);
+
+    /**
+     * 查询符合过滤条件的当前概念类型的概念实体对象,并根据输入的 SINGLE_VALUE 数据存储结构的属性视图类型列表，合并其中包含的属性类型返回相应的属性值
+     *
+     * @param attributesViewKindNames List<String> 属性视图类型列表
+     * @param exploreParameters QueryParameters 查询过滤条件
+     *
+     * @return 概念实体属性查询结果集
+     */
     public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByViewKinds(List<String> attributesViewKindNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 查询符合过滤条件的当前概念类型的概念实体对象,并根据输入的属性类型返回相应的属性值
+     *
+     * @param attributeNames List<String> 属性类型列表
+     * @param exploreParameters QueryParameters 查询过滤条件
+     *
+     * @return 概念实体属性查询结果集
+     */
     public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNames(List<String> attributeNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException;
 
+    /**
+     * 为当前概念类型附加属性视图类型
+     *
+     * @param attributesViewKindUID String 需要附加的属性视图类型唯一ID
+     *
+     * @return 如操作成功，返回结果为 true
+     */
     public boolean attachAttributesViewKind(String attributesViewKindUID) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取当前概念类型附加的全部属性视图类型
+     *
+     * @return 属性视图类型对象列表
+     */
     public List<AttributesViewKind> getContainsAttributesViewKinds();
+
+    /**
+     * 获取当前概念类型附加的全部符合名称查询条件的属性视图类型
+     *
+     * @param attributesViewKindName String 需要返回的属性视图类型名称，本查询的数值匹配规则为 Equal 匹配
+     *
+     * @return 属性视图类型对象列表
+     */
     public List<AttributesViewKind> getContainsAttributesViewKinds(String attributesViewKindName);
+
+    /**
+     * 从当前概念类型上移除已经附加的属性视图类型
+     *
+     * @param attributesViewKindUID String 需要移除的属性视图类型唯一ID
+     *
+     * @return 如操作成功，返回结果为 true
+     */
     public boolean detachAttributesViewKind(String attributesViewKindUID) throws CoreRealmServiceRuntimeException;
 
+    /**
+     * 获取当前概念类型包含的全部 SINGLE_VALUE 数据存储结构的属性视图类型中包含的属性类型
+     *
+     * @return 属性类型对象列表
+     */
     public List<AttributeKind> getContainsSingleValueAttributeKinds();
+
+    /**
+     * 获取当前概念类型包含的全部符合名称查询条件的 SINGLE_VALUE 数据存储结构的属性视图类型中包含的属性类型
+     *
+     * @param attributeKindName String 需要返回的属性类型名称，本查询的数值匹配规则为 Equal 匹配
+     *
+     * @return 属性类型对象列表
+     */
     public List<AttributeKind> getContainsSingleValueAttributeKinds(String attributeKindName);
 }
