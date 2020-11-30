@@ -767,11 +767,107 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      */
     public List<ConceptionKind> getContainerConceptionKinds();   
 ```
+###### ↳ AttributeKind
 
+---
+```java
+    /**
+     * 获取当前属性类型对象名称
+     *
+     * @return 属性类型对象名称
+     */
+    public String getAttributeKindName();
+
+    /**
+     * 获取当前属性类型对象唯一ID
+     *
+     * @return 属性类型对象唯一ID
+     */
+    public String getAttributeKindUID();
+
+    /**
+     * 获取当前属性类型对象描述
+     *
+     * @return 属性类型对象描述
+     */
+    public String getAttributeKindDesc();
+
+    /**
+     * 获取当前属性类型对象数据类型,数据类型可能选项是：
+     * BOOLEAN,INT,SHORT,LONG,FLOAT,DOUBLE,DATE,STRING,BYTE,DECIMAL,
+     * BOOLEAN_ARRAY,INT_ARRAY,SHORT_ARRAY,LONG_ARRAY,FLOAT_ARRAY,DOUBLE_ARRAY,DATE_ARRAY,STRING_ARRAY,BYTE_ARRAY,DECIMAL_ARRAY,
+     * BINARY
+     * @return 属性类型对象数据类型枚举值
+     */
+    public AttributeDataType getAttributeDataType();
+
+    /**
+     * 获取所有包含当前属性类型的属性视图类型对象
+     *
+     * @return 属性视图类型对象列表
+     */
+    public List<AttributesViewKind> getContainerAttributesViewKinds();
+```
+###### ↳ ConceptionEntity
+
+---
+```java
+    /**
+     * 获取当前概念实体对象唯一ID
+     *
+     * @return 概念实体对象唯一ID
+     */
+    public String getConceptionEntityUID();
+
+    /**
+     * 获取当前操作上下文中概念实体对象所属的概念类型名称
+     *
+     * @return 概念类型名称
+     */
+    public String getConceptionKindName();
+
+    /**
+     * 获取当前概念实体对象所属的所有概念类型名称
+     *
+     * @return 概念类型名称列表
+     */
+    public List<String> getAllConceptionKindNames();
+```
+###### ↳ RelationEntity
+
+---
+
+```java
+    /**
+     * 获取当前关系实体对象唯一ID
+     *
+     * @return 关系实体对象唯一ID
+     */
+    public String getRelationEntityUID();
+
+    /**
+     * 获取当前关系实体所属关系类型名称
+     *
+     * @return 关系类型名称
+     */
+    public String getRelationKindName();
+
+    /**
+     * 获取当前关系实体的来源概念实体唯一ID
+     *
+     * @return 概念实体对象唯一ID
+     */
+    public String getFromConceptionEntityUID();
+
+    /**
+     * 获取当前关系实体的目标概念实体唯一ID
+     *
+     * @return 概念实体对象唯一ID
+     */
+    public String getToConceptionEntityUID();
+```
 
 
 ```java
 
-
-   
 ```
