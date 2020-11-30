@@ -866,7 +866,242 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      */
     public String getToConceptionEntityUID();
 ```
+###### ↳ Classification
 
+---
+
+```java
+    /**
+     * 获取当前分类名称
+     *
+     * @return 分类名称
+     */
+    public String getClassificationName();
+
+    /**
+     * 获取当前分类描述
+     *
+     * @return 分类描述
+     */
+    public String getClassificationDesc();
+
+    /**
+     * 判断当前分类是否为根节点分类
+     *
+     * @return 如果当前分类没有父分类则返回 true
+     */
+    public boolean isRootClassification();
+
+    /**
+     * 获取当前分类的父分类
+     *
+     * @return 父分类对象
+     */
+    public Classification getParentClassification();
+
+    /**
+     * 获取当前分类的子分类列表
+     *
+     * @return 子分类对象列表
+     */
+    public List<Classification> getChildClassifications();
+
+    /**
+     * 获取当前分类的所有后代分类
+     *
+     * @return 分类对象继承树
+     */
+    public InheritanceTree<Classification> getOffspringClassifications();
+
+    /**
+     * 为当前分类附加已经存在的子分类
+     *
+     * @param childClassificationName String 需要附加的子分类名称
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean attachChildClassification(String childClassificationName) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 从当前分类上移除已经附加的子分类的父子关系
+     *
+     * @param childClassificationName String 需要移除父子关系的子分类名称
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean detachChildClassification(String childClassificationName) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 为当前分类创建新的子分类
+     *
+     * @param classificationName String 新建的子分类名称
+     * @param classificationDesc String 新建的子分类描述
+     *
+     * @return 新建的子分类对象
+     */
+    public Classification createChildClassification(String classificationName,String classificationDesc) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 删除当前分类的子分类
+     *
+     * @param classificationName String 需要删除的子分类名称
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean removeChildClassification(String classificationName) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取与当前分类关联的概念分类对象
+     *
+     * @param relationKindName String 关联的关系类型名称
+     * @param relationDirection RelationDirection 关联的关系方向
+     * @param includeOffspringClassifications boolean 是否获取后代分类关联的数据
+     * @param offspringLevel int 包含的后代分类层级数
+     *
+     * @return 概念分类对象列表
+     */
+    public List<ConceptionKind> getRelatedConceptionKind(String relationKindName, RelationDirection relationDirection,boolean includeOffspringClassifications,int offspringLevel) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取与当前分类关联的关系分类对象
+     *
+     * @param relationKindName String 关联的关系类型名称
+     * @param relationDirection RelationDirection 关联的关系方向
+     * @param includeOffspringClassifications boolean 是否获取后代分类关联的数据
+     * @param offspringLevel int 包含的后代分类层级数
+     *
+     * @return 关系分类对象列表
+     */
+    public List<RelationKind> getRelatedRelationKind(String relationKindName, RelationDirection relationDirection,boolean includeOffspringClassifications,int offspringLevel) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取与当前分类关联的属性类型对象
+     *
+     * @param relationKindName String 关联的关系类型名称
+     * @param relationDirection RelationDirection 关联的关系方向
+     * @param includeOffspringClassifications boolean 是否获取后代分类关联的数据
+     * @param offspringLevel int 包含的后代分类层级数
+     *
+     * @return 属性类型对象列表
+     */
+    public List<AttributeKind> getRelatedAttributeKind(String relationKindName, RelationDirection relationDirection,boolean includeOffspringClassifications,int offspringLevel) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取与当前分类关联的属性视图类型对象
+     *
+     * @param relationKindName String 关联的关系类型名称
+     * @param relationDirection RelationDirection 关联的关系方向
+     * @param includeOffspringClassifications boolean 是否获取后代分类关联的数据
+     * @param offspringLevel int 包含的后代分类层级数
+     *
+     * @return 属性视图类型对象列表
+     */
+    public List<AttributesViewKind> getRelatedAttributesViewKind(String relationKindName, RelationDirection relationDirection,boolean includeOffspringClassifications,int offspringLevel) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取与当前分类关联的概念实体对象
+     *
+     * @param relationKindName String 关联的关系类型名称
+     * @param relationDirection RelationDirection 关联的关系方向
+     * @param queryParameters QueryParameters 概念实体查询过滤条件
+     * @param includeOffspringClassifications boolean 是否获取后代分类关联的数据
+     * @param offspringLevel int 包含的后代分类层级数
+     *
+     * @return 概念实体对象列表
+     */
+    public List<ConceptionEntity> getRelatedConceptionEntity(String relationKindName, RelationDirection relationDirection, QueryParameters queryParameters,boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+```
+###### ↳ RelationAttachKind
+
+---
+```java
+    /**
+     * 获取当前关系附着规则类型对象唯一ID
+     *
+     * @return 关系附着规则类型对象唯一ID
+     */
+    public String getRelationAttachKindUID();
+
+    /**
+     * 获取当前关系附着规则类型的来源概念类型名称
+     *
+     * @return 来源概念类型名称
+     */
+    public String getSourceConceptionKindName();
+
+    /**
+     * 获取当前关系附着规则类型的目标概念类型名称
+     *
+     * @return 目标概念类型名称
+     */
+    public String getTargetConceptionKindName();
+
+    /**
+     * 获取当前关系附着规则类型的关系类型名称
+     *
+     * @return 关系类型名称
+     */
+    public String getRelationKindName();
+
+    /**
+     * 获取当前关系附着规则类型描述
+     *
+     * @return 关系附着规则类型描述
+     */
+    public String getRelationAttachKindDesc();
+
+    /**
+     * 获取当前关系附着规则类型的描述
+     *
+     * @param newDesc String 新的关系附着规则类型描述
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean updateRelationAttachKindDesc(String newDesc);
+
+    /**
+     * 获取当前关系附着规则类型的所有关系附着逻辑规则
+     *
+     * @return 关系附着逻辑规则列表
+     */
+    public List<RelationAttachLinkLogic> getRelationAttachLinkLogic();
+
+    /**
+     * 为当前关系附着规则类型创建新的关系附着逻辑规则
+     *
+     * @param relationAttachLinkLogic RelationAttachLinkLogic 新的关系附着逻辑规则对象
+     *
+     * @return 新建的关系附着逻辑规则逻辑
+     */
+    public RelationAttachLinkLogic createRelationAttachLinkLogic(RelationAttachLinkLogic relationAttachLinkLogic) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 删除当前关系附着规则类型中已有的关系附着逻辑规则
+     *
+     * @param relationAttachLinkLogicUID String 要删除的关系附着逻辑规则对象唯一ID
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean removeRelationAttachLinkLogic(String relationAttachLinkLogicUID) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 使用当前关系附着规则类型的逻辑创建新的关系实体
+     *
+     * @param sourceConceptionEntityUID String 源概念实体对象唯一ID
+     * @param targetConceptionEntityUID String 目标概念实体对象唯一ID
+     * @param relationData Map<String,Object> 关系实体上的自定义属性
+     *
+     * @return 关系附着逻辑规则列表
+     */
+    public boolean newRelationEntity(String sourceConceptionEntityUID, String targetConceptionEntityUID, Map<String,Object> relationData);
+
+    /**
+     * 使用当前关系附着规则类型的定义在领域内的全部数据上创建符合条件的关系实体
+     *
+     * @return 实体对象操作返回结果
+     */
+    public EntitiesOperationResult newUniversalRelationEntities();
+```
 
 ```java
 
