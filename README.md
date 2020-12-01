@@ -49,11 +49,9 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
 
 
 
-#### ➜ SDK
+#### ➜ JAVA SDK
 
-**JAVA SDK**
-
-*数据建模类对象*
+###### *数据建模类对象*
 
 - CoreRealm：定义，维护业务领域模型中的各类对象
 - ConceptionKind：定义，维护概念类型
@@ -61,12 +59,6 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
 - AttributeKind：定义，维护属性类型
 - RelationKind：定义，维护关系类型
 - RelationAttachKind：定义，维护基本关联关系创建规则
-
-*数据操作类对象*
-
-- ConceptionEntity：对指定概念类型中的概念实体数据执行CRUD操作
-- RelationEntity：对指定关系类型中的关系实体数据执行CRUD操作
-- Classification：对领域模型中的各类分类数据执行CRUD与关联分析操作
 
 **对象方法概述**
 
@@ -808,6 +800,108 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      */
     public List<AttributesViewKind> getContainerAttributesViewKinds();
 ```
+
+###### ↳ RelationAttachKind
+
+---
+```java
+    /**
+     * 获取当前关系附着规则类型对象唯一ID
+     *
+     * @return 关系附着规则类型对象唯一ID
+     */
+    public String getRelationAttachKindUID();
+
+    /**
+     * 获取当前关系附着规则类型的来源概念类型名称
+     *
+     * @return 来源概念类型名称
+     */
+    public String getSourceConceptionKindName();
+
+    /**
+     * 获取当前关系附着规则类型的目标概念类型名称
+     *
+     * @return 目标概念类型名称
+     */
+    public String getTargetConceptionKindName();
+
+    /**
+     * 获取当前关系附着规则类型的关系类型名称
+     *
+     * @return 关系类型名称
+     */
+    public String getRelationKindName();
+
+    /**
+     * 获取当前关系附着规则类型描述
+     *
+     * @return 关系附着规则类型描述
+     */
+    public String getRelationAttachKindDesc();
+
+    /**
+     * 获取当前关系附着规则类型的描述
+     *
+     * @param newDesc String 新的关系附着规则类型描述
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean updateRelationAttachKindDesc(String newDesc);
+
+    /**
+     * 获取当前关系附着规则类型的所有关系附着逻辑规则
+     *
+     * @return 关系附着逻辑规则列表
+     */
+    public List<RelationAttachLinkLogic> getRelationAttachLinkLogic();
+
+    /**
+     * 为当前关系附着规则类型创建新的关系附着逻辑规则
+     *
+     * @param relationAttachLinkLogic RelationAttachLinkLogic 新的关系附着逻辑规则对象
+     *
+     * @return 新建的关系附着逻辑规则逻辑
+     */
+    public RelationAttachLinkLogic createRelationAttachLinkLogic(RelationAttachLinkLogic relationAttachLinkLogic) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 删除当前关系附着规则类型中已有的关系附着逻辑规则
+     *
+     * @param relationAttachLinkLogicUID String 要删除的关系附着逻辑规则对象唯一ID
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean removeRelationAttachLinkLogic(String relationAttachLinkLogicUID) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 使用当前关系附着规则类型的逻辑创建新的关系实体
+     *
+     * @param sourceConceptionEntityUID String 源概念实体对象唯一ID
+     * @param targetConceptionEntityUID String 目标概念实体对象唯一ID
+     * @param relationData Map<String,Object> 关系实体上的自定义属性
+     *
+     * @return 关系附着逻辑规则列表
+     */
+    public boolean newRelationEntity(String sourceConceptionEntityUID, String targetConceptionEntityUID, Map<String,Object> relationData);
+
+    /**
+     * 使用当前关系附着规则类型的定义在领域内的全部数据上创建符合条件的关系实体
+     *
+     * @return 实体对象操作返回结果
+     */
+    public EntitiesOperationResult newUniversalRelationEntities();
+```
+###### *数据操作类对象*
+
+- ConceptionEntity：对指定概念类型中的概念实体数据执行CRUD操作
+
+- RelationEntity：对指定关系类型中的关系实体数据执行CRUD操作
+
+- Classification：对领域模型中的各类分类数据执行CRUD与关联分析操作
+
+**对象方法概述**
+
 ###### ↳ ConceptionEntity
 
 ---
@@ -1011,97 +1105,17 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      */
     public List<ConceptionEntity> getRelatedConceptionEntity(String relationKindName, RelationDirection relationDirection, QueryParameters queryParameters,boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 ```
-###### ↳ RelationAttachKind
 
----
-```java
-    /**
-     * 获取当前关系附着规则类型对象唯一ID
-     *
-     * @return 关系附着规则类型对象唯一ID
-     */
-    public String getRelationAttachKindUID();
 
-    /**
-     * 获取当前关系附着规则类型的来源概念类型名称
-     *
-     * @return 来源概念类型名称
-     */
-    public String getSourceConceptionKindName();
 
-    /**
-     * 获取当前关系附着规则类型的目标概念类型名称
-     *
-     * @return 目标概念类型名称
-     */
-    public String getTargetConceptionKindName();
 
-    /**
-     * 获取当前关系附着规则类型的关系类型名称
-     *
-     * @return 关系类型名称
-     */
-    public String getRelationKindName();
 
-    /**
-     * 获取当前关系附着规则类型描述
-     *
-     * @return 关系附着规则类型描述
-     */
-    public String getRelationAttachKindDesc();
 
-    /**
-     * 获取当前关系附着规则类型的描述
-     *
-     * @param newDesc String 新的关系附着规则类型描述
-     *
-     * @return 如操作成功，返回结果为 true
-     */
-    public boolean updateRelationAttachKindDesc(String newDesc);
 
-    /**
-     * 获取当前关系附着规则类型的所有关系附着逻辑规则
-     *
-     * @return 关系附着逻辑规则列表
-     */
-    public List<RelationAttachLinkLogic> getRelationAttachLinkLogic();
 
-    /**
-     * 为当前关系附着规则类型创建新的关系附着逻辑规则
-     *
-     * @param relationAttachLinkLogic RelationAttachLinkLogic 新的关系附着逻辑规则对象
-     *
-     * @return 新建的关系附着逻辑规则逻辑
-     */
-    public RelationAttachLinkLogic createRelationAttachLinkLogic(RelationAttachLinkLogic relationAttachLinkLogic) throws CoreRealmServiceRuntimeException;
 
-    /**
-     * 删除当前关系附着规则类型中已有的关系附着逻辑规则
-     *
-     * @param relationAttachLinkLogicUID String 要删除的关系附着逻辑规则对象唯一ID
-     *
-     * @return 如操作成功，返回结果为 true
-     */
-    public boolean removeRelationAttachLinkLogic(String relationAttachLinkLogicUID) throws CoreRealmServiceRuntimeException;
 
-    /**
-     * 使用当前关系附着规则类型的逻辑创建新的关系实体
-     *
-     * @param sourceConceptionEntityUID String 源概念实体对象唯一ID
-     * @param targetConceptionEntityUID String 目标概念实体对象唯一ID
-     * @param relationData Map<String,Object> 关系实体上的自定义属性
-     *
-     * @return 关系附着逻辑规则列表
-     */
-    public boolean newRelationEntity(String sourceConceptionEntityUID, String targetConceptionEntityUID, Map<String,Object> relationData);
 
-    /**
-     * 使用当前关系附着规则类型的定义在领域内的全部数据上创建符合条件的关系实体
-     *
-     * @return 实体对象操作返回结果
-     */
-    public EntitiesOperationResult newUniversalRelationEntities();
-```
 
 ```java
 
