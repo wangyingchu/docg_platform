@@ -1859,7 +1859,102 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      */
     boolean updateDataOrigin(String dataOrigin);
 ```
+###### ↳ MultiConceptionKindsSupportable
+
+---
+```java
+    /**
+     * 将当前实体对象加入更多的概念类型中
+     *
+     * @param newKindNames String[] 需要加入的概念类型列表
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean joinConceptionKinds(String[] newKindNames) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 将当前实体对象退出指定概念类型
+     *
+     * @param kindName String 需要退出的概念类型
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean retreatFromConceptionKind(String kindName) throws CoreRealmServiceRuntimeException;
+```
+###### ↳ MetaConfigItemFeatureSupportable
+
+---
+```java
+    /**
+     * 为当前对象添加自定义配置项，如该配置项已经存在，则执行更新操作
+     *
+     * @param itemName String 配置项名称
+     * @param itemValue Object 配置项值
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    boolean addOrUpdateMetaConfigItem(String itemName,Object itemValue);
+
+    /**
+     * 获取当前对象的所有自定义配置项
+     *
+     * @return 自定义配置项键值对
+     */
+    Map<String,Object> getMetaConfigItems();
+
+    /**
+     * 获取当前对象的指定自定义配置项
+     *
+     * @param itemName String 配置项名称
+     *
+     * @return 自定义配置项键值对
+     */
+    Object getMetaConfigItem(String itemName);
+
+    /**
+     * 删除当前对象的指定自定义配置项
+     *
+     * @param itemName String 配置项名称
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    boolean deleteMetaConfigItem(String itemName);
+```
+
+###### ↳ StatisticalAndEvaluable
+
+---
 
 ```java
+    /**
+     * 统计数值类属性信息
+     *
+     * @param queryParameters QueryParameters 待统计数据查询条件
+     * @param statisticCondition List<NumericalAttributeStatisticCondition> 数值类属性数据统计条件列表
+     *
+     * @return 统计结果键值对
+     */
+    public Map<String,Number> statisticNumericalAttributes(QueryParameters queryParameters,List<NumericalAttributeStatisticCondition> statisticCondition)  throws CoreRealmServiceEntityExploreException;
 
+    /**
+     * 按属性值分组统计数值类属性信息
+     *
+     * @param groupByAttribute String 待分组属性名称
+     * @param queryParameters QueryParameters 待统计数据查询条件
+     * @param statisticConditions  List<NumericalAttributeStatisticCondition>  数值类属性数据统计条件列表
+     *
+     * @return 带分组信息的统计结果键值对列表
+     */
+    public List<GroupNumericalAttributesStatisticResult> statisticNumericalAttributesByGroup(String groupByAttribute, QueryParameters queryParameters, List<NumericalAttributeStatisticCondition> statisticConditions) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 统计特定实体对象按照指定关联规律与分类的关联分组
+     *
+     * @param queryParameters QueryParameters 待统计数据查询条件
+     * @param relationKindName String 与分类关联的关系类型名称
+     * @param relationDirection RelationDirection 与分类关联的关系方向
+     *
+     * @return 统计结果键值对，Key 为分类名称， Value 为与其相关的概念实体列表
+     */
+    public Map<String,List<ConceptionEntity>> statisticRelatedClassifications(QueryParameters queryParameters, String relationKindName, RelationDirection relationDirection);
 ```
