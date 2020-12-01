@@ -1106,16 +1106,759 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public List<ConceptionEntity> getRelatedConceptionEntity(String relationKindName, RelationDirection relationDirection, QueryParameters queryParameters,boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 ```
 
+###### *通用功能特性*
 
+- AttributesMeasurable：具有此特性的对象能够执行对自定义属性的CRUD操作
 
+  ​	具有此特性的对象：|___Classification___|___ConceptionEntity___|___RelationEntity___|
 
+- ClassificationAttachable：具有此特性的对象能够执行各类与分类关联相关的操作
+  ​	具有此特性的对象：|___AttributeKind___|___AttributesViewKind___|___ConceptionEntity___|___ConceptionKind___|___RelationAttachKind___|___RelationKind___|
 
+- EntityRelationable：具有此特性的对象能够执行与各类概念实体的关联操作
+  ​	具有此特性的对象：|___ConceptionEntity___|
+  
+- MetaAttributeFeatureSupportable：具有此特性的对象能够执行对系统全局定义的元数据属性的获取与更新操作
+  ​	具有此特性的对象：|___AttributeKind___|___AttributesViewKind___|___Classification___|___ConceptionKind___|___RelationAttachKind___|___RelationKind___|
 
+- MetaConfigItemFeatureSupportable：具有此特性的对象能够执行对自定义配置信息的CRUD操作
+  	具有此特性的对象：|___AttributeKind___|___AttributesViewKind___|___ConceptionKind___|___RelationAttachKind___|___RelationKind___|
+  
+- MultiConceptionKindsSupportable：具有此特性的对象能够执行对多概念分类的隶属关系的定义操作
+  ​	具有此特性的对象：|___ConceptionEntity___|
+  
+- StatisticalAndEvaluable：具有此特性的对象能够执行对自身包含的数值类数据的统计与评估相关的操作
+  ​	具有此特性的对象：|___ConceptionKind___|
 
+**对象方法概述**
 
+###### ↳ AttributesMeasurable
 
+---
 
+```java
+    /**
+     * 删除当前对象中包含的属性信息
+     *
+     * @param attributeName String 需要删除的属性名称
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean removeAttribute(String attributeName) throws CoreRealmServiceRuntimeException;
 
+    /**
+     * 获取当前对象中包含的所有属性信息
+     *
+     * @return 属性信息值列表
+     */
+    public List<AttributeValue> getAttributes();
+
+    /**
+     * 判断当前对象中是否包含的特定的属性信息
+     *
+     * @param attributeName String 需要判断的属性名称
+     *
+     * @return 如包含该属性，返回结果为 true
+     */
+    public boolean hasAttribute(String attributeName);
+
+    /**
+     * 获取当前对象中包含的所有属性名称
+     *
+     * @return 属性名称列表
+     */
+    public List<String> getAttributeNames();
+
+    /**
+     * 获取当前对象中包含的指定属性信息值
+     *
+     * @param attributeName String 需要获取的属性名称
+     *
+     * @return 属性信息值
+     */
+    public AttributeValue getAttribute(String attributeName);
+
+    /**
+     * 在当前对象中添加 boolean 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue boolean 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, boolean attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 int 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue int 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, int attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 short 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue short 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, short attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 long 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue long 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, long attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 float 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue float 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, float attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 double 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue double 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, double attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 Date 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue Date 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, Date attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 String 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue String 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, String attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 byte 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue byte 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, byte attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 BigDecimal 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue BigDecimal 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, BigDecimal attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 Boolean[] 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue Boolean[] 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, Boolean[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 Integer[] 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue Integer[] 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, Integer[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 Short[] 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue Short[] 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, Short[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 Long[] 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue Long[] 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, Long[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 Float[] 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue Float[] 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, Float[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 Double[] 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue Double[] 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, Double[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 Date[] 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue Date[] 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, Date[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 String[] 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue String[] 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, String[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 Byte[] 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue Byte[] 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, Byte[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 BigDecimal[] 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue BigDecimal[] 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, BigDecimal[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 byte[] 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue byte[] 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, byte[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 boolean 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue boolean 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, boolean attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 int 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue int 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, int attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 short 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue short 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, short attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 long 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue long 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, long attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 float 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue float 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, float attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 double 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue double 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, double attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 Date 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue Date 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, Date attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 String 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue String 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, String attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 byte 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue byte 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, byte attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 BigDecimal 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue BigDecimal 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, BigDecimal attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 Boolean[] 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue Boolean[] 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, Boolean[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 Integer[] 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue Integer[] 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, Integer[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 Short[] 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue Short[] 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, Short[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 Long[] 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue Long[] 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, Long[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 Float[] 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue Float[] 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, Float[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 Double[] 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue Double[] 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, Double[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 Date[] 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue Date[] 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, Date[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 String[] 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue String[] 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, String[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 Byte[] 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue Byte[] 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, Byte[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 BigDecimal[] 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue BigDecimal[] 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, BigDecimal[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 byte[] 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue byte[] 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, byte[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加多个属性信息
+     *
+     * @param properties Map<String,Object> 需要添加的属性信息键值对
+     *
+     * @return 添加成功的属性名称列表
+     */
+    public List<String> addAttributes(Map<String,Object> properties);
+
+    /**
+     * 更新当前对象中已有的多个属性信息
+     *
+     * @param properties Map<String,Object> 需要更新的属性信息键值对
+     *
+     * @return 更新成功的属性名称列表
+     */
+    public List<String> updateAttributes(Map<String,Object> properties);
+
+    /**
+     * 在当前对象中添加多个属性信息，如果该属性存在，则执行更新操作
+     *
+     * @param properties Map<String,Object> 需要添加或更新的属性信息键值对
+     *
+     * @return 操作成功的属性名称列表
+     */
+    public List<String> addNewOrUpdateAttributes(Map<String, Object> properties);
+```
+###### ↳ ClassificationAttachable
+
+---
+```java
+    /**
+     * 将当前对象关联到指定的分类上
+     *
+     * @param relationAttachInfo RelationAttachInfo 关联附着信息
+     * @param classificationName String 分类名称
+     *
+     * @return 关联成功创建的关系实体
+     */
+    RelationEntity attachClassification(RelationAttachInfo relationAttachInfo, String classificationName) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 删除当前对象到指定分类的已有关联
+     *
+     * @param classificationName String 分类名称
+     * @param relationKindName String 关系类型名称
+     * @param relationDirection RelationDirection 关联方向
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    boolean detachClassification(String classificationName, String relationKindName, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException ;
+
+    /**
+     * 获取当前对象已经关联的分类
+     *
+     * @param relationKindName String 关系类型名称
+     * @param relationDirection RelationDirection 关联方向
+     *
+     * @return 符合条件的分类列表
+     */
+    List<Classification> getAttachedClassifications(String relationKindName, RelationDirection relationDirection);
+```
+###### ↳ EntityRelationable
+
+---
+```java
+    /**
+     * 计算当前实体的所有数据关联数量
+     *
+     * @return 关联数量
+     */
+    public Long countAllRelations();
+
+    /**
+     * 计算当前实体的特定关系类型下的数据关联数量
+     *
+     * @param relationType String 关系类型名称
+     * @param relationDirection RelationDirection 关系关联方向
+     *
+     * @return 符合条件的关联数量
+     */
+    public Long countAllSpecifiedRelations(String relationType, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 计算当前实体的符合特定查询条件的数据关联数量
+     *
+     * @param exploreParameters QueryParameters 关系属性查询条件
+     * @param relationDirection RelationDirection 关系关联方向
+     *
+     * @return 符合条件的关联数量
+     */
+    public Long countSpecifiedRelations(QueryParameters exploreParameters, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取与当前实体相关的所有数据关系实体
+     *
+     * @return 关系实体列表
+     */
+    public List<RelationEntity> getAllRelations();
+
+    /**
+     * 获取当前实体的特定关系类型下的关系实体
+     *
+     * @param relationKind String 关系类型名称
+     * @param relationDirection RelationDirection 关系关联方向
+     *
+     * @return 关系实体列表
+     */
+    public List<RelationEntity> getAllSpecifiedRelations(String relationKind, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取当前实体的符合特定查询条件的关系实体
+     *
+     * @param exploreParameters QueryParameters 关系属性查询条件
+     * @param relationDirection RelationDirection 关系关联方向
+     *
+     * @return 关系实体列表
+     */
+    public List<RelationEntity> getSpecifiedRelations(QueryParameters exploreParameters, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 为当前实体附着源数据关联
+     *
+     * @param targetRelationableUID String 目标实体唯一ID
+     * @param relationKind String 关系类型名称
+     * @param initRelationProperties Map<String,Object> 新建的关系实体上的初始属性信息
+     * @param repeatable boolean 是否允许重复建立已有关系类型的数据关联
+     *
+     * @return 新建的关系实体
+     */
+    public RelationEntity attachFromRelation(String targetRelationableUID, String relationKind, Map<String,Object> initRelationProperties, boolean repeatable) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 为当前实体附着目标数据关联
+     *
+     * @param targetRelationableUID String 目标实体唯一ID
+     * @param relationKind String 关系类型名称
+     * @param initRelationProperties Map<String,Object> 新建的关系实体上的初始属性信息
+     * @param repeatable boolean 是否允许重复建立已有关系类型的数据关联
+     *
+     * @return 新建的关系实体
+     */
+    public RelationEntity attachToRelation(String targetRelationableUID, String relationKind, Map<String,Object> initRelationProperties, boolean repeatable) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 根据关系实体唯一ID删除当前实体的特定数据关联
+     *
+     * @param relationEntityUID String 需要删除的关系实体唯一ID
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean detachRelation(String relationEntityUID) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 删除当前实体的所有数据关联
+     *
+     * @return 删除成功的关系实体唯一ID列表
+     */
+    public List<String> detachAllRelations();
+
+    /**
+     * 删除当前实体的特定关系类型下的关系实体
+     *
+     * @param relationType String 关系类型名称
+     * @param relationDirection RelationDirection 关系关联方向
+     *
+     * @return 删除成功的关系实体唯一ID列表
+     */
+    public List<String> detachAllSpecifiedRelations(String relationType, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 删除当前实体的符合特定查询条件的关系实体
+     *
+     * @param exploreParameters QueryParameters 关系属性查询条件
+     * @param relationDirection RelationDirection 关系关联方向
+     *
+     * @return 删除成功的关系实体唯一ID列表
+     */
+    public List<String> detachSpecifiedRelations(QueryParameters exploreParameters, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 计算与当前实体关联的概念实体数量
+     *
+     * @param targetConceptionKind String 目标概念类型名称
+     * @param relationKind String 目标关系类型名称
+     * @param relationDirection RelationDirection 关系关联方向
+     * @param maxJump int 关联传播的最大跳数
+     *
+     * @return 符合条件的概念实体数量
+     */
+    public Long countRelatedConceptionEntities(String targetConceptionKind, String relationKind,RelationDirection relationDirection,int maxJump);
+
+    /**
+     * 获取与当前实体关联的概念实体
+     *
+     * @param targetConceptionKind String 目标概念类型名称
+     * @param relationKind String 目标关系类型名称
+     * @param relationDirection RelationDirection 关系关联方向
+     * @param maxJump int 关联传播的最大跳数
+     *
+     * @return 符合条件的概念实体对象列表
+     */
+    public List<ConceptionEntity> getRelatedConceptionEntities(String targetConceptionKind, String relationKind, RelationDirection relationDirection, int maxJump);
+```
+###### ↳ MetaAttributeFeatureSupportable
+
+---
+```java
+    /**
+     * 获取当前对象创建时间
+     *
+     * @return 创建时间
+     */
+    Date getCreateDateTime();
+
+    /**
+     * 获取当前对象最后更新时间
+     *
+     * @return 最后更新时间
+     */
+    Date getLastModifyDateTime();
+
+    /**
+     * 获取当前对象创建人ID
+     *
+     * @return 创建人ID
+     */
+    String getCreatorId();
+
+    /**
+     * 获取当前对象数据原始来源
+     *
+     * @return 数据原始来源
+     */
+    String getDataOrigin();
+
+    /**
+     * 更新当前对象最后更新时间
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    boolean updateLastModifyDateTime();
+
+    /**
+     * 更新当前对象创建人ID
+     *
+     * @param creatorId String 新的创建人ID
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    boolean updateCreatorId(String creatorId);
+
+    /**
+     * 更新当前对象数据原始来源
+     *
+     * @param dataOrigin String 新的数据原始来源
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    boolean updateDataOrigin(String dataOrigin);
+```
 
 ```java
 
