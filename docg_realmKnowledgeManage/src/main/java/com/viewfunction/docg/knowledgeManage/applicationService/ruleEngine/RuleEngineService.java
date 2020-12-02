@@ -69,12 +69,16 @@ public class RuleEngineService {
         KieServices ks = KieServices.Factory.get();
         KieContainer kc = ks.getKieClasspathContainer();
         KieSession kSession = kc.getKieBase(extractionId).newKieSession();
-
-        ruleFactsGenerator.generateRuleFacts(kSession,coreRealm,commandContextDataMap,extractionId,linkerId);
-        // Fire the rules.
-        kSession.fireAllRules();
-        // Fire the rules.
-        kSession.fireAllRules();
-        kSession.dispose();
+        try{
+            ruleFactsGenerator.generateRuleFacts(kSession,coreRealm,commandContextDataMap,extractionId,linkerId);
+            // Fire the rules.
+            kSession.fireAllRules();
+            // Fire the rules.
+            kSession.fireAllRules();
+        }finally {
+            if(kSession != null){
+                kSession.dispose();
+            }
+        }
     }
 }
