@@ -6,27 +6,29 @@ import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
+import java.util.Properties;
 
 public class RuleEngineService {
 
-    public static class Message {
-        public static final int HELLO   = 0;
-        public static final int GOODBYE = 1;
-        public String          message;
-        public int             status;
-        public String getMessage() {
-            return message;
+    private static Properties _RuleFactsGeneratorsProperties;
+
+    public static String getRuleFactsGeneratorClassName(String extractionId){
+        if(_RuleFactsGeneratorsProperties == null){
+            _RuleFactsGeneratorsProperties = new Properties();
+            try {
+                _RuleFactsGeneratorsProperties.load(new FileInputStream("RuleFactsGenerators.properties"));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        public void setMessage(String message) {
-            this.message = message;
-        }
-        public int getStatus() {
-            return status;
-        }
-        public void setStatus(int status) {
-            this.status = status;
-        }
+        return _RuleFactsGeneratorsProperties.getProperty(extractionId);
     }
 
     public static boolean validateKieBaseExistence(String kieBaseName){
@@ -35,19 +37,39 @@ public class RuleEngineService {
         return kc.getKieBaseNames().contains(kieBaseName);
     }
 
+    public static boolean validateRuleFactsGeneratorExistence(String extractionId){
+        String targetRuleFactsGeneratorClassName = getRuleFactsGeneratorClassName(extractionId);
+        return targetRuleFactsGeneratorClassName != null ? true : false;
+    }
+
+    public static RuleFactsGenerator getRuleFactsGenerator(String extractionId){
+        String targetRuleFactsGeneratorClassName = getRuleFactsGeneratorClassName(extractionId);
+        if(targetRuleFactsGeneratorClassName != null){
+            Class<?> ruleFactsGeneratorClass = null;
+            try {
+                ruleFactsGeneratorClass = Class.forName(targetRuleFactsGeneratorClassName);
+                Object ruleFactsGeneratorObject = ruleFactsGeneratorClass.getDeclaredConstructor().newInstance();
+                return (RuleFactsGenerator)ruleFactsGeneratorObject;
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
 
     public static void executeRuleLogic(CoreRealm coreRealm, Map<Object,Object> commandContextDataMap,String extractionId, String linkerId,RuleFactsGenerator ruleFactsGenerator){
         KieServices ks = KieServices.Factory.get();
         KieContainer kc = ks.getKieClasspathContainer();
-        //KieSession kSession = kc.newKieSession("docgRelationExtractionKS");
         KieSession kSession = kc.getKieBase(extractionId).newKieSession();
-        /*
-        // Insert facts into the KIE session.
-        final Message message = new Message();
-        message.setMessage( "Hello World" );
-        message.setStatus( Message.HELLO );
-        ksession.insert( message );
-        */
+
         ruleFactsGenerator.generateRuleFacts(kSession,coreRealm,commandContextDataMap,extractionId,linkerId);
         // Fire the rules.
         kSession.fireAllRules();

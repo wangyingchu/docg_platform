@@ -1,5 +1,5 @@
 package relationExtractionRules;
-import com.viewfunction.docg.knowledgeManage.applicationService.ruleEngine.RuleEngineService.Message
+import com.viewfunction.docg.knowledgeManage.applicationCapacity.relationExtraction.ruleEngineFactsGenerators.RelationExtractionRulesGenerator.Message
 
 rule "Hello World2"
   when
