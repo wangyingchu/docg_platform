@@ -153,7 +153,7 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      *
      * @return 概念实体数量
      */
-    public Long countEntities(AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException;
+    public Long countEntities(AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
 
     /**
      * 查询符合过滤条件的当前概念类型的概念实体对象

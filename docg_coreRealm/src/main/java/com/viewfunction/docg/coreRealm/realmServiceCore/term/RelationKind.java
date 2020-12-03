@@ -71,7 +71,7 @@ public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttr
      *
      * @return 关系实体数量
      */
-    public Long countRelationEntities(AttributesParameters attributesParameters)  throws CoreRealmServiceEntityExploreException;
+    public Long countRelationEntities(AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
 
     /**
      * 查询符合过滤条件的当前关系类型的关系实体对象

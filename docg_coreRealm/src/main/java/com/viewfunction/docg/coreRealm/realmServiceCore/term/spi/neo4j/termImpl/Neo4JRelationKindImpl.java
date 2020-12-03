@@ -2,6 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
@@ -100,28 +101,43 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
     }
 
     @Override
-    public Long countRelationEntities(AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException {
+    public Long countRelationEntities(AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+        if (attributesParameters != null) {
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setDistinctMode(attributesParameters.isDistinctMode());
+            queryParameters.setResultNumber(100000000);
+            queryParameters.setDefaultFilteringItem(attributesParameters.getDefaultFilteringItem());
+            if (attributesParameters.getAndFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getAndFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.AND);
+                }
+            }
+            if (attributesParameters.getOrFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getOrFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.OR);
+                }
+            }
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                queryParameters.setEntityKind(this.relationKindName);
+                String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,
+                        null,null,true,queryParameters, CypherBuilder.CypherFunctionType.COUNT);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        return null;
+                GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer =
+                        queryParameters.isDistinctMode() ?
+                        new GetLongFormatAggregatedReturnValueTransformer("count","DISTINCT"):
+                                new GetLongFormatAggregatedReturnValueTransformer("count");
+                Object queryRes = workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer,queryCql);
+                if (queryRes != null) {
+                    return (Long) queryRes;
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            return null;
+        }else{
+            return countRelationEntities();
+        }
     }
 
     @Override

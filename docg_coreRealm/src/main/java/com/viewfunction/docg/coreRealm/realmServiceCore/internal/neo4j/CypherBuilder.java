@@ -1842,13 +1842,15 @@ public class CypherBuilder {
                     case COUNT:
                         if (ongoingReadingWithWhere != null) {
                             if(isDistinct){
-                                activeOngoingReadingAndReturn = ongoingReadingWithWhere.returningDistinct(Functions2.count(relations));
+                                CustomContentLiteral returningText = new CustomContentLiteral("count(DISTINCT operationResult)");
+                                activeOngoingReadingAndReturn = ongoingReadingWithWhere.returning(returningText);
                             }else{
                                 activeOngoingReadingAndReturn = ongoingReadingWithWhere.returning(Functions2.count(relations));
                             }
                         } else {
                             if(isDistinct){
-                                activeOngoingReadingAndReturn = ongoingReadingWithoutWhere.returningDistinct(Functions2.count(relations));
+                                CustomContentLiteral returningText = new CustomContentLiteral("count(DISTINCT operationResult)");
+                                activeOngoingReadingAndReturn = ongoingReadingWithoutWhere.returning(returningText);
                             }else{
                                 activeOngoingReadingAndReturn = ongoingReadingWithoutWhere.returning(Functions2.count(relations));
                             }

@@ -1,5 +1,6 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.GreaterThanEqualFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
@@ -109,6 +110,13 @@ public class RelationKindTest {
         _RelationEntitiesRetrieveResult = _RelationKind01.getRelationEntities(queryParameters);
         Assert.assertNotNull(_RelationEntitiesRetrieveResult);
         Assert.assertTrue(_RelationEntitiesRetrieveResult.getRelationEntities().size()<10);
+
+        AttributesParameters attributesParameters = new AttributesParameters();
+        attributesParameters.setDistinctMode(true);
+        attributesParameters.setDefaultFilteringItem(new GreaterThanEqualFilteringItem("relProp1",500l));
+        Long entityCount = _RelationKind01.countRelationEntities(attributesParameters);
+        long res1 = (_RelationEntitiesRetrieveResult.getOperationStatistics().getResultEntitiesCount());
+        Assert.assertEquals(res1,entityCount.longValue());
 
         Assert.assertEquals(_RelationKind01.countRelationEntities(),new Long(10));
 

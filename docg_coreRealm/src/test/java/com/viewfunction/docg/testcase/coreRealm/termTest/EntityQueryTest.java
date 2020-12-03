@@ -1,5 +1,6 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
@@ -105,6 +106,18 @@ public class EntityQueryTest {
         Assert.assertTrue(conceptionEntitiesRetrieveResult.getOperationStatistics().getResultEntitiesCount() >0);
         Assert.assertNotNull(conceptionEntitiesRetrieveResult.getConceptionEntities());
         Assert.assertTrue(conceptionEntitiesRetrieveResult.getConceptionEntities().size() >0);
+
+        AttributesParameters attributesParameters = new AttributesParameters();
+        attributesParameters.setDefaultFilteringItem(defaultFilteringItem);
+        attributesParameters.addFilteringItem(new EqualFilteringItem("prop8",Float.valueOf("1234.66")), QueryParameters.FilteringLogic.AND);
+        attributesParameters.addFilteringItem(new EqualFilteringItem("prop3",new Integer(1234)), QueryParameters.FilteringLogic.AND);
+        //attributesParameters.addFilteringItem(new SimilarFilteringItem("prop12","this ",SimilarFilteringItem.MatchingType.BeginWith), QueryParameters.FilteringLogic.AND);
+        //attributesParameters.addFilteringItem(new SimilarFilteringItem("attribute3","oss", SimilarFilteringItem.MatchingType.BeginWith), QueryParameters.FilteringLogic.AND);
+        attributesParameters.addFilteringItem(new EqualFilteringItem("prop5",new Boolean(true)), QueryParameters.FilteringLogic.OR);
+        attributesParameters.addFilteringItem(new EqualFilteringItem("prop1",Long.parseLong("12345")), QueryParameters.FilteringLogic.OR);
+        Long entityCount = _ConceptionKind01.countEntities(attributesParameters);
+        long res1 = (conceptionEntitiesRetrieveResult.getOperationStatistics().getResultEntitiesCount());
+        Assert.assertEquals(res1,entityCount.longValue());
 
         QueryParameters nullValueQueryParameters = new QueryParameters();
         NullValueFilteringItem nullValueFilteringItem = new NullValueFilteringItem("propertyNotExist");

@@ -10,6 +10,15 @@ public class AttributesParameters {
     private FilteringItem defaultFilteringItem;
     private List<FilteringItem> andFilteringItemList;
     private List<FilteringItem> orFilteringItemList;
+    private boolean distinctMode = false;
+
+    public boolean isDistinctMode() {
+        return distinctMode;
+    }
+
+    public void setDistinctMode(boolean distinctMode) {
+        this.distinctMode = distinctMode;
+    }
 
     public AttributesParameters() {
         andFilteringItemList = new ArrayList<>();
