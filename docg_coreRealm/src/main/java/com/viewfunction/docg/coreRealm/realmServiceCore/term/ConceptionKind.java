@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
@@ -144,6 +145,15 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      * @return 实体对象操作返回结果
      */
     public EntitiesOperationResult purgeAllEntities() throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 计算符合过滤条件的当前概念类型的概念实体对象数量
+     *
+     * @param attributesParameters AttributesParameters 查询过滤条件
+     *
+     * @return 概念实体数量
+     */
+    public Long countEntities(AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException;
 
     /**
      * 查询符合过滤条件的当前概念类型的概念实体对象

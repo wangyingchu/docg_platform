@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
@@ -322,6 +323,29 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
+    }
+
+    @Override
+    public Long countEntities(AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        return null;
     }
 
     @Override

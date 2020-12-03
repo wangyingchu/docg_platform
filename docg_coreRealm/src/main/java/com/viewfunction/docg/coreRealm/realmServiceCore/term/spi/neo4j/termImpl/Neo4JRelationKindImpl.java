@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
@@ -96,6 +97,31 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
         CoreRealmFunctionNotSupportedException exception = new CoreRealmFunctionNotSupportedException();
         exception.setCauseMessage("Neo4J storage implements doesn't support this function");
         throw exception;
+    }
+
+    @Override
+    public Long countRelationEntities(AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        return null;
     }
 
     @Override

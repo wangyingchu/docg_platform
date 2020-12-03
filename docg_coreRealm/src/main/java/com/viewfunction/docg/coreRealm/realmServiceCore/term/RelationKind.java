@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
@@ -62,6 +63,15 @@ public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttr
      * @return 关系实体数量
      */
     public Long countRelationEntitiesWithOffspring() throws CoreRealmFunctionNotSupportedException;
+
+    /**
+     * 计算符合过滤条件的当前关系类型的关系实体对象数量
+     *
+     * @param attributesParameters AttributesParameters 查询过滤条件
+     *
+     * @return 关系实体数量
+     */
+    public Long countRelationEntities(AttributesParameters attributesParameters)  throws CoreRealmServiceEntityExploreException;
 
     /**
      * 查询符合过滤条件的当前关系类型的关系实体对象

@@ -13,6 +13,8 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="docg_coreRealm" target="11" />
+      <module name="docg_platform" target="11" />
+      <module name="docg_realmKnowledgeManage" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
