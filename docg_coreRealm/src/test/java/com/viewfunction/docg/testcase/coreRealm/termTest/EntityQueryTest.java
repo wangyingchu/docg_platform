@@ -115,7 +115,7 @@ public class EntityQueryTest {
         //attributesParameters.addFilteringItem(new SimilarFilteringItem("attribute3","oss", SimilarFilteringItem.MatchingType.BeginWith), QueryParameters.FilteringLogic.AND);
         attributesParameters.addFilteringItem(new EqualFilteringItem("prop5",new Boolean(true)), QueryParameters.FilteringLogic.OR);
         attributesParameters.addFilteringItem(new EqualFilteringItem("prop1",Long.parseLong("12345")), QueryParameters.FilteringLogic.OR);
-        Long entityCount = _ConceptionKind01.countEntities(attributesParameters);
+        Long entityCount = _ConceptionKind01.countEntities(attributesParameters,false);
         long res1 = (conceptionEntitiesRetrieveResult.getOperationStatistics().getResultEntitiesCount());
         Assert.assertEquals(res1,entityCount.longValue());
 

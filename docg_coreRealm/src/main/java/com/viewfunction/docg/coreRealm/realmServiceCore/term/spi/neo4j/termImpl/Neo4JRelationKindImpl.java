@@ -101,10 +101,10 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
     }
 
     @Override
-    public Long countRelationEntities(AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+    public Long countRelationEntities(AttributesParameters attributesParameters,boolean isDistinctMode) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
         if (attributesParameters != null) {
             QueryParameters queryParameters = new QueryParameters();
-            queryParameters.setDistinctMode(attributesParameters.isDistinctMode());
+            queryParameters.setDistinctMode(isDistinctMode);
             queryParameters.setResultNumber(100000000);
             queryParameters.setDefaultFilteringItem(attributesParameters.getDefaultFilteringItem());
             if (attributesParameters.getAndFilteringItemsList() != null) {

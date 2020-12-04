@@ -112,9 +112,8 @@ public class RelationKindTest {
         Assert.assertTrue(_RelationEntitiesRetrieveResult.getRelationEntities().size()<10);
 
         AttributesParameters attributesParameters = new AttributesParameters();
-        attributesParameters.setDistinctMode(true);
         attributesParameters.setDefaultFilteringItem(new GreaterThanEqualFilteringItem("relProp1",500l));
-        Long entityCount = _RelationKind01.countRelationEntities(attributesParameters);
+        Long entityCount = _RelationKind01.countRelationEntities(attributesParameters,true);
         long res1 = (_RelationEntitiesRetrieveResult.getOperationStatistics().getResultEntitiesCount());
         Assert.assertEquals(res1,entityCount.longValue());
 

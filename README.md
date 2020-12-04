@@ -478,10 +478,11 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * 计算符合过滤条件的当前概念类型的概念实体对象数量
      *
      * @param attributesParameters AttributesParameters 查询过滤条件
+     * @param attributesParameters isDistinctMode 是否不允许重复数据
      *
      * @return 概念实体数量
      */
-    public Long countEntities(AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
+    public Long countEntities(AttributesParameters attributesParameters,boolean isDistinctMode) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
 
     /**
      * 查询符合过滤条件的当前概念类型的概念实体对象
@@ -628,10 +629,10 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * 计算符合过滤条件的当前关系类型的关系实体对象数量
      *
      * @param attributesParameters AttributesParameters 查询过滤条件
-     *
+     * @param attributesParameters isDistinctMode 是否不允许重复数据
      * @return 关系实体数量
      */
-    public Long countRelationEntities(AttributesParameters attributesParameters)  throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
+    public Long countRelationEntities(AttributesParameters attributesParameters, boolean isDistinctMode)  throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
 
     /**
      * 查询符合过滤条件的当前关系类型的关系实体对象

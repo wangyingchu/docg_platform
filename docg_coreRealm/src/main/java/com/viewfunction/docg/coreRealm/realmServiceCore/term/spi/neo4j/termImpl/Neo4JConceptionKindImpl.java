@@ -327,10 +327,10 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public Long countEntities(AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+    public Long countEntities(AttributesParameters attributesParameters,boolean isDistinctMode) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
         if (attributesParameters != null) {
             QueryParameters queryParameters = new QueryParameters();
-            queryParameters.setDistinctMode(attributesParameters.isDistinctMode());
+            queryParameters.setDistinctMode(isDistinctMode);
             queryParameters.setResultNumber(100000000);
             queryParameters.setDefaultFilteringItem(attributesParameters.getDefaultFilteringItem());
             if (attributesParameters.getAndFilteringItemsList() != null) {
