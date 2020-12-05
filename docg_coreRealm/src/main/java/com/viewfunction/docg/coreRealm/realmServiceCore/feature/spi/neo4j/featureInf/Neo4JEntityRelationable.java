@@ -403,7 +403,7 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
     }
 
     default Long countRelatedConceptionEntities(String targetConceptionKind, String relationKind, RelationDirection relationDirection, int maxJump,
-                                               AttributesParameters relationAttributesParameters, AttributesParameters conceptionAttributesParameters){
+                                               AttributesParameters relationAttributesParameters, AttributesParameters conceptionAttributesParameters,boolean isDistinctMode){
         if (this.getEntityUID() != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try {

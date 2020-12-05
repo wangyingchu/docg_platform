@@ -1,6 +1,8 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.ResultEntitiesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.SortingItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
@@ -1657,6 +1659,142 @@ public class CypherBuilder {
                 }
                 ongoingReadingWithoutWhere = Cypher.match(resultRelationship);
         }
+
+        StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
+        switch (sourcePropertyFunctionType) {
+            case ID:
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
+                break;
+            default:
+        }
+
+        Statement statement = null;
+        if (ongoingReadingWithWhere != null) {
+            switch(returnRelationableDataType){
+                case BOTH:
+                    statement = ongoingReadingWithWhere.returning(resultNodes,resultRelationship).build();
+                    break;
+                case NODE:
+                    statement = ongoingReadingWithWhere.returningDistinct(resultNodes).build();
+                    break;
+                case RELATION:
+                    statement = ongoingReadingWithWhere.returningDistinct(resultRelationship).build();
+                    break;
+                case COUNT_NODE:
+                    statement = ongoingReadingWithWhere.returning(Functions.countDistinct(resultNodes)).build();
+                    break;
+                case COUNT_RELATION:
+                    statement = ongoingReadingWithWhere.returningDistinct(Functions2.count(resultRelationship)).build();
+                    break;
+            }
+        } else {
+            switch(returnRelationableDataType){
+                case BOTH:
+                    statement = ongoingReadingWithoutWhere.returning(resultNodes,resultRelationship).build();
+                    break;
+                case NODE:
+                    statement = ongoingReadingWithoutWhere.returningDistinct(resultNodes).build();
+                    break;
+                case RELATION:
+                    statement = ongoingReadingWithoutWhere.returningDistinct(resultRelationship).build();
+                    break;
+                case COUNT_NODE:
+                    statement = ongoingReadingWithoutWhere.returning(Functions.countDistinct(resultNodes)).build();
+                    break;
+                case COUNT_RELATION:
+                    statement = ongoingReadingWithoutWhere.returningDistinct(Functions2.count(resultRelationship)).build();
+                    break;
+            }
+        }
+
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        return rel;
+    }
+
+    public static String matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherFunctionType sourcePropertyFunctionType, Object sourcePropertyValue,
+                                                                            String targetConceptionKind, String relationKind,
+                                                                            RelationDirection relationDirection, int minJump, int maxJump,
+                                                                            AttributesParameters relationAttributesParameters, AttributesParameters conceptionAttributesParameters,
+                                                                            ResultEntitiesParameters resultEntitiesParameters,ReturnRelationableDataType returnRelationableDataType) throws CoreRealmServiceEntityExploreException {
+        Node sourceNode = Cypher.anyNode().named(sourceNodeName);
+        Node resultNodes = targetConceptionKind != null ? Cypher.node(targetConceptionKind).named(operationResultName):Cypher.anyNode().named(operationResultName);
+        StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = null;
+        Relationship resultRelationship = null;
+
+        switch (relationDirection) {
+            case FROM:
+                if(minJump != 0 & maxJump != 0 & maxJump>=minJump) {
+                    resultRelationship = sourceNode.relationshipFrom(resultNodes, relationKind).length(minJump,maxJump).named(relationResultName);
+                }else{
+                    resultRelationship = sourceNode.relationshipFrom(resultNodes, relationKind).unbounded().named(relationResultName);
+                }
+                ongoingReadingWithoutWhere = Cypher.match(resultRelationship);
+                break;
+            case TO:
+                if(minJump != 0 & maxJump != 0 & maxJump>=minJump) {
+                    resultRelationship = sourceNode.relationshipTo(resultNodes, relationKind).length(minJump,maxJump).named(relationResultName);
+                }else{
+                    resultRelationship = sourceNode.relationshipTo(resultNodes, relationKind).unbounded().named(relationResultName);
+                }
+                ongoingReadingWithoutWhere = Cypher.match(resultRelationship);
+                break;
+            case TWO_WAY:
+                if(minJump != 0 & maxJump != 0 & maxJump>=minJump) {
+                    resultRelationship = sourceNode.relationshipBetween(resultNodes, relationKind).length(minJump,maxJump).named(relationResultName);
+                }else{
+                    resultRelationship = sourceNode.relationshipBetween(resultNodes, relationKind).unbounded().named(relationResultName);
+                }
+                ongoingReadingWithoutWhere = Cypher.match(resultRelationship);
+        }
+
+
+        if(relationAttributesParameters != null){
+            FilteringItem defaultFilteringItem = relationAttributesParameters.getDefaultFilteringItem();
+            List<FilteringItem> andFilteringItemList = relationAttributesParameters.getAndFilteringItemsList();
+            List<FilteringItem> orFilteringItemList = relationAttributesParameters.getOrFilteringItemsList();
+            if (defaultFilteringItem == null) {
+                if ((andFilteringItemList != null && andFilteringItemList.size() > 0) ||
+                        (orFilteringItemList != null && orFilteringItemList.size() > 0)) {
+                    logger.error("Default Filtering Item is required");
+                    CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+                    e.setCauseMessage("Default Filtering Item is required");
+                    throw e;
+                }
+            } else {
+                StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = Cypher.match(resultRelationship).where(CommonOperationUtil.getQueryCondition(resultRelationship, defaultFilteringItem));
+                if (andFilteringItemList != null && andFilteringItemList.size() > 0) {
+                    for (FilteringItem currentFilteringItem : andFilteringItemList) {
+                        ongoingReadingWithWhere = ongoingReadingWithWhere.and(CommonOperationUtil.getQueryCondition(resultRelationship, currentFilteringItem));
+                    }
+                }
+                if (orFilteringItemList != null && orFilteringItemList.size() > 0) {
+                    for (FilteringItem currentFilteringItem : orFilteringItemList) {
+                        ongoingReadingWithWhere = ongoingReadingWithWhere.or(CommonOperationUtil.getQueryCondition(resultRelationship, currentFilteringItem));
+                    }
+                }
+
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (sourcePropertyFunctionType) {

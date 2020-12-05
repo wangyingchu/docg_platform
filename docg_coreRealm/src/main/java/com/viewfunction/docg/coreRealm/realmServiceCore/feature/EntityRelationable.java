@@ -159,11 +159,12 @@ public interface EntityRelationable {
      * @param maxJump int 关联传播的最大跳数
      * @param relationAttributesParameters AttributesParameters 需要获取的数据的关系实体属性查询条件
      * @param conceptionAttributesParameters AttributesParameters 需要获取的数据的概念实体属性查询条件
+     * @param isDistinctMode boolean 是否不允许重复数据
      *
      * @return 符合条件的概念实体数量
      */
     public Long countRelatedConceptionEntities(String targetConceptionKind, String relationKind, RelationDirection relationDirection, int maxJump,
-                                               AttributesParameters relationAttributesParameters, AttributesParameters conceptionAttributesParameters);
+                                               AttributesParameters relationAttributesParameters, AttributesParameters conceptionAttributesParameters, boolean isDistinctMode);
 
     /**
      * 获取与当前实体关联的概念实体

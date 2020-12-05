@@ -68,7 +68,7 @@ public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttr
      * 计算符合过滤条件的当前关系类型的关系实体对象数量
      *
      * @param attributesParameters AttributesParameters 查询过滤条件
-     * @param attributesParameters isDistinctMode 是否不允许重复数据
+     * @param isDistinctMode boolean 是否不允许重复数据
      *
      * @return 关系实体数量
      */
