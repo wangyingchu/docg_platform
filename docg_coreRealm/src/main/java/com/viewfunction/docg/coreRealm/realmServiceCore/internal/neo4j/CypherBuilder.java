@@ -1720,6 +1720,7 @@ public class CypherBuilder {
         Node sourceNode = Cypher.anyNode().named(sourceNodeName);
         Node resultNodes = targetConceptionKind != null ? Cypher.node(targetConceptionKind).named(operationResultName):Cypher.anyNode().named(operationResultName);
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = null;
+        StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         Relationship resultRelationship = null;
 
         switch (relationDirection) {
@@ -1729,7 +1730,6 @@ public class CypherBuilder {
                 }else{
                     resultRelationship = sourceNode.relationshipFrom(resultNodes, relationKind).unbounded().named(relationResultName);
                 }
-                ongoingReadingWithoutWhere = Cypher.match(resultRelationship);
                 break;
             case TO:
                 if(minJump != 0 & maxJump != 0 & maxJump>=minJump) {
@@ -1737,7 +1737,6 @@ public class CypherBuilder {
                 }else{
                     resultRelationship = sourceNode.relationshipTo(resultNodes, relationKind).unbounded().named(relationResultName);
                 }
-                ongoingReadingWithoutWhere = Cypher.match(resultRelationship);
                 break;
             case TWO_WAY:
                 if(minJump != 0 & maxJump != 0 & maxJump>=minJump) {
@@ -1745,63 +1744,76 @@ public class CypherBuilder {
                 }else{
                     resultRelationship = sourceNode.relationshipBetween(resultNodes, relationKind).unbounded().named(relationResultName);
                 }
-                ongoingReadingWithoutWhere = Cypher.match(resultRelationship);
         }
-
+        ongoingReadingWithoutWhere = Cypher.match(resultRelationship);
 
         if(relationAttributesParameters != null){
-            FilteringItem defaultFilteringItem = relationAttributesParameters.getDefaultFilteringItem();
-            List<FilteringItem> andFilteringItemList = relationAttributesParameters.getAndFilteringItemsList();
-            List<FilteringItem> orFilteringItemList = relationAttributesParameters.getOrFilteringItemsList();
-            if (defaultFilteringItem == null) {
-                if ((andFilteringItemList != null && andFilteringItemList.size() > 0) ||
-                        (orFilteringItemList != null && orFilteringItemList.size() > 0)) {
+            FilteringItem defaultRelationFilteringItem = relationAttributesParameters.getDefaultFilteringItem();
+            List<FilteringItem> andRelationFilteringItemList = relationAttributesParameters.getAndFilteringItemsList();
+            List<FilteringItem> orRelationFilteringItemList = relationAttributesParameters.getOrFilteringItemsList();
+            if (defaultRelationFilteringItem == null) {
+                if ((andRelationFilteringItemList != null && andRelationFilteringItemList.size() > 0) ||
+                        (orRelationFilteringItemList != null && orRelationFilteringItemList.size() > 0)) {
                     logger.error("Default Filtering Item is required");
                     CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
                     e.setCauseMessage("Default Filtering Item is required");
                     throw e;
                 }
             } else {
-                StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = Cypher.match(resultRelationship).where(CommonOperationUtil.getQueryCondition(resultRelationship, defaultFilteringItem));
-                if (andFilteringItemList != null && andFilteringItemList.size() > 0) {
-                    for (FilteringItem currentFilteringItem : andFilteringItemList) {
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(CommonOperationUtil.getQueryCondition(resultRelationship, defaultRelationFilteringItem));
+                if (andRelationFilteringItemList != null && andRelationFilteringItemList.size() > 0) {
+                    for (FilteringItem currentFilteringItem : andRelationFilteringItemList) {
                         ongoingReadingWithWhere = ongoingReadingWithWhere.and(CommonOperationUtil.getQueryCondition(resultRelationship, currentFilteringItem));
                     }
                 }
-                if (orFilteringItemList != null && orFilteringItemList.size() > 0) {
-                    for (FilteringItem currentFilteringItem : orFilteringItemList) {
+                if (orRelationFilteringItemList != null && orRelationFilteringItemList.size() > 0) {
+                    for (FilteringItem currentFilteringItem : orRelationFilteringItemList) {
                         ongoingReadingWithWhere = ongoingReadingWithWhere.or(CommonOperationUtil.getQueryCondition(resultRelationship, currentFilteringItem));
                     }
                 }
-
             }
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (sourcePropertyFunctionType) {
             case ID:
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
+                if(ongoingReadingWithWhere != null){
+                    ongoingReadingWithWhere = ongoingReadingWithWhere.and(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
+                }else{
+                    ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
+                }
                 break;
             default:
+        }
+
+        if(conceptionAttributesParameters != null){
+            FilteringItem defaultConceptionFilteringItem = conceptionAttributesParameters.getDefaultFilteringItem();
+            List<FilteringItem> andConceptionFilteringItemList = conceptionAttributesParameters.getAndFilteringItemsList();
+            List<FilteringItem> orConceptionFilteringItemList = conceptionAttributesParameters.getOrFilteringItemsList();
+            if (defaultConceptionFilteringItem == null) {
+                if ((andConceptionFilteringItemList != null && andConceptionFilteringItemList.size() > 0) ||
+                        (orConceptionFilteringItemList != null && orConceptionFilteringItemList.size() > 0)) {
+                    logger.error("Default Filtering Item is required");
+                    CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+                    e.setCauseMessage("Default Filtering Item is required");
+                    throw e;
+                }
+            } else {
+                if(ongoingReadingWithWhere == null){
+                    ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(CommonOperationUtil.getQueryCondition(resultNodes, defaultConceptionFilteringItem));
+                }else{
+                    ongoingReadingWithWhere = ongoingReadingWithWhere.and(CommonOperationUtil.getQueryCondition(resultNodes, defaultConceptionFilteringItem));
+                }
+                if (andConceptionFilteringItemList != null && andConceptionFilteringItemList.size() > 0) {
+                    for (FilteringItem currentFilteringItem : andConceptionFilteringItemList) {
+                        ongoingReadingWithWhere = ongoingReadingWithWhere.and(CommonOperationUtil.getQueryCondition(resultNodes, currentFilteringItem));
+                    }
+                }
+                if (orConceptionFilteringItemList != null && orConceptionFilteringItemList.size() > 0) {
+                    for (FilteringItem currentFilteringItem : orConceptionFilteringItemList) {
+                        ongoingReadingWithWhere = ongoingReadingWithWhere.or(CommonOperationUtil.getQueryCondition(resultNodes, currentFilteringItem));
+                    }
+                }
+            }
         }
 
         Statement statement = null;

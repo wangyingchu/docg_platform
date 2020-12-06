@@ -403,17 +403,23 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
     }
 
     default Long countRelatedConceptionEntities(String targetConceptionKind, String relationKind, RelationDirection relationDirection, int maxJump,
-                                               AttributesParameters relationAttributesParameters, AttributesParameters conceptionAttributesParameters,boolean isDistinctMode){
+                                               AttributesParameters relationAttributesParameters, AttributesParameters conceptionAttributesParameters,boolean isDistinctMode) throws CoreRealmServiceEntityExploreException {
         if (this.getEntityUID() != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try {
+                ResultEntitiesParameters resultEntitiesParameters = new ResultEntitiesParameters();
+                resultEntitiesParameters.setDistinctMode(isDistinctMode);
                 String queryCql = CypherBuilder.matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID, Long.parseLong(getEntityUID()),
-                        targetConceptionKind,relationKind, relationDirection,1,maxJump, CypherBuilder.ReturnRelationableDataType.NODE);
+                        targetConceptionKind,relationKind, relationDirection,1,maxJump, relationAttributesParameters,conceptionAttributesParameters,resultEntitiesParameters,CypherBuilder.ReturnRelationableDataType.COUNT_NODE);
 
 
+                GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count","DISTINCT");
+                Long countResult = (Long)workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer,queryCql);
 
 
+                System.out.println(countResult);
 
+return countResult;
                 /*
                 GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(targetConceptionKind,workingGraphOperationExecutor);
                 Object relationEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);

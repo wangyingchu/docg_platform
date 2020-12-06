@@ -1,10 +1,12 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.GreaterThanFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.LessThanFilteringItem;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
@@ -32,7 +34,7 @@ public class EntityRelationableTest {
     }
 
     @Test
-    public void testEntityRelationableFunction() throws CoreRealmServiceRuntimeException {
+    public void testEntityRelationableFunction() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
 
@@ -310,16 +312,24 @@ public class EntityRelationableTest {
         }
 
         Map<String,Object> newEntityValueCommon= new HashMap<>();
-        newEntityValueCommon.put("prop1","fromEntity");
+        newEntityValueCommon.put("prop1",10000);
+        newEntityValueCommon.put("prop2",20000);
+        newEntityValueCommon.put("prop3",30000);
         ConceptionEntityValue conceptionEntityValueCommon1 = new ConceptionEntityValue(newEntityValueCommon);
         ConceptionEntity _ConceptionEntityA = _ConceptionKind0A.newEntity(conceptionEntityValueCommon1,false);
 
-        ConceptionEntity _ConceptionEntityB1 = _ConceptionKind0B.newEntity(conceptionEntityValueCommon1,false);
-        ConceptionEntity _ConceptionEntityB2 = _ConceptionKind0B.newEntity(conceptionEntityValueCommon1,false);
+        Map<String,Object> newEntityValueCommon2= new HashMap<>();
+        newEntityValueCommon2.put("kindName","ConceptionKind0B");
+        ConceptionEntityValue conceptionEntityValueCommon2 = new ConceptionEntityValue(newEntityValueCommon2);
+        ConceptionEntity _ConceptionEntityB1 = _ConceptionKind0B.newEntity(conceptionEntityValueCommon2,false);
+        ConceptionEntity _ConceptionEntityB2 = _ConceptionKind0B.newEntity(conceptionEntityValueCommon2,false);
 
-        ConceptionEntity _ConceptionEntityC1 = _ConceptionKind0C.newEntity(conceptionEntityValueCommon1,false);
-        ConceptionEntity _ConceptionEntityC2 = _ConceptionKind0C.newEntity(conceptionEntityValueCommon1,false);
-        ConceptionEntity _ConceptionEntityC3 = _ConceptionKind0C.newEntity(conceptionEntityValueCommon1,false);
+        Map<String,Object> newEntityValueCommon3= new HashMap<>();
+        newEntityValueCommon3.put("kindName","ConceptionKind0C");
+        ConceptionEntityValue conceptionEntityValueCommon3 = new ConceptionEntityValue(newEntityValueCommon3);
+        ConceptionEntity _ConceptionEntityC1 = _ConceptionKind0C.newEntity(conceptionEntityValueCommon3,false);
+        ConceptionEntity _ConceptionEntityC2 = _ConceptionKind0C.newEntity(conceptionEntityValueCommon3,false);
+        ConceptionEntity _ConceptionEntityC3 = _ConceptionKind0C.newEntity(conceptionEntityValueCommon3,false);
 
         _ConceptionEntityA.attachFromRelation(_ConceptionEntityB1.getConceptionEntityUID(),"testRelationTypeType1",null,true);
         _ConceptionEntityA.attachFromRelation(_ConceptionEntityB2.getConceptionEntityUID(),"testRelationTypeType1",null,true);
@@ -350,6 +360,17 @@ public class EntityRelationableTest {
 
         Long countRelatedNodesNumber = _ConceptionEntityA.countRelatedConceptionEntities(null,"testRelationTypeType1",RelationDirection.TWO_WAY,2);
         Assert.assertEquals(countRelatedNodesNumber,new Long("4"));
+
+
+        AttributesParameters relationAttributesParameters =new AttributesParameters();
+        relationAttributesParameters.setDefaultFilteringItem(new EqualFilteringItem("prop1",10000l));
+
+        Long countRelatedConceptionEntitiesRes = _ConceptionEntityA.countRelatedConceptionEntities(null,"testRelationTypeType1",RelationDirection.TWO_WAY,2,null,relationAttributesParameters,true);
+
+        //System.out.println(countRelatedConceptionEntitiesRes);
+        Assert.assertEquals(countRelatedConceptionEntitiesRes,new Long("5"));
+
+
 
         RelationEntity resultRelationEntity = _ConceptionEntityA.attachFromRelation(_ConceptionEntityB2.getConceptionEntityUID(),"detachRelTestRelation",null,false);
         RelationEntity resultRelationEntity2 = _ConceptionEntityB1.attachFromRelation(_ConceptionEntityB2.getConceptionEntityUID(),"detachRelTestRelation",null,false);
