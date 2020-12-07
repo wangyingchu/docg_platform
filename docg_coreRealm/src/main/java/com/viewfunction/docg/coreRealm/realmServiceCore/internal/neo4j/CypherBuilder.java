@@ -1726,7 +1726,6 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         Relationship resultRelationship = null;
         boolean isDistinctMode = resultEntitiesParameters != null? resultEntitiesParameters.isDistinctMode() : true;
-
         switch (relationDirection) {
             case FROM:
                 if(minJump != 0 & maxJump != 0 & maxJump>=minJump) {
@@ -1750,7 +1749,12 @@ public class CypherBuilder {
                 }
         }
         ongoingReadingWithoutWhere = Cypher.match(resultRelationship);
-
+        /* example for relation properties query
+        MATCH path=()-[relationResult:`testRelationTypeType1`*1..2]->()
+        UNWIND relationships(path) AS rel
+        MATCH (sourceNode)-[relationResult:`testRelationTypeType1`*1..2]-(operationResult) WHERE (id(sourceNode) = 2130 AND rel.dataOrigin = 'dataOrigin002' AND operationResult.kindName = 'ConceptionKind0C')
+        RETURN count(DISTINCT operationResult)
+        */
         if(relationAttributesParameters != null){
             FilteringItem defaultRelationFilteringItem = relationAttributesParameters.getDefaultFilteringItem();
             List<FilteringItem> andRelationFilteringItemList = relationAttributesParameters.getAndFilteringItemsList();
