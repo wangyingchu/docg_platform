@@ -21,6 +21,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 
+import static com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder.ReturnRelationableDataType.NODE;
+import static com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder.ReturnRelationableDataType.RELATION;
+
 public class CypherBuilder {
 
     private static Logger logger = LoggerFactory.getLogger(CypherBuilder.class);
@@ -1817,76 +1820,184 @@ public class CypherBuilder {
             }
         }
 
+        int defaultReturnRecordNumber = 500;
+        int skipRecordNumber = 0;
+        int limitRecordNumber = 0;
+        if(resultEntitiesParameters != null){
+            int startPage = resultEntitiesParameters.getStartPage();
+            int endPage = resultEntitiesParameters.getEndPage();
+            int pageSize = resultEntitiesParameters.getPageSize();
+            int resultNumber = resultEntitiesParameters.getResultNumber();
+
+            List<SortingItem> sortingItemList = resultEntitiesParameters.getSortingItems();
+
+            SortItem[] sortItemArray = null;
+            if ((sortingItemList.size() > 0 && returnRelationableDataType.equals(NODE)) || (sortingItemList.size() > 0 && returnRelationableDataType.equals(RELATION))){
+                sortItemArray = new SortItem[sortingItemList.size()];
+                for (int i = 0; i < sortingItemList.size(); i++) {
+                    SortingItem currentSortingItem = sortingItemList.get(i);
+                    String attributeName = currentSortingItem.getAttributeName();
+                    QueryParameters.SortingLogic sortingLogic = currentSortingItem.getSortingLogic();
+                    switch (sortingLogic) {
+                        case ASC:
+                            switch(returnRelationableDataType){
+                                case NODE:
+                                    sortItemArray[i] = Cypher.sort(resultNodes.property(attributeName)).ascending();
+                                    break;
+                                case RELATION:
+                                    sortItemArray[i] = Cypher.sort(resultRelationship.property(attributeName)).ascending();
+                                    break;
+                            }
+                            break;
+                        case DESC:
+                            switch(returnRelationableDataType){
+                                case NODE:
+                                    sortItemArray[i] = Cypher.sort(resultNodes.property(attributeName)).descending();
+                                    break;
+                                case RELATION:
+                                    sortItemArray[i] = Cypher.sort(resultRelationship.property(attributeName)).descending();
+                                    break;
+                            }
+                    }
+                }
+            }
+
+            if (startPage != 0) {
+                if (startPage < 0) {
+                    String exceptionMessage = "start page must great then zero";
+                    CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
+                    coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
+                    throw coreRealmServiceEntityExploreException;
+                }
+                if (pageSize < 0) {
+                    String exceptionMessage = "page size must great then zero";
+                    CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
+                    coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
+                    throw coreRealmServiceEntityExploreException;
+                }
+
+                int runtimePageSize = pageSize != 0 ? pageSize : 50;
+                int runtimeStartPage = startPage - 1;
+
+                if (endPage != 0) {
+                    //get data from start page to end page, each page has runtimePageSize number of record
+                    if (endPage < 0 || endPage <= startPage) {
+                        String exceptionMessage = "end page must great than start page";
+                        CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
+                        coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
+                        throw coreRealmServiceEntityExploreException;
+                    }
+                    int runtimeEndPage = endPage - 1;
+
+                    skipRecordNumber = runtimePageSize * runtimeStartPage;
+                    limitRecordNumber = (runtimeEndPage - runtimeStartPage) * runtimePageSize;
+                } else {
+                    //filter the data before the start page
+                    limitRecordNumber = runtimePageSize * runtimeStartPage;
+                }
+            } else {
+                //if there is no page parameters,use resultNumber to control result information number
+                if (resultNumber != 0) {
+                    if (resultNumber < 0) {
+                        String exceptionMessage = "result number must great then zero";
+                        CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
+                        coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
+                        throw coreRealmServiceEntityExploreException;
+                    }
+                    limitRecordNumber = resultNumber;
+                }
+            }
+            if (limitRecordNumber == 0) {
+                limitRecordNumber = defaultReturnRecordNumber;
+            }
+        }
+
+        StatementBuilder.OngoingReadingAndReturn ongoingReadingAndReturn = null;
         Statement statement = null;
         if (ongoingReadingWithWhere != null) {
             switch(returnRelationableDataType){
                 case BOTH:
-                    statement = ongoingReadingWithWhere.returning(resultNodes,resultRelationship).build();
+                    ongoingReadingAndReturn = ongoingReadingWithWhere.returning(resultNodes,resultRelationship);
                     break;
                 case NODE:
                     if(isDistinctMode){
-                        statement = ongoingReadingWithWhere.returningDistinct(resultNodes).build();
+                        ongoingReadingAndReturn = ongoingReadingWithWhere.returningDistinct(resultNodes);
                     }else{
-                        statement = ongoingReadingWithWhere.returning(resultNodes).build();
+                        ongoingReadingAndReturn = ongoingReadingWithWhere.returning(resultNodes);
                     }
                     break;
                 case RELATION:
                     if(isDistinctMode){
-                        statement = ongoingReadingWithWhere.returningDistinct(resultRelationship).build();
+                        ongoingReadingAndReturn = ongoingReadingWithWhere.returningDistinct(resultRelationship);
                     }else{
-                        statement = ongoingReadingWithWhere.returning(resultRelationship).build();
+                        ongoingReadingAndReturn = ongoingReadingWithWhere.returning(resultRelationship);
                     }
                     break;
                 case COUNT_NODE:
                     if(isDistinctMode){
-                        statement = ongoingReadingWithWhere.returning(Functions.countDistinct(resultNodes)).build();
+                        ongoingReadingAndReturn = ongoingReadingWithWhere.returning(Functions.countDistinct(resultNodes));
                     }else{
-                        statement = ongoingReadingWithWhere.returning(Functions.count(resultNodes)).build();
+                        ongoingReadingAndReturn = ongoingReadingWithWhere.returning(Functions.count(resultNodes));
                     }
                     break;
                 case COUNT_RELATION:
                     if(isDistinctMode){
-                        statement = ongoingReadingWithWhere.returningDistinct(Functions2.count(resultRelationship)).build();
+                        ongoingReadingAndReturn = ongoingReadingWithWhere.returningDistinct(Functions2.count(resultRelationship));
                     }else{
-                        statement = ongoingReadingWithWhere.returning(Functions2.count(resultRelationship)).build();
+                        ongoingReadingAndReturn = ongoingReadingWithWhere.returning(Functions2.count(resultRelationship));
                     }
                     break;
             }
         } else {
             switch(returnRelationableDataType){
                 case BOTH:
-                    statement = ongoingReadingWithoutWhere.returning(resultNodes,resultRelationship).build();
+                    ongoingReadingAndReturn = ongoingReadingWithoutWhere.returning(resultNodes,resultRelationship);
                     break;
                 case NODE:
                     if(isDistinctMode){
-                        statement = ongoingReadingWithoutWhere.returningDistinct(resultNodes).build();
+                        ongoingReadingAndReturn = ongoingReadingWithoutWhere.returningDistinct(resultNodes);
                     }else{
-                        statement = ongoingReadingWithoutWhere.returning(resultNodes).build();
+                        ongoingReadingAndReturn = ongoingReadingWithoutWhere.returning(resultNodes);
                     }
                     break;
                 case RELATION:
                     if(isDistinctMode){
-                        statement = ongoingReadingWithoutWhere.returningDistinct(resultRelationship).build();
+                        ongoingReadingAndReturn = ongoingReadingWithoutWhere.returningDistinct(resultRelationship);
                     }else{
-                        statement = ongoingReadingWithoutWhere.returning(resultRelationship).build();
+                        ongoingReadingAndReturn = ongoingReadingWithoutWhere.returning(resultRelationship);
                     }
                     break;
                 case COUNT_NODE:
                     if(isDistinctMode){
-                        statement = ongoingReadingWithoutWhere.returning(Functions.countDistinct(resultNodes)).build();
+                        ongoingReadingAndReturn = ongoingReadingWithoutWhere.returning(Functions.countDistinct(resultNodes));
                     }else{
-                        statement = ongoingReadingWithoutWhere.returning(Functions.count(resultNodes)).build();
+                        ongoingReadingAndReturn = ongoingReadingWithoutWhere.returning(Functions.count(resultNodes));
                     }
                     break;
                 case COUNT_RELATION:
                     if(isDistinctMode){
-                        statement = ongoingReadingWithoutWhere.returningDistinct(Functions2.count(resultRelationship)).build();
+                        ongoingReadingAndReturn = ongoingReadingWithoutWhere.returningDistinct(Functions2.count(resultRelationship));
                     }else{
-                        statement = ongoingReadingWithoutWhere.returning(Functions2.count(resultRelationship)).build();
+                        ongoingReadingAndReturn = ongoingReadingWithoutWhere.returning(Functions2.count(resultRelationship));
                     }
                     break;
             }
         }
+
+
+
+
+
+
+        if (skipRecordNumber != 0){
+            statement = ongoingReadingAndReturn.skip(skipRecordNumber).limit(limitRecordNumber).build();
+        }else{
+            statement = ongoingReadingAndReturn.limit(limitRecordNumber).build();
+        }
+
+
+
+
 
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}", rel);

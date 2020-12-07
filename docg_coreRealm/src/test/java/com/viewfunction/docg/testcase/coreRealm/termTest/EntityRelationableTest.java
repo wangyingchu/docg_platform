@@ -372,6 +372,8 @@ public class EntityRelationableTest {
 
         ResultEntitiesParameters resultEntitiesParameters= new ResultEntitiesParameters();
         resultEntitiesParameters.setDistinctMode(true);
+        resultEntitiesParameters.addSortingAttribute("kindName", QueryParameters.SortingLogic.DESC);
+        //resultEntitiesParameters.setResultNumber(10000);
         List<ConceptionEntity> resultListConceptionEntityList2 = _ConceptionEntityA.getRelatedConceptionEntities(null,"testRelationTypeType1",RelationDirection.TWO_WAY,2,null,conceptionAttributesParameters,resultEntitiesParameters);
 
         Assert.assertEquals(resultListConceptionEntityList2.size(),2);
@@ -385,6 +387,12 @@ public class EntityRelationableTest {
                 );
             }
         }
+
+        resultEntitiesParameters.setStartPage(2);
+        resultEntitiesParameters.setEndPage(4);
+        resultEntitiesParameters.setPageSize(10);
+        resultListConceptionEntityList2 = _ConceptionEntityA.getRelatedConceptionEntities(null,"testRelationTypeType1",RelationDirection.TWO_WAY,2,null,conceptionAttributesParameters,resultEntitiesParameters);
+        Assert.assertEquals(resultListConceptionEntityList2.size(),0);
 
         RelationEntity resultRelationEntity = _ConceptionEntityA.attachFromRelation(_ConceptionEntityB2.getConceptionEntityUID(),"detachRelTestRelation",null,false);
         RelationEntity resultRelationEntity2 = _ConceptionEntityB1.attachFromRelation(_ConceptionEntityB2.getConceptionEntityUID(),"detachRelTestRelation",null,false);
