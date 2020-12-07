@@ -411,38 +411,33 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
                 resultEntitiesParameters.setDistinctMode(isDistinctMode);
                 String queryCql = CypherBuilder.matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID, Long.parseLong(getEntityUID()),
                         targetConceptionKind,relationKind, relationDirection,1,maxJump, relationAttributesParameters,conceptionAttributesParameters,resultEntitiesParameters,CypherBuilder.ReturnRelationableDataType.COUNT_NODE);
-
-
-                GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count","DISTINCT");
-                Long countResult = (Long)workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer,queryCql);
-
-
-                System.out.println(countResult);
-
-return countResult;
-                /*
-                GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(targetConceptionKind,workingGraphOperationExecutor);
-                Object relationEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
-                return relationEntityList != null ? (List<ConceptionEntity>)relationEntityList : null;
-                */
-
-
-
-
-
+                GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = isDistinctMode ?
+                        new GetLongFormatAggregatedReturnValueTransformer("count","DISTINCT"):
+                        new GetLongFormatAggregatedReturnValueTransformer("count");
+                Object countResult = workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer,queryCql);
+                if(countResult != null){
+                    return (Long)countResult;
+                }
             }finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }
-
         }
         return null;
     }
 
     default List<ConceptionEntity> getRelatedConceptionEntities(String targetConceptionKind, String relationKind, RelationDirection relationDirection, int maxJump,
-                                                               AttributesParameters relationAttributesParameters, AttributesParameters conceptionAttributesParameters, ResultEntitiesParameters resultEntitiesParameters){
+                                                               AttributesParameters relationAttributesParameters, AttributesParameters conceptionAttributesParameters, ResultEntitiesParameters resultEntitiesParameters) throws CoreRealmServiceEntityExploreException {
         if (this.getEntityUID() != null) {
-
-
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                String queryCql = CypherBuilder.matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID, Long.parseLong(getEntityUID()),
+                        targetConceptionKind,relationKind, relationDirection,1,maxJump, relationAttributesParameters,conceptionAttributesParameters,resultEntitiesParameters,CypherBuilder.ReturnRelationableDataType.NODE);
+                GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(targetConceptionKind,workingGraphOperationExecutor);
+                Object relationEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
+                return relationEntityList != null ? (List<ConceptionEntity>)relationEntityList : null;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
         }
         return null;
     }

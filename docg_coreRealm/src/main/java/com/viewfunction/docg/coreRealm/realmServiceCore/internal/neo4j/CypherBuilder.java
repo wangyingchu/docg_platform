@@ -1722,6 +1722,7 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = null;
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         Relationship resultRelationship = null;
+        boolean isDistinctMode = resultEntitiesParameters != null? resultEntitiesParameters.isDistinctMode() : true;
 
         switch (relationDirection) {
             case FROM:
@@ -1823,16 +1824,32 @@ public class CypherBuilder {
                     statement = ongoingReadingWithWhere.returning(resultNodes,resultRelationship).build();
                     break;
                 case NODE:
-                    statement = ongoingReadingWithWhere.returningDistinct(resultNodes).build();
+                    if(isDistinctMode){
+                        statement = ongoingReadingWithWhere.returningDistinct(resultNodes).build();
+                    }else{
+                        statement = ongoingReadingWithWhere.returning(resultNodes).build();
+                    }
                     break;
                 case RELATION:
-                    statement = ongoingReadingWithWhere.returningDistinct(resultRelationship).build();
+                    if(isDistinctMode){
+                        statement = ongoingReadingWithWhere.returningDistinct(resultRelationship).build();
+                    }else{
+                        statement = ongoingReadingWithWhere.returning(resultRelationship).build();
+                    }
                     break;
                 case COUNT_NODE:
-                    statement = ongoingReadingWithWhere.returning(Functions.countDistinct(resultNodes)).build();
+                    if(isDistinctMode){
+                        statement = ongoingReadingWithWhere.returning(Functions.countDistinct(resultNodes)).build();
+                    }else{
+                        statement = ongoingReadingWithWhere.returning(Functions.count(resultNodes)).build();
+                    }
                     break;
                 case COUNT_RELATION:
-                    statement = ongoingReadingWithWhere.returningDistinct(Functions2.count(resultRelationship)).build();
+                    if(isDistinctMode){
+                        statement = ongoingReadingWithWhere.returningDistinct(Functions2.count(resultRelationship)).build();
+                    }else{
+                        statement = ongoingReadingWithWhere.returning(Functions2.count(resultRelationship)).build();
+                    }
                     break;
             }
         } else {
@@ -1841,16 +1858,32 @@ public class CypherBuilder {
                     statement = ongoingReadingWithoutWhere.returning(resultNodes,resultRelationship).build();
                     break;
                 case NODE:
-                    statement = ongoingReadingWithoutWhere.returningDistinct(resultNodes).build();
+                    if(isDistinctMode){
+                        statement = ongoingReadingWithoutWhere.returningDistinct(resultNodes).build();
+                    }else{
+                        statement = ongoingReadingWithoutWhere.returning(resultNodes).build();
+                    }
                     break;
                 case RELATION:
-                    statement = ongoingReadingWithoutWhere.returningDistinct(resultRelationship).build();
+                    if(isDistinctMode){
+                        statement = ongoingReadingWithoutWhere.returningDistinct(resultRelationship).build();
+                    }else{
+                        statement = ongoingReadingWithoutWhere.returning(resultRelationship).build();
+                    }
                     break;
                 case COUNT_NODE:
-                    statement = ongoingReadingWithoutWhere.returning(Functions.countDistinct(resultNodes)).build();
+                    if(isDistinctMode){
+                        statement = ongoingReadingWithoutWhere.returning(Functions.countDistinct(resultNodes)).build();
+                    }else{
+                        statement = ongoingReadingWithoutWhere.returning(Functions.count(resultNodes)).build();
+                    }
                     break;
                 case COUNT_RELATION:
-                    statement = ongoingReadingWithoutWhere.returningDistinct(Functions2.count(resultRelationship)).build();
+                    if(isDistinctMode){
+                        statement = ongoingReadingWithoutWhere.returningDistinct(Functions2.count(resultRelationship)).build();
+                    }else{
+                        statement = ongoingReadingWithoutWhere.returning(Functions2.count(resultRelationship)).build();
+                    }
                     break;
             }
         }
