@@ -128,7 +128,7 @@ public class EntityRelationableTest {
         Assert.assertEquals(relationEntityList2.size(),2);
         // need check count number defect
         countSpecifiedRelations = _ConceptionEntity1.countSpecifiedRelations(queryParameters1,RelationDirection.TWO_WAY);
-        //Assert.assertEquals(countSpecifiedRelations,new Long(2));
+        Assert.assertEquals(countSpecifiedRelations,new Long(2));
 
         //use batch operation mode way 1
         GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
@@ -373,7 +373,7 @@ public class EntityRelationableTest {
         ResultEntitiesParameters resultEntitiesParameters= new ResultEntitiesParameters();
         resultEntitiesParameters.setDistinctMode(true);
         resultEntitiesParameters.addSortingAttribute("kindName", QueryParameters.SortingLogic.DESC);
-        //resultEntitiesParameters.setResultNumber(10000);
+        resultEntitiesParameters.setResultNumber(10000);
         List<ConceptionEntity> resultListConceptionEntityList2 = _ConceptionEntityA.getRelatedConceptionEntities(null,"testRelationTypeType1",RelationDirection.TWO_WAY,2,null,conceptionAttributesParameters,resultEntitiesParameters);
 
         Assert.assertEquals(resultListConceptionEntityList2.size(),2);

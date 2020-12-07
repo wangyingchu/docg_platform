@@ -180,7 +180,14 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
                     }
                 }
                 String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,sourceNodeProperty,targetNodeProperty,ignoreDirection,exploreParameters,CypherBuilder.CypherFunctionType.COUNT);
-                GetLongFormatAggregatedReturnValueTransformer GetLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
+
+                boolean isDistinct = false;
+                if(exploreParameters != null){
+                    isDistinct = exploreParameters.isDistinctMode();
+                }
+                GetLongFormatAggregatedReturnValueTransformer GetLongFormatAggregatedReturnValueTransformer = isDistinct ?
+                        new GetLongFormatAggregatedReturnValueTransformer("count","DISTINCT"):
+                        new GetLongFormatAggregatedReturnValueTransformer("count");
                 Long countResult = (Long)workingGraphOperationExecutor.executeRead(GetLongFormatAggregatedReturnValueTransformer,queryCql);
                 return countResult;
             } catch (CoreRealmServiceEntityExploreException e) {

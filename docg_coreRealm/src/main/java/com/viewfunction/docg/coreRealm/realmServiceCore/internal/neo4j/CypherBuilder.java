@@ -1823,15 +1823,13 @@ public class CypherBuilder {
         int defaultReturnRecordNumber = 500;
         int skipRecordNumber = 0;
         int limitRecordNumber = 0;
+        SortItem[] sortItemArray = null;
         if(resultEntitiesParameters != null){
             int startPage = resultEntitiesParameters.getStartPage();
             int endPage = resultEntitiesParameters.getEndPage();
             int pageSize = resultEntitiesParameters.getPageSize();
             int resultNumber = resultEntitiesParameters.getResultNumber();
-
             List<SortingItem> sortingItemList = resultEntitiesParameters.getSortingItems();
-
-            SortItem[] sortItemArray = null;
             if ((sortingItemList.size() > 0 && returnRelationableDataType.equals(NODE)) || (sortingItemList.size() > 0 && returnRelationableDataType.equals(RELATION))){
                 sortItemArray = new SortItem[sortingItemList.size()];
                 for (int i = 0; i < sortingItemList.size(); i++) {
@@ -1983,22 +1981,19 @@ public class CypherBuilder {
                     break;
             }
         }
-
-
-
-
-
-
         if (skipRecordNumber != 0){
-            statement = ongoingReadingAndReturn.skip(skipRecordNumber).limit(limitRecordNumber).build();
+            if(sortItemArray != null){
+                statement = ongoingReadingAndReturn.orderBy(sortItemArray).skip(skipRecordNumber).limit(limitRecordNumber).build();
+            }else{
+                statement = ongoingReadingAndReturn.skip(skipRecordNumber).limit(limitRecordNumber).build();
+            }
         }else{
-            statement = ongoingReadingAndReturn.limit(limitRecordNumber).build();
+            if(sortItemArray != null){
+                statement = ongoingReadingAndReturn.orderBy(sortItemArray).limit(limitRecordNumber).build();
+            }else{
+                statement = ongoingReadingAndReturn.limit(limitRecordNumber).build();
+            }
         }
-
-
-
-
-
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
