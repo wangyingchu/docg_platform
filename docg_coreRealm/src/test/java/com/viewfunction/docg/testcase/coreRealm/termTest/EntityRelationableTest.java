@@ -370,6 +370,14 @@ public class EntityRelationableTest {
         Long countRelatedConceptionEntitiesRes = _ConceptionEntityA.countRelatedConceptionEntities(null,"testRelationTypeType1",RelationDirection.TWO_WAY,2,null,conceptionAttributesParameters,true);
         Assert.assertEquals(countRelatedConceptionEntitiesRes,new Long("2"));
 
+        AttributesParameters relationAttributesParameters =new AttributesParameters();
+        relationAttributesParameters.setDefaultFilteringItem(new EqualFilteringItem("dataOrigin","dataOrigin001"+"bad"));
+        countRelatedConceptionEntitiesRes = _ConceptionEntityA.countRelatedConceptionEntities(null,"testRelationTypeType1",RelationDirection.TWO_WAY,2,relationAttributesParameters,conceptionAttributesParameters,true);
+        Assert.assertEquals(countRelatedConceptionEntitiesRes,new Long("0"));
+        relationAttributesParameters.setDefaultFilteringItem(new EqualFilteringItem("dataOrigin","dataOrigin001"));
+        countRelatedConceptionEntitiesRes = _ConceptionEntityA.countRelatedConceptionEntities(null,"testRelationTypeType1",RelationDirection.TWO_WAY,2,relationAttributesParameters,conceptionAttributesParameters,true);
+        Assert.assertEquals(countRelatedConceptionEntitiesRes,new Long("2"));
+
         ResultEntitiesParameters resultEntitiesParameters= new ResultEntitiesParameters();
         resultEntitiesParameters.setDistinctMode(true);
         resultEntitiesParameters.addSortingAttribute("kindName", QueryParameters.SortingLogic.DESC);
@@ -387,6 +395,12 @@ public class EntityRelationableTest {
                 );
             }
         }
+
+        resultListConceptionEntityList2 = _ConceptionEntityA.getRelatedConceptionEntities(null,"testRelationTypeType1",RelationDirection.TWO_WAY,2,relationAttributesParameters,conceptionAttributesParameters,resultEntitiesParameters);
+        Assert.assertEquals(resultListConceptionEntityList2.size(),2);
+        relationAttributesParameters.setDefaultFilteringItem(new EqualFilteringItem("dataOrigin","dataOrigin001"+"bad"));
+        resultListConceptionEntityList2 = _ConceptionEntityA.getRelatedConceptionEntities(null,"testRelationTypeType1",RelationDirection.TWO_WAY,2,relationAttributesParameters,conceptionAttributesParameters,resultEntitiesParameters);
+        Assert.assertEquals(resultListConceptionEntityList2.size(),0);
 
         resultEntitiesParameters.setStartPage(2);
         resultEntitiesParameters.setEndPage(4);

@@ -1725,6 +1725,12 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = null;
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         Relationship resultRelationship = null;
+        NamedPath relationshipNamedPath = null;
+        Statement relationshipNamedPathStatement = null;
+
+        String pathPropName = "path";
+        String relationshipUnwindedProp = "middleRelation";
+
         boolean isDistinctMode = resultEntitiesParameters != null? resultEntitiesParameters.isDistinctMode() : true;
         switch (relationDirection) {
             case FROM:
@@ -1749,13 +1755,11 @@ public class CypherBuilder {
                 }
         }
         ongoingReadingWithoutWhere = Cypher.match(resultRelationship);
-        /* example for relation properties query
-        MATCH path=()-[relationResult:`testRelationTypeType1`*1..2]->()
-        UNWIND relationships(path) AS rel
-        MATCH (sourceNode)-[relationResult:`testRelationTypeType1`*1..2]-(operationResult) WHERE (id(sourceNode) = 2130 AND rel.dataOrigin = 'dataOrigin002' AND operationResult.kindName = 'ConceptionKind0C')
-        RETURN count(DISTINCT operationResult)
-        */
+
         if(relationAttributesParameters != null){
+            relationshipNamedPath = Cypher.path(pathPropName).definedBy(resultRelationship);
+            relationshipNamedPathStatement = Cypher.match(relationshipNamedPath).returning(relationshipNamedPath).build();
+            Node unwindRelationAlias = Cypher.anyNode().named(relationshipUnwindedProp);
             FilteringItem defaultRelationFilteringItem = relationAttributesParameters.getDefaultFilteringItem();
             List<FilteringItem> andRelationFilteringItemList = relationAttributesParameters.getAndFilteringItemsList();
             List<FilteringItem> orRelationFilteringItemList = relationAttributesParameters.getOrFilteringItemsList();
@@ -1768,15 +1772,15 @@ public class CypherBuilder {
                     throw e;
                 }
             } else {
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(CommonOperationUtil.getQueryCondition(resultRelationship, defaultRelationFilteringItem));
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(CommonOperationUtil.getQueryCondition(unwindRelationAlias, defaultRelationFilteringItem));
                 if (andRelationFilteringItemList != null && andRelationFilteringItemList.size() > 0) {
                     for (FilteringItem currentFilteringItem : andRelationFilteringItemList) {
-                        ongoingReadingWithWhere = ongoingReadingWithWhere.and(CommonOperationUtil.getQueryCondition(resultRelationship, currentFilteringItem));
+                        ongoingReadingWithWhere = ongoingReadingWithWhere.and(CommonOperationUtil.getQueryCondition(unwindRelationAlias, currentFilteringItem));
                     }
                 }
                 if (orRelationFilteringItemList != null && orRelationFilteringItemList.size() > 0) {
                     for (FilteringItem currentFilteringItem : orRelationFilteringItemList) {
-                        ongoingReadingWithWhere = ongoingReadingWithWhere.or(CommonOperationUtil.getQueryCondition(resultRelationship, currentFilteringItem));
+                        ongoingReadingWithWhere = ongoingReadingWithWhere.or(CommonOperationUtil.getQueryCondition(unwindRelationAlias, currentFilteringItem));
                     }
                 }
             }
@@ -1998,7 +2002,17 @@ public class CypherBuilder {
                 statement = ongoingReadingAndReturn.limit(limitRecordNumber).build();
             }
         }
-        String rel = cypherRenderer.render(statement);
+
+        String rel = null;
+        if(relationshipNamedPathStatement != null){
+            String firstPart =  cypherRenderer.render(relationshipNamedPathStatement);
+            int indexOfReturn = firstPart.indexOf("RETURN");
+            rel = firstPart.substring(0,indexOfReturn)+" "+
+                    "UNWIND relationships("+pathPropName+") AS "+relationshipUnwindedProp+" "+
+                    cypherRenderer.render(statement);
+        }else{
+            rel = cypherRenderer.render(statement);
+        }
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
     }
