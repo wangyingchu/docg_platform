@@ -97,4 +97,6 @@ public interface RelationAttachKind extends MetaConfigItemFeatureSupportable, Me
      * @return 实体对象操作返回结果
      */
     public EntitiesOperationResult newUniversalRelationEntities();
+
+    public boolean allowRepeatRelationKindEntity();
 }
