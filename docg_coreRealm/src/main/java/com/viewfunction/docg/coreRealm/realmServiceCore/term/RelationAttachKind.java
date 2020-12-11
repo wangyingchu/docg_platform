@@ -98,5 +98,13 @@ public interface RelationAttachKind extends MetaConfigItemFeatureSupportable, Me
      */
     public EntitiesOperationResult newUniversalRelationEntities();
 
-    public boolean allowRepeatRelationKindEntity();
+
+    public enum EntityRelateRole {SOURCE, TARGET}
+
+
+    public boolean allowRepeatableRelationKind();
+
+    public List<String> getSourceKindRelationProperties();
+
+    public List<String> getTargetKindRelationProperties();
 }
