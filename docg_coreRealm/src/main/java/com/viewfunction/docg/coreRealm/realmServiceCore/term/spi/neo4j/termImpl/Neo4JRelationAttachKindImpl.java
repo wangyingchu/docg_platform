@@ -70,7 +70,7 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
     }
 
     @Override
-    public boolean newRelationEntity(String sourceConceptionEntityUID, String targetConceptionEntityUID, Map<String, Object> relationData) {
+    public boolean newRelationEntity(String conceptionEntityUID, EntityRelateRole entityRelateRole, Map<String,Object> relationData) {
         return false;
     }
 

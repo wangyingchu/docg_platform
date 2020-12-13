@@ -83,13 +83,13 @@ public interface RelationAttachKind extends MetaConfigItemFeatureSupportable, Me
     /**
      * 使用当前关系附着规则类型的逻辑创建新的关系实体
      *
-     * @param sourceConceptionEntityUID String 源概念实体对象唯一ID
-     * @param targetConceptionEntityUID String 目标概念实体对象唯一ID
+     * @param conceptionEntityUID String 概念实体对象唯一ID
+     * @param entityRelateRole EntityRelateRole 概念实体在关系中的角色
      * @param relationData Map<String,Object> 关系实体上的自定义属性
      *
      * @return 关系附着逻辑规则列表
      */
-    public boolean newRelationEntity(String sourceConceptionEntityUID, String targetConceptionEntityUID, Map<String,Object> relationData);
+    public boolean newRelationEntity(String conceptionEntityUID, EntityRelateRole entityRelateRole, Map<String,Object> relationData);
 
     /**
      * 使用当前关系附着规则类型的定义在领域内的全部数据上创建符合条件的关系实体
