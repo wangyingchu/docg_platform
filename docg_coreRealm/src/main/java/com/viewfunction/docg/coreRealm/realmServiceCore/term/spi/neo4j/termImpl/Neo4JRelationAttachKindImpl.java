@@ -1,15 +1,21 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleAttributeValueTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachLinkLogic;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JRelationAttachKind;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -71,7 +77,24 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
 
     @Override
     public boolean updateRelationAttachKindDesc(String newDesc) {
-        return false;
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            Map<String,Object> attributeDataMap = new HashMap<>();
+            attributeDataMap.put(RealmConstant._DescProperty, newDesc);
+            String updateCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.relationAttachKindUID),attributeDataMap);
+            GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._DescProperty);
+            Object updateResultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,updateCql);
+            CommonOperationUtil.updateEntityMetaAttributes(workingGraphOperationExecutor,this.relationAttachKindUID,false);
+            AttributeValue resultAttributeValue =  updateResultRes != null ? (AttributeValue) updateResultRes : null;
+            if(resultAttributeValue != null && resultAttributeValue.getAttributeValue().toString().equals(newDesc)){
+                this.relationAttachKindDesc = newDesc;
+                return true;
+            }else{
+                return false;
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
@@ -106,7 +129,25 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
 
     @Override
     public boolean setAllowRepeatableRelationKind(boolean allowRepeatableRelationKind) {
-        return false;
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            Map<String,Object> attributeDataMap = new HashMap<>();
+            attributeDataMap.put(RealmConstant._relationAttachRepeatableRelationKind, allowRepeatableRelationKind);
+            String updateCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.relationAttachKindUID),attributeDataMap);
+            GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._relationAttachRepeatableRelationKind);
+            Object updateResultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,updateCql);
+            CommonOperationUtil.updateEntityMetaAttributes(workingGraphOperationExecutor,this.relationAttachKindUID,false);
+            AttributeValue resultAttributeValue = updateResultRes != null ? (AttributeValue) updateResultRes : null;
+            if(resultAttributeValue != null ){
+                Boolean currentValue = (Boolean)resultAttributeValue.getAttributeValue();
+                this.allowRepeatableRelationKind = currentValue.booleanValue();
+                return currentValue.booleanValue();
+            }else{
+                return false;
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     //internal graphOperationExecutor management logic

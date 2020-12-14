@@ -16,7 +16,30 @@ public interface RelationAttachKind extends MetaConfigItemFeatureSupportable, Me
      * SOURCE : 当前实体是关联关系的出发方 (FROM)。
      * TARGET : 当前实体是关联关系的目标方 (TO)。
      */
-    public enum EntityRelateRole {SOURCE, TARGET}
+    public enum EntityRelateRole { SOURCE, TARGET }
+
+    /**
+     * 构建关联关系时实体匹配逻辑类型
+     * DEFAULT : 默认匹配条件，每个关系附着规则类型必须有且只有一项。
+     * AND : 逻辑 与 匹配条件。
+     * OR : 逻辑 或 匹配条件。
+     */
+    public enum LinkLogicType { DEFAULT, AND, OR }
+
+    /**
+     * 构建关联关系时实体匹配计算规则
+     * Equal : 属性值相等。
+     * GreaterThanEqual : 属性值大于等于。
+     * GreaterThan : 属性值大于。
+     * LessThanEqual : 属性值小于等于。
+     * LessThan : 属性值小于。
+     * NotEqual : 属性值不等。
+     * RegularMatch : 属性值正则表达式匹配。
+     * BeginWithSimilar : 属性值开始包含。
+     * EndWithSimilar : 属性值结束包含。
+     * ContainSimilar : 属性值包含。
+     */
+    public enum LinkLogicCondition { Equal,GreaterThanEqual,GreaterThan,LessThanEqual,LessThan,NotEqual,RegularMatch,BeginWithSimilar, EndWithSimilar, ContainSimilar }
 
     /**
      * 获取当前关系附着规则类型对象唯一ID

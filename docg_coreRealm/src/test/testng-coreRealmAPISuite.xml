@@ -60,9 +60,14 @@
             <class name="com.viewfunction.docg.testcase.coreRealm.termTest.MultiConceptionKindsSupportableTest"/>
         </classes>
     </test>
+    <test verbose="13" name="RelationAttachKindTest">
+        <classes>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.RelationAttachKindTest"/>
+        </classes>
+    </test>
 
     <!-- KindCacheableTest must be the last test case at anytime-->
-    <test verbose="13" name="KindCacheableTest">
+    <test verbose="14" name="KindCacheableTest">
         <classes>
             <class name="com.viewfunction.docg.testcase.coreRealm.termTest.KindCacheableTest"/>
         </classes>
