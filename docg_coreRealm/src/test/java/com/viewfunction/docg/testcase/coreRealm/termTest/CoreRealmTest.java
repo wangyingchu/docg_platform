@@ -24,7 +24,7 @@ public class CoreRealmTest {
     }
 
     @Test
-    public void testCoreRealmFunction() throws CoreRealmServiceRuntimeException {
+    public void testCoreRealmFunction() throws CoreRealmServiceRuntimeException, CoreRealmFunctionNotSupportedException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
 
@@ -276,5 +276,80 @@ public class CoreRealmTest {
         Assert.assertTrue(attributesViewKindList.size()==0);
         attributesViewKindList = coreRealm.getAttributesViewKinds("attributesViewKind03","attributesViewKind03Desc",AttributesViewKind.AttributesViewKindDataForm.LIST_VALUE);
         Assert.assertTrue(attributesViewKindList.size()>0);
+
+        RelationAttachKind targetRelationAttachKind = coreRealm.createRelationAttachKind("RelationAttachKind_Name","RelationAttachKind_Desc",
+                "RelationAttachKind_SourceKind","RelationAttachKind_TargetKind","RelationAttachKind_RelationKind",true);
+        Assert.assertNotNull(targetRelationAttachKind);
+        Assert.assertNotNull(targetRelationAttachKind.getRelationAttachKindUID());
+        Assert.assertEquals(targetRelationAttachKind.getRelationAttachKindName(),"RelationAttachKind_Name");
+        Assert.assertEquals(targetRelationAttachKind.getRelationAttachKindDesc(),"RelationAttachKind_Desc");
+        Assert.assertEquals(targetRelationAttachKind.getSourceConceptionKindName(),"RelationAttachKind_SourceKind");
+        Assert.assertEquals(targetRelationAttachKind.getTargetConceptionKindName(),"RelationAttachKind_TargetKind");
+        Assert.assertEquals(targetRelationAttachKind.getRelationKindName(),"RelationAttachKind_RelationKind");
+        Assert.assertEquals(targetRelationAttachKind.isRepeatableRelationKindAllow(),true);
+
+        RelationAttachKind targetRelationAttachKind2 = coreRealm.getRelationAttachKind(targetRelationAttachKind.getRelationAttachKindUID());
+        Assert.assertNotNull(targetRelationAttachKind2);
+        Assert.assertNotNull(targetRelationAttachKind2.getRelationAttachKindUID());
+        Assert.assertEquals(targetRelationAttachKind2.getRelationAttachKindName(),"RelationAttachKind_Name");
+        Assert.assertEquals(targetRelationAttachKind2.getRelationAttachKindDesc(),"RelationAttachKind_Desc");
+        Assert.assertEquals(targetRelationAttachKind2.getSourceConceptionKindName(),"RelationAttachKind_SourceKind");
+        Assert.assertEquals(targetRelationAttachKind2.getTargetConceptionKindName(),"RelationAttachKind_TargetKind");
+        Assert.assertEquals(targetRelationAttachKind2.getRelationKindName(),"RelationAttachKind_RelationKind");
+        Assert.assertEquals(targetRelationAttachKind2.isRepeatableRelationKindAllow(),true);
+
+        RelationAttachKind  targetRelationAttachKind3 = coreRealm.getRelationAttachKind(targetRelationAttachKind.getRelationAttachKindUID()+"1000");
+        Assert.assertNull(targetRelationAttachKind3);
+
+        targetRelationAttachKind = coreRealm.createRelationAttachKind("RelationAttachKind_Name","RelationAttachKind_Desc",
+                "RelationAttachKind_SourceKind","RelationAttachKind_TargetKind","RelationAttachKind_RelationKind",true);
+        Assert.assertNull(targetRelationAttachKind);
+
+        targetRelationAttachKind = coreRealm.createRelationAttachKind("RelationAttachKind_Name","RelationAttachKind_Desc",
+                null,"RelationAttachKind_TargetKind","RelationAttachKind_RelationKind",true);
+        Assert.assertNull(targetRelationAttachKind);
+
+        targetRelationAttachKind = coreRealm.createRelationAttachKind(null,"RelationAttachKind_Desc",
+                null,"RelationAttachKind_TargetKind","RelationAttachKind_RelationKind",true);
+        Assert.assertNull(targetRelationAttachKind);
+
+        targetRelationAttachKind = coreRealm.createRelationAttachKind("RelationAttachKind_Name2","RelationAttachKind_Desc",
+                "RelationAttachKind_SourceKind","RelationAttachKind_TargetKind","RelationAttachKind_RelationKind",false);
+        Assert.assertNotNull(targetRelationAttachKind);
+        Assert.assertNotNull(targetRelationAttachKind.getRelationAttachKindUID());
+        Assert.assertEquals(targetRelationAttachKind.getRelationAttachKindName(),"RelationAttachKind_Name2");
+        Assert.assertEquals(targetRelationAttachKind.getRelationAttachKindDesc(),"RelationAttachKind_Desc");
+        Assert.assertEquals(targetRelationAttachKind.getSourceConceptionKindName(),"RelationAttachKind_SourceKind");
+        Assert.assertEquals(targetRelationAttachKind.getTargetConceptionKindName(),"RelationAttachKind_TargetKind");
+        Assert.assertEquals(targetRelationAttachKind.getRelationKindName(),"RelationAttachKind_RelationKind");
+        Assert.assertEquals(targetRelationAttachKind.isRepeatableRelationKindAllow(),false);
+
+        List<RelationAttachKind> relationAttachKindList = coreRealm.getRelationAttachKinds(null,null,null,null,null,Boolean.valueOf(true));
+        Assert.assertNotNull(relationAttachKindList);
+        Assert.assertEquals(relationAttachKindList.size(),1);
+        relationAttachKindList = coreRealm.getRelationAttachKinds(null,null,null,null,null,Boolean.valueOf(false));
+        Assert.assertNotNull(relationAttachKindList);
+        Assert.assertEquals(relationAttachKindList.size(),1);
+
+        relationAttachKindList = coreRealm.getRelationAttachKinds(null,null,null,null,null,null);
+        Assert.assertNotNull(relationAttachKindList);
+        Assert.assertEquals(relationAttachKindList.size(),2);
+
+        relationAttachKindList = coreRealm.getRelationAttachKinds("NOTMatchedValue",null,null,null,null,null);
+        Assert.assertNotNull(relationAttachKindList);
+        Assert.assertEquals(relationAttachKindList.size(),0);
+
+        boolean removeResult = coreRealm.removeRelationAttachKind(targetRelationAttachKind.getRelationAttachKindUID());
+        Assert.assertTrue(removeResult);
+        removeResult = coreRealm.removeRelationAttachKind(targetRelationAttachKind2.getRelationAttachKindUID());
+        Assert.assertTrue(removeResult);
+
+        exceptionShouldBeCaught = false;
+        try{
+            coreRealm.removeRelationAttachKind(targetRelationAttachKind2.getRelationAttachKindUID()+"12345");
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
     }
 }

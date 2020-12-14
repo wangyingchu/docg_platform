@@ -191,7 +191,7 @@ public interface CoreRealm {
      * @return 关系附着规则类型列表
      */
     public List<RelationAttachKind> getRelationAttachKinds(String relationAttachKindName, String relationAttachKindDesc, String sourceConceptionKindName,
-                                                       String targetConceptionKindName,String relationKindName,boolean allowRepeatableRelationKind);
+                                                           String targetConceptionKindName, String relationKindName, Boolean allowRepeatableRelationKind);
 
     /**
      * 根据对象唯一ID获取关系附着规则类型对象
@@ -205,11 +205,11 @@ public interface CoreRealm {
     /**
      * 创建新的关系附着规则类型
      *
-     * @param relationAttachKindName String 需要创建的关系附着规则类型名称
+     * @param relationAttachKindName String 需要创建的关系附着规则类型名称，不能与已有关系附着规则类型重名,非空输入值
      * @param relationAttachKindDesc String 需要创建的关系附着规则类型描述
-     * @param sourceConceptionKindName String 关联关系源概念类型名称
-     * @param targetConceptionKindName String 关联关系目标概念类型名称
-     * @param relationKindName String 关联关系类型名称
+     * @param sourceConceptionKindName String 关联关系源概念类型名称,非空输入值
+     * @param targetConceptionKindName String 关联关系目标概念类型名称,非空输入值
+     * @param relationKindName String 关联关系类型名称,非空输入值
      * @param allowRepeatableRelationKind String 是否允许重复创建相同关系类型的关联
      *
      * @return 关系附着规则类型

@@ -464,43 +464,157 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         }
     }
 
-
-
-
-
-
-
-
-
     @Override
-    public List<RelationAttachKind> getRelationAttachKinds(String relationAttachKindName, String relationAttachKindDesc, String sourceConceptionKindName, String targetConceptionKindName, String relationKindName, boolean allowRepeatableRelationKind) {
+    public List<RelationAttachKind> getRelationAttachKinds(String relationAttachKindName, String relationAttachKindDesc, String sourceConceptionKindName, String targetConceptionKindName, String relationKindName, Boolean allowRepeatableRelationKind) {
+        boolean alreadyHaveDefaultFilteringItem = false;
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(1000000);
+        if(relationAttachKindName != null){
+            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant._NameProperty,relationAttachKindName));
+            alreadyHaveDefaultFilteringItem = true;
+        }
+        if(relationAttachKindDesc != null){
+            if(alreadyHaveDefaultFilteringItem){
+                queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant._DescProperty,relationAttachKindDesc), QueryParameters.FilteringLogic.AND);
+            }else{
+                queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant._DescProperty,relationAttachKindDesc));
+                alreadyHaveDefaultFilteringItem = true;
+            }
+        }
+        if(sourceConceptionKindName != null){
+            if(alreadyHaveDefaultFilteringItem){
+                queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant._relationAttachSourceKind,sourceConceptionKindName), QueryParameters.FilteringLogic.AND);
+            }else{
+                queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant._relationAttachSourceKind,sourceConceptionKindName));
+                alreadyHaveDefaultFilteringItem = true;
+            }
+        }
+        if(targetConceptionKindName != null){
+            if(alreadyHaveDefaultFilteringItem){
+                queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant._relationAttachTargetKind,targetConceptionKindName), QueryParameters.FilteringLogic.AND);
+            }else{
+                queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant._relationAttachTargetKind,targetConceptionKindName));
+                alreadyHaveDefaultFilteringItem = true;
+            }
+        }
+        if(relationKindName != null){
+            if(alreadyHaveDefaultFilteringItem){
+                queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant._relationAttachRelationKind,relationKindName), QueryParameters.FilteringLogic.AND);
+            }else{
+                queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant._relationAttachRelationKind,relationKindName));
+                alreadyHaveDefaultFilteringItem = true;
+            }
+        }
+
+        if(allowRepeatableRelationKind != null){
+            boolean allowRepeatableRelationKindValue = allowRepeatableRelationKind.booleanValue();
+            if(alreadyHaveDefaultFilteringItem){
+                queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant._relationAttachRepeatableRelationKind,allowRepeatableRelationKindValue), QueryParameters.FilteringLogic.AND);
+            }else{
+                queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant._relationAttachRepeatableRelationKind,allowRepeatableRelationKindValue));
+            }
+        }
+
+        try {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.RelationAttachKindClass,queryParameters,null);
+                GetListRelationAttachKindTransformer getListRelationAttachKindTransformer = new GetListRelationAttachKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object relationAttachKindsRes = workingGraphOperationExecutor.executeWrite(getListRelationAttachKindTransformer,queryCql);
+                return relationAttachKindsRes != null ? (List<RelationAttachKind>) relationAttachKindsRes : null;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
     @Override
     public RelationAttachKind getRelationAttachKind(String relationAttachKindUID) {
-        return null;
+        if(relationAttachKindUID == null){
+            return null;
+        }
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(relationAttachKindUID), null, null);
+            GetSingleRelationAttachKindTransformer getSingleRelationAttachKindTransformer =
+                    new GetSingleRelationAttachKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object getRelationAttachKindRes = workingGraphOperationExecutor.executeWrite(getSingleRelationAttachKindTransformer,queryCql);
+            return getRelationAttachKindRes != null ? (RelationAttachKind)getRelationAttachKindRes : null;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
     public RelationAttachKind createRelationAttachKind(String relationAttachKindName, String relationAttachKindDesc, String sourceConceptionKindName, String targetConceptionKindName, String relationKindName, boolean allowRepeatableRelationKind) throws CoreRealmFunctionNotSupportedException {
-        return null;
+        if(relationAttachKindName == null || sourceConceptionKindName== null || targetConceptionKindName == null || relationKindName == null){
+            return null;
+        }
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String checkCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.RelationAttachKindClass,RealmConstant._NameProperty,relationAttachKindName,1);
+            Object relationAttachKindExistenceRes = workingGraphOperationExecutor.executeRead(new CheckResultExistenceTransformer(),checkCql);
+            if(((Boolean)relationAttachKindExistenceRes).booleanValue()){
+                return null;
+            }
+
+            Map<String,Object> propertiesMap = new HashMap<>();
+            propertiesMap.put(RealmConstant._NameProperty,relationAttachKindName);
+            if(relationAttachKindDesc != null) {
+                propertiesMap.put(RealmConstant._DescProperty, relationAttachKindDesc);
+            }
+            propertiesMap.put(RealmConstant._relationAttachSourceKind,sourceConceptionKindName);
+            propertiesMap.put(RealmConstant._relationAttachTargetKind,targetConceptionKindName);
+            propertiesMap.put(RealmConstant._relationAttachRelationKind,relationKindName);
+            propertiesMap.put(RealmConstant._relationAttachRepeatableRelationKind,allowRepeatableRelationKind);
+            CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
+
+            String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.RelationAttachKindClass},propertiesMap);
+
+            GetSingleRelationAttachKindTransformer getSingleRelationAttachKindTransformer =
+                    new GetSingleRelationAttachKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object createRelationAttachKindRes = workingGraphOperationExecutor.executeWrite(getSingleRelationAttachKindTransformer,createCql);
+            RelationAttachKind resultKind = createRelationAttachKindRes != null ? (RelationAttachKind)createRelationAttachKindRes : null;
+            executeRelationAttachKindCacheOperation(resultKind,CacheOperationType.INSERT);
+            return resultKind;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
     public boolean removeRelationAttachKind(String relationAttachKindUID) throws CoreRealmServiceRuntimeException {
-        return false;
+        if(relationAttachKindUID == null){
+            return false;
+        }
+        RelationAttachKind targetRelationAttachKind = this.getRelationAttachKind(relationAttachKindUID);
+        if(targetRelationAttachKind != null){
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(relationAttachKindUID),null,null);
+                GetSingleRelationAttachKindTransformer getSingleRelationAttachKindTransformer =
+                        new GetSingleRelationAttachKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object deletedRelationAttachKindRes = workingGraphOperationExecutor.executeWrite(getSingleRelationAttachKindTransformer,deleteCql);
+                RelationAttachKind resultKind = deletedRelationAttachKindRes != null ? (RelationAttachKind)deletedRelationAttachKindRes : null;
+                if(resultKind == null){
+                    throw new CoreRealmServiceRuntimeException();
+                }else{
+                    executeRelationAttachKindCacheOperation(resultKind,CacheOperationType.DELETE);
+                    return true;
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }else{
+            logger.error("RelationAttachKind does not contains entity with UID {}.", relationAttachKindUID);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("RelationAttachKind does not contains entity with UID " + relationAttachKindUID + ".");
+            throw exception;
+        }
     }
-
-
-
-
-
-
-
-
-
-
 
     @Override
     public Classification getClassification(String classificationName) {
