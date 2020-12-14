@@ -236,6 +236,53 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      */
     public boolean removeRelationKind(String relationKindName, boolean deleteExistEntities) throws CoreRealmServiceRuntimeException;
 
+     /**
+     * 根据输入条件查询关系附着规则类型对象,所有查询条件均为可选输入，各个查询条件精确匹配输入值，互相间为 AND 的组合关系
+     *
+     * @param relationAttachKindName String 需要查询的关系附着规则类型名称
+     * @param relationAttachKindDesc String 需要查询的关系附着规则类型描述
+     * @param sourceConceptionKindName String 需要查询的关联关系源概念类型名称
+     * @param targetConceptionKindName String 需要查询的关联关系目标概念类型名称
+     * @param relationKindName String 需要查询的关联关系类型名称
+     * @param allowRepeatableRelationKind String 需要查询的关系附着规则类型是否允许重复创建相同关系类型的关联
+     *
+     * @return 关系附着规则类型列表
+     */
+    public List<RelationAttachKind> getRelationAttachKinds(String relationAttachKindName, String relationAttachKindDesc, String sourceConceptionKindName, String targetConceptionKindName,String relationKindName,boolean allowRepeatableRelationKind);
+
+     /**
+     * 根据对象唯一ID获取关系附着规则类型对象
+     *
+     * @param relationAttachKindUID String 需要获取的关系附着规则类型唯一ID
+     *
+     * @return 关系附着规则类型
+     */
+    public RelationAttachKind getRelationAttachKind(String relationAttachKindUID);
+
+    /**
+     * 创建新的关系附着规则类型
+     *
+     * @param relationAttachKindName String 需要创建的关系附着规则类型名称
+     * @param relationAttachKindDesc String 需要创建的关系附着规则类型描述
+     * @param sourceConceptionKindName String 关联关系源概念类型名称
+     * @param targetConceptionKindName String 关联关系目标概念类型名称
+     * @param relationKindName String 关联关系类型名称
+     * @param allowRepeatableRelationKind String 是否允许重复创建相同关系类型的关联
+     *
+     * @return 关系附着规则类型
+     */
+    public RelationAttachKind createRelationAttachKind(String relationAttachKindName, String relationAttachKindDesc, String sourceConceptionKindName, String targetConceptionKindName,String relationKindName,boolean allowRepeatableRelationKind)
+            throws CoreRealmFunctionNotSupportedException;
+
+    /**
+     * 根据对象唯一ID删除关系附着规则类型
+     *
+     * @param relationAttachKindUID String 需要删除的关系附着规则类型唯一ID
+     *
+     * @return 如果操作成功返回 true
+     */
+    public boolean removeRelationAttachKind(String relationAttachKindUID) throws CoreRealmServiceRuntimeException;
+
     /**
      * 根据名称获取分类对象
      *
@@ -825,6 +872,13 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
 ---
 ```java
     /**
+     * 构建关联关系时当前实体在关系中所属的角色
+     * SOURCE : 当前实体是关联关系的出发方 (FROM)。
+     * TARGET : 当前实体是关联关系的目标方 (TO)。
+     */
+    public enum EntityRelateRole {SOURCE, TARGET}    
+
+    /**
      * 获取当前关系附着规则类型对象唯一ID
      *
      * @return 关系附着规则类型对象唯一ID
@@ -851,6 +905,13 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 关系类型名称
      */
     public String getRelationKindName();
+
+     /**
+     * 获取当前关系附着规则类型名称
+     *
+     * @return 关系附着规则类型名称
+     */
+    public String getRelationAttachKindName();
 
     /**
      * 获取当前关系附着规则类型描述
@@ -902,14 +963,31 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @return 关系附着逻辑规则列表
      */
-    public boolean newRelationEntity(String conceptionEntityUID, EntityRelateRole entityRelateRole, Map<String,Object> relationData);
+    public boolean newRelationEntities(String conceptionEntityUID, EntityRelateRole entityRelateRole, Map<String,Object> relationData);
 
-    /**
+     /**
      * 使用当前关系附着规则类型的定义在领域内的全部数据上创建符合条件的关系实体
      *
+     * @param relationData Map<String,Object> 关系实体上的自定义属性
      * @return 实体对象操作返回结果
      */
-    public EntitiesOperationResult newUniversalRelationEntities();
+    public EntitiesOperationResult newUniversalRelationEntities(Map<String,Object> relationData);
+
+    /**
+     * 是否允许在同样的两个实体之间创建相同关系类型的关系实体
+     *
+     * @return 如允许则返回 true
+     */
+    public boolean isRepeatableRelationKindAllow();
+
+    /**
+     * 设定是否允许在同样的两个实体之间创建相同关系类型的关系实体
+     *
+     * @param allowRepeatableRelationKind boolean 是否允许创建相同关系类型的实体
+     *
+     * @return 返回最新的是否允许状态
+     */
+    public boolean setAllowRepeatableRelationKind(boolean allowRepeatableRelationKind);
 ```
 ###### *数据操作类对象*
 

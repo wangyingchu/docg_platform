@@ -179,6 +179,55 @@ public interface CoreRealm {
     public boolean removeRelationKind(String relationKindName, boolean deleteExistEntities) throws CoreRealmServiceRuntimeException;
 
     /**
+     * 根据输入条件查询关系附着规则类型对象,所有查询条件均为可选输入，各个查询条件精确匹配输入值，互相间为 AND 的组合关系
+     *
+     * @param relationAttachKindName String 需要查询的关系附着规则类型名称
+     * @param relationAttachKindDesc String 需要查询的关系附着规则类型描述
+     * @param sourceConceptionKindName String 需要查询的关联关系源概念类型名称
+     * @param targetConceptionKindName String 需要查询的关联关系目标概念类型名称
+     * @param relationKindName String 需要查询的关联关系类型名称
+     * @param allowRepeatableRelationKind String 需要查询的关系附着规则类型是否允许重复创建相同关系类型的关联
+     *
+     * @return 关系附着规则类型列表
+     */
+    public List<RelationAttachKind> getRelationAttachKinds(String relationAttachKindName, String relationAttachKindDesc, String sourceConceptionKindName,
+                                                       String targetConceptionKindName,String relationKindName,boolean allowRepeatableRelationKind);
+
+    /**
+     * 根据对象唯一ID获取关系附着规则类型对象
+     *
+     * @param relationAttachKindUID String 需要获取的关系附着规则类型唯一ID
+     *
+     * @return 关系附着规则类型
+     */
+    public RelationAttachKind getRelationAttachKind(String relationAttachKindUID);
+
+    /**
+     * 创建新的关系附着规则类型
+     *
+     * @param relationAttachKindName String 需要创建的关系附着规则类型名称
+     * @param relationAttachKindDesc String 需要创建的关系附着规则类型描述
+     * @param sourceConceptionKindName String 关联关系源概念类型名称
+     * @param targetConceptionKindName String 关联关系目标概念类型名称
+     * @param relationKindName String 关联关系类型名称
+     * @param allowRepeatableRelationKind String 是否允许重复创建相同关系类型的关联
+     *
+     * @return 关系附着规则类型
+     */
+    public RelationAttachKind createRelationAttachKind(String relationAttachKindName, String relationAttachKindDesc, String sourceConceptionKindName,
+                                                       String targetConceptionKindName,String relationKindName,boolean allowRepeatableRelationKind)
+            throws CoreRealmFunctionNotSupportedException;
+
+    /**
+     * 根据对象唯一ID删除关系附着规则类型
+     *
+     * @param relationAttachKindUID String 需要删除的关系附着规则类型唯一ID
+     *
+     * @return 如果操作成功返回 true
+     */
+    public boolean removeRelationAttachKind(String relationAttachKindUID) throws CoreRealmServiceRuntimeException;
+
+    /**
      * 根据名称获取分类对象
      *
      * @param classificationName String 需要获取的分类名称

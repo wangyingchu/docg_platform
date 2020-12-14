@@ -464,6 +464,44 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         }
     }
 
+
+
+
+
+
+
+
+
+    @Override
+    public List<RelationAttachKind> getRelationAttachKinds(String relationAttachKindName, String relationAttachKindDesc, String sourceConceptionKindName, String targetConceptionKindName, String relationKindName, boolean allowRepeatableRelationKind) {
+        return null;
+    }
+
+    @Override
+    public RelationAttachKind getRelationAttachKind(String relationAttachKindUID) {
+        return null;
+    }
+
+    @Override
+    public RelationAttachKind createRelationAttachKind(String relationAttachKindName, String relationAttachKindDesc, String sourceConceptionKindName, String targetConceptionKindName, String relationKindName, boolean allowRepeatableRelationKind) throws CoreRealmFunctionNotSupportedException {
+        return null;
+    }
+
+    @Override
+    public boolean removeRelationAttachKind(String relationAttachKindUID) throws CoreRealmServiceRuntimeException {
+        return false;
+    }
+
+
+
+
+
+
+
+
+
+
+
     @Override
     public Classification getClassification(String classificationName) {
         if(classificationName == null){

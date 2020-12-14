@@ -6,6 +6,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.Grap
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachLinkLogic;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JRelationAttachKind;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +24,20 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
     private String sourceConceptionKindName;
     private String targetConceptionKindName;
     private String relationKindName;
+    private boolean allowRepeatableRelationKind;
+
+    public Neo4JRelationAttachKindImpl(String coreRealmName, String relationAttachKindName, String relationAttachKindDesc, String relationAttachKindUID,
+                                       String sourceConceptionKindName, String targetConceptionKindName,String relationKindName,boolean allowRepeatableRelationKind){
+        this.coreRealmName = coreRealmName;
+        this.relationAttachKindName = relationAttachKindName;
+        this.relationAttachKindDesc = relationAttachKindDesc;
+        this.relationAttachKindUID = relationAttachKindUID;
+        this.sourceConceptionKindName = sourceConceptionKindName;
+        this.targetConceptionKindName = targetConceptionKindName;
+        this.relationKindName = relationKindName;
+        this.allowRepeatableRelationKind = allowRepeatableRelationKind;
+        this.graphOperationExecutorHelper = new GraphOperationExecutorHelper();
+    }
 
     @Override
     public String getRelationAttachKindUID() {
@@ -42,6 +57,11 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
     @Override
     public String getRelationKindName() {
         return this.relationKindName;
+    }
+
+    @Override
+    public String getRelationAttachKindName() {
+        return this.relationAttachKindName;
     }
 
     @Override
@@ -70,28 +90,23 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
     }
 
     @Override
-    public boolean newRelationEntity(String conceptionEntityUID, EntityRelateRole entityRelateRole, Map<String,Object> relationData) {
+    public boolean newRelationEntities(String conceptionEntityUID, EntityRelateRole entityRelateRole, Map<String,Object> relationData) {
         return false;
     }
 
     @Override
-    public EntitiesOperationResult newUniversalRelationEntities() {
+    public EntitiesOperationResult newUniversalRelationEntities(Map<String,Object> relationData) {
         return null;
     }
 
     @Override
-    public boolean allowRepeatableRelationKind() {
+    public boolean isRepeatableRelationKindAllow() {
+        return this.allowRepeatableRelationKind;
+    }
+
+    @Override
+    public boolean setAllowRepeatableRelationKind(boolean allowRepeatableRelationKind) {
         return false;
-    }
-
-    @Override
-    public List<String> getSourceKindRelationProperties() {
-        return null;
-    }
-
-    @Override
-    public List<String> getTargetKindRelationProperties() {
-        return null;
     }
 
     //internal graphOperationExecutor management logic
