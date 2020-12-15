@@ -12,6 +12,8 @@ public interface RealmConstant {
     public final String AttributesViewKind_AttributeKindRelationClass="DOCG_ViewContainsAttributeKindIs";
     public final String Classification_ClassificationRelationClass="DOCG_ParentClassificationIs";
     public final String RelationAttachKindClass="DOCG_RelationAttachKind";
+    public final String RelationAttachLinkLogicClass="DOCG_RelationAttachLinkLogic";
+    public final String RelationAttachKind_RelationAttachLinkLogicRelationClass="DOCG_AttachKindContainsAttachLinkLogicIs";
 
     public final String _NameProperty = "name";
     public final String _DescProperty = "description";
@@ -19,10 +21,18 @@ public interface RealmConstant {
     public final String _lastModifyDateProperty = "lastModifyDate";
     public final String _creatorIdProperty = "creatorId";
     public final String _dataOriginProperty = "dataOrigin";
+
     public final String _viewKindDataForm = "viewKindDataForm";
+
     public final String _attributeDataType = "attributeDataType";
+
     public final String _relationAttachSourceKind = "attachSourceKind";
     public final String _relationAttachTargetKind = "attachTargetKind";
     public final String _relationAttachRelationKind = "attachRelationKind";
     public final String _relationAttachRepeatableRelationKind = "attachAllowRepeatRelation";
+
+    public final String _attachLinkLogicType = "linkLogicType";
+    public final String _attachLinkLogicCondition = "linkLogicCondition";
+    public final String _attachLinkLogicKnownAttribute = "linkLogicKnownAttribute";
+    public final String _attachLinkLogicUnKnownAttribute = "linkLogicUnKnownAttribute";
 }

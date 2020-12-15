@@ -2,6 +2,7 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachLinkLogic;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationAttachKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
@@ -9,6 +10,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFa
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+
+import java.util.List;
 
 public class RelationAttachKindTest {
 
@@ -41,6 +44,35 @@ public class RelationAttachKindTest {
         Assert.assertEquals(targetRelationAttachKind.isRepeatableRelationKindAllow(),false);
         targetRelationAttachKind2 = coreRealm.getRelationAttachKind(targetRelationAttachKind.getRelationAttachKindUID());
         Assert.assertEquals(targetRelationAttachKind2.isRepeatableRelationKindAllow(),false);
+
+        List<RelationAttachLinkLogic> attachLinkLogicList = targetRelationAttachKind2.getRelationAttachLinkLogic();
+        Assert.assertNotNull(attachLinkLogicList);
+        Assert.assertEquals(attachLinkLogicList.size(),0);
+
+        RelationAttachLinkLogic relationAttachLinkLogic01 = new RelationAttachLinkLogic(RelationAttachKind.LinkLogicType.DEFAULT, RelationAttachKind.LinkLogicCondition.Equal,"knownPropertyName","unKnownPropertyName");
+        RelationAttachLinkLogic resultRelationAttachLinkLogic = targetRelationAttachKind2.createRelationAttachLinkLogic(relationAttachLinkLogic01);
+        Assert.assertNotNull(resultRelationAttachLinkLogic);
+        Assert.assertNotNull(resultRelationAttachLinkLogic.getRelationAttachLinkLogicUID());
+
+        attachLinkLogicList = targetRelationAttachKind2.getRelationAttachLinkLogic();
+        Assert.assertNotNull(attachLinkLogicList);
+        Assert.assertEquals(attachLinkLogicList.size(),1);
+
+        Assert.assertEquals(attachLinkLogicList.get(0).getLinkLogicType(), RelationAttachKind.LinkLogicType.DEFAULT);
+        Assert.assertEquals(attachLinkLogicList.get(0).getLinkLogicCondition(), RelationAttachKind.LinkLogicCondition.Equal);
+        Assert.assertEquals(attachLinkLogicList.get(0).getKnownEntityLinkAttributeName(),"knownPropertyName");
+        Assert.assertEquals(attachLinkLogicList.get(0).getUnKnownEntitiesLinkAttributeName(),"unKnownPropertyName");
+        Assert.assertEquals(attachLinkLogicList.get(0).getRelationAttachLinkLogicUID(),resultRelationAttachLinkLogic.getRelationAttachLinkLogicUID());
+
+        boolean exceptionShouldBeCaught = false;
+        try{
+            targetRelationAttachKind2.createRelationAttachLinkLogic(relationAttachLinkLogic01);
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
+
+
 
 
 

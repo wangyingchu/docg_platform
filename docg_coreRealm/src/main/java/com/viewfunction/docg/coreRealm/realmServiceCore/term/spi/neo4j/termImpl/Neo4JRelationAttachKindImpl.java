@@ -3,12 +3,13 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleAttributeValueTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachLinkLogic;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JRelationAttachKind;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
@@ -99,17 +100,80 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
 
     @Override
     public List<RelationAttachLinkLogic> getRelationAttachLinkLogic() {
-        return null;
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.matchRelatedNodesFromSpecialStartNodes(
+                    CypherBuilder.CypherFunctionType.ID, Long.parseLong(this.relationAttachKindUID),
+                    RealmConstant.RelationAttachLinkLogicClass,RealmConstant.RelationAttachKind_RelationAttachLinkLogicRelationClass, RelationDirection.TO, null);
+            GetListRelationAttachLinkLogicTransformer getListRelationAttachLinkLogicTransformer = new GetListRelationAttachLinkLogicTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object relationAttachLinkLogicsRes = workingGraphOperationExecutor.executeWrite(getListRelationAttachLinkLogicTransformer,queryCql);
+            return relationAttachLinkLogicsRes != null ? (List<RelationAttachLinkLogic>) relationAttachLinkLogicsRes : null;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
     public RelationAttachLinkLogic createRelationAttachLinkLogic(RelationAttachLinkLogic relationAttachLinkLogic) throws CoreRealmServiceRuntimeException {
-        return null;
+        if(relationAttachLinkLogic.getLinkLogicType().equals(LinkLogicType.DEFAULT)){
+            List<RelationAttachLinkLogic> relationAttachLinkLogicList = getRelationAttachLinkLogic();
+            for(RelationAttachLinkLogic currentRelationAttachLinkLogic:relationAttachLinkLogicList){
+                if(currentRelationAttachLinkLogic.getLinkLogicType().equals(LinkLogicType.DEFAULT)){
+                    logger.error("RelationAttachKind {} already contains DEFAULT LinkLogicType.", this.relationAttachKindName);
+                    CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                    exception.setCauseMessage("RelationAttachKind "+this.relationAttachKindName+" already contains DEFAULT LinkLogicType.");
+                    throw exception;
+                }
+            }
+        }
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            Map<String,Object> propertiesMap = new HashMap<>();
+            propertiesMap.put(RealmConstant._attachLinkLogicType,relationAttachLinkLogic.getLinkLogicType().toString());
+            propertiesMap.put(RealmConstant._attachLinkLogicCondition,relationAttachLinkLogic.getLinkLogicCondition().toString());
+            propertiesMap.put(RealmConstant._attachLinkLogicKnownAttribute,relationAttachLinkLogic.getKnownEntityLinkAttributeName());
+            propertiesMap.put(RealmConstant._attachLinkLogicUnKnownAttribute,relationAttachLinkLogic.getUnKnownEntitiesLinkAttributeName());
+            CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
+            String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.RelationAttachLinkLogicClass},propertiesMap);
+            GetSingleRelationAttachLinkLogicTransformer getSingleRelationAttachLinkLogicTransformer =
+                    new GetSingleRelationAttachLinkLogicTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object createLinkLogicRes = workingGraphOperationExecutor.executeWrite(getSingleRelationAttachLinkLogicTransformer,createCql);
+            RelationAttachLinkLogic targetRelationAttachLinkLogic = createLinkLogicRes != null ? (RelationAttachLinkLogic)createLinkLogicRes : null;
+
+            Map<String,Object> relationPropertiesMap = new HashMap<>();
+            CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
+            String linkCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(this.relationAttachKindUID),Long.parseLong(targetRelationAttachLinkLogic.getRelationAttachLinkLogicUID()),
+                    RealmConstant.RelationAttachKind_RelationAttachLinkLogicRelationClass,relationPropertiesMap);
+            GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
+                    (RealmConstant.RelationAttachKind_RelationAttachLinkLogicRelationClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object newRelationEntityRes = workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, linkCql);
+            if(newRelationEntityRes == null){
+                throw new CoreRealmServiceRuntimeException();
+            }
+            return targetRelationAttachLinkLogic;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
     public boolean removeRelationAttachLinkLogic(String relationAttachLinkLogicUID) throws CoreRealmServiceRuntimeException {
-        return false;
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(relationAttachLinkLogicUID),null,null);
+            GetSingleRelationAttachLinkLogicTransformer getSingleRelationAttachLinkLogicTransformer =
+                    new GetSingleRelationAttachLinkLogicTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object deletedAttributesViewKindRes = workingGraphOperationExecutor.executeWrite(getSingleRelationAttachLinkLogicTransformer,deleteCql);
+            RelationAttachLinkLogic resultKind = deletedAttributesViewKindRes != null ? (RelationAttachLinkLogic)deletedAttributesViewKindRes : null;
+            if(resultKind == null){
+                throw new CoreRealmServiceRuntimeException();
+            }else{
+                return true;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override

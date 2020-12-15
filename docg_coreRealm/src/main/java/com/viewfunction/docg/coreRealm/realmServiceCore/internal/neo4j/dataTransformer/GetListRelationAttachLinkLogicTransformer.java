@@ -1,0 +1,100 @@
+package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer;
+
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachLinkLogic;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationAttachKind;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
+import org.neo4j.driver.Record;
+import org.neo4j.driver.Result;
+import org.neo4j.driver.types.Node;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationAttachKind.LinkLogicCondition.*;
+import static com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationAttachKind.LinkLogicCondition.ContainSimilar;
+import static com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationAttachKind.LinkLogicType.*;
+
+public class GetListRelationAttachLinkLogicTransformer implements DataTransformer<List<RelationAttachLinkLogic>>{
+
+    private GraphOperationExecutor workingGraphOperationExecutor;
+    private String currentCoreRealmName;
+
+    public GetListRelationAttachLinkLogicTransformer(String currentCoreRealmName,GraphOperationExecutor workingGraphOperationExecutor){
+        this.currentCoreRealmName= currentCoreRealmName;
+        this.workingGraphOperationExecutor = workingGraphOperationExecutor;
+    }
+
+    @Override
+    public List<RelationAttachLinkLogic> transformResult(Result result) {
+        List<RelationAttachLinkLogic> relationAttachLinkLogicsList = new ArrayList<>();
+        if(result.hasNext()) {
+            while (result.hasNext()) {
+                Record nodeRecord = result.next();
+                if(nodeRecord != null){
+                    Node resultNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
+                    long nodeUID = resultNode.id();
+                    String attachLinkLogicType = resultNode.get(RealmConstant._attachLinkLogicType).asString();
+                    String attachLinkLogicCondition = resultNode.get(RealmConstant._attachLinkLogicCondition).asString();
+                    String attachLinkLogicKnownAttribute = resultNode.get(RealmConstant._attachLinkLogicKnownAttribute).asString();
+                    String attachLinkLogicUnKnownAttribute = resultNode.get(RealmConstant._attachLinkLogicUnKnownAttribute).asString();
+
+                    String relationAttachLinkLogicUID = ""+nodeUID;
+                    RelationAttachLinkLogic relationAttachLinkLogic =
+                            new RelationAttachLinkLogic(getLinkLogicType(attachLinkLogicType),getLinkLogicCondition(attachLinkLogicCondition),
+                                    attachLinkLogicKnownAttribute,attachLinkLogicUnKnownAttribute,relationAttachLinkLogicUID);
+                    relationAttachLinkLogicsList.add(relationAttachLinkLogic);
+                }
+            }
+        }
+        return relationAttachLinkLogicsList;
+    }
+
+    private static RelationAttachKind.LinkLogicType getLinkLogicType(String linkLogicTypeStr){
+        if(linkLogicTypeStr.equals("DEFAULT")){
+            return DEFAULT;
+        }
+        if(linkLogicTypeStr.equals("AND")){
+            return AND;
+        }
+        if(linkLogicTypeStr.equals("OR")){
+            return OR;
+        }
+        return null;
+    }
+
+    private static RelationAttachKind.LinkLogicCondition getLinkLogicCondition(String linkLogicConditionStr){
+        if(linkLogicConditionStr.equals("Equal")){
+            return Equal;
+        }
+        if(linkLogicConditionStr.equals("GreaterThanEqual")){
+            return GreaterThanEqual;
+        }
+        if(linkLogicConditionStr.equals("GreaterThan")){
+            return GreaterThan;
+        }
+        if(linkLogicConditionStr.equals("LessThanEqual")){
+            return LessThanEqual;
+        }
+        if(linkLogicConditionStr.equals("LessThan")){
+            return LessThan;
+        }
+        if(linkLogicConditionStr.equals("NotEqual")){
+            return NotEqual;
+        }
+        if(linkLogicConditionStr.equals("RegularMatch")){
+            return RegularMatch;
+        }
+        if(linkLogicConditionStr.equals("BeginWithSimilar")){
+            return BeginWithSimilar;
+        }
+        if(linkLogicConditionStr.equals("EndWithSimilar")){
+            return EndWithSimilar;
+        }
+        if(linkLogicConditionStr.equals("ContainSimilar")){
+            return ContainSimilar;
+        }
+        return null;
+    }
+}
