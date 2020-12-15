@@ -12,6 +12,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.Comm
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachLinkLogic;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JCoreRealm;
@@ -592,6 +593,12 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         }
         RelationAttachKind targetRelationAttachKind = this.getRelationAttachKind(relationAttachKindUID);
         if(targetRelationAttachKind != null){
+            List<RelationAttachLinkLogic> relationAttachLinkLogicList = targetRelationAttachKind.getRelationAttachLinkLogic();
+            if(relationAttachLinkLogicList != null){
+                for(RelationAttachLinkLogic currentRelationAttachLinkLogic:relationAttachLinkLogicList){
+                    targetRelationAttachKind.removeRelationAttachLinkLogic(currentRelationAttachLinkLogic.getRelationAttachLinkLogicUID());
+                }
+            }
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try{
                 String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(relationAttachKindUID),null,null);

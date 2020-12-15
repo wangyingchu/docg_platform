@@ -159,6 +159,20 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
 
     @Override
     public boolean removeRelationAttachLinkLogic(String relationAttachLinkLogicUID) throws CoreRealmServiceRuntimeException {
+        boolean isValidRelationAttachLinkLogic = false;
+        List<RelationAttachLinkLogic> relationAttachLinkLogicList = getRelationAttachLinkLogic();
+        for(RelationAttachLinkLogic currentRelationAttachLinkLogic:relationAttachLinkLogicList){
+            if(currentRelationAttachLinkLogic.getRelationAttachLinkLogicUID().equals(relationAttachLinkLogicUID)){
+                isValidRelationAttachLinkLogic = true;
+                break;
+            }
+        }
+        if(!isValidRelationAttachLinkLogic){
+            logger.error("RelationAttachKind {} does not contain relationAttachLinkLogic with UID {}.", this.relationAttachKindName,relationAttachLinkLogicUID);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("RelationAttachKind "+this.relationAttachKindName+" does not contain relationAttachLinkLogic with UID "+relationAttachLinkLogicUID+".");
+            throw exception;
+        }
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
             String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(relationAttachLinkLogicUID),null,null);

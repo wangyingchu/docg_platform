@@ -72,9 +72,39 @@ public class RelationAttachKindTest {
         }
         Assert.assertTrue(exceptionShouldBeCaught);
 
+        boolean removeResult = targetRelationAttachKind2.removeRelationAttachLinkLogic(resultRelationAttachLinkLogic.getRelationAttachLinkLogicUID());
+        Assert.assertTrue(removeResult);
 
+        attachLinkLogicList = targetRelationAttachKind2.getRelationAttachLinkLogic();
+        Assert.assertNotNull(attachLinkLogicList);
+        Assert.assertEquals(attachLinkLogicList.size(),0);
 
+        exceptionShouldBeCaught = false;
+        try{
+            targetRelationAttachKind2.removeRelationAttachLinkLogic(resultRelationAttachLinkLogic.getRelationAttachLinkLogicUID()+"123");
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
 
+        relationAttachLinkLogic01 = new RelationAttachLinkLogic(RelationAttachKind.LinkLogicType.DEFAULT, RelationAttachKind.LinkLogicCondition.Equal,"knownPropertyName1","unKnownPropertyName1");
+        resultRelationAttachLinkLogic = targetRelationAttachKind2.createRelationAttachLinkLogic(relationAttachLinkLogic01);
+        Assert.assertNotNull(resultRelationAttachLinkLogic);
+        Assert.assertNotNull(resultRelationAttachLinkLogic.getRelationAttachLinkLogicUID());
+
+        relationAttachLinkLogic01 = new RelationAttachLinkLogic(RelationAttachKind.LinkLogicType.AND, RelationAttachKind.LinkLogicCondition.BeginWithSimilar,"knownPropertyName2","unKnownPropertyName2");
+        resultRelationAttachLinkLogic = targetRelationAttachKind2.createRelationAttachLinkLogic(relationAttachLinkLogic01);
+        Assert.assertNotNull(resultRelationAttachLinkLogic);
+        Assert.assertNotNull(resultRelationAttachLinkLogic.getRelationAttachLinkLogicUID());
+
+        relationAttachLinkLogic01 = new RelationAttachLinkLogic(RelationAttachKind.LinkLogicType.OR, RelationAttachKind.LinkLogicCondition.LessThan,"knownPropertyName3","unKnownPropertyName3");
+        resultRelationAttachLinkLogic = targetRelationAttachKind2.createRelationAttachLinkLogic(relationAttachLinkLogic01);
+        Assert.assertNotNull(resultRelationAttachLinkLogic);
+        Assert.assertNotNull(resultRelationAttachLinkLogic.getRelationAttachLinkLogicUID());
+
+        attachLinkLogicList = targetRelationAttachKind2.getRelationAttachLinkLogic();
+        Assert.assertNotNull(attachLinkLogicList);
+        Assert.assertEquals(attachLinkLogicList.size(),3);
 
         coreRealm.removeRelationAttachKind(targetRelationAttachKind.getRelationAttachKindUID());
     }
