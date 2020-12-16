@@ -293,10 +293,11 @@ public interface CoreRealm {
      * @param conceptionKindNames String[] 所属的概念类型数组
      * @param conceptionEntityValue ConceptionEntityValue 概念实体属性值
      * @param relationAttachKindList List<RelationAttachKind> 建立链接所需的关系附着规则类型列表
+     * @param entityRelateRole EntityRelateRole 概念实体在关系中的角色
      *
      * @return 概念实体对象
      */
-    public ConceptionEntity newMultiConceptionEntity(String[] conceptionKindNames,ConceptionEntityValue conceptionEntityValue,List<RelationAttachKind> relationAttachKindList) throws CoreRealmServiceRuntimeException;
+    public ConceptionEntity newMultiConceptionEntity(String[] conceptionKindNames,ConceptionEntityValue conceptionEntityValue,List<RelationAttachKind> relationAttachKindList, RelationAttachKind.EntityRelateRole entityRelateRole) throws CoreRealmServiceRuntimeException;
 
     /**
      * 创建多个属于多概念类型的概念实体对象
@@ -315,10 +316,11 @@ public interface CoreRealm {
      * @param conceptionKindNames String[] 所属的概念类型数组
      * @param conceptionEntityValues List<ConceptionEntityValue> 概念实体属性值列表
      * @param relationAttachKindList List<RelationAttachKind> 建立链接所需的关系附着规则类型列表
+     * @param entityRelateRole EntityRelateRole 概念实体在关系中的角色
      *
      * @return 实体对象操作返回结果
      */
-    public EntitiesOperationResult newMultiConceptionEntities(String[] conceptionKindNames,List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList) throws CoreRealmServiceRuntimeException;
+    public EntitiesOperationResult newMultiConceptionEntities(String[] conceptionKindNames,List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList, RelationAttachKind.EntityRelateRole entityRelateRole) throws CoreRealmServiceRuntimeException;
 
     /**
      * 开启全局会话，此操作会创建一个持久化的后端数据库连接，执行该操作后由当前 CoreRealm 所创建的所有对象（以及这些对象创建的后续对象）将继承性的共享该持久化后端数据库连接。

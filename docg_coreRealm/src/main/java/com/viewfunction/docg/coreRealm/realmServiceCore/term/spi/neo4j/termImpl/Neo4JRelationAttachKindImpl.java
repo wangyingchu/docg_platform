@@ -191,8 +191,13 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
     }
 
     @Override
-    public boolean newRelationEntities(String conceptionEntityUID, EntityRelateRole entityRelateRole, Map<String,Object> relationData) {
-        return false;
+    public long newRelationEntities(String conceptionEntityUID, EntityRelateRole entityRelateRole, Map<String,Object> relationData) {
+        return 0;
+    }
+
+    @Override
+    public long newRelationEntities(List<String> conceptionEntityUID, EntityRelateRole entityRelateRole, Map<String, Object> relationData) {
+        return 0;
     }
 
     @Override

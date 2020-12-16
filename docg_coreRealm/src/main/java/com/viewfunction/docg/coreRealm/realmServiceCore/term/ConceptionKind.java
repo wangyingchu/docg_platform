@@ -79,10 +79,11 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      *
      * @param conceptionEntityValue ConceptionEntityValue 概念实体属性值
      * @param relationAttachKindList List<RelationAttachKind> 建立链接所需的关系附着规则类型列表
+     * @param entityRelateRole EntityRelateRole 概念实体在关系中的角色
      *
      * @return 概念实体对象
      */
-    public ConceptionEntity newEntity(ConceptionEntityValue conceptionEntityValue,List<RelationAttachKind> relationAttachKindList);
+    public ConceptionEntity newEntity(ConceptionEntityValue conceptionEntityValue, List<RelationAttachKind> relationAttachKindList, RelationAttachKind.EntityRelateRole entityRelateRole);
 
     /**
      * 创建多个属于当前概念类型的概念实体对象
@@ -98,10 +99,10 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      *
      * @param conceptionEntityValues List<ConceptionEntityValue> 概念实体属性值列表
      * @param relationAttachKindList List<RelationAttachKind> 建立链接所需的关系附着规则类型列表
-     *
+     * @param entityRelateRole EntityRelateRole 概念实体在关系中的角色
      * @return 实体对象操作返回结果
      */
-    public EntitiesOperationResult newEntities(List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList);
+    public EntitiesOperationResult newEntities(List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList, RelationAttachKind.EntityRelateRole entityRelateRole);
 
     /**
      * 更新一个当前概念类型的概念实体对象的属性信息

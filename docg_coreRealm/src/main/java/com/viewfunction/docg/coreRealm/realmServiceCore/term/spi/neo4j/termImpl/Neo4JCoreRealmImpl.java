@@ -764,7 +764,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
-    public ConceptionEntity newMultiConceptionEntity(String[] conceptionKindNames, ConceptionEntityValue conceptionEntityValue, List<RelationAttachKind> relationAttachKindList) throws CoreRealmServiceRuntimeException {
+    public ConceptionEntity newMultiConceptionEntity(String[] conceptionKindNames, ConceptionEntityValue conceptionEntityValue, List<RelationAttachKind> relationAttachKindList, RelationAttachKind.EntityRelateRole entityRelateRole) throws CoreRealmServiceRuntimeException {
         return newMultiConceptionEntity(conceptionKindNames,conceptionEntityValue,false);
     }
 
@@ -816,7 +816,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
-    public EntitiesOperationResult newMultiConceptionEntities(String[] conceptionKindNames, List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList) throws CoreRealmServiceRuntimeException {
+    public EntitiesOperationResult newMultiConceptionEntities(String[] conceptionKindNames, List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList, RelationAttachKind.EntityRelateRole entityRelateRole) throws CoreRealmServiceRuntimeException {
         return newMultiConceptionEntities(conceptionKindNames,conceptionEntityValues,false);
     }
 

@@ -1,11 +1,16 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListRelationAttachKindTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationAttachKind;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JRelationAttachKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.config.PropertiesHandler;
 
@@ -677,5 +682,33 @@ public class CommonOperationUtil {
             literalList.add(Cypher.literalOf(currentLongValue));
         }
         return literalList;
+    }
+
+    public static void attachEntities(String entityKind,List<String> entityUIDList,GraphOperationExecutor workingGraphOperationExecutor){
+        try {
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setResultNumber(1000000);
+            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant._relationAttachSourceKind,entityKind));
+            queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant._relationAttachTargetKind,entityKind), QueryParameters.FilteringLogic.OR);
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.RelationAttachKindClass,queryParameters,null);
+            GetListRelationAttachKindTransformer getListRelationAttachKindTransformer = new GetListRelationAttachKindTransformer(null,workingGraphOperationExecutor);
+            Object relationAttachKindsRes = workingGraphOperationExecutor.executeWrite(getListRelationAttachKindTransformer,queryCql);
+            List<RelationAttachKind> relationAttachKindList = relationAttachKindsRes != null ? (List<RelationAttachKind>) relationAttachKindsRes : null;
+
+            for(RelationAttachKind currentRelationAttachKind:relationAttachKindList){
+                Neo4JRelationAttachKindImpl neo4JRelationAttachKindImpl = (Neo4JRelationAttachKindImpl)currentRelationAttachKind;
+                neo4JRelationAttachKindImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+                String sourceKindName = neo4JRelationAttachKindImpl.getSourceConceptionKindName();
+                String targetKindName = neo4JRelationAttachKindImpl.getTargetConceptionKindName();
+                if(sourceKindName.equals(entityKind)){
+                    neo4JRelationAttachKindImpl.newRelationEntities(entityUIDList, RelationAttachKind.EntityRelateRole.SOURCE,null);
+                }
+                if(targetKindName.equals(entityKind)){
+                    neo4JRelationAttachKindImpl.newRelationEntities(entityUIDList, RelationAttachKind.EntityRelateRole.TARGET,null);
+                }
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
     }
 }

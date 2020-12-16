@@ -122,7 +122,14 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
                 GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
                         new GetSingleConceptionEntityTransformer(this.conceptionKindName, this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer, createCql);
-                return newEntityRes != null ? (ConceptionEntity) newEntityRes : null;
+
+                ConceptionEntity resultEntity = newEntityRes != null ? (ConceptionEntity) newEntityRes : null;
+                if(addPerDefinedRelation && resultEntity != null){
+                    List<String> uidList = new ArrayList<>();
+                    uidList.add(resultEntity.getConceptionEntityUID());
+                    CommonOperationUtil.attachEntities(this.conceptionKindName,uidList,workingGraphOperationExecutor);
+                }
+                return resultEntity;
             }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
@@ -131,8 +138,14 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public ConceptionEntity newEntity(ConceptionEntityValue conceptionEntityValue, List<RelationAttachKind> relationAttachKindList) {
-        return newEntity(conceptionEntityValue,false);
+    public ConceptionEntity newEntity(ConceptionEntityValue conceptionEntityValue, List<RelationAttachKind> relationAttachKindList, RelationAttachKind.EntityRelateRole entityRelateRole) {
+        ConceptionEntity resultConceptionEntity = newEntity(conceptionEntityValue,false);
+        if(relationAttachKindList != null){
+            for(RelationAttachKind currentRelationAttachKind : relationAttachKindList){
+                currentRelationAttachKind.newRelationEntities(resultConceptionEntity.getConceptionEntityUID(),entityRelateRole,null);
+            }
+        }
+        return resultConceptionEntity;
     }
 
     @Override
@@ -167,6 +180,9 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
                             setOperationSummary("newEntities operation for conceptionKind "+this.conceptionKindName+" success.");
                 }
                 commonEntitiesOperationResultImpl.finishEntitiesOperation();
+                if(addPerDefinedRelation && commonEntitiesOperationResultImpl.getSuccessEntityUIDs() != null){
+                    CommonOperationUtil.attachEntities(this.conceptionKindName,commonEntitiesOperationResultImpl.getSuccessEntityUIDs(),workingGraphOperationExecutor);
+                }
                 return commonEntitiesOperationResultImpl;
             }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
@@ -176,8 +192,14 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public EntitiesOperationResult newEntities(List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList) {
-        return newEntities(conceptionEntityValues,false);
+    public EntitiesOperationResult newEntities(List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList, RelationAttachKind.EntityRelateRole entityRelateRole) {
+        EntitiesOperationResult entitiesOperationResult =  newEntities(conceptionEntityValues,false);
+        if(relationAttachKindList != null){
+            for(RelationAttachKind currentRelationAttachKind : relationAttachKindList){
+                currentRelationAttachKind.newRelationEntities(entitiesOperationResult.getSuccessEntityUIDs(),entityRelateRole,null);
+            }
+        }
+        return entitiesOperationResult;
     }
 
     @Override

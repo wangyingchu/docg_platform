@@ -124,9 +124,20 @@ public interface RelationAttachKind extends MetaConfigItemFeatureSupportable, Me
      * @param entityRelateRole EntityRelateRole 概念实体在关系中的角色
      * @param relationData Map<String,Object> 关系实体上的自定义属性
      *
-     * @return 关系附着逻辑规则列表
+     * @return 新创建的概念实体对象数量
      */
-    public boolean newRelationEntities(String conceptionEntityUID, EntityRelateRole entityRelateRole, Map<String,Object> relationData);
+    public long newRelationEntities(String conceptionEntityUID, EntityRelateRole entityRelateRole, Map<String,Object> relationData);
+
+    /**
+     * 使用当前关系附着规则类型的逻辑创建新的关系实体
+     *
+     * @param conceptionEntityUIDs List<String> 概念实体对象唯一ID列表
+     * @param entityRelateRole EntityRelateRole 概念实体在关系中的角色
+     * @param relationData Map<String,Object> 关系实体上的自定义属性
+     *
+     * @return 新创建的概念实体对象数量
+     */
+    public long newRelationEntities(List<String> conceptionEntityUIDs, EntityRelateRole entityRelateRole, Map<String,Object> relationData);
 
     /**
      * 使用当前关系附着规则类型的定义在领域内的全部数据上创建符合条件的关系实体

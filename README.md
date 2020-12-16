@@ -349,10 +349,11 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @param conceptionKindNames String[] 所属的概念类型数组
      * @param conceptionEntityValue ConceptionEntityValue 概念实体属性值
      * @param relationAttachKindList List<RelationAttachKind> 建立链接所需的关系附着规则类型列表
+     * @param entityRelateRole EntityRelateRole 概念实体在关系中的角色
      *
      * @return 概念实体对象
      */
-    public ConceptionEntity newMultiConceptionEntity(String[] conceptionKindNames,ConceptionEntityValue conceptionEntityValue,List<RelationAttachKind> relationAttachKindList) throws CoreRealmServiceRuntimeException;
+    public ConceptionEntity newMultiConceptionEntity(String[] conceptionKindNames,ConceptionEntityValue conceptionEntityValue,List<RelationAttachKind> relationAttachKindList, RelationAttachKind.EntityRelateRole entityRelateRole) throws CoreRealmServiceRuntimeException;
 
     /**
      * 创建多个属于多概念类型的概念实体对象
@@ -371,10 +372,11 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @param conceptionKindNames String[] 所属的概念类型数组
      * @param conceptionEntityValues List<ConceptionEntityValue> 概念实体属性值列表
      * @param relationAttachKindList List<RelationAttachKind> 建立链接所需的关系附着规则类型列表
+     * @param entityRelateRole EntityRelateRole 概念实体在关系中的角色
      *
      * @return 实体对象操作返回结果
      */
-    public EntitiesOperationResult newMultiConceptionEntities(String[] conceptionKindNames,List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList) throws CoreRealmServiceRuntimeException;
+    public EntitiesOperationResult newMultiConceptionEntities(String[] conceptionKindNames,List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList, RelationAttachKind.EntityRelateRole entityRelateRole) throws CoreRealmServiceRuntimeException;
 
     /**
      * 开启全局会话，此操作会创建一个持久化的后端数据库连接，执行该操作后由当前 CoreRealm 所创建的所有对象（以及这些对象创建的后续对象）将继承性的共享该持久化后端数据库连接。
@@ -454,10 +456,11 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @param conceptionEntityValue ConceptionEntityValue 概念实体属性值
      * @param relationAttachKindList List<RelationAttachKind> 建立链接所需的关系附着规则类型列表
+     * @param entityRelateRole EntityRelateRole 概念实体在关系中的角色
      *
      * @return 概念实体对象
      */
-    public ConceptionEntity newEntity(ConceptionEntityValue conceptionEntityValue,List<RelationAttachKind> relationAttachKindList);
+    public ConceptionEntity newEntity(ConceptionEntityValue conceptionEntityValue,List<RelationAttachKind> relationAttachKindList, RelationAttachKind.EntityRelateRole entityRelateRole);
 
     /**
      * 创建多个属于当前概念类型的概念实体对象
@@ -473,10 +476,11 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @param conceptionEntityValues List<ConceptionEntityValue> 概念实体属性值列表
      * @param relationAttachKindList List<RelationAttachKind> 建立链接所需的关系附着规则类型列表
+     * @param entityRelateRole EntityRelateRole 概念实体在关系中的角色
      *
      * @return 实体对象操作返回结果
      */
-    public EntitiesOperationResult newEntities(List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList);
+    public EntitiesOperationResult newEntities(List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList, RelationAttachKind.EntityRelateRole entityRelateRole);
 
     /**
      * 更新一个当前概念类型的概念实体对象的属性信息
@@ -984,9 +988,20 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @param entityRelateRole EntityRelateRole 概念实体在关系中的角色
      * @param relationData Map<String,Object> 关系实体上的自定义属性
      *
-     * @return 关系附着逻辑规则列表
+     * @return 新创建的概念实体对象数量
      */
-    public boolean newRelationEntities(String conceptionEntityUID, EntityRelateRole entityRelateRole, Map<String,Object> relationData);
+    public long newRelationEntities(String conceptionEntityUID, EntityRelateRole entityRelateRole, Map<String,Object> relationData);
+
+     /**
+     * 使用当前关系附着规则类型的逻辑创建新的关系实体
+     *
+     * @param conceptionEntityUIDs List<String> 概念实体对象唯一ID列表
+     * @param entityRelateRole EntityRelateRole 概念实体在关系中的角色
+     * @param relationData Map<String,Object> 关系实体上的自定义属性
+     *
+     * @return 新创建的概念实体对象数量
+     */
+    public long newRelationEntities(List<String> conceptionEntityUIDs, EntityRelateRole entityRelateRole, Map<String,Object> relationData);
 
      /**
      * 使用当前关系附着规则类型的定义在领域内的全部数据上创建符合条件的关系实体
