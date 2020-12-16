@@ -755,7 +755,15 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
                         new GetSingleConceptionEntityTransformer(conceptionKindNames[0], this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer, createCql);
-                return newEntityRes != null ? (ConceptionEntity) newEntityRes : null;
+                ConceptionEntity resultEntity = newEntityRes != null ? (ConceptionEntity) newEntityRes : null;
+                if(addPerDefinedRelation && resultEntity != null){
+                    List<String> uidList = new ArrayList<>();
+                    uidList.add(resultEntity.getConceptionEntityUID());
+                    for(String currentConceptionKindName:conceptionKindNames){
+                        CommonOperationUtil.attachEntities(currentConceptionKindName,uidList,workingGraphOperationExecutor);
+                    }
+                }
+                return resultEntity;
             }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
@@ -765,7 +773,13 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
     @Override
     public ConceptionEntity newMultiConceptionEntity(String[] conceptionKindNames, ConceptionEntityValue conceptionEntityValue, List<RelationAttachKind> relationAttachKindList, RelationAttachKind.EntityRelateRole entityRelateRole) throws CoreRealmServiceRuntimeException {
-        return newMultiConceptionEntity(conceptionKindNames,conceptionEntityValue,false);
+        ConceptionEntity conceptionEntity = newMultiConceptionEntity(conceptionKindNames,conceptionEntityValue,false);
+        if(relationAttachKindList != null){
+            for(RelationAttachKind currentRelationAttachKind : relationAttachKindList){
+                currentRelationAttachKind.newRelationEntities(conceptionEntity.getConceptionEntityUID(),entityRelateRole,null);
+            }
+        }
+        return conceptionEntity;
     }
 
     @Override
@@ -807,6 +821,11 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                             setOperationSummary("newEntities operation for multi conceptionKind success.");
                 }
                 commonEntitiesOperationResultImpl.finishEntitiesOperation();
+                if(addPerDefinedRelation && commonEntitiesOperationResultImpl.getSuccessEntityUIDs() != null){
+                    for(String currentConceptionKindName:conceptionKindNames){
+                        CommonOperationUtil.attachEntities(currentConceptionKindName,commonEntitiesOperationResultImpl.getSuccessEntityUIDs(),workingGraphOperationExecutor);
+                    }
+                }
                 return commonEntitiesOperationResultImpl;
             }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
@@ -817,7 +836,13 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
     @Override
     public EntitiesOperationResult newMultiConceptionEntities(String[] conceptionKindNames, List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList, RelationAttachKind.EntityRelateRole entityRelateRole) throws CoreRealmServiceRuntimeException {
-        return newMultiConceptionEntities(conceptionKindNames,conceptionEntityValues,false);
+        EntitiesOperationResult entitiesOperationResult = newMultiConceptionEntities(conceptionKindNames,conceptionEntityValues,false);
+        if(relationAttachKindList != null){
+            for(RelationAttachKind currentRelationAttachKind : relationAttachKindList){
+                currentRelationAttachKind.newRelationEntities(entitiesOperationResult.getSuccessEntityUIDs(),entityRelateRole,null);
+            }
+        }
+        return entitiesOperationResult;
     }
 
     @Override
