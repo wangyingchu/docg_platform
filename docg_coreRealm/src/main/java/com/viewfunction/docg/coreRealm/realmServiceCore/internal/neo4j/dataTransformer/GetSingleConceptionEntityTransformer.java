@@ -31,14 +31,15 @@ public class GetSingleConceptionEntityTransformer implements DataTransformer<Con
                 Node resultNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
                 List<String> allConceptionKindNames = Lists.newArrayList(resultNode.labels());
                 boolean isMatchedConceptionKind = true;
-                if(allConceptionKindNames.size()>0){
+                if(allConceptionKindNames.size()>0 && targetConceptionKindName != null){
                     isMatchedConceptionKind = allConceptionKindNames.contains(targetConceptionKindName);
                 }
                 if(isMatchedConceptionKind){
                     long nodeUID = resultNode.id();
                     String conceptionEntityUID = ""+nodeUID;
-                    Neo4JConceptionEntityImpl neo4jConceptionEntityImpl =
-                            new Neo4JConceptionEntityImpl(targetConceptionKindName,conceptionEntityUID);
+                    Neo4JConceptionEntityImpl neo4jConceptionEntityImpl = targetConceptionKindName != null ?
+                            new Neo4JConceptionEntityImpl(targetConceptionKindName,conceptionEntityUID):
+                            new Neo4JConceptionEntityImpl(allConceptionKindNames.get(0),conceptionEntityUID);
                     neo4jConceptionEntityImpl.setAllConceptionKindNames(allConceptionKindNames);
                     neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
                     return neo4jConceptionEntityImpl;
