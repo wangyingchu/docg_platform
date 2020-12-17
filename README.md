@@ -379,6 +379,15 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public EntitiesOperationResult newMultiConceptionEntities(String[] conceptionKindNames,List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList, RelationAttachKind.EntityRelateRole entityRelateRole) throws CoreRealmServiceRuntimeException;
 
     /**
+     * 根据自定义查询条件获取实体的属性信息
+     *
+     * @param customQuerySentence String 用户自定义的查询语句，必须确保返回的实体为概念实体或关系实体
+     *
+     * @return 查询结果实体数据列表，具体数据格式依查询语句的返回条件而定
+     */
+    public List<Map<String,Map<String,Object>>> executeCustomQuery(String customQuerySentence) throws CoreRealmServiceRuntimeException;
+
+    /**
      * 开启全局会话，此操作会创建一个持久化的后端数据库连接，执行该操作后由当前 CoreRealm 所创建的所有对象（以及这些对象创建的后续对象）将继承性的共享该持久化后端数据库连接。
      */
     public void openGlobalSession();

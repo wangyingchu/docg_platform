@@ -8,6 +8,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 
 import java.util.List;
+import java.util.Map;
 
 public class OrientDBCoreRealmImpl implements CoreRealm {
 
@@ -162,6 +163,11 @@ public class OrientDBCoreRealmImpl implements CoreRealm {
 
     @Override
     public EntitiesOperationResult newMultiConceptionEntities(String[] conceptionKindNames, List<ConceptionEntityValue> conceptionEntityValues, List<RelationAttachKind> relationAttachKindList, RelationAttachKind.EntityRelateRole entityRelateRole) {
+        return null;
+    }
+
+    @Override
+    public List<Map<String,Map<String,Object>>> executeCustomQuery(String customQuerySentence) throws CoreRealmServiceRuntimeException {
         return null;
     }
 

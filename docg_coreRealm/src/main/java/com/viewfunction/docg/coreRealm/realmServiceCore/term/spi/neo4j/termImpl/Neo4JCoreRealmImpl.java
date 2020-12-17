@@ -846,6 +846,18 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
+    public List<Map<String,Map<String,Object>>> executeCustomQuery(String customQuerySentence) throws CoreRealmServiceRuntimeException {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListMapTransformer getListMapTransformer = new GetListMapTransformer();
+            Object newEntityRes = workingGraphOperationExecutor.executeWrite(getListMapTransformer, customQuerySentence);
+            return newEntityRes != null ? (List<Map<String,Map<String,Object>>>)newEntityRes : null;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
     public void openGlobalSession() {
         GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
         this.setGlobalGraphOperationExecutor(graphOperationExecutor);
