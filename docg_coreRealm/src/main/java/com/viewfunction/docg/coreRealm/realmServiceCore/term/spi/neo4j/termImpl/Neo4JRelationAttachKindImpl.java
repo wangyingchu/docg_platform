@@ -1,7 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
@@ -289,7 +289,7 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
     }
 
     @Override
-    public long newRelationEntities(List<String> conceptionEntityUID, EntityRelateRole entityRelateRole, Map<String, Object> relationData) {
+    public long newRelationEntities(List<String> conceptionEntityUIDs, EntityRelateRole entityRelateRole, Map<String, Object> relationData) {
         return 0;
     }
 
@@ -326,10 +326,40 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
         }
     }
 
-    private FilteringItem generateFilteringItem(LinkLogicCondition LinkLogicCondition, String attributeName, Object attributeValue){
-
-
-        return null;
+    private FilteringItem generateFilteringItem(LinkLogicCondition linkLogicCondition, String attributeName, Object attributeValue){
+        FilteringItem filteringItem = null;
+        switch(linkLogicCondition){
+            case Equal:
+                filteringItem = new EqualFilteringItem(attributeName,attributeValue);
+                break;
+            case GreaterThanEqual:
+                filteringItem = new GreaterThanEqualFilteringItem(attributeName,attributeValue);
+                break;
+            case GreaterThan:
+                filteringItem = new GreaterThanFilteringItem(attributeName,attributeValue);
+                break;
+            case LessThanEqual:
+                filteringItem = new LessThanEqualFilteringItem(attributeName,attributeValue);
+                break;
+            case LessThan:
+                filteringItem = new LessThanFilteringItem(attributeName,attributeValue);
+                break;
+            case NotEqual:
+                filteringItem = new NotEqualFilteringItem(attributeName,attributeValue);
+                break;
+            case RegularMatch:
+                filteringItem = new RegularMatchFilteringItem(attributeName,attributeValue.toString());
+                break;
+            case BeginWithSimilar:
+                filteringItem = new SimilarFilteringItem(attributeName,attributeValue.toString(),SimilarFilteringItem.MatchingType.BeginWith);
+                break;
+            case EndWithSimilar:
+                filteringItem = new SimilarFilteringItem(attributeName,attributeValue.toString(),SimilarFilteringItem.MatchingType.EndWith);
+                break;
+            case ContainSimilar:
+                filteringItem = new SimilarFilteringItem(attributeName,attributeValue.toString(),SimilarFilteringItem.MatchingType.Contain);
+        }
+        return filteringItem;
     }
 
     //internal graphOperationExecutor management logic

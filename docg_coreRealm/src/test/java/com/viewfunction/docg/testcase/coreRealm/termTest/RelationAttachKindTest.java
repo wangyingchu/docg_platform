@@ -2,7 +2,10 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachLinkLogic;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationAttachKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
@@ -11,7 +14,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
 
 public class RelationAttachKindTest {
 
@@ -107,5 +111,83 @@ public class RelationAttachKindTest {
         Assert.assertEquals(attachLinkLogicList.size(),3);
 
         coreRealm.removeRelationAttachKind(targetRelationAttachKind.getRelationAttachKindUID());
+
+        ConceptionKind _ConceptionKind01 = coreRealm.getConceptionKind("RelationAttachConceptionKind01");
+        if(_ConceptionKind01 != null){
+            coreRealm.removeConceptionKind("RelationAttachConceptionKind01",true);
+        }
+        _ConceptionKind01 = coreRealm.getConceptionKind("RelationAttachConceptionKind01");
+        if(_ConceptionKind01 == null){
+            _ConceptionKind01 = coreRealm.createConceptionKind("RelationAttachConceptionKind01","");
+            Assert.assertNotNull(_ConceptionKind01);
+            Assert.assertEquals(_ConceptionKind01.getConceptionKindName(),"RelationAttachConceptionKind01");
+        }
+
+        ConceptionKind _ConceptionKind02 = coreRealm.getConceptionKind("RelationAttachConceptionKind02");
+        if(_ConceptionKind02 != null){
+            coreRealm.removeConceptionKind("RelationAttachConceptionKind02",true);
+        }
+        _ConceptionKind02 = coreRealm.getConceptionKind("RelationAttachConceptionKind02");
+        if(_ConceptionKind02 == null){
+            _ConceptionKind02 = coreRealm.createConceptionKind("RelationAttachConceptionKind02","");
+            Assert.assertNotNull(_ConceptionKind02);
+            Assert.assertEquals(_ConceptionKind02.getConceptionKindName(),"RelationAttachConceptionKind02");
+        }
+
+        ConceptionKind _ConceptionKind03 = coreRealm.getConceptionKind("RelationAttachConceptionKind03");
+        if(_ConceptionKind03 != null){
+            coreRealm.removeConceptionKind("RelationAttachConceptionKind03",true);
+        }
+        _ConceptionKind03 = coreRealm.getConceptionKind("RelationAttachConceptionKind03");
+        if(_ConceptionKind03 == null){
+            _ConceptionKind03 = coreRealm.createConceptionKind("RelationAttachConceptionKind03","");
+            Assert.assertNotNull(_ConceptionKind03);
+            Assert.assertEquals(_ConceptionKind03.getConceptionKindName(),"RelationAttachConceptionKind03");
+        }
+
+        Map<String,Object> newEntityValueMap= new HashMap<>();
+        newEntityValueMap.put("prop1",Long.parseLong("12345"));
+        newEntityValueMap.put("prop2",Double.parseDouble("12345.789"));
+        newEntityValueMap.put("prop3",Integer.parseInt("1234"));
+        newEntityValueMap.put("prop4","thi is s string");
+        newEntityValueMap.put("prop5",Boolean.valueOf("true"));
+        newEntityValueMap.put("prop6", new BigDecimal("5566778890.223344"));
+        newEntityValueMap.put("prop7", Short.valueOf("24"));
+        newEntityValueMap.put("prop8", Float.valueOf("1234.66"));
+        newEntityValueMap.put("prop9", new Long[]{1000l,2000l,3000l});
+        newEntityValueMap.put("prop10", new Double[]{1000.1d,2000.2d,3000.3d});
+        newEntityValueMap.put("prop11", new Integer[]{100,200,300});
+        newEntityValueMap.put("prop12", new String[]{"this is str1","这是字符串2"});
+        newEntityValueMap.put("prop13", new Boolean[]{true,true,false,false,true});
+        newEntityValueMap.put("prop14", new BigDecimal[]{new BigDecimal("1234567.890"),new BigDecimal("987654321.12345")});
+        newEntityValueMap.put("prop15", new Short[]{1,2,3,4,5});
+        newEntityValueMap.put("prop16", new Float[]{1000.1f,2000.2f,3000.3f});
+        newEntityValueMap.put("prop17", new Date());
+        newEntityValueMap.put("prop18", new Date[]{new Date(),new Date(),new Date(),new Date()});
+        newEntityValueMap.put("prop19", Byte.valueOf("2"));
+        newEntityValueMap.put("prop20", "this is a byte array value".getBytes());
+        newEntityValueMap.put("prop21", new Byte[]{Byte.valueOf("1"),Byte.valueOf("3"),Byte.valueOf("5")});
+
+        List<ConceptionEntityValue> conceptionEntityValueList = new ArrayList<>();
+        ConceptionEntityValue conceptionEntityValue1 = new ConceptionEntityValue(newEntityValueMap);
+        ConceptionEntityValue conceptionEntityValue2 = new ConceptionEntityValue(newEntityValueMap);
+        ConceptionEntityValue conceptionEntityValue3 = new ConceptionEntityValue(newEntityValueMap);
+        conceptionEntityValueList.add(conceptionEntityValue1);
+        conceptionEntityValueList.add(conceptionEntityValue2);
+        conceptionEntityValueList.add(conceptionEntityValue3);
+
+        EntitiesOperationResult addEntitiesResult = _ConceptionKind01.newEntities(conceptionEntityValueList,false);
+
+
+
+
+
+
+
+
+
+
+
+
     }
 }
