@@ -701,10 +701,18 @@ public class CommonOperationUtil {
                 String sourceKindName = neo4JRelationAttachKindImpl.getSourceConceptionKindName();
                 String targetKindName = neo4JRelationAttachKindImpl.getTargetConceptionKindName();
                 if(sourceKindName.equals(entityKind)){
-                    neo4JRelationAttachKindImpl.newRelationEntities(entityUIDList, RelationAttachKind.EntityRelateRole.SOURCE,null);
+                    if(entityUIDList.size() ==1){
+                        neo4JRelationAttachKindImpl.newRelationEntities(entityUIDList.get(0), RelationAttachKind.EntityRelateRole.SOURCE,null);
+                    }else{
+                        neo4JRelationAttachKindImpl.newRelationEntities(entityUIDList, RelationAttachKind.EntityRelateRole.SOURCE,null);
+                    }
                 }
                 if(targetKindName.equals(entityKind)){
-                    neo4JRelationAttachKindImpl.newRelationEntities(entityUIDList, RelationAttachKind.EntityRelateRole.TARGET,null);
+                    if(entityUIDList.size() ==1){
+                        neo4JRelationAttachKindImpl.newRelationEntities(entityUIDList.get(0), RelationAttachKind.EntityRelateRole.TARGET,null);
+                    }else{
+                        neo4JRelationAttachKindImpl.newRelationEntities(entityUIDList, RelationAttachKind.EntityRelateRole.TARGET,null);
+                    }
                 }
             }
         } catch (CoreRealmServiceEntityExploreException e) {

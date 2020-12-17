@@ -3,8 +3,8 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachLinkLogic;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationAttachKind;
@@ -14,7 +14,6 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 public class RelationAttachKindTest {
@@ -112,6 +111,8 @@ public class RelationAttachKindTest {
 
         coreRealm.removeRelationAttachKind(targetRelationAttachKind.getRelationAttachKindUID());
 
+        coreRealm.openGlobalSession();
+
         ConceptionKind _ConceptionKind01 = coreRealm.getConceptionKind("RelationAttachConceptionKind01");
         if(_ConceptionKind01 != null){
             coreRealm.removeConceptionKind("RelationAttachConceptionKind01",true);
@@ -151,43 +152,40 @@ public class RelationAttachKindTest {
         newEntityValueMap.put("prop3",Integer.parseInt("1234"));
         newEntityValueMap.put("prop4","thi is s string");
         newEntityValueMap.put("prop5",Boolean.valueOf("true"));
-        newEntityValueMap.put("prop6", new BigDecimal("5566778890.223344"));
-        newEntityValueMap.put("prop7", Short.valueOf("24"));
-        newEntityValueMap.put("prop8", Float.valueOf("1234.66"));
-        newEntityValueMap.put("prop9", new Long[]{1000l,2000l,3000l});
-        newEntityValueMap.put("prop10", new Double[]{1000.1d,2000.2d,3000.3d});
-        newEntityValueMap.put("prop11", new Integer[]{100,200,300});
-        newEntityValueMap.put("prop12", new String[]{"this is str1","这是字符串2"});
-        newEntityValueMap.put("prop13", new Boolean[]{true,true,false,false,true});
-        newEntityValueMap.put("prop14", new BigDecimal[]{new BigDecimal("1234567.890"),new BigDecimal("987654321.12345")});
-        newEntityValueMap.put("prop15", new Short[]{1,2,3,4,5});
-        newEntityValueMap.put("prop16", new Float[]{1000.1f,2000.2f,3000.3f});
-        newEntityValueMap.put("prop17", new Date());
-        newEntityValueMap.put("prop18", new Date[]{new Date(),new Date(),new Date(),new Date()});
-        newEntityValueMap.put("prop19", Byte.valueOf("2"));
-        newEntityValueMap.put("prop20", "this is a byte array value".getBytes());
-        newEntityValueMap.put("prop21", new Byte[]{Byte.valueOf("1"),Byte.valueOf("3"),Byte.valueOf("5")});
 
-        List<ConceptionEntityValue> conceptionEntityValueList = new ArrayList<>();
-        ConceptionEntityValue conceptionEntityValue1 = new ConceptionEntityValue(newEntityValueMap);
-        ConceptionEntityValue conceptionEntityValue2 = new ConceptionEntityValue(newEntityValueMap);
-        ConceptionEntityValue conceptionEntityValue3 = new ConceptionEntityValue(newEntityValueMap);
-        conceptionEntityValueList.add(conceptionEntityValue1);
-        conceptionEntityValueList.add(conceptionEntityValue2);
-        conceptionEntityValueList.add(conceptionEntityValue3);
+        for(int i=0;i<30;i++){
+            newEntityValueMap.put("prop6","prop6Value"+i);
+            ConceptionEntityValue conceptionEntityValue1 = new ConceptionEntityValue(newEntityValueMap);
+            _ConceptionKind01.newEntity(conceptionEntityValue1,false);
+        }
 
-        EntitiesOperationResult addEntitiesResult = _ConceptionKind01.newEntities(conceptionEntityValueList,false);
+        for(int i=0;i<50;i++){
+            newEntityValueMap.put("prop7","prop7Value"+i);
+            ConceptionEntityValue conceptionEntityValue1 = new ConceptionEntityValue(newEntityValueMap);
+            _ConceptionKind02.newEntity(conceptionEntityValue1,false);
+        }
 
+        RelationAttachKind targetRelationAttachKind3 = coreRealm.createRelationAttachKind("RelationAttachKindForUnitTest3","RelationAttachKind_Desc3",
+                "RelationAttachConceptionKind01","RelationAttachConceptionKind03","RAK_RelationKindA",true);
+        RelationAttachLinkLogic relationAttachLinkLogicA = new RelationAttachLinkLogic(RelationAttachKind.LinkLogicType.DEFAULT, RelationAttachKind.LinkLogicCondition.Equal,"kprop1","prop6");
+        relationAttachLinkLogicA = targetRelationAttachKind3.createRelationAttachLinkLogic(relationAttachLinkLogicA);
 
+        RelationAttachKind targetRelationAttachKind4 = coreRealm.createRelationAttachKind("RelationAttachKindForUnitTest4","RelationAttachKind_Desc4",
+                "RelationAttachConceptionKind03","RelationAttachConceptionKind02","RAK_RelationKindB",true);
+        RelationAttachLinkLogic relationAttachLinkLogicB = new RelationAttachLinkLogic(RelationAttachKind.LinkLogicType.DEFAULT, RelationAttachKind.LinkLogicCondition.Equal,"kprop2","prop7");
+        targetRelationAttachKind4.createRelationAttachLinkLogic(relationAttachLinkLogicB);
 
+        Map<String,Object> newEntityValueMap2= new HashMap<>();
+        newEntityValueMap2.put("kprop1","prop6Value3");
+        newEntityValueMap2.put("kprop2","prop7Value12");
+        ConceptionEntityValue conceptionEntityValueC = new ConceptionEntityValue(newEntityValueMap2);
+        ConceptionEntity resultConceptionEntity = _ConceptionKind03.newEntity(conceptionEntityValueC,true);
 
+        Assert.assertEquals(resultConceptionEntity.countAllRelations().longValue(),2l);
 
+        coreRealm.removeRelationAttachKind(targetRelationAttachKind3.getRelationAttachKindUID());
+        coreRealm.removeRelationAttachKind(targetRelationAttachKind4.getRelationAttachKindUID());
 
-
-
-
-
-
-
+        coreRealm.closeGlobalSession();
     }
 }
