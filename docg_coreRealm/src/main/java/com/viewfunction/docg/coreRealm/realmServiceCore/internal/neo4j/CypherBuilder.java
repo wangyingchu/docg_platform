@@ -173,6 +173,9 @@ public class CypherBuilder {
             case COUNT:
                 ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.returning(Functions.count(m));
                 break;
+            case ID:
+                ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.returning(Functions.id(m));
+                break;
             default:
                 ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.returning(m);
         }

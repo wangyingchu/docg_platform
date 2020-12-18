@@ -241,6 +241,9 @@ public class RelationAttachKindTest {
         _ConceptionKind03.newEntities(conceptionEntityValues2,relationAttachKindList,RelationAttachKind.EntityRelateRole.SOURCE);
         coreRealm.newMultiConceptionEntities(multiConceptionsArray,conceptionEntityValues2,relationAttachKindList,RelationAttachKind.EntityRelateRole.SOURCE);
 
+        System.out.println("===================================");
+        targetRelationAttachKind4.newUniversalRelationEntities(null);
+
         coreRealm.removeRelationAttachKind(targetRelationAttachKind3.getRelationAttachKindUID());
         coreRealm.removeRelationAttachKind(targetRelationAttachKind4.getRelationAttachKindUID());
 

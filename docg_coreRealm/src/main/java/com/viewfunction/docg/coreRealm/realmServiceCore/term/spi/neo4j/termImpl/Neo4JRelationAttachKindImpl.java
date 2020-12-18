@@ -14,6 +14,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperatio
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachLinkLogic;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationAttachKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JRelationAttachKind;
@@ -242,23 +243,17 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
             countConceptionEntitiesRes = workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer, queryCql);
             long targetKindDataNumber = countConceptionEntitiesRes != null ?((Long)countConceptionEntitiesRes).longValue() : 0 ;
             if(sourceKindDataNumber != 0 && targetKindDataNumber != 0){
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                String cacheKindName = sourceKindDataNumber > targetKindDataNumber ? sourceKind : targetKind;
+                EntityRelateRole entityRelateRole = sourceKindDataNumber > targetKindDataNumber ? EntityRelateRole.TARGET : RelationAttachKind.EntityRelateRole.SOURCE;
+                String queryCacheIDsCql = CypherBuilder.matchLabelWithSinglePropertyValueAndFunction(cacheKindName, CypherBuilder.CypherFunctionType.ID, null, null);
+                GetListObjectValueTransformer<Long> getListObjectValueTransformer = new GetListObjectValueTransformer("id");
+                Object idListRes = workingGraphOperationExecutor.executeRead(getListObjectValueTransformer, queryCacheIDsCql);
+                List<Long> idList = idListRes != null ? (List<Long>)idListRes : null;
+                if(idList != null){
+                    for(Long currentEntityId:idList){
+                        newRelationEntities(workingGraphOperationExecutor,""+currentEntityId.longValue(),entityRelateRole,relationData);
+                    }
+               }
             }
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
@@ -396,7 +391,10 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
                         }
                     }
                 }
-
+                if(queryParameters.getDefaultFilteringItem() == null){
+                    logger.error("QueryParameters doesn't contains Default FilteringItem.", this.relationAttachKindName);
+                    return 0;
+                }
                 String queryLinkTargetEntitiesCql = CypherBuilder.matchNodesWithQueryParameters(linkTargetConceptionKind,queryParameters,null);
                 GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(linkTargetConceptionKind,workingGraphOperationExecutor);
                 Object queryRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryLinkTargetEntitiesCql);
