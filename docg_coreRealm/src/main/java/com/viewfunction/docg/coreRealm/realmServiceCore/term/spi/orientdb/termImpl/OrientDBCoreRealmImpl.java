@@ -172,6 +172,11 @@ public class OrientDBCoreRealmImpl implements CoreRealm {
     }
 
     @Override
+    public Map<String, Number> executeCustomStatistic(String customQuerySentence) throws CoreRealmServiceRuntimeException {
+        return null;
+    }
+
+    @Override
     public void openGlobalSession() {
 
     }

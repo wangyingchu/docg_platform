@@ -333,6 +333,15 @@ public interface CoreRealm {
     public List<Map<String,Map<String,Object>>> executeCustomQuery(String customQuerySentence) throws CoreRealmServiceRuntimeException;
 
     /**
+     * 根据自定义查询条件获取实体的统计类信息
+     *
+     * @param customQuerySentence String 用户自定义的查询语句，必须确保返回的实体为统计类汇总数值信息
+     *
+     * @return 查询结果统计信息，具体数据格式依查询语句的返回条件而定
+     */
+    public Map<String,Number> executeCustomStatistic(String customQuerySentence)throws CoreRealmServiceRuntimeException;
+
+    /**
      * 开启全局会话，此操作会创建一个持久化的后端数据库连接，执行该操作后由当前 CoreRealm 所创建的所有对象（以及这些对象创建的后续对象）将继承性的共享该持久化后端数据库连接。
      */
     public void openGlobalSession();

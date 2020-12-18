@@ -858,6 +858,38 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
+    public Map<String, Number> executeCustomStatistic(String customQuerySentence) throws CoreRealmServiceRuntimeException {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            DataTransformer resultHandleDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()){
+                        Map<String,Number> resultStatisticMap = new HashMap<>();
+                        Record returnRecord = result.next();
+                        Map<String,Object> returnValueMap = returnRecord.asMap();
+                        Set<String> keySet = returnValueMap.keySet();
+                        for(String currentKey : keySet){
+                            String currentStatisticKey = currentKey.replace(CypherBuilder.operationResultName+".","");
+                            Number currentStatisticValue = (Number)returnValueMap.get(currentKey);
+                            resultStatisticMap.put(currentStatisticKey,currentStatisticValue);
+                        }
+                        return resultStatisticMap;
+                    }
+                    return null;
+                }
+            };
+            Object statisticCqlRes = workingGraphOperationExecutor.executeRead(resultHandleDataTransformer,customQuerySentence);
+            if(statisticCqlRes != null){
+                return (Map<String,Number>)statisticCqlRes;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return null;
+    }
+
+    @Override
     public void openGlobalSession() {
         GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
         this.setGlobalGraphOperationExecutor(graphOperationExecutor);
