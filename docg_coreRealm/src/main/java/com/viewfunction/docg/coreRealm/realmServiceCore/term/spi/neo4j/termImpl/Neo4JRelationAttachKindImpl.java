@@ -325,6 +325,19 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
                 boolean hasDefaultFilteringItem = false;
                 for(RelationAttachLinkLogic currentRelationAttachLinkLogic:relationAttachLinkLogicList){
                     LinkLogicType linkLogicType = currentRelationAttachLinkLogic.getLinkLogicType();
+                    switch(linkLogicType){
+                        case DEFAULT:
+                            hasDefaultFilteringItem = true;
+                            break;
+                    }
+                }
+                if(!hasDefaultFilteringItem){
+                    logger.error("RelationAttachKind {} doesn't contains DEFAULT LinkLogicType.", this.relationAttachKindName);
+                    return 0;
+                }
+
+                for(RelationAttachLinkLogic currentRelationAttachLinkLogic:relationAttachLinkLogicList){
+                    LinkLogicType linkLogicType = currentRelationAttachLinkLogic.getLinkLogicType();
                     LinkLogicCondition linkLogicCondition = currentRelationAttachLinkLogic.getLinkLogicCondition();
                     String unKnownEntitiesLinkAttributeName = currentRelationAttachLinkLogic.getUnKnownEntitiesLinkAttributeName();
                     String knownEntityLinkAttributeName = currentRelationAttachLinkLogic.getKnownEntityLinkAttributeName();
@@ -335,7 +348,6 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
                         switch(linkLogicType){
                             case DEFAULT:
                                 queryParameters.setDefaultFilteringItem(filteringItem);
-                                hasDefaultFilteringItem = true;
                                 break;
                             case AND:
                                 queryParameters.addFilteringItem(filteringItem, QueryParameters.FilteringLogic.AND);
@@ -345,35 +357,32 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
                         }
                     }
                 }
-                if(!hasDefaultFilteringItem){
-                    logger.error("RelationAttachKind {} doesn't contains DEFAULT LinkLogicType.", this.relationAttachKindName);
-                }else{
-                    String queryLinkTargetEntitiesCql = CypherBuilder.matchNodesWithQueryParameters(linkTargetConceptionKind,queryParameters,null);
-                    GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(linkTargetConceptionKind,workingGraphOperationExecutor);
-                    Object queryRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryLinkTargetEntitiesCql);
-                    if(queryRes != null){
-                        List<ConceptionEntity> resultConceptionEntityList = (List<ConceptionEntity>)queryRes;
-                        RelationEntity relationEntity = null;
-                        for(ConceptionEntity currentUnknownEntity:resultConceptionEntityList){
-                            switch(entityRelateRole){
-                                case SOURCE:
-                                    relationEntity = currentConceptionEntity.attachFromRelation(currentUnknownEntity.getConceptionEntityUID(),
-                                            this.relationKindName,relationData,this.isRepeatableRelationKindAllow());
-                                    if(relationEntity != null){
-                                        resultRelationCount ++;
-                                    }
-                                    break;
-                                case TARGET:
-                                    relationEntity = currentConceptionEntity.attachToRelation(currentUnknownEntity.getConceptionEntityUID(),
-                                            this.relationKindName,relationData,this.isRepeatableRelationKindAllow());
-                                    if(relationEntity != null){
-                                        resultRelationCount ++;
-                                    }
-                            }
+
+                String queryLinkTargetEntitiesCql = CypherBuilder.matchNodesWithQueryParameters(linkTargetConceptionKind,queryParameters,null);
+                GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(linkTargetConceptionKind,workingGraphOperationExecutor);
+                Object queryRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryLinkTargetEntitiesCql);
+                if(queryRes != null){
+                    List<ConceptionEntity> resultConceptionEntityList = (List<ConceptionEntity>)queryRes;
+                    RelationEntity relationEntity = null;
+                    for(ConceptionEntity currentUnknownEntity:resultConceptionEntityList){
+                        switch(entityRelateRole){
+                            case SOURCE:
+                                relationEntity = currentConceptionEntity.attachFromRelation(currentUnknownEntity.getConceptionEntityUID(),
+                                        this.relationKindName,relationData,this.isRepeatableRelationKindAllow());
+                                if(relationEntity != null){
+                                    resultRelationCount ++;
+                                }
+                                break;
+                            case TARGET:
+                                relationEntity = currentConceptionEntity.attachToRelation(currentUnknownEntity.getConceptionEntityUID(),
+                                        this.relationKindName,relationData,this.isRepeatableRelationKindAllow());
+                                if(relationEntity != null){
+                                    resultRelationCount ++;
+                                }
                         }
                     }
-                    return resultRelationCount;
                 }
+                return resultRelationCount;
             }else{
                 return 0;
             }

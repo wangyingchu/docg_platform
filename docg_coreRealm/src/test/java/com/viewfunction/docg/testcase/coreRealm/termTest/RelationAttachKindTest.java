@@ -175,17 +175,71 @@ public class RelationAttachKindTest {
         RelationAttachLinkLogic relationAttachLinkLogicB = new RelationAttachLinkLogic(RelationAttachKind.LinkLogicType.DEFAULT, RelationAttachKind.LinkLogicCondition.Equal,"kprop2","prop7");
         targetRelationAttachKind4.createRelationAttachLinkLogic(relationAttachLinkLogicB);
 
+        String[] multiConceptionsArray = new String[]{"RelationAttachConceptionKind_Multi","RelationAttachConceptionKind03"};
+
         Map<String,Object> newEntityValueMap2= new HashMap<>();
         newEntityValueMap2.put("kprop1","prop6Value3");
         newEntityValueMap2.put("kprop2","prop7Value12");
         ConceptionEntityValue conceptionEntityValueC = new ConceptionEntityValue(newEntityValueMap2);
         ConceptionEntity resultConceptionEntity = _ConceptionKind03.newEntity(conceptionEntityValueC,true);
-
         Assert.assertEquals(resultConceptionEntity.countAllRelations().longValue(),2l);
+
+        newEntityValueMap2 = new HashMap<>();
+        newEntityValueMap2.put("kprop1","prop6Value3");
+        newEntityValueMap2.put("kprop2","prop7Value12");
+        ConceptionEntityValue conceptionEntityValueC_M = new ConceptionEntityValue(newEntityValueMap2);
+        ConceptionEntity resultConceptionEntity_m = coreRealm.newMultiConceptionEntity(multiConceptionsArray,conceptionEntityValueC_M,true);
+        Assert.assertEquals(resultConceptionEntity_m.countAllRelations().longValue(),2l);
 
         List<RelationAttachKind> relationAttachKindList = new ArrayList<>();
         relationAttachKindList.add(targetRelationAttachKind3);
-        ConceptionEntity resultConceptionEntity2 = _ConceptionKind03.newEntity(conceptionEntityValueC,relationAttachKindList, RelationAttachKind.EntityRelateRole.TARGET);
+        Map<String,Object> newEntityValueMap3= new HashMap<>();
+        newEntityValueMap3.put("kprop1","prop6Value6");
+        newEntityValueMap3.put("kprop2","prop7Value19");
+        ConceptionEntityValue conceptionEntityValueD = new ConceptionEntityValue(newEntityValueMap3);
+        ConceptionEntity resultConceptionEntity2 = _ConceptionKind03.newEntity(conceptionEntityValueD,relationAttachKindList, RelationAttachKind.EntityRelateRole.TARGET);
+        Assert.assertEquals(resultConceptionEntity2.countAllRelations().longValue(),1l);
+
+        relationAttachKindList = new ArrayList<>();
+        relationAttachKindList.add(targetRelationAttachKind3);
+        newEntityValueMap3= new HashMap<>();
+        newEntityValueMap3.put("kprop1","prop6Value6");
+        newEntityValueMap3.put("kprop2","prop7Value19");
+        ConceptionEntityValue conceptionEntityValueD_m = new ConceptionEntityValue(newEntityValueMap3);
+        ConceptionEntity resultConceptionEntity2_m = coreRealm.newMultiConceptionEntity(multiConceptionsArray,conceptionEntityValueD_m,relationAttachKindList, RelationAttachKind.EntityRelateRole.TARGET);
+        Assert.assertEquals(resultConceptionEntity2_m.countAllRelations().longValue(),1l);
+
+        List<ConceptionEntityValue> conceptionEntityValues = new ArrayList<>();
+        Map<String,Object> newEntityValueMap4= new HashMap<>();
+        newEntityValueMap4.put("kprop1","prop6Value15");
+        newEntityValueMap4.put("kprop2","prop7Value21");
+        ConceptionEntityValue conceptionEntityValueE = new ConceptionEntityValue(newEntityValueMap4);
+        conceptionEntityValues.add(conceptionEntityValueE);
+        Map<String,Object> newEntityValueMap5= new HashMap<>();
+        newEntityValueMap5.put("kprop1","prop6Value15");
+        newEntityValueMap5.put("kprop2","prop7Value21");
+        ConceptionEntityValue conceptionEntityValueF = new ConceptionEntityValue(newEntityValueMap5);
+        conceptionEntityValues.add(conceptionEntityValueF);
+
+        _ConceptionKind03.newEntities(conceptionEntityValues,true);
+        coreRealm.newMultiConceptionEntities(multiConceptionsArray,conceptionEntityValues,true);
+
+        List<ConceptionEntityValue> conceptionEntityValues2 = new ArrayList<>();
+        Map<String,Object> newEntityValueMap6= new HashMap<>();
+        newEntityValueMap6.put("kprop1","prop6Value23");
+        newEntityValueMap6.put("kprop2","prop7Value3");
+        ConceptionEntityValue conceptionEntityValueG = new ConceptionEntityValue(newEntityValueMap6);
+        conceptionEntityValues2.add(conceptionEntityValueG);
+        Map<String,Object> newEntityValueMap7= new HashMap<>();
+        newEntityValueMap7.put("kprop1","prop6Value23");
+        newEntityValueMap7.put("kprop2","prop7Value3");
+        ConceptionEntityValue conceptionEntityValueH = new ConceptionEntityValue(newEntityValueMap7);
+        conceptionEntityValues2.add(conceptionEntityValueH);
+
+        relationAttachKindList.clear();
+        relationAttachKindList.add(targetRelationAttachKind4);
+        _ConceptionKind03.newEntities(conceptionEntityValues2,relationAttachKindList,RelationAttachKind.EntityRelateRole.SOURCE);
+        coreRealm.newMultiConceptionEntities(multiConceptionsArray,conceptionEntityValues2,relationAttachKindList,RelationAttachKind.EntityRelateRole.SOURCE);
 
         coreRealm.removeRelationAttachKind(targetRelationAttachKind3.getRelationAttachKindUID());
         coreRealm.removeRelationAttachKind(targetRelationAttachKind4.getRelationAttachKindUID());
