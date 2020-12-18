@@ -12,6 +12,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.Grap
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachLinkLogic;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
@@ -225,7 +226,45 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
 
     @Override
     public EntitiesOperationResult newUniversalRelationEntities(Map<String,Object> relationData) {
-        return null;
+        CommonEntitiesOperationResultImpl entitiesOperationResult = new CommonEntitiesOperationResultImpl();
+        entitiesOperationResult.getOperationStatistics().setSuccessItemsCount(0);
+
+        String sourceKind = this.sourceConceptionKindName;
+        String targetKind = this.targetConceptionKindName;
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            String queryCql = CypherBuilder.matchLabelWithSinglePropertyValueAndFunction(sourceKind, CypherBuilder.CypherFunctionType.COUNT, null, null);
+            GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
+            Object countConceptionEntitiesRes = workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer, queryCql);
+            long sourceKindDataNumber = countConceptionEntitiesRes != null ?((Long)countConceptionEntitiesRes).longValue() : 0 ;
+            queryCql = CypherBuilder.matchLabelWithSinglePropertyValueAndFunction(targetKind, CypherBuilder.CypherFunctionType.COUNT, null, null);
+            countConceptionEntitiesRes = workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer, queryCql);
+            long targetKindDataNumber = countConceptionEntitiesRes != null ?((Long)countConceptionEntitiesRes).longValue() : 0 ;
+            if(sourceKindDataNumber != 0 && targetKindDataNumber != 0){
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        entitiesOperationResult.finishEntitiesOperation();
+        return entitiesOperationResult;
     }
 
     @Override
