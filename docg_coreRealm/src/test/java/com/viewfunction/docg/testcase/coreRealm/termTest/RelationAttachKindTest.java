@@ -168,7 +168,7 @@ public class RelationAttachKindTest {
         RelationAttachKind targetRelationAttachKind3 = coreRealm.createRelationAttachKind("RelationAttachKindForUnitTest3","RelationAttachKind_Desc3",
                 "RelationAttachConceptionKind01","RelationAttachConceptionKind03","RAK_RelationKindA",true);
         RelationAttachLinkLogic relationAttachLinkLogicA = new RelationAttachLinkLogic(RelationAttachKind.LinkLogicType.DEFAULT, RelationAttachKind.LinkLogicCondition.Equal,"kprop1","prop6");
-        relationAttachLinkLogicA = targetRelationAttachKind3.createRelationAttachLinkLogic(relationAttachLinkLogicA);
+        targetRelationAttachKind3.createRelationAttachLinkLogic(relationAttachLinkLogicA);
 
         RelationAttachKind targetRelationAttachKind4 = coreRealm.createRelationAttachKind("RelationAttachKindForUnitTest4","RelationAttachKind_Desc4",
                 "RelationAttachConceptionKind03","RelationAttachConceptionKind02","RAK_RelationKindB",true);
@@ -182,6 +182,10 @@ public class RelationAttachKindTest {
         ConceptionEntity resultConceptionEntity = _ConceptionKind03.newEntity(conceptionEntityValueC,true);
 
         Assert.assertEquals(resultConceptionEntity.countAllRelations().longValue(),2l);
+
+        List<RelationAttachKind> relationAttachKindList = new ArrayList<>();
+        relationAttachKindList.add(targetRelationAttachKind3);
+        ConceptionEntity resultConceptionEntity2 = _ConceptionKind03.newEntity(conceptionEntityValueC,relationAttachKindList, RelationAttachKind.EntityRelateRole.TARGET);
 
         coreRealm.removeRelationAttachKind(targetRelationAttachKind3.getRelationAttachKindUID());
         coreRealm.removeRelationAttachKind(targetRelationAttachKind4.getRelationAttachKindUID());

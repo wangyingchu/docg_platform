@@ -16,8 +16,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JRelationAttachKind;
-
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -199,97 +199,27 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
     public long newRelationEntities(String conceptionEntityUID, EntityRelateRole entityRelateRole, Map<String,Object> relationData) {
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
-            String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(conceptionEntityUID), null, null);
-            GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
-                    new GetSingleConceptionEntityTransformer(null, workingGraphOperationExecutor);
-            Object resEntityRes = workingGraphOperationExecutor.executeRead(getSingleConceptionEntityTransformer, queryCql);
-            if(resEntityRes != null){
-                ConceptionEntity currentConceptionEntity = (ConceptionEntity)resEntityRes;
-                List<String> conceptionKindNames = currentConceptionEntity.getAllConceptionKindNames();
-                String linkTargetConceptionKind = null;
-                switch(entityRelateRole){
-                    case SOURCE:
-                        if(!conceptionKindNames.contains(this.sourceConceptionKindName)){
-                            return 0;
-                        }
-                        linkTargetConceptionKind = this.targetConceptionKindName;
-                        break;
-                    case TARGET:
-                        if(!conceptionKindNames.contains(this.targetConceptionKindName)){
-                            return 0;
-                        }
-                        linkTargetConceptionKind = this.sourceConceptionKindName;
-                }
-
-                long resultRelationCount = 0;
-                QueryParameters queryParameters = new QueryParameters();
-                queryParameters.setDistinctMode(true);
-                queryParameters.setResultNumber(100000000);
-                List<RelationAttachLinkLogic> relationAttachLinkLogicList = this.getRelationAttachLinkLogic();
-
-                boolean hasDefaultFilteringItem = false;
-                for(RelationAttachLinkLogic currentRelationAttachLinkLogic:relationAttachLinkLogicList){
-                    LinkLogicType linkLogicType = currentRelationAttachLinkLogic.getLinkLogicType();
-                    LinkLogicCondition linkLogicCondition = currentRelationAttachLinkLogic.getLinkLogicCondition();
-                    String unKnownEntitiesLinkAttributeName = currentRelationAttachLinkLogic.getUnKnownEntitiesLinkAttributeName();
-                    String knownEntityLinkAttributeName = currentRelationAttachLinkLogic.getKnownEntityLinkAttributeName();
-
-                    if(currentConceptionEntity.getAttribute(knownEntityLinkAttributeName) != null){
-                        FilteringItem filteringItem = generateFilteringItem(linkLogicCondition,unKnownEntitiesLinkAttributeName,
-                                currentConceptionEntity.getAttribute(knownEntityLinkAttributeName).getAttributeValue());
-                        switch(linkLogicType){
-                            case DEFAULT:
-                                queryParameters.setDefaultFilteringItem(filteringItem);
-                                hasDefaultFilteringItem = true;
-                                break;
-                            case AND:
-                                queryParameters.addFilteringItem(filteringItem, QueryParameters.FilteringLogic.AND);
-                                break;
-                            case OR:
-                                queryParameters.addFilteringItem(filteringItem, QueryParameters.FilteringLogic.OR);
-                        }
-                    }
-                }
-                if(!hasDefaultFilteringItem){
-                    logger.error("RelationAttachKind {} doesn't contains DEFAULT LinkLogicType.", this.relationAttachKindName);
-                }else{
-                    String queryLinkTargetEntitiesCql = CypherBuilder.matchNodesWithQueryParameters(linkTargetConceptionKind,queryParameters,null);
-                    GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(linkTargetConceptionKind,workingGraphOperationExecutor);
-                    Object queryRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryLinkTargetEntitiesCql);
-                    if(queryRes != null){
-                        List<ConceptionEntity> resultConceptionEntityList = (List<ConceptionEntity>)queryRes;
-                        RelationEntity relationEntity = null;
-                        for(ConceptionEntity currentUnknownEntity:resultConceptionEntityList){
-                            switch(entityRelateRole){
-                                case SOURCE:
-                                    relationEntity = currentConceptionEntity.attachFromRelation(currentUnknownEntity.getConceptionEntityUID(),this.relationKindName,null,this.isRepeatableRelationKindAllow());
-                                    if(relationEntity != null){
-                                        resultRelationCount ++;
-                                    }
-                                    break;
-                                case TARGET:
-                                    relationEntity = currentConceptionEntity.attachToRelation(currentUnknownEntity.getConceptionEntityUID(),this.relationKindName,null,this.isRepeatableRelationKindAllow());
-                                    if(relationEntity != null){
-                                        resultRelationCount ++;
-                                    }
-                            }
-                        }
-                    }
-                    return resultRelationCount;
-                }
-            }else{
-                return 0;
-            }
-        } catch (CoreRealmServiceEntityExploreException | CoreRealmServiceRuntimeException e) {
-            e.printStackTrace();
+            return newRelationEntities(workingGraphOperationExecutor,conceptionEntityUID,entityRelateRole,relationData);
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
-        return 0;
     }
 
     @Override
     public long newRelationEntities(List<String> conceptionEntityUIDs, EntityRelateRole entityRelateRole, Map<String, Object> relationData) {
+        if(conceptionEntityUIDs != null && conceptionEntityUIDs.size()>0){
+            long totalResultNumber = 0;
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                for(String currentEntityID : conceptionEntityUIDs){
+                    long currentResultNumber = newRelationEntities(workingGraphOperationExecutor,currentEntityID,entityRelateRole,relationData);
+                    totalResultNumber = totalResultNumber + currentResultNumber;
+                }
+                return totalResultNumber;
+            } finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
         return 0;
     }
 
@@ -360,6 +290,97 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
                 filteringItem = new SimilarFilteringItem(attributeName,attributeValue.toString(),SimilarFilteringItem.MatchingType.Contain);
         }
         return filteringItem;
+    }
+
+    private long newRelationEntities(GraphOperationExecutor workingGraphOperationExecutor, String conceptionEntityUID, EntityRelateRole entityRelateRole, Map<String,Object> relationData) {
+        try{
+            String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(conceptionEntityUID), null, null);
+            GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                    new GetSingleConceptionEntityTransformer(null, workingGraphOperationExecutor);
+            Object resEntityRes = workingGraphOperationExecutor.executeRead(getSingleConceptionEntityTransformer, queryCql);
+            if(resEntityRes != null){
+                ConceptionEntity currentConceptionEntity = (ConceptionEntity)resEntityRes;
+                List<String> conceptionKindNames = currentConceptionEntity.getAllConceptionKindNames();
+                String linkTargetConceptionKind = null;
+                switch(entityRelateRole){
+                    case SOURCE:
+                        if(!conceptionKindNames.contains(this.sourceConceptionKindName)){
+                            return 0;
+                        }
+                        linkTargetConceptionKind = this.targetConceptionKindName;
+                        break;
+                    case TARGET:
+                        if(!conceptionKindNames.contains(this.targetConceptionKindName)){
+                            return 0;
+                        }
+                        linkTargetConceptionKind = this.sourceConceptionKindName;
+                }
+
+                long resultRelationCount = 0;
+                QueryParameters queryParameters = new QueryParameters();
+                queryParameters.setDistinctMode(true);
+                queryParameters.setResultNumber(100000000);
+                List<RelationAttachLinkLogic> relationAttachLinkLogicList = this.getRelationAttachLinkLogic();
+
+                boolean hasDefaultFilteringItem = false;
+                for(RelationAttachLinkLogic currentRelationAttachLinkLogic:relationAttachLinkLogicList){
+                    LinkLogicType linkLogicType = currentRelationAttachLinkLogic.getLinkLogicType();
+                    LinkLogicCondition linkLogicCondition = currentRelationAttachLinkLogic.getLinkLogicCondition();
+                    String unKnownEntitiesLinkAttributeName = currentRelationAttachLinkLogic.getUnKnownEntitiesLinkAttributeName();
+                    String knownEntityLinkAttributeName = currentRelationAttachLinkLogic.getKnownEntityLinkAttributeName();
+
+                    if(currentConceptionEntity.getAttribute(knownEntityLinkAttributeName) != null){
+                        FilteringItem filteringItem = generateFilteringItem(linkLogicCondition,unKnownEntitiesLinkAttributeName,
+                                currentConceptionEntity.getAttribute(knownEntityLinkAttributeName).getAttributeValue());
+                        switch(linkLogicType){
+                            case DEFAULT:
+                                queryParameters.setDefaultFilteringItem(filteringItem);
+                                hasDefaultFilteringItem = true;
+                                break;
+                            case AND:
+                                queryParameters.addFilteringItem(filteringItem, QueryParameters.FilteringLogic.AND);
+                                break;
+                            case OR:
+                                queryParameters.addFilteringItem(filteringItem, QueryParameters.FilteringLogic.OR);
+                        }
+                    }
+                }
+                if(!hasDefaultFilteringItem){
+                    logger.error("RelationAttachKind {} doesn't contains DEFAULT LinkLogicType.", this.relationAttachKindName);
+                }else{
+                    String queryLinkTargetEntitiesCql = CypherBuilder.matchNodesWithQueryParameters(linkTargetConceptionKind,queryParameters,null);
+                    GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(linkTargetConceptionKind,workingGraphOperationExecutor);
+                    Object queryRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryLinkTargetEntitiesCql);
+                    if(queryRes != null){
+                        List<ConceptionEntity> resultConceptionEntityList = (List<ConceptionEntity>)queryRes;
+                        RelationEntity relationEntity = null;
+                        for(ConceptionEntity currentUnknownEntity:resultConceptionEntityList){
+                            switch(entityRelateRole){
+                                case SOURCE:
+                                    relationEntity = currentConceptionEntity.attachFromRelation(currentUnknownEntity.getConceptionEntityUID(),
+                                            this.relationKindName,relationData,this.isRepeatableRelationKindAllow());
+                                    if(relationEntity != null){
+                                        resultRelationCount ++;
+                                    }
+                                    break;
+                                case TARGET:
+                                    relationEntity = currentConceptionEntity.attachToRelation(currentUnknownEntity.getConceptionEntityUID(),
+                                            this.relationKindName,relationData,this.isRepeatableRelationKindAllow());
+                                    if(relationEntity != null){
+                                        resultRelationCount ++;
+                                    }
+                            }
+                        }
+                    }
+                    return resultRelationCount;
+                }
+            }else{
+                return 0;
+            }
+        } catch (CoreRealmServiceEntityExploreException | CoreRealmServiceRuntimeException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
     //internal graphOperationExecutor management logic
