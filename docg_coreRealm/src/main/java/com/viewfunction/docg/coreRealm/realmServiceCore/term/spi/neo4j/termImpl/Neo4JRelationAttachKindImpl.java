@@ -374,8 +374,19 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
                 for(RelationAttachLinkLogic currentRelationAttachLinkLogic:relationAttachLinkLogicList){
                     LinkLogicType linkLogicType = currentRelationAttachLinkLogic.getLinkLogicType();
                     LinkLogicCondition linkLogicCondition = currentRelationAttachLinkLogic.getLinkLogicCondition();
-                    String unKnownEntitiesLinkAttributeName = currentRelationAttachLinkLogic.getTargetEntitiesLinkAttributeName();
-                    String knownEntityLinkAttributeName = currentRelationAttachLinkLogic.getSourceEntityLinkAttributeName();
+
+                    String knownEntityLinkAttributeName = null;
+                    String unKnownEntitiesLinkAttributeName = null;
+
+                    switch(entityRelateRole){
+                        case SOURCE:
+                            knownEntityLinkAttributeName = currentRelationAttachLinkLogic.getSourceEntityLinkAttributeName();
+                            unKnownEntitiesLinkAttributeName = currentRelationAttachLinkLogic.getTargetEntitiesLinkAttributeName();
+                            break;
+                        case TARGET:
+                            knownEntityLinkAttributeName = currentRelationAttachLinkLogic.getTargetEntitiesLinkAttributeName();
+                            unKnownEntitiesLinkAttributeName = currentRelationAttachLinkLogic.getSourceEntityLinkAttributeName();
+                    }
 
                     if(currentConceptionEntity.getAttribute(knownEntityLinkAttributeName) != null){
                         FilteringItem filteringItem = generateFilteringItem(linkLogicCondition,unKnownEntitiesLinkAttributeName,

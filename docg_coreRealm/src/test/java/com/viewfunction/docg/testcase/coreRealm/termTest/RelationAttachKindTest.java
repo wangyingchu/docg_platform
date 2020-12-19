@@ -168,7 +168,7 @@ public class RelationAttachKindTest {
 
         RelationAttachKind targetRelationAttachKind3 = coreRealm.createRelationAttachKind("RelationAttachKindForUnitTest3","RelationAttachKind_Desc3",
                 "RelationAttachConceptionKind01","RelationAttachConceptionKind03","RAK_RelationKindA",true);
-        RelationAttachLinkLogic relationAttachLinkLogicA = new RelationAttachLinkLogic(RelationAttachKind.LinkLogicType.DEFAULT, RelationAttachKind.LinkLogicCondition.Equal,"kprop1","prop6");
+        RelationAttachLinkLogic relationAttachLinkLogicA = new RelationAttachLinkLogic(RelationAttachKind.LinkLogicType.DEFAULT, RelationAttachKind.LinkLogicCondition.Equal,"prop6","kprop1");
         targetRelationAttachKind3.createRelationAttachLinkLogic(relationAttachLinkLogicA);
 
         RelationAttachKind targetRelationAttachKind4 = coreRealm.createRelationAttachKind("RelationAttachKindForUnitTest4","RelationAttachKind_Desc4",
@@ -296,7 +296,7 @@ public class RelationAttachKindTest {
 
         RelationAttachKind targetRelationAttachKind5 = coreRealm.createRelationAttachKind("RelationAttachKindForUnitTest5","RelationAttachKind_Desc5",
                 "RelationAttachConceptionKind04","RelationAttachConceptionKind05","RAK_RelationKindC01",true);
-        RelationAttachLinkLogic relationAttachLinkLogicC = new RelationAttachLinkLogic(RelationAttachKind.LinkLogicType.DEFAULT, RelationAttachKind.LinkLogicCondition.Equal,"prop_CK5","prop_CK4");
+        RelationAttachLinkLogic relationAttachLinkLogicC = new RelationAttachLinkLogic(RelationAttachKind.LinkLogicType.DEFAULT, RelationAttachKind.LinkLogicCondition.Equal,"prop_CK4","prop_CK5");
         targetRelationAttachKind5.createRelationAttachLinkLogic(relationAttachLinkLogicC);
 
         Map<String,Object> relationDataMap = new HashMap<>();
