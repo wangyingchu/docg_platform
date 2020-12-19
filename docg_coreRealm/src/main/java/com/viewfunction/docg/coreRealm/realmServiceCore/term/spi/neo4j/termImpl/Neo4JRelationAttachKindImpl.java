@@ -243,17 +243,19 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
             countConceptionEntitiesRes = workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer, queryCql);
             long targetKindDataNumber = countConceptionEntitiesRes != null ?((Long)countConceptionEntitiesRes).longValue() : 0 ;
             if(sourceKindDataNumber != 0 && targetKindDataNumber != 0){
+                long successItemsCount = 0;
                 String cacheKindName = sourceKindDataNumber > targetKindDataNumber ? sourceKind : targetKind;
-                EntityRelateRole entityRelateRole = sourceKindDataNumber > targetKindDataNumber ? EntityRelateRole.TARGET : RelationAttachKind.EntityRelateRole.SOURCE;
+                EntityRelateRole entityRelateRole = sourceKindDataNumber > targetKindDataNumber ? EntityRelateRole.SOURCE : EntityRelateRole.TARGET;
                 String queryCacheIDsCql = CypherBuilder.matchLabelWithSinglePropertyValueAndFunction(cacheKindName, CypherBuilder.CypherFunctionType.ID, null, null);
                 GetListObjectValueTransformer<Long> getListObjectValueTransformer = new GetListObjectValueTransformer("id");
                 Object idListRes = workingGraphOperationExecutor.executeRead(getListObjectValueTransformer, queryCacheIDsCql);
                 List<Long> idList = idListRes != null ? (List<Long>)idListRes : null;
                 if(idList != null){
                     for(Long currentEntityId:idList){
-                        newRelationEntities(workingGraphOperationExecutor,""+currentEntityId.longValue(),entityRelateRole,relationData);
+                        successItemsCount = successItemsCount + newRelationEntities(workingGraphOperationExecutor,""+currentEntityId.longValue(),entityRelateRole,relationData);
                     }
                }
+                entitiesOperationResult.getOperationStatistics().setSuccessItemsCount(successItemsCount);
             }
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();

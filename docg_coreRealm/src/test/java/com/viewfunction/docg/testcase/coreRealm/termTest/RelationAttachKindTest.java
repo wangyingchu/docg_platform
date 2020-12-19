@@ -3,6 +3,7 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachLinkLogic;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
@@ -241,12 +242,71 @@ public class RelationAttachKindTest {
         _ConceptionKind03.newEntities(conceptionEntityValues2,relationAttachKindList,RelationAttachKind.EntityRelateRole.SOURCE);
         coreRealm.newMultiConceptionEntities(multiConceptionsArray,conceptionEntityValues2,relationAttachKindList,RelationAttachKind.EntityRelateRole.SOURCE);
 
-        System.out.println("===================================");
-        targetRelationAttachKind4.newUniversalRelationEntities(null);
+        ConceptionKind _ConceptionKind04 = coreRealm.getConceptionKind("RelationAttachConceptionKind04");
+        if(_ConceptionKind04 != null){
+            coreRealm.removeConceptionKind("RelationAttachConceptionKind04",true);
+        }
+        _ConceptionKind04 = coreRealm.getConceptionKind("RelationAttachConceptionKind04");
+        if(_ConceptionKind04 == null){
+            _ConceptionKind04 = coreRealm.createConceptionKind("RelationAttachConceptionKind04","");
+            Assert.assertNotNull(_ConceptionKind04);
+            Assert.assertEquals(_ConceptionKind04.getConceptionKindName(),"RelationAttachConceptionKind04");
+        }
+
+        ConceptionKind _ConceptionKind05 = coreRealm.getConceptionKind("RelationAttachConceptionKind05");
+        if(_ConceptionKind05 != null){
+            coreRealm.removeConceptionKind("RelationAttachConceptionKind05",true);
+        }
+        _ConceptionKind05 = coreRealm.getConceptionKind("RelationAttachConceptionKind05");
+        if(_ConceptionKind05 == null){
+            _ConceptionKind05 = coreRealm.createConceptionKind("RelationAttachConceptionKind05","");
+            Assert.assertNotNull(_ConceptionKind05);
+            Assert.assertEquals(_ConceptionKind05.getConceptionKindName(),"RelationAttachConceptionKind05");
+        }
+
+        Map<String,Object> newEntityValueMap8= new HashMap<>();
+        newEntityValueMap8.put("prop1",Long.parseLong("12345"));
+        newEntityValueMap8.put("prop2",Double.parseDouble("12345.789"));
+        newEntityValueMap8.put("prop3",Integer.parseInt("1234"));
+
+        for(int i=0;i<50;i++){
+            newEntityValueMap8.put("prop_CK4","CK4Value"+i);
+            ConceptionEntityValue conceptionEntityValue1 = new ConceptionEntityValue(newEntityValueMap8);
+            _ConceptionKind04.newEntity(conceptionEntityValue1,false);
+        }
+        for(int i=0;i<2;i++){
+            newEntityValueMap8.put("prop_CK4","COMMON_VALUE");
+            ConceptionEntityValue conceptionEntityValue1 = new ConceptionEntityValue(newEntityValueMap8);
+            _ConceptionKind04.newEntity(conceptionEntityValue1,false);
+        }
+
+        newEntityValueMap8.remove("prop_CK4");
+
+        for(int i=0;i<100;i++){
+            newEntityValueMap8.put("prop_CK5","CK5Value"+i);
+            ConceptionEntityValue conceptionEntityValue1 = new ConceptionEntityValue(newEntityValueMap8);
+            _ConceptionKind05.newEntity(conceptionEntityValue1,false);
+        }
+
+        for(int i=0;i<5;i++){
+            newEntityValueMap8.put("prop_CK5","COMMON_VALUE");
+            ConceptionEntityValue conceptionEntityValue1 = new ConceptionEntityValue(newEntityValueMap8);
+            _ConceptionKind05.newEntity(conceptionEntityValue1,false);
+        }
+
+        RelationAttachKind targetRelationAttachKind5 = coreRealm.createRelationAttachKind("RelationAttachKindForUnitTest5","RelationAttachKind_Desc5",
+                "RelationAttachConceptionKind04","RelationAttachConceptionKind05","RAK_RelationKindC01",true);
+        RelationAttachLinkLogic relationAttachLinkLogicC = new RelationAttachLinkLogic(RelationAttachKind.LinkLogicType.DEFAULT, RelationAttachKind.LinkLogicCondition.Equal,"prop_CK5","prop_CK4");
+        targetRelationAttachKind5.createRelationAttachLinkLogic(relationAttachLinkLogicC);
+
+        Map<String,Object> relationDataMap = new HashMap<>();
+        relationDataMap.put("relProp",1000);
+        EntitiesOperationResult entitiesOperationResult = targetRelationAttachKind5.newUniversalRelationEntities(relationDataMap);
+        Assert.assertEquals(entitiesOperationResult.getOperationStatistics().getSuccessItemsCount(),10l);
 
         coreRealm.removeRelationAttachKind(targetRelationAttachKind3.getRelationAttachKindUID());
         coreRealm.removeRelationAttachKind(targetRelationAttachKind4.getRelationAttachKindUID());
-
+        coreRealm.removeRelationAttachKind(targetRelationAttachKind5.getRelationAttachKindUID());
         coreRealm.closeGlobalSession();
     }
 }
