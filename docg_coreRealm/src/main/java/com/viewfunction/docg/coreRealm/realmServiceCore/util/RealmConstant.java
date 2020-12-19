@@ -33,6 +33,6 @@ public interface RealmConstant {
 
     public final String _attachLinkLogicType = "linkLogicType";
     public final String _attachLinkLogicCondition = "linkLogicCondition";
-    public final String _attachLinkLogicKnownAttribute = "linkLogicKnownAttribute";
-    public final String _attachLinkLogicUnKnownAttribute = "linkLogicUnKnownAttribute";
+    public final String _attachLinkLogicSourceAttribute = "linkLogicSourceAttribute";
+    public final String _attachLinkLogicTargetAttribute = "linkLogicTargetAttribute";
 }

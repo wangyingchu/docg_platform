@@ -37,13 +37,13 @@ public class GetListRelationAttachLinkLogicTransformer implements DataTransforme
                     long nodeUID = resultNode.id();
                     String attachLinkLogicType = resultNode.get(RealmConstant._attachLinkLogicType).asString();
                     String attachLinkLogicCondition = resultNode.get(RealmConstant._attachLinkLogicCondition).asString();
-                    String attachLinkLogicKnownAttribute = resultNode.get(RealmConstant._attachLinkLogicKnownAttribute).asString();
-                    String attachLinkLogicUnKnownAttribute = resultNode.get(RealmConstant._attachLinkLogicUnKnownAttribute).asString();
+                    String attachLinkLogicSourceAttribute = resultNode.get(RealmConstant._attachLinkLogicSourceAttribute).asString();
+                    String attachLinkLogicTargetAttribute = resultNode.get(RealmConstant._attachLinkLogicTargetAttribute).asString();
 
                     String relationAttachLinkLogicUID = ""+nodeUID;
                     RelationAttachLinkLogic relationAttachLinkLogic =
                             new RelationAttachLinkLogic(getLinkLogicType(attachLinkLogicType),getLinkLogicCondition(attachLinkLogicCondition),
-                                    attachLinkLogicKnownAttribute,attachLinkLogicUnKnownAttribute,relationAttachLinkLogicUID);
+                                    attachLinkLogicSourceAttribute,attachLinkLogicTargetAttribute,relationAttachLinkLogicUID);
                     relationAttachLinkLogicsList.add(relationAttachLinkLogic);
                 }
             }

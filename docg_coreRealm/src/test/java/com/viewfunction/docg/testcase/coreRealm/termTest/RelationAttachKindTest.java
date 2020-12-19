@@ -64,8 +64,8 @@ public class RelationAttachKindTest {
 
         Assert.assertEquals(attachLinkLogicList.get(0).getLinkLogicType(), RelationAttachKind.LinkLogicType.DEFAULT);
         Assert.assertEquals(attachLinkLogicList.get(0).getLinkLogicCondition(), RelationAttachKind.LinkLogicCondition.Equal);
-        Assert.assertEquals(attachLinkLogicList.get(0).getKnownEntityLinkAttributeName(),"knownPropertyName");
-        Assert.assertEquals(attachLinkLogicList.get(0).getUnKnownEntitiesLinkAttributeName(),"unKnownPropertyName");
+        Assert.assertEquals(attachLinkLogicList.get(0).getSourceEntityLinkAttributeName(),"knownPropertyName");
+        Assert.assertEquals(attachLinkLogicList.get(0).getTargetEntitiesLinkAttributeName(),"unKnownPropertyName");
         Assert.assertEquals(attachLinkLogicList.get(0).getRelationAttachLinkLogicUID(),resultRelationAttachLinkLogic.getRelationAttachLinkLogicUID());
 
         boolean exceptionShouldBeCaught = false;

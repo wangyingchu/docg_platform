@@ -6,26 +6,26 @@ public class RelationAttachLinkLogic {
 
     private RelationAttachKind.LinkLogicType linkLogicType;
     private RelationAttachKind.LinkLogicCondition linkLogicCondition;
-    private String knownEntityLinkAttributeName;
-    private String unKnownEntitiesLinkAttributeName;
+    private String sourceEntityLinkAttributeName;
+    private String targetEntitiesLinkAttributeName;
     private String relationAttachLinkLogicUID;
 
     public RelationAttachLinkLogic(){}
 
     public RelationAttachLinkLogic(RelationAttachKind.LinkLogicType linkLogicType, RelationAttachKind.LinkLogicCondition linkLogicCondition,
-                                   String knownEntityLinkAttributeName,String unKnownEntitiesLinkAttributeName){
+                                   String sourceEntityLinkAttributeName,String targetEntitiesLinkAttributeName){
         this.linkLogicType = linkLogicType;
         this.linkLogicCondition = linkLogicCondition;
-        this.knownEntityLinkAttributeName = knownEntityLinkAttributeName;
-        this.unKnownEntitiesLinkAttributeName = unKnownEntitiesLinkAttributeName;
+        this.sourceEntityLinkAttributeName = sourceEntityLinkAttributeName;
+        this.targetEntitiesLinkAttributeName = targetEntitiesLinkAttributeName;
     }
 
     public RelationAttachLinkLogic(RelationAttachKind.LinkLogicType linkLogicType, RelationAttachKind.LinkLogicCondition linkLogicCondition,
-                                   String knownEntityLinkAttributeName,String unKnownEntitiesLinkAttributeName,String relationAttachLinkLogicUID){
+                                   String sourceEntityLinkAttributeName, String targetEntitiesLinkAttributeName, String relationAttachLinkLogicUID){
         this.linkLogicType = linkLogicType;
         this.linkLogicCondition = linkLogicCondition;
-        this.knownEntityLinkAttributeName = knownEntityLinkAttributeName;
-        this.unKnownEntitiesLinkAttributeName = unKnownEntitiesLinkAttributeName;
+        this.sourceEntityLinkAttributeName = sourceEntityLinkAttributeName;
+        this.targetEntitiesLinkAttributeName = targetEntitiesLinkAttributeName;
         this.relationAttachLinkLogicUID = relationAttachLinkLogicUID;
     }
 
@@ -45,20 +45,20 @@ public class RelationAttachLinkLogic {
         this.linkLogicCondition = linkLogicCondition;
     }
 
-    public String getKnownEntityLinkAttributeName() {
-        return knownEntityLinkAttributeName;
+    public String getSourceEntityLinkAttributeName() {
+        return sourceEntityLinkAttributeName;
     }
 
-    public void setKnownEntityLinkAttributeName(String knownEntityLinkAttributeName) {
-        this.knownEntityLinkAttributeName = knownEntityLinkAttributeName;
+    public void setSourceEntityLinkAttributeName(String sourceEntityLinkAttributeName) {
+        this.sourceEntityLinkAttributeName = sourceEntityLinkAttributeName;
     }
 
-    public String getUnKnownEntitiesLinkAttributeName() {
-        return unKnownEntitiesLinkAttributeName;
+    public String getTargetEntitiesLinkAttributeName() {
+        return targetEntitiesLinkAttributeName;
     }
 
-    public void setUnKnownEntitiesLinkAttributeName(String unKnownEntitiesLinkAttributeName) {
-        this.unKnownEntitiesLinkAttributeName = unKnownEntitiesLinkAttributeName;
+    public void setTargetEntitiesLinkAttributeName(String targetEntitiesLinkAttributeName) {
+        this.targetEntitiesLinkAttributeName = targetEntitiesLinkAttributeName;
     }
 
     public String getRelationAttachLinkLogicUID() {

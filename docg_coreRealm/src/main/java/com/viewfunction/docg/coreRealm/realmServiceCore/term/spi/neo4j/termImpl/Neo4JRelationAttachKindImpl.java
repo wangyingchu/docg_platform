@@ -14,7 +14,6 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperatio
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachLinkLogic;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationAttachKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JRelationAttachKind;
@@ -139,8 +138,8 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
             Map<String,Object> propertiesMap = new HashMap<>();
             propertiesMap.put(RealmConstant._attachLinkLogicType,relationAttachLinkLogic.getLinkLogicType().toString());
             propertiesMap.put(RealmConstant._attachLinkLogicCondition,relationAttachLinkLogic.getLinkLogicCondition().toString());
-            propertiesMap.put(RealmConstant._attachLinkLogicKnownAttribute,relationAttachLinkLogic.getKnownEntityLinkAttributeName());
-            propertiesMap.put(RealmConstant._attachLinkLogicUnKnownAttribute,relationAttachLinkLogic.getUnKnownEntitiesLinkAttributeName());
+            propertiesMap.put(RealmConstant._attachLinkLogicSourceAttribute,relationAttachLinkLogic.getSourceEntityLinkAttributeName());
+            propertiesMap.put(RealmConstant._attachLinkLogicTargetAttribute,relationAttachLinkLogic.getTargetEntitiesLinkAttributeName());
             CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
             String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.RelationAttachLinkLogicClass},propertiesMap);
             GetSingleRelationAttachLinkLogicTransformer getSingleRelationAttachLinkLogicTransformer =
@@ -375,8 +374,8 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
                 for(RelationAttachLinkLogic currentRelationAttachLinkLogic:relationAttachLinkLogicList){
                     LinkLogicType linkLogicType = currentRelationAttachLinkLogic.getLinkLogicType();
                     LinkLogicCondition linkLogicCondition = currentRelationAttachLinkLogic.getLinkLogicCondition();
-                    String unKnownEntitiesLinkAttributeName = currentRelationAttachLinkLogic.getUnKnownEntitiesLinkAttributeName();
-                    String knownEntityLinkAttributeName = currentRelationAttachLinkLogic.getKnownEntityLinkAttributeName();
+                    String unKnownEntitiesLinkAttributeName = currentRelationAttachLinkLogic.getTargetEntitiesLinkAttributeName();
+                    String knownEntityLinkAttributeName = currentRelationAttachLinkLogic.getSourceEntityLinkAttributeName();
 
                     if(currentConceptionEntity.getAttribute(knownEntityLinkAttributeName) != null){
                         FilteringItem filteringItem = generateFilteringItem(linkLogicCondition,unKnownEntitiesLinkAttributeName,
