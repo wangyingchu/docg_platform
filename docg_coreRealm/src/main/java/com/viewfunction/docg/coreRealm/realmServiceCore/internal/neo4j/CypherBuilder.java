@@ -805,7 +805,7 @@ public class CypherBuilder {
 
         if (targetConceptionKindQueryParameters != null) {
 
-            int defaultReturnRecordNumber = 500;
+            int defaultReturnRecordNumber = 10000;
             int skipRecordNumber = 0;
             int limitRecordNumber = 0;
 
@@ -1297,7 +1297,7 @@ public class CypherBuilder {
     }
 
     public static String matchNodesWithQueryParameters(String labelName, QueryParameters queryParameters, CypherFunctionType cypherFunctionType) throws CoreRealmServiceEntityExploreException {
-        int defaultReturnRecordNumber = 500;
+        int defaultReturnRecordNumber = 10000;
         Node m = null;
         Statement statement = null;
         if (labelName != null) {
@@ -1473,7 +1473,7 @@ public class CypherBuilder {
     }
 
     public static String matchAttributesWithQueryParameters(String labelName, QueryParameters queryParameters,List<String> returnProperties) throws CoreRealmServiceEntityExploreException {
-        int defaultReturnRecordNumber = 500;
+        int defaultReturnRecordNumber = 10000;
         Node m = null;
         Statement statement = null;
         if (labelName != null) {
@@ -1831,7 +1831,7 @@ public class CypherBuilder {
             }
         }
 
-        int defaultReturnRecordNumber = 500;
+        int defaultReturnRecordNumber = 10000;
         int skipRecordNumber = 0;
         int limitRecordNumber = 0;
         SortItem[] sortItemArray = null;
@@ -2183,7 +2183,7 @@ public class CypherBuilder {
                 }
             }
 
-            int defaultReturnRecordNumber = 500;
+            int defaultReturnRecordNumber = 10000;
             int skipRecordNumber = 0;
             int limitRecordNumber = 0;
             SortItem[] sortItemArray = null;
