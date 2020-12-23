@@ -6,9 +6,11 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 
 import java.io.BufferedReader;
@@ -145,6 +147,11 @@ public class ChemicalProducts_Realm_Generator {
             idUIDMapping_Compound.put(idValue,uid);
         }
 
+        RelationAttachInfo relationAttachInfo = new RelationAttachInfo();
+        relationAttachInfo.setRelationKind("belongsToCategory");
+        relationAttachInfo.setRelationDirection(RelationDirection.FROM);
+        List<String> existClassificationList = new ArrayList<>();
+
         ConceptionKind _IngredientConceptionKind1 = coreRealm.getConceptionKind(IngredientConceptionType);
         QueryParameters queryParameters3 = new QueryParameters();
         NullValueFilteringItem defaultFilterItem2 = new NullValueFilteringItem(IngredientId);
@@ -156,6 +163,15 @@ public class ChemicalProducts_Realm_Generator {
             String uid = currentIngredientConceptionEntity.getConceptionEntityUID();
             String idValue = currentIngredientConceptionEntity.getAttribute(IngredientId).getAttributeValue().toString();
             idUIDMapping_Ingredient.put(idValue,uid);
+
+            String categoryName = currentIngredientConceptionEntity.getAttribute(IngredientCategory).getAttributeValue().toString().trim();
+            if (!existClassificationList.contains(categoryName)) {
+                if (coreRealm.getClassification(categoryName) == null) {
+                    coreRealm.createClassification(categoryName, "");
+                }
+                existClassificationList.add(categoryName);
+            }
+            currentIngredientConceptionEntity.attachClassification(relationAttachInfo,categoryName);
         }
 
         File file3 = new File("realmExampleData/ingr_comp/ingr_comp.tsv");
@@ -188,7 +204,8 @@ public class ChemicalProducts_Realm_Generator {
         coreRealm.closeGlobalSession();
     }
 
-    private static void linkItem(ConceptionKind _IngredientConceptionKind,Map<String,String> idUIDMapping_Ingredient,Map<String,String> idUIDMapping_Compound,String ingredientId,String compoundId) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+    private static void linkItem(ConceptionKind _IngredientConceptionKind,Map<String,String> idUIDMapping_Ingredient,Map<String,String> idUIDMapping_Compound,
+                                 String ingredientId,String compoundId) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
         String ingredientEntityUID = idUIDMapping_Ingredient.get(ingredientId);
         ConceptionEntity _IngredientEntity = _IngredientConceptionKind.getEntityByUID(ingredientEntityUID);
         String _CompoundEntityUID = idUIDMapping_Compound.get(compoundId);
