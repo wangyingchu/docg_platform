@@ -1,13 +1,11 @@
 package com.viewfunction.docg.realmExample.generator;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.NullValueFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
@@ -92,7 +90,7 @@ public class ChemicalProducts_Realm_Generator {
                 }
             }
         }
-        EntitiesOperationResult addEntitiesResult = _CompoundConceptionKind.newEntities(compoundEntityValueList,false);
+        _CompoundConceptionKind.newEntities(compoundEntityValueList,false);
 
         List<ConceptionEntityValue> ingredientEntityValueList = new ArrayList<>();
         File file2 = new File("realmExampleData/ingr_comp/ingr_info.tsv");
@@ -130,7 +128,7 @@ public class ChemicalProducts_Realm_Generator {
                 }
             }
         }
-        EntitiesOperationResult addEntitiesResult2 = _IngredientConceptionKind.newEntities(ingredientEntityValueList,false);
+        _IngredientConceptionKind.newEntities(ingredientEntityValueList,false);
 
         coreRealm.openGlobalSession();
 
@@ -140,14 +138,25 @@ public class ChemicalProducts_Realm_Generator {
         defaultFilterItem.reverseCondition();
         queryParameters2.setDefaultFilteringItem(defaultFilterItem);
         ConceptionEntitiesRetrieveResult _CompoundResult= _CompoundConceptionKind1.getEntities(queryParameters2);
-        Map<String,String> idUIDMapping = new HashMap();
+        Map<String,String> idUIDMapping_Compound = new HashMap();
         for(ConceptionEntity currentCompoundConceptionEntity : _CompoundResult.getConceptionEntities()){
             String uid = currentCompoundConceptionEntity.getConceptionEntityUID();
             String idValue = currentCompoundConceptionEntity.getAttribute(CompoundId).getAttributeValue().toString();
-            idUIDMapping.put(idValue,uid);
+            idUIDMapping_Compound.put(idValue,uid);
         }
 
         ConceptionKind _IngredientConceptionKind1 = coreRealm.getConceptionKind(IngredientConceptionType);
+        QueryParameters queryParameters3 = new QueryParameters();
+        NullValueFilteringItem defaultFilterItem2 = new NullValueFilteringItem(IngredientId);
+        defaultFilterItem2.reverseCondition();
+        queryParameters3.setDefaultFilteringItem(defaultFilterItem2);
+        ConceptionEntitiesRetrieveResult _IngredientResult= _IngredientConceptionKind1.getEntities(queryParameters3);
+        Map<String,String> idUIDMapping_Ingredient = new HashMap();
+        for(ConceptionEntity currentIngredientConceptionEntity : _IngredientResult.getConceptionEntities()){
+            String uid = currentIngredientConceptionEntity.getConceptionEntityUID();
+            String idValue = currentIngredientConceptionEntity.getAttribute(IngredientId).getAttributeValue().toString();
+            idUIDMapping_Ingredient.put(idValue,uid);
+        }
 
         File file3 = new File("realmExampleData/ingr_comp/ingr_comp.tsv");
         BufferedReader reader3 = null;
@@ -161,7 +170,7 @@ public class ChemicalProducts_Realm_Generator {
                     String[] dataItems =  currentLine.split("\t");
                     String ingredientId = dataItems[0].trim();
                     String compoundId = dataItems[1].trim();
-                    linkItem(_IngredientConceptionKind1,idUIDMapping,ingredientId,compoundId);
+                    linkItem(_IngredientConceptionKind1,idUIDMapping_Ingredient,idUIDMapping_Compound,ingredientId,compoundId);
                 }
             }
             reader3.close();
@@ -179,17 +188,12 @@ public class ChemicalProducts_Realm_Generator {
         coreRealm.closeGlobalSession();
     }
 
-    private static void linkItem(ConceptionKind _IngredientConceptionKind,Map<String,String> idUIDMapping,String ingredientId,String compoundId) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
-        QueryParameters queryParameters1 = new QueryParameters();
-        queryParameters1.setDefaultFilteringItem(new EqualFilteringItem(IngredientId,ingredientId));
-        ConceptionEntitiesRetrieveResult _IngredientResult =_IngredientConceptionKind.getEntities(queryParameters1);
-
-        if(_IngredientResult.getConceptionEntities().size()>0){
-            ConceptionEntity _IngredientEntity = _IngredientResult.getConceptionEntities().get(0);
-            String _CompoundEntityUID = idUIDMapping.get(compoundId);
-            if(_CompoundEntityUID != null){
-                _IngredientEntity.attachFromRelation(_CompoundEntityUID,"isUsedIn",null,false);
-            }
+    private static void linkItem(ConceptionKind _IngredientConceptionKind,Map<String,String> idUIDMapping_Ingredient,Map<String,String> idUIDMapping_Compound,String ingredientId,String compoundId) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+        String ingredientEntityUID = idUIDMapping_Ingredient.get(ingredientId);
+        ConceptionEntity _IngredientEntity = _IngredientConceptionKind.getEntityByUID(ingredientEntityUID);
+        String _CompoundEntityUID = idUIDMapping_Compound.get(compoundId);
+        if(_CompoundEntityUID != null){
+            _IngredientEntity.attachFromRelation(_CompoundEntityUID,"isUsedIn",null,false);
         }
     }
 }
