@@ -6,14 +6,16 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="docg_realmKnowledgeManage" />
+        <module name="docg_realmExample" />
         <module name="docg_platform" />
         <module name="docg_coreRealm" />
-        <module name="docg_realmKnowledgeManage" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="docg_coreRealm" target="11" />
       <module name="docg_platform" target="11" />
+      <module name="docg_realmExample" target="11" />
       <module name="docg_realmKnowledgeManage" target="11" />
     </bytecodeTargetLevel>
   </component>
