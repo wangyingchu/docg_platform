@@ -1,5 +1,6 @@
 package com.viewfunction.docg.realmExample.generator;
 
+import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.NullValueFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
@@ -19,6 +20,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SongPlaylists_Realm_Generator {
 
@@ -37,8 +40,10 @@ public class SongPlaylists_Realm_Generator {
 
     public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
 
+
+
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
-/*
+
         ConceptionKind _MusicTagConceptionKind = coreRealm.getConceptionKind(MusicTagConceptionType);
         if(_MusicTagConceptionKind != null){
             coreRealm.removeConceptionKind(MusicTagConceptionType,true);
@@ -81,8 +86,8 @@ public class SongPlaylists_Realm_Generator {
             }
         }
         _MusicTagConceptionKind.newEntities(musicTagEntityValueList,false);
-*/
-/*
+
+
         ConceptionKind _SongConceptionKind = coreRealm.getConceptionKind(SongConceptionType);
         if(_SongConceptionKind != null){
             coreRealm.removeConceptionKind(SongConceptionType,true);
@@ -99,7 +104,6 @@ public class SongPlaylists_Realm_Generator {
             reader2 = new BufferedReader(new FileReader(file2));
             String tempStr;
             while ((tempStr = reader2.readLine()) != null) {
-
                 String currentLine = !tempStr.startsWith("#")? tempStr : null;
                 if(currentLine != null){
                     String[] dataItems =  currentLine.split("\t");
@@ -128,8 +132,8 @@ public class SongPlaylists_Realm_Generator {
             }
         }
         _SongConceptionKind.newEntities(songEntityValueList,false);
-*/
-/*
+
+
         coreRealm.openGlobalSession();
 
         ConceptionKind _MusicTagConceptionKind1 = coreRealm.getConceptionKind(MusicTagConceptionType);
@@ -195,12 +199,6 @@ public class SongPlaylists_Realm_Generator {
         }
 
         coreRealm.closeGlobalSession();
-*/
-
-
-
-
-
 
 
         ConceptionKind _PlaylistConceptionKind = coreRealm.getConceptionKind(PlaylistConceptionType);
@@ -212,14 +210,14 @@ public class SongPlaylists_Realm_Generator {
             _PlaylistConceptionKind = coreRealm.createConceptionKind(PlaylistConceptionType,"播放列表");
         }
 
-        List<ConceptionEntityValue> playlistEntityValueList = new ArrayList<>();
+        List<ConceptionEntityValue> playlistEntityValueList = Lists.newArrayList();
         File file4 = new File("realmExampleData/song_playlists/test.txt");
-        BufferedReader reader3 = null;
+        BufferedReader reader4 = null;
         try {
-            reader3 = new BufferedReader(new FileReader(file4));
+            reader4 = new BufferedReader(new FileReader(file4));
             String tempStr;
             int keyIndex = 0;
-            while ((tempStr = reader3.readLine()) != null) {
+            while ((tempStr = reader4.readLine()) != null) {
                 String currentPlayListId = ""+keyIndex;
                 keyIndex ++;
                 String currentLine = !tempStr.startsWith("#")? tempStr : null;
@@ -231,38 +229,89 @@ public class SongPlaylists_Realm_Generator {
                     playlistEntityValueList.add(conceptionEntityValue);
                 }
             }
-            reader3.close();
+            reader4.close();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (reader3 != null) {
+            if (reader4 != null) {
                 try {
-                    reader3.close();
+                    reader4.close();
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
             }
         }
 
+        class InsertRecordThread implements Runnable{
+            private List<ConceptionEntityValue> conceptionEntityValueList;
+            private ConceptionKind conceptionKind;
 
-        _PlaylistConceptionKind.newEntities(playlistEntityValueList,false);
+            public InsertRecordThread(ConceptionKind conceptionKind,List<ConceptionEntityValue> conceptionEntityValueList){
+                this.conceptionEntityValueList = conceptionEntityValueList;
+                this.conceptionKind = conceptionKind;
+            }
+            @Override
+            public void run(){
+                this.conceptionKind.newEntities(conceptionEntityValueList,false);
+            }
+        }
+        List<List<ConceptionEntityValue>> rsList = Lists.partition(playlistEntityValueList, 10000);
+
+        ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+
+        for (List<ConceptionEntityValue> currentConceptionEntityValueList : rsList) {
+            ConceptionKind conceptionKind = coreRealm.getConceptionKind(PlaylistConceptionType);
+            InsertRecordThread insertRecordThread = new InsertRecordThread(conceptionKind,currentConceptionEntityValueList);
+            executor.execute(insertRecordThread);
+        }
+        executor.shutdown();
 
 
 
 
+        coreRealm.openGlobalSession();
+
+        ConceptionKind _PlaylistConceptionKind1 = coreRealm.getConceptionKind(PlaylistConceptionType);
+
+        QueryParameters queryParameters3 = new QueryParameters();
+        NullValueFilteringItem defaultFilterItem3 = new NullValueFilteringItem(PlaylistId);
+        defaultFilterItem3.reverseCondition();
+        queryParameters3.setDefaultFilteringItem(defaultFilterItem3);
+        queryParameters3.setResultNumber(10000000);
+
+        ConceptionEntitiesRetrieveResult _PlaylistResult = _PlaylistConceptionKind1.getEntities(queryParameters3);
+        List<ConceptionEntity> allPlaylistResultList = _PlaylistResult.getConceptionEntities();
+
+        class LinkPlaylistRecordThread implements Runnable{
+            private List<ConceptionEntity> conceptionEntityList;
+            private ConceptionKind conceptionKind;
+
+            public LinkPlaylistRecordThread(ConceptionKind conceptionKind,List<ConceptionEntity> conceptionEntityList){
+                this.conceptionEntityList = conceptionEntityList;
+                this.conceptionKind = conceptionKind;
+            }
+            @Override
+            public void run(){
+               for(ConceptionEntity currentConceptionEntity:conceptionEntityList){
+                String playlistContent = currentConceptionEntity.getAttribute(PlaylistContent).getAttributeValue().toString();
+
+                   String[] dataItems = playlistContent.split(" ");
+                   for(String currentSongIdValue:dataItems){
+                       String currentSongId = currentSongIdValue.trim();
+                       linkPlaylistToSongItem(currentConceptionEntity,idUIDMapping_Song,currentSongId);
+                   }
+               }
+            }
+        }
+
+        List<List<ConceptionEntity>> playlistEntityRsList = Lists.partition(allPlaylistResultList, 10000);
+
+        for (List<ConceptionEntity> currentConceptionEntityValueList : playlistEntityRsList) {
+            System.out.println(currentConceptionEntityValueList.size());
+        }
 
 
-
-
-
-
-
-
-
-
-
-
-
+        coreRealm.closeGlobalSession();
     }
 
     private static void linkSongToTagItem(ConceptionEntity _SongEntity,Map<String,String> idUIDMapping_Song,Map<String,String> idUIDMapping_MusicTag,
@@ -272,4 +321,6 @@ public class SongPlaylists_Realm_Generator {
             _SongEntity.attachFromRelation(_musicTagEntityUID,"belongsToMusicType",null,false);
         }
     }
+
+    private static void linkPlaylistToSongItem(ConceptionEntity _PlaylistEntity,Map<String,String> idUIDMapping_Song,String songId){}
 }
