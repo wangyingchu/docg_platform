@@ -1,10 +1,12 @@
 package com.viewfunction.docg.realmExample.generator;
 
 import com.google.common.collect.Lists;
+
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.NullValueFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
@@ -16,10 +18,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -41,7 +40,8 @@ public class SongPlaylists_Realm_Generator {
     public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
 
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
-/*
+
+        //Part 1
         ConceptionKind _MusicTagConceptionKind = coreRealm.getConceptionKind(MusicTagConceptionType);
         if(_MusicTagConceptionKind != null){
             coreRealm.removeConceptionKind(MusicTagConceptionType,true);
@@ -84,7 +84,6 @@ public class SongPlaylists_Realm_Generator {
             }
         }
         _MusicTagConceptionKind.newEntities(musicTagEntityValueList,false);
-
 
         ConceptionKind _SongConceptionKind = coreRealm.getConceptionKind(SongConceptionType);
         if(_SongConceptionKind != null){
@@ -155,11 +154,15 @@ public class SongPlaylists_Realm_Generator {
         defaultFilterItem2.reverseCondition();
         queryParameters2.setDefaultFilteringItem(defaultFilterItem2);
 
-        ConceptionEntitiesRetrieveResult _SongResult= _SongConceptionKind1.getEntities(queryParameters2);
+        List<String> attributeNamesList0 = new ArrayList<>();
+        attributeNamesList0.add(SongId);
+        ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributesRetrieveResult0 = _SongConceptionKind1.getSingleValueEntityAttributesByAttributeNames(attributeNamesList0,queryParameters2);
+        List<ConceptionEntityValue> conceptionEntityValueList0 = conceptionEntitiesAttributesRetrieveResult0.getConceptionEntityValues();
+
         Map<String,String> idUIDMapping_Song = new HashMap();
-        for(ConceptionEntity currentSongConceptionEntity : _SongResult.getConceptionEntities()){
-            String uid = currentSongConceptionEntity.getConceptionEntityUID();
-            String idValue = currentSongConceptionEntity.getAttribute(SongId).getAttributeValue().toString();
+        for(ConceptionEntityValue currentSongConceptionEntityValue : conceptionEntityValueList0){
+            String uid = currentSongConceptionEntityValue.getConceptionEntityUID();
+            String idValue = currentSongConceptionEntityValue.getEntityAttributesValue().get(SongId).toString();
             idUIDMapping_Song.put(idValue,uid);
         }
 
@@ -261,7 +264,8 @@ public class SongPlaylists_Realm_Generator {
             executor1.execute(insertRecordThread);
         }
         executor1.shutdown();
-*/
+
+        //PART2
 
         coreRealm.openGlobalSession();
 
@@ -271,11 +275,15 @@ public class SongPlaylists_Realm_Generator {
         defaultFilterItem2_1.reverseCondition();
         queryParameters2_1.setDefaultFilteringItem(defaultFilterItem2_1);
 
-        ConceptionEntitiesRetrieveResult _SongResult2= _SongConceptionKind2.getEntities(queryParameters2_1);
+        List<String> attributeNamesList1 = new ArrayList<>();
+        attributeNamesList0.add(SongId);
+        ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributesRetrieveResult1 = _SongConceptionKind2.getSingleValueEntityAttributesByAttributeNames(attributeNamesList1,queryParameters2_1);
+        List<ConceptionEntityValue> conceptionEntityValueList1 = conceptionEntitiesAttributesRetrieveResult1.getConceptionEntityValues();
+
         Map<String,String> idUIDMapping_Song2 = new HashMap();
-        for(ConceptionEntity currentSongConceptionEntity : _SongResult2.getConceptionEntities()){
-            String uid = currentSongConceptionEntity.getConceptionEntityUID();
-            String idValue = currentSongConceptionEntity.getAttribute(SongId).getAttributeValue().toString();
+        for(ConceptionEntityValue currentSongConceptionEntityValue : conceptionEntityValueList1){
+            String uid = currentSongConceptionEntityValue.getConceptionEntityUID();
+            String idValue = currentSongConceptionEntityValue.getEntityAttributesValue().get(SongId).toString();
             idUIDMapping_Song2.put(idValue,uid);
         }
 
@@ -286,44 +294,124 @@ public class SongPlaylists_Realm_Generator {
         queryParameters3.setDefaultFilteringItem(defaultFilterItem3);
         queryParameters3.setResultNumber(10000000);
 
-        ConceptionEntitiesRetrieveResult _PlaylistResult = _PlaylistConceptionKind1.getEntities(queryParameters3);
-        List<ConceptionEntity> allPlaylistResultList = _PlaylistResult.getConceptionEntities();
+        List<String> attributeNamesList = new ArrayList<>();
+        attributeNamesList.add(PlaylistContent);
+        ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributesRetrieveResult = _PlaylistConceptionKind1.getSingleValueEntityAttributesByAttributeNames(attributeNamesList,queryParameters3);
+        List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributesRetrieveResult.getConceptionEntityValues();
 
-        class LinkPlaylistRecordThread implements Runnable{
-            private List<ConceptionEntity> conceptionEntityList;
+        Map<String,String> idContentMapping_Playlist = new HashMap();
+        for(ConceptionEntityValue currentConceptionEntityValue : conceptionEntityValueList){
+            String uid = currentConceptionEntityValue.getConceptionEntityUID();
+            String playlistContentValue = currentConceptionEntityValue.getEntityAttributesValue().get(PlaylistContent).toString();
+            idContentMapping_Playlist.put(uid,playlistContentValue);
+        }
+        coreRealm.closeGlobalSession();
 
-            public LinkPlaylistRecordThread(List<ConceptionEntity> conceptionEntityList){
-                this.conceptionEntityList = conceptionEntityList;
+        Iterator<Map.Entry<String, String>> iterator = idContentMapping_Playlist.entrySet().iterator();
+        Map<String, String> mapThread0 = new HashMap<>();
+        Map<String, String> mapThread1 = new HashMap<>();
+        Map<String, String> mapThread2 = new HashMap<>();
+        Map<String, String> mapThread3 = new HashMap<>();
+        Map<String, String> mapThread4 = new HashMap<>();
+        Map<String, String> mapThread5 = new HashMap<>();
+        Map<String, String> mapThread6 = new HashMap<>();
+        Map<String, String> mapThread7 = new HashMap<>();
+        Map<String, String> mapThread_default = new HashMap<>();
+
+        List<Map<String, String>> mapThreadList = new ArrayList<>();
+        mapThreadList.add(mapThread0);
+        mapThreadList.add(mapThread1);
+        mapThreadList.add(mapThread2);
+        mapThreadList.add(mapThread3);
+        mapThreadList.add(mapThread4);
+        mapThreadList.add(mapThread5);
+        mapThreadList.add(mapThread6);
+        mapThreadList.add(mapThread7);
+        mapThreadList.add(mapThread_default);
+
+        while (iterator.hasNext()) {
+            Map.Entry<String, String> entry = iterator.next();
+            String key = entry.getKey();
+            String.valueOf(key);
+            int hashCode = Math.abs(String.valueOf(key).hashCode());
+
+            switch (hashCode % 8) {
+                case 0 :
+                    mapThread0.put(key, idContentMapping_Playlist.get(key));
+                    break;
+                case 1 :
+                    mapThread1.put(key, idContentMapping_Playlist.get(key));
+                    break;
+                case 2 :
+                    mapThread2.put(key, idContentMapping_Playlist.get(key));
+                    break;
+                case 3 :
+                    mapThread3.put(key, idContentMapping_Playlist.get(key));
+                    break;
+                case 4 :
+                    mapThread4.put(key, idContentMapping_Playlist.get(key));
+                    break;
+                case 5 :
+                    mapThread5.put(key, idContentMapping_Playlist.get(key));
+                    break;
+                case 6 :
+                    mapThread6.put(key, idContentMapping_Playlist.get(key));
+                    break;
+                case 7 :
+                    mapThread7.put(key, idContentMapping_Playlist.get(key));
+                    break;
+                default:
+                    mapThread_default.put(key, idContentMapping_Playlist.get(key));
+                    break;
             }
-            @Override
-            public void run(){
-               for(ConceptionEntity currentConceptionEntity:conceptionEntityList){
-                String playlistContent = currentConceptionEntity.getAttribute(PlaylistContent).getAttributeValue().toString();
+        }
 
-                String[] dataItems = playlistContent.split(" ");
-                for(String currentSongIdValue:dataItems){
-                    String currentSongId = currentSongIdValue.trim();
-                    try {
-                        linkPlaylistToSongItem(currentConceptionEntity,idUIDMapping_Song2,currentSongId);
-                    } catch (CoreRealmServiceRuntimeException e) {
-                        e.printStackTrace();
+        class LinkPlaylistAndSongThread implements Runnable{
+
+            private Map<String,String> playlistDataMap;
+            private Map<String,String> songIdRIDMapping;
+
+            public LinkPlaylistAndSongThread(Map<String,String> playlistDataMap,Map<String,String> songIdRIDMapping){
+                this.playlistDataMap = playlistDataMap;
+                this.songIdRIDMapping = songIdRIDMapping;
+            }
+
+            @Override
+            public void run() {
+                CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+                coreRealm.openGlobalSession();
+                ConceptionKind _PlaylistConceptionKind = coreRealm.getConceptionKind(PlaylistConceptionType);
+
+                Set<String> playlistUIDKeySet = this.playlistDataMap.keySet();
+                for(String currentUID :playlistUIDKeySet){
+                    String uid = currentUID;
+                    String playlistContent = this.playlistDataMap.get(uid);
+
+                    String[] dataItems = playlistContent.split(" ");
+                    for(String currentSongIdValue:dataItems){
+                        String currentSongId = currentSongIdValue.trim();
+                        try {
+                            ConceptionEntity currentConceptionEntity = _PlaylistConceptionKind.getEntityByUID(uid);
+                            String _songEntityUID = songIdRIDMapping.get(currentSongId);
+                            if(_songEntityUID != null){
+                                currentConceptionEntity.attachToRelation(_songEntityUID,"playedInList",null,false);
+                            }
+
+                        } catch (CoreRealmServiceRuntimeException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
-               }
+                coreRealm.closeGlobalSession();
             }
         }
 
-        List<List<ConceptionEntity>> playlistEntityRsList = Lists.partition(allPlaylistResultList, 10000);
-
-        ExecutorService executor2 = Executors.newFixedThreadPool(playlistEntityRsList.size());
-
-        for (List<ConceptionEntity> currentConceptionEntityList : playlistEntityRsList) {
-            LinkPlaylistRecordThread linkPlaylistRecordThread = new LinkPlaylistRecordThread(currentConceptionEntityList);
-            executor2.execute(linkPlaylistRecordThread);
+        ExecutorService executor2 = Executors.newFixedThreadPool(mapThreadList.size());
+        for(Map<String, String> currentMapThread:mapThreadList){
+            LinkPlaylistAndSongThread linkPlaylistAndSongThread1 = new LinkPlaylistAndSongThread(currentMapThread,idUIDMapping_Song2);
+            executor2.execute(linkPlaylistAndSongThread1);
         }
         executor2.shutdown();
-
-        coreRealm.closeGlobalSession();
     }
 
     private static void linkSongToTagItem(ConceptionEntity _SongEntity,Map<String,String> idUIDMapping_Song,Map<String,String> idUIDMapping_MusicTag,
@@ -331,14 +419,6 @@ public class SongPlaylists_Realm_Generator {
         String _musicTagEntityUID = idUIDMapping_MusicTag.get(musicTagId);
         if(_musicTagEntityUID != null){
             _SongEntity.attachFromRelation(_musicTagEntityUID,"belongsToMusicType",null,false);
-        }
-    }
-
-    private static void linkPlaylistToSongItem(ConceptionEntity _PlaylistEntity,Map<String,String> idUIDMapping_Song,String songId) throws CoreRealmServiceRuntimeException {
-        String _songEntityUID = idUIDMapping_Song.get(songId);
-        if(_songEntityUID != null){
-            //System.out.println("DOLINK..................");
-            _PlaylistEntity.attachToRelation(_songEntityUID,"playedInList",null,false);
         }
     }
 }
