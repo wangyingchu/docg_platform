@@ -276,7 +276,7 @@ public class SongPlaylists_Realm_Generator {
         queryParameters2_1.setDefaultFilteringItem(defaultFilterItem2_1);
 
         List<String> attributeNamesList1 = new ArrayList<>();
-        attributeNamesList0.add(SongId);
+        attributeNamesList1.add(SongId);
         ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributesRetrieveResult1 = _SongConceptionKind2.getSingleValueEntityAttributesByAttributeNames(attributeNamesList1,queryParameters2_1);
         List<ConceptionEntityValue> conceptionEntityValueList1 = conceptionEntitiesAttributesRetrieveResult1.getConceptionEntityValues();
 
@@ -293,6 +293,7 @@ public class SongPlaylists_Realm_Generator {
         defaultFilterItem3.reverseCondition();
         queryParameters3.setDefaultFilteringItem(defaultFilterItem3);
         queryParameters3.setResultNumber(10000000);
+        queryParameters3.addSortingAttribute(PlaylistId, QueryParameters.SortingLogic.ASC);
 
         List<String> attributeNamesList = new ArrayList<>();
         attributeNamesList.add(PlaylistContent);
@@ -394,7 +395,7 @@ public class SongPlaylists_Realm_Generator {
                             ConceptionEntity currentConceptionEntity = _PlaylistConceptionKind.getEntityByUID(uid);
                             String _songEntityUID = songIdRIDMapping.get(currentSongId);
                             if(_songEntityUID != null){
-                                currentConceptionEntity.attachToRelation(_songEntityUID,"playedInList",null,false);
+                                currentConceptionEntity.attachToRelation(_songEntityUID,"playedInList",null,true);
                             }
 
                         } catch (CoreRealmServiceRuntimeException e) {
@@ -412,13 +413,14 @@ public class SongPlaylists_Realm_Generator {
             executor2.execute(linkPlaylistAndSongThread1);
         }
         executor2.shutdown();
+
     }
 
     private static void linkSongToTagItem(ConceptionEntity _SongEntity,Map<String,String> idUIDMapping_Song,Map<String,String> idUIDMapping_MusicTag,
                                 String musicTagId) throws CoreRealmServiceRuntimeException {
         String _musicTagEntityUID = idUIDMapping_MusicTag.get(musicTagId);
         if(_musicTagEntityUID != null){
-            _SongEntity.attachFromRelation(_musicTagEntityUID,"belongsToMusicType",null,false);
+            _SongEntity.attachFromRelation(_musicTagEntityUID,"belongsToMusicType",null,true);
         }
     }
 }
