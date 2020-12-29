@@ -2141,3 +2141,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      */
     public Map<String,List<ConceptionEntity>> statisticRelatedClassifications(QueryParameters queryParameters, String relationKindName, RelationDirection relationDirection);
 ```
+
+#### ➜ 领域模型数据分析
+
+###### *Demo 领域模型创建*
