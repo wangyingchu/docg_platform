@@ -2142,16 +2142,30 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public Map<String,List<ConceptionEntity>> statisticRelatedClassifications(QueryParameters queryParameters, String relationKindName, RelationDirection relationDirection);
 ```
 
+
+
 #### ➜ 领域模型数据分析
 
 ###### *Demo 领域模型创建*
 
+DOCG 数据分析平台的 docg_realmExample 模块中包含若干内置的模拟数据领域模型。通过执行相应的Demo领域模型创建程序， 可以生成相应的领域模型定义与实体对象。
+
 ###### ↳ Chemical Products Realm
+
+小型领域模型，包含 概念实体 *Compound*  *Ingredient*，分类 ，关系实体  *isUsedIn*  *belongsToCategory*
+
+创建程序：
+
 ```java
 com.viewfunction.docg.realmExample.generator.ChemicalProducts_Realm_Generator
 ```
 
 ###### ↳ Song Playlists Realm
+
+中型领域模型包含 概念实体 *Song*  *MusicTag*  *Playlist*，关系实体 *playedInList*  *belongsToMusicType*
+
+创建程序：
+
 ```java
 com.viewfunction.docg.realmExample.generator.SongPlaylists_Realm_Generator
 ```
