@@ -2145,3 +2145,14 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
 #### ➜ 领域模型数据分析
 
 ###### *Demo 领域模型创建*
+
+###### ↳ Chemical Products Realm
+```java
+com.viewfunction.docg.realmExample.generator.ChemicalProducts_Realm_Generator
+```
+
+###### ↳ Song Playlists Realm
+```java
+com.viewfunction.docg.realmExample.generator.SongPlaylists_Realm_Generator
+```
+
