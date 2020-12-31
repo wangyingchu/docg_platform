@@ -2148,11 +2148,15 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
 
 ###### *Demo 领域模型创建*
 
-DOCG 数据分析平台的 docg_realmExample 模块中包含若干内置的模拟数据领域模型。通过执行相应的Demo领域模型创建程序， 可以生成相应的领域模型定义与实体对象。
+DOCG 数据分析平台的 docg_realmExample 模块中包含若干内置的模拟领域模型数据集。通过执行Demo领域模型创建程序， 可以生成对应的领域模型定义与实体对象。
 
 ###### ↳ Chemical Products Realm
 
-小型领域模型，包含 概念实体 *Compound*  *Ingredient*，分类 ，关系实体  *isUsedIn*  *belongsToCategory*
+小型领域模型，包含 概念实体 ***Compound***  （数量1107个），  ***Ingredient*** （数量1530），关系实体  ***isUsedIn***  （数量36781个），***belongsToCategory*** （数量1530个）。
+
+概念关联关系示例：
+
+![image](documentPic/graph_ChemicalProductsRealm.png)
 
 创建程序：
 
@@ -2162,7 +2166,9 @@ com.viewfunction.docg.realmExample.generator.ChemicalProducts_Realm_Generator
 
 ###### ↳ Song Playlists Realm
 
-中型领域模型包含 概念实体 *Song*  *MusicTag*  *Playlist*，关系实体 *playedInList*  *belongsToMusicType*
+中型领域模型包含 概念实体 ***Song***（数量9775个） ， ***MusicTag***（数量250个）  ，***Playlist***（数量188064个），关系实体 ***playedInList*** （数量1790143个）， ***belongsToMusicType***（数量149041个）。
+
+概念关联关系示例：![image](documentPic/graph_SongPlaylistsRealm.png)
 
 创建程序：
 
