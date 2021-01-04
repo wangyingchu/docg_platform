@@ -1,5 +1,6 @@
 package com.viewfunction.docg.realmExample.generator;
 
+import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
@@ -14,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class UndergroundPipelineNetwork_Realm_Generator {
 
@@ -46,6 +49,20 @@ public class UndergroundPipelineNetwork_Realm_Generator {
     private static final String PipeTubulationEndPointID = "endPointID";
 
     public static void main(String[] args) throws CoreRealmServiceRuntimeException {
+
+        class InsertRecordThread implements Runnable{
+            private List<ConceptionEntityValue> conceptionEntityValueList;
+            private ConceptionKind conceptionKind;
+
+            public InsertRecordThread(ConceptionKind conceptionKind,List<ConceptionEntityValue> conceptionEntityValueList){
+                this.conceptionEntityValueList = conceptionEntityValueList;
+                this.conceptionKind = conceptionKind;
+            }
+            @Override
+            public void run(){
+                this.conceptionKind.newEntities(conceptionEntityValueList,false);
+            }
+        }
 
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
 
@@ -124,7 +141,15 @@ public class UndergroundPipelineNetwork_Realm_Generator {
                 }
             }
         }
-        _PipePointConceptionKind.newEntities(pipePointEntityValueList,false);
+
+        List<List<ConceptionEntityValue>> pointRsList = Lists.partition(pipePointEntityValueList, 1500);
+        ExecutorService executor1 = Executors.newFixedThreadPool(pointRsList.size());
+        for (List<ConceptionEntityValue> currentConceptionEntityValueList : pointRsList) {
+            ConceptionKind conceptionKind = coreRealm.getConceptionKind(PipePointConceptionType);
+            InsertRecordThread insertRecordThread = new InsertRecordThread(conceptionKind,currentConceptionEntityValueList);
+            executor1.execute(insertRecordThread);
+        }
+        executor1.shutdown();
 
         List<ConceptionEntityValue> pipeTubulationEntityValueList = new ArrayList<>();
         File file2 = new File("realmExampleData/underground_pipelinenetwork/UGPN_Tubulation.csv");
@@ -207,7 +232,13 @@ public class UndergroundPipelineNetwork_Realm_Generator {
             }
         }
 
-        _PipeTubulationConceptionKind.newEntities(pipeTubulationEntityValueList,false);
-
+        List<List<ConceptionEntityValue>> tubulationRsList = Lists.partition(pipeTubulationEntityValueList, 1500);
+        ExecutorService executor2 = Executors.newFixedThreadPool(pointRsList.size());
+        for (List<ConceptionEntityValue> currentConceptionEntityValueList : tubulationRsList) {
+            ConceptionKind conceptionKind = coreRealm.getConceptionKind(PipeTubulationConceptionType);
+            InsertRecordThread insertRecordThread = new InsertRecordThread(conceptionKind,currentConceptionEntityValueList);
+            executor2.execute(insertRecordThread);
+        }
+        executor2.shutdown();
     }
 }
