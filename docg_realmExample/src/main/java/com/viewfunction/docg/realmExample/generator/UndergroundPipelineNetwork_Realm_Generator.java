@@ -6,6 +6,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
@@ -14,10 +15,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -68,6 +66,7 @@ public class UndergroundPipelineNetwork_Realm_Generator {
         }
 
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        //Part 1
 
         ConceptionKind _PipelineConceptionKind = coreRealm.getConceptionKind(PipelineConceptionType);
         if(_PipelineConceptionKind != null){
@@ -244,8 +243,9 @@ public class UndergroundPipelineNetwork_Realm_Generator {
         }
         executor2.shutdown();
 
-
-        //ConceptionKind _PipePointConceptionKind = coreRealm.getConceptionKind(PipePointConceptionType);
+        //Part 2
+        /*
+        ConceptionKind _PipePointConceptionKind = coreRealm.getConceptionKind(PipePointConceptionType);
 
         List<String> attributeNamesList1 = new ArrayList<>();
         attributeNamesList1.add(PipePointPointID);
@@ -263,7 +263,7 @@ public class UndergroundPipelineNetwork_Realm_Generator {
             idUIDMapping_PipePoint.put(idValue,uid);
         }
 
-        //ConceptionKind _PipeTubulationConceptionKind = coreRealm.getConceptionKind(PipeTubulationConceptionType);
+        ConceptionKind _PipeTubulationConceptionKind = coreRealm.getConceptionKind(PipeTubulationConceptionType);
 
         List<String> attributeNamesList2 = new ArrayList<>();
         attributeNamesList2.add(PipeTubulationStartPointID);
@@ -275,15 +275,60 @@ public class UndergroundPipelineNetwork_Realm_Generator {
         ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributesRetrieveResult2 = _PipeTubulationConceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeNamesList2,queryParameters2);
         List<ConceptionEntityValue> conceptionEntityValueList2 = conceptionEntitiesAttributesRetrieveResult2.getConceptionEntityValues();
 
+        class LinkPointAndTubulationThread implements Runnable{
+
+            private Map<String,String> pipePointDataMap;
+            private List<ConceptionEntityValue> tubulationEntityValueList;
+
+            public LinkPointAndTubulationThread(Map<String,String> pipePointDataMap,List<ConceptionEntityValue> tubulationEntityValueList){
+                this.pipePointDataMap = pipePointDataMap;
+                this.tubulationEntityValueList = tubulationEntityValueList;
+            }
+
+            @Override
+            public void run() {
+                CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+                coreRealm.openGlobalSession();
+                ConceptionKind _PipeTubulationConceptionKind = coreRealm.getConceptionKind(PipeTubulationConceptionType);
+
+                for(ConceptionEntityValue currentConceptionEntityValue:tubulationEntityValueList){
+                    String entityUID = currentConceptionEntityValue.getConceptionEntityUID();
+                    String startPointId = currentConceptionEntityValue.getEntityAttributesValue().get(PipeTubulationStartPointID).toString();
+                    String endPointId = currentConceptionEntityValue.getEntityAttributesValue().get(PipeTubulationEndPointID).toString();
+
+                    ConceptionEntity currentConceptionEntity = _PipeTubulationConceptionKind.getEntityByUID(entityUID);
+                    String _startEntityUID = pipePointDataMap.get(startPointId);
+                    if(_startEntityUID != null){
+                        try {
+                            currentConceptionEntity.attachToRelation(_startEntityUID,"connectTo",null,true);
+                        } catch (CoreRealmServiceRuntimeException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    String _endEntityUID = pipePointDataMap.get(endPointId);
+                    if(_endEntityUID != null){
+                        try {
+                            currentConceptionEntity.attachFromRelation(_endEntityUID,"connectTo",null,true);
+                        } catch (CoreRealmServiceRuntimeException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                coreRealm.closeGlobalSession();
+            }
+        }
+
         List<List<ConceptionEntityValue>> tubulationRsList2 = Lists.partition(conceptionEntityValueList2, 1500);
 
-        ExecutorService executor3 = Executors.newFixedThreadPool(tubulationRsList2.size());
+        //ExecutorService executor3 = Executors.newFixedThreadPool(tubulationRsList2.size());
+        ExecutorService executor3 = Executors.newFixedThreadPool(5);
         for (List<ConceptionEntityValue> currentConceptionEntityValueList : tubulationRsList2) {
-            ConceptionKind conceptionKind = coreRealm.getConceptionKind(PipeTubulationConceptionType);
-            //InsertRecordThread insertRecordThread = new InsertRecordThread(conceptionKind,currentConceptionEntityValueList);
-            //executor3.execute(insertRecordThread);
+            LinkPointAndTubulationThread linkPointAndTubulationThread = new LinkPointAndTubulationThread(idUIDMapping_PipePoint,currentConceptionEntityValueList);
+            executor3.execute(linkPointAndTubulationThread);
         }
         executor3.shutdown();
+        */
 
     }
 }
