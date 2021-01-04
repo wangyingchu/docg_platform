@@ -18,8 +18,8 @@ import java.util.Map;
 public class UndergroundPipelineNetwork_Realm_Generator {
 
     private static final String PipelineConceptionType = "Pipeline";
-    private static final String PipePointConceptionType = "PipePoint";
 
+    private static final String PipePointConceptionType = "PipePoint";
     private static final String PipePointStandardCode = "standardCode";
     private static final String PipePointNetworkType = "networkType";
     private static final String PipePointGroundElevation = "groundElevation";
@@ -29,22 +29,26 @@ public class UndergroundPipelineNetwork_Realm_Generator {
     private static final String PipePointElementType = "elementType";
 
     private static final String PipeTubulationConceptionType = "PipeTubulation";
-
-
-
-
-    //standardCode,startPortionTopElevation,networkType,endPortionBuriedDepth,endPortionTopElevation,tubulationID,crossSection,NAME,startPortionBuriedDepth,locationRoad,startPointID,material,elementType,tubulationLength,endPointID
-
-
-
-
-
-
-
+    private static final String PipeTubulationStandardCode = "standardCode";
+    private static final String PipeTubulationStartPortionTopElevation = "startPortionTopElevation";
+    private static final String PipeTubulationNetworkType = "networkType";
+    private static final String PipeTubulationEndPortionBuriedDepth = "endPortionBuriedDepth";
+    private static final String PipeTubulationEndPortionTopElevation = "endPortionTopElevation";
+    private static final String PipeTubulationTubulationID = "tubulationID";
+    private static final String PipeTubulationCrossSection = "crossSection";
+    private static final String PipeTubulationName = "name";
+    private static final String PipeTubulationStartPortionBuriedDepth = "startPortionBuriedDepth";
+    private static final String PipeTubulationLocationRoad = "locationRoad";
+    private static final String PipeTubulationStartPointID = "startPointID";
+    private static final String PipeTubulationMaterial = "material";
+    private static final String PipeTubulationElementType = "elementType";
+    private static final String PipeTubulationTubulationLength = "tubulationLength";
+    private static final String PipeTubulationEndPointID = "endPointID";
 
     public static void main(String[] args) throws CoreRealmServiceRuntimeException {
 
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+
         ConceptionKind _PipelineConceptionKind = coreRealm.getConceptionKind(PipelineConceptionType);
         if(_PipelineConceptionKind != null){
             coreRealm.removeConceptionKind(PipelineConceptionType,true);
@@ -68,10 +72,9 @@ public class UndergroundPipelineNetwork_Realm_Generator {
             coreRealm.removeConceptionKind(PipeTubulationConceptionType,true);
         }
         _PipeTubulationConceptionKind = coreRealm.getConceptionKind(PipeTubulationConceptionType);
-        if(_PipePointConceptionKind == null){
+        if(_PipeTubulationConceptionKind == null){
             _PipeTubulationConceptionKind = coreRealm.createConceptionKind(PipeTubulationConceptionType,"管段");
         }
-
 
         List<ConceptionEntityValue> pipePointEntityValueList = new ArrayList<>();
         File file = new File("realmExampleData/underground_pipelinenetwork/UGPN_Point.csv");
@@ -91,7 +94,6 @@ public class UndergroundPipelineNetwork_Realm_Generator {
                     String pointID = dataItems[5];
                     String elementType = dataItems[6];
 
-                    System.out.println(currentLine);
                     Map<String,Object> newEntityValueMap = new HashMap<>();
                     newEntityValueMap.put(PipePointStandardCode,standardCode);
                     newEntityValueMap.put(PipePointNetworkType,networkType);
@@ -123,6 +125,89 @@ public class UndergroundPipelineNetwork_Realm_Generator {
             }
         }
         _PipePointConceptionKind.newEntities(pipePointEntityValueList,false);
+
+        List<ConceptionEntityValue> pipeTubulationEntityValueList = new ArrayList<>();
+        File file2 = new File("realmExampleData/underground_pipelinenetwork/UGPN_Tubulation.csv");
+        BufferedReader reader2 = null;
+        try {
+            reader2 = new BufferedReader(new FileReader(file2));
+            String tempStr;
+            while ((tempStr = reader2.readLine()) != null) {
+                String currentLine = !tempStr.startsWith("standardCode")? tempStr : null;
+                if(currentLine != null){
+                    String[] dataItems =  currentLine.split(",");
+
+                    String standardCode = dataItems[0];
+                    String startPortionTopElevation = dataItems[1];
+                    String networkType = dataItems[2];
+                    String endPortionBuriedDepth = dataItems[3];
+                    String endPortionTopElevation = dataItems[4];
+                    String tubulationID = dataItems[5];
+                    String crossSection = dataItems[6];
+                    String name = dataItems[7];
+                    String startPortionBuriedDepth = dataItems[8];
+                    String locationRoad = dataItems[9];
+                    String startPointID = dataItems[10];
+                    String material = dataItems[11];
+                    String elementType = dataItems[12];
+                    String tubulationLength = dataItems[13];
+                    String endPointID = dataItems[14];
+
+                    Map<String, Object> newEntityValueMap = new HashMap<>();
+                    newEntityValueMap.put(PipeTubulationStandardCode, standardCode);
+                    if (startPortionTopElevation.equals("")) {
+                        newEntityValueMap.put(PipeTubulationStartPortionTopElevation, Float.valueOf(0.0f));
+                    } else {
+                        newEntityValueMap.put(PipeTubulationStartPortionTopElevation, Float.parseFloat(startPortionTopElevation));
+                    }
+                    newEntityValueMap.put(PipeTubulationNetworkType, networkType);
+                    if (endPortionBuriedDepth.equals("")) {
+                        newEntityValueMap.put(PipeTubulationEndPortionBuriedDepth, Float.valueOf(0.0f));
+                    } else {
+                        newEntityValueMap.put(PipeTubulationEndPortionBuriedDepth, Float.parseFloat(endPortionBuriedDepth));
+                    }
+                    if (endPortionTopElevation.equals("")) {
+                            newEntityValueMap.put(PipeTubulationEndPortionTopElevation, Float.valueOf(0.0f));
+                    } else {
+                        newEntityValueMap.put(PipeTubulationEndPortionTopElevation, Float.parseFloat(endPortionTopElevation));
+                    }
+                    newEntityValueMap.put(PipeTubulationTubulationID, tubulationID);
+                    newEntityValueMap.put(PipeTubulationCrossSection, crossSection);
+                    newEntityValueMap.put(PipeTubulationName, name);
+                    if (startPortionBuriedDepth.equals("")) {
+                        newEntityValueMap.put(PipeTubulationStartPortionBuriedDepth, Float.valueOf(0.0f));
+                    } else {
+                        newEntityValueMap.put(PipeTubulationStartPortionBuriedDepth, Float.parseFloat(startPortionBuriedDepth));
+                    }
+                    newEntityValueMap.put(PipeTubulationLocationRoad, locationRoad);
+                    newEntityValueMap.put(PipeTubulationStartPointID, startPointID);
+                    newEntityValueMap.put(PipeTubulationMaterial, material);
+                    newEntityValueMap.put(PipeTubulationElementType, elementType);
+                    if (tubulationLength.equals("")) {
+                        newEntityValueMap.put(PipeTubulationTubulationLength, Float.valueOf(0.0f));
+                    } else {
+                        newEntityValueMap.put(PipeTubulationTubulationLength, Float.parseFloat(tubulationLength));
+                    }
+                    newEntityValueMap.put(PipeTubulationEndPointID, endPointID);
+                    ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValueMap);
+                    pipeTubulationEntityValueList.add(conceptionEntityValue);
+                }
+            }
+            reader2.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader2 != null) {
+                try {
+                    reader2.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
+
+        _PipeTubulationConceptionKind.newEntities(pipeTubulationEntityValueList,false);
 
     }
 }
