@@ -68,7 +68,7 @@ public class UndergroundPipelineNetwork_Realm_Generator {
         }
 
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
-/*
+
         ConceptionKind _PipelineConceptionKind = coreRealm.getConceptionKind(PipelineConceptionType);
         if(_PipelineConceptionKind != null){
             coreRealm.removeConceptionKind(PipelineConceptionType,true);
@@ -243,9 +243,9 @@ public class UndergroundPipelineNetwork_Realm_Generator {
             executor2.execute(insertRecordThread);
         }
         executor2.shutdown();
-*/
 
-        ConceptionKind _PipePointConceptionKind = coreRealm.getConceptionKind(PipePointConceptionType);
+
+        //ConceptionKind _PipePointConceptionKind = coreRealm.getConceptionKind(PipePointConceptionType);
 
         List<String> attributeNamesList1 = new ArrayList<>();
         attributeNamesList1.add(PipePointPointID);
@@ -256,21 +256,14 @@ public class UndergroundPipelineNetwork_Realm_Generator {
         ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributesRetrieveResult1 = _PipePointConceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeNamesList1,queryParameters1);
 
         List<ConceptionEntityValue> conceptionEntityValueList1 = conceptionEntitiesAttributesRetrieveResult1.getConceptionEntityValues();
-
         Map<String,String> idUIDMapping_PipePoint = new HashMap();
-        for(ConceptionEntityValue currentSongConceptionEntityValue : conceptionEntityValueList1){
-            String uid = currentSongConceptionEntityValue.getConceptionEntityUID();
-            String idValue = currentSongConceptionEntityValue.getEntityAttributesValue().get(PipePointPointID).toString();
+        for(ConceptionEntityValue currentPointConceptionEntityValue : conceptionEntityValueList1){
+            String uid = currentPointConceptionEntityValue.getConceptionEntityUID();
+            String idValue = currentPointConceptionEntityValue.getEntityAttributesValue().get(PipePointPointID).toString();
             idUIDMapping_PipePoint.put(idValue,uid);
         }
 
-        System.out.println(idUIDMapping_PipePoint);
-
-
-
-/*
-        ConceptionKind _PipeTubulationConceptionKind = coreRealm.getConceptionKind(PipeTubulationConceptionType);
-
+        //ConceptionKind _PipeTubulationConceptionKind = coreRealm.getConceptionKind(PipeTubulationConceptionType);
 
         List<String> attributeNamesList2 = new ArrayList<>();
         attributeNamesList2.add(PipeTubulationStartPointID);
@@ -282,8 +275,15 @@ public class UndergroundPipelineNetwork_Realm_Generator {
         ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributesRetrieveResult2 = _PipeTubulationConceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeNamesList2,queryParameters2);
         List<ConceptionEntityValue> conceptionEntityValueList2 = conceptionEntitiesAttributesRetrieveResult2.getConceptionEntityValues();
 
+        List<List<ConceptionEntityValue>> tubulationRsList2 = Lists.partition(conceptionEntityValueList2, 1500);
 
-        System.out.println(conceptionEntityValueList2);
-*/
+        ExecutorService executor3 = Executors.newFixedThreadPool(tubulationRsList2.size());
+        for (List<ConceptionEntityValue> currentConceptionEntityValueList : tubulationRsList2) {
+            ConceptionKind conceptionKind = coreRealm.getConceptionKind(PipeTubulationConceptionType);
+            //InsertRecordThread insertRecordThread = new InsertRecordThread(conceptionKind,currentConceptionEntityValueList);
+            //executor3.execute(insertRecordThread);
+        }
+        executor3.shutdown();
+
     }
 }
