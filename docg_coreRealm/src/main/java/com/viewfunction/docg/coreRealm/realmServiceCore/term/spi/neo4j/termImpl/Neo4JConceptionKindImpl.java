@@ -457,7 +457,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try {
                 String queryCql = CypherBuilder.matchAttributesWithQueryParameters(this.conceptionKindName,exploreParameters,attributeNames);
-                List<AttributeKind> containsAttributesKinds = getContainsSingleValueAttributeKinds();
+                List<AttributeKind> containsAttributesKinds = getContainsSingleValueAttributeKinds(workingGraphOperationExecutor);
                 GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer =
                         new GetListConceptionEntityValueTransformer(attributeNames,containsAttributesKinds);
                 Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
@@ -614,36 +614,44 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         }
     }
 
+    private List<AttributeKind> getContainsSingleValueAttributeKinds(GraphOperationExecutor workingGraphOperationExecutor) {
+        return getSingleValueAttributeKinds(null,workingGraphOperationExecutor);
+    }
+
     private List<AttributeKind> getSingleValueAttributeKinds(String attributeKindName) {
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
-            Map<String,Object> attributeKindNameFilterMap = null;
-            if(attributeKindName != null){
-                /*
-                MATCH (sourceNode)-[:`DOCG_ConceptionContainsViewKindIs`]->
-                (middleNode:`DOCG_AttributesViewKind` {viewKindDataForm: 'SINGLE_VALUE'})-[:`DOCG_ViewContainsAttributeKindIs`]->
-                (operationResult:`DOCG_AttributeKind` {name: 'attributeKind02'}) WHERE id(sourceNode) = 1415 RETURN operationResult
-                */
-                attributeKindNameFilterMap = new HashMap<>();
-                attributeKindNameFilterMap.put(RealmConstant._NameProperty,attributeKindName);
-            }else{
-                /*
-                   MATCH (sourceNode)-[:`DOCG_ConceptionContainsViewKindIs`]->
-                   (middleNode:`DOCG_AttributesViewKind` {viewKindDataForm: 'SINGLE_VALUE'})-[:`DOCG_ViewContainsAttributeKindIs`]->
-                   (operationResult:`DOCG_AttributeKind`) WHERE id(sourceNode) = 1399 RETURN operationResult
-                */
-            }
-            String queryCql = CypherBuilder.match2JumpRelatedNodesFromSpecialStartNodes(
-                    CypherBuilder.CypherFunctionType.ID, Long.parseLong(conceptionKindUID),
-                    RealmConstant.AttributesViewKindClass,RealmConstant.ConceptionKind_AttributesViewKindRelationClass,RelationDirection.TO,singleValueAttributesViewKindTypeFilter,
-                    RealmConstant.AttributeKindClass,RealmConstant.AttributesViewKind_AttributeKindRelationClass,RelationDirection.TO,attributeKindNameFilterMap,
-                    null);
-            GetListAttributeKindTransformer getListAttributeKindTransformer = new GetListAttributeKindTransformer(RealmConstant.AttributeKindClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
-            Object attributeKindsRes = workingGraphOperationExecutor.executeWrite(getListAttributeKindTransformer,queryCql);
-            return attributeKindsRes != null ? (List<AttributeKind>) attributeKindsRes : null;
+            return getSingleValueAttributeKinds(attributeKindName,workingGraphOperationExecutor);
         }finally {
-                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
+    }
+
+    private List<AttributeKind> getSingleValueAttributeKinds(String attributeKindName,GraphOperationExecutor workingGraphOperationExecutor) {
+        Map<String,Object> attributeKindNameFilterMap = null;
+        if(attributeKindName != null){
+            /*
+               MATCH (sourceNode)-[:`DOCG_ConceptionContainsViewKindIs`]->
+               (middleNode:`DOCG_AttributesViewKind` {viewKindDataForm: 'SINGLE_VALUE'})-[:`DOCG_ViewContainsAttributeKindIs`]->
+               (operationResult:`DOCG_AttributeKind` {name: 'attributeKind02'}) WHERE id(sourceNode) = 1415 RETURN operationResult
+               */
+            attributeKindNameFilterMap = new HashMap<>();
+            attributeKindNameFilterMap.put(RealmConstant._NameProperty,attributeKindName);
+        }else{
+            /*
+                  MATCH (sourceNode)-[:`DOCG_ConceptionContainsViewKindIs`]->
+                  (middleNode:`DOCG_AttributesViewKind` {viewKindDataForm: 'SINGLE_VALUE'})-[:`DOCG_ViewContainsAttributeKindIs`]->
+                  (operationResult:`DOCG_AttributeKind`) WHERE id(sourceNode) = 1399 RETURN operationResult
+               */
+        }
+        String queryCql = CypherBuilder.match2JumpRelatedNodesFromSpecialStartNodes(
+                CypherBuilder.CypherFunctionType.ID, Long.parseLong(conceptionKindUID),
+                RealmConstant.AttributesViewKindClass,RealmConstant.ConceptionKind_AttributesViewKindRelationClass,RelationDirection.TO,singleValueAttributesViewKindTypeFilter,
+                RealmConstant.AttributeKindClass,RealmConstant.AttributesViewKind_AttributeKindRelationClass,RelationDirection.TO,attributeKindNameFilterMap,
+                null);
+        GetListAttributeKindTransformer getListAttributeKindTransformer = new GetListAttributeKindTransformer(RealmConstant.AttributeKindClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+        Object attributeKindsRes = workingGraphOperationExecutor.executeWrite(getListAttributeKindTransformer,queryCql);
+        return attributeKindsRes != null ? (List<AttributeKind>) attributeKindsRes : null;
     }
 
     private List<String> filterSingleValueAttributeKindNames(List<AttributeKind> targetAttributeKindList){

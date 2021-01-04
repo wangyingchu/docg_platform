@@ -1,7 +1,10 @@
 package com.viewfunction.docg.realmExample.generator;
 
 import com.google.common.collect.Lists;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
@@ -48,7 +51,7 @@ public class UndergroundPipelineNetwork_Realm_Generator {
     private static final String PipeTubulationTubulationLength = "tubulationLength";
     private static final String PipeTubulationEndPointID = "endPointID";
 
-    public static void main(String[] args) throws CoreRealmServiceRuntimeException {
+    public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
 
         class InsertRecordThread implements Runnable{
             private List<ConceptionEntityValue> conceptionEntityValueList;
@@ -65,7 +68,7 @@ public class UndergroundPipelineNetwork_Realm_Generator {
         }
 
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
-
+/*
         ConceptionKind _PipelineConceptionKind = coreRealm.getConceptionKind(PipelineConceptionType);
         if(_PipelineConceptionKind != null){
             coreRealm.removeConceptionKind(PipelineConceptionType,true);
@@ -240,5 +243,47 @@ public class UndergroundPipelineNetwork_Realm_Generator {
             executor2.execute(insertRecordThread);
         }
         executor2.shutdown();
+*/
+
+        ConceptionKind _PipePointConceptionKind = coreRealm.getConceptionKind(PipePointConceptionType);
+
+        List<String> attributeNamesList1 = new ArrayList<>();
+        attributeNamesList1.add(PipePointPointID);
+        attributeNamesList1.add(PipePointNetworkType);
+        QueryParameters queryParameters1 = new QueryParameters();
+        queryParameters1.setResultNumber(20000);
+
+        ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributesRetrieveResult1 = _PipePointConceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeNamesList1,queryParameters1);
+
+        List<ConceptionEntityValue> conceptionEntityValueList1 = conceptionEntitiesAttributesRetrieveResult1.getConceptionEntityValues();
+
+        Map<String,String> idUIDMapping_PipePoint = new HashMap();
+        for(ConceptionEntityValue currentSongConceptionEntityValue : conceptionEntityValueList1){
+            String uid = currentSongConceptionEntityValue.getConceptionEntityUID();
+            String idValue = currentSongConceptionEntityValue.getEntityAttributesValue().get(PipePointPointID).toString();
+            idUIDMapping_PipePoint.put(idValue,uid);
+        }
+
+        System.out.println(idUIDMapping_PipePoint);
+
+
+
+/*
+        ConceptionKind _PipeTubulationConceptionKind = coreRealm.getConceptionKind(PipeTubulationConceptionType);
+
+
+        List<String> attributeNamesList2 = new ArrayList<>();
+        attributeNamesList2.add(PipeTubulationStartPointID);
+        attributeNamesList2.add(PipeTubulationEndPointID);
+        attributeNamesList2.add(PipeTubulationNetworkType);
+        QueryParameters queryParameters2 = new QueryParameters();
+        queryParameters2.setResultNumber(20000);
+
+        ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributesRetrieveResult2 = _PipeTubulationConceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeNamesList2,queryParameters2);
+        List<ConceptionEntityValue> conceptionEntityValueList2 = conceptionEntitiesAttributesRetrieveResult2.getConceptionEntityValues();
+
+
+        System.out.println(conceptionEntityValueList2);
+*/
     }
 }
