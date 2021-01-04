@@ -2152,7 +2152,7 @@ DOCG 数据分析平台的 docg_realmExample 模块中包含若干内置的模�
 
 ###### ↳ Chemical Products Realm
 
-小型领域模型，包含 概念实体 ***Compound***  （数量1107个），  ***Ingredient*** （数量1530），关系实体  ***isUsedIn***  （数量36781个），***belongsToCategory*** （数量1530个）。
+小型领域模型，包含概念实体 ***Compound***  （数量1107个），  ***Ingredient*** （数量1530），关系实体 ***isUsedIn***  （数量36781个），***belongsToCategory*** （数量1530个）。
 
 领域概念类型关联关系示例：
 
@@ -2168,7 +2168,7 @@ com.viewfunction.docg.realmExample.generator.ChemicalProducts_Realm_Generator
 
 ###### ↳ Underground Pipeline Network Realm
 
-小型领域模型，包含 概念实体 ***PipePoint***  （数量9696个），  ***PipeTubulation*** （数量9281个），关系实体  ***connectTo*** （数量17044个）。
+小型领域模型，包含概念实体 ***PipePoint***  （数量9696个），  ***PipeTubulation*** （数量9281个），关系实体 ***connectTo*** （数量17044个）。
 
 领域概念类型关联关系示例：![image](documentPic/graph_UndergroundPipelineNetworkRealm.png)
 
@@ -2182,7 +2182,7 @@ com.viewfunction.docg.realmExample.generator.UndergroundPipelineNetwork_Realm_Ge
 
 ###### ↳ Song Playlists Realm
 
-中型领域模型包含 概念实体 ***Song***（数量9775个） ， ***MusicTag***（数量250个）  ，***Playlist***（数量188064个），关系实体 ***playedInList*** （数量1790143个）， ***belongsToMusicType***（数量149041个）。
+中型领域模型包含概念实体 ***Song***（数量9775个） ， ***MusicTag***（数量250个）  ，***Playlist***（数量188064个），关系实体 ***playedInList*** （数量1790143个）， ***belongsToMusicType***（数量149041个）。
 
 领域概念类型关联关系示例：![image](documentPic/graph_SongPlaylistsRealm.png)
 
