@@ -14,6 +14,7 @@ public interface RealmConstant {
     public final String RelationAttachKindClass="DOCG_RelationAttachKind";
     public final String RelationAttachLinkLogicClass="DOCG_RelationAttachLinkLogic";
     public final String RelationAttachKind_RelationAttachLinkLogicRelationClass="DOCG_AttachKindContainsAttachLinkLogicIs";
+    public final String TimeScaleEventClass="DOCG_TimeScaleEvent";
 
     public final String _NameProperty = "name";
     public final String _DescProperty = "description";

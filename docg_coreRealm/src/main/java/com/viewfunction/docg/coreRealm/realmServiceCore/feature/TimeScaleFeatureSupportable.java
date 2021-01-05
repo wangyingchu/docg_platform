@@ -1,15 +1,16 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.feature;
 
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimesSeriesEvent;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleEvent;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 
 import java.util.Map;
 
 public interface TimeScaleFeatureSupportable {
 
-    public enum TimesSeriesGrade{YEAR,MONTH,DAY,HOUR,MINUTE,SECOND,WEEK}
+    public enum TimeScaleGrade {YEAR,MONTH,DAY,HOUR,MINUTE,SECOND,WEEK}
 
-    public TimesSeriesEvent attachTimeSeries(long dateTime, String relationType, RelationDirection relationDirection,
-                                             Map<String, Object> relationData, TimesSeriesGrade timesSeriesGrade);
+    public TimeScaleEvent attachTimeScaleEvent(long dateTime, String relationType, RelationDirection relationDirection,
+                                               Map<String, Object> eventData, TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException;
 
 }
