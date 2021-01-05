@@ -1,13 +1,10 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 
-import com.viewfunction.docg.coreRealm.realmServiceCore.feature.AttributesMeasurable;
-import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationAttachable;
-import com.viewfunction.docg.coreRealm.realmServiceCore.feature.EntityRelationable;
-import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MultiConceptionKindsSupportable;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.*;
 
 import java.util.List;
 
-public interface ConceptionEntity extends AttributesMeasurable, EntityRelationable, ClassificationAttachable, MultiConceptionKindsSupportable {
+public interface ConceptionEntity extends AttributesMeasurable, EntityRelationable, ClassificationAttachable, MultiConceptionKindsSupportable, TimeScaleFeatureSupportable {
     /**
      * 获取当前概念实体对象唯一ID
      *
