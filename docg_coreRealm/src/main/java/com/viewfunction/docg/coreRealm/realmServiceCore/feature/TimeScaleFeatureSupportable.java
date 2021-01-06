@@ -12,4 +12,7 @@ public interface TimeScaleFeatureSupportable {
     public TimeScaleEvent attachTimeScaleEvent(long dateTime, String relationType, RelationDirection relationDirection,
                                                Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException;
 
+    public TimeScaleEvent attachTimeScaleEvent(String timeFlowName,long dateTime, String relationType, RelationDirection relationDirection,
+                                               Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException;
+
 }

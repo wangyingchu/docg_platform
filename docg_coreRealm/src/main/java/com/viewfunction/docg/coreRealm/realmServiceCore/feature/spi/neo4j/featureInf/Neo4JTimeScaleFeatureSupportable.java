@@ -72,5 +72,10 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
         return null;
     }
 
+    public default TimeScaleEvent attachTimeScaleEvent(String timeFlowName,long dateTime, String relationType, RelationDirection relationDirection,
+                                                       Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException {
+        return null;
+    }
+
 
 }
