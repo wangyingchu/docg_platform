@@ -1,6 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleMoment;
+import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 
 import java.util.LinkedList;
 
@@ -33,4 +34,11 @@ public interface TimeFlow {
     public TimeScaleEntity getSecondEntity(int year, int month,int day,int hour,int minute,int second);
     public LinkedList<TimeScaleEntity> getSecondEntities(TimeScaleMoment fromSecondMoment, TimeScaleMoment toSecondMoment);
     public TimeScaleEntity[] getSecondEntities(TimeScaleMoment... secondMoments);
+
+    public LinkedList<TimeScaleEntity> getChildEntities(TimeScaleMoment timeScaleMoments);
+    public LinkedList<TimeScaleEntity> getFellowEntities(TimeScaleMoment timeScaleMoments);
+
+    public TimeScaleEntity getFirstChildEntity(TimeScaleMoment timeScaleMoments);
+    public TimeScaleEntity getLastChildEntity(TimeScaleMoment timeScaleMoments);
+    public InheritanceTree<TimeScaleEntity> getOffspringEntities(TimeScaleMoment timeScaleMoments);
 }

@@ -8,6 +8,7 @@ public class TimeScaleMoment {
     private int hour;
     private int minute;
     private int second;
+    private int week;
 
     public TimeScaleMoment(){}
 
@@ -92,5 +93,13 @@ public class TimeScaleMoment {
 
     public void setSecond(int second) {
         this.second = second;
+    }
+
+    public int getWeek() {
+        return week;
+    }
+
+    public void setWeek(int week) {
+        this.week = week;
     }
 }
