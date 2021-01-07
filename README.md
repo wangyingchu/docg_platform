@@ -397,6 +397,47 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public Map<String,Number> executeCustomStatistic(String customQuerySentence)throws CoreRealmServiceRuntimeException;
 
     /**
+     * 获取默认时间流
+     *
+     * @return 时间流对象
+     */
+    public TimeFlow getTimeFlow();
+
+    /**
+     * 获取用户自定义时间流
+     *
+     * @param timeFlowName String 用户自定义时间流名称
+     *
+     * @return 时间流对象
+     */
+    public TimeFlow getTimeFlow(String timeFlowName);
+
+    /**
+     * 创建用户自定义时间流
+     *
+     * @param timeFlowName String 用户自定义时间流名称
+     *
+     * @return 时间流对象
+     */
+    public TimeFlow createTimeFlow(String timeFlowName) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 删除用户自定义时间流
+     *
+     * @param timeFlowName String 用户自定义时间流名称
+     *
+     * @return 如果操作成功返回 true
+     */
+    public boolean removeTimeFlow(String timeFlowName) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取领域所有时间流
+     *
+     * @return 时间流对象列表
+     */
+    public List<TimeFlow> getTimeFlows();
+
+    /**
      * 开启全局会话，此操作会创建一个持久化的后端数据库连接，执行该操作后由当前 CoreRealm 所创建的所有对象（以及这些对象创建的后续对象）将继承性的共享该持久化后端数据库连接。
      */
     public void openGlobalSession();

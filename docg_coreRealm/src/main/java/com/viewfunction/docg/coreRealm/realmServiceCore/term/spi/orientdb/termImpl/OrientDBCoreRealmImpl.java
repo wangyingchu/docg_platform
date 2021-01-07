@@ -177,6 +177,31 @@ public class OrientDBCoreRealmImpl implements CoreRealm {
     }
 
     @Override
+    public TimeFlow getTimeFlow() {
+        return null;
+    }
+
+    @Override
+    public TimeFlow getTimeFlow(String timeFlowName) {
+        return null;
+    }
+
+    @Override
+    public TimeFlow createTimeFlow(String timeFlowName) throws CoreRealmServiceRuntimeException {
+        return null;
+    }
+
+    @Override
+    public boolean removeTimeFlow(String timeFlowName) throws CoreRealmServiceRuntimeException {
+        return false;
+    }
+
+    @Override
+    public List<TimeFlow> getTimeFlows() {
+        return null;
+    }
+
+    @Override
     public void openGlobalSession() {
 
     }
