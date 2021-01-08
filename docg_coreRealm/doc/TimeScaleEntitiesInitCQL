@@ -1,0 +1,119 @@
+WITH range(2011, 2014) AS years, range(1,12) as months
+FOREACH(year IN years |
+  MERGE (y:DOCG_TS_Year {year: year,id:year})
+  FOREACH(month IN months |
+    CREATE (m:DOCG_TS_Month {month: month,id:month})
+    MERGE (y)-[:DOCG_TS_Contains]->(m)    
+    FOREACH(month IN CASE WHEN month=1 THEN [1] ELSE [] END | 
+        MERGE (y)-[:DOCG_TS_FirstChildIs]->(m)
+    )
+    FOREACH(month IN CASE WHEN month=12 THEN [1] ELSE [] END | 
+        MERGE (y)-[:DOCG_TS_LastChildIs]->(m)
+    )    
+    FOREACH(day IN (CASE
+                      WHEN month IN [1,3,5,7,8,10,12] THEN range(1,31) 
+                      WHEN month = 2 THEN
+                        CASE
+                          WHEN year % 4 <> 0 THEN range(1,28)
+                          WHEN year % 100 <> 0 THEN range(1,29)
+                          WHEN year % 400 = 0 THEN range(1,29)
+                          ELSE range(1,28)
+                        END
+                      ELSE range(1,30)
+                    END) |
+        CREATE (d:DOCG_TS_Day {day:day,id:day})
+        MERGE (m)-[:DOCG_TS_Contains]->(d)        
+        FOREACH(day IN CASE WHEN day=1 THEN [1] ELSE [] END | 
+            MERGE (m)-[:DOCG_TS_FirstChildIs]->(d)
+        )        
+        FOREACH(day IN CASE WHEN day=31 THEN [1] ELSE [] END | 
+            MERGE (m)-[:DOCG_TS_LastChildIs]->(d)
+        )
+        FOREACH(day IN CASE WHEN (day=30 and month IN [4,6,9,11]) THEN [1] ELSE [] END | 
+            MERGE (m)-[:DOCG_TS_LastChildIs]->(d)
+        )
+        FOREACH(day IN CASE WHEN (day=29 and month =2) THEN [1] ELSE [] END | 
+            MERGE (m)-[:DOCG_TS_LastChildIs]->(d)
+        )
+        FOREACH(day IN CASE WHEN (day=28 and month =2 and (year % 4 <> 0)) THEN [1] ELSE [] END | 
+            MERGE (m)-[:DOCG_TS_LastChildIs]->(d)
+        )
+    )
+  )
+)
+
+WITH *
+MATCH (day:DOCG_TS_Day)
+WITH range(0,23) as HOURS, day
+FOREACH (hour in HOURS | 
+    MERGE (h:DOCG_TS_Hour {hour:hour,id:hour})<-[:DOCG_TS_Contains]-(day)
+    FOREACH(hour IN CASE WHEN hour=0 THEN [1] ELSE [] END | 
+        MERGE (h)<-[:DOCG_TS_FirstChildIs]-(day)
+    )
+    FOREACH(hour IN CASE WHEN hour=23 THEN [1] ELSE [] END | 
+        MERGE (h)<-[:DOCG_TS_LastChildIs]-(day)
+    )
+)
+
+WITH *
+MATCH (hour:DOCG_TS_Hour)
+FOREACH (minute in range(0,59) | 
+    MERGE (m:DOCG_TS_Minute {id:minute,minute:minute})<-[:DOCG_TS_Contains]-(hour)
+    FOREACH(minute IN CASE WHEN minute=0 THEN [1] ELSE [] END | 
+        MERGE (m)<-[:DOCG_TS_FirstChildIs]-(hour)
+    )
+    FOREACH(minute IN CASE WHEN minute=59 THEN [1] ELSE [] END | 
+        MERGE (m)<-[:DOCG_TS_LastChildIs]-(hour)
+    )
+)
+
+WITH *
+MATCH (year:DOCG_TS_Year)
+WITH year
+ORDER BY year.year
+WITH collect(year) as years
+FOREACH(i in RANGE(0, size(years)-2) |
+    FOREACH(year1 in [years[i]] |
+        FOREACH(year2 in [years[i+1]] |
+            MERGE (year1)-[:DOCG_TS_NextIs]->(year2))))
+
+WITH *
+MATCH (year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month)
+WITH year,month
+ORDER BY year.year, month.month
+WITH collect(month) as months
+FOREACH(i in RANGE(0, size(months)-2) |
+    FOREACH(month1 in [months[i]] |
+        FOREACH(month2 in [months[i+1]] |
+            MERGE (month1)-[:DOCG_TS_NextIs]->(month2))))
+
+WITH *
+MATCH (year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month)-[:DOCG_TS_Contains]->(day)
+WITH year,month,day
+ORDER BY year.year, month.month, day.day
+WITH collect(year) as years,collect(month) as months,collect(day) as days
+FOREACH(i in RANGE(0, size(days)-2) |
+    FOREACH(day1 in [days[i]] |
+        FOREACH(day2 in [days[i+1]] |
+            MERGE (day1)-[:DOCG_TS_NextIs]->(day2))))
+
+WITH *
+MATCH (year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month)-[:DOCG_TS_Contains]->(day)-[:DOCG_TS_Contains]->(hour)
+WITH year,month,day,hour
+ORDER BY year.year, month.month, day.day, hour.hour
+WITH collect(hour) as hours,size(collect(hour)) as hourCount
+FOREACH(i in RANGE(0, hourCount-2) |
+    FOREACH(hour1 in [hours[i]] |
+        FOREACH(hour2 in [hours[i+1]] |
+            MERGE (hour1)-[:DOCG_TS_NextIs]->(hour2))))
+
+WITH *
+MATCH (year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month)-[:DOCG_TS_Contains]->(day)-[:DOCG_TS_Contains]->(hour)-[:DOCG_TS_Contains]->(minute)
+WITH year,month,day,hour,minute
+ORDER BY year.year, month.month, day.day, hour.hour, minute.minute
+WITH collect(minute) as minutes,size(collect(minute)) as minuteCount
+FOREACH(i in RANGE(0, minuteCount-2) |
+    FOREACH(minute1 in [minutes[i]] |
+        FOREACH(minute2 in [minutes[i+1]] |
+            MERGE (minute1)-[:DOCG_TS_NextIs]->(minute2))))
+
