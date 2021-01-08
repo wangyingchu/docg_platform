@@ -78,7 +78,6 @@ FOREACH(i in RANGE(0, size(years)-2) |
         FOREACH(year2 in [years[i+1]] |
             MERGE (year1)-[:DOCG_TS_NextIs]->(year2))))
 
-
 ////// Create links between months
 MATCH (year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month)
 WITH year,month
@@ -88,7 +87,6 @@ FOREACH(i in RANGE(0, size(months)-2) |
     FOREACH(month1 in [months[i]] |
         FOREACH(month2 in [months[i+1]] |
             MERGE (month1)-[:DOCG_TS_NextIs]->(month2))))
-
 
 ////// Create links between days
 MATCH (year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month)-[:DOCG_TS_Contains]->(day)
@@ -119,4 +117,3 @@ FOREACH(i in RANGE(0, minuteCount-2) |
     FOREACH(minute1 in [minutes[i]] |
         FOREACH(minute2 in [minutes[i+1]] |
             MERGE (minute1)-[:DOCG_TS_NextIs]->(minute2))))
-
