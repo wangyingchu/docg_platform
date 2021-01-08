@@ -1,8 +1,9 @@
+////// Create and link year, month and day data
 WITH range(2011, 2014) AS years, range(1,12) as months
 FOREACH(year IN years |
-  MERGE (y:DOCG_TS_Year {year: year,id:year})
+  MERGE (y:DOCG_TS_Year {year:year,id:year,timeFlow:"default"})
   FOREACH(month IN months |
-    CREATE (m:DOCG_TS_Month {month: month,id:month})
+    CREATE (m:DOCG_TS_Month {month: month,id:month,timeFlow:"default"})
     MERGE (y)-[:DOCG_TS_Contains]->(m)    
     FOREACH(month IN CASE WHEN month=1 THEN [1] ELSE [] END | 
         MERGE (y)-[:DOCG_TS_FirstChildIs]->(m)
@@ -21,7 +22,7 @@ FOREACH(year IN years |
                         END
                       ELSE range(1,30)
                     END) |
-        CREATE (d:DOCG_TS_Day {day:day,id:day})
+        CREATE (d:DOCG_TS_Day {day:day,id:day,timeFlow:"default"})
         MERGE (m)-[:DOCG_TS_Contains]->(d)        
         FOREACH(day IN CASE WHEN day=1 THEN [1] ELSE [] END | 
             MERGE (m)-[:DOCG_TS_FirstChildIs]->(d)
@@ -42,11 +43,11 @@ FOREACH(year IN years |
   )
 )
 
-WITH *
+////// Create and link hour data
 MATCH (day:DOCG_TS_Day)
 WITH range(0,23) as HOURS, day
 FOREACH (hour in HOURS | 
-    MERGE (h:DOCG_TS_Hour {hour:hour,id:hour})<-[:DOCG_TS_Contains]-(day)
+    MERGE (h:DOCG_TS_Hour {hour:hour,id:hour,timeFlow:"default"})<-[:DOCG_TS_Contains]-(day)
     FOREACH(hour IN CASE WHEN hour=0 THEN [1] ELSE [] END | 
         MERGE (h)<-[:DOCG_TS_FirstChildIs]-(day)
     )
@@ -55,10 +56,10 @@ FOREACH (hour in HOURS |
     )
 )
 
-WITH *
+////// Create and link minute data
 MATCH (hour:DOCG_TS_Hour)
 FOREACH (minute in range(0,59) | 
-    MERGE (m:DOCG_TS_Minute {id:minute,minute:minute})<-[:DOCG_TS_Contains]-(hour)
+    MERGE (m:DOCG_TS_Minute {id:minute,minute:minute,timeFlow:"default"})<-[:DOCG_TS_Contains]-(hour)
     FOREACH(minute IN CASE WHEN minute=0 THEN [1] ELSE [] END | 
         MERGE (m)<-[:DOCG_TS_FirstChildIs]-(hour)
     )
@@ -67,7 +68,7 @@ FOREACH (minute in range(0,59) |
     )
 )
 
-WITH *
+////// Create links between years
 MATCH (year:DOCG_TS_Year)
 WITH year
 ORDER BY year.year
@@ -77,7 +78,8 @@ FOREACH(i in RANGE(0, size(years)-2) |
         FOREACH(year2 in [years[i+1]] |
             MERGE (year1)-[:DOCG_TS_NextIs]->(year2))))
 
-WITH *
+
+////// Create links between months
 MATCH (year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month)
 WITH year,month
 ORDER BY year.year, month.month
@@ -87,7 +89,8 @@ FOREACH(i in RANGE(0, size(months)-2) |
         FOREACH(month2 in [months[i+1]] |
             MERGE (month1)-[:DOCG_TS_NextIs]->(month2))))
 
-WITH *
+
+////// Create links between days
 MATCH (year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month)-[:DOCG_TS_Contains]->(day)
 WITH year,month,day
 ORDER BY year.year, month.month, day.day
@@ -97,7 +100,7 @@ FOREACH(i in RANGE(0, size(days)-2) |
         FOREACH(day2 in [days[i+1]] |
             MERGE (day1)-[:DOCG_TS_NextIs]->(day2))))
 
-WITH *
+////// Create links between hours
 MATCH (year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month)-[:DOCG_TS_Contains]->(day)-[:DOCG_TS_Contains]->(hour)
 WITH year,month,day,hour
 ORDER BY year.year, month.month, day.day, hour.hour
@@ -107,7 +110,7 @@ FOREACH(i in RANGE(0, hourCount-2) |
         FOREACH(hour2 in [hours[i+1]] |
             MERGE (hour1)-[:DOCG_TS_NextIs]->(hour2))))
 
-WITH *
+////// Create links between minutes
 MATCH (year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month)-[:DOCG_TS_Contains]->(day)-[:DOCG_TS_Contains]->(hour)-[:DOCG_TS_Contains]->(minute)
 WITH year,month,day,hour,minute
 ORDER BY year.year, month.month, day.day, hour.hour, minute.minute
