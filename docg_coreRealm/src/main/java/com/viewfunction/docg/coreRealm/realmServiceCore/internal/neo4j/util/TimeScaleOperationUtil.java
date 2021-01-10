@@ -126,6 +126,12 @@ public class TimeScaleOperationUtil {
         workingGraphOperationExecutor.executeWrite(dataTransformer,createTimeFlowEntitiesCql);
     }
 
+    private static void generateTimeFlowScaleEntities_YMD(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int... targetYears){}
+
+    private static void generateTimeFlowScaleEntities_Hour(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int... targetYears){}
+
+    private static void generateTimeFlowScaleEntities_Minute(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int... targetYears){}
+
     private static void linkTimeFlowScaleEntities_Year(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName){
         String linkTimeFlowEntitiesCql ="MATCH (year:DOCG_TS_Year{timeFlow:\""+timeFlowName+"\"})\n" +
                 "WITH year\n" +
