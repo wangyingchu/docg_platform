@@ -22,9 +22,8 @@ public class TimeScaleOperationUtil {
         linkTimeFlowScaleEntities_Minute(workingGraphOperationExecutor,timeFlowName);
     }
 
-    public static void generateTimeFlowScaleEntities_YMD(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int startYear, int endYear){
-        String createTimeFlowEntitiesCql = "////// Create and link year, month and day data\n" +
-                "WITH range("+startYear+", "+endYear+") AS years, range(1,12) as months\n" +
+    private static void generateTimeFlowScaleEntities_YMD(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int startYear, int endYear){
+        String createTimeFlowEntitiesCql = "WITH range("+startYear+", "+endYear+") AS years, range(1,12) as months\n" +
                 "FOREACH(year IN years |\n" +
                 "  MERGE (y:DOCG_TS_Year {year:year,id:year,timeFlow:\""+timeFlowName+"\"})\n" +
                 "  FOREACH(month IN months |\n" +
@@ -80,8 +79,8 @@ public class TimeScaleOperationUtil {
         workingGraphOperationExecutor.executeWrite(dataTransformer,createTimeFlowEntitiesCql);
     }
 
-    public static void generateTimeFlowScaleEntities_Hour(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int startYear, int endYear){
-        String createTimeFlowEntitiesCql ="MATCH (day:DOCG_TS_Day{timeFlow:\""+timeFlowName+"\"})\n" +
+    private static void generateTimeFlowScaleEntities_Hour(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int startYear, int endYear){
+        String createTimeFlowEntitiesCql = "MATCH (year:DOCG_TS_Year{timeFlow:\""+timeFlowName+"\"})-[:DOCG_TS_Contains]->(month)-[:DOCG_TS_Contains]->(day:DOCG_TS_Day) WHERE year.year in range("+startYear+","+endYear+")\n"+
                 "WITH range(0,23) as HOURS, day\n" +
                 "FOREACH (hour in HOURS | \n" +
                 "    MERGE (h:DOCG_TS_Hour {hour:hour,id:hour,timeFlow:\""+timeFlowName+"\"})<-[:DOCG_TS_Contains]-(day)\n" +
@@ -104,8 +103,8 @@ public class TimeScaleOperationUtil {
         workingGraphOperationExecutor.executeWrite(dataTransformer,createTimeFlowEntitiesCql);
     }
 
-    public static void generateTimeFlowScaleEntities_Minute(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int startYear, int endYear){
-        String createTimeFlowEntitiesCql ="MATCH (hour:DOCG_TS_Hour{timeFlow:\""+timeFlowName+"\"})\n" +
+    private static void generateTimeFlowScaleEntities_Minute(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int startYear, int endYear){
+        String createTimeFlowEntitiesCql = "MATCH (year:DOCG_TS_Year{timeFlow:\""+timeFlowName+"\"})-[:DOCG_TS_Contains]->(month)-[:DOCG_TS_Contains]->(day)-[:DOCG_TS_Contains]->(hour:DOCG_TS_Hour) WHERE year.year in range("+startYear+","+endYear+")\n"+
                 "FOREACH (minute in range(0,59) | \n" +
                 "    MERGE (m:DOCG_TS_Minute {id:minute,minute:minute,timeFlow:\""+timeFlowName+"\"})<-[:DOCG_TS_Contains]-(hour)\n" +
                 "    FOREACH(minute IN CASE WHEN minute=0 THEN [1] ELSE [] END | \n" +
@@ -127,7 +126,7 @@ public class TimeScaleOperationUtil {
         workingGraphOperationExecutor.executeWrite(dataTransformer,createTimeFlowEntitiesCql);
     }
 
-    public static void linkTimeFlowScaleEntities_Year(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName){
+    private static void linkTimeFlowScaleEntities_Year(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName){
         String linkTimeFlowEntitiesCql ="MATCH (year:DOCG_TS_Year{timeFlow:\""+timeFlowName+"\"})\n" +
                 "WITH year\n" +
                 "ORDER BY year.year\n" +
@@ -148,7 +147,7 @@ public class TimeScaleOperationUtil {
         workingGraphOperationExecutor.executeWrite(dataTransformer,linkTimeFlowEntitiesCql);
     }
 
-    public static void linkTimeFlowScaleEntities_Month(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName){
+    private static void linkTimeFlowScaleEntities_Month(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName){
         String linkTimeFlowEntitiesCql = "MATCH (year:DOCG_TS_Year{timeFlow:\""+timeFlowName+"\"})-[:DOCG_TS_Contains]->(month)\n" +
                 "WITH year,month\n" +
                 "ORDER BY year.year, month.month\n" +
@@ -167,7 +166,7 @@ public class TimeScaleOperationUtil {
         workingGraphOperationExecutor.executeWrite(dataTransformer,linkTimeFlowEntitiesCql);
     }
 
-    public static void linkTimeFlowScaleEntities_Day(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName){
+    private static void linkTimeFlowScaleEntities_Day(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName){
         String linkTimeFlowEntitiesCql = "MATCH (year:DOCG_TS_Year{timeFlow:\""+timeFlowName+"\"})-[:DOCG_TS_Contains]->(month)-[:DOCG_TS_Contains]->(day)\n" +
                 "WITH year,month,day\n" +
                 "ORDER BY year.year, month.month, day.day\n" +
@@ -186,7 +185,7 @@ public class TimeScaleOperationUtil {
         workingGraphOperationExecutor.executeWrite(dataTransformer,linkTimeFlowEntitiesCql);
     }
 
-    public static void linkTimeFlowScaleEntities_Hour(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName){
+    private static void linkTimeFlowScaleEntities_Hour(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName){
         String linkTimeFlowEntitiesCql = "MATCH (year:DOCG_TS_Year{timeFlow:\""+timeFlowName+"\"})-[:DOCG_TS_Contains]->(month)-[:DOCG_TS_Contains]->(day)-[:DOCG_TS_Contains]->(hour)\n" +
                 "WITH year,month,day,hour\n" +
                 "ORDER BY year.year, month.month, day.day, hour.hour\n" +
@@ -205,7 +204,7 @@ public class TimeScaleOperationUtil {
         workingGraphOperationExecutor.executeWrite(dataTransformer,linkTimeFlowEntitiesCql);
     }
 
-    public static void linkTimeFlowScaleEntities_Minute(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName){
+    private static void linkTimeFlowScaleEntities_Minute(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName){
         String linkTimeFlowEntitiesCql = "MATCH (year:DOCG_TS_Year{timeFlow:\""+timeFlowName+"\"})-[:DOCG_TS_Contains]->(month)-[:DOCG_TS_Contains]->(day)-[:DOCG_TS_Contains]->(hour)-[:DOCG_TS_Contains]->(minute)\n" +
                 "WITH year,month,day,hour,minute\n" +
                 "ORDER BY year.year, month.month, day.day, hour.hour, minute.minute\n" +
