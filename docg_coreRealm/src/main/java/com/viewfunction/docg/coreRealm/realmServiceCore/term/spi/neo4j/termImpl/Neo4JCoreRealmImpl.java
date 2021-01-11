@@ -900,9 +900,9 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             Object getDefaultTimeFlowRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,queryCql);
             if(getDefaultTimeFlowRes == null){
                 //init default TimeFlow data
-                TimeScaleOperationUtil.generateTimeFlowScaleEntities(workingGraphOperationExecutor,RealmConstant._defaultTimeFlowName,2018,2025);
+                //TimeScaleOperationUtil.generateTimeFlowScaleEntities(workingGraphOperationExecutor,RealmConstant._defaultTimeFlowName,2020,2030);
 
-
+                TimeScaleOperationUtil.generateTimeFlowScaleEntities(workingGraphOperationExecutor,RealmConstant._defaultTimeFlowName,2019);
 
             }
 
