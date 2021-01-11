@@ -1,16 +1,58 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.TimeScaleOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleMoment;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 
 public class Neo4JTimeFlowImpl implements TimeFlow {
 
+    private static Logger logger = LoggerFactory.getLogger(Neo4JTimeFlowImpl.class);
+    private String coreRealmName;
+    private String timeFlowName;
+
+    public Neo4JTimeFlowImpl(String coreRealmName, String timeFlowName){
+        this.coreRealmName = coreRealmName;
+        this.timeFlowName = timeFlowName;
+        this.graphOperationExecutorHelper = new GraphOperationExecutorHelper();
+    }
+
     @Override
     public String getTimeFlowName() {
+        return null;
+    }
+
+    @Override
+    public void createTimeSpanEntities(int fromYear, int toYear) throws CoreRealmServiceRuntimeException {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            TimeScaleOperationUtil.generateTimeFlowScaleEntities(workingGraphOperationExecutor,RealmConstant._defaultTimeFlowName,fromYear,toYear);
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public void createTimeSpanEntities(int targetYear) throws CoreRealmServiceRuntimeException {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            TimeScaleOperationUtil.generateTimeFlowScaleEntities(workingGraphOperationExecutor, RealmConstant._defaultTimeFlowName,targetYear);
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public LinkedList<Integer> getAvailableTimeSpanYears() {
         return null;
     }
 
@@ -127,5 +169,12 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
     @Override
     public InheritanceTree<TimeScaleEntity> getOffspringEntities(TimeScaleMoment timeScaleMoments) {
         return null;
+    }
+
+    //internal graphOperationExecutor management logic
+    private GraphOperationExecutorHelper graphOperationExecutorHelper;
+
+    public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
+        this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }
 }

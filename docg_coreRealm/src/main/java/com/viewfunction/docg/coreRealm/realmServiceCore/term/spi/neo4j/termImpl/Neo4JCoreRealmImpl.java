@@ -891,7 +891,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
-    public TimeFlow getTimeFlow() {
+    public TimeFlow getOrCreateTimeFlow() {
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
             String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.TimeFlowClass,RealmConstant._NameProperty,RealmConstant._defaultTimeFlowName,1);
@@ -899,34 +899,43 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                     new GetSingleConceptionEntityTransformer(RealmConstant.TimeFlowClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object getDefaultTimeFlowRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,queryCql);
             if(getDefaultTimeFlowRes == null){
-                //init default TimeFlow data
-                //TimeScaleOperationUtil.generateTimeFlowScaleEntities(workingGraphOperationExecutor,RealmConstant._defaultTimeFlowName,3001,3003);
-
-                TimeScaleOperationUtil.generateTimeFlowScaleEntities(workingGraphOperationExecutor,RealmConstant._defaultTimeFlowName,3004);
-
+                Map<String,Object> propertiesMap = new HashMap<>();
+                propertiesMap.put(RealmConstant._NameProperty,RealmConstant._defaultTimeFlowName);
+                CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
+                String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.TimeFlowClass},propertiesMap);
+                GetSingleTimeFlowTransformer getSingleTimeFlowTransformer = new GetSingleTimeFlowTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object createTimeFlowRes = workingGraphOperationExecutor.executeWrite(getSingleTimeFlowTransformer,createCql);
+                TimeFlow resultTimeFlow = createTimeFlowRes != null ? (TimeFlow)createTimeFlowRes : null;
+                return resultTimeFlow;
             }
-
-
-            //return getRelationKindRes != null ? (RelationKind)getRelationKindRes : null;
+            return (TimeFlow)getDefaultTimeFlowRes;
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
-
-
-
-
-
-        return null;
     }
 
     @Override
-    public TimeFlow getTimeFlow(String timeFlowName) {
-        return null;
-    }
-
-    @Override
-    public TimeFlow createTimeFlow(String timeFlowName) throws CoreRealmServiceRuntimeException {
-        return null;
+    public TimeFlow getOrCreateTimeFlow(String timeFlowName) {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.TimeFlowClass,RealmConstant._NameProperty,timeFlowName,1);
+            GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                    new GetSingleConceptionEntityTransformer(RealmConstant.TimeFlowClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object getDefaultTimeFlowRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,queryCql);
+            if(getDefaultTimeFlowRes == null){
+                Map<String,Object> propertiesMap = new HashMap<>();
+                propertiesMap.put(RealmConstant._NameProperty,timeFlowName);
+                CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
+                String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.TimeFlowClass},propertiesMap);
+                GetSingleTimeFlowTransformer getSingleTimeFlowTransformer = new GetSingleTimeFlowTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object createTimeFlowRes = workingGraphOperationExecutor.executeWrite(getSingleTimeFlowTransformer,createCql);
+                TimeFlow resultTimeFlow = createTimeFlowRes != null ? (TimeFlow)createTimeFlowRes : null;
+                return resultTimeFlow;
+            }
+            return (TimeFlow)getDefaultTimeFlowRes;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override

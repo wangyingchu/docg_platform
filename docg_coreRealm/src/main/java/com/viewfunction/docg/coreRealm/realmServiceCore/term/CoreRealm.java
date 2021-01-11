@@ -342,29 +342,20 @@ public interface CoreRealm {
     public Map<String,Number> executeCustomStatistic(String customQuerySentence) throws CoreRealmServiceRuntimeException;
 
     /**
-     * 获取默认时间流
+     * 获取默认时间流,如默认时间流不存在则自动创建
      *
      * @return 时间流对象
      */
-    public TimeFlow getTimeFlow();
+    public TimeFlow getOrCreateTimeFlow();
 
     /**
-     * 获取用户自定义时间流
+     * 获取用户自定义时间流,如自定义时间流不存在则自动创建
      *
      * @param timeFlowName String 用户自定义时间流名称
      *
      * @return 时间流对象
      */
-    public TimeFlow getTimeFlow(String timeFlowName);
-
-    /**
-     * 创建用户自定义时间流
-     *
-     * @param timeFlowName String 用户自定义时间流名称
-     *
-     * @return 时间流对象
-     */
-    public TimeFlow createTimeFlow(String timeFlowName) throws CoreRealmServiceRuntimeException;
+    public TimeFlow getOrCreateTimeFlow(String timeFlowName);
 
     /**
      * 删除用户自定义时间流

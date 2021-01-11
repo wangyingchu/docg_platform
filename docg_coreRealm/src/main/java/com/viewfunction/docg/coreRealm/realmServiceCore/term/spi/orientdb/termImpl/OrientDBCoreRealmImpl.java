@@ -177,17 +177,12 @@ public class OrientDBCoreRealmImpl implements CoreRealm {
     }
 
     @Override
-    public TimeFlow getTimeFlow() {
+    public TimeFlow getOrCreateTimeFlow() {
         return null;
     }
 
     @Override
-    public TimeFlow getTimeFlow(String timeFlowName) {
-        return null;
-    }
-
-    @Override
-    public TimeFlow createTimeFlow(String timeFlowName) throws CoreRealmServiceRuntimeException {
+    public TimeFlow getOrCreateTimeFlow(String timeFlowName) {
         return null;
     }
 

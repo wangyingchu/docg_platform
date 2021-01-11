@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleMoment;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 
@@ -7,9 +8,14 @@ import java.util.LinkedList;
 
 public interface TimeFlow {
 
-    public enum TimeScaleGrade {YEAR,MONTH,DAY,HOUR,MINUTE,SECOND,WEEK}
+    public enum TimeScaleGrade {YEAR,MONTH,DAY,HOUR,MINUTE,SECOND}
 
     public String getTimeFlowName();
+
+    public void createTimeSpanEntities(int fromYear, int toYear) throws CoreRealmServiceRuntimeException;
+    public void createTimeSpanEntities(int targetYear) throws CoreRealmServiceRuntimeException;
+
+    public LinkedList<Integer> getAvailableTimeSpanYears();
 
     public TimeScaleEntity getYearEntity(int year);
     public LinkedList<TimeScaleEntity> getYearEntities(int fromYear, int toYear);
