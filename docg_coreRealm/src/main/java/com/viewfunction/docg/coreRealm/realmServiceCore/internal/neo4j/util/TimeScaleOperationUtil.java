@@ -2,6 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
+import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ public class TimeScaleOperationUtil {
 
     public static void generateTimeFlowScaleEntities(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int targetYear){
         generateTimeFlowScaleEntities_YMD(workingGraphOperationExecutor,timeFlowName,targetYear);
+        /*
         generateTimeFlowScaleEntities_Hour(workingGraphOperationExecutor,timeFlowName,targetYear);
         generateTimeFlowScaleEntities_Minute(workingGraphOperationExecutor,timeFlowName,targetYear);
         linkTimeFlowScaleEntities_Year(workingGraphOperationExecutor,timeFlowName,targetYear-1,targetYear+1);
@@ -30,6 +32,7 @@ public class TimeScaleOperationUtil {
         linkTimeFlowScaleEntities_Day(workingGraphOperationExecutor,timeFlowName,targetYear-1,targetYear+1);
         linkTimeFlowScaleEntities_Hour(workingGraphOperationExecutor,timeFlowName,targetYear-1,targetYear+1);
         linkTimeFlowScaleEntities_Minute(workingGraphOperationExecutor,timeFlowName,targetYear-1,targetYear+1);
+        */
     }
 
     private static void generateTimeFlowScaleEntities_YMD(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int startYear, int endYear){
@@ -84,6 +87,9 @@ public class TimeScaleOperationUtil {
             public Object transformResult(Result result) {
                 System.out.println(result);
                 //System.out.println(result.next().asMap());
+
+
+
 
 
                 return null;
@@ -189,6 +195,17 @@ public class TimeScaleOperationUtil {
             @Override
             public Object transformResult(Result result) {
                 System.out.println(result);
+
+                if(result.hasNext()){
+                    Record xx = result.next();
+                    System.out.println(xx.asMap());
+
+                }else{
+                    System.out.println(result.keys());
+                    System.out.println(result.consume());
+                }
+
+
                 //System.out.println(result.next().asMap());
                 return null;
             }
@@ -347,4 +364,13 @@ public class TimeScaleOperationUtil {
         workingGraphOperationExecutor.executeWrite(dataTransformer,linkTimeFlowEntitiesCql);
     }
 
+    private static DataTransformer silentOperationDataTransformer(){
+        DataTransformer dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                return null;
+            }
+        };
+        return dataTransformer;
+    }
 }
