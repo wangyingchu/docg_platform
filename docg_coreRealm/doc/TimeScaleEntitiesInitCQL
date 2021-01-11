@@ -1,9 +1,9 @@
 ////// Create and link year, month and day data for range years
 WITH range(2011, 2014) AS years, range(1,12) as months
 FOREACH(year IN years |
-  MERGE (y:DOCG_TS_Year {year:year,id:year,timeFlow:"default"})
+  MERGE (y:DOCG_TS_Year:DOCG_TimeScaleEntity {year:year,id:year,timeFlow:"default"})
   FOREACH(month IN months |
-    CREATE (m:DOCG_TS_Month {month: month,id:month,timeFlow:"default"})
+    CREATE (m:DOCG_TS_Month:DOCG_TimeScaleEntity {month: month,id:month,timeFlow:"default"})
     MERGE (y)-[:DOCG_TS_Contains]->(m)    
     FOREACH(month IN CASE WHEN month=1 THEN [1] ELSE [] END | 
         MERGE (y)-[:DOCG_TS_FirstChildIs]->(m)
@@ -22,7 +22,7 @@ FOREACH(year IN years |
                         END
                       ELSE range(1,30)
                     END) |
-        CREATE (d:DOCG_TS_Day {day:day,id:day,timeFlow:"default"})
+        CREATE (d:DOCG_TS_Day:DOCG_TimeScaleEntity {day:day,id:day,timeFlow:"default"})
         MERGE (m)-[:DOCG_TS_Contains]->(d)        
         FOREACH(day IN CASE WHEN day=1 THEN [1] ELSE [] END | 
             MERGE (m)-[:DOCG_TS_FirstChildIs]->(d)
@@ -47,7 +47,7 @@ FOREACH(year IN years |
 MATCH (year:DOCG_TS_Year{timeFlow:"default"})-[:DOCG_TS_Contains]->(month)-[:DOCG_TS_Contains]->(day:DOCG_TS_Day) WHERE year.year in range(2011,2014)
 WITH range(0,23) as HOURS, day
 FOREACH (hour in HOURS |
-    MERGE (h:DOCG_TS_Hour {hour:hour,id:hour,timeFlow:"default"})<-[:DOCG_TS_Contains]-(day)
+    MERGE (h:DOCG_TS_Hour:DOCG_TimeScaleEntity {hour:hour,id:hour,timeFlow:"default"})<-[:DOCG_TS_Contains]-(day)
     FOREACH(hour IN CASE WHEN hour=0 THEN [1] ELSE [] END |
         MERGE (h)<-[:DOCG_TS_FirstChildIs]-(day)
     )
@@ -59,7 +59,7 @@ FOREACH (hour in HOURS |
 ////// Create and link minute data for range years
 MATCH (year:DOCG_TS_Year{timeFlow:"default"})-[:DOCG_TS_Contains]->(month)-[:DOCG_TS_Contains]->(day)-[:DOCG_TS_Contains]->(hour:DOCG_TS_Hour) WHERE year.year in range(2011,2014)
 FOREACH (minute in range(0,59) | 
-    MERGE (m:DOCG_TS_Minute {id:minute,minute:minute,timeFlow:"default"})<-[:DOCG_TS_Contains]-(hour)
+    MERGE (m:DOCG_TS_Minute:DOCG_TimeScaleEntity {id:minute,minute:minute,timeFlow:"default"})<-[:DOCG_TS_Contains]-(hour)
     FOREACH(minute IN CASE WHEN minute=0 THEN [1] ELSE [] END | 
         MERGE (m)<-[:DOCG_TS_FirstChildIs]-(hour)
     )
@@ -120,9 +120,9 @@ FOREACH(i in RANGE(0, minuteCount-2) |
 
 ////// Create and link year, month and day data for single year
 WITH range(1,12) as months, 2099 as year
-MERGE (y:DOCG_TS_Year {year:year,id:year,timeFlow:"default"})
+MERGE (y:DOCG_TS_Year:DOCG_TimeScaleEntity {year:year,id:year,timeFlow:"default"})
   FOREACH(month IN months |
-    CREATE (m:DOCG_TS_Month {month: month,id:month,timeFlow:"default"})
+    CREATE (m:DOCG_TS_Month:DOCG_TimeScaleEntity {month: month,id:month,timeFlow:"default"})
     MERGE (y)-[:DOCG_TS_Contains]->(m)
     FOREACH(month IN CASE WHEN month=1 THEN [1] ELSE [] END |
         MERGE (y)-[:DOCG_TS_FirstChildIs]->(m)
@@ -141,7 +141,7 @@ MERGE (y:DOCG_TS_Year {year:year,id:year,timeFlow:"default"})
                         END
                       ELSE range(1,30)
                     END) |
-        CREATE (d:DOCG_TS_Day {day:day,id:day,timeFlow:"default"})
+        CREATE (d:DOCG_TS_Day:DOCG_TimeScaleEntity {day:day,id:day,timeFlow:"default"})
         MERGE (m)-[:DOCG_TS_Contains]->(d)
         FOREACH(day IN CASE WHEN day=1 THEN [1] ELSE [] END |
             MERGE (m)-[:DOCG_TS_FirstChildIs]->(d)
@@ -165,7 +165,7 @@ MERGE (y:DOCG_TS_Year {year:year,id:year,timeFlow:"default"})
 MATCH (year:DOCG_TS_Year{timeFlow:"default",year:2099})-[:DOCG_TS_Contains]->(month)-[:DOCG_TS_Contains]->(day:DOCG_TS_Day)
 WITH range(0,23) as HOURS, day
 FOREACH (hour in HOURS |
-    MERGE (h:DOCG_TS_Hour {hour:hour,id:hour,timeFlow:"default"})<-[:DOCG_TS_Contains]-(day)
+    MERGE (h:DOCG_TS_Hour:DOCG_TimeScaleEntity {hour:hour,id:hour,timeFlow:"default"})<-[:DOCG_TS_Contains]-(day)
     FOREACH(hour IN CASE WHEN hour=0 THEN [1] ELSE [] END |
         MERGE (h)<-[:DOCG_TS_FirstChildIs]-(day)
     )
@@ -177,7 +177,7 @@ FOREACH (hour in HOURS |
 ////// Create and link minute data for for single year
 MATCH (year:DOCG_TS_Year{timeFlow:"default",year:2099})-[:DOCG_TS_Contains]->(month)-[:DOCG_TS_Contains]->(day)-[:DOCG_TS_Contains]->(hour:DOCG_TS_Hour)
 FOREACH (minute in range(0,59) |
-    MERGE (m:DOCG_TS_Minute {id:minute,minute:minute,timeFlow:"default"})<-[:DOCG_TS_Contains]-(hour)
+    MERGE (m:DOCG_TS_Minute:DOCG_TimeScaleEntity {id:minute,minute:minute,timeFlow:"default"})<-[:DOCG_TS_Contains]-(hour)
     FOREACH(minute IN CASE WHEN minute=0 THEN [1] ELSE [] END |
         MERGE (m)<-[:DOCG_TS_FirstChildIs]-(hour)
     )
