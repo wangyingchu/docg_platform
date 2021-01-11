@@ -15,16 +15,15 @@ public class TimeScaleOperationUtil {
         generateTimeFlowScaleEntities_YMD(workingGraphOperationExecutor,timeFlowName,startYear,endYear);
         generateTimeFlowScaleEntities_Hour(workingGraphOperationExecutor,timeFlowName,startYear,endYear);
         generateTimeFlowScaleEntities_Minute(workingGraphOperationExecutor,timeFlowName,startYear,endYear);
-        linkTimeFlowScaleEntities_Year(workingGraphOperationExecutor,timeFlowName,startYear,endYear);
-        linkTimeFlowScaleEntities_Month(workingGraphOperationExecutor,timeFlowName,startYear,endYear);
-        linkTimeFlowScaleEntities_Day(workingGraphOperationExecutor,timeFlowName,startYear,endYear);
-        linkTimeFlowScaleEntities_Hour(workingGraphOperationExecutor,timeFlowName,startYear,endYear);
-        linkTimeFlowScaleEntities_Minute(workingGraphOperationExecutor,timeFlowName,startYear,endYear);
+        linkTimeFlowScaleEntities_Year(workingGraphOperationExecutor,timeFlowName,startYear-1,endYear+1);
+        linkTimeFlowScaleEntities_Month(workingGraphOperationExecutor,timeFlowName,startYear-1,endYear+1);
+        linkTimeFlowScaleEntities_Day(workingGraphOperationExecutor,timeFlowName,startYear-1,endYear+1);
+        linkTimeFlowScaleEntities_Hour(workingGraphOperationExecutor,timeFlowName,startYear-1,endYear+1);
+        linkTimeFlowScaleEntities_Minute(workingGraphOperationExecutor,timeFlowName,startYear-1,endYear+1);
     }
 
     public static void generateTimeFlowScaleEntities(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int targetYear){
         generateTimeFlowScaleEntities_YMD(workingGraphOperationExecutor,timeFlowName,targetYear);
-        /*
         generateTimeFlowScaleEntities_Hour(workingGraphOperationExecutor,timeFlowName,targetYear);
         generateTimeFlowScaleEntities_Minute(workingGraphOperationExecutor,timeFlowName,targetYear);
         linkTimeFlowScaleEntities_Year(workingGraphOperationExecutor,timeFlowName,targetYear-1,targetYear+1);
@@ -32,7 +31,6 @@ public class TimeScaleOperationUtil {
         linkTimeFlowScaleEntities_Day(workingGraphOperationExecutor,timeFlowName,targetYear-1,targetYear+1);
         linkTimeFlowScaleEntities_Hour(workingGraphOperationExecutor,timeFlowName,targetYear-1,targetYear+1);
         linkTimeFlowScaleEntities_Minute(workingGraphOperationExecutor,timeFlowName,targetYear-1,targetYear+1);
-        */
     }
 
     private static void generateTimeFlowScaleEntities_YMD(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int startYear, int endYear){
@@ -81,21 +79,7 @@ public class TimeScaleOperationUtil {
                 ")";
 
         logger.debug("Generated Cypher Statement: {}", createTimeFlowEntitiesCql);
-
-        DataTransformer dataTransformer = new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-                System.out.println(result);
-                //System.out.println(result.next().asMap());
-
-
-
-
-
-                return null;
-            }
-        };
-        workingGraphOperationExecutor.executeWrite(dataTransformer,createTimeFlowEntitiesCql);
+        workingGraphOperationExecutor.executeWrite(getSilentOperationDataTransformer(),createTimeFlowEntitiesCql);
     }
 
     private static void generateTimeFlowScaleEntities_Hour(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int startYear, int endYear){
@@ -111,16 +95,7 @@ public class TimeScaleOperationUtil {
                 "    )\n" +
                 ")";
         logger.debug("Generated Cypher Statement: {}", createTimeFlowEntitiesCql);
-
-        DataTransformer dataTransformer = new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-                System.out.println(result);
-                //System.out.println(result.next().asMap());
-                return null;
-            }
-        };
-        workingGraphOperationExecutor.executeWrite(dataTransformer,createTimeFlowEntitiesCql);
+        workingGraphOperationExecutor.executeWrite(getSilentOperationDataTransformer(),createTimeFlowEntitiesCql);
     }
 
     private static void generateTimeFlowScaleEntities_Minute(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int startYear, int endYear){
@@ -135,16 +110,7 @@ public class TimeScaleOperationUtil {
                 "    )\n" +
                 ")";
         logger.debug("Generated Cypher Statement: {}", createTimeFlowEntitiesCql);
-
-        DataTransformer dataTransformer = new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-                System.out.println(result);
-                //System.out.println(result.next().asMap());
-                return null;
-            }
-        };
-        workingGraphOperationExecutor.executeWrite(dataTransformer,createTimeFlowEntitiesCql);
+        workingGraphOperationExecutor.executeWrite(getSilentOperationDataTransformer(),createTimeFlowEntitiesCql);
     }
 
     private static void generateTimeFlowScaleEntities_YMD(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int targetYear){
@@ -190,27 +156,7 @@ public class TimeScaleOperationUtil {
                 "    )\n" +
                 "  )" ;
         logger.debug("Generated Cypher Statement: {}", createTimeFlowEntitiesCql);
-
-        DataTransformer dataTransformer = new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-                System.out.println(result);
-
-                if(result.hasNext()){
-                    Record xx = result.next();
-                    System.out.println(xx.asMap());
-
-                }else{
-                    System.out.println(result.keys());
-                    System.out.println(result.consume());
-                }
-
-
-                //System.out.println(result.next().asMap());
-                return null;
-            }
-        };
-        workingGraphOperationExecutor.executeWrite(dataTransformer,createTimeFlowEntitiesCql);
+        workingGraphOperationExecutor.executeWrite(getSilentOperationDataTransformer(),createTimeFlowEntitiesCql);
     }
 
     private static void generateTimeFlowScaleEntities_Hour(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int targetYear){
@@ -226,16 +172,7 @@ public class TimeScaleOperationUtil {
                 "    )\n" +
                 ")";
         logger.debug("Generated Cypher Statement: {}", createTimeFlowEntitiesCql);
-
-        DataTransformer dataTransformer = new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-                System.out.println(result);
-                //System.out.println(result.next().asMap());
-                return null;
-            }
-        };
-        workingGraphOperationExecutor.executeWrite(dataTransformer,createTimeFlowEntitiesCql);
+        workingGraphOperationExecutor.executeWrite(getSilentOperationDataTransformer(),createTimeFlowEntitiesCql);
     }
 
     private static void generateTimeFlowScaleEntities_Minute(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int targetYear){
@@ -250,16 +187,7 @@ public class TimeScaleOperationUtil {
                 "    )\n" +
                 ")";
         logger.debug("Generated Cypher Statement: {}", createTimeFlowEntitiesCql);
-
-        DataTransformer dataTransformer = new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-                System.out.println(result);
-                //System.out.println(result.next().asMap());
-                return null;
-            }
-        };
-        workingGraphOperationExecutor.executeWrite(dataTransformer,createTimeFlowEntitiesCql);
+        workingGraphOperationExecutor.executeWrite(getSilentOperationDataTransformer(),createTimeFlowEntitiesCql);
     }
 
     private static void linkTimeFlowScaleEntities_Year(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int startYear, int endYear){
@@ -272,16 +200,7 @@ public class TimeScaleOperationUtil {
                 "        FOREACH(year2 in [years[i+1]] |\n" +
                 "            MERGE (year1)-[:DOCG_TS_NextIs]->(year2))))";
         logger.debug("Generated Cypher Statement: {}", linkTimeFlowEntitiesCql);
-
-        DataTransformer dataTransformer = new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-                System.out.println(result);
-                //System.out.println(result.next().asMap());
-                return null;
-            }
-        };
-        workingGraphOperationExecutor.executeWrite(dataTransformer,linkTimeFlowEntitiesCql);
+        workingGraphOperationExecutor.executeWrite(getSilentOperationDataTransformer(),linkTimeFlowEntitiesCql);
     }
 
     private static void linkTimeFlowScaleEntities_Month(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int startYear, int endYear){
@@ -293,15 +212,7 @@ public class TimeScaleOperationUtil {
                 "    FOREACH(month1 in [months[i]] |\n" +
                 "        FOREACH(month2 in [months[i+1]] |\n" +
                 "            MERGE (month1)-[:DOCG_TS_NextIs]->(month2))))";
-        DataTransformer dataTransformer = new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-                System.out.println(result);
-                //System.out.println(result.next().asMap());
-                return null;
-            }
-        };
-        workingGraphOperationExecutor.executeWrite(dataTransformer,linkTimeFlowEntitiesCql);
+        workingGraphOperationExecutor.executeWrite(getSilentOperationDataTransformer(),linkTimeFlowEntitiesCql);
     }
 
     private static void linkTimeFlowScaleEntities_Day(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int startYear, int endYear){
@@ -313,15 +224,7 @@ public class TimeScaleOperationUtil {
                 "    FOREACH(day1 in [days[i]] |\n" +
                 "        FOREACH(day2 in [days[i+1]] |\n" +
                 "            MERGE (day1)-[:DOCG_TS_NextIs]->(day2))))";
-        DataTransformer dataTransformer = new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-                System.out.println(result);
-                //System.out.println(result.next().asMap());
-                return null;
-            }
-        };
-        workingGraphOperationExecutor.executeWrite(dataTransformer,linkTimeFlowEntitiesCql);
+        workingGraphOperationExecutor.executeWrite(getSilentOperationDataTransformer(),linkTimeFlowEntitiesCql);
     }
 
     private static void linkTimeFlowScaleEntities_Hour(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int startYear, int endYear){
@@ -333,15 +236,7 @@ public class TimeScaleOperationUtil {
                 "    FOREACH(hour1 in [hours[i]] |\n" +
                 "        FOREACH(hour2 in [hours[i+1]] |\n" +
                 "            MERGE (hour1)-[:DOCG_TS_NextIs]->(hour2))))";
-        DataTransformer dataTransformer = new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-                System.out.println(result);
-                //System.out.println(result.next().asMap());
-                return null;
-            }
-        };
-        workingGraphOperationExecutor.executeWrite(dataTransformer,linkTimeFlowEntitiesCql);
+        workingGraphOperationExecutor.executeWrite(getSilentOperationDataTransformer(),linkTimeFlowEntitiesCql);
     }
 
     private static void linkTimeFlowScaleEntities_Minute(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int startYear, int endYear){
@@ -353,18 +248,10 @@ public class TimeScaleOperationUtil {
                 "    FOREACH(minute1 in [minutes[i]] |\n" +
                 "        FOREACH(minute2 in [minutes[i+1]] |\n" +
                 "            MERGE (minute1)-[:DOCG_TS_NextIs]->(minute2))))";
-        DataTransformer dataTransformer = new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-                System.out.println(result);
-                //System.out.println(result.asMap());
-                return null;
-            }
-        };
-        workingGraphOperationExecutor.executeWrite(dataTransformer,linkTimeFlowEntitiesCql);
+        workingGraphOperationExecutor.executeWrite(getSilentOperationDataTransformer(),linkTimeFlowEntitiesCql);
     }
 
-    private static DataTransformer silentOperationDataTransformer(){
+    private static DataTransformer getSilentOperationDataTransformer(){
         DataTransformer dataTransformer = new DataTransformer() {
             @Override
             public Object transformResult(Result result) {
