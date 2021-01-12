@@ -19,16 +19,22 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
     private static Logger logger = LoggerFactory.getLogger(Neo4JTimeFlowImpl.class);
     private String coreRealmName;
     private String timeFlowName;
+    private String timeFlowUID;
 
-    public Neo4JTimeFlowImpl(String coreRealmName, String timeFlowName){
+    public Neo4JTimeFlowImpl(String coreRealmName, String timeFlowName,String timeFlowUID){
         this.coreRealmName = coreRealmName;
         this.timeFlowName = timeFlowName;
+        this.timeFlowUID = timeFlowUID;
         this.graphOperationExecutorHelper = new GraphOperationExecutorHelper();
+    }
+
+    public String getTimeFlowUID() {
+        return this.timeFlowUID;
     }
 
     @Override
     public String getTimeFlowName() {
-        return null;
+        return this.timeFlowName;
     }
 
     @Override

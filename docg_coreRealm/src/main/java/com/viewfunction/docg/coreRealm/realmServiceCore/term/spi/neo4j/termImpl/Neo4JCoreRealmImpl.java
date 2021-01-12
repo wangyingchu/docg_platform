@@ -895,15 +895,14 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
             String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.TimeFlowClass,RealmConstant._NameProperty,RealmConstant._defaultTimeFlowName,1);
-            GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
-                    new GetSingleConceptionEntityTransformer(RealmConstant.TimeFlowClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
-            Object getDefaultTimeFlowRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,queryCql);
+            GetSingleTimeFlowTransformer getSingleTimeFlowTransformer =
+                    new GetSingleTimeFlowTransformer(RealmConstant.TimeFlowClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object getDefaultTimeFlowRes = workingGraphOperationExecutor.executeRead(getSingleTimeFlowTransformer,queryCql);
             if(getDefaultTimeFlowRes == null){
                 Map<String,Object> propertiesMap = new HashMap<>();
                 propertiesMap.put(RealmConstant._NameProperty,RealmConstant._defaultTimeFlowName);
                 CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
                 String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.TimeFlowClass},propertiesMap);
-                GetSingleTimeFlowTransformer getSingleTimeFlowTransformer = new GetSingleTimeFlowTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object createTimeFlowRes = workingGraphOperationExecutor.executeWrite(getSingleTimeFlowTransformer,createCql);
                 TimeFlow resultTimeFlow = createTimeFlowRes != null ? (TimeFlow)createTimeFlowRes : null;
                 return resultTimeFlow;
@@ -919,15 +918,14 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
             String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.TimeFlowClass,RealmConstant._NameProperty,timeFlowName,1);
-            GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
-                    new GetSingleConceptionEntityTransformer(RealmConstant.TimeFlowClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
-            Object getDefaultTimeFlowRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,queryCql);
+            GetSingleTimeFlowTransformer getSingleTimeFlowTransformer =
+                    new GetSingleTimeFlowTransformer(RealmConstant.TimeFlowClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object getDefaultTimeFlowRes = workingGraphOperationExecutor.executeRead(getSingleTimeFlowTransformer,queryCql);
             if(getDefaultTimeFlowRes == null){
                 Map<String,Object> propertiesMap = new HashMap<>();
                 propertiesMap.put(RealmConstant._NameProperty,timeFlowName);
                 CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
                 String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.TimeFlowClass},propertiesMap);
-                GetSingleTimeFlowTransformer getSingleTimeFlowTransformer = new GetSingleTimeFlowTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object createTimeFlowRes = workingGraphOperationExecutor.executeWrite(getSingleTimeFlowTransformer,createCql);
                 TimeFlow resultTimeFlow = createTimeFlowRes != null ? (TimeFlow)createTimeFlowRes : null;
                 return resultTimeFlow;
@@ -945,6 +943,22 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
     @Override
     public List<TimeFlow> getTimeFlows() {
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(1000000);
+        try {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.TimeFlowClass,queryParameters,null);
+                GetListTimeFlowTransformer getListTimeFlowTransformer =
+                        new GetListTimeFlowTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object timeFlowsRes = workingGraphOperationExecutor.executeRead(getListTimeFlowTransformer,queryCql);
+                return timeFlowsRes != null ? (List<TimeFlow>) timeFlowsRes : null;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 

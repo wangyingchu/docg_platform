@@ -4,7 +4,9 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunct
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionKindImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeFlowImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
@@ -351,5 +353,31 @@ public class CoreRealmTest {
             exceptionShouldBeCaught = true;
         }
         Assert.assertTrue(exceptionShouldBeCaught);
+
+        TimeFlow defaultTimeFlow = coreRealm.getOrCreateTimeFlow();
+        Assert.assertNotNull(defaultTimeFlow);
+        Assert.assertNotNull(((Neo4JTimeFlowImpl)defaultTimeFlow).getTimeFlowUID());
+        Assert.assertEquals(defaultTimeFlow.getTimeFlowName(), RealmConstant._defaultTimeFlowName);
+
+        TimeFlow defaultTimeFlow2 = coreRealm.getOrCreateTimeFlow("自定义时间流");
+        Assert.assertNotNull(defaultTimeFlow2);
+        Assert.assertNotNull(((Neo4JTimeFlowImpl)defaultTimeFlow2).getTimeFlowUID());
+        Assert.assertEquals(defaultTimeFlow2.getTimeFlowName(), "自定义时间流");
+
+        List<TimeFlow> timeFlowsList = coreRealm.getTimeFlows();
+        Assert.assertTrue(timeFlowsList.size()>=2);
+
+        boolean hasDefaultTimeFlow = false;
+        boolean hasCustomTimeFlow = false;
+        for(TimeFlow currentTimeFlow:timeFlowsList){
+            if(currentTimeFlow.getTimeFlowName().equals(RealmConstant._defaultTimeFlowName)){
+                hasDefaultTimeFlow = true;
+            }
+            if(currentTimeFlow.getTimeFlowName().equals("自定义时间流")){
+                hasCustomTimeFlow = true;
+            }
+        }
+        Assert.assertTrue(hasDefaultTimeFlow);
+        Assert.assertTrue(hasCustomTimeFlow);
     }
 }

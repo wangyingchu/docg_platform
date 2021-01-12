@@ -45,8 +45,6 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
                             timeScaleEventEntity.attachFromRelation(this.getEntityUID(), relationType, null, true);
                             timeScaleEventEntity.attachToRelation(this.getEntityUID(), relationType, null, true);
                     }
-
-
                     switch (timeScaleGrade) {
                         case YEAR:
                             break;
@@ -60,11 +58,8 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
                             break;
                         case SECOND:
                             break;
-                        case WEEK:
                     }
                 }
-
-
             }finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }
