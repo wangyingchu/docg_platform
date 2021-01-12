@@ -1,18 +1,27 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.TimeScaleOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleMoment;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
+import org.neo4j.driver.Record;
+import org.neo4j.driver.Result;
+import org.neo4j.driver.types.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 public class Neo4JTimeFlowImpl implements TimeFlow {
 
@@ -41,25 +50,70 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
     public void createTimeSpanEntities(int fromYear, int toYear) throws CoreRealmServiceRuntimeException {
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
-            TimeScaleOperationUtil.generateTimeFlowScaleEntities(workingGraphOperationExecutor,RealmConstant._defaultTimeFlowName,fromYear,toYear);
+            TimeScaleOperationUtil.generateTimeFlowScaleEntities(workingGraphOperationExecutor,getTimeFlowName(),fromYear,toYear);
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
     }
 
     @Override
-    public void createTimeSpanEntities(int targetYear) throws CoreRealmServiceRuntimeException {
+    public boolean createTimeSpanEntities(int targetYear) throws CoreRealmServiceRuntimeException {
+        List<Integer> availableTimeSpanYears = getAvailableTimeSpanYears();
+        if(availableTimeSpanYears.contains(targetYear)){
+            return false;
+        }
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
-            TimeScaleOperationUtil.generateTimeFlowScaleEntities(workingGraphOperationExecutor, RealmConstant._defaultTimeFlowName,targetYear);
+            TimeScaleOperationUtil.generateTimeFlowScaleEntities(workingGraphOperationExecutor,getTimeFlowName(),targetYear);
+
+            String linkYearCql = "MATCH (timeFlow:DOCG_TimeFlow{name:\"DefaultTimeFlow\"}),(year:DOCG_TS_Year{timeFlow:\"DefaultTimeFlow\"}) WHERE year.year ="+targetYear+"\n" +
+                    "MERGE (timeFlow)-[r:DOCG_TS_Contains]->(year) return count(r) as operationResult";
+
+            DataTransformer<Boolean> dataTransformer = new DataTransformer() {
+                @Override
+                public Boolean transformResult(Result result) {
+                    if(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        int resultNumber = nodeRecord.get(CypherBuilder.operationResultName).asInt();
+                        return resultNumber == 1;
+                    }
+                    return false;
+                }
+            };
+            Object resultRes = workingGraphOperationExecutor.executeWrite(dataTransformer,linkYearCql);
+            return (Boolean)resultRes;
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
     }
 
     @Override
-    public LinkedList<Integer> getAvailableTimeSpanYears() {
-        return null;
+    public List<Integer> getAvailableTimeSpanYears() {
+        List<Integer> availableTimeSpanYearList = new ArrayList<>();
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.matchRelatedNodesFromSpecialStartNodes(
+                    CypherBuilder.CypherFunctionType.ID, Long.parseLong(timeFlowUID),
+                    RealmConstant.TimeScaleYearEntityClass,RealmConstant.TimeScale_ContainsRelationClass, RelationDirection.TO, null);
+            DataTransformer dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()){
+                        while(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            Node resultNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
+                            availableTimeSpanYearList.add(resultNode.get("year").asInt());
+                        }
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeWrite(dataTransformer,queryCql);
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        Collections.sort(availableTimeSpanYearList);
+        return availableTimeSpanYearList;
     }
 
     @Override

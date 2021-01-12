@@ -5,6 +5,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleMoment;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public interface TimeFlow {
 
@@ -13,9 +14,9 @@ public interface TimeFlow {
     public String getTimeFlowName();
 
     public void createTimeSpanEntities(int fromYear, int toYear) throws CoreRealmServiceRuntimeException;
-    public void createTimeSpanEntities(int targetYear) throws CoreRealmServiceRuntimeException;
+    public boolean createTimeSpanEntities(int targetYear) throws CoreRealmServiceRuntimeException;
 
-    public LinkedList<Integer> getAvailableTimeSpanYears();
+    public List<Integer> getAvailableTimeSpanYears();
 
     public TimeScaleEntity getYearEntity(int year);
     public LinkedList<TimeScaleEntity> getYearEntities(int fromYear, int toYear);
