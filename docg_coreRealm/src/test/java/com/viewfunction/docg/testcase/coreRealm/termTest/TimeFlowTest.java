@@ -4,6 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeFlowImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
@@ -12,6 +13,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class TimeFlowTest {
@@ -38,14 +40,28 @@ public class TimeFlowTest {
         List<Integer> availableTimeSpanYears = defaultTimeFlow.getAvailableTimeSpanYears();
         System.out.println(availableTimeSpanYears);
 
-        boolean addTimeSpanEntities = defaultTimeFlow.createTimeSpanEntities(2004);
-        System.out.println(addTimeSpanEntities);
+        //boolean addTimeSpanEntities = defaultTimeFlow.createTimeSpanEntities(2004);
+        //System.out.println(addTimeSpanEntities);
 
         //boolean addTimeSpanEntities2 = defaultTimeFlow.createTimeSpanEntities(2001,2003);
         //System.out.println(addTimeSpanEntities2);
 
         //availableTimeSpanYears = defaultTimeFlow.getAvailableTimeSpanYears();
         //System.out.println(availableTimeSpanYears);
+
+        TimeScaleEntity _2000YearTimeScaleEntity = defaultTimeFlow.getYearEntity(2000);
+        System.out.println(_2000YearTimeScaleEntity);
+        System.out.println(_2000YearTimeScaleEntity.getTimeScaleGrade());
+        System.out.println(_2000YearTimeScaleEntity.getEntityValue());
+
+        LinkedList<TimeScaleEntity> timeScaleEntityLinkedList1 = defaultTimeFlow.getYearEntities(2001,2004);
+        System.out.println(timeScaleEntityLinkedList1.getFirst().getEntityValue());
+        System.out.println(timeScaleEntityLinkedList1.getLast().getEntityValue());
+
+
+        TimeScaleEntity[] timeScaleEntityArray1 = defaultTimeFlow.getSpecificYearEntities(1998,2004,1997,4561);
+        System.out.println(timeScaleEntityArray1.length);
+
     }
 
 }

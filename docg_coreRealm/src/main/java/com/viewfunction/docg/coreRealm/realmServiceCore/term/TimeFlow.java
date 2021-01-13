@@ -20,7 +20,7 @@ public interface TimeFlow {
 
     public TimeScaleEntity getYearEntity(int year);
     public LinkedList<TimeScaleEntity> getYearEntities(int fromYear, int toYear);
-    public TimeScaleEntity[] getYearEntities(int... year);
+    public TimeScaleEntity[] getSpecificYearEntities(int... year);
 
     public TimeScaleEntity getMonthEntity(int year,int month);
     public LinkedList<TimeScaleEntity> getMonthEntities(TimeScaleMoment fromMonthMoment, TimeScaleMoment toMonthMoment);

@@ -11,6 +11,8 @@ public interface TimeScaleEntity {
 
     public enum TimeScaleLevel {SELF, CHILD,OFFSPRING}
 
+    public TimeFlow.TimeScaleGrade getTimeScaleGrade();
+    public int getEntityValue();
     public TimeScaleEntity getNextSameScaleEntity();
     public TimeScaleEntity getPreviousSameScaleEntity();
     public LinkedList<TimeScaleEntity> getFellowEntities();
