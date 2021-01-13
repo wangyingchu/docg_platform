@@ -38,8 +38,14 @@ public class TimeFlowTest {
         List<Integer> availableTimeSpanYears = defaultTimeFlow.getAvailableTimeSpanYears();
         System.out.println(availableTimeSpanYears);
 
-        boolean addTimeSpanEntities = defaultTimeFlow.createTimeSpanEntities(1998);
+        boolean addTimeSpanEntities = defaultTimeFlow.createTimeSpanEntities(2004);
         System.out.println(addTimeSpanEntities);
+
+        //boolean addTimeSpanEntities2 = defaultTimeFlow.createTimeSpanEntities(2001,2003);
+        //System.out.println(addTimeSpanEntities2);
+
+        //availableTimeSpanYears = defaultTimeFlow.getAvailableTimeSpanYears();
+        //System.out.println(availableTimeSpanYears);
     }
 
 }

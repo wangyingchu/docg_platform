@@ -189,3 +189,7 @@ FOREACH (minute in range(0,59) |
 ////// Link timeFlow to single year
 MATCH (timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"}),(year:DOCG_TS_Year{timeFlow:"DefaultTimeFlow"}) WHERE year.year =2000
 MERGE (timeFlow)-[r:DOCG_TS_Contains]->(year) return count(r) as operationResult
+
+////// Link timeFlow to years
+MATCH (timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"}),(year:DOCG_TS_Year{timeFlow:"DefaultTimeFlow"}) WHERE year.year in range(2001,2002)
+MERGE (timeFlow)-[r:DOCG_TS_Contains]->(year) return count(r) as operationResult

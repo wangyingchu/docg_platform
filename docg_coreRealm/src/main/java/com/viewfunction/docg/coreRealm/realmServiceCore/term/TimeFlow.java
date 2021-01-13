@@ -13,7 +13,7 @@ public interface TimeFlow {
 
     public String getTimeFlowName();
 
-    public void createTimeSpanEntities(int fromYear, int toYear) throws CoreRealmServiceRuntimeException;
+    public boolean createTimeSpanEntities(int fromYear, int toYear) throws CoreRealmServiceRuntimeException;
     public boolean createTimeSpanEntities(int targetYear) throws CoreRealmServiceRuntimeException;
 
     public List<Integer> getAvailableTimeSpanYears();

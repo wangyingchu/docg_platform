@@ -47,10 +47,44 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
     }
 
     @Override
-    public void createTimeSpanEntities(int fromYear, int toYear) throws CoreRealmServiceRuntimeException {
+    public boolean createTimeSpanEntities(int fromYear, int toYear) throws CoreRealmServiceRuntimeException {
+        if(toYear<=fromYear){
+            logger.error("To Year {} must great than From Year {}.", toYear, fromYear);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("To Year "+toYear+" must great than From Year "+fromYear+".");
+            throw exception;
+        }
+        List<Integer> availableTimeSpanYears = getAvailableTimeSpanYears();
+        if(availableTimeSpanYears.contains(fromYear) ){
+            logger.error("Year {} already initialized in TimeFlow {}.", fromYear, getTimeFlowName());
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("Year "+fromYear+" already initialized in TimeFlow "+getTimeFlowName()+".");
+            throw exception;
+        }
+        if(availableTimeSpanYears.contains(toYear)){
+            logger.error("Year {} already initialized in TimeFlow {}.", toYear, getTimeFlowName());
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("Year "+toYear+" already initialized in TimeFlow "+getTimeFlowName()+".");
+            throw exception;
+        }
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
             TimeScaleOperationUtil.generateTimeFlowScaleEntities(workingGraphOperationExecutor,getTimeFlowName(),fromYear,toYear);
+            String linkYearsCql = "MATCH (timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"}),(year:DOCG_TS_Year{timeFlow:\""+getTimeFlowName()+"\"}) WHERE year.year in range("+fromYear+","+toYear+")\n" +
+                    "MERGE (timeFlow)-[r:DOCG_TS_Contains]->(year) return count(r) as operationResult";
+            DataTransformer<Boolean> dataTransformer = new DataTransformer() {
+                @Override
+                public Boolean transformResult(Result result) {
+                    if(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        int resultNumber = nodeRecord.get(CypherBuilder.operationResultName).asInt();
+                        return resultNumber == toYear-fromYear;
+                    }
+                    return false;
+                }
+            };
+            Object resultRes = workingGraphOperationExecutor.executeWrite(dataTransformer,linkYearsCql);
+            return (Boolean)resultRes;
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
@@ -60,15 +94,17 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
     public boolean createTimeSpanEntities(int targetYear) throws CoreRealmServiceRuntimeException {
         List<Integer> availableTimeSpanYears = getAvailableTimeSpanYears();
         if(availableTimeSpanYears.contains(targetYear)){
-            return false;
+            logger.error("Year {} already initialized in TimeFlow {}.", targetYear, getTimeFlowName());
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("Year "+targetYear+" already initialized in TimeFlow "+getTimeFlowName()+".");
+            throw exception;
         }
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
             TimeScaleOperationUtil.generateTimeFlowScaleEntities(workingGraphOperationExecutor,getTimeFlowName(),targetYear);
 
-            String linkYearCql = "MATCH (timeFlow:DOCG_TimeFlow{name:\"DefaultTimeFlow\"}),(year:DOCG_TS_Year{timeFlow:\"DefaultTimeFlow\"}) WHERE year.year ="+targetYear+"\n" +
+            String linkYearCql = "MATCH (timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"}),(year:DOCG_TS_Year{timeFlow:\""+getTimeFlowName()+"\"}) WHERE year.year ="+targetYear+"\n" +
                     "MERGE (timeFlow)-[r:DOCG_TS_Contains]->(year) return count(r) as operationResult";
-
             DataTransformer<Boolean> dataTransformer = new DataTransformer() {
                 @Override
                 public Boolean transformResult(Result result) {
