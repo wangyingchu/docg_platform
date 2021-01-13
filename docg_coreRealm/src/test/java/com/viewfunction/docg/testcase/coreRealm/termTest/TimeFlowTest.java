@@ -34,6 +34,8 @@ public class TimeFlowTest {
         Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
 
         TimeFlow defaultTimeFlow = coreRealm.getOrCreateTimeFlow();
+/*
+
         Assert.assertNotNull(defaultTimeFlow);
         Assert.assertNotNull(((Neo4JTimeFlowImpl)defaultTimeFlow).getTimeFlowUID());
         Assert.assertEquals(defaultTimeFlow.getTimeFlowName(), RealmConstant._defaultTimeFlowName);
@@ -67,8 +69,13 @@ public class TimeFlowTest {
         System.out.println(singleTimeScaleEntity1);
         System.out.println(singleTimeScaleEntity1.getTimeScaleGrade());
         System.out.println(singleTimeScaleEntity1.getEntityValue());
+*/
+       // defaultTimeFlow.getMonthEntities(new TimeScaleMoment(1980,6),new TimeScaleMoment(1999,8));
 
-        defaultTimeFlow.getMonthEntities(new TimeScaleMoment(1998,11),new TimeScaleMoment(1999,3));
+        defaultTimeFlow.getSpecificMonthEntities(new TimeScaleMoment(1980,6),new TimeScaleMoment(1999,8));
+
+
+
     }
 
 }

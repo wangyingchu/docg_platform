@@ -162,7 +162,6 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
         return getSingleTimeScaleEntity(queryCql);
     }
 
-
     @Override
     public LinkedList<TimeScaleEntity> getYearEntities(int fromYear, int toYear) {
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
@@ -227,21 +226,47 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
         int fromMonth = fromMonthMoment.getMonth();
         int toYear = toMonthMoment.getYear();
         int toMonth = toMonthMoment.getMonth();
-
         try {
-            TimeScaleOperationUtil.getMonths(fromYear,fromMonth,toYear,toMonth);
+            LinkedList<TimeScaleMoment> timeScaleMomentList = TimeScaleOperationUtil.getMonths(fromYear,fromMonth,toYear,toMonth);
+            for(TimeScaleMoment currentTimeScaleMoment:timeScaleMomentList){
+                System.out.println(currentTimeScaleMoment.getYear()+"-"+currentTimeScaleMoment.getMonth());
+            }
 
+            int entitiesNumber = timeScaleMomentList.size();
+            if(entitiesNumber<=12){
+                //in one year, use UNION directly
+                TimeScaleMoment[] momentValueArray = new TimeScaleMoment[timeScaleMomentList.size()];
+                timeScaleMomentList.toArray(momentValueArray);
+                String queryCql = buildUnionMonthEntitiesCql(momentValueArray);
 
+            }else{
+                System.out.println(entitiesNumber/12);
+                System.out.println(entitiesNumber%12);
+            }
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
         return null;
     }
 
     @Override
     public TimeScaleEntity[] getSpecificMonthEntities(TimeScaleMoment... monthMoments) {
+        String queryCql = buildUnionMonthEntitiesCql(monthMoments);
+        System.out.println(queryCql);
         return new TimeScaleEntity[0];
+    }
+
+    private String buildUnionMonthEntitiesCql(TimeScaleMoment... monthMoments){
+        StringBuffer cqlBuffer = new StringBuffer();
+        for(int i = 0; i< monthMoments.length;i++){
+            TimeScaleMoment currentTimeScaleMoment = monthMoments[i];
+            String queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+currentTimeScaleMoment.getYear()+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:"+currentTimeScaleMoment.getMonth()+"}) RETURN month as operationResult";
+            cqlBuffer.append(queryCql);
+            if(i !=monthMoments.length-1){
+                cqlBuffer.append(" UNION"+"\n");
+            }
+        }
+        return cqlBuffer.toString();
     }
 
     @Override
