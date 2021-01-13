@@ -24,23 +24,23 @@ public interface TimeFlow {
 
     public TimeScaleEntity getMonthEntity(int year,int month);
     public LinkedList<TimeScaleEntity> getMonthEntities(TimeScaleMoment fromMonthMoment, TimeScaleMoment toMonthMoment);
-    public TimeScaleEntity[] getMonthEntities(TimeScaleMoment... monthMoments);
+    public TimeScaleEntity[] getSpecificMonthEntities(TimeScaleMoment... monthMoments);
 
     public TimeScaleEntity getDayEntity(int year,int month,int day);
     public LinkedList<TimeScaleEntity> getDayEntities(TimeScaleMoment fromDayMoment, TimeScaleMoment toDayMoment);
-    public TimeScaleEntity[] getDayEntities(TimeScaleMoment... dayMoments);
+    public TimeScaleEntity[] getSpecificDayEntities(TimeScaleMoment... dayMoments);
 
     public TimeScaleEntity getHourEntity(int year, int month,int day,int hour);
     public LinkedList<TimeScaleEntity> getHourEntities(TimeScaleMoment fromHourMoment, TimeScaleMoment toHourMoment);
-    public TimeScaleEntity[] getHourEntities(TimeScaleMoment... hourMoments);
+    public TimeScaleEntity[] getSpecificHourEntities(TimeScaleMoment... hourMoments);
 
     public TimeScaleEntity getMinuteEntity(int year, int month,int day,int hour,int minute);
     public LinkedList<TimeScaleEntity> getMinuteEntities(TimeScaleMoment fromMinuteMoment, TimeScaleMoment toMinuteMoment);
-    public TimeScaleEntity[] getMinuteEntities(TimeScaleMoment... minuteMoments);
+    public TimeScaleEntity[] getSpecificMinuteEntities(TimeScaleMoment... minuteMoments);
 
     public TimeScaleEntity getSecondEntity(int year, int month,int day,int hour,int minute,int second);
     public LinkedList<TimeScaleEntity> getSecondEntities(TimeScaleMoment fromSecondMoment, TimeScaleMoment toSecondMoment);
-    public TimeScaleEntity[] getSecondEntities(TimeScaleMoment... secondMoments);
+    public TimeScaleEntity[] getSpecificSecondEntities(TimeScaleMoment... secondMoments);
 
     public LinkedList<TimeScaleEntity> getChildEntities(TimeScaleMoment timeScaleMoments);
     public LinkedList<TimeScaleEntity> getFellowEntities(TimeScaleMoment timeScaleMoments);

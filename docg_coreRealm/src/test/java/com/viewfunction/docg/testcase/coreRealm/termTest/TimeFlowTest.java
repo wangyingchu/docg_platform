@@ -2,6 +2,7 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleMoment;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEntity;
@@ -58,10 +59,16 @@ public class TimeFlowTest {
         System.out.println(timeScaleEntityLinkedList1.getFirst().getEntityValue());
         System.out.println(timeScaleEntityLinkedList1.getLast().getEntityValue());
 
-
         TimeScaleEntity[] timeScaleEntityArray1 = defaultTimeFlow.getSpecificYearEntities(1998,2004,1997,4561);
         System.out.println(timeScaleEntityArray1.length);
 
+
+        TimeScaleEntity singleTimeScaleEntity1 = defaultTimeFlow.getMonthEntity(1997,6);
+        System.out.println(singleTimeScaleEntity1);
+        System.out.println(singleTimeScaleEntity1.getTimeScaleGrade());
+        System.out.println(singleTimeScaleEntity1.getEntityValue());
+
+        defaultTimeFlow.getMonthEntities(new TimeScaleMoment(1998,11),new TimeScaleMoment(1999,3));
     }
 
 }

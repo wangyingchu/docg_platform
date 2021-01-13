@@ -198,3 +198,6 @@ MERGE (timeFlow)-[r:DOCG_TS_Contains]->(year) return count(r) as operationResult
 MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:2000}) RETURN year as operationResult
 MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year) WHERE year.year in range(2001,2004) RETURN year as operationResult ORDER BY year.year
 MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year) WHERE year.year in [2001,2004,1999] RETURN year as operationResult
+
+////// Get months
+MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:2000})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:11}) RETURN month as operationResult

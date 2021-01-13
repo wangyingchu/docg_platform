@@ -20,6 +20,7 @@ import org.neo4j.driver.types.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -157,21 +158,10 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
 
     @Override
     public TimeScaleEntity getYearEntity(int year) {
-        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-        try{
-            String queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+year+"}) RETURN year as operationResult";
-            logger.debug("Generated Cypher Statement: {}", queryCql);
-            GetSingleTimeScaleEntityTransformer getSingleTimeScaleEntityTransformer =
-                    new GetSingleTimeScaleEntityTransformer(this.coreRealmName,graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
-            Object queryRes = workingGraphOperationExecutor.executeRead(getSingleTimeScaleEntityTransformer,queryCql);
-            if(queryRes != null){
-                return (TimeScaleEntity)queryRes;
-            }
-        }finally {
-            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-        }
-        return null;
+        String queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+year+"}) RETURN year as operationResult";
+        return getSingleTimeScaleEntity(queryCql);
     }
+
 
     @Override
     public LinkedList<TimeScaleEntity> getYearEntities(int fromYear, int toYear) {
@@ -227,16 +217,30 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
 
     @Override
     public TimeScaleEntity getMonthEntity(int year, int month) {
-        return null;
+        String queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+year+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:"+month+"}) RETURN month as operationResult";
+        return getSingleTimeScaleEntity(queryCql);
     }
 
     @Override
     public LinkedList<TimeScaleEntity> getMonthEntities(TimeScaleMoment fromMonthMoment, TimeScaleMoment toMonthMoment) {
+        int fromYear = fromMonthMoment.getYear();
+        int fromMonth = fromMonthMoment.getMonth();
+        int toYear = toMonthMoment.getYear();
+        int toMonth = toMonthMoment.getMonth();
+
+        try {
+            TimeScaleOperationUtil.getMonths(fromYear,fromMonth,toYear,toMonth);
+
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 
     @Override
-    public TimeScaleEntity[] getMonthEntities(TimeScaleMoment... monthMoments) {
+    public TimeScaleEntity[] getSpecificMonthEntities(TimeScaleMoment... monthMoments) {
         return new TimeScaleEntity[0];
     }
 
@@ -251,7 +255,7 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
     }
 
     @Override
-    public TimeScaleEntity[] getDayEntities(TimeScaleMoment... dayMoments) {
+    public TimeScaleEntity[] getSpecificDayEntities(TimeScaleMoment... dayMoments) {
         return new TimeScaleEntity[0];
     }
 
@@ -266,7 +270,7 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
     }
 
     @Override
-    public TimeScaleEntity[] getHourEntities(TimeScaleMoment... hourMoments) {
+    public TimeScaleEntity[] getSpecificHourEntities(TimeScaleMoment... hourMoments) {
         return new TimeScaleEntity[0];
     }
 
@@ -281,7 +285,7 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
     }
 
     @Override
-    public TimeScaleEntity[] getMinuteEntities(TimeScaleMoment... minuteMoments) {
+    public TimeScaleEntity[] getSpecificMinuteEntities(TimeScaleMoment... minuteMoments) {
         return new TimeScaleEntity[0];
     }
 
@@ -296,7 +300,7 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
     }
 
     @Override
-    public TimeScaleEntity[] getSecondEntities(TimeScaleMoment... secondMoments) {
+    public TimeScaleEntity[] getSpecificSecondEntities(TimeScaleMoment... secondMoments) {
         return new TimeScaleEntity[0];
     }
 
@@ -322,6 +326,22 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
 
     @Override
     public InheritanceTree<TimeScaleEntity> getOffspringEntities(TimeScaleMoment timeScaleMoments) {
+        return null;
+    }
+
+    private TimeScaleEntity getSingleTimeScaleEntity(String queryCql){
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            GetSingleTimeScaleEntityTransformer getSingleTimeScaleEntityTransformer =
+                    new GetSingleTimeScaleEntityTransformer(this.coreRealmName,graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object queryRes = workingGraphOperationExecutor.executeRead(getSingleTimeScaleEntityTransformer,queryCql);
+            if(queryRes != null){
+                return (TimeScaleEntity)queryRes;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
         return null;
     }
 

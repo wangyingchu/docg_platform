@@ -2,10 +2,14 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
-import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 public class TimeScaleOperationUtil {
 
@@ -260,4 +264,23 @@ public class TimeScaleOperationUtil {
         };
         return dataTransformer;
     }
+
+    public static void getMonths(int startYear,int startMonth,int endYear,int endMonth) throws ParseException {
+        Date d1 = new SimpleDateFormat("yyyy-MM").parse(startYear+"-"+startMonth);
+        Date d2 = new SimpleDateFormat("yyyy-MM").parse(endYear+"-"+endMonth);
+
+        Calendar dd = Calendar.getInstance();
+        dd.setTime(d1);
+        while(dd.getTime().before(d2)){
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+            String str = sdf.format(dd.getTime());
+            System.out.println(str);
+            dd.add(Calendar.MONTH, 1);
+        }
+        System.out.println(endYear+"-"+endMonth);
+
+
+
+    }
+
 }

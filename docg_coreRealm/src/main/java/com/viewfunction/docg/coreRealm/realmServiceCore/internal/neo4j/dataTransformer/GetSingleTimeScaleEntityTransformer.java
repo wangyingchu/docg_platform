@@ -40,16 +40,15 @@ public class GetSingleTimeScaleEntityTransformer implements DataTransformer<Time
                     String entityUID = ""+nodeUID;
                     int value = resultNode.get("id").asInt();
                     String timeFlowName = resultNode.get("timeFlow").asString();
-
-                    if(resultNode.get("year") != null){
+                    if(resultNode.get("year").asObject() != null){
                         timeScaleGrade = TimeFlow.TimeScaleGrade.YEAR;
-                    }else if(resultNode.get("month") != null){
+                    }else if(resultNode.get("month").asObject() != null){
                         timeScaleGrade = TimeFlow.TimeScaleGrade.MONTH;
-                    }else if(resultNode.get("day") != null){
+                    }else if(resultNode.get("day").asObject() != null){
                         timeScaleGrade = TimeFlow.TimeScaleGrade.DAY;
-                    }else if(resultNode.get("hour") != null){
+                    }else if(resultNode.get("hour").asObject() != null){
                         timeScaleGrade = TimeFlow.TimeScaleGrade.HOUR;
-                    }else if(resultNode.get("minute") != null){
+                    }else if(resultNode.get("minute").asObject() != null){
                         timeScaleGrade = TimeFlow.TimeScaleGrade.MINUTE;
                     }
                     Neo4JTimeScaleEntityImpl neo4JTimeScaleEntityImpl = new Neo4JTimeScaleEntityImpl(
