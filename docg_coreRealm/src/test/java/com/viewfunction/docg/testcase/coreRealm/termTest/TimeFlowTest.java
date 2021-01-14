@@ -48,7 +48,7 @@ public class TimeFlowTest {
 
         //boolean addTimeSpanEntities2 = defaultTimeFlow.createTimeSpanEntities(2001,2003);
         //System.out.println(addTimeSpanEntities2);
-
+*/
         //availableTimeSpanYears = defaultTimeFlow.getAvailableTimeSpanYears();
         //System.out.println(availableTimeSpanYears);
 
@@ -64,18 +64,22 @@ public class TimeFlowTest {
         TimeScaleEntity[] timeScaleEntityArray1 = defaultTimeFlow.getSpecificYearEntities(1998,2004,1997,4561);
         System.out.println(timeScaleEntityArray1.length);
 
-
         TimeScaleEntity singleTimeScaleEntity1 = defaultTimeFlow.getMonthEntity(1997,6);
         System.out.println(singleTimeScaleEntity1);
         System.out.println(singleTimeScaleEntity1.getTimeScaleGrade());
         System.out.println(singleTimeScaleEntity1.getEntityValue());
-*/
-       // defaultTimeFlow.getMonthEntities(new TimeScaleMoment(1980,6),new TimeScaleMoment(1999,8));
 
-        defaultTimeFlow.getSpecificMonthEntities(new TimeScaleMoment(1980,6),new TimeScaleMoment(1999,8));
+        TimeScaleEntity[] timeScaleEntityArray2 = defaultTimeFlow.getSpecificMonthEntities(new TimeScaleMoment(2004,6),new TimeScaleMoment(1999,8));
+        System.out.println(timeScaleEntityArray2.length);
+        System.out.println(timeScaleEntityArray2[0].getTimeScaleGrade());
+        System.out.println(timeScaleEntityArray2[0].getEntityValue());
+        System.out.println(timeScaleEntityArray2[1].getTimeScaleGrade());
+        System.out.println(timeScaleEntityArray2[1].getEntityValue());
 
-
-
+        LinkedList<TimeScaleEntity> timeScaleEntityLinkedList2 = defaultTimeFlow.getMonthEntities(new TimeScaleMoment(1997,4),new TimeScaleMoment(2021,5));
+        System.out.println(timeScaleEntityLinkedList2.getFirst().getEntityValue());
+        System.out.println(timeScaleEntityLinkedList2.getLast().getEntityValue());
+        System.out.println(timeScaleEntityLinkedList2.size());
     }
 
 }

@@ -164,20 +164,8 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
 
     @Override
     public LinkedList<TimeScaleEntity> getYearEntities(int fromYear, int toYear) {
-        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-        try{
-            String queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year) WHERE year.year in range("+fromYear+","+toYear+") RETURN year as operationResult ORDER BY year.year";
-            logger.debug("Generated Cypher Statement: {}", queryCql);
-            GetLinkedListTimeScaleEntityTransformer getLinkedListTimeScaleEntityTransformer =
-                    new GetLinkedListTimeScaleEntityTransformer(this.coreRealmName,graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
-            Object queryRes = workingGraphOperationExecutor.executeRead(getLinkedListTimeScaleEntityTransformer,queryCql);
-            if(queryRes != null){
-                return (LinkedList<TimeScaleEntity>)queryRes;
-            }
-        }finally {
-            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-        }
-        return null;
+        String queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year) WHERE year.year in range("+fromYear+","+toYear+") RETURN year as operationResult ORDER BY year.year";
+        return getListTimeScaleEntity(queryCql);
     }
 
     @Override
@@ -193,25 +181,8 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
         }
         yearPartString.append("]");
 
-        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-        try{
-            String queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year) WHERE year.year in "+yearPartString.toString()+" RETURN year as operationResult";
-            logger.debug("Generated Cypher Statement: {}", queryCql);
-            GetLinkedListTimeScaleEntityTransformer getLinkedListTimeScaleEntityTransformer =
-                    new GetLinkedListTimeScaleEntityTransformer(this.coreRealmName,graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
-            Object queryRes = workingGraphOperationExecutor.executeRead(getLinkedListTimeScaleEntityTransformer,queryCql);
-            if(queryRes != null){
-                List<TimeScaleEntity> timeScaleEntityList = (LinkedList<TimeScaleEntity>)queryRes;
-                TimeScaleEntity[] timeScaleEntityArray = new TimeScaleEntity[timeScaleEntityList.size()];
-                for(int i=0 ; i< timeScaleEntityList.size() ; i++){
-                    timeScaleEntityArray[i] = timeScaleEntityList.get(i);
-                }
-                return timeScaleEntityArray;
-            }
-        }finally {
-            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-        }
-        return new TimeScaleEntity[0];
+        String queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year) WHERE year.year in "+yearPartString.toString()+" RETURN year as operationResult";
+        return getArrayTimeScaleEntity(queryCql);
     }
 
     @Override
@@ -226,34 +197,48 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
         int fromMonth = fromMonthMoment.getMonth();
         int toYear = toMonthMoment.getYear();
         int toMonth = toMonthMoment.getMonth();
-        try {
-            LinkedList<TimeScaleMoment> timeScaleMomentList = TimeScaleOperationUtil.getMonths(fromYear,fromMonth,toYear,toMonth);
-            for(TimeScaleMoment currentTimeScaleMoment:timeScaleMomentList){
-                System.out.println(currentTimeScaleMoment.getYear()+"-"+currentTimeScaleMoment.getMonth());
-            }
 
-            int entitiesNumber = timeScaleMomentList.size();
-            if(entitiesNumber<=12){
-                //in one year, use UNION directly
-                TimeScaleMoment[] momentValueArray = new TimeScaleMoment[timeScaleMomentList.size()];
-                timeScaleMomentList.toArray(momentValueArray);
-                String queryCql = buildUnionMonthEntitiesCql(momentValueArray);
+        String queryCql = null;
 
-            }else{
-                System.out.println(entitiesNumber/12);
-                System.out.println(entitiesNumber%12);
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
+        //for from and to part year
+        List<TimeScaleMoment> queryBuildingMomentList = new ArrayList<>();
+        for(int i = fromMonth; i<=12; i++){
+            queryBuildingMomentList.add(new TimeScaleMoment(fromYear,i));
         }
-        return null;
+        TimeScaleMoment[] momentValueArray = new TimeScaleMoment[queryBuildingMomentList.size()];
+        queryBuildingMomentList.toArray(momentValueArray);
+        queryCql = buildUnionMonthEntitiesCql(momentValueArray);
+
+        //for middle whole year
+        int yearSpan = toYear - fromYear;
+        if(yearSpan > 1 ){
+            if(yearSpan == 2){
+                String yearRange =""+(fromYear+1);
+                String wholeYearPartQuery = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month:DOCG_TS_Month) WHERE year.year ="+yearRange+" RETURN month as operationResult ORDER BY year.year, month.month";
+                queryCql = queryCql +" UNION "+"\n" + wholeYearPartQuery;
+            }else{
+                String yearRange ="range("+(fromYear+1)+","+(fromYear+yearSpan-1)+")";
+                String wholeYearPartQuery = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month:DOCG_TS_Month) WHERE year.year in "+yearRange+" RETURN month as operationResult ORDER BY year.year, month.month";
+                queryCql = queryCql +" UNION "+"\n" + wholeYearPartQuery;
+            }
+        }
+
+        //for to part year
+        queryBuildingMomentList.clear();
+        for(int i = 1; i<=toMonth; i++){
+            queryBuildingMomentList.add(new TimeScaleMoment(toYear,i));
+        }
+        momentValueArray = new TimeScaleMoment[queryBuildingMomentList.size()];
+        queryBuildingMomentList.toArray(momentValueArray);
+        queryCql = queryCql +" UNION "+"\n" + buildUnionMonthEntitiesCql(momentValueArray);
+
+        return getListTimeScaleEntity(queryCql);
     }
 
     @Override
     public TimeScaleEntity[] getSpecificMonthEntities(TimeScaleMoment... monthMoments) {
         String queryCql = buildUnionMonthEntitiesCql(monthMoments);
-        System.out.println(queryCql);
-        return new TimeScaleEntity[0];
+        return getArrayTimeScaleEntity(queryCql);
     }
 
     private String buildUnionMonthEntitiesCql(TimeScaleMoment... monthMoments){
@@ -363,6 +348,43 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
             Object queryRes = workingGraphOperationExecutor.executeRead(getSingleTimeScaleEntityTransformer,queryCql);
             if(queryRes != null){
                 return (TimeScaleEntity)queryRes;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return null;
+    }
+
+    private LinkedList<TimeScaleEntity> getListTimeScaleEntity(String queryCql){
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            GetLinkedListTimeScaleEntityTransformer getLinkedListTimeScaleEntityTransformer =
+                    new GetLinkedListTimeScaleEntityTransformer(this.coreRealmName,graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object queryRes = workingGraphOperationExecutor.executeRead(getLinkedListTimeScaleEntityTransformer,queryCql);
+            if(queryRes != null){
+                return (LinkedList<TimeScaleEntity>)queryRes;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return null;
+    }
+
+    private TimeScaleEntity[] getArrayTimeScaleEntity(String queryCql){
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            GetLinkedListTimeScaleEntityTransformer getLinkedListTimeScaleEntityTransformer =
+                    new GetLinkedListTimeScaleEntityTransformer(this.coreRealmName,graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object queryRes = workingGraphOperationExecutor.executeRead(getLinkedListTimeScaleEntityTransformer,queryCql);
+            if(queryRes != null){
+                List<TimeScaleEntity> timeScaleEntityList = (LinkedList<TimeScaleEntity>)queryRes;
+                TimeScaleEntity[] timeScaleEntityArray = new TimeScaleEntity[timeScaleEntityList.size()];
+                for(int i=0 ; i< timeScaleEntityList.size() ; i++){
+                    timeScaleEntityArray[i] = timeScaleEntityList.get(i);
+                }
+                return timeScaleEntityArray;
             }
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
