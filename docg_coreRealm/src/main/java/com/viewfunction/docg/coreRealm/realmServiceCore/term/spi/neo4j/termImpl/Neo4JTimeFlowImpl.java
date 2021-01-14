@@ -213,13 +213,7 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
         String queryCql = null;
 
         //for from part year
-        List<TimeScaleMoment> queryBuildingMomentList = new ArrayList<>();
-        for(int i = fromMonth; i<=12; i++){
-            queryBuildingMomentList.add(new TimeScaleMoment(fromYear,i));
-        }
-        TimeScaleMoment[] momentValueArray = new TimeScaleMoment[queryBuildingMomentList.size()];
-        queryBuildingMomentList.toArray(momentValueArray);
-        queryCql = buildUnionMonthEntitiesCql(momentValueArray);
+        queryCql = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+fromYear+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month) WHERE month.month in range("+fromMonth+",12) RETURN month as operationResult ORDER BY year.year, month.month";
 
         //for middle whole year
         int yearSpan = toYear - fromYear;
@@ -234,16 +228,9 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
                 queryCql = queryCql +" UNION "+"\n" + wholeYearPartQuery;
             }
         }
-
         //for to part year
-        queryBuildingMomentList.clear();
-        for(int i = 1; i<=toMonth; i++){
-            queryBuildingMomentList.add(new TimeScaleMoment(toYear,i));
-        }
-        momentValueArray = new TimeScaleMoment[queryBuildingMomentList.size()];
-        queryBuildingMomentList.toArray(momentValueArray);
-        queryCql = queryCql +" UNION "+"\n" + buildUnionMonthEntitiesCql(momentValueArray);
-
+        queryCql = queryCql +" UNION "+"\n" +
+                "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+toYear+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month) WHERE month.month in range(1,"+toMonth+") RETURN month as operationResult ORDER BY year.year, month.month";
         return getListTimeScaleEntity(queryCql);
     }
 
