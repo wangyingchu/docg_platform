@@ -203,3 +203,8 @@ MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains]->(year
 MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:2000})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:11}) RETURN month as operationResult
 MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month:DOCG_TS_Month) WHERE year.year in range(2001,2002) RETURN month as operationResult ORDER BY year.year, month.month
 MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month:DOCG_TS_Month) WHERE year.year =2000 RETURN month as operationResult ORDER BY year.year, month.month
+
+////// Get days
+MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:2000})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:11})-[:DOCG_TS_Contains]->(day:DOCG_TS_Day{day:11}) RETURN day as operationResult
+MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month:DOCG_TS_Month)-[:DOCG_TS_Contains]->(day:DOCG_TS_Day) WHERE year.year in range(2001,2002) RETURN day as operationResult ORDER BY year.year, month.month, day.day
+MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month:DOCG_TS_Month)-[:DOCG_TS_Contains]->(day:DOCG_TS_Day) WHERE year.year =2000 RETURN day as operationResult ORDER BY year.year, month.month, day.day

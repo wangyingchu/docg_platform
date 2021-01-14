@@ -20,7 +20,6 @@ import org.neo4j.driver.types.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -163,7 +162,13 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
     }
 
     @Override
-    public LinkedList<TimeScaleEntity> getYearEntities(int fromYear, int toYear) {
+    public LinkedList<TimeScaleEntity> getYearEntities(int fromYear, int toYear) throws CoreRealmServiceRuntimeException {
+        if(toYear<=fromYear){
+            logger.error("To Year {} must great than From Year {}.", toYear, fromYear);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("To Year "+toYear+" must great than From Year "+fromYear+".");
+            throw exception;
+        }
         String queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year) WHERE year.year in range("+fromYear+","+toYear+") RETURN year as operationResult ORDER BY year.year";
         return getListTimeScaleEntity(queryCql);
     }
@@ -192,15 +197,22 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
     }
 
     @Override
-    public LinkedList<TimeScaleEntity> getMonthEntities(TimeScaleMoment fromMonthMoment, TimeScaleMoment toMonthMoment) {
+    public LinkedList<TimeScaleEntity> getMonthEntities(TimeScaleMoment fromMonthMoment, TimeScaleMoment toMonthMoment) throws CoreRealmServiceRuntimeException {
         int fromYear = fromMonthMoment.getYear();
         int fromMonth = fromMonthMoment.getMonth();
         int toYear = toMonthMoment.getYear();
         int toMonth = toMonthMoment.getMonth();
 
+        if(toYear<=fromYear){
+            logger.error("To Year {} must great than From Year {}.", toYear, fromYear);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("To Year "+toYear+" must great than From Year "+fromYear+".");
+            throw exception;
+        }
+
         String queryCql = null;
 
-        //for from and to part year
+        //for from part year
         List<TimeScaleMoment> queryBuildingMomentList = new ArrayList<>();
         for(int i = fromMonth; i<=12; i++){
             queryBuildingMomentList.add(new TimeScaleMoment(fromYear,i));
@@ -256,17 +268,67 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
 
     @Override
     public TimeScaleEntity getDayEntity(int year, int month, int day) {
-        return null;
+        String queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+year+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:"+month+"})-[:DOCG_TS_Contains]->(day:DOCG_TS_Day{day:"+day+"}) RETURN day as operationResult";
+        return getSingleTimeScaleEntity(queryCql);
     }
 
     @Override
-    public LinkedList<TimeScaleEntity> getDayEntities(TimeScaleMoment fromDayMoment, TimeScaleMoment toDayMoment) {
+    public LinkedList<TimeScaleEntity> getDayEntities(TimeScaleMoment fromDayMoment, TimeScaleMoment toDayMoment) throws CoreRealmServiceRuntimeException {
+        int fromYear = fromDayMoment.getYear();
+        int fromMonth = fromDayMoment.getMonth();
+        int fromDay = fromDayMoment.getDay();
+        int toYear = toDayMoment.getYear();
+        int toMonth = toDayMoment.getMonth();
+        int toDay = toDayMoment.getDay();
+
+        if(toYear<=fromYear){
+            logger.error("To Year {} must great than From Year {}.", toYear, fromYear);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("To Year "+toYear+" must great than From Year "+fromYear+".");
+            throw exception;
+        }
+
+        String queryCql = null;
+
+        //for from part year
+
+        //for middle whole year
+        int yearSpan = toYear - fromYear;
+        if(yearSpan > 1 ){
+            if(yearSpan == 2){
+                String yearRange =""+(fromYear+1);
+                String wholeYearPartQuery = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month:DOCG_TS_Month)-[:DOCG_TS_Contains]->(day:DOCG_TS_Day) WHERE year.year ="+yearRange+" RETURN day as operationResult ORDER BY year.year, month.month, day.day";
+                queryCql = queryCql +" UNION "+"\n" + wholeYearPartQuery;
+            }else{
+                String yearRange ="range("+(fromYear+1)+","+(fromYear+yearSpan-1)+")";
+                String wholeYearPartQuery = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month:DOCG_TS_Month)-[:DOCG_TS_Contains]->(day:DOCG_TS_Day) WHERE year.year in "+yearRange+" RETURN month as operationResult ORDER BY year.year, month.month, day.day";
+                queryCql = queryCql +" UNION "+"\n" + wholeYearPartQuery;
+            }
+        }
+
+        //for to part year
+
+
         return null;
     }
 
     @Override
     public TimeScaleEntity[] getSpecificDayEntities(TimeScaleMoment... dayMoments) {
-        return new TimeScaleEntity[0];
+        String queryCql = buildUnionDayEntitiesCql(dayMoments);
+        return getArrayTimeScaleEntity(queryCql);
+    }
+
+    private String buildUnionDayEntitiesCql(TimeScaleMoment... monthMoments){
+        StringBuffer cqlBuffer = new StringBuffer();
+        for(int i = 0; i< monthMoments.length;i++){
+            TimeScaleMoment currentTimeScaleMoment = monthMoments[i];
+            String queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+currentTimeScaleMoment.getYear()+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:"+currentTimeScaleMoment.getMonth()+"})-[:DOCG_TS_Contains]->(day:DOCG_TS_Day{day:"+currentTimeScaleMoment.getDay()+"}) RETURN day as operationResult";
+            cqlBuffer.append(queryCql);
+            if(i !=monthMoments.length-1){
+                cqlBuffer.append(" UNION"+"\n");
+            }
+        }
+        return cqlBuffer.toString();
     }
 
     @Override

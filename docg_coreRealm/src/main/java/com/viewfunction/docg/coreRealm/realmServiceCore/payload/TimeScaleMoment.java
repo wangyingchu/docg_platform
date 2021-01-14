@@ -2,13 +2,13 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.payload;
 
 public class TimeScaleMoment {
 
-    private int year;
-    private int month;
-    private int day;
-    private int hour;
-    private int minute;
-    private int second;
-    private int week;
+    private int year=0;
+    private int month=1;
+    private int day=1;
+    private int hour=0;
+    private int minute=0;
+    private int second=0;
+    private int week=1;
 
     public TimeScaleMoment(){}
 

@@ -15,7 +15,6 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.util.LinkedList;
-import java.util.List;
 
 public class TimeFlowTest {
 
@@ -78,8 +77,24 @@ public class TimeFlowTest {
 
         LinkedList<TimeScaleEntity> timeScaleEntityLinkedList2 = defaultTimeFlow.getMonthEntities(new TimeScaleMoment(1997,4),new TimeScaleMoment(2021,5));
         System.out.println(timeScaleEntityLinkedList2.getFirst().getEntityValue());
+        System.out.println(timeScaleEntityLinkedList2.getFirst().getTimeScaleGrade());
         System.out.println(timeScaleEntityLinkedList2.getLast().getEntityValue());
+        System.out.println(timeScaleEntityLinkedList2.getLast().getTimeScaleGrade());
         System.out.println(timeScaleEntityLinkedList2.size());
+
+        TimeScaleEntity singleTimeScaleEntity2 = defaultTimeFlow.getDayEntity(2000,2,29);
+        System.out.println(singleTimeScaleEntity2);
+        System.out.println(singleTimeScaleEntity2.getTimeScaleGrade());
+        System.out.println(singleTimeScaleEntity2.getEntityValue());
+
+        TimeScaleEntity[] timeScaleEntityArray3 = defaultTimeFlow.getSpecificDayEntities(new TimeScaleMoment(2004,6,5),
+                new TimeScaleMoment(1999,11,23),
+                new TimeScaleMoment(2003,9,27));
+        System.out.println(timeScaleEntityArray3.length);
+        System.out.println(timeScaleEntityArray3[0].getTimeScaleGrade());
+        System.out.println(timeScaleEntityArray3[0].getEntityValue());
+        System.out.println(timeScaleEntityArray3[1].getTimeScaleGrade());
+        System.out.println(timeScaleEntityArray3[1].getEntityValue());
     }
 
 }

@@ -19,15 +19,15 @@ public interface TimeFlow {
     public List<Integer> getAvailableTimeSpanYears();
 
     public TimeScaleEntity getYearEntity(int year);
-    public LinkedList<TimeScaleEntity> getYearEntities(int fromYear, int toYear);
+    public LinkedList<TimeScaleEntity> getYearEntities(int fromYear, int toYear) throws CoreRealmServiceRuntimeException;
     public TimeScaleEntity[] getSpecificYearEntities(int... year);
 
     public TimeScaleEntity getMonthEntity(int year,int month);
-    public LinkedList<TimeScaleEntity> getMonthEntities(TimeScaleMoment fromMonthMoment, TimeScaleMoment toMonthMoment);
+    public LinkedList<TimeScaleEntity> getMonthEntities(TimeScaleMoment fromMonthMoment, TimeScaleMoment toMonthMoment) throws CoreRealmServiceRuntimeException;
     public TimeScaleEntity[] getSpecificMonthEntities(TimeScaleMoment... monthMoments);
 
     public TimeScaleEntity getDayEntity(int year,int month,int day);
-    public LinkedList<TimeScaleEntity> getDayEntities(TimeScaleMoment fromDayMoment, TimeScaleMoment toDayMoment);
+    public LinkedList<TimeScaleEntity> getDayEntities(TimeScaleMoment fromDayMoment, TimeScaleMoment toDayMoment) throws CoreRealmServiceRuntimeException;
     public TimeScaleEntity[] getSpecificDayEntities(TimeScaleMoment... dayMoments);
 
     public TimeScaleEntity getHourEntity(int year, int month,int day,int hour);
