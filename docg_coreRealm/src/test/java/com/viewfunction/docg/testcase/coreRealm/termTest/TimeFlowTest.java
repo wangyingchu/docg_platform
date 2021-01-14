@@ -101,6 +101,9 @@ public class TimeFlowTest {
         System.out.println(timeScaleEntityArray3[1].getTimeScaleGrade());
         System.out.println(timeScaleEntityArray3[1].getEntityValue());
         */
+
+        LinkedList<TimeScaleEntity> timeScaleEntityLinkedList3 = defaultTimeFlow.getDayEntities(new TimeScaleMoment(1997,4,2),new TimeScaleMoment(1997,4,30));
+        System.out.println(timeScaleEntityLinkedList3.size());
     }
 
 }
