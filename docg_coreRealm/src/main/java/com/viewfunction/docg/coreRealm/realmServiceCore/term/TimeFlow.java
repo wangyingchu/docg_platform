@@ -31,7 +31,7 @@ public interface TimeFlow {
     public TimeScaleEntity[] getSpecificDayEntities(TimeScaleMoment... dayMoments);
 
     public TimeScaleEntity getHourEntity(int year, int month,int day,int hour);
-    public LinkedList<TimeScaleEntity> getHourEntities(TimeScaleMoment fromHourMoment, TimeScaleMoment toHourMoment);
+    public LinkedList<TimeScaleEntity> getHourEntities(TimeScaleMoment fromHourMoment, TimeScaleMoment toHourMoment) throws CoreRealmServiceRuntimeException;
     public TimeScaleEntity[] getSpecificHourEntities(TimeScaleMoment... hourMoments);
 
     public TimeScaleEntity getMinuteEntity(int year, int month,int day,int hour,int minute);

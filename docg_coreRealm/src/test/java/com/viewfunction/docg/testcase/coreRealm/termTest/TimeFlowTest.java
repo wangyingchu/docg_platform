@@ -104,6 +104,28 @@ public class TimeFlowTest {
 
         LinkedList<TimeScaleEntity> timeScaleEntityLinkedList3 = defaultTimeFlow.getDayEntities(new TimeScaleMoment(1997,12,2),new TimeScaleMoment(1998,1,2));
         System.out.println(timeScaleEntityLinkedList3.size());
+
+        TimeScaleEntity singleTimeScaleEntity3 = defaultTimeFlow.getHourEntity(2000,2,29,18);
+        System.out.println(singleTimeScaleEntity3);
+        System.out.println(singleTimeScaleEntity3.getTimeScaleGrade());
+        System.out.println(singleTimeScaleEntity3.getEntityValue());
+
+        TimeScaleEntity[] timeScaleEntityArray4 = defaultTimeFlow.getSpecificHourEntities(new TimeScaleMoment(2004,6,5,13),
+                new TimeScaleMoment(1999,11,23,22),
+                new TimeScaleMoment(2003,9,27,2));
+        System.out.println(timeScaleEntityArray4.length);
+        System.out.println(timeScaleEntityArray4[0].getTimeScaleGrade());
+        System.out.println(timeScaleEntityArray4[0].getEntityValue());
+        System.out.println(timeScaleEntityArray4[1].getTimeScaleGrade());
+        System.out.println(timeScaleEntityArray4[1].getEntityValue());
+
+        LinkedList<TimeScaleEntity> timeScaleEntityLinkedList4 = defaultTimeFlow.getHourEntities(new TimeScaleMoment(1997,12,2,0),new TimeScaleMoment(1997,12,2,21));
+        System.out.println(timeScaleEntityLinkedList4.size());
+        System.out.println(timeScaleEntityLinkedList4.get(0).getTimeScaleGrade());
+
+        timeScaleEntityLinkedList4 = defaultTimeFlow.getHourEntities(new TimeScaleMoment(1997,12,2,0),new TimeScaleMoment(1997,12,4,21));
+        System.out.println(timeScaleEntityLinkedList4.size());
+        System.out.println(timeScaleEntityLinkedList4.get(0).getTimeScaleGrade());
     }
 
 }
