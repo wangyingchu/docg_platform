@@ -35,7 +35,7 @@ public class TimeFlowTest {
 
         TimeFlow defaultTimeFlow = coreRealm.getOrCreateTimeFlow();
 
-
+/*
         Assert.assertNotNull(defaultTimeFlow);
         Assert.assertNotNull(((Neo4JTimeFlowImpl)defaultTimeFlow).getTimeFlowUID());
         Assert.assertEquals(defaultTimeFlow.getTimeFlowName(), RealmConstant._defaultTimeFlowName);
@@ -85,7 +85,7 @@ public class TimeFlowTest {
         System.out.println(timeScaleEntityLinkedList2.getLast().getEntityValue());
         System.out.println(timeScaleEntityLinkedList2.getLast().getTimeScaleGrade());
         System.out.println(timeScaleEntityLinkedList2.size());
-
+*/
         /*
         TimeScaleEntity singleTimeScaleEntity2 = defaultTimeFlow.getDayEntity(2000,2,29);
         System.out.println(singleTimeScaleEntity2);
@@ -102,7 +102,7 @@ public class TimeFlowTest {
         System.out.println(timeScaleEntityArray3[1].getEntityValue());
         */
 
-        LinkedList<TimeScaleEntity> timeScaleEntityLinkedList3 = defaultTimeFlow.getDayEntities(new TimeScaleMoment(1997,4,2),new TimeScaleMoment(1997,4,30));
+        LinkedList<TimeScaleEntity> timeScaleEntityLinkedList3 = defaultTimeFlow.getDayEntities(new TimeScaleMoment(1997,12,2),new TimeScaleMoment(1998,1,2));
         System.out.println(timeScaleEntityLinkedList3.size());
     }
 

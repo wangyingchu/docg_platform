@@ -277,37 +277,32 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
 
         String queryCql = null;
 
-        // 2011-6-15  -   2012-8-28
-
-        //for from part day
-        queryCql = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+fromYear+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:"+fromMonth+"})-[:DOCG_TS_Contains]->(day:DOCG_TS_Day) WHERE day.day in range("+fromDay+",31) RETURN day as operationResult ORDER BY year.year, month.month, day.day";
-
-        //for middle whole years
-        int yearSpan = toYear - fromYear;
-        if(yearSpan > 1 ){
-
-            String yearRange ="range("+(fromYear+1)+","+(fromYear+yearSpan-1)+")";
-            String wholeYearPartQuery = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month:DOCG_TS_Month)-[:DOCG_TS_Contains]->(day:DOCG_TS_Day) WHERE year.year in "+yearRange+" RETURN month as operationResult ORDER BY year.year, month.month, day.day";
-            queryCql = queryCql +" UNION "+"\n" + wholeYearPartQuery;
-
-            /*
-            if(yearSpan == 2){
-                String yearRange =""+(fromYear+1);
-                String wholeYearPartQuery = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month:DOCG_TS_Month)-[:DOCG_TS_Contains]->(day:DOCG_TS_Day) WHERE year.year ="+yearRange+" RETURN day as operationResult ORDER BY year.year, month.month, day.day";
+        if(fromYear == toYear && fromMonth == toMonth){
+            queryCql = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+fromYear+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:"+fromMonth+"})-[:DOCG_TS_Contains]->(day:DOCG_TS_Day) WHERE day.day in range("+fromDay+","+toDay+") RETURN day as operationResult ORDER BY year.year, month.month, day.day";
+        }else{
+            //for from part day
+            queryCql = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+fromYear+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:"+fromMonth+"})-[:DOCG_TS_Contains]->(day:DOCG_TS_Day) WHERE day.day in range("+fromDay+",31) RETURN day as operationResult ORDER BY year.year, month.month, day.day";
+            if(fromYear == toYear){
+                String monthRange ="range("+(fromMonth+1)+","+(toMonth-1)+")";
+                String wholeYearPartQuery = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+fromYear+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month)-[:DOCG_TS_Contains]->(day:DOCG_TS_Day) WHERE month.month in "+monthRange+" RETURN day as operationResult ORDER BY year.year, month.month, day.day";
                 queryCql = queryCql +" UNION "+"\n" + wholeYearPartQuery;
             }else{
-                String yearRange ="range("+(fromYear+1)+","+(fromYear+yearSpan-1)+")";
-                String wholeYearPartQuery = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month:DOCG_TS_Month)-[:DOCG_TS_Contains]->(day:DOCG_TS_Day) WHERE year.year in "+yearRange+" RETURN month as operationResult ORDER BY year.year, month.month, day.day";
-                queryCql = queryCql +" UNION "+"\n" + wholeYearPartQuery;
+                //for middle whole years
+                int yearSpan = toYear - fromYear;
+                if(yearSpan > 1 ){
+                    String yearRange ="range("+(fromYear+1)+","+(fromYear+yearSpan-1)+")";
+                    String wholeYearPartQuery = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month:DOCG_TS_Month)-[:DOCG_TS_Contains]->(day:DOCG_TS_Day) WHERE year.year in "+yearRange+" RETURN month as operationResult ORDER BY year.year, month.month, day.day";
+                    queryCql = queryCql +" UNION "+"\n" + wholeYearPartQuery;
+                }
             }
-            */
+            //for to part day
+            if(toYear != fromYear){
+                queryCql = queryCql +" UNION "+"\n" +
+                        "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+toYear+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month)-[:DOCG_TS_Contains]->(day:DOCG_TS_Day) WHERE month.month in range(1,"+(toMonth-1)+") RETURN day as operationResult ORDER BY year.year, month.month, day.day";
+            }
+            queryCql = queryCql +" UNION "+"\n" +
+                    "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+toYear+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:"+toMonth+"})-[:DOCG_TS_Contains]->(day:DOCG_TS_Day) WHERE day.day in range(1,"+toDay+") RETURN day as operationResult ORDER BY year.year, month.month, day.day";
         }
-
-        //for to part day
-        queryCql = queryCql +" UNION "+"\n" +
-                "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+toYear+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month)-[:DOCG_TS_Contains]->(day:DOCG_TS_Day) WHERE month.month in range(1,"+(toMonth-1)+") RETURN day as operationResult ORDER BY year.year, month.month, day.day"+
-                " UNION "+"\n" +
-                "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+toYear+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:"+toMonth+"})-[:DOCG_TS_Contains]->(day:DOCG_TS_Day) WHERE day.day in range(1,"+toDay+") RETURN day as operationResult ORDER BY year.year, month.month, day.day";
         return getListTimeScaleEntity(queryCql);
     }
 
