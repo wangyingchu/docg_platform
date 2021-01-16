@@ -363,6 +363,9 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
             }else if(fromYear == toYear && toMonth > fromMonth){
                 queryCql = queryCql + " UNION " + "\n" +
                         "MATCH(timeFlow:DOCG_TimeFlow{name:\"" + getTimeFlowName() + "\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:" + toYear + "})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month)-[:DOCG_TS_Contains]->(day:DOCG_TS_Day)-[:DOCG_TS_Contains]->(hour:DOCG_TS_Hour) WHERE month.month in range(" + (fromMonth + 1) + "," + (toMonth - 1) + ") RETURN hour as operationResult ORDER BY year.year, month.month, day.day, hour.hour\n";
+            }else if(toYear > fromYear){
+                queryCql = queryCql + " UNION " + "\n" +
+                        "MATCH(timeFlow:DOCG_TimeFlow{name:\"" + getTimeFlowName() + "\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month:DOCG_TS_Month)-[:DOCG_TS_Contains]->(day:DOCG_TS_Day)-[:DOCG_TS_Contains]->(hour:DOCG_TS_Hour) WHERE year.year in range(" + (fromYear + 1) + "," + (toYear - 1) + ") RETURN hour as operationResult ORDER BY year.year, month.month, day.day, hour.hour\n";
             }
 
             //for to part hour
