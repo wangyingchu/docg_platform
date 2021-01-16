@@ -396,7 +396,8 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
 
     @Override
     public TimeScaleEntity getMinuteEntity(int year, int month, int day, int hour, int minute) {
-        return null;
+        String queryCql = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+year+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:"+month+"})-[:DOCG_TS_Contains]->(day:DOCG_TS_Day{day:"+day+"})-[:DOCG_TS_Contains]->(hour:DOCG_TS_Hour{hour:"+hour+"})-[:DOCG_TS_Contains]->(minute:DOCG_TS_Minute{minute:"+minute+"}) RETURN minute as operationResult";
+        return getSingleTimeScaleEntity(queryCql);
     }
 
     @Override
@@ -406,7 +407,21 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
 
     @Override
     public TimeScaleEntity[] getSpecificMinuteEntities(TimeScaleMoment... minuteMoments) {
-        return new TimeScaleEntity[0];
+        String queryCql = buildUnionMinuteEntitiesCql(minuteMoments);
+        return getArrayTimeScaleEntity(queryCql);
+    }
+
+    private String buildUnionMinuteEntitiesCql(TimeScaleMoment... monthMoments){
+        StringBuffer cqlBuffer = new StringBuffer();
+        for(int i = 0; i< monthMoments.length;i++){
+            TimeScaleMoment currentTimeScaleMoment = monthMoments[i];
+            String queryCql = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+currentTimeScaleMoment.getYear()+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:"+currentTimeScaleMoment.getMonth()+"})-[:DOCG_TS_Contains]->(day:DOCG_TS_Day{day:"+currentTimeScaleMoment.getDay()+"})-[:DOCG_TS_Contains]->(hour:DOCG_TS_Hour{hour:"+currentTimeScaleMoment.getHour()+"})-[:DOCG_TS_Contains]->(minute:DOCG_TS_Minute{minute:"+currentTimeScaleMoment.getMinute()+"}) RETURN minute as operationResult";
+            cqlBuffer.append(queryCql);
+            if(i !=monthMoments.length-1){
+                cqlBuffer.append(" UNION"+"\n");
+            }
+        }
+        return cqlBuffer.toString();
     }
 
     @Override
