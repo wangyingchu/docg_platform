@@ -153,7 +153,18 @@ public class TimeFlowTest {
         System.out.println(timeScaleEntityArray5[2].getTimeScaleGrade());
         System.out.println(timeScaleEntityArray5[2].getEntityValue());
 
+        LinkedList<TimeScaleEntity> timeScaleEntityLinkedList5 = defaultTimeFlow.getMinuteEntities(new TimeScaleMoment(1997,12,31,3,5),new TimeScaleMoment(1997,12,31,3,18));
+        System.out.println(timeScaleEntityLinkedList5.size());
+        System.out.println(timeScaleEntityLinkedList5.get(0).getTimeScaleGrade());
 
+        timeScaleEntityLinkedList5 = defaultTimeFlow.getMinuteEntities(new TimeScaleMoment(1997,12,31,3,5),new TimeScaleMoment(1997,12,31,5,18));
+        System.out.println(timeScaleEntityLinkedList5.size());
+        System.out.println(timeScaleEntityLinkedList5.get(0).getTimeScaleGrade());
+
+
+        timeScaleEntityLinkedList5 = defaultTimeFlow.getMinuteEntities(new TimeScaleMoment(1997,12,25,3,5),new TimeScaleMoment(1997,12,28,5,18));
+        System.out.println(timeScaleEntityLinkedList5.size());
+        System.out.println(timeScaleEntityLinkedList5.get(0).getTimeScaleGrade());
 
 
     }
