@@ -39,13 +39,13 @@ public interface TimeFlow {
     public TimeScaleEntity[] getSpecificMinuteEntities(TimeScaleMoment... minuteMoments);
 
     public TimeScaleEntity getSecondEntity(int year, int month,int day,int hour,int minute,int second);
-    public LinkedList<TimeScaleEntity> getSecondEntities(TimeScaleMoment fromSecondMoment, TimeScaleMoment toSecondMoment);
+    public LinkedList<TimeScaleEntity> getSecondEntities(TimeScaleMoment fromSecondMoment, TimeScaleMoment toSecondMoment) throws CoreRealmServiceRuntimeException;
     public TimeScaleEntity[] getSpecificSecondEntities(TimeScaleMoment... secondMoments);
 
-    public LinkedList<TimeScaleEntity> getChildEntities(TimeScaleMoment timeScaleMoments);
-    public LinkedList<TimeScaleEntity> getFellowEntities(TimeScaleMoment timeScaleMoments);
+    public LinkedList<TimeScaleEntity> getChildEntities(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade);
+    public LinkedList<TimeScaleEntity> getFellowEntities(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade);
 
-    public TimeScaleEntity getFirstChildEntity(TimeScaleMoment timeScaleMoments);
-    public TimeScaleEntity getLastChildEntity(TimeScaleMoment timeScaleMoments);
-    public InheritanceTree<TimeScaleEntity> getOffspringEntities(TimeScaleMoment timeScaleMoments);
+    public TimeScaleEntity getFirstChildEntity(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade);
+    public TimeScaleEntity getLastChildEntity(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade);
+    public InheritanceTree<TimeScaleEntity> getOffspringEntities(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade);
 }

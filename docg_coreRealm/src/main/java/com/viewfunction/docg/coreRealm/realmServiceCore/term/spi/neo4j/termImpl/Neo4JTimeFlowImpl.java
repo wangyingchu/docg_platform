@@ -495,38 +495,91 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
     }
 
     @Override
-    public LinkedList<TimeScaleEntity> getSecondEntities(TimeScaleMoment fromSecondMoment, TimeScaleMoment toSecondMoment) {
+    public LinkedList<TimeScaleEntity> getSecondEntities(TimeScaleMoment fromSecondMoment, TimeScaleMoment toSecondMoment) throws CoreRealmServiceRuntimeException {
         return null;
     }
 
     @Override
     public TimeScaleEntity[] getSpecificSecondEntities(TimeScaleMoment... secondMoments) {
-        return new TimeScaleEntity[0];
-    }
-
-    @Override
-    public LinkedList<TimeScaleEntity> getChildEntities(TimeScaleMoment timeScaleMoments) {
         return null;
     }
 
     @Override
-    public LinkedList<TimeScaleEntity> getFellowEntities(TimeScaleMoment timeScaleMoments) {
+    public LinkedList<TimeScaleEntity> getChildEntities(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade) {
+        TimeScaleEntity targetEntity = getSpecialTimeScaleEntity(timeScaleMoment,timeScaleGrade);
+        if (targetEntity != null){
+            return targetEntity.getChildEntities();
+        }
         return null;
     }
 
     @Override
-    public TimeScaleEntity getFirstChildEntity(TimeScaleMoment timeScaleMoments) {
+    public LinkedList<TimeScaleEntity> getFellowEntities(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade) {
+        TimeScaleEntity targetEntity = getSpecialTimeScaleEntity(timeScaleMoment,timeScaleGrade);
+        if (targetEntity != null){
+            return targetEntity.getFellowEntities();
+        }
         return null;
     }
 
     @Override
-    public TimeScaleEntity getLastChildEntity(TimeScaleMoment timeScaleMoments) {
+    public TimeScaleEntity getFirstChildEntity(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade) {
+        TimeScaleEntity targetEntity = getSpecialTimeScaleEntity(timeScaleMoment,timeScaleGrade);
+        if (targetEntity != null){
+            return targetEntity.getFirstChildEntity();
+        }
         return null;
     }
 
     @Override
-    public InheritanceTree<TimeScaleEntity> getOffspringEntities(TimeScaleMoment timeScaleMoments) {
+    public TimeScaleEntity getLastChildEntity(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade) {
+        TimeScaleEntity targetEntity = getSpecialTimeScaleEntity(timeScaleMoment,timeScaleGrade);
+        if (targetEntity != null){
+            return targetEntity.getLastChildEntity();
+        }
         return null;
+    }
+
+    @Override
+    public InheritanceTree<TimeScaleEntity> getOffspringEntities(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade) {
+        TimeScaleEntity targetEntity = getSpecialTimeScaleEntity(timeScaleMoment,timeScaleGrade);
+        if (targetEntity != null){
+            return targetEntity.getOffspringEntities();
+        }
+        return null;
+    }
+
+    private TimeScaleEntity getSpecialTimeScaleEntity(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade){
+        int targetYear = timeScaleMoment.getYear();
+        int targetMonth = timeScaleMoment.getMonth();
+        int targetDay = timeScaleMoment.getDay();
+        int targetHour = timeScaleMoment.getHour();
+        int targetMinute = timeScaleMoment.getMinute();
+        int targetSecond = timeScaleMoment.getSecond();
+
+        TimeScaleEntity targetTimeScaleEntity = null;
+
+        switch(timeScaleGrade){
+            case SECOND:
+                targetTimeScaleEntity = getSecondEntity(targetYear,targetMonth,targetDay,targetHour,targetMinute,targetSecond);
+                break;
+            case MINUTE:
+                targetTimeScaleEntity = getMinuteEntity(targetYear,targetMonth,targetDay,targetHour,targetMinute);
+                break;
+            case HOUR:
+                targetTimeScaleEntity = getHourEntity(targetYear,targetMonth,targetDay,targetHour);
+                break;
+            case DAY:
+                targetTimeScaleEntity = getDayEntity(targetYear,targetMonth,targetDay);
+                break;
+            case MONTH:
+                targetTimeScaleEntity = getMonthEntity(targetYear,targetMonth);
+                break;
+            case YEAR:
+                targetTimeScaleEntity = getYearEntity(targetYear);
+                break;
+        }
+        return targetTimeScaleEntity;
     }
 
     private TimeScaleEntity getSingleTimeScaleEntity(String queryCql){
