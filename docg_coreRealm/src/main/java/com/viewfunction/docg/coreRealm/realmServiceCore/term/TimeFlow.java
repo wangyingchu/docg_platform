@@ -45,7 +45,5 @@ public interface TimeFlow {
     public LinkedList<TimeScaleEntity> getChildEntities(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade);
     public LinkedList<TimeScaleEntity> getFellowEntities(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade);
 
-    public TimeScaleEntity getFirstChildEntity(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade);
-    public TimeScaleEntity getLastChildEntity(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade);
     public InheritanceTree<TimeScaleEntity> getOffspringEntities(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade);
 }

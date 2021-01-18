@@ -523,24 +523,6 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
     }
 
     @Override
-    public TimeScaleEntity getFirstChildEntity(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade) {
-        TimeScaleEntity targetEntity = getSpecialTimeScaleEntity(timeScaleMoment,timeScaleGrade);
-        if (targetEntity != null){
-            return targetEntity.getFirstChildEntity();
-        }
-        return null;
-    }
-
-    @Override
-    public TimeScaleEntity getLastChildEntity(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade) {
-        TimeScaleEntity targetEntity = getSpecialTimeScaleEntity(timeScaleMoment,timeScaleGrade);
-        if (targetEntity != null){
-            return targetEntity.getLastChildEntity();
-        }
-        return null;
-    }
-
-    @Override
     public InheritanceTree<TimeScaleEntity> getOffspringEntities(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade) {
         TimeScaleEntity targetEntity = getSpecialTimeScaleEntity(timeScaleMoment,timeScaleGrade);
         if (targetEntity != null){
