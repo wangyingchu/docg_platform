@@ -169,6 +169,10 @@ public class TimeFlowTest {
         System.out.println(timeScaleEntityLinkedList5.size());
         System.out.println(timeScaleEntityLinkedList5.get(0).getTimeScaleGrade());
 
+        timeScaleEntityLinkedList5 = defaultTimeFlow.getMinuteEntities(new TimeScaleMoment(1997,7,15,3,5),new TimeScaleMoment(2001,11,28,22,18));
+        System.out.println(timeScaleEntityLinkedList5.size());
+        System.out.println(timeScaleEntityLinkedList5.get(0).getTimeScaleGrade());
+
 
     }
 
