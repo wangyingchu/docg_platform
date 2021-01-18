@@ -3,6 +3,7 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleMoment;
+import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEntity;
@@ -14,6 +15,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -137,6 +139,7 @@ public class TimeFlowTest {
         System.out.println(timeScaleEntityLinkedList4.get(0).getTimeScaleGrade());
         */
 
+        /*
         TimeScaleEntity singleTimeScaleEntity4 = defaultTimeFlow.getMinuteEntity(2000,5,29,18,59);
         System.out.println(singleTimeScaleEntity4);
         System.out.println(singleTimeScaleEntity4.getTimeScaleGrade());
@@ -195,6 +198,24 @@ public class TimeFlowTest {
         System.out.println(singleTimeScaleEntity7_fellowList.getFirst().getEntityValue());
         System.out.println(singleTimeScaleEntity7_fellowList.getLast().getTimeScaleGrade());
         System.out.println(singleTimeScaleEntity7_fellowList.getLast().getEntityValue());
+*/
+
+        TimeScaleEntity singleTimeScaleEntity8 = defaultTimeFlow.getDayEntity(1999,6,19);
+        InheritanceTree<TimeScaleEntity> singleTimeScaleEntity8_InheritanceTree = singleTimeScaleEntity8.getOffspringEntities();
+
+        System.out.println(singleTimeScaleEntity8_InheritanceTree.size());
+        System.out.println(singleTimeScaleEntity8_InheritanceTree.getRoot().getTimeScaleGrade());
+        System.out.println(singleTimeScaleEntity8_InheritanceTree.getRoot().getEntityValue());
+        System.out.println(singleTimeScaleEntity8_InheritanceTree.numOfChildren(singleTimeScaleEntity8_InheritanceTree.getRootID()));
+        Collection<String> rootChildrenIDCollection = singleTimeScaleEntity8_InheritanceTree.getChildrenID(singleTimeScaleEntity8_InheritanceTree.getRootID());
+        for(String currentNodeId:rootChildrenIDCollection){
+            System.out.println(singleTimeScaleEntity8_InheritanceTree.numOfChildren(currentNodeId));
+            String firstChildId = singleTimeScaleEntity8_InheritanceTree.getChildrenID(currentNodeId).iterator().next();
+
+            System.out.println(singleTimeScaleEntity8_InheritanceTree.getNode(firstChildId).getEntityValue());
+            System.out.println(singleTimeScaleEntity8_InheritanceTree.getNode(firstChildId).getTimeScaleGrade());
+
+        }
 
         /*
         TimeScaleEntity[] timeScaleEntityArray5 = defaultTimeFlow.getSpecificMinuteEntities(new TimeScaleMoment(2004,6,5,13,24),
