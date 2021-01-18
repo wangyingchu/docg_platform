@@ -155,7 +155,4 @@ public class Neo4JTimeScaleEntityImpl implements TimeScaleEntity {
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }
-
-
-
 }
