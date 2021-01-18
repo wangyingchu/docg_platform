@@ -434,17 +434,11 @@ public class Neo4JTimeFlowImpl implements TimeFlow {
                         "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+fromYear+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:"+fromMonth+"})-[:DOCG_TS_Contains]->(day:DOCG_TS_Day{day:"+fromDay+"})-[:DOCG_TS_Contains]->(hour:DOCG_TS_Hour)-[:DOCG_TS_Contains]->(minute:DOCG_TS_Minute) WHERE hour.hour in range("+(fromHour+1)+","+(toHour-1)+") RETURN minute as operationResult ORDER BY year.year, month.month, day.day, hour.hour, minute.minute\n";
             }else if(fromYear == toYear && fromMonth == toMonth && toDay > fromDay) {
                 queryCql = queryCql + " UNION " + "\n" +
-
-
-
-                        "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+fromYear+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:"+fromMonth+"})-[:DOCG_TS_Contains]->(day:DOCG_TS_Day)-[:DOCG_TS_Contains]->(hour:DOCG_TS_Hour)-[:DOCG_TS_Contains]->(minute:DOCG_TS_Minute) WHERE day.day in range("+(fromDay+1)+","+(toDay-1)+") RETURN minute as operationResult ORDER BY year.year, month.month, day.day, hour.hour, minute.minute\n"
-
+                        "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+fromYear+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:"+fromMonth+"})-[:DOCG_TS_Contains]->(day:DOCG_TS_Day{day:"+fromDay+"})-[:DOCG_TS_Contains]->(hour:DOCG_TS_Hour)-[:DOCG_TS_Contains]->(minute:DOCG_TS_Minute) WHERE hour.hour in range("+(fromHour+1)+",23) RETURN minute as operationResult ORDER BY year.year, month.month, day.day, hour.hour, minute.minute\n"
                         + " UNION " + "\n" +
-                        "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+fromYear+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:"+fromMonth+"})-[:DOCG_TS_Contains]->(day:DOCG_TS_Day{day:"+toDay+"})-[:DOCG_TS_Contains]->(hour:DOCG_TS_Hour)-[:DOCG_TS_Contains]->(minute:DOCG_TS_Minute) WHERE minute.minute in range(0,"+(toHour-1)+") RETURN minute as operationResult ORDER BY year.year, month.month, day.day, hour.hour, minute.minute\n";
-
-
-
-
+                        "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+fromYear+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:"+fromMonth+"})-[:DOCG_TS_Contains]->(day:DOCG_TS_Day)-[:DOCG_TS_Contains]->(hour:DOCG_TS_Hour)-[:DOCG_TS_Contains]->(minute:DOCG_TS_Minute) WHERE day.day in range("+(fromDay+1)+","+(toDay-1)+") RETURN minute as operationResult ORDER BY year.year, month.month, day.day, hour.hour, minute.minute\n"
+                        + " UNION " + "\n" +
+                        "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+fromYear+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:"+fromMonth+"})-[:DOCG_TS_Contains]->(day:DOCG_TS_Day{day:"+toDay+"})-[:DOCG_TS_Contains]->(hour:DOCG_TS_Hour)-[:DOCG_TS_Contains]->(minute:DOCG_TS_Minute) WHERE hour.hour in range(0,"+(toHour-1)+") RETURN minute as operationResult ORDER BY year.year, month.month, day.day, hour.hour, minute.minute\n";
             }else if(fromYear == toYear && toMonth > fromMonth) {
                 queryCql = queryCql + " UNION " + "\n" +
                         "";
