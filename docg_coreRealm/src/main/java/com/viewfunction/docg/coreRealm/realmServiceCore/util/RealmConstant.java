@@ -25,6 +25,8 @@ public interface RealmConstant {
     public final String TimeScaleMinuteEntityClass="DOCG_TS_Minute";
     public final String TimeScale_ContainsRelationClass="DOCG_TS_Contains";
     public final String TimeScale_NextIsRelationClass="DOCG_TS_NextIs";
+    public final String TimeScale_FirstChildIsRelationClass="DOCG_TS_FirstChildIs";
+    public final String TimeScale_LastChildIsRelationClass="DOCG_TS_LastChildIs";
     public final String TimeScaleEventClass="DOCG_TimeScaleEvent";
 
     public final String _NameProperty = "name";

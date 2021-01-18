@@ -13,6 +13,7 @@ public interface TimeScaleEntity {
 
     public TimeFlow.TimeScaleGrade getTimeScaleGrade();
     public int getEntityValue();
+    public TimeScaleEntity getParentEntity();
     public TimeScaleEntity getNextSameScaleEntity();
     public TimeScaleEntity getPreviousSameScaleEntity();
     public LinkedList<TimeScaleEntity> getFellowEntities();
