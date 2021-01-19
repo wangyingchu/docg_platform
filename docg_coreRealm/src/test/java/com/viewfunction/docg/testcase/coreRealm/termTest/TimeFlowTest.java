@@ -2,11 +2,11 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleMoment;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeFlowImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
@@ -15,9 +15,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
 
 public class TimeFlowTest {
 
@@ -249,5 +248,31 @@ public class TimeFlowTest {
         System.out.println(timeScaleEntityLinkedList5.size());
         System.out.println(timeScaleEntityLinkedList5.get(0).getTimeScaleGrade());
         */
+
+
+        ConceptionKind _ConceptionKind01 = coreRealm.getConceptionKind("TimeFlowEventTest");
+        if(_ConceptionKind01 == null){
+            _ConceptionKind01 = coreRealm.createConceptionKind("TimeFlowEventTest","TimeFlowEventTest+中文描述");
+            Assert.assertNotNull(_ConceptionKind01);
+        }
+
+        EntitiesOperationResult purgeEntitiesOperationResult = _ConceptionKind01.purgeAllEntities();
+
+        Map<String,Object> newEntityValue= new HashMap<>();
+        newEntityValue.put("prop1",Long.parseLong("12345"));
+        newEntityValue.put("prop2",Double.parseDouble("12345.789"));
+        ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValue);
+
+        ConceptionEntity _ConceptionEntity = _ConceptionKind01.newEntity(conceptionEntityValue,false);
+
+        Calendar eventCalendar=Calendar.getInstance();
+        eventCalendar.set(Calendar.YEAR,2001);
+        eventCalendar.set(Calendar.MONTH,4);
+        eventCalendar.set(Calendar.DAY_OF_MONTH,16);
+        eventCalendar.set(Calendar.HOUR,16);
+        eventCalendar.set(Calendar.MINUTE,55);
+
+        _ConceptionEntity.attachTimeScaleEvent(eventCalendar.getTimeInMillis(),"timeEventRelation",RelationDirection.FROM,null, TimeFlow.TimeScaleGrade.MINUTE);
+        System.out.println(eventCalendar.getTime());
     }
 }
