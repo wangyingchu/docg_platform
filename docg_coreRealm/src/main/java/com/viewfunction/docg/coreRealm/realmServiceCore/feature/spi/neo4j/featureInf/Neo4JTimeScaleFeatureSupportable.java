@@ -4,15 +4,15 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.TimeScaleFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleRelationEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleEvent;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
-import org.neo4j.driver.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,16 +50,28 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
                     ConceptionEntity timeScaleEventEntity = (ConceptionEntity) newEntityRes;
                     switch (relationDirection) {
                         case FROM:
-                            timeScaleEventEntity.attachFromRelation(this.getEntityUID(), relationType, null, true);
+                            timeScaleEventEntity.attachToRelation(this.getEntityUID(), relationType, null, true);
                             break;
                         case TO:
-                            timeScaleEventEntity.attachToRelation(this.getEntityUID(), relationType, null, true);
+                            timeScaleEventEntity.attachFromRelation(this.getEntityUID(), relationType, null, true);
                             break;
                         case TWO_WAY:
                             timeScaleEventEntity.attachFromRelation(this.getEntityUID(), relationType, null, true);
                             timeScaleEventEntity.attachToRelation(this.getEntityUID(), relationType, null, true);
                     }
-                    return linkTimeScaleEntity(dateTime,timeFlowName,timeScaleGrade,timeScaleEventEntity.getConceptionEntityUID(),workingGraphOperationExecutor);
+
+                    RelationEntity linkToTimeScaleEntityRelation = linkTimeScaleEntity(dateTime,timeFlowName,timeScaleGrade,timeScaleEventEntity,workingGraphOperationExecutor);
+                    if(linkToTimeScaleEntityRelation != null){
+                        TimeScaleEvent resultTimeScaleEvent = new TimeScaleEvent();
+                        resultTimeScaleEvent.setReferTime(dateTime);
+                        resultTimeScaleEvent.setEventData(eventData);
+                        resultTimeScaleEvent.setTimeScaleGrade(timeScaleGrade);
+                        resultTimeScaleEvent.setTimeFlowName(timeFlowName);
+                        resultTimeScaleEvent.setRelationType(relationType);
+                        resultTimeScaleEvent.setRelationDirection(relationDirection);
+                        resultTimeScaleEvent.setTimeScaleEventUID(timeScaleEventEntity.getConceptionEntityUID());
+                        return resultTimeScaleEvent;
+                    }
                 }
             }finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
@@ -68,8 +80,8 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
         return null;
     }
 
-    private TimeScaleEvent linkTimeScaleEntity(long dateTime,String timeFlowName,TimeFlow.TimeScaleGrade timeScaleGrade,
-                                               String scaleEventEntityUID,GraphOperationExecutor workingGraphOperationExecutor){
+    private RelationEntity linkTimeScaleEntity(long dateTime, String timeFlowName, TimeFlow.TimeScaleGrade timeScaleGrade,
+                                               ConceptionEntity timeScaleEventEntity, GraphOperationExecutor workingGraphOperationExecutor){
         Calendar eventCalendar=Calendar.getInstance();
         eventCalendar.setTimeInMillis(dateTime);
 
@@ -100,16 +112,10 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
             case SECOND:
                 break;
         }
-        String createCql = queryCql + ",(timeScaleEvent:DOCG_TimeScaleEvent) WHERE id(timeScaleEvent) = "+ scaleEventEntityUID +" CREATE (timeScaleEntity)-[r:"+RealmConstant.TimeScale_TimeReferToRelationClass+"]->(timeScaleEvent) return r as operationResult";
-
-        DataTransformer offspringClassificationsDataTransformer = new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-                return null;
-            }
-        };
+        String createCql = queryCql + ",(timeScaleEvent:DOCG_TimeScaleEvent) WHERE id(timeScaleEvent) = "+ timeScaleEventEntity.getConceptionEntityUID() +" CREATE (timeScaleEntity)-[r:"+RealmConstant.TimeScale_TimeReferToRelationClass+"]->(timeScaleEvent) return r as operationResult";
         logger.debug("Generated Cypher Statement: {}", createCql);
-        workingGraphOperationExecutor.executeWrite(offspringClassificationsDataTransformer,createCql);
-        return null;
+        GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer(RealmConstant.TimeScale_TimeReferToRelationClass,null);
+        Object linkRes = workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer,createCql);
+        return linkRes != null? (RelationEntity)linkRes : null;
     }
 }
