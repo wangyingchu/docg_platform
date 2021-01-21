@@ -143,8 +143,6 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
         }
         executor1.shutdown();
 
-
-
         System.out.println(rsList.size());
     }
 }
