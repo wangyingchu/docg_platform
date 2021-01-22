@@ -3,6 +3,7 @@ package com.viewfunction.docg.realmExample.generator;
 import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
@@ -15,8 +16,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class SeattleRealTimeFire911Calls_Realm_Generator {
 
@@ -31,7 +30,7 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
 
     public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
-
+/*
         //Part 1
         ConceptionKind _Fire911CallConceptionKind = coreRealm.getConceptionKind(Fire911CallConceptionType);
         if(_Fire911CallConceptionKind != null){
@@ -41,7 +40,7 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
         if(_Fire911CallConceptionKind == null){
             _Fire911CallConceptionKind = coreRealm.createConceptionKind(Fire911CallConceptionType,"911报警记录");
         }
-
+*/
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa");
 
         List<ConceptionEntityValue> _Fire911CallEntityValueList = Lists.newArrayList();
@@ -116,35 +115,6 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
             }
         }
 
-        List<List<ConceptionEntityValue>> rsList = Lists.partition(_Fire911CallEntityValueList, 2000);
-
-        class InsertRecordThread implements Runnable{
-            private List<ConceptionEntityValue> conceptionEntityValueList;
-            private ConceptionKind conceptionKind;
-
-            public InsertRecordThread(ConceptionKind conceptionKind,List<ConceptionEntityValue> conceptionEntityValueList){
-                this.conceptionEntityValueList = conceptionEntityValueList;
-                this.conceptionKind = conceptionKind;
-            }
-            @Override
-            public void run(){
-                this.conceptionKind.newEntities(conceptionEntityValueList,false);
-            }
-        }
-
-        //ExecutorService executor1 = Executors.newFixedThreadPool(rsList.size());
-        ExecutorService executor1 = Executors.newFixedThreadPool(10);
-        //for(int i =0;i<rsList.size();i++){
-         for(int i = 0;i<10;i++){
-            List<ConceptionEntityValue> currentConceptionEntityValueList = rsList.get(i);
-            ConceptionKind conceptionKind = coreRealm.getConceptionKind(Fire911CallConceptionType);
-            InsertRecordThread insertRecordThread = new InsertRecordThread(conceptionKind,currentConceptionEntityValueList);
-            executor1.execute(insertRecordThread);
-        }
-        executor1.shutdown();
-
-
-
-        System.out.println(rsList.size());
+        BatchDataOperationUtil.batchAddNewEntities(Fire911CallConceptionType,_Fire911CallEntityValueList);
     }
 }
