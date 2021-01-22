@@ -1,13 +1,17 @@
 package com.viewfunction.docg.realmExample.generator;
 
 import com.google.common.collect.Lists;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
+
+
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -41,6 +45,7 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
             _Fire911CallConceptionKind = coreRealm.createConceptionKind(Fire911CallConceptionType,"911报警记录");
         }
 */
+        /*
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa");
 
         List<ConceptionEntityValue> _Fire911CallEntityValueList = Lists.newArrayList();
@@ -114,7 +119,33 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
                 }
             }
         }
+*/
+    //    BatchDataOperationUtil.batchAddNewEntities(Fire911CallConceptionType,_Fire911CallEntityValueList);
 
-        BatchDataOperationUtil.batchAddNewEntities(Fire911CallConceptionType,_Fire911CallEntityValueList);
+        //Part 2 link
+
+        coreRealm.openGlobalSession();
+        ConceptionKind _Fire911CallConceptionKind = coreRealm.getConceptionKind(Fire911CallConceptionType);
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(1000);
+        ConceptionEntitiesRetrieveResult conceptionEntitiesRetrieveResult =_Fire911CallConceptionKind.getEntities(queryParameters);
+
+        //System.out.println(conceptionEntitiesRetrieveResult.getConceptionEntities().size());
+
+        List<ConceptionEntity> conceptionEntityList = conceptionEntitiesRetrieveResult.getConceptionEntities();
+        for(int i =0; i< 10;i++){
+            ConceptionEntity currentConceptionEntity = conceptionEntityList.get(i);
+
+            if(currentConceptionEntity.hasAttribute(Datetime)){
+                Object dateAttributeValue = currentConceptionEntity.getAttribute(Datetime).getAttributeValue();
+                Date dataValue = (Date)dateAttributeValue;
+                System.out.println(dataValue);
+
+                currentConceptionEntity.attachTimeScaleEvent(dataValue.getTime(),"occurredAt", RelationDirection.FROM,null, TimeFlow.TimeScaleGrade.MINUTE);
+            }
+
+        }
+        coreRealm.closeGlobalSession();
     }
 }

@@ -88,7 +88,7 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
         int year = eventCalendar.get(Calendar.YEAR) ;
         int month = eventCalendar.get(Calendar.MONTH)+1;
         int day = eventCalendar.get(Calendar.DAY_OF_MONTH);
-        int hour = eventCalendar.get(Calendar.HOUR);
+        int hour = eventCalendar.get(Calendar.HOUR_OF_DAY);
         int minute = eventCalendar.get(Calendar.MINUTE);
         int second = eventCalendar.get(Calendar.SECOND);
 
