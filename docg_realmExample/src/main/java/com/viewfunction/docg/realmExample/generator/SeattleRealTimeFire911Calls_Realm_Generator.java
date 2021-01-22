@@ -34,7 +34,7 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
 
     public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
-/*
+
         //Part 1
         ConceptionKind _Fire911CallConceptionKind = coreRealm.getConceptionKind(Fire911CallConceptionType);
         if(_Fire911CallConceptionKind != null){
@@ -44,13 +44,13 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
         if(_Fire911CallConceptionKind == null){
             _Fire911CallConceptionKind = coreRealm.createConceptionKind(Fire911CallConceptionType,"911报警记录");
         }
-*/
-        /*
+
+
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa");
 
         List<ConceptionEntityValue> _Fire911CallEntityValueList = Lists.newArrayList();
 
-        File file = new File("realmExampleData/seattle_fire_911_calls/Seattle_Real_Time_Fire_911_Calls.csv");
+        File file = new File("realmExampleData/seattle_fire_911_calls/Seattle_Real_Time_Fire_911_Calls_huge.csv");
         BufferedReader reader = null;
         try {
             reader = new BufferedReader(new FileReader(file));
@@ -119,11 +119,12 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
                 }
             }
         }
-*/
-    //    BatchDataOperationUtil.batchAddNewEntities(Fire911CallConceptionType,_Fire911CallEntityValueList);
+
+        BatchDataOperationUtil.batchAddNewEntities(Fire911CallConceptionType,_Fire911CallEntityValueList);
 
         //Part 2 link
 
+        /*
         coreRealm.openGlobalSession();
         ConceptionKind _Fire911CallConceptionKind = coreRealm.getConceptionKind(Fire911CallConceptionType);
 
@@ -147,5 +148,8 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
 
         }
         coreRealm.closeGlobalSession();
+        */
+
+
     }
 }

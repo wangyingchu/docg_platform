@@ -28,7 +28,9 @@ public class BatchDataOperationUtil {
             CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
             coreRealm.openGlobalSession();
             ConceptionKind conceptionKind = coreRealm.getConceptionKind(conceptionKindName);
-            conceptionKind.newEntities(conceptionEntityValueList,false);
+            for(ConceptionEntityValue currentConceptionEntityValue:conceptionEntityValueList){
+                conceptionKind.newEntity(currentConceptionEntityValue,false);
+            }
             coreRealm.closeGlobalSession();
         }
     }
@@ -38,7 +40,7 @@ public class BatchDataOperationUtil {
         boolean hasNextRound = true;
         int currentHandlingItemIdx = 0;
 
-        ExecutorService executor1 = Executors.newFixedThreadPool(5);
+        ExecutorService executor = Executors.newFixedThreadPool(5);
 
         List<List<ConceptionEntityValue>> innerListRsList = new ArrayList<>();
         while(hasNextRound){
@@ -57,10 +59,10 @@ public class BatchDataOperationUtil {
                 }
             }
             currentHandlingItemIdx = currentHandlingItemIdx + 5;
-            batchInsertEntities(executor1,targetConceptionTypeName,innerListRsList);
+            batchInsertEntities(executor,targetConceptionTypeName,innerListRsList);
         }
 
-        executor1.shutdown();
+        executor.shutdown();
 
         System.out.println(rsList.size());
 
@@ -74,24 +76,11 @@ public class BatchDataOperationUtil {
         System.out.println(innerListRsList.get(0).size());
         System.out.println("==============================================");
 
-
         int threadNumber = innerListRsList.size();
-
-        //ExecutorService executor1 = Executors.newFixedThreadPool(rsList.size());
-
-        //for(int i =0;i<rsList.size();i++){
         for(int i = 0;i< threadNumber;i++){
             List<ConceptionEntityValue> currentConceptionEntityValueList = innerListRsList.get(i);
-
             InsertRecordThread insertRecordThread = new InsertRecordThread(targetConceptionTypeName,currentConceptionEntityValueList);
             executor.execute(insertRecordThread);
-
-
         }
-
-      //
-
     }
-
-
 }
