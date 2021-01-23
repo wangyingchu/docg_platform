@@ -1,16 +1,18 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util;
 
 import com.google.common.collect.Lists;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
-import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
+
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleRelationEntityTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleTimeScaleEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleEvent;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionEntityImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeScaleEntityImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 import org.slf4j.Logger;
@@ -21,6 +23,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class BatchDataOperationUtil {
+
+    private static Logger logger = LoggerFactory.getLogger(BatchDataOperationUtil.class);
+    private static Map<String,String> TimeScaleEntitiesMetaInfoMapping_Minute = new HashMap<>();
 
     public static void batchAddNewEntities(String targetConceptionTypeName,List<ConceptionEntityValue> conceptionEntityValuesList){
         int degreeOfParallelism = 5;
@@ -148,6 +153,9 @@ public class BatchDataOperationUtil {
             for(ConceptionEntityValue currentConceptionEntityValue:conceptionEntityValueList){
                 if(currentConceptionEntityValue.getEntityAttributesValue().get(timeEventAttributeName) != null){
                     Date targetDateValue = (Date)currentConceptionEntityValue.getEntityAttributesValue().get(timeEventAttributeName);
+                    attachTimeScaleEventLogic(currentConceptionEntityValue.getConceptionEntityUID(),targetDateValue.getTime(),
+                            relationKindName, relationDirection,globalEventData,timeScaleGrade,graphOperationExecutor);
+                    /*
                     Neo4JConceptionEntityImpl _Neo4JConceptionEntityImpl = new Neo4JConceptionEntityImpl(conceptionKindName,currentConceptionEntityValue.getConceptionEntityUID());
                     _Neo4JConceptionEntityImpl.setGlobalGraphOperationExecutor(graphOperationExecutor);
                     try {
@@ -155,10 +163,98 @@ public class BatchDataOperationUtil {
                     } catch (CoreRealmServiceRuntimeException e) {
                         e.printStackTrace();
                     }
-
+                    */
                 }
             }
             graphOperationExecutor.close();
         }
+    }
+
+
+    private static void attachTimeScaleEventLogic(String conceptionEntityUID,long dateTime,String relationKindName,
+                                                  RelationDirection relationDirection,Map<String,Object> globalEventData,
+                                                  TimeFlow.TimeScaleGrade timeScaleGrade,GraphOperationExecutor workingGraphOperationExecutor){
+
+        Map<String, Object> propertiesMap = globalEventData != null ? globalEventData : new HashMap<>();
+        CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
+        String createEventCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.TimeScaleEventClass}, propertiesMap);
+        GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                new GetSingleConceptionEntityTransformer(RealmConstant.TimeScaleEventClass, workingGraphOperationExecutor);
+        Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer, createEventCql);
+        if(newEntityRes != null) {
+
+            String timeEventUID = ((ConceptionEntity)newEntityRes).getConceptionEntityUID();
+            String createCql = null;
+            Map<String,Object> relationPropertiesMap = new HashMap<>();
+            CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
+            switch (relationDirection) {
+                case FROM:
+                    createCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(conceptionEntityUID),Long.parseLong(timeEventUID),relationKindName,relationPropertiesMap);
+                    break;
+                case TO:
+                    createCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(timeEventUID),Long.parseLong(conceptionEntityUID),relationKindName,relationPropertiesMap);
+                    break;
+                case TWO_WAY:
+            }
+
+            GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
+                    (relationKindName,workingGraphOperationExecutor);
+            Object newRelationEntityRes = workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, createCql);
+            if(newRelationEntityRes != null){
+                String timeScaleEntityUID = getTimeScaleEntityUID(dateTime,RealmConstant._defaultTimeFlowName, timeScaleGrade, workingGraphOperationExecutor);
+
+                String linkToTimeScaleEntityCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(timeScaleEntityUID),Long.parseLong(timeEventUID),RealmConstant.TimeScale_TimeReferToRelationClass,relationPropertiesMap);
+                workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, linkToTimeScaleEntityCql);
+            }
+        }
+    }
+
+    private static String getTimeScaleEntityUID(long dateTime, String timeFlowName, TimeFlow.TimeScaleGrade timeScaleGrade,GraphOperationExecutor workingGraphOperationExecutor){
+        Calendar eventCalendar=Calendar.getInstance();
+        eventCalendar.setTimeInMillis(dateTime);
+
+        int year = eventCalendar.get(Calendar.YEAR) ;
+        int month = eventCalendar.get(Calendar.MONTH)+1;
+        int day = eventCalendar.get(Calendar.DAY_OF_MONTH);
+        int hour = eventCalendar.get(Calendar.HOUR_OF_DAY);
+        int minute = eventCalendar.get(Calendar.MINUTE);
+        //int second = eventCalendar.get(Calendar.SECOND);
+
+        String TimeScaleEntityKey = timeFlowName+":"+year+"_"+month+"_"+day+"_"+hour+"_"+minute;
+
+        if(TimeScaleEntitiesMetaInfoMapping_Minute.containsKey(TimeScaleEntityKey)){
+            return TimeScaleEntitiesMetaInfoMapping_Minute.get(TimeScaleEntityKey);
+        }else{
+            String queryCql = null;
+            switch (timeScaleGrade) {
+                case YEAR:
+                    queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+timeFlowName+"\"})-[:DOCG_TS_Contains]->(timeScaleEntity:DOCG_TS_Year{year:"+year+"}) RETURN timeScaleEntity as operationResult";
+                    break;
+                case MONTH:
+                    queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+timeFlowName+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+year+"})-[:DOCG_TS_Contains]->(timeScaleEntity:DOCG_TS_Month{month:"+month+"}) RETURN timeScaleEntity as operationResult";
+                    break;
+                case DAY:
+                    queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+timeFlowName+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+year+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:"+month+"})-[:DOCG_TS_Contains]->(timeScaleEntity:DOCG_TS_Day{day:"+day+"}) RETURN timeScaleEntity as operationResult";
+                    break;
+                case HOUR:
+                    queryCql = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+timeFlowName+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+year+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:"+month+"})-[:DOCG_TS_Contains]->(day:DOCG_TS_Day{day:"+day+"})-[:DOCG_TS_Contains]->(timeScaleEntity:DOCG_TS_Hour{hour:"+hour+"}) RETURN timeScaleEntity as operationResult";
+                    break;
+                case MINUTE:
+                    queryCql = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+timeFlowName+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+year+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month{month:"+month+"})-[:DOCG_TS_Contains]->(day:DOCG_TS_Day{day:"+day+"})-[:DOCG_TS_Contains]->(hour:DOCG_TS_Hour{hour:"+hour+"})-[:DOCG_TS_Contains]->(timeScaleEntity:DOCG_TS_Minute{minute:"+minute+"}) RETURN timeScaleEntity as operationResult";
+                    break;
+                case SECOND:
+                    break;
+            }
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            GetSingleTimeScaleEntityTransformer getSingleTimeScaleEntityTransformer =
+                    new GetSingleTimeScaleEntityTransformer(null,workingGraphOperationExecutor);
+            Object queryRes = workingGraphOperationExecutor.executeRead(getSingleTimeScaleEntityTransformer,queryCql);
+            if(queryRes != null){
+                String  timeScaleEntityUID = ((Neo4JTimeScaleEntityImpl)queryRes).getTimeScaleEntityUID();
+                TimeScaleEntitiesMetaInfoMapping_Minute.put(TimeScaleEntityKey,timeScaleEntityUID);
+                return timeScaleEntityUID;
+            }
+        }
+        return null;
     }
 }
