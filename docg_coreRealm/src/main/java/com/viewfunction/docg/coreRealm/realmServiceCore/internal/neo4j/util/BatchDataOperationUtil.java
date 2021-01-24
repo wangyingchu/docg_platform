@@ -86,7 +86,16 @@ public class BatchDataOperationUtil {
     public static void batchAttachTimeScaleEvents(List<ConceptionEntityValue> conceptionEntityValueList,String targetConceptionTypeName, String timeEventAttributeName,
                                                   String relationKindName, RelationDirection relationDirection,
                                                   Map<String,Object> globalEventData, TimeFlow.TimeScaleGrade timeScaleGrade){
-        int degreeOfParallelism = 15;
+
+
+
+
+        int degreeOfParallelism = 1;
+
+
+
+
+
         List<List<ConceptionEntityValue>> rsList = Lists.partition(conceptionEntityValueList, 2000);
 
         boolean hasNextRound = true;
@@ -223,6 +232,16 @@ public class BatchDataOperationUtil {
         String TimeScaleEntityKey = timeFlowName+":"+year+"_"+month+"_"+day+"_"+hour+"_"+minute;
 
         if(TimeScaleEntitiesMetaInfoMapping_Minute.containsKey(TimeScaleEntityKey)){
+
+
+
+            System.out.println("=========================================");
+            System.out.println("MATCHED MATCHED MATCHED");
+            System.out.println("=========================================");
+
+
+
+
             return TimeScaleEntitiesMetaInfoMapping_Minute.get(TimeScaleEntityKey);
         }else{
             String queryCql = null;
