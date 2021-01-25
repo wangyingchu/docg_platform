@@ -127,6 +127,7 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
 
 
         //Part 2 link to time
+
         ConceptionKind conceptionKind = coreRealm.getConceptionKind(Fire911CallConceptionType);
         QueryParameters queryParameters = new QueryParameters();
         queryParameters.setResultNumber(10000000);
@@ -136,11 +137,6 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
         conceptionEntitiesAttributeResult.getConceptionEntityValues();
 
         List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
-
-        BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,Fire911CallConceptionType,Datetime,"occurredAt", RelationDirection.FROM,null, TimeFlow.TimeScaleGrade.YEAR);
-
-
-
-
+        BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,Fire911CallConceptionType,Datetime,"occurredAt", RelationDirection.FROM,null, TimeFlow.TimeScaleGrade.MINUTE);
     }
 }

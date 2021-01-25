@@ -9,7 +9,6 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleRelationEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleTimeScaleEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleEvent;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionEntityImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeScaleEntityImpl;
@@ -86,52 +85,17 @@ public class BatchDataOperationUtil {
     public static void batchAttachTimeScaleEvents(List<ConceptionEntityValue> conceptionEntityValueList,String targetConceptionTypeName, String timeEventAttributeName,
                                                   String relationKindName, RelationDirection relationDirection,
                                                   Map<String,Object> globalEventData, TimeFlow.TimeScaleGrade timeScaleGrade){
+        int degreeOfParallelism = 5;
+        int singlePartitionSize = (conceptionEntityValueList.size()/degreeOfParallelism)+1;
+        List<List<ConceptionEntityValue>> rsList = Lists.partition(conceptionEntityValueList, singlePartitionSize);
 
-
-
-
-        int degreeOfParallelism = 1;
-
-
-
-
-
-        List<List<ConceptionEntityValue>> rsList = Lists.partition(conceptionEntityValueList, 2000);
-
-        boolean hasNextRound = true;
-        int currentHandlingItemIdx = 0;
-
-        ExecutorService executor = Executors.newFixedThreadPool(degreeOfParallelism);
-        List<List<ConceptionEntityValue>> innerListRsList = new ArrayList<>();
-        while(hasNextRound){
-            innerListRsList.clear();
-            for(int i = 0;i<degreeOfParallelism;i++){
-                int currentListIdx = currentHandlingItemIdx + i;
-                if(currentListIdx < rsList.size()) {
-                    if (rsList.get(currentListIdx) != null) {
-                        innerListRsList.add(rsList.get(currentListIdx));
-                    }
-                }else{
-                    hasNextRound = false;
-                }
-            }
-            currentHandlingItemIdx = currentHandlingItemIdx + degreeOfParallelism;
-            batchLinkTimeScaleEvents(executor,innerListRsList,targetConceptionTypeName,timeEventAttributeName,relationKindName,relationDirection,globalEventData,timeScaleGrade);
-        }
-        executor.shutdown();
-    }
-
-    private static void batchLinkTimeScaleEvents(ExecutorService executor,List<List<ConceptionEntityValue>> innerListRsList,
-                                                 String targetConceptionTypeName, String timeEventAttributeName,
-                                                 String relationKindName, RelationDirection relationDirection,
-                                                 Map<String,Object> globalEventData, TimeFlow.TimeScaleGrade timeScaleGrade){
-        int threadNumber = innerListRsList.size();
-        for(int i = 0;i< threadNumber;i++){
-            List<ConceptionEntityValue> currentConceptionEntityValueList = innerListRsList.get(i);
+        ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+        for(List<ConceptionEntityValue> currentConceptionEntityValueList:rsList){
             LinkTimeScaleEventThread linkTimeScaleEventThread = new LinkTimeScaleEventThread(targetConceptionTypeName,
                     timeEventAttributeName,relationKindName,relationDirection,globalEventData,timeScaleGrade,currentConceptionEntityValueList);
             executor.execute(linkTimeScaleEventThread);
         }
+        executor.shutdown();
     }
 
     private static class LinkTimeScaleEventThread implements Runnable{
@@ -179,11 +143,9 @@ public class BatchDataOperationUtil {
         }
     }
 
-
     private static void attachTimeScaleEventLogic(String conceptionEntityUID,long dateTime,String relationKindName,
                                                   RelationDirection relationDirection,Map<String,Object> globalEventData,
                                                   TimeFlow.TimeScaleGrade timeScaleGrade,GraphOperationExecutor workingGraphOperationExecutor){
-
         Map<String, Object> propertiesMap = globalEventData != null ? globalEventData : new HashMap<>();
         CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
         String createEventCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.TimeScaleEventClass}, propertiesMap);
@@ -191,7 +153,6 @@ public class BatchDataOperationUtil {
                 new GetSingleConceptionEntityTransformer(RealmConstant.TimeScaleEventClass, workingGraphOperationExecutor);
         Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer, createEventCql);
         if(newEntityRes != null) {
-
             String timeEventUID = ((ConceptionEntity)newEntityRes).getConceptionEntityUID();
             String createCql = null;
             Map<String,Object> relationPropertiesMap = new HashMap<>();
@@ -232,16 +193,9 @@ public class BatchDataOperationUtil {
         String TimeScaleEntityKey = timeFlowName+":"+year+"_"+month+"_"+day+"_"+hour+"_"+minute;
 
         if(TimeScaleEntitiesMetaInfoMapping_Minute.containsKey(TimeScaleEntityKey)){
-
-
-
-            System.out.println("=========================================");
-            System.out.println("MATCHED MATCHED MATCHED");
-            System.out.println("=========================================");
-
-
-
-
+            //System.out.println("=========================================");
+            //System.out.println("MATCHED MATCHED MATCHED");
+            //System.out.println("=========================================");
             return TimeScaleEntitiesMetaInfoMapping_Minute.get(TimeScaleEntityKey);
         }else{
             String queryCql = null;
