@@ -94,7 +94,7 @@ public class RoadWeatherInformationStationsRecords_Realm_Generator {
                 }
             }
         }
-        BatchDataOperationUtil.batchAddNewEntities(RoadWeatherInformationStationsRecordsConceptionType,_WeatherInformationStationsRecordEntityValueList);
+        BatchDataOperationUtil.batchAddNewEntities(RoadWeatherInformationStationsRecordsConceptionType,_WeatherInformationStationsRecordEntityValueList,10);
 
         //Part 2 link to time
 

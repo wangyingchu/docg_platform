@@ -26,8 +26,7 @@ public class BatchDataOperationUtil {
     private static Logger logger = LoggerFactory.getLogger(BatchDataOperationUtil.class);
     private static Map<String,String> TimeScaleEntitiesMetaInfoMapping_Minute = new HashMap<>();
 
-    public static void batchAddNewEntities(String targetConceptionTypeName,List<ConceptionEntityValue> conceptionEntityValuesList){
-        int degreeOfParallelism = 10;
+    public static void batchAddNewEntities(String targetConceptionTypeName,List<ConceptionEntityValue> conceptionEntityValuesList,int degreeOfParallelism){
         int singlePartitionSize = (conceptionEntityValuesList.size()/degreeOfParallelism)+1;
         List<List<ConceptionEntityValue>> rsList = Lists.partition(conceptionEntityValuesList, singlePartitionSize);
 
@@ -62,8 +61,7 @@ public class BatchDataOperationUtil {
 
     public static void batchAttachTimeScaleEvents(List<ConceptionEntityValue> conceptionEntityValueList,String targetConceptionTypeName, String timeEventAttributeName,
                                                   String relationKindName, RelationDirection relationDirection,
-                                                  Map<String,Object> globalEventData, TimeFlow.TimeScaleGrade timeScaleGrade){
-        int degreeOfParallelism = 5;
+                                                  Map<String,Object> globalEventData, TimeFlow.TimeScaleGrade timeScaleGrade,int degreeOfParallelism){
         int singlePartitionSize = (conceptionEntityValueList.size()/degreeOfParallelism)+1;
         List<List<ConceptionEntityValue>> rsList = Lists.partition(conceptionEntityValueList, singlePartitionSize);
 

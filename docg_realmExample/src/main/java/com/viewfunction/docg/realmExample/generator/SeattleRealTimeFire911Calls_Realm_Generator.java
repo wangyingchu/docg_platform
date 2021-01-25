@@ -119,7 +119,7 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
             }
         }
 
-        BatchDataOperationUtil.batchAddNewEntities(Fire911CallConceptionType,_Fire911CallEntityValueList);
+        BatchDataOperationUtil.batchAddNewEntities(Fire911CallConceptionType,_Fire911CallEntityValueList,10);
 */
 
         //TimeFlow defaultTimeFlow = coreRealm.getOrCreateTimeFlow();
@@ -137,6 +137,6 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
         conceptionEntitiesAttributeResult.getConceptionEntityValues();
 
         List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
-        BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,Fire911CallConceptionType,Datetime,"occurredAt", RelationDirection.FROM,null, TimeFlow.TimeScaleGrade.MINUTE);
+        BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,Fire911CallConceptionType,Datetime,"occurredAt", RelationDirection.FROM,null, TimeFlow.TimeScaleGrade.MINUTE,5);
     }
 }
