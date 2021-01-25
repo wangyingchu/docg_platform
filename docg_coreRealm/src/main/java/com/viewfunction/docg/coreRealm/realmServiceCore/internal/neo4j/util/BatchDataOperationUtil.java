@@ -162,9 +162,11 @@ public class BatchDataOperationUtil {
         String TimeScaleEntityKey = timeFlowName+":"+year+"_"+month+"_"+day+"_"+hour+"_"+minute;
 
         if(timeScaleEntitiesMetaInfoMapping.containsKey(TimeScaleEntityKey)){
+            /*
             System.out.println("=========================================");
             System.out.println("GET MATCHED TimeScaleEntity");
             System.out.println("=========================================");
+            */
             return timeScaleEntitiesMetaInfoMapping.get(TimeScaleEntityKey);
         }else{
             String queryCql = null;

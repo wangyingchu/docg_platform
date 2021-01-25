@@ -107,6 +107,7 @@ public class RoadWeatherInformationStationsRecords_Realm_Generator {
         conceptionEntitiesAttributeResult.getConceptionEntityValues();
 
         List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
-        BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,RoadWeatherInformationStationsRecordsConceptionType,RecordDateTime,"recordedAt", RelationDirection.FROM,null, TimeFlow.TimeScaleGrade.MINUTE,5);
+        BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,RoadWeatherInformationStationsRecordsConceptionType,RecordDateTime,"recordedAt", RelationDirection.FROM,null, TimeFlow.TimeScaleGrade.MINUTE,10);
+
     }
 }

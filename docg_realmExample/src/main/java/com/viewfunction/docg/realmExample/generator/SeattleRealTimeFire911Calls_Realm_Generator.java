@@ -5,9 +5,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryPara
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
@@ -33,7 +31,7 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
 
     public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
-/*
+
         //Part 1
         ConceptionKind _Fire911CallConceptionKind = coreRealm.getConceptionKind(Fire911CallConceptionType);
         if(_Fire911CallConceptionKind != null){
@@ -43,7 +41,6 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
         if(_Fire911CallConceptionKind == null){
             _Fire911CallConceptionKind = coreRealm.createConceptionKind(Fire911CallConceptionType,"911报警记录");
         }
-
 
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa");
 
@@ -120,14 +117,8 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
         }
 
         BatchDataOperationUtil.batchAddNewEntities(Fire911CallConceptionType,_Fire911CallEntityValueList,10);
-*/
-
-        //TimeFlow defaultTimeFlow = coreRealm.getOrCreateTimeFlow();
-        //defaultTimeFlow.createTimeSpanEntities(2000,2003);
-
 
         //Part 2 link to time
-
         ConceptionKind conceptionKind = coreRealm.getConceptionKind(Fire911CallConceptionType);
         QueryParameters queryParameters = new QueryParameters();
         queryParameters.setResultNumber(10000000);
@@ -138,5 +129,6 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
 
         List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
         BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,Fire911CallConceptionType,Datetime,"occurredAt", RelationDirection.FROM,null, TimeFlow.TimeScaleGrade.MINUTE,10);
+
     }
 }
