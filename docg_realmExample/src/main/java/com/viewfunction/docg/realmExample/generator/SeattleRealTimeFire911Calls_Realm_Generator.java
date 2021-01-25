@@ -128,7 +128,7 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
         conceptionEntitiesAttributeResult.getConceptionEntityValues();
 
         List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
-        BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,Fire911CallConceptionType,Datetime,"occurredAt", RelationDirection.FROM,null, TimeFlow.TimeScaleGrade.MINUTE,10);
+        BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,Datetime,"occurredAt", RelationDirection.FROM,null, TimeFlow.TimeScaleGrade.MINUTE,10);
 
     }
 }

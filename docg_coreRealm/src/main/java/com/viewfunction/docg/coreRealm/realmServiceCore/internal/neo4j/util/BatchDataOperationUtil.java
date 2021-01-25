@@ -56,7 +56,7 @@ public class BatchDataOperationUtil {
         }
     }
 
-    public static void batchAttachTimeScaleEvents(List<ConceptionEntityValue> conceptionEntityValueList,String targetConceptionTypeName, String timeEventAttributeName,
+    public static void batchAttachTimeScaleEvents(List<ConceptionEntityValue> conceptionEntityValueList, String timeEventAttributeName,
                                                   String relationKindName, RelationDirection relationDirection,
                                                   Map<String,Object> globalEventData, TimeFlow.TimeScaleGrade timeScaleGrade,int degreeOfParallelism){
         int singlePartitionSize = (conceptionEntityValueList.size()/degreeOfParallelism)+1;
@@ -65,16 +65,14 @@ public class BatchDataOperationUtil {
         Map<String,String> timeScaleEntitiesMetaInfoMapping = new HashMap<>();
         ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
         for(List<ConceptionEntityValue> currentConceptionEntityValueList:rsList){
-            LinkTimeScaleEventThread linkTimeScaleEventThread = new LinkTimeScaleEventThread(targetConceptionTypeName,
-                    timeEventAttributeName,relationKindName,relationDirection,globalEventData,timeScaleGrade,
-                    currentConceptionEntityValueList,timeScaleEntitiesMetaInfoMapping);
+            LinkTimeScaleEventThread linkTimeScaleEventThread = new LinkTimeScaleEventThread(timeEventAttributeName,
+                    relationKindName,relationDirection,globalEventData,timeScaleGrade,currentConceptionEntityValueList,timeScaleEntitiesMetaInfoMapping);
             executor.execute(linkTimeScaleEventThread);
         }
         executor.shutdown();
     }
 
     private static class LinkTimeScaleEventThread implements Runnable{
-        private String conceptionKindName;
         private String timeEventAttributeName;
         private String relationKindName;
         private RelationDirection relationDirection;
@@ -83,12 +81,11 @@ public class BatchDataOperationUtil {
         private List<ConceptionEntityValue> conceptionEntityValueList;
         private Map<String,String> timeScaleEntitiesMetaInfoMapping;
 
-        public LinkTimeScaleEventThread(String conceptionKindName, String timeEventAttributeName,String relationKindName,
+        public LinkTimeScaleEventThread(String timeEventAttributeName,String relationKindName,
                                         RelationDirection relationDirection,Map<String,Object> globalEventData,
                                         TimeFlow.TimeScaleGrade timeScaleGrade,List<ConceptionEntityValue> conceptionEntityValueList,
                                         Map<String,String> timeScaleEntitiesMetaInfoMapping
                                          ){
-            this.conceptionKindName = conceptionKindName;
             this.timeEventAttributeName = timeEventAttributeName;
             this.relationKindName = relationKindName;
             this.relationDirection = relationDirection;
