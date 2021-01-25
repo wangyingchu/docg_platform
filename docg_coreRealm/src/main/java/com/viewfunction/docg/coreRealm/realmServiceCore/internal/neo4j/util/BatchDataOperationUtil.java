@@ -27,38 +27,16 @@ public class BatchDataOperationUtil {
     private static Map<String,String> TimeScaleEntitiesMetaInfoMapping_Minute = new HashMap<>();
 
     public static void batchAddNewEntities(String targetConceptionTypeName,List<ConceptionEntityValue> conceptionEntityValuesList){
-        int degreeOfParallelism = 5;
-        List<List<ConceptionEntityValue>> rsList = Lists.partition(conceptionEntityValuesList, 2000);
-        boolean hasNextRound = true;
-        int currentHandlingItemIdx = 0;
+        int degreeOfParallelism = 10;
+        int singlePartitionSize = (conceptionEntityValuesList.size()/degreeOfParallelism)+1;
+        List<List<ConceptionEntityValue>> rsList = Lists.partition(conceptionEntityValuesList, singlePartitionSize);
 
-        ExecutorService executor = Executors.newFixedThreadPool(degreeOfParallelism);
-        List<List<ConceptionEntityValue>> innerListRsList = new ArrayList<>();
-        while(hasNextRound){
-            innerListRsList.clear();
-            for(int i = 0;i<degreeOfParallelism;i++){
-                int currentListIdx = currentHandlingItemIdx + i;
-                if(currentListIdx < rsList.size()) {
-                    if (rsList.get(currentListIdx) != null) {
-                        innerListRsList.add(rsList.get(currentListIdx));
-                    }
-                }else{
-                    hasNextRound = false;
-                }
-            }
-            currentHandlingItemIdx = currentHandlingItemIdx + 5;
-            batchInsertEntities(executor,targetConceptionTypeName,innerListRsList);
-        }
-        executor.shutdown();
-    }
-
-    private static void batchInsertEntities(ExecutorService executor,String targetConceptionTypeName,List<List<ConceptionEntityValue>> innerListRsList){
-        int threadNumber = innerListRsList.size();
-        for(int i = 0;i< threadNumber;i++){
-            List<ConceptionEntityValue> currentConceptionEntityValueList = innerListRsList.get(i);
+        ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+        for(List<ConceptionEntityValue> currentConceptionEntityValueList:rsList){
             InsertRecordThread insertRecordThread = new InsertRecordThread(targetConceptionTypeName,currentConceptionEntityValueList);
             executor.execute(insertRecordThread);
         }
+        executor.shutdown();
     }
 
     private static class InsertRecordThread implements Runnable{
