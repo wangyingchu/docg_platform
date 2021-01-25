@@ -2,7 +2,6 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util;
 
 import com.google.common.collect.Lists;
 
-import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionEntityTransformer;
@@ -10,7 +9,6 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleTimeScaleEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionEntityImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeScaleEntityImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
@@ -24,7 +22,6 @@ import java.util.concurrent.Executors;
 public class BatchDataOperationUtil {
 
     private static Logger logger = LoggerFactory.getLogger(BatchDataOperationUtil.class);
-    private static Map<String,String> TimeScaleEntitiesMetaInfoMapping_Minute = new HashMap<>();
 
     public static void batchAddNewEntities(String targetConceptionTypeName,List<ConceptionEntityValue> conceptionEntityValuesList,int degreeOfParallelism){
         int singlePartitionSize = (conceptionEntityValuesList.size()/degreeOfParallelism)+1;
@@ -65,10 +62,12 @@ public class BatchDataOperationUtil {
         int singlePartitionSize = (conceptionEntityValueList.size()/degreeOfParallelism)+1;
         List<List<ConceptionEntityValue>> rsList = Lists.partition(conceptionEntityValueList, singlePartitionSize);
 
+        Map<String,String> timeScaleEntitiesMetaInfoMapping = new HashMap<>();
         ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
         for(List<ConceptionEntityValue> currentConceptionEntityValueList:rsList){
             LinkTimeScaleEventThread linkTimeScaleEventThread = new LinkTimeScaleEventThread(targetConceptionTypeName,
-                    timeEventAttributeName,relationKindName,relationDirection,globalEventData,timeScaleGrade,currentConceptionEntityValueList);
+                    timeEventAttributeName,relationKindName,relationDirection,globalEventData,timeScaleGrade,
+                    currentConceptionEntityValueList,timeScaleEntitiesMetaInfoMapping);
             executor.execute(linkTimeScaleEventThread);
         }
         executor.shutdown();
@@ -82,10 +81,12 @@ public class BatchDataOperationUtil {
         private Map<String,Object> globalEventData;
         private TimeFlow.TimeScaleGrade timeScaleGrade;
         private List<ConceptionEntityValue> conceptionEntityValueList;
+        private Map<String,String> timeScaleEntitiesMetaInfoMapping;
 
         public LinkTimeScaleEventThread(String conceptionKindName, String timeEventAttributeName,String relationKindName,
                                         RelationDirection relationDirection,Map<String,Object> globalEventData,
-                                        TimeFlow.TimeScaleGrade timeScaleGrade,List<ConceptionEntityValue> conceptionEntityValueList
+                                        TimeFlow.TimeScaleGrade timeScaleGrade,List<ConceptionEntityValue> conceptionEntityValueList,
+                                        Map<String,String> timeScaleEntitiesMetaInfoMapping
                                          ){
             this.conceptionKindName = conceptionKindName;
             this.timeEventAttributeName = timeEventAttributeName;
@@ -94,6 +95,7 @@ public class BatchDataOperationUtil {
             this.globalEventData = globalEventData;
             this.timeScaleGrade = timeScaleGrade;
             this.conceptionEntityValueList = conceptionEntityValueList;
+            this.timeScaleEntitiesMetaInfoMapping = timeScaleEntitiesMetaInfoMapping;
         }
 
         @Override
@@ -102,24 +104,15 @@ public class BatchDataOperationUtil {
             for(ConceptionEntityValue currentConceptionEntityValue:conceptionEntityValueList){
                 if(currentConceptionEntityValue.getEntityAttributesValue().get(timeEventAttributeName) != null){
                     Date targetDateValue = (Date)currentConceptionEntityValue.getEntityAttributesValue().get(timeEventAttributeName);
-                    attachTimeScaleEventLogic(currentConceptionEntityValue.getConceptionEntityUID(),targetDateValue.getTime(),
+                    attachTimeScaleEventLogic(timeScaleEntitiesMetaInfoMapping,currentConceptionEntityValue.getConceptionEntityUID(),targetDateValue.getTime(),
                             relationKindName, relationDirection,globalEventData,timeScaleGrade,graphOperationExecutor);
-                    /*
-                    Neo4JConceptionEntityImpl _Neo4JConceptionEntityImpl = new Neo4JConceptionEntityImpl(conceptionKindName,currentConceptionEntityValue.getConceptionEntityUID());
-                    _Neo4JConceptionEntityImpl.setGlobalGraphOperationExecutor(graphOperationExecutor);
-                    try {
-                        _Neo4JConceptionEntityImpl.attachTimeScaleEvent(targetDateValue.getTime(),relationKindName, relationDirection,globalEventData,timeScaleGrade);
-                    } catch (CoreRealmServiceRuntimeException e) {
-                        e.printStackTrace();
-                    }
-                    */
                 }
             }
             graphOperationExecutor.close();
         }
     }
 
-    private static void attachTimeScaleEventLogic(String conceptionEntityUID,long dateTime,String relationKindName,
+    private static void attachTimeScaleEventLogic(Map<String,String> timeScaleEntitiesMetaInfoMapping,String conceptionEntityUID,long dateTime,String relationKindName,
                                                   RelationDirection relationDirection,Map<String,Object> globalEventData,
                                                   TimeFlow.TimeScaleGrade timeScaleGrade,GraphOperationExecutor workingGraphOperationExecutor){
         Map<String, Object> propertiesMap = globalEventData != null ? globalEventData : new HashMap<>();
@@ -147,7 +140,7 @@ public class BatchDataOperationUtil {
                     (relationKindName,workingGraphOperationExecutor);
             Object newRelationEntityRes = workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, createCql);
             if(newRelationEntityRes != null){
-                String timeScaleEntityUID = getTimeScaleEntityUID(dateTime,RealmConstant._defaultTimeFlowName, timeScaleGrade, workingGraphOperationExecutor);
+                String timeScaleEntityUID = getTimeScaleEntityUID(timeScaleEntitiesMetaInfoMapping,dateTime,RealmConstant._defaultTimeFlowName, timeScaleGrade, workingGraphOperationExecutor);
 
                 String linkToTimeScaleEntityCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(timeScaleEntityUID),Long.parseLong(timeEventUID),RealmConstant.TimeScale_TimeReferToRelationClass,relationPropertiesMap);
                 workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, linkToTimeScaleEntityCql);
@@ -155,7 +148,7 @@ public class BatchDataOperationUtil {
         }
     }
 
-    private static String getTimeScaleEntityUID(long dateTime, String timeFlowName, TimeFlow.TimeScaleGrade timeScaleGrade,GraphOperationExecutor workingGraphOperationExecutor){
+    private static String getTimeScaleEntityUID(Map<String,String> timeScaleEntitiesMetaInfoMapping,long dateTime, String timeFlowName, TimeFlow.TimeScaleGrade timeScaleGrade,GraphOperationExecutor workingGraphOperationExecutor){
         Calendar eventCalendar=Calendar.getInstance();
         eventCalendar.setTimeInMillis(dateTime);
 
@@ -168,11 +161,11 @@ public class BatchDataOperationUtil {
 
         String TimeScaleEntityKey = timeFlowName+":"+year+"_"+month+"_"+day+"_"+hour+"_"+minute;
 
-        if(TimeScaleEntitiesMetaInfoMapping_Minute.containsKey(TimeScaleEntityKey)){
-            //System.out.println("=========================================");
-            //System.out.println("MATCHED MATCHED MATCHED");
-            //System.out.println("=========================================");
-            return TimeScaleEntitiesMetaInfoMapping_Minute.get(TimeScaleEntityKey);
+        if(timeScaleEntitiesMetaInfoMapping.containsKey(TimeScaleEntityKey)){
+            System.out.println("=========================================");
+            System.out.println("GET MATCHED TimeScaleEntity");
+            System.out.println("=========================================");
+            return timeScaleEntitiesMetaInfoMapping.get(TimeScaleEntityKey);
         }else{
             String queryCql = null;
             switch (timeScaleGrade) {
@@ -199,8 +192,8 @@ public class BatchDataOperationUtil {
                     new GetSingleTimeScaleEntityTransformer(null,workingGraphOperationExecutor);
             Object queryRes = workingGraphOperationExecutor.executeRead(getSingleTimeScaleEntityTransformer,queryCql);
             if(queryRes != null){
-                String  timeScaleEntityUID = ((Neo4JTimeScaleEntityImpl)queryRes).getTimeScaleEntityUID();
-                TimeScaleEntitiesMetaInfoMapping_Minute.put(TimeScaleEntityKey,timeScaleEntityUID);
+                String timeScaleEntityUID = ((Neo4JTimeScaleEntityImpl)queryRes).getTimeScaleEntityUID();
+                timeScaleEntitiesMetaInfoMapping.put(TimeScaleEntityKey,timeScaleEntityUID);
                 return timeScaleEntityUID;
             }
         }
