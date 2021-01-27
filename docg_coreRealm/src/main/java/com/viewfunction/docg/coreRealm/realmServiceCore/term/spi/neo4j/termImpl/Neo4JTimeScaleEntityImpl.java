@@ -249,6 +249,16 @@ public class Neo4JTimeScaleEntityImpl implements TimeScaleEntity {
     public ConceptionEntitiesRetrieveResult getAttachedTimeScaleEvents(QueryParameters queryParameters, TimeScaleLevel timeScaleLevel) {
         try {
             String queryCql = CypherBuilder.matchNodesWithQueryParameters(TimeScaleEventClass,queryParameters,null);
+
+            /*
+
+            MATCH(currentEntity:DOCG_TimeScaleEntity)-[relationResult:`DOCG_TS_Contains`*1..3]->(childEntities:`DOCG_TimeScaleEntity`) WHERE id(currentEntity) = 9914172
+            MATCH (childEntities)-[:`DOCG_TS_TimeReferTo`]->(relatedEvents:`DOCG_TimeScaleEvent`) RETURN relatedEvents as operationResult SKIP 100 LIMIT 10
+
+             */
+
+
+
         } catch (CoreRealmServiceEntityExploreException e) {
             e.printStackTrace();
         }
