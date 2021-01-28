@@ -9,11 +9,13 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBui
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetLinkedListTimeScaleEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleTimeScaleEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.spi.common.structureImpl.CommonInheritanceTreeImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEntity;
 
@@ -280,6 +282,62 @@ public class Neo4JTimeScaleEntityImpl implements TimeScaleEntity {
             logger.debug("Generated Cypher Statement: {}", queryCql);
 
 
+
+
+
+
+
+            DataTransformer<Object> _DataTransformer = new DataTransformer<Object>() {
+                @Override
+                public Object transformResult(Result result) {
+
+                    if (result.hasNext()) {
+                        Record record = result.next();
+
+
+
+                        System.out.println(record.asMap());
+                        System.out.println(record.asMap());
+                        System.out.println(record.asMap());
+
+                        /*
+                        if (record.containsKey(CypherBuilder.operationResultName)) {
+                            return record.get(CypherBuilder.operationResultName).asLong();
+                        }
+                        */
+                        return null;
+                    }
+                    return null;
+                }
+            };
+
+
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+
+
+
+
+
+
+
+                GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(TimeScaleEventClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+
+
+
+
+                Object queryRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
+                if(queryRes != null){
+
+                    List<ConceptionEntity> res = (List<ConceptionEntity>)queryRes;
+                    System.out.println(res.size());
+
+                }
+
+
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
 
 
         } catch (CoreRealmServiceEntityExploreException e) {

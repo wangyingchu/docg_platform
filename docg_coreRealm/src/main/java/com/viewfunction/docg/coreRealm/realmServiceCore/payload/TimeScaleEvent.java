@@ -10,8 +10,7 @@ public class TimeScaleEvent {
     private String timeFlowName;
     private long referTime;
     private Map<String, Object> eventData;
-    private String relationType;
-    private RelationDirection relationDirection;
+    private String eventComment;
     private TimeFlow.TimeScaleGrade timeScaleGrade;
     private String timeScaleEventUID;
 
@@ -39,22 +38,6 @@ public class TimeScaleEvent {
         this.eventData = eventData;
     }
 
-    public String getRelationType() {
-        return relationType;
-    }
-
-    public void setRelationType(String relationType) {
-        this.relationType = relationType;
-    }
-
-    public RelationDirection getRelationDirection() {
-        return relationDirection;
-    }
-
-    public void setRelationDirection(RelationDirection relationDirection) {
-        this.relationDirection = relationDirection;
-    }
-
     public TimeFlow.TimeScaleGrade getTimeScaleGrade() {
         return timeScaleGrade;
     }
@@ -69,5 +52,13 @@ public class TimeScaleEvent {
 
     public void setTimeScaleEventUID(String timeScaleEventUID) {
         this.timeScaleEventUID = timeScaleEventUID;
+    }
+
+    public String getEventComment() {
+        return eventComment;
+    }
+
+    public void setEventComment(String eventComment) {
+        this.eventComment = eventComment;
     }
 }

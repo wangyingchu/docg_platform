@@ -29,6 +29,7 @@ public interface RealmConstant {
     public final String TimeScale_LastChildIsRelationClass="DOCG_TS_LastChildIs";
     public final String TimeScaleEventClass="DOCG_TimeScaleEvent";
     public final String TimeScale_TimeReferToRelationClass="DOCG_TS_TimeReferTo";
+    public final String TimeScale_AttachToRelationClass="DOCG_AttachToTimeScale";
 
     public final String _NameProperty = "name";
     public final String _DescProperty = "description";
@@ -50,4 +51,7 @@ public interface RealmConstant {
     public final String _attachLinkLogicCondition = "linkLogicCondition";
     public final String _attachLinkLogicSourceAttribute = "linkLogicSourceAttribute";
     public final String _attachLinkLogicTargetAttribute = "linkLogicTargetAttribute";
+
+    public final String _TimeScaleEventComment="DOCG_TimeScaleEventComment";
+    public final String _TimeScaleEventReferTime="DOCG_TimeScaleEventReferTime";
 }

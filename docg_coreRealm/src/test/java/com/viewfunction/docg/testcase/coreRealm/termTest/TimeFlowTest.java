@@ -200,7 +200,7 @@ public class TimeFlowTest {
         System.out.println(singleTimeScaleEntity7_fellowList.getLast().getEntityValue());
 */
 
-        TimeScaleEntity singleTimeScaleEntity8 = defaultTimeFlow.getDayEntity(1999,6,19);
+        TimeScaleEntity singleTimeScaleEntity8 = defaultTimeFlow.getDayEntity(2004,6,19);
         InheritanceTree<TimeScaleEntity> singleTimeScaleEntity8_InheritanceTree = singleTimeScaleEntity8.getOffspringEntities();
 
         System.out.println(singleTimeScaleEntity8_InheritanceTree.size());
@@ -287,7 +287,7 @@ public class TimeFlowTest {
         eventCalendar.set(Calendar.HOUR,16);
         eventCalendar.set(Calendar.MINUTE,55);
 
-        TimeScaleEvent timeScaleEvent1 = _ConceptionEntity.attachTimeScaleEvent(eventCalendar.getTimeInMillis(),"timeEventRelation",RelationDirection.FROM,null, TimeFlow.TimeScaleGrade.MINUTE);
+        TimeScaleEvent timeScaleEvent1 = _ConceptionEntity.attachTimeScaleEvent(eventCalendar.getTimeInMillis(),"timeEventRelation",null, TimeFlow.TimeScaleGrade.MINUTE);
         System.out.println(timeScaleEvent1);
         System.out.println(timeScaleEvent1.getTimeScaleEventUID());
         System.out.println(eventCalendar.getTime());

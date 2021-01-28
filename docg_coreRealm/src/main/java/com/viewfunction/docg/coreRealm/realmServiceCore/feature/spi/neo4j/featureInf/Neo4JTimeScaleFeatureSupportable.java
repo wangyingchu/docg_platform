@@ -24,23 +24,25 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
 
     static Logger logger = LoggerFactory.getLogger(Neo4JTimeScaleFeatureSupportable.class);
 
-    public default TimeScaleEvent attachTimeScaleEvent(long dateTime, String relationType, RelationDirection relationDirection,
-                                                       Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException {
-        return attachTimeScaleEventInnerLogic(RealmConstant._defaultTimeFlowName,dateTime,relationType,relationDirection,eventData,timeScaleGrade);
+    public default TimeScaleEvent attachTimeScaleEvent(long dateTime, String eventComment, Map<String, Object> eventData,
+                                                       TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException {
+        return attachTimeScaleEventInnerLogic(RealmConstant._defaultTimeFlowName,dateTime,eventComment,eventData,timeScaleGrade);
     }
 
-    public default TimeScaleEvent attachTimeScaleEvent(String timeFlowName,long dateTime, String relationType, RelationDirection relationDirection,
-                                                       Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException {
-        return attachTimeScaleEventInnerLogic(timeFlowName,dateTime,relationType,relationDirection,eventData,timeScaleGrade);
+    public default TimeScaleEvent attachTimeScaleEvent(String timeFlowName,long dateTime, String eventComment, Map<String, Object> eventData,
+                                                       TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException {
+        return attachTimeScaleEventInnerLogic(timeFlowName,dateTime,eventComment,eventData,timeScaleGrade);
     }
 
-    private TimeScaleEvent attachTimeScaleEventInnerLogic(String timeFlowName,long dateTime, String relationType, RelationDirection relationDirection,
+    private TimeScaleEvent attachTimeScaleEventInnerLogic(String timeFlowName,long dateTime, String eventComment,
                                                        Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException {
         if(this.getEntityUID() != null){
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try{
                 Map<String, Object> propertiesMap = eventData != null ? eventData : new HashMap<>();
                 CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
+                propertiesMap.put(RealmConstant._TimeScaleEventReferTime,dateTime);
+                propertiesMap.put(RealmConstant._TimeScaleEventComment,eventComment);
                 String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.TimeScaleEventClass}, propertiesMap);
                 logger.debug("Generated Cypher Statement: {}", createCql);
                 GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
@@ -48,18 +50,7 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
                 Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer, createCql);
                 if(newEntityRes != null) {
                     ConceptionEntity timeScaleEventEntity = (ConceptionEntity) newEntityRes;
-                    switch (relationDirection) {
-                        case FROM:
-                            timeScaleEventEntity.attachToRelation(this.getEntityUID(), relationType, null, true);
-                            break;
-                        case TO:
-                            timeScaleEventEntity.attachFromRelation(this.getEntityUID(), relationType, null, true);
-                            break;
-                        case TWO_WAY:
-                            timeScaleEventEntity.attachFromRelation(this.getEntityUID(), relationType, null, true);
-                            timeScaleEventEntity.attachToRelation(this.getEntityUID(), relationType, null, true);
-                    }
-
+                    timeScaleEventEntity.attachToRelation(this.getEntityUID(), RealmConstant.TimeScale_AttachToRelationClass, null, true);
                     RelationEntity linkToTimeScaleEntityRelation = linkTimeScaleEntity(dateTime,timeFlowName,timeScaleGrade,timeScaleEventEntity,workingGraphOperationExecutor);
                     if(linkToTimeScaleEntityRelation != null){
                         TimeScaleEvent resultTimeScaleEvent = new TimeScaleEvent();
@@ -67,8 +58,7 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
                         resultTimeScaleEvent.setEventData(eventData);
                         resultTimeScaleEvent.setTimeScaleGrade(timeScaleGrade);
                         resultTimeScaleEvent.setTimeFlowName(timeFlowName);
-                        resultTimeScaleEvent.setRelationType(relationType);
-                        resultTimeScaleEvent.setRelationDirection(relationDirection);
+                        resultTimeScaleEvent.setEventComment(eventComment);
                         resultTimeScaleEvent.setTimeScaleEventUID(timeScaleEventEntity.getConceptionEntityUID());
                         return resultTimeScaleEvent;
                     }
