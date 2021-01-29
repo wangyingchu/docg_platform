@@ -9,7 +9,6 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntiti
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 
@@ -107,7 +106,7 @@ public class RoadWeatherInformationStationsRecords_Realm_Generator {
         conceptionEntitiesAttributeResult.getConceptionEntityValues();
 
         List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
-        BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,RecordDateTime,"recordedAt", RelationDirection.FROM,null, TimeFlow.TimeScaleGrade.MINUTE,10);
+        BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,RecordDateTime,"recordedAt",null, TimeFlow.TimeScaleGrade.MINUTE,10);
 
     }
 }
