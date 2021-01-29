@@ -9,10 +9,10 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleEvent;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

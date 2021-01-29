@@ -287,7 +287,11 @@ public class TimeFlowTest {
         eventCalendar.set(Calendar.HOUR,16);
         eventCalendar.set(Calendar.MINUTE,55);
 
-        TimeScaleEvent timeScaleEvent1 = _ConceptionEntity.attachTimeScaleEvent(eventCalendar.getTimeInMillis(),"timeEventRelation",null, TimeFlow.TimeScaleGrade.MINUTE);
+        Map<String,Object> timeEventDataMap = new HashMap<>();
+        timeEventDataMap.put("K1",Long.parseLong("112"));
+        timeEventDataMap.put("K2",Double.parseDouble("2344"));
+
+        TimeScaleEvent timeScaleEvent1 = _ConceptionEntity.attachTimeScaleEvent(eventCalendar.getTimeInMillis(),"timeEventRelation",timeEventDataMap, TimeFlow.TimeScaleGrade.MINUTE);
         System.out.println(timeScaleEvent1);
         System.out.println(timeScaleEvent1.getTimeScaleEventUID());
         System.out.println(eventCalendar.getTime());

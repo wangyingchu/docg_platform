@@ -1,6 +1,5 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.payload;
 
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 
 import java.util.Map;
