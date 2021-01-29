@@ -112,10 +112,10 @@ public class BatchDataOperationUtil {
         if(globalEventData != null){
             propertiesMap.putAll(globalEventData);
         }
-
         CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
         propertiesMap.put(RealmConstant._TimeScaleEventReferTime,dateTime);
         propertiesMap.put(RealmConstant._TimeScaleEventComment,eventComment);
+        propertiesMap.put(RealmConstant._TimeScaleEventScaleGrade,""+timeScaleGrade);
         String createEventCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.TimeScaleEventClass}, propertiesMap);
         GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
                 new GetSingleConceptionEntityTransformer(RealmConstant.TimeScaleEventClass, workingGraphOperationExecutor);

@@ -54,4 +54,5 @@ public interface RealmConstant {
 
     public final String _TimeScaleEventComment="DOCG_TimeScaleEventComment";
     public final String _TimeScaleEventReferTime="DOCG_TimeScaleEventReferTime";
+    public final String _TimeScaleEventScaleGrade="DOCG_TimeScaleEventScaleGrade";
 }

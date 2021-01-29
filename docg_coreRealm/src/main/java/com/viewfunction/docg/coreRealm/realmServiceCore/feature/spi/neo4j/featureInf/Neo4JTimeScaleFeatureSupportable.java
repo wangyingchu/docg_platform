@@ -43,6 +43,7 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
                 CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
                 propertiesMap.put(RealmConstant._TimeScaleEventReferTime,dateTime);
                 propertiesMap.put(RealmConstant._TimeScaleEventComment,eventComment);
+                propertiesMap.put(RealmConstant._TimeScaleEventScaleGrade,""+timeScaleGrade);
                 String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.TimeScaleEventClass}, propertiesMap);
                 logger.debug("Generated Cypher Statement: {}", createCql);
                 GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
