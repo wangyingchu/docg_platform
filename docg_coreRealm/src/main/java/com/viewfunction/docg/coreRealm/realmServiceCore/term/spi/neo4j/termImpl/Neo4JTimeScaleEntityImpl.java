@@ -5,6 +5,7 @@ import com.google.common.collect.Table;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
@@ -244,7 +245,56 @@ public class Neo4JTimeScaleEntityImpl implements TimeScaleEntity {
 
     @Override
     public Long countAttachedTimeScaleEvents(AttributesParameters attributesParameters, boolean isDistinctMode, TimeScaleLevel timeScaleLevel) {
-        return null;
+        if(attributesParameters != null){
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setDistinctMode(isDistinctMode);
+            queryParameters.setResultNumber(100000000);
+            queryParameters.setDefaultFilteringItem(attributesParameters.getDefaultFilteringItem());
+            if (attributesParameters.getAndFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getAndFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.AND);
+                }
+            }
+            if (attributesParameters.getOrFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getOrFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.OR);
+                }
+            }
+            try {
+                String eventEntitiesQueryCql = CypherBuilder.matchNodesWithQueryParameters(TimeScaleEventClass,queryParameters,CypherBuilder.CypherFunctionType.COUNT);
+                eventEntitiesQueryCql = eventEntitiesQueryCql.replace("(operationResult:`DOCG_TimeScaleEvent`)","(childEntities)-[:`DOCG_TS_TimeReferTo`]->(operationResult:`DOCG_TimeScaleEvent`)");
+                String queryCql = addTimeScaleGradeTravelLogic(timeScaleLevel,eventEntitiesQueryCql);
+                logger.debug("Generated Cypher Statement: {}", queryCql);
+
+                DataTransformer<Long> _DataTransformer = new DataTransformer<Long>() {
+                    @Override
+                    public Long transformResult(Result result) {
+                        if (result.hasNext()) {
+                            Record record = result.next();
+                            if (record.containsKey("count("+CypherBuilder.operationResultName+")")) {
+                                return record.get("count("+CypherBuilder.operationResultName+")").asLong();
+                            }
+                            return null;
+                        }
+                        return null;
+                    }
+                };
+                Long resultNumber = 0l;
+                GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+                try{
+                    Object countRes = workingGraphOperationExecutor.executeRead(_DataTransformer,queryCql);
+                    resultNumber = countRes != null ? (Long) countRes: 0l;
+                    return resultNumber;
+                }finally {
+                    this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+                }
+            } catch (CoreRealmServiceEntityExploreException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }else{
+            return countAttachedTimeScaleEvents(timeScaleLevel);
+        }
     }
 
     @Override
@@ -254,33 +304,7 @@ public class Neo4JTimeScaleEntityImpl implements TimeScaleEntity {
             commonTimeScaleEventsRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
             String eventEntitiesQueryCql = CypherBuilder.matchNodesWithQueryParameters(TimeScaleEventClass,queryParameters,null);
             eventEntitiesQueryCql = eventEntitiesQueryCql.replace("(operationResult:`DOCG_TimeScaleEvent`)","(childEntities)-[:`DOCG_TS_TimeReferTo`]->(operationResult:`DOCG_TimeScaleEvent`)");
-            String relationTravelLogic = "relationResult:`DOCG_TS_Contains`*1..3";
-            switch (timeScaleLevel){
-                case SELF: relationTravelLogic = "relationResult:`DOCG_TS_Contains`";
-                    break;
-                case CHILD: relationTravelLogic = "relationResult:`DOCG_TS_Contains`*1";
-                    break;
-                case OFFSPRING:
-                    switch(this.timeScaleGrade){
-                        case YEAR:
-                            relationTravelLogic = "relationResult:`DOCG_TS_Contains`*1..4";
-                            break;
-                        case MONTH:
-                            relationTravelLogic = "relationResult:`DOCG_TS_Contains`*1..3";
-                            break;
-                        case DAY:
-                            relationTravelLogic = "relationResult:`DOCG_TS_Contains`*1..2";
-                            break;
-                        case HOUR:
-                            relationTravelLogic = "relationResult:`DOCG_TS_Contains`*1";
-                            break;
-                        case MINUTE:
-                            relationTravelLogic = "relationResult:`DOCG_TS_Contains`*1";
-                            break;
-                    }
-            }
-            String queryCql = "MATCH(currentEntity:DOCG_TimeScaleEntity)-["+relationTravelLogic+"]->(childEntities:`DOCG_TimeScaleEntity`) WHERE id(currentEntity) = "+this.getTimeScaleEntityUID()+" \n" +
-                    eventEntitiesQueryCql;
+            String queryCql = addTimeScaleGradeTravelLogic(timeScaleLevel,eventEntitiesQueryCql);
             logger.debug("Generated Cypher Statement: {}", queryCql);
 
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
@@ -289,7 +313,6 @@ public class Neo4JTimeScaleEntityImpl implements TimeScaleEntity {
                 Object queryRes = workingGraphOperationExecutor.executeRead(getListTimeScaleEventTransformer,queryCql);
                 if(queryRes != null){
                     List<TimeScaleEvent> res = (List<TimeScaleEvent>)queryRes;
-                    System.out.println(res.size());
                     commonTimeScaleEventsRetrieveResultImpl.addTimeScaleEvents(res);
                     commonTimeScaleEventsRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(res.size());
                 }
@@ -311,6 +334,37 @@ public class Neo4JTimeScaleEntityImpl implements TimeScaleEntity {
 
     public String getTimeScaleEntityUID() {
         return timeScaleEntityUID;
+    }
+
+    private String addTimeScaleGradeTravelLogic(TimeScaleLevel timeScaleLevel,String eventEntitiesQueryCql){
+        String relationTravelLogic = "relationResult:`DOCG_TS_Contains`*1..3";
+        switch (timeScaleLevel){
+            case SELF: relationTravelLogic = "relationResult:`DOCG_TS_Contains`";
+                break;
+            case CHILD: relationTravelLogic = "relationResult:`DOCG_TS_Contains`*1";
+                break;
+            case OFFSPRING:
+                switch(this.timeScaleGrade){
+                    case YEAR:
+                        relationTravelLogic = "relationResult:`DOCG_TS_Contains`*1..4";
+                        break;
+                    case MONTH:
+                        relationTravelLogic = "relationResult:`DOCG_TS_Contains`*1..3";
+                        break;
+                    case DAY:
+                        relationTravelLogic = "relationResult:`DOCG_TS_Contains`*1..2";
+                        break;
+                    case HOUR:
+                        relationTravelLogic = "relationResult:`DOCG_TS_Contains`*1";
+                        break;
+                    case MINUTE:
+                        relationTravelLogic = "relationResult:`DOCG_TS_Contains`*1";
+                        break;
+                }
+        }
+        String queryCql = "MATCH(currentEntity:DOCG_TimeScaleEntity)-["+relationTravelLogic+"]->(childEntities:`DOCG_TimeScaleEntity`) WHERE id(currentEntity) = "+this.getTimeScaleEntityUID()+" \n" +
+                eventEntitiesQueryCql;
+        return queryCql;
     }
 
     private TimeScaleEntity getSingleTimeScaleEntity(String queryCql){
