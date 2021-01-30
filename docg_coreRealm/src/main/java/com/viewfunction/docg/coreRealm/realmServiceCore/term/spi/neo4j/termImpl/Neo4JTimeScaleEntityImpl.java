@@ -2,23 +2,23 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
+
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetLinkedListTimeScaleEntityTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleTimeScaleEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleEventsRetrieveResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonTimeScaleEventsRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.spi.common.structureImpl.CommonInheritanceTreeImpl;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEntity;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEvent;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
@@ -248,8 +248,10 @@ public class Neo4JTimeScaleEntityImpl implements TimeScaleEntity {
     }
 
     @Override
-    public ConceptionEntitiesRetrieveResult getAttachedTimeScaleEvents(QueryParameters queryParameters, TimeScaleLevel timeScaleLevel) {
+    public TimeScaleEventsRetrieveResult getAttachedTimeScaleEvents(QueryParameters queryParameters, TimeScaleLevel timeScaleLevel) {
         try {
+            CommonTimeScaleEventsRetrieveResultImpl commonTimeScaleEventsRetrieveResultImpl = new CommonTimeScaleEventsRetrieveResultImpl();
+            commonTimeScaleEventsRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
             String eventEntitiesQueryCql = CypherBuilder.matchNodesWithQueryParameters(TimeScaleEventClass,queryParameters,null);
             eventEntitiesQueryCql = eventEntitiesQueryCql.replace("(operationResult:`DOCG_TimeScaleEvent`)","(childEntities)-[:`DOCG_TS_TimeReferTo`]->(operationResult:`DOCG_TimeScaleEvent`)");
             String relationTravelLogic = "relationResult:`DOCG_TS_Contains`*1..3";
@@ -281,68 +283,29 @@ public class Neo4JTimeScaleEntityImpl implements TimeScaleEntity {
                     eventEntitiesQueryCql;
             logger.debug("Generated Cypher Statement: {}", queryCql);
 
-
-
-
-
-
-
-            DataTransformer<Object> _DataTransformer = new DataTransformer<Object>() {
-                @Override
-                public Object transformResult(Result result) {
-
-                    if (result.hasNext()) {
-                        Record record = result.next();
-
-
-
-                        System.out.println(record.asMap());
-                        System.out.println(record.asMap());
-                        System.out.println(record.asMap());
-
-                        /*
-                        if (record.containsKey(CypherBuilder.operationResultName)) {
-                            return record.get(CypherBuilder.operationResultName).asLong();
-                        }
-                        */
-                        return null;
-                    }
-                    return null;
-                }
-            };
-
-
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try{
-
-
-
-
-
-
-
-                GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(TimeScaleEventClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
-
-
-
-
-                Object queryRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
+                GetListTimeScaleEventTransformer getListTimeScaleEventTransformer = new GetListTimeScaleEventTransformer(timeFlowName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object queryRes = workingGraphOperationExecutor.executeRead(getListTimeScaleEventTransformer,queryCql);
                 if(queryRes != null){
-
-                    List<ConceptionEntity> res = (List<ConceptionEntity>)queryRes;
+                    List<TimeScaleEvent> res = (List<TimeScaleEvent>)queryRes;
                     System.out.println(res.size());
-
+                    commonTimeScaleEventsRetrieveResultImpl.addTimeScaleEvents(res);
+                    commonTimeScaleEventsRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(res.size());
                 }
-
-
             }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
-
-
+            commonTimeScaleEventsRetrieveResultImpl.finishEntitiesRetrieving();
+            return commonTimeScaleEventsRetrieveResultImpl;
         } catch (CoreRealmServiceEntityExploreException e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    @Override
+    public ConceptionEntitiesRetrieveResult getAttachedConceptionEntities(QueryParameters queryParameters, TimeScaleLevel timeScaleLevel) {
         return null;
     }
 
