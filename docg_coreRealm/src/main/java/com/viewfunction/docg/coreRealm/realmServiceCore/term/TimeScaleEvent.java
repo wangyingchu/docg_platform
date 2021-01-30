@@ -10,5 +10,7 @@ public interface TimeScaleEvent extends AttributesMeasurable, ClassificationAtta
     public TimeFlow.TimeScaleGrade getTimeScaleGrade();
     public String getTimeScaleEventUID();
     public String getEventComment();
+    public TimeScaleEntity getReferTimeScaleEntity();
+    public ConceptionEntity getAttachConceptionEntity();
 
 }

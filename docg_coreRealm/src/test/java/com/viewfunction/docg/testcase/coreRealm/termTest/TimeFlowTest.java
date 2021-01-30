@@ -307,12 +307,15 @@ public class TimeFlowTest {
         if(_Classification01 == null) {
             coreRealm.createClassification("classificationNameA", "classificationNameA" + "Desc");
         }
-
         RelationAttachInfo relationAttachInfo = new RelationAttachInfo();
         relationAttachInfo.setRelationKind("relationTypeForClassificationTest01");
         relationAttachInfo.setRelationDirection(RelationDirection.FROM);
-
         timeScaleEvent1.attachClassification(relationAttachInfo,"classificationNameA");
+
+        System.out.println(timeScaleEvent1.getReferTimeScaleEntity().getTimeScaleGrade());
+        System.out.println(timeScaleEvent1.getReferTimeScaleEntity().getEntityValue());
+        System.out.println(timeScaleEvent1.getAttachConceptionEntity().getConceptionKindName());
+        System.out.println(timeScaleEvent1.getAttachConceptionEntity().getConceptionEntityUID());
 
         _ConceptionEntity.attachFromRelation(_ConceptionEntity2.getConceptionEntityUID(),"timeEventRelation2",null,true);
     }
