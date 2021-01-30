@@ -4,6 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleMoment;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
@@ -294,6 +295,24 @@ public class TimeFlowTest {
         System.out.println(timeScaleEvent1);
         System.out.println(timeScaleEvent1.getTimeScaleEventUID());
         System.out.println(eventCalendar.getTime());
+
+        System.out.println(timeScaleEvent1.getEventComment());
+        System.out.println(timeScaleEvent1.getTimeScaleGrade());
+        System.out.println(timeScaleEvent1.getReferTime());
+        System.out.println(timeScaleEvent1.getTimeFlowName());
+        System.out.println(timeScaleEvent1.getAttribute("K1").getAttributeValue());
+        System.out.println(timeScaleEvent1.getAttribute("K2").getAttributeValue());
+
+        Classification _Classification01 = coreRealm.getClassification("classificationNameA");
+        if(_Classification01 == null) {
+            coreRealm.createClassification("classificationNameA", "classificationNameA" + "Desc");
+        }
+
+        RelationAttachInfo relationAttachInfo = new RelationAttachInfo();
+        relationAttachInfo.setRelationKind("relationTypeForClassificationTest01");
+        relationAttachInfo.setRelationDirection(RelationDirection.FROM);
+
+        timeScaleEvent1.attachClassification(relationAttachInfo,"classificationNameA");
 
         _ConceptionEntity.attachFromRelation(_ConceptionEntity2.getConceptionEntityUID(),"timeEventRelation2",null,true);
     }
