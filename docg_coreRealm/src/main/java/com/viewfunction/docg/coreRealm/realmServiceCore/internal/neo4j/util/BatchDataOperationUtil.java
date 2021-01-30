@@ -106,7 +106,7 @@ public class BatchDataOperationUtil {
     }
 
     private static void attachTimeScaleEventLogic(Map<String,String> timeScaleEntitiesMetaInfoMapping,String conceptionEntityUID,long dateTime,String eventComment,
-                                                 Map<String,Object> globalEventData, TimeFlow.TimeScaleGrade timeScaleGrade,
+                                                 Map<String,Object> globalEventData,TimeFlow.TimeScaleGrade timeScaleGrade,
                                                   GraphOperationExecutor workingGraphOperationExecutor){
         Map<String, Object> propertiesMap = new HashMap<>();
         if(globalEventData != null){
@@ -116,6 +116,8 @@ public class BatchDataOperationUtil {
         propertiesMap.put(RealmConstant._TimeScaleEventReferTime,dateTime);
         propertiesMap.put(RealmConstant._TimeScaleEventComment,eventComment);
         propertiesMap.put(RealmConstant._TimeScaleEventScaleGrade,""+timeScaleGrade);
+        propertiesMap.put(RealmConstant._TimeScaleEventTimeFlow,RealmConstant._defaultTimeFlowName);
+
         String createEventCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.TimeScaleEventClass}, propertiesMap);
         GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
                 new GetSingleConceptionEntityTransformer(RealmConstant.TimeScaleEventClass, workingGraphOperationExecutor);

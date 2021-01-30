@@ -10,9 +10,21 @@ import java.util.Map;
 
 public class Neo4JTimeScaleEventImpl extends Neo4JAttributesMeasurableImpl implements Neo4JClassificationAttachable,TimeScaleEvent {
 
-    public Neo4JTimeScaleEventImpl(String entityUID) {
-        super(entityUID);
+    public Neo4JTimeScaleEventImpl(String timeFlowName,String eventComment,long referTime,TimeFlow.TimeScaleGrade timeScaleGrade,
+                                   Map<String, Object> EventData, String timeScaleEventUID) {
+        super(timeScaleEventUID);
     }
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public String getTimeFlowName() {

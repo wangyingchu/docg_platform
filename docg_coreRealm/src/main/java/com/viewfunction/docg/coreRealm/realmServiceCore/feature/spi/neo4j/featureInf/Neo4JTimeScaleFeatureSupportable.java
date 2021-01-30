@@ -7,10 +7,11 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOper
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleRelationEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleEvent;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEvent;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeScaleEventImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 
 import org.slf4j.Logger;
@@ -44,6 +45,7 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
                 propertiesMap.put(RealmConstant._TimeScaleEventReferTime,dateTime);
                 propertiesMap.put(RealmConstant._TimeScaleEventComment,eventComment);
                 propertiesMap.put(RealmConstant._TimeScaleEventScaleGrade,""+timeScaleGrade);
+                propertiesMap.put(RealmConstant._TimeScaleEventTimeFlow,timeFlowName);
                 String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.TimeScaleEventClass}, propertiesMap);
                 logger.debug("Generated Cypher Statement: {}", createCql);
                 GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
@@ -54,14 +56,9 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
                     timeScaleEventEntity.attachToRelation(this.getEntityUID(), RealmConstant.TimeScale_AttachToRelationClass, null, true);
                     RelationEntity linkToTimeScaleEntityRelation = linkTimeScaleEntity(dateTime,timeFlowName,timeScaleGrade,timeScaleEventEntity,workingGraphOperationExecutor);
                     if(linkToTimeScaleEntityRelation != null){
-                        TimeScaleEvent resultTimeScaleEvent = new TimeScaleEvent();
-                        resultTimeScaleEvent.setReferTime(dateTime);
-                        resultTimeScaleEvent.setEventData(eventData);
-                        resultTimeScaleEvent.setTimeScaleGrade(timeScaleGrade);
-                        resultTimeScaleEvent.setTimeFlowName(timeFlowName);
-                        resultTimeScaleEvent.setEventComment(eventComment);
-                        resultTimeScaleEvent.setTimeScaleEventUID(timeScaleEventEntity.getConceptionEntityUID());
-                        return resultTimeScaleEvent;
+                        Neo4JTimeScaleEventImpl neo4JTimeScaleEventImpl = new Neo4JTimeScaleEventImpl(timeFlowName,
+                                eventComment,dateTime,timeScaleGrade,eventData,timeScaleEventEntity.getConceptionEntityUID());
+                        return neo4JTimeScaleEventImpl;
                     }
                 }
             }finally {
