@@ -1,6 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.feature;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleDataPair;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEvent;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
@@ -22,4 +23,5 @@ public interface TimeScaleFeatureSupportable {
 
     public List<TimeScaleEntity> getAttachedTimeScaleEntities();
 
+    public List<TimeScaleDataPair> getAttachedTimeScaleDataPairs();
 }

@@ -1,15 +1,21 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf;
 
+import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.TimeScaleFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleDataPair;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeScaleEntityImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeScaleEventImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 
+import org.neo4j.driver.Record;
+import org.neo4j.driver.Result;
+import org.neo4j.driver.types.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,6 +115,86 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
         return new ArrayList<>();
     }
 
+    public default List<TimeScaleDataPair> getAttachedTimeScaleDataPairs(){
+        List<TimeScaleDataPair> timeScaleDataPairList = new ArrayList<>();
+        if(this.getEntityUID() != null) {
+            String queryCql = "MATCH(currentEntity)-[:`" + RealmConstant.TimeScale_AttachToRelationClass + "`]->(timeScaleEvents:DOCG_TimeScaleEvent)<-[:`"+RealmConstant.TimeScale_TimeReferToRelationClass+"`]-(timeScaleEntities:`DOCG_TimeScaleEntity`) WHERE id(currentEntity) = " + this.getEntityUID() + " \n" +
+                    "RETURN timeScaleEntities ,timeScaleEvents";
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                DataTransformer<Object> _DataTransformer = new DataTransformer<Object>() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        while(result.hasNext()) {
+                            Record record = result.next();
+
+                            Neo4JTimeScaleEntityImpl neo4JTimeScaleEntityImpl = null;
+                            Neo4JTimeScaleEventImpl neo4JTimeScaleEventImpl = null;
+
+                            Node timeScaleEntityNode = record.get("timeScaleEntities").asNode();
+                            List<String> allLabelNames = Lists.newArrayList(timeScaleEntityNode.labels());
+                            boolean isMatchedEntity = true;
+                            if (allLabelNames.size() > 0) {
+                                isMatchedEntity = allLabelNames.contains(RealmConstant.TimeScaleEntityClass);
+                            }
+                            if (isMatchedEntity) {
+                                TimeFlow.TimeScaleGrade timeScaleGrade = null;
+                                long nodeUID = timeScaleEntityNode.id();
+                                String entityUID = "" + nodeUID;
+                                int value = timeScaleEntityNode.get("id").asInt();
+                                String timeFlowName = timeScaleEntityNode.get("timeFlow").asString();
+
+                                if (timeScaleEntityNode.get("year").asObject() != null) {
+                                    timeScaleGrade = TimeFlow.TimeScaleGrade.YEAR;
+                                } else if (timeScaleEntityNode.get("month").asObject() != null) {
+                                    timeScaleGrade = TimeFlow.TimeScaleGrade.MONTH;
+                                } else if (timeScaleEntityNode.get("day").asObject() != null) {
+                                    timeScaleGrade = TimeFlow.TimeScaleGrade.DAY;
+                                } else if (timeScaleEntityNode.get("hour").asObject() != null) {
+                                    timeScaleGrade = TimeFlow.TimeScaleGrade.HOUR;
+                                } else if (timeScaleEntityNode.get("minute").asObject() != null) {
+                                    timeScaleGrade = TimeFlow.TimeScaleGrade.MINUTE;
+                                }
+                                neo4JTimeScaleEntityImpl = new Neo4JTimeScaleEntityImpl(
+                                        null, timeFlowName, entityUID, timeScaleGrade, value);
+                                neo4JTimeScaleEntityImpl.setGlobalGraphOperationExecutor(getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
+                            }
+
+                            Node timeScaleEventNode = record.get("timeScaleEvents").asNode();
+                            List<String> allConceptionKindNames = Lists.newArrayList(timeScaleEventNode.labels());
+                            boolean isMatchedEvent = false;
+                            if(allConceptionKindNames.size()>0){
+                                isMatchedEvent = allConceptionKindNames.contains(RealmConstant.TimeScaleEventClass);
+                            }
+                            if(isMatchedEvent){
+                                long nodeUID = timeScaleEventNode.id();
+                                String timeScaleEventUID = ""+nodeUID;
+                                String eventComment = timeScaleEventNode.get(RealmConstant._TimeScaleEventComment).asString();
+                                String timeScaleGrade = timeScaleEventNode.get(RealmConstant._TimeScaleEventScaleGrade).asString();
+                                long referTime = timeScaleEventNode.get(RealmConstant._TimeScaleEventReferTime).asLong();
+                                neo4JTimeScaleEventImpl = new Neo4JTimeScaleEventImpl(null,eventComment,referTime,getTimeScaleGrade(timeScaleGrade),timeScaleEventUID);
+                                neo4JTimeScaleEventImpl.setGlobalGraphOperationExecutor(getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
+                            }
+
+                            if(neo4JTimeScaleEntityImpl != null && neo4JTimeScaleEventImpl != null){
+                                timeScaleDataPairList.add(
+                                        new TimeScaleDataPair(neo4JTimeScaleEventImpl,neo4JTimeScaleEntityImpl)
+                                );
+                            }
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(_DataTransformer,queryCql);
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return timeScaleDataPairList;
+    }
+
     private TimeScaleEvent attachTimeScaleEventInnerLogic(String timeFlowName,long dateTime, String eventComment,
                                                        Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException {
         if(this.getEntityUID() != null){
@@ -179,5 +265,22 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
         GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer(RealmConstant.TimeScale_TimeReferToRelationClass,null);
         Object linkRes = workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer,createCql);
         return linkRes != null? (RelationEntity)linkRes : null;
+    }
+
+    private TimeFlow.TimeScaleGrade getTimeScaleGrade(String timeScaleGradeValue){
+        if(timeScaleGradeValue.equals("YEAR")){
+            return TimeFlow.TimeScaleGrade.YEAR;
+        }else if(timeScaleGradeValue.equals("MONTH")){
+            return TimeFlow.TimeScaleGrade.MONTH;
+        }else if(timeScaleGradeValue.equals("DAY")){
+            return TimeFlow.TimeScaleGrade.DAY;
+        }else if(timeScaleGradeValue.equals("HOUR")){
+            return TimeFlow.TimeScaleGrade.HOUR;
+        }else if(timeScaleGradeValue.equals("MINUTE")){
+            return TimeFlow.TimeScaleGrade.MINUTE;
+        }else if(timeScaleGradeValue.equals("SECOND")){
+            return TimeFlow.TimeScaleGrade.SECOND;
+        }
+        return null;
     }
 }

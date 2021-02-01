@@ -2,10 +2,7 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachInfo;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleMoment;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeFlowImpl;
@@ -334,6 +331,12 @@ public class TimeFlowTest {
         if(attachedTimeScaleEntityList.size()>0) {
             System.out.println(attachedTimeScaleEntityList.get(0).getEntityValue());
             System.out.println(attachedTimeScaleEntityList.get(0).getTimeScaleGrade());
+        }
+
+        List<TimeScaleDataPair> timeScaleDataPairList = _ConceptionEntity.getAttachedTimeScaleDataPairs();
+        if(timeScaleDataPairList.size()>0) {
+            System.out.println(timeScaleDataPairList.get(0).getTimeScaleEvent().getTimeScaleEventUID());
+            System.out.println(timeScaleDataPairList.get(0).getTimeScaleEntity().getTimeScaleGrade());
         }
 
         //_ConceptionEntity.detachTimeScaleEvent("123450000000");
