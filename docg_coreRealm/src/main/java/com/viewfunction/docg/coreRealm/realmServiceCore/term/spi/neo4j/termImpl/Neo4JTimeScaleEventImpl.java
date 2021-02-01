@@ -37,6 +37,9 @@ public class Neo4JTimeScaleEventImpl extends Neo4JAttributesMeasurableImpl imple
 
     @Override
     public String getTimeFlowName() {
+        if(this.timeFlowName == null){
+            this.timeFlowName = this.getAttribute(RealmConstant._TimeScaleEventTimeFlow).getAttributeValue().toString();
+        }
         return this.timeFlowName;
     }
 

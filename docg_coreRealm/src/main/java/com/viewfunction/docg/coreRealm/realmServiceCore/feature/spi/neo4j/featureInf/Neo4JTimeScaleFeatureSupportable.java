@@ -4,22 +4,16 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.TimeScaleFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionEntityTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleRelationEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEvent;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeScaleEventImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSupportable,Neo4JKeyResourcesRetrievable {
 
@@ -33,6 +27,86 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
     public default TimeScaleEvent attachTimeScaleEvent(String timeFlowName,long dateTime, String eventComment, Map<String, Object> eventData,
                                                        TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException {
         return attachTimeScaleEventInnerLogic(timeFlowName,dateTime,eventComment,eventData,timeScaleGrade);
+    }
+
+    public default boolean detachTimeScaleEvent(String timeScaleEventUID) throws CoreRealmServiceRuntimeException{
+        if(this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(timeScaleEventUID), null, null);
+                GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                        new GetSingleConceptionEntityTransformer(RealmConstant.TimeScaleEventClass, getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
+                Object resEntityRes = workingGraphOperationExecutor.executeRead(getSingleConceptionEntityTransformer, queryCql);
+                if(resEntityRes == null){
+                    logger.error("TimeScaleEvent does not contains entity with UID {}.", timeScaleEventUID);
+                    CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                    exception.setCauseMessage("TimeScaleEvent does not contains entity with UID " + timeScaleEventUID + ".");
+                    throw exception;
+                }else{
+                    Neo4JTimeScaleEventImpl neo4JTimeScaleEventImpl = new Neo4JTimeScaleEventImpl(null,null,0l,null,timeScaleEventUID);
+                    neo4JTimeScaleEventImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+                    if(neo4JTimeScaleEventImpl.getAttachConceptionEntity().getConceptionEntityUID().equals(this.getEntityUID())){
+                        String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(timeScaleEventUID),null,null);
+                        Object deletedEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer, deleteCql);
+                        if(deletedEntityRes == null){
+                            throw new CoreRealmServiceRuntimeException();
+                        }else{
+                            return true;
+                        }
+                    }else{
+                        logger.error("TimeScaleEvent with entity UID {} doesn't attached to current ConceptionEntity with UID {}.", timeScaleEventUID,this.getEntityUID());
+                        CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                        exception.setCauseMessage("TimeScaleEvent with entity UID " + timeScaleEventUID + " doesn't attached to current ConceptionEntity with UID "+ this.getEntityUID()+ ".");
+                        throw exception;
+                    }
+                }
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return false;
+    }
+
+    public default List<TimeScaleEvent> getAttachedTimeScaleEvents(){
+        if(this.getEntityUID() != null) {
+            String queryCql = "MATCH(currentEntity)-[:`" + RealmConstant.TimeScale_AttachToRelationClass + "`]->(timeScaleEvents:DOCG_TimeScaleEvent) WHERE id(currentEntity) = " + this.getEntityUID() + " \n" +
+                    "RETURN timeScaleEvents as operationResult";
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                GetListTimeScaleEventTransformer getListTimeScaleEventTransformer = new GetListTimeScaleEventTransformer(null,getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
+                Object queryRes = workingGraphOperationExecutor.executeRead(getListTimeScaleEventTransformer,queryCql);
+                if(queryRes != null){
+                    List<TimeScaleEvent> res = (List<TimeScaleEvent>)queryRes;
+                    return res;
+                }
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    public default List<TimeScaleEntity> getAttachedTimeScaleEntities(){
+        if(this.getEntityUID() != null) {
+            String queryCql = "MATCH(currentEntity)-[:`" + RealmConstant.TimeScale_AttachToRelationClass + "`]->(timeScaleEvents:DOCG_TimeScaleEvent)<-[:`"+RealmConstant.TimeScale_TimeReferToRelationClass+"`]-(timeScaleEntities:`DOCG_TimeScaleEntity`) WHERE id(currentEntity) = " + this.getEntityUID() + " \n" +
+                    "RETURN timeScaleEntities as operationResult";
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                GetLinkedListTimeScaleEntityTransformer getLinkedListTimeScaleEntityTransformer =
+                        new GetLinkedListTimeScaleEntityTransformer(null,getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
+                Object queryRes = workingGraphOperationExecutor.executeRead(getLinkedListTimeScaleEntityTransformer,queryCql);
+                if(queryRes != null){
+                    return (LinkedList<TimeScaleEntity>)queryRes;
+                }
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return new ArrayList<>();
     }
 
     private TimeScaleEvent attachTimeScaleEventInnerLogic(String timeFlowName,long dateTime, String eventComment,

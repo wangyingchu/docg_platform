@@ -318,5 +318,28 @@ public class TimeFlowTest {
         System.out.println(timeScaleEvent1.getAttachConceptionEntity().getConceptionEntityUID());
 
         _ConceptionEntity.attachFromRelation(_ConceptionEntity2.getConceptionEntityUID(),"timeEventRelation2",null,true);
+
+        List<TimeScaleEvent> attachedTimeScaleEventsList = _ConceptionEntity.getAttachedTimeScaleEvents();
+        if(attachedTimeScaleEventsList.size()>0) {
+            System.out.println(attachedTimeScaleEventsList.get(0).getTimeScaleGrade());
+            System.out.println(attachedTimeScaleEventsList.get(0).getTimeFlowName());
+            System.out.println(attachedTimeScaleEventsList.get(0).getReferTime());
+            System.out.println(attachedTimeScaleEventsList.get(0).getTimeScaleEventUID());
+            System.out.println(attachedTimeScaleEventsList.get(0).getEventComment());
+            System.out.println(attachedTimeScaleEventsList.get(0).getAttachConceptionEntity());
+            System.out.println(attachedTimeScaleEventsList.get(0).getReferTimeScaleEntity());
+        }
+
+        List<TimeScaleEntity> attachedTimeScaleEntityList = _ConceptionEntity.getAttachedTimeScaleEntities();
+        if(attachedTimeScaleEntityList.size()>0) {
+            System.out.println(attachedTimeScaleEntityList.get(0).getEntityValue());
+            System.out.println(attachedTimeScaleEntityList.get(0).getTimeScaleGrade());
+        }
+
+        //_ConceptionEntity.detachTimeScaleEvent("123450000000");
+        //_ConceptionEntity.detachTimeScaleEvent("13658484");
+
+        boolean detachTimeScaleEventRes = _ConceptionEntity.detachTimeScaleEvent(attachedTimeScaleEventsList.get(0).getTimeScaleEventUID());
+        System.out.println(detachTimeScaleEventRes);
     }
 }
