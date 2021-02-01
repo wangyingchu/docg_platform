@@ -22,9 +22,13 @@ public interface TimeScaleEntity {
     public TimeScaleEntity getFirstChildEntity();
     public TimeScaleEntity getLastChildEntity();
     public InheritanceTree<TimeScaleEntity> getOffspringEntities();
-    public Long countAttachedTimeScaleEvents(TimeScaleLevel timeScaleLevel);
-    public Long countAttachedTimeScaleEvents(AttributesParameters attributesParameters, boolean isDistinctMode,TimeScaleLevel timeScaleLevel);
+
+    public Long countAttachedTimeScaleEvents(AttributesParameters attributesParameters, boolean isDistinctMode, TimeScaleLevel timeScaleLevel);
     public TimeScaleEventsRetrieveResult getAttachedTimeScaleEvents(QueryParameters queryParameters, TimeScaleLevel timeScaleLevel);
+
+    public Long countAttachedConceptionEntities(TimeScaleLevel timeScaleLevel);
+
+    public Long countAttachedConceptionEntities(AttributesParameters attributesParameters, boolean isDistinctMode, TimeScaleLevel timeScaleLevel);
     public ConceptionEntitiesRetrieveResult getAttachedConceptionEntities(QueryParameters queryParameters,TimeScaleLevel timeScaleLevel);
 
 }
