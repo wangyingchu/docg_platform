@@ -28,7 +28,6 @@ public interface TimeScaleEntity {
 
     public Long countAttachedConceptionEntities(TimeScaleLevel timeScaleLevel);
 
-    public Long countAttachedConceptionEntities(AttributesParameters attributesParameters, boolean isDistinctMode, TimeScaleLevel timeScaleLevel);
-    public ConceptionEntitiesRetrieveResult getAttachedConceptionEntities(QueryParameters queryParameters,TimeScaleLevel timeScaleLevel);
-
+    public Long countAttachedConceptionEntities(String conceptionKindName,AttributesParameters attributesParameters, boolean isDistinctMode, TimeScaleLevel timeScaleLevel);
+    public ConceptionEntitiesRetrieveResult getAttachedConceptionEntities(String conceptionKindName,QueryParameters queryParameters,TimeScaleLevel timeScaleLevel);
 }

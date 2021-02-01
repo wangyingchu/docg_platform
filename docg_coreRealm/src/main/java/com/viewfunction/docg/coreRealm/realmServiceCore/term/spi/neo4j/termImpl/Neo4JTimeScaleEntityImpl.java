@@ -330,7 +330,7 @@ public class Neo4JTimeScaleEntityImpl implements TimeScaleEntity {
     }
 
     @Override
-    public Long countAttachedConceptionEntities(AttributesParameters attributesParameters, boolean isDistinctMode, TimeScaleLevel timeScaleLevel) {
+    public Long countAttachedConceptionEntities(String conceptionKindName,AttributesParameters attributesParameters, boolean isDistinctMode, TimeScaleLevel timeScaleLevel) {
         if(attributesParameters != null){
             QueryParameters queryParameters = new QueryParameters();
             queryParameters.setDistinctMode(isDistinctMode);
@@ -347,8 +347,14 @@ public class Neo4JTimeScaleEntityImpl implements TimeScaleEntity {
                 }
             }
             try {
+                CommonConceptionEntitiesRetrieveResultImpl commonConceptionEntitiesRetrieveResultImpl = new CommonConceptionEntitiesRetrieveResultImpl();
+                commonConceptionEntitiesRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
                 String eventEntitiesQueryCql = CypherBuilder.matchNodesWithQueryParameters(TimeScaleEventClass,queryParameters,CypherBuilder.CypherFunctionType.COUNT);
-                eventEntitiesQueryCql = eventEntitiesQueryCql.replace("(operationResult:`DOCG_TimeScaleEvent`)","(childEntities)-[:`DOCG_TS_TimeReferTo`]->(operationResult:`DOCG_TimeScaleEvent`)");
+                if(conceptionKindName != null){
+                    eventEntitiesQueryCql = eventEntitiesQueryCql.replace("(operationResult:`DOCG_TimeScaleEvent`)","(childEntities)-[:`DOCG_TS_TimeReferTo`]->(timeScaleEvents:`DOCG_TimeScaleEvent`)<-[:`DOCG_AttachToTimeScale`]-(operationResult:`"+conceptionKindName+"`)");
+                }else{
+                    eventEntitiesQueryCql = eventEntitiesQueryCql.replace("(operationResult:`DOCG_TimeScaleEvent`)","(childEntities)-[:`DOCG_TS_TimeReferTo`]->(timeScaleEvents:`DOCG_TimeScaleEvent`)<-[:`DOCG_AttachToTimeScale`]-(operationResult)");
+                }
                 String queryCql = addTimeScaleGradeTravelLogic(timeScaleLevel,eventEntitiesQueryCql);
                 logger.debug("Generated Cypher Statement: {}", queryCql);
 
@@ -383,15 +389,17 @@ public class Neo4JTimeScaleEntityImpl implements TimeScaleEntity {
         }
     }
 
-
     @Override
-    public ConceptionEntitiesRetrieveResult getAttachedConceptionEntities(QueryParameters queryParameters, TimeScaleLevel timeScaleLevel) {
+    public ConceptionEntitiesRetrieveResult getAttachedConceptionEntities(String conceptionKindName,QueryParameters queryParameters, TimeScaleLevel timeScaleLevel) {
         try {
             CommonConceptionEntitiesRetrieveResultImpl commonConceptionEntitiesRetrieveResultImpl = new CommonConceptionEntitiesRetrieveResultImpl();
             commonConceptionEntitiesRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
-
             String eventEntitiesQueryCql = CypherBuilder.matchNodesWithQueryParameters(TimeScaleEventClass,queryParameters,null);
-            eventEntitiesQueryCql = eventEntitiesQueryCql.replace("(operationResult:`DOCG_TimeScaleEvent`)","(childEntities)-[:`DOCG_TS_TimeReferTo`]->(operationResult:`DOCG_TimeScaleEvent`)");
+            if(conceptionKindName != null){
+                eventEntitiesQueryCql = eventEntitiesQueryCql.replace("(operationResult:`DOCG_TimeScaleEvent`)","(childEntities)-[:`DOCG_TS_TimeReferTo`]->(timeScaleEvents:`DOCG_TimeScaleEvent`)<-[:`DOCG_AttachToTimeScale`]-(operationResult:`"+conceptionKindName+"`)");
+            }else{
+                eventEntitiesQueryCql = eventEntitiesQueryCql.replace("(operationResult:`DOCG_TimeScaleEvent`)","(childEntities)-[:`DOCG_TS_TimeReferTo`]->(timeScaleEvents:`DOCG_TimeScaleEvent`)<-[:`DOCG_AttachToTimeScale`]-(operationResult)");
+            }
             String queryCql = addTimeScaleGradeTravelLogic(timeScaleLevel,eventEntitiesQueryCql);
             logger.debug("Generated Cypher Statement: {}", queryCql);
 
