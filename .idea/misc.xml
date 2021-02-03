@@ -8,7 +8,7 @@
         <option value="$PROJECT_DIR$/docg_relationManage/pom.xml" />
         <option value="$PROJECT_DIR$/docg_realmKnowledgeManage/pom.xml" />
         <option value="$PROJECT_DIR$/docg_realmExample/pom.xml" />
-        <option value="$PROJECT_DIR$/docg_dataCube/pom.xml" />
+        <option value="$PROJECT_DIR$/docg_dataCompute/pom.xml" />
       </list>
     </option>
   </component>

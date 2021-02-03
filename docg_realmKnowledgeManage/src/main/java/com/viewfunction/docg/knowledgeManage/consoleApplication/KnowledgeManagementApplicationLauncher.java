@@ -9,12 +9,12 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Scanner;
 
-public class ApplicationLauncher {
+public class KnowledgeManagementApplicationLauncher {
 
     private static BaseApplication consoleApplication;
     private static boolean applicationRunningFlag = true;
     private static boolean applicationAbnormalCloseFlag = true;
-    private static Logger logger = LoggerFactory.getLogger(ApplicationLauncher.class);
+    private static Logger logger = LoggerFactory.getLogger(KnowledgeManagementApplicationLauncher.class);
 
     private static void stopApplication() {
         applicationAbnormalCloseFlag = false;
