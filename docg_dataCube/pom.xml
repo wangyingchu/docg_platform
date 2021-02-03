@@ -12,7 +12,6 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <ignite.version>2.9.1</ignite.version>
         <ignite.geospatial.version>2.7.2</ignite.geospatial.version>
         <spark.version>2.4.7</spark.version>
