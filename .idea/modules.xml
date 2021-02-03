@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/docg_coreRealm/docg_coreRealm.iml" filepath="$PROJECT_DIR$/docg_coreRealm/docg_coreRealm.iml" />
+      <module fileurl="file://$PROJECT_DIR$/docg_dataCube/docg_dataCube.iml" filepath="$PROJECT_DIR$/docg_dataCube/docg_dataCube.iml" />
       <module fileurl="file://$PROJECT_DIR$/docg_platform.iml" filepath="$PROJECT_DIR$/docg_platform.iml" />
       <module fileurl="file://$PROJECT_DIR$/docg_realmExample/docg_realmExample.iml" filepath="$PROJECT_DIR$/docg_realmExample/docg_realmExample.iml" />
       <module fileurl="file://$PROJECT_DIR$/docg_realmKnowledgeManage/docg_realmKnowledgeManage.iml" filepath="$PROJECT_DIR$/docg_realmKnowledgeManage/docg_realmKnowledgeManage.iml" />
