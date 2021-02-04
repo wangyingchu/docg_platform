@@ -68,7 +68,7 @@ public class DataComputeApplicationLauncher {
             boolean initApplicationResult = consoleApplication.initApplication();
             if (initApplicationResult) {
                 ApplicationLauncherUtil.printApplicationConsoleBanner();
-                if(applicationFeatureName.contains("Service")){
+                if(applicationFeatureName.contains("service")){
                     consoleApplication.executeConsoleCommand(null);
                     return;
                 }

@@ -2,13 +2,14 @@ package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.commandProcessor.CommandProcessorFactory;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCube.DataComputeConfigurationHandler;
 import com.viewfunction.docg.dataCompute.consoleApplication.feature.BaseApplication;
 import com.viewfunction.docg.dataCompute.consoleApplication.feature.BaseCommandProcessor;
-import com.viewfunction.docg.dataCompute.consoleApplication.util.ApplicationLauncherUtil;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.Ignition;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
@@ -19,15 +20,17 @@ public class DataComputeApplication implements BaseApplication {
     private CoreRealm coreRealm = null;
     private ExecutorService executor = null;
     private Map<Object,Object> commandContextDataMap;
+    private Map<String,BaseCommandProcessor> commandProcessorMap;
 
     @Override
     public boolean initApplication() {
-        String isClientNodeCfg= ApplicationLauncherUtil.getApplicationInfoPropertyValue("isClientNode");
+        String isClientNodeCfg= DataComputeConfigurationHandler.getConfigPropertyValue("isClientNode");
         boolean isClientNode=Boolean.parseBoolean(isClientNodeCfg);
         if(isClientNode){
             Ignition.setClientMode(true);
         }
-        nodeIgnite= Ignition.start();
+        nodeIgnite= Ignition.start(DataComputeConfigurationHandler.getConnectomeNodeConfigurationFilePath());
+        commandProcessorMap = new HashMap<>();
         return true;
     }
 
@@ -47,7 +50,8 @@ public class DataComputeApplication implements BaseApplication {
                     System.out.println("Please input valid command and options");
                 }else{
                     String[] options = Arrays.copyOfRange(commandOptions,1,commandOptions.length);
-                    BaseCommandProcessor commandProcessor = CommandProcessorFactory.getCommandProcessor(command,this.coreRealm,this.executor,this.commandContextDataMap);
+                    BaseCommandProcessor commandProcessor = CommandProcessorFactory.getCommandProcessor(commandProcessorMap,command,options,
+                            this.coreRealm,this.executor,this.commandContextDataMap,this.nodeIgnite);
                     if(commandProcessor!=null){
                         commandProcessor.processCommand(command,options);
                     }
