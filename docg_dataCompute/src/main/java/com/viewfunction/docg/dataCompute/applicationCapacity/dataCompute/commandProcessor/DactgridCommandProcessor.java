@@ -3,10 +3,10 @@ package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.comman
 import com.viewfunction.docg.dataCompute.consoleApplication.feature.BaseCommandProcessor;
 import org.apache.ignite.Ignite;
 
-public class ActiveGridCommandProcessor implements BaseCommandProcessor {
+public class DactgridCommandProcessor implements BaseCommandProcessor {
     private Ignite nodeIgnite;
 
-    public ActiveGridCommandProcessor(Ignite nodeIgnite){
+    public DactgridCommandProcessor(Ignite nodeIgnite){
         this.nodeIgnite=nodeIgnite;
     }
 
@@ -16,13 +16,12 @@ public class ActiveGridCommandProcessor implements BaseCommandProcessor {
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("================================================================");
         appInfoStringBuffer.append("\n\r");
-        appInfoStringBuffer.append("Start active global grid......");
+        appInfoStringBuffer.append("Start deactive global grid......");
         appInfoStringBuffer.append("\n\r");
-        this.nodeIgnite.active(true);
-        appInfoStringBuffer.append("Active global grid finish.");
+        this.nodeIgnite.active(false);
+        appInfoStringBuffer.append("Deactive global grid finish.");
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("================================================================");
         System.out.println(appInfoStringBuffer.toString());
     }
-
 }

@@ -11,30 +11,30 @@ import java.util.Properties;
 
 public class DataComputeConfigurationHandler {
 
-    private static Properties _connectomeNodeProperties;
+    private static Properties globalConfigurationProperties;
 
-    public static String getConnectomeNodeConfigurationFilePath(){
-        return "configurations/edgeCompute-ignite.xml";
+    public static String getDataComputeIgniteConfigurationFilePath(){
+        return "configurations/dataCompute-ignite.xml";
     }
 
-    public static IgniteConfiguration getConnectomeNodeConfiguration(){
-        ApplicationContext context = new FileSystemXmlApplicationContext(getConnectomeNodeConfigurationFilePath());
+    public static IgniteConfiguration getDataComputeIgniteConfiguration(){
+        ApplicationContext context = new FileSystemXmlApplicationContext(getDataComputeIgniteConfigurationFilePath());
         Object configObject=context.getBean("configuration");
         IgniteConfiguration igniteConfiguration=(IgniteConfiguration)configObject;
         return igniteConfiguration;
     }
 
     public static String getConfigPropertyValue(String resourceFileName){
-        if(_connectomeNodeProperties==null){
-            _connectomeNodeProperties=new Properties();
+        if(globalConfigurationProperties ==null){
+            globalConfigurationProperties =new Properties();
             try {
-                _connectomeNodeProperties.load(new FileInputStream("configurations/edgeComputeResourceNodeCfg.properties"));
+                globalConfigurationProperties.load(new FileInputStream("configurations/dataComputeGlobalConfiguration.properties"));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        return _connectomeNodeProperties.getProperty(resourceFileName);
+        return globalConfigurationProperties.getProperty(resourceFileName);
     }
 }

@@ -6,11 +6,11 @@ import com.viewfunction.docg.dataCompute.consoleApplication.feature.BaseCommandP
 import org.apache.ignite.Ignite;
 import org.apache.ignite.cluster.ClusterNode;
 
-public class ShowAppInfoCommandProcessor implements BaseCommandProcessor {
+public class CubeInfCommandProcessor implements BaseCommandProcessor {
 
     private Ignite nodeIgnite;
 
-    public ShowAppInfoCommandProcessor(Ignite nodeIgnite){
+    public CubeInfCommandProcessor(Ignite nodeIgnite){
         this.nodeIgnite=nodeIgnite;
     }
 
@@ -21,7 +21,7 @@ public class ShowAppInfoCommandProcessor implements BaseCommandProcessor {
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("================================================================");
         appInfoStringBuffer.append("\n\r");
-        appInfoStringBuffer.append("Application Id:        " + clusterNode.id().toString());
+        appInfoStringBuffer.append("Cube Id:               " + clusterNode.id().toString());
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("Connectome type:       " + clusterNode.attribute(DataComputeConfigurationHandler.getConfigPropertyValue("connectomeRoleAttributeName")));
         appInfoStringBuffer.append("\n\r");
@@ -34,9 +34,9 @@ public class ShowAppInfoCommandProcessor implements BaseCommandProcessor {
         appInfoStringBuffer.append("Max available Memory:  " + this.nodeIgnite.configuration().getDataStorageConfiguration().getDefaultDataRegionConfiguration().getMaxSize()/1024/1024/1024+" GB");
         appInfoStringBuffer.append("\n\r");
         if(clusterNode.isClient()){
-            appInfoStringBuffer.append("Client application:    " + "YES");
+            appInfoStringBuffer.append("Client cube:           " + "YES");
         }else{
-            appInfoStringBuffer.append("Client application:    " + "NO");
+            appInfoStringBuffer.append("Client cube:           " + "NO");
         }
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("================================================================");

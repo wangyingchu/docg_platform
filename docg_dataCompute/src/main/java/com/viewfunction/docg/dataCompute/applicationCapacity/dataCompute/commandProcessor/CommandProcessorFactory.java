@@ -14,71 +14,71 @@ public class CommandProcessorFactory {
         if(commandContent.equals("clear")){
             BaseCommandProcessor clearAppConsoleCommandProcessor=commandProcessorMap.get("clear");
             if(clearAppConsoleCommandProcessor==null){
-                clearAppConsoleCommandProcessor=new ClearAppConsoleCommandProcessor();
+                clearAppConsoleCommandProcessor=new ClearCommandProcessor();
                 commandProcessorMap.put("clear",clearAppConsoleCommandProcessor);
             }
             clearAppConsoleCommandProcessor.processCommand(commandContent,commandOptions);
-        }else if(commandContent.equals("appinfo")){
-            BaseCommandProcessor showAppInfoCommandProcessor=commandProcessorMap.get("appinfo");
+        }else if(commandContent.equals("cubeinf")){
+            BaseCommandProcessor showAppInfoCommandProcessor=commandProcessorMap.get("cubeinf");
             if(showAppInfoCommandProcessor==null){
-                showAppInfoCommandProcessor=new ShowAppInfoCommandProcessor(nodeIgnite);
-                commandProcessorMap.put("appinfo",showAppInfoCommandProcessor);
+                showAppInfoCommandProcessor=new CubeInfCommandProcessor(nodeIgnite);
+                commandProcessorMap.put("cubeinf",showAppInfoCommandProcessor);
             }
             showAppInfoCommandProcessor.processCommand(commandContent,commandOptions);
-        }else if(commandContent.equals("lsapps")){
-            BaseCommandProcessor listApplicationsCommandProcessor=commandProcessorMap.get("lsapps");
+        }else if(commandContent.equals("lscube")){
+            BaseCommandProcessor listApplicationsCommandProcessor=commandProcessorMap.get("lscube");
             if(listApplicationsCommandProcessor==null){
-                listApplicationsCommandProcessor=new ListApplicationsCommandProcessor(nodeIgnite);
-                commandProcessorMap.put("lsapps",listApplicationsCommandProcessor);
+                listApplicationsCommandProcessor=new LscubeCommandProcessor(nodeIgnite);
+                commandProcessorMap.put("lscube",listApplicationsCommandProcessor);
             }
             listApplicationsCommandProcessor.processCommand(commandContent,commandOptions);
-        }else if(commandContent.equals("lsservices")){
-            BaseCommandProcessor listServicesCommandProcessor=commandProcessorMap.get("lsservices");
+        }else if(commandContent.equals("lssvc")){
+            BaseCommandProcessor listServicesCommandProcessor=commandProcessorMap.get("lssvc");
             if(listServicesCommandProcessor==null){
-                listServicesCommandProcessor=new ListServicesCommandProcessor(nodeIgnite);
-                commandProcessorMap.put("lsservices",listServicesCommandProcessor);
+                listServicesCommandProcessor=new LssvcCommandProcessor(nodeIgnite);
+                commandProcessorMap.put("lssvc",listServicesCommandProcessor);
             }
             listServicesCommandProcessor.processCommand(commandContent,commandOptions);
-        }else if(commandContent.equals("appdss")){
-            BaseCommandProcessor showAppDataStoresInfoCommandProcessor=commandProcessorMap.get("appdss");
+        }else if(commandContent.equals("cubeds")){
+            BaseCommandProcessor showAppDataStoresInfoCommandProcessor=commandProcessorMap.get("cubeds");
             if(showAppDataStoresInfoCommandProcessor==null){
-                showAppDataStoresInfoCommandProcessor=new ShowAppDataStoresInfoCommandProcessor(nodeIgnite);
-                commandProcessorMap.put("appdss",showAppDataStoresInfoCommandProcessor);
+                showAppDataStoresInfoCommandProcessor=new CubedsCommandProcessor(nodeIgnite);
+                commandProcessorMap.put("cubeds",showAppDataStoresInfoCommandProcessor);
             }
             showAppDataStoresInfoCommandProcessor.processCommand(commandContent,commandOptions);
         }else if(commandContent.equals("help")){
             BaseCommandProcessor showHelpInfoCommandProcessor=commandProcessorMap.get("help");
             if(showHelpInfoCommandProcessor==null){
-                showHelpInfoCommandProcessor=new ShowHelpInfoCommandProcessor(nodeIgnite);
+                showHelpInfoCommandProcessor=new HelpCommandProcessor(nodeIgnite);
                 commandProcessorMap.put("help",showHelpInfoCommandProcessor);
             }
             showHelpInfoCommandProcessor.processCommand(commandContent,commandOptions);
-        }else if(commandContent.equals("appmetrics")){
-            BaseCommandProcessor showAppMetricsCommandProcessor=commandProcessorMap.get("appmetrics");
+        }else if(commandContent.equals("cubemetr")){
+            BaseCommandProcessor showAppMetricsCommandProcessor=commandProcessorMap.get("cubemetr");
             if(showAppMetricsCommandProcessor==null){
-                showAppMetricsCommandProcessor=new ShowAppMetricsCommandProcessor(nodeIgnite);
-                commandProcessorMap.put("appmetrics",showAppMetricsCommandProcessor);
+                showAppMetricsCommandProcessor=new CubemetrCommandProcessor(nodeIgnite);
+                commandProcessorMap.put("cubemetr",showAppMetricsCommandProcessor);
             }
             showAppMetricsCommandProcessor.processCommand(commandContent,commandOptions);
-        }else if(commandContent.equals("gridmetrics")){
-            BaseCommandProcessor showGridMetricsCommandProcessor=commandProcessorMap.get("gridmetrics");
+        }else if(commandContent.equals("gridmetr")){
+            BaseCommandProcessor showGridMetricsCommandProcessor=commandProcessorMap.get("gridmetr");
             if(showGridMetricsCommandProcessor==null){
-                showGridMetricsCommandProcessor=new ShowGridMetricsCommandProcessor(nodeIgnite);
-                commandProcessorMap.put("gridmetrics",showGridMetricsCommandProcessor);
+                showGridMetricsCommandProcessor=new GridmetrCommandProcessor(nodeIgnite);
+                commandProcessorMap.put("gridmetr",showGridMetricsCommandProcessor);
             }
             showGridMetricsCommandProcessor.processCommand(commandContent,commandOptions);
-        }else if(commandContent.equals("activegrid")){
-            BaseCommandProcessor activeGridCommandProcessor=commandProcessorMap.get("activegrid");
+        }else if(commandContent.equals("actvgrid")){
+            BaseCommandProcessor activeGridCommandProcessor=commandProcessorMap.get("actvgrid");
             if(activeGridCommandProcessor==null){
-                activeGridCommandProcessor=new ActiveGridCommandProcessor(nodeIgnite);
-                commandProcessorMap.put("activegrid",activeGridCommandProcessor);
+                activeGridCommandProcessor=new ActvgridCommandProcessor(nodeIgnite);
+                commandProcessorMap.put("actvgrid",activeGridCommandProcessor);
             }
             activeGridCommandProcessor.processCommand(commandContent,commandOptions);
-        }else if(commandContent.equals("deactivegrid")){
-            BaseCommandProcessor deactiveGridCommandProcessor=commandProcessorMap.get("deactivegrid");
+        }else if(commandContent.equals("dactgrid")){
+            BaseCommandProcessor deactiveGridCommandProcessor=commandProcessorMap.get("dactgrid");
             if(deactiveGridCommandProcessor==null){
-                deactiveGridCommandProcessor=new DeactiveGridCommandProcessor(nodeIgnite);
-                commandProcessorMap.put("deactivegrid",deactiveGridCommandProcessor);
+                deactiveGridCommandProcessor=new DactgridCommandProcessor(nodeIgnite);
+                commandProcessorMap.put("dactgrid",deactiveGridCommandProcessor);
             }
             deactiveGridCommandProcessor.processCommand(commandContent,commandOptions);
         }

@@ -11,11 +11,11 @@ import org.apache.ignite.cluster.ClusterNode;
 
 import java.util.Date;
 
-public class ShowGridMetricsCommandProcessor implements BaseCommandProcessor {
+public class GridmetrCommandProcessor implements BaseCommandProcessor {
 
     private Ignite nodeIgnite;
 
-    public ShowGridMetricsCommandProcessor(Ignite nodeIgnite){
+    public GridmetrCommandProcessor(Ignite nodeIgnite){
         this.nodeIgnite=nodeIgnite;
     }
 

@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
   Licensed to the Apache Software Foundation (ASF) under one or more
   contributor license agreements.  See the NOTICE file distributed with
@@ -16,16 +15,11 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-
-<!--
-    Ignite configuration with all defaults and enabled p2p deployment and enabled events.
--->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
     <!-- Imports default Ignite configuration -->
-    <import resource="edgeCompute-default.xml"/>
-
+    <import resource="dataCompute-default.xml"/>
     <bean parent="ignite.cfg" id="configuration"/>
 </beans>

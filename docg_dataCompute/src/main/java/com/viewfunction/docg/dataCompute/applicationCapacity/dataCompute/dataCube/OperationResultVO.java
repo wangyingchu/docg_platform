@@ -5,7 +5,6 @@ public class OperationResultVO {
     private boolean result;
     private String resultMessage;
 
-
     public boolean getResult() {
         return result;
     }

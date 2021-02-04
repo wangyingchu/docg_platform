@@ -1,6 +1,5 @@
 package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCube;
 
-
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.ResourceNetworkNotActiveException;
 import org.apache.ignite.Ignite;
 

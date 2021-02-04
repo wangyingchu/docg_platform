@@ -9,11 +9,11 @@ import org.apache.ignite.cluster.ClusterNode;
 
 import java.util.Date;
 
-public class ShowAppMetricsCommandProcessor implements BaseCommandProcessor {
+public class CubemetrCommandProcessor implements BaseCommandProcessor {
 
     private Ignite nodeIgnite;
 
-    public ShowAppMetricsCommandProcessor(Ignite nodeIgnite){
+    public CubemetrCommandProcessor(Ignite nodeIgnite){
         this.nodeIgnite=nodeIgnite;
     }
 

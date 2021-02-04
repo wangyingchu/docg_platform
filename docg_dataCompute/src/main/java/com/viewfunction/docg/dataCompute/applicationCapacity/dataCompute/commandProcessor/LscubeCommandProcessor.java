@@ -1,6 +1,5 @@
 package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.commandProcessor;
 
-
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCube.DataComputeConfigurationHandler;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCube.OperationResultVO;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCube.ResourceNodeIgniteOperationUtil;
@@ -11,11 +10,11 @@ import org.apache.ignite.cluster.ClusterNode;
 
 import java.util.Collection;
 
-public class ListApplicationsCommandProcessor implements BaseCommandProcessor {
+public class LscubeCommandProcessor implements BaseCommandProcessor {
 
     private Ignite nodeIgnite;
 
-    public ListApplicationsCommandProcessor(Ignite nodeIgnite){
+    public LscubeCommandProcessor(Ignite nodeIgnite){
         this.nodeIgnite=nodeIgnite;
     }
 

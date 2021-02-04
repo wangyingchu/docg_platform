@@ -10,11 +10,11 @@ import org.apache.ignite.services.ServiceDescriptor;
 
 import java.util.*;
 
-public class ListServicesCommandProcessor implements BaseCommandProcessor {
+public class LssvcCommandProcessor implements BaseCommandProcessor {
 
     private Ignite nodeIgnite;
 
-    public ListServicesCommandProcessor(Ignite nodeIgnite){
+    public LssvcCommandProcessor(Ignite nodeIgnite){
         this.nodeIgnite=nodeIgnite;
     }
 

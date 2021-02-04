@@ -29,8 +29,9 @@ public class DataComputeApplication implements BaseApplication {
         if(isClientNode){
             Ignition.setClientMode(true);
         }
-        nodeIgnite= Ignition.start(DataComputeConfigurationHandler.getConnectomeNodeConfigurationFilePath());
+        nodeIgnite= Ignition.start(DataComputeConfigurationHandler.getDataComputeIgniteConfigurationFilePath());
         commandProcessorMap = new HashMap<>();
+        commandContextDataMap = new HashMap<>();
         return true;
     }
 

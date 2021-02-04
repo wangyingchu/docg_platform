@@ -3,7 +3,7 @@ package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.comman
 import com.viewfunction.docg.dataCompute.consoleApplication.feature.BaseCommandProcessor;
 import com.viewfunction.docg.dataCompute.consoleApplication.util.ApplicationLauncherUtil;
 
-public class ClearAppConsoleCommandProcessor implements BaseCommandProcessor {
+public class ClearCommandProcessor implements BaseCommandProcessor {
     @Override
     public void processCommand(String command, String[] commandOptions) {
         ApplicationLauncherUtil.printApplicationConsoleBanner();
