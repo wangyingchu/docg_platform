@@ -4,6 +4,7 @@ import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCom
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
+import org.apache.ignite.cache.query.QueryCursor;
 import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.apache.ignite.configuration.CacheConfiguration;
 
@@ -13,14 +14,56 @@ public class DataSlice {
 
     private static final String DUMMY_CACHE_NAME = "dummy_cache";
 
+
     public static void main(String[] args){
+        try (Ignite ignite = Ignition.start(DataComputeConfigurationHandler.getDataComputeIgniteConfigurationFilePath())) {
+
+
+            IgniteCache<?, ?> cache = ignite.cache("dummy_cache1");
+
+
+
+
+
+
+
+            SqlFieldsQuery sql = new SqlFieldsQuery(
+                    "select * from person");
+
+// Iterate over the result set.
+            try (QueryCursor<List<?>> cursor = cache.query(sql)) {
+
+
+                for (Object next : cursor.getAll())
+                    System.out.println(">>>    " + next);
+
+
+
+                /*
+                for (List<?> row : cursor)
+                    System.out.println("personName=" + row.get(0));
+                */
+
+
+            }
+
+
+
+
+        }
+    }
+
+
+
+    public static void main0(String[] args){
         try (Ignite ignite = Ignition.start(DataComputeConfigurationHandler.getDataComputeIgniteConfigurationFilePath())) {
             print("Cache query DDL example started.");
 
             // Create dummy cache to act as an entry point for SQL queries (new SQL API which do not require this
             // will appear in future versions, JDBC and ODBC drivers do not require it already).
-            CacheConfiguration<?, ?> cacheCfg = new CacheConfiguration<>(DUMMY_CACHE_NAME)
-                    .setSqlSchema("PUBLIC");
+            CacheConfiguration<?, ?> cacheCfg = new CacheConfiguration<>(DUMMY_CACHE_NAME+1)
+                    //.setSqlSchema("PUBLIC");
+            .setSqlSchema("Schema2");
                     //.setDataRegionName(DataComputeConfigurationHandler.getConfigPropertyValue("dataStoreRegionName"));
 
             try (
