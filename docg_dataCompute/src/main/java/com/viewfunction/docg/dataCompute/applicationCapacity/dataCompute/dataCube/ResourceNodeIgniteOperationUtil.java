@@ -13,7 +13,7 @@ public class ResourceNodeIgniteOperationUtil {
         lsDataStoreMessageStringBuffer.append("================================================================");
         lsDataStoreMessageStringBuffer.append("\n\r");
         if(!operationResultVO.getResult()){
-            lsDataStoreMessageStringBuffer.append("Grid is not active, please active grid with activegrid command.");
+            lsDataStoreMessageStringBuffer.append("Grid is not active, please active grid with actvgrid command.");
         }else{
             lsDataStoreMessageStringBuffer.append("Grid is active");
         }

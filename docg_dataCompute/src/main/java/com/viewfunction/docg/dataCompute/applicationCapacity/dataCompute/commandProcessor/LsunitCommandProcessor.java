@@ -26,9 +26,9 @@ public class LsunitCommandProcessor implements BaseCommandProcessor {
             return;
         }
 
-        String connectomeScopeName= DataComputeConfigurationHandler.getConfigPropertyValue("unitScopeAttributeName");
-        String connectomeScopeValue= DataComputeConfigurationHandler.getConfigPropertyValue("unitScopeAttributeValue");
-        ClusterGroup nodes = nodeIgnite.cluster().forAttribute(connectomeScopeName, connectomeScopeValue);
+        String unitScopeName= DataComputeConfigurationHandler.getConfigPropertyValue("unitScopeAttributeName");
+        String unitScopeValue= DataComputeConfigurationHandler.getConfigPropertyValue("unitScopeAttributeValue");
+        ClusterGroup nodes = nodeIgnite.cluster().forAttribute(unitScopeName, unitScopeValue);
         Collection<ClusterNode> appNodes = nodes.nodes();
         StringBuffer lsAppsMessageStringBuffer=new StringBuffer();
         lsAppsMessageStringBuffer.append("\n\r");
@@ -36,14 +36,14 @@ public class LsunitCommandProcessor implements BaseCommandProcessor {
         lsAppsMessageStringBuffer.append("\n\r");
         lsAppsMessageStringBuffer.append("Total running unit number:        "+appNodes.size());
         lsAppsMessageStringBuffer.append("\n\r");
-        lsAppsMessageStringBuffer.append("Connectome scope: " + DataComputeConfigurationHandler.getConfigPropertyValue("unitScopeAttributeValue"));
+        lsAppsMessageStringBuffer.append("Unit scope:       " + DataComputeConfigurationHandler.getConfigPropertyValue("unitScopeAttributeValue"));
         lsAppsMessageStringBuffer.append("\n\r");
         for(ClusterNode clusterNode:appNodes){
             lsAppsMessageStringBuffer.append("-------------------------------------------------------------");
             lsAppsMessageStringBuffer.append("\n\r");
             lsAppsMessageStringBuffer.append("Unit Id:            " + clusterNode.id().toString());
             lsAppsMessageStringBuffer.append("\n\r");
-            lsAppsMessageStringBuffer.append("Connectome type:    " + clusterNode.attribute(DataComputeConfigurationHandler.getConfigPropertyValue("unitRoleAttributeName")));
+            lsAppsMessageStringBuffer.append("Unit type:          " + clusterNode.attribute(DataComputeConfigurationHandler.getConfigPropertyValue("unitRoleAttributeName")));
             lsAppsMessageStringBuffer.append("\n\r");
             lsAppsMessageStringBuffer.append("Host name:          " + clusterNode.hostNames());
             lsAppsMessageStringBuffer.append("\n\r");

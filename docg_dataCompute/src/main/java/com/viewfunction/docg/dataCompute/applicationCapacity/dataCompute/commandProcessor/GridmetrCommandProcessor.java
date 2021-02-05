@@ -26,9 +26,9 @@ public class GridmetrCommandProcessor implements BaseCommandProcessor {
             System.out.println(operationResultVO.getResultMessage());
             return;
         }
-        String connectomeScopeName= DataComputeConfigurationHandler.getConfigPropertyValue("unitScopeAttributeName");
-        String connectomeScopeValue= DataComputeConfigurationHandler.getConfigPropertyValue("unitScopeAttributeValue");
-        ClusterGroup clusterGroup = this.nodeIgnite.cluster().forAttribute(connectomeScopeName, connectomeScopeValue);
+        String unitScopeName= DataComputeConfigurationHandler.getConfigPropertyValue("unitScopeAttributeName");
+        String unitScopeValue= DataComputeConfigurationHandler.getConfigPropertyValue("unitScopeAttributeValue");
+        ClusterGroup clusterGroup = this.nodeIgnite.cluster().forAttribute(unitScopeName, unitScopeValue);
         ClusterNode oldestNode=clusterGroup.forOldest().node();
         ClusterNode youngestNode=clusterGroup.forYoungest().node();
         ClusterMetrics metrics = clusterGroup.metrics();
