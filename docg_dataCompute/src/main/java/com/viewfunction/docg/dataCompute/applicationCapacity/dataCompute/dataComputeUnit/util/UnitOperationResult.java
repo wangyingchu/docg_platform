@@ -1,6 +1,6 @@
-package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCube;
+package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util;
 
-public class OperationResultVO {
+public class UnitOperationResult {
 
     private boolean result;
     private String resultMessage;

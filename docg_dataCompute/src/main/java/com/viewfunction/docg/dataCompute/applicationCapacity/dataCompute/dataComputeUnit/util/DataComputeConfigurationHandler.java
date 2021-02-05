@@ -1,4 +1,4 @@
-package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCube;
+package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util;
 
 import org.apache.ignite.configuration.IgniteConfiguration;
 import org.springframework.context.ApplicationContext;

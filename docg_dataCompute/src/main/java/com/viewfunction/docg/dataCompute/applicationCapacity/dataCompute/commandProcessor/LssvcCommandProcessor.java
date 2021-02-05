@@ -1,8 +1,8 @@
 package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.commandProcessor;
 
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCube.DataComputeConfigurationHandler;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCube.OperationResultVO;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCube.ResourceNodeIgniteOperationUtil;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.DataComputeConfigurationHandler;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.UnitOperationResult;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.UnitIgniteOperationUtil;
 import com.viewfunction.docg.dataCompute.consoleApplication.feature.BaseCommandProcessor;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteServices;
@@ -20,9 +20,9 @@ public class LssvcCommandProcessor implements BaseCommandProcessor {
 
     @Override
     public void processCommand(String command, String[] commandOptions) {
-        OperationResultVO operationResultVO= ResourceNodeIgniteOperationUtil.isGridActive(this.nodeIgnite);
-        if(!operationResultVO.getResult()){
-            System.out.println(operationResultVO.getResultMessage());
+        UnitOperationResult unitOperationResult = UnitIgniteOperationUtil.isGridActive(this.nodeIgnite);
+        if(!unitOperationResult.getResult()){
+            System.out.println(unitOperationResult.getResultMessage());
             return;
         }
 

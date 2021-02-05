@@ -2,7 +2,7 @@ package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.commandProcessor.CommandProcessorFactory;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCube.DataComputeConfigurationHandler;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.DataComputeConfigurationHandler;
 import com.viewfunction.docg.dataCompute.consoleApplication.feature.BaseApplication;
 import com.viewfunction.docg.dataCompute.consoleApplication.feature.BaseCommandProcessor;
 import org.apache.ignite.Ignite;
