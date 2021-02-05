@@ -10,11 +10,11 @@ import org.apache.ignite.cluster.ClusterNode;
 
 import java.util.Collection;
 
-public class LscubeCommandProcessor implements BaseCommandProcessor {
+public class LsunitCommandProcessor implements BaseCommandProcessor {
 
     private Ignite nodeIgnite;
 
-    public LscubeCommandProcessor(Ignite nodeIgnite){
+    public LsunitCommandProcessor(Ignite nodeIgnite){
         this.nodeIgnite=nodeIgnite;
     }
 

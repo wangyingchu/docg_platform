@@ -13,11 +13,11 @@ import org.apache.ignite.configuration.CacheConfiguration;
 import java.util.Collection;
 import java.util.Iterator;
 
-public class CubedsCommandProcessor implements BaseCommandProcessor {
+public class UnitdsCommandProcessor implements BaseCommandProcessor {
 
     private Ignite nodeIgnite;
 
-    public CubedsCommandProcessor(Ignite nodeIgnite){
+    public UnitdsCommandProcessor(Ignite nodeIgnite){
         this.nodeIgnite=nodeIgnite;
     }
 

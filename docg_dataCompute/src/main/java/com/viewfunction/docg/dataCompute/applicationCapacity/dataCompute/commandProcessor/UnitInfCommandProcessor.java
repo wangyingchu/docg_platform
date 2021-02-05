@@ -6,11 +6,11 @@ import com.viewfunction.docg.dataCompute.consoleApplication.feature.BaseCommandP
 import org.apache.ignite.Ignite;
 import org.apache.ignite.cluster.ClusterNode;
 
-public class CubeInfCommandProcessor implements BaseCommandProcessor {
+public class UnitInfCommandProcessor implements BaseCommandProcessor {
 
     private Ignite nodeIgnite;
 
-    public CubeInfCommandProcessor(Ignite nodeIgnite){
+    public UnitInfCommandProcessor(Ignite nodeIgnite){
         this.nodeIgnite=nodeIgnite;
     }
 
