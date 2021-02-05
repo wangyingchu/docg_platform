@@ -13,13 +13,13 @@
     <bean abstract="true" id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
         <!-- Set to true to enable distributed class loading for examples, default is false. -->
         <property name="peerClassLoadingEnabled" value="false"/>
-        <property name="igniteInstanceName" value="docg-dataComputeCube"/>
+        <property name="igniteInstanceName" value="docg-dataComputeUnit"/>
 
         <!-- CIM Edge Compute node customer attributes. -->
         <property name="userAttributes">
             <map>
-                <entry key="RESOURCE_NODE_SCOPE" value="DOCG_DATA_COMPUTE_UNIT"/>
-                <entry key="RESOURCE_NODE_ROLE" value="SERVICE_NODE"/>
+                <entry key="UNIT_SCOPE" value="DOCG_DATA_COMPUTE_UNIT"/>
+                <entry key="UNIT_ROLE" value="SERVICE_UNIT"/>
             </map>
         </property>
         <!-- Enable task execution events. -->
