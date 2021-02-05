@@ -24,7 +24,7 @@ public class DataComputeApplication implements BaseApplication {
 
     @Override
     public boolean initApplication() {
-        String isClientNodeCfg= DataComputeConfigurationHandler.getConfigPropertyValue("isClientNode");
+        String isClientNodeCfg= DataComputeConfigurationHandler.getConfigPropertyValue("isClientUnit");
         boolean isClientNode=Boolean.parseBoolean(isClientNodeCfg);
         if(isClientNode){
             Ignition.setClientMode(true);

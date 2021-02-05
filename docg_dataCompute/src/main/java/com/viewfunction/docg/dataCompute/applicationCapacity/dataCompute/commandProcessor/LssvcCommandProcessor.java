@@ -26,8 +26,8 @@ public class LssvcCommandProcessor implements BaseCommandProcessor {
             return;
         }
 
-        String connectomeScopeName= DataComputeConfigurationHandler.getConfigPropertyValue("connectomeScopeAttributeName");
-        String connectomeScopeValue= DataComputeConfigurationHandler.getConfigPropertyValue("connectomeScopeAttributeValue");
+        String connectomeScopeName= DataComputeConfigurationHandler.getConfigPropertyValue("unitScopeAttributeName");
+        String connectomeScopeValue= DataComputeConfigurationHandler.getConfigPropertyValue("unitScopeAttributeValue");
         IgniteServices svcs = this.nodeIgnite.services(this.nodeIgnite.cluster().forServers().forAttribute(connectomeScopeName,connectomeScopeValue));
         Collection<ServiceDescriptor> serviceDescCollection=svcs.serviceDescriptors();
         StringBuffer lsServicesMessageStringBuffer=new StringBuffer();

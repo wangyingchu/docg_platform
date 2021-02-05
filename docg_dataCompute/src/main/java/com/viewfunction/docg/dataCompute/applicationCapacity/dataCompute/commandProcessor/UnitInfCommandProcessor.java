@@ -23,9 +23,9 @@ public class UnitInfCommandProcessor implements BaseCommandProcessor {
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("Unit Id:               " + clusterNode.id().toString());
         appInfoStringBuffer.append("\n\r");
-        appInfoStringBuffer.append("Connectome type:       " + clusterNode.attribute(DataComputeConfigurationHandler.getConfigPropertyValue("connectomeRoleAttributeName")));
+        appInfoStringBuffer.append("Connectome type:       " + clusterNode.attribute(DataComputeConfigurationHandler.getConfigPropertyValue("unitRoleAttributeName")));
         appInfoStringBuffer.append("\n\r");
-        appInfoStringBuffer.append("Connectome scope:      " + clusterNode.attribute(DataComputeConfigurationHandler.getConfigPropertyValue("connectomeScopeAttributeName")));
+        appInfoStringBuffer.append("Connectome scope:      " + clusterNode.attribute(DataComputeConfigurationHandler.getConfigPropertyValue("unitScopeAttributeName")));
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("Host name:             " + clusterNode.hostNames());
         appInfoStringBuffer.append("\n\r");
