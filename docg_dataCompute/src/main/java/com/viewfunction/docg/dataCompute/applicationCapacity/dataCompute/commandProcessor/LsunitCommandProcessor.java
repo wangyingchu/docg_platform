@@ -34,14 +34,14 @@ public class LsunitCommandProcessor implements BaseCommandProcessor {
         lsAppsMessageStringBuffer.append("\n\r");
         lsAppsMessageStringBuffer.append("================================================================");
         lsAppsMessageStringBuffer.append("\n\r");
-        lsAppsMessageStringBuffer.append("Total running application number: "+appNodes.size());
+        lsAppsMessageStringBuffer.append("Total running unit number:        "+appNodes.size());
         lsAppsMessageStringBuffer.append("\n\r");
         lsAppsMessageStringBuffer.append("Connectome scope: " + DataComputeConfigurationHandler.getConfigPropertyValue("connectomeScopeAttributeValue"));
         lsAppsMessageStringBuffer.append("\n\r");
         for(ClusterNode clusterNode:appNodes){
             lsAppsMessageStringBuffer.append("-------------------------------------------------------------");
             lsAppsMessageStringBuffer.append("\n\r");
-            lsAppsMessageStringBuffer.append("Application Id:     " + clusterNode.id().toString());
+            lsAppsMessageStringBuffer.append("Unit Id:            " + clusterNode.id().toString());
             lsAppsMessageStringBuffer.append("\n\r");
             lsAppsMessageStringBuffer.append("Connectome type:    " + clusterNode.attribute(DataComputeConfigurationHandler.getConfigPropertyValue("connectomeRoleAttributeName")));
             lsAppsMessageStringBuffer.append("\n\r");
@@ -50,15 +50,15 @@ public class LsunitCommandProcessor implements BaseCommandProcessor {
             lsAppsMessageStringBuffer.append("IP address:         " + clusterNode.addresses());
             lsAppsMessageStringBuffer.append("\n\r");
             if(clusterNode.isClient()){
-                lsAppsMessageStringBuffer.append("Client application: " + "YES");
+                lsAppsMessageStringBuffer.append("Client unit:        " + "YES");
             }else{
-                lsAppsMessageStringBuffer.append("Client application: " + "NO");
+                lsAppsMessageStringBuffer.append("Client unit:        " + "NO");
             }
             lsAppsMessageStringBuffer.append("\n\r");
             if(clusterNode.isLocal()){
-                lsAppsMessageStringBuffer.append("Local application:  " + "YES");
+                lsAppsMessageStringBuffer.append("Local unit:         " + "YES");
             }else{
-                lsAppsMessageStringBuffer.append("Local application:  " + "NO");
+                lsAppsMessageStringBuffer.append("Local unit:         " + "NO");
             }
             lsAppsMessageStringBuffer.append("\n\r");
         }

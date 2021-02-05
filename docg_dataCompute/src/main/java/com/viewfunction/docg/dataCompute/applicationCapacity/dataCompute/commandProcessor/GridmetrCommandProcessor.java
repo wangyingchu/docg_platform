@@ -45,11 +45,11 @@ public class GridmetrCommandProcessor implements BaseCommandProcessor {
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("Grid Total Idle Time:         " + metrics.getTotalIdleTime()/1000+" Second");
         appInfoStringBuffer.append("\n\r");
-        appInfoStringBuffer.append("Grid Applications Amount:     " + metrics.getTotalNodes());
+        appInfoStringBuffer.append("Grid Units Amount:            " + metrics.getTotalNodes());
         appInfoStringBuffer.append("\n\r");
-        appInfoStringBuffer.append("Oldest Application Id:        " + oldestNode.id().toString());
+        appInfoStringBuffer.append("Oldest Unit Id:               " + oldestNode.id().toString());
         appInfoStringBuffer.append("\n\r");
-        appInfoStringBuffer.append("Youngest Application Id:      " + youngestNode.id().toString());
+        appInfoStringBuffer.append("Youngest Unit Id:             " + youngestNode.id().toString());
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("Used Non-Heap Memory:         " + metrics.getNonHeapMemoryUsed()/1024/1024+" MB");
         appInfoStringBuffer.append("\n\r");

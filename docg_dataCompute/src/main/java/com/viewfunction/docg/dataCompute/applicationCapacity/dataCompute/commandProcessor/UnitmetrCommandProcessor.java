@@ -9,11 +9,11 @@ import org.apache.ignite.cluster.ClusterNode;
 
 import java.util.Date;
 
-public class CubemetrCommandProcessor implements BaseCommandProcessor {
+public class UnitmetrCommandProcessor implements BaseCommandProcessor {
 
     private Ignite nodeIgnite;
 
-    public CubemetrCommandProcessor(Ignite nodeIgnite){
+    public UnitmetrCommandProcessor(Ignite nodeIgnite){
         this.nodeIgnite=nodeIgnite;
     }
 
@@ -30,11 +30,11 @@ public class CubemetrCommandProcessor implements BaseCommandProcessor {
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("================================================================");
         appInfoStringBuffer.append("\n\r");
-        appInfoStringBuffer.append("Application Id:               " + clusterNode.id().toString());
+        appInfoStringBuffer.append("Unit Id:                      " + clusterNode.id().toString());
         appInfoStringBuffer.append("\n\r");
-        appInfoStringBuffer.append("Application Start Time:       " + new Date(metrics.getNodeStartTime()).toString());
+        appInfoStringBuffer.append("Unit Start Time:              " + new Date(metrics.getNodeStartTime()).toString());
         appInfoStringBuffer.append("\n\r");
-        appInfoStringBuffer.append("Application Up Time:          " + metrics.getUpTime()/1000/60+" Minute");
+        appInfoStringBuffer.append("Unit Up Time:                 " + metrics.getUpTime()/1000/60+" Minute");
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("Current Idle Time:            " + metrics.getCurrentIdleTime()/1000+" Second");
         appInfoStringBuffer.append("\n\r");

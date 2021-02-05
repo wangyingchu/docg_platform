@@ -21,7 +21,7 @@ public class UnitInfCommandProcessor implements BaseCommandProcessor {
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("================================================================");
         appInfoStringBuffer.append("\n\r");
-        appInfoStringBuffer.append("Cube Id:               " + clusterNode.id().toString());
+        appInfoStringBuffer.append("Unit Id:               " + clusterNode.id().toString());
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("Connectome type:       " + clusterNode.attribute(DataComputeConfigurationHandler.getConfigPropertyValue("connectomeRoleAttributeName")));
         appInfoStringBuffer.append("\n\r");
@@ -34,9 +34,9 @@ public class UnitInfCommandProcessor implements BaseCommandProcessor {
         appInfoStringBuffer.append("Max available Memory:  " + this.nodeIgnite.configuration().getDataStorageConfiguration().getDefaultDataRegionConfiguration().getMaxSize()/1024/1024/1024+" GB");
         appInfoStringBuffer.append("\n\r");
         if(clusterNode.isClient()){
-            appInfoStringBuffer.append("Client cube:           " + "YES");
+            appInfoStringBuffer.append("Client unit:           " + "YES");
         }else{
-            appInfoStringBuffer.append("Client cube:           " + "NO");
+            appInfoStringBuffer.append("Client unit:           " + "NO");
         }
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("================================================================");

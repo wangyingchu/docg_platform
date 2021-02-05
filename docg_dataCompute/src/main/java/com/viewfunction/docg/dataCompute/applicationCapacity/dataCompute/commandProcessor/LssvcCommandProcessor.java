@@ -46,14 +46,14 @@ public class LssvcCommandProcessor implements BaseCommandProcessor {
             lsServicesMessageStringBuffer.append("Service class:               " + currentServiceDesc.serviceClass());
             lsServicesMessageStringBuffer.append("\n\r");
             if(currentServiceDesc.maxPerNodeCount()!=0){
-                lsServicesMessageStringBuffer.append("Max service per application: " + currentServiceDesc.maxPerNodeCount());
+                lsServicesMessageStringBuffer.append("Max service per unit:        " + currentServiceDesc.maxPerNodeCount());
             }else{
-                lsServicesMessageStringBuffer.append("Max service per application: " + "unlimited");
+                lsServicesMessageStringBuffer.append("Max service per unit:        " + "unlimited");
             }
             lsServicesMessageStringBuffer.append("\n\r");
             lsServicesMessageStringBuffer.append("Service total count:         " + currentServiceDesc.totalCount());
             lsServicesMessageStringBuffer.append("\n\r");
-            lsServicesMessageStringBuffer.append("Running on applications:");
+            lsServicesMessageStringBuffer.append("Running on units:");
             lsServicesMessageStringBuffer.append("\n\r");
 
             Map<UUID,Integer> topologyMap=currentServiceDesc.topologySnapshot();

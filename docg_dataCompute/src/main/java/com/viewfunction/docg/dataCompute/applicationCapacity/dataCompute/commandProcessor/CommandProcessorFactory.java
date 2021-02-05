@@ -56,7 +56,7 @@ public class CommandProcessorFactory {
         }else if(commandContent.equals("unitmetr")){
             BaseCommandProcessor unitmetrCommandProcessor=commandProcessorMap.get("unitmetr");
             if(unitmetrCommandProcessor==null){
-                unitmetrCommandProcessor=new CubemetrCommandProcessor(nodeIgnite);
+                unitmetrCommandProcessor=new UnitmetrCommandProcessor(nodeIgnite);
                 commandProcessorMap.put("unitmetr",unitmetrCommandProcessor);
             }
             unitmetrCommandProcessor.processCommand(commandContent,commandOptions);
