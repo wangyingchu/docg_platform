@@ -53,7 +53,7 @@ public class UnitdsCommandProcessor implements BaseCommandProcessor {
             }
             lsDataStoreMessageStringBuffer.append("-------------------------------------------------------------");
             lsDataStoreMessageStringBuffer.append("\n\r");
-            lsDataStoreMessageStringBuffer.append("Data Store Name:          " + currentCacheMetrics.name());
+            lsDataStoreMessageStringBuffer.append("Data Slice Name:          " + currentCacheMetrics.name());
             lsDataStoreMessageStringBuffer.append("\n\r");
             lsDataStoreMessageStringBuffer.append("Data Key Type:            " + currentCacheConfig.getKeyType().getName());
             lsDataStoreMessageStringBuffer.append("\n\r");
@@ -77,7 +77,7 @@ public class UnitdsCommandProcessor implements BaseCommandProcessor {
             lsDataStoreMessageStringBuffer.append(currentCache.size(CachePeekMode.ONHEAP)+"\n\r");
             lsDataStoreMessageStringBuffer.append(currentCache.size(CachePeekMode.SWAP)+"\n\r");
             */
-            lsDataStoreMessageStringBuffer.append("Data Store Mode:          " + dataStoreMode);
+            lsDataStoreMessageStringBuffer.append("Data Slice Mode:          " + dataStoreMode);
             lsDataStoreMessageStringBuffer.append("\n\r");
             lsDataStoreMessageStringBuffer.append("Atomicity Mode:           " + currentCacheConfig.getAtomicityMode());
             lsDataStoreMessageStringBuffer.append("\n\r");
