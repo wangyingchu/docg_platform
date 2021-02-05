@@ -18,7 +18,7 @@
         <!-- CIM Edge Compute node customer attributes. -->
         <property name="userAttributes">
             <map>
-                <entry key="RESOURCE_NODE_SCOPE" value="DOCG_DATA_COMPUTE_CUBE"/>
+                <entry key="RESOURCE_NODE_SCOPE" value="DOCG_DATA_COMPUTE_UNIT"/>
                 <entry key="RESOURCE_NODE_ROLE" value="SERVICE_NODE"/>
             </map>
         </property>
