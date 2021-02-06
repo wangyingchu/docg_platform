@@ -4,6 +4,7 @@ import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCom
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
+import org.apache.ignite.cache.CachePeekMode;
 import org.apache.ignite.cache.query.QueryCursor;
 import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.apache.ignite.configuration.CacheConfiguration;
@@ -17,53 +18,36 @@ public class DataSlice {
 
     public static void main(String[] args){
         try (Ignite ignite = Ignition.start(DataComputeConfigurationHandler.getDataComputeIgniteConfigurationFilePath())) {
-
-
-            IgniteCache<?, ?> cache = ignite.cache("dummy_cache1");
-
-
-
-
-
-
-
-            SqlFieldsQuery sql = new SqlFieldsQuery(
-                    "select * from person");
-
-// Iterate over the result set.
+            /*
+            IgniteCache<?, ?> cache = ignite.cache("dummy_cache2");
+            SqlFieldsQuery sql = new SqlFieldsQuery("select * from person");
+            // Iterate over the result set.
             try (QueryCursor<List<?>> cursor = cache.query(sql)) {
-
-
                 for (Object next : cursor.getAll())
                     System.out.println(">>>    " + next);
-
-
-
-                /*
-                for (List<?> row : cursor)
-                    System.out.println("personName=" + row.get(0));
-                */
-
-
             }
-
-
-
-
+            */
+            IgniteCache<?, ?> cache = ignite.cache("SQL_SCHEMA0_PERSON");
+            SqlFieldsQuery sql = new SqlFieldsQuery("select * from person");
+            // Iterate over the result set.
+            try (QueryCursor<List<?>> cursor = cache.query(sql)) {
+                for (Object next : cursor.getAll())
+                    System.out.println(">>>    " + next);
+            }
         }
     }
 
 
 
-    public static void main0(String[] args){
+    public static void main1(String[] args){
         try (Ignite ignite = Ignition.start(DataComputeConfigurationHandler.getDataComputeIgniteConfigurationFilePath())) {
             print("Cache query DDL example started.");
 
             // Create dummy cache to act as an entry point for SQL queries (new SQL API which do not require this
             // will appear in future versions, JDBC and ODBC drivers do not require it already).
-            CacheConfiguration<?, ?> cacheCfg = new CacheConfiguration<>(DUMMY_CACHE_NAME+1)
+            CacheConfiguration<?, ?> cacheCfg = new CacheConfiguration<>(DUMMY_CACHE_NAME+2)
                     //.setSqlSchema("PUBLIC");
-            .setSqlSchema("Schema2");
+            .setSqlSchema("Schema1");
                     //.setDataRegionName(DataComputeConfigurationHandler.getConfigPropertyValue("dataStoreRegionName"));
 
             try (
@@ -87,7 +71,7 @@ public class DataSlice {
 
                 cache.query(qry.setArgs(1L, "Forest Hill")).getAll();
                 cache.query(qry.setArgs(2L, "Denver")).getAll();
-                cache.query(qry.setArgs(3L, "St. Petersburg")).getAll();
+                //cache.query(qry.setArgs(3L, "St. Petersburg")).getAll();
 
                 qry = new SqlFieldsQuery("INSERT INTO person (id, name, city_id) values (?, ?, ?)");
 

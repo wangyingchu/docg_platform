@@ -21,40 +21,27 @@ public class DataSlicesFactory {
 
     public static void main(String[] args) throws IgniteCheckedException {
 
-/*
-        String isClientNodeCfg= DataComputeConfigurationHandler.getConfigPropertyValue("isClientUnit");
-        boolean isClientNode=Boolean.parseBoolean(isClientNodeCfg);
-        if(isClientNode){
-            Ignition.setClientMode(true);
-        }
-        Ignite nodeIgnite = Ignition.start(DataComputeConfigurationHandler.getDataComputeIgniteConfigurationFilePath());
-*/
-
-
-
         final Map<String, Object> filedMap = new HashMap<>();
         filedMap.put("field0", String.class.getName());
         filedMap.put("field1", Integer.class.getName());
         filedMap.put("field2", Boolean.class.getName());
-        filedMap.put("primaryKey001", String.class.getName());
+        filedMap.put("pk", String.class.getName());
 
         IgniteConfiguration cfg = DataComputeConfigurationHandler.getDataComputeIgniteConfiguration();
         //用户自定义值类型 设置为默认
         QueryEntity qe = new QueryEntity(String.class.getName(), "SQL_CUSTOM_VALUE_TYPE");
        // qe.setTableName("tableName001");
-        qe.addQueryField("primaryKey001", String.class.getName(), null);
+        qe.addQueryField("pk", String.class.getName(), null);
 
         for (Map.Entry<String, Object> filedEntry : filedMap.entrySet()) {
             qe.addQueryField(filedEntry.getKey(), filedEntry.getValue().toString(), null);
         }
-        qe.setKeyFieldName("primaryKey001");
+        qe.setKeyFieldName("pk");
 
-        CacheConfiguration cacheCfg = new CacheConfiguration()
-                .setQueryEntities(Collections.singleton(qe))
-                .setName("DEFAULT_CACHE_NAME");
-
-      //  CacheConfiguration enableCacheMetricsCfg = enableCacheMetrics(cfg, cacheCfg);
-     //   cfg.setCacheConfiguration(enableCacheMetricsCfg);
+        CacheConfiguration cacheCfg = new CacheConfiguration().setQueryEntities(Collections.singleton(qe)).setName("DataCube01");
+        cacheCfg.setSqlSchema("DataCube01");
+        //CacheConfiguration enableCacheMetricsCfg = enableCacheMetrics(cfg, cacheCfg);
+        //cfg.setCacheConfiguration(enableCacheMetricsCfg);
 
         cfg.setClientMode(true);
         Ignite ignite = Ignition.getOrStart(cfg);
@@ -66,10 +53,10 @@ public class DataSlicesFactory {
         input.put("field0", "value0");
         input.put("field1", 0);
         input.put("field2", false);
-        input.put("primaryKey001", "pk001");
+        input.put("pk", "pk001");
 
 
-        InsertData insertData = new InsertData("primaryKey001", input);
+        InsertData insertData = new InsertData("pk", input);
         //StringBuilder sb = new StringBuilder("INSERT INTO ").append("tableName001").append(" (")
         StringBuilder sb = new StringBuilder("INSERT INTO ").append("DEFAULT_CACHE_NAME").append(" (")
                 .append(insertData.getInsertFields()).append(") VALUES (")
