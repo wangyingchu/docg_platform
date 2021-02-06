@@ -4,7 +4,6 @@ import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCom
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
-import org.apache.ignite.cache.CachePeekMode;
 import org.apache.ignite.cache.query.QueryCursor;
 import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.apache.ignite.configuration.CacheConfiguration;
@@ -16,7 +15,7 @@ public class DataSlice {
     private static final String DUMMY_CACHE_NAME = "dummy_cache";
 
 
-    public static void main(String[] args){
+    public static void main0(String[] args){
         try (Ignite ignite = Ignition.start(DataComputeConfigurationHandler.getDataComputeIgniteConfigurationFilePath())) {
             /*
             IgniteCache<?, ?> cache = ignite.cache("dummy_cache2");
@@ -39,19 +38,20 @@ public class DataSlice {
 
 
 
-    public static void main1(String[] args){
+    public static void main(String[] args){
         try (Ignite ignite = Ignition.start(DataComputeConfigurationHandler.getDataComputeIgniteConfigurationFilePath())) {
             print("Cache query DDL example started.");
 
             // Create dummy cache to act as an entry point for SQL queries (new SQL API which do not require this
             // will appear in future versions, JDBC and ODBC drivers do not require it already).
-            CacheConfiguration<?, ?> cacheCfg = new CacheConfiguration<>(DUMMY_CACHE_NAME+2)
+            CacheConfiguration<?, ?> cacheCfg = new CacheConfiguration<>("DUMMY_CACHE_NAME+2")
                     //.setSqlSchema("PUBLIC");
             .setSqlSchema("Schema1");
                     //.setDataRegionName(DataComputeConfigurationHandler.getConfigPropertyValue("dataStoreRegionName"));
 
             try (
-                    IgniteCache<?, ?> cache = ignite.getOrCreateCache(cacheCfg)
+                    //IgniteCache<?, ?> cache = ignite.getOrCreateCache(cacheCfg)
+                    IgniteCache<?, ?> cache = ignite.cache("gridDataCube1")
             ) {
                 // Create reference City table based on REPLICATED template.
                 cache.query(new SqlFieldsQuery(

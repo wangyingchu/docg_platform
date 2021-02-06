@@ -1,8 +1,9 @@
 package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.datastore;
 
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataStoreMetaInfo;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.ComputeGridNotActiveException;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataClassTypeNotMatchedException;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataStoreExistException;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataCubeExistException;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,7 +55,7 @@ public class ResourceNodeDataStoreInvokerTest {
             resourceNodeDataStoreInvoker.createConnectomeLocalDataStore("ConnectomeLocalDataStore");
             ResourceNodeDataStore<String,Integer> store2= resourceNodeDataStoreInvoker.createGridPerNodeDataStore("GridPerNodeDataStore",String.class,Integer.class);
             ResourceNodeDataStore<String, Float> store3= resourceNodeDataStoreInvoker.createGridSingletonDataStore("GridSingletonDataStore",String.class,Float.class);
-        } catch (DataStoreExistException e) {
+        } catch (DataCubeExistException e) {
             e.printStackTrace();
         }
         System.out.println(resourceNodeDataStoreInvoker.listGridDataStores());
@@ -158,7 +159,7 @@ public class ResourceNodeDataStoreInvokerTest {
             ResourceNodeDataStore store1= resourceNodeDataStoreInvoker.createGridSingletonDataStore("GridSingletonDataStoreWithType", String.class, Integer.class);
             ResourceNodeDataStore store2= resourceNodeDataStoreInvoker.createGridSingletonDataStore("GridPerNodeDataStoreWithType", Integer.class, Float.class);
             ResourceNodeDataStore store3= resourceNodeDataStoreInvoker.createGridSingletonDataStore("ConnectomeLocalDataStoreWithType", Float.class, Long.class);
-        } catch (DataStoreExistException e) {
+        } catch (DataCubeExistException e) {
             e.printStackTrace();
         }
         System.out.println(resourceNodeDataStoreInvoker.listGridDataStores());
