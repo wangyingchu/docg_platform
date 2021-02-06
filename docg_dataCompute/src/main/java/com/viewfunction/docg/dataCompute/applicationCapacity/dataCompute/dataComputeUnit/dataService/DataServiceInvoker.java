@@ -12,6 +12,10 @@ import org.apache.ignite.cache.CacheMode;
 import org.apache.ignite.cache.affinity.rendezvous.RendezvousAffinityFunction;
 import org.apache.ignite.configuration.CacheConfiguration;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 public class DataServiceInvoker implements AutoCloseable{
 
     private Ignite invokerIgnite;
@@ -46,6 +50,32 @@ public class DataServiceInvoker implements AutoCloseable{
         return new DataCube(this.invokerIgnite,igniteCache);
     }
 
+    public void eraseDataCube(String dataCubeName){
+        if(listDataCubes().contains(dataCubeName)){
+            this.invokerIgnite.destroyCache(dataCubeName);
+        }
+    }
+
+    public DataCube getDataCube(String dataCubeName){
+        IgniteCache targetCache=this.invokerIgnite.cache(dataCubeName);
+        if(targetCache==null){
+            return null;
+        }else{
+            return new DataCube(this.invokerIgnite,targetCache);
+        }
+    }
+
+    public List<String> listDataCubes(){
+        Collection<String> igniteCacheNames = this.invokerIgnite.cacheNames();
+        List<String> dataCubeNameList = new ArrayList<>();
+        for(String currentString:igniteCacheNames){
+            if(!currentString.startsWith("SQL_")){
+                dataCubeNameList.add(currentString);
+            }
+        }
+        return dataCubeNameList;
+    }
+
     public static DataServiceInvoker getInvokerInstance() throws ComputeGridNotActiveException {
         DataServiceInvoker invokerInstance=new DataServiceInvoker();
         try{
@@ -56,15 +86,6 @@ public class DataServiceInvoker implements AutoCloseable{
         }
         return invokerInstance;
     }
-
-    public static DataServiceInvoker getInvokerInstance(Ignite dataAccessSession){
-        DataServiceInvoker invokerInstance=new DataServiceInvoker();
-        //invokerInstance.setDataAccessSession(dataAccessSession);
-        return invokerInstance;
-    }
-
-
-
 
     private IgniteCache createIgniteCache(Ignite invokerIgnite, String cacheName, CacheMode cacheMode){
         CacheConfiguration<?, ?> cacheCfg = new CacheConfiguration<>(cacheName);

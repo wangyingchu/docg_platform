@@ -1,6 +1,6 @@
 package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService;
 
-public class DataStoreMetaInfo {
+public class DataStorageMetaInfo {
 
     private int primaryDataCount;
     private int backupDataCount;
@@ -11,6 +11,7 @@ public class DataStoreMetaInfo {
     private String sqlSchema;
     private Class keyClass;
     private Class valueClass;
+    private String storageName;
 
     public int getPrimaryDataCount() {
         return primaryDataCount;
@@ -82,5 +83,13 @@ public class DataStoreMetaInfo {
 
     public void setValueClass(Class valueClass) {
         this.valueClass = valueClass;
+    }
+
+    public String getStorageName() {
+        return storageName;
+    }
+
+    public void setStorageName(String storageName) {
+        this.storageName = storageName;
     }
 }

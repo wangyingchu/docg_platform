@@ -1,6 +1,6 @@
 package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.datastore;
 
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataStoreMetaInfo;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataStorageMetaInfo;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.DataComputeConfigurationHandler;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataClassTypeNotMatchedException;
 import org.apache.ignite.Ignite;
@@ -170,13 +170,13 @@ public class ResourceNodeDataStore<K, V> {
         }
     }
 
-    public DataStoreMetaInfo getDataStoreMetaInfo(){
+    public DataStorageMetaInfo getDataStoreMetaInfo(){
         CacheConfiguration currentCacheConfig=this.cache.getConfiguration(CacheConfiguration.class);
-        DataStoreMetaInfo dataStoreMetaInfo=new DataStoreMetaInfo();
-        dataStoreMetaInfo.setPrimaryDataCount(this.cache.size(CachePeekMode.PRIMARY));
-        dataStoreMetaInfo.setBackupDataCount(this.cache.size(CachePeekMode.BACKUP));
-        dataStoreMetaInfo.setTotalDataCount(this.cache.size(CachePeekMode.ALL));
-        dataStoreMetaInfo.setStoreBackupNumber(currentCacheConfig.getBackups());
+        DataStorageMetaInfo dataStorageMetaInfo =new DataStorageMetaInfo();
+        dataStorageMetaInfo.setPrimaryDataCount(this.cache.size(CachePeekMode.PRIMARY));
+        dataStorageMetaInfo.setBackupDataCount(this.cache.size(CachePeekMode.BACKUP));
+        dataStorageMetaInfo.setTotalDataCount(this.cache.size(CachePeekMode.ALL));
+        dataStorageMetaInfo.setStoreBackupNumber(currentCacheConfig.getBackups());
         CacheMode currentStoreCacheMode=currentCacheConfig.getCacheMode();
         String dataStoreMode="UNKNOWN";
         switch(currentStoreCacheMode){
@@ -184,12 +184,12 @@ public class ResourceNodeDataStore<K, V> {
             case LOCAL:dataStoreMode="Connectome Local";break;
             case REPLICATED:dataStoreMode="Grid PerNode";break;
         }
-        dataStoreMetaInfo.setDataStoreMode(dataStoreMode);
-        dataStoreMetaInfo.setAtomicityMode(""+currentCacheConfig.getAtomicityMode());
-        dataStoreMetaInfo.setSqlSchema(""+currentCacheConfig.getSqlSchema());
-        dataStoreMetaInfo.setKeyClass(currentCacheConfig.getKeyType());
-        dataStoreMetaInfo.setValueClass(currentCacheConfig.getValueType());
-        return dataStoreMetaInfo;
+        dataStorageMetaInfo.setDataStoreMode(dataStoreMode);
+        dataStorageMetaInfo.setAtomicityMode(""+currentCacheConfig.getAtomicityMode());
+        dataStorageMetaInfo.setSqlSchema(""+currentCacheConfig.getSqlSchema());
+        dataStorageMetaInfo.setKeyClass(currentCacheConfig.getKeyType());
+        dataStorageMetaInfo.setValueClass(currentCacheConfig.getValueType());
+        return dataStorageMetaInfo;
     }
 
     public void addData(K key, V value) throws DataClassTypeNotMatchedException {
