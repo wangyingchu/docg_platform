@@ -1,6 +1,6 @@
 package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.datastore;
 
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataStorageMetaInfo;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSliceMetaInfo;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.ComputeGridNotActiveException;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataClassTypeNotMatchedException;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataCubeExistException;
@@ -95,7 +95,7 @@ public class ResourceNodeDataStoreInvokerTest {
         targetStore2.addData("GridPerNodeDataStore_key1",new Integer(45690));
         System.out.println(targetStore2.getData("GridPerNodeDataStore_key1"));
 
-        DataStorageMetaInfo metaInfo = targetStore2.getDataStoreMetaInfo();
+        DataSliceMetaInfo metaInfo = targetStore2.getDataStoreMetaInfo();
         System.out.println(metaInfo.getPrimaryDataCount());
         System.out.println(metaInfo.getBackupDataCount());
         System.out.println(metaInfo.getTotalDataCount());

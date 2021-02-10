@@ -10,15 +10,18 @@ import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.CacheAtomicityMode;
 import org.apache.ignite.cache.CacheMode;
 import org.apache.ignite.cache.affinity.rendezvous.RendezvousAffinityFunction;
+import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.apache.ignite.configuration.CacheConfiguration;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public class DataServiceInvoker implements AutoCloseable{
 
     private Ignite invokerIgnite;
+    private final String TEMPLATE_OPERATION_CACHE = "TEMPLATE_OPERATION_CACHE";
 
     public void openServiceSession() throws ComputeGridNotActiveException {
         Ignition.setClientMode(true);
@@ -32,48 +35,68 @@ public class DataServiceInvoker implements AutoCloseable{
         }
     }
 
+    //https://ignite.apache.org/docs/latest/sql-reference/ddl#create-table
+    //https://ignite.apache.org/docs/latest/SQL/schemas#cache-and-schema-names
+    //https://www.ignite-service.cn/doc/java/
+
+
+    public DataSlice createGridDataSlice(String dataSliceName, String dataSliceGroup, Map<String, Object> filedMap,List<String> primaryKeysList) throws DataCubeExistException{
+        confirmDataSliceNotExist(dataSliceName);
+        CacheConfiguration<?, ?> cacheCfg = new CacheConfiguration<>(TEMPLATE_OPERATION_CACHE).setSqlSchema(dataSliceGroup);
+        IgniteCache<?, ?> cache = this.invokerIgnite.getOrCreateCache(cacheCfg);
+        cache.query(new SqlFieldsQuery(
+                "CREATE TABLE "+dataSliceName+" (id LONG PRIMARY KEY, name VARCHAR) " +
+                        "WITH \"CACHE_NAME="+dataSliceName+
+                        ",DATA_REGION=Default_DataStore_Region," +
+                        "TEMPLATE=replicated\"")).getAll();
+        this.invokerIgnite.destroyCache(TEMPLATE_OPERATION_CACHE);
+        IgniteCache igniteCache = this.invokerIgnite.cache(dataSliceName);
+        DataSlice targetDataSlice = new DataSlice(this.invokerIgnite,igniteCache);
+        return targetDataSlice;
+    }
+
     public DataCube createGridDataCube(String dataCubeName) throws DataCubeExistException {
-        confirmDataCubeNotExist(dataCubeName);
+        confirmDataSliceNotExist(dataCubeName);
         IgniteCache igniteCache = createIgniteCache(this.invokerIgnite,dataCubeName, CacheMode.PARTITIONED);
         return new DataCube(this.invokerIgnite,igniteCache);
     }
 
     public DataCube createPerUnitDataCube(String dataCubeName) throws DataCubeExistException {
-        confirmDataCubeNotExist(dataCubeName);
+        confirmDataSliceNotExist(dataCubeName);
         IgniteCache igniteCache = createIgniteCache(this.invokerIgnite,dataCubeName, CacheMode.REPLICATED);
         return new DataCube(this.invokerIgnite,igniteCache);
     }
 
     public DataCube createUnitLocalDataCube(String dataCubeName) throws DataCubeExistException {
-        confirmDataCubeNotExist(dataCubeName);
+        confirmDataSliceNotExist(dataCubeName);
         IgniteCache igniteCache = createIgniteCache(this.invokerIgnite,dataCubeName, CacheMode.LOCAL);
         return new DataCube(this.invokerIgnite,igniteCache);
     }
 
-    public void eraseDataCube(String dataCubeName){
-        if(listDataCubes().contains(dataCubeName)){
-            this.invokerIgnite.destroyCache(dataCubeName);
+    public void eraseDataSlice(String dataSliceName){
+        if(listDataSlices().contains(dataSliceName)){
+            this.invokerIgnite.destroyCache(dataSliceName);
         }
     }
 
-    public DataCube getDataCube(String dataCubeName){
-        IgniteCache targetCache=this.invokerIgnite.cache(dataCubeName);
+    public DataSlice getDataSlice(String dataSliceName){
+        IgniteCache targetCache=this.invokerIgnite.cache(dataSliceName);
         if(targetCache==null){
             return null;
         }else{
-            return new DataCube(this.invokerIgnite,targetCache);
+            return new DataSlice(this.invokerIgnite,targetCache);
         }
     }
 
-    public List<String> listDataCubes(){
+    public List<String> listDataSlices(){
         Collection<String> igniteCacheNames = this.invokerIgnite.cacheNames();
-        List<String> dataCubeNameList = new ArrayList<>();
+        List<String> dataSliceNameList = new ArrayList<>();
         for(String currentString:igniteCacheNames){
             if(!currentString.startsWith("SQL_")){
-                dataCubeNameList.add(currentString);
+                dataSliceNameList.add(currentString);
             }
         }
-        return dataCubeNameList;
+        return dataSliceNameList;
     }
 
     public static DataServiceInvoker getInvokerInstance() throws ComputeGridNotActiveException {
@@ -108,6 +131,9 @@ public class DataServiceInvoker implements AutoCloseable{
             if(dataStoreAtomicityModeStr.equals(""+CacheAtomicityMode.TRANSACTIONAL)){
                 cacheCfg.setAtomicityMode(CacheAtomicityMode.TRANSACTIONAL);
             }
+            if(dataStoreAtomicityModeStr.equals(""+CacheAtomicityMode.TRANSACTIONAL_SNAPSHOT)){
+                cacheCfg.setAtomicityMode(CacheAtomicityMode.TRANSACTIONAL_SNAPSHOT);
+            }
         }
         cacheCfg.setCacheMode(cacheMode);
         String dataStoreRegionNameStr= DataComputeConfigurationHandler.getConfigPropertyValue("dataStoreRegionName");
@@ -128,7 +154,7 @@ public class DataServiceInvoker implements AutoCloseable{
         return resultIgniteCache;
     }
 
-    private void confirmDataCubeNotExist(String dataCubeName) throws DataCubeExistException {
+    private void confirmDataSliceNotExist(String dataCubeName) throws DataCubeExistException {
         IgniteCache targetCache=this.invokerIgnite.cache(dataCubeName);
         if(targetCache!=null){
             throw new DataCubeExistException();

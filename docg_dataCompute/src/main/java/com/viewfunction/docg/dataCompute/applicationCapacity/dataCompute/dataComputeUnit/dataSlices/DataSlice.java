@@ -44,23 +44,23 @@ public class DataSlice {
 
             // Create dummy cache to act as an entry point for SQL queries (new SQL API which do not require this
             // will appear in future versions, JDBC and ODBC drivers do not require it already).
-            CacheConfiguration<?, ?> cacheCfg = new CacheConfiguration<>("DUMMY_CACHE_NAME+2")
+            CacheConfiguration<?, ?> cacheCfg = new CacheConfiguration<>(DUMMY_CACHE_NAME)
                     //.setSqlSchema("PUBLIC");
             .setSqlSchema("Schema1");
                     //.setDataRegionName(DataComputeConfigurationHandler.getConfigPropertyValue("dataStoreRegionName"));
 
             try (
-                    //IgniteCache<?, ?> cache = ignite.getOrCreateCache(cacheCfg)
-                    IgniteCache<?, ?> cache = ignite.cache("gridDataCube1")
+                    IgniteCache<?, ?> cache = ignite.getOrCreateCache(cacheCfg)
+                    //IgniteCache<?, ?> cache = ignite.cache("gridDataCube1")
             ) {
                 // Create reference City table based on REPLICATED template.
                 cache.query(new SqlFieldsQuery(
-                        "CREATE TABLE city (id LONG PRIMARY KEY, name VARCHAR) WITH \"template=replicated\"")).getAll();
+                        "CREATE TABLE city (id LONG PRIMARY KEY, name VARCHAR) WITH \"CACHE_NAME=city,DATA_REGION=Default_DataStore_Region,TEMPLATE=replicated\"")).getAll();
 
                 // Create table based on PARTITIONED template with one backup.
                 cache.query(new SqlFieldsQuery(
                         "CREATE TABLE person (id LONG, name VARCHAR, city_id LONG, PRIMARY KEY (id, city_id)) " +
-                                "WITH \"backups=1, affinity_key=city_id\"")).getAll();
+                                "WITH \"CACHE_NAME=person,backups=1, TEMPLATE=PARTITIONED,affinity_key=city_id\"")).getAll();
 
                 // Create an index.
                 cache.query(new SqlFieldsQuery("CREATE INDEX on Person (city_id)")).getAll();

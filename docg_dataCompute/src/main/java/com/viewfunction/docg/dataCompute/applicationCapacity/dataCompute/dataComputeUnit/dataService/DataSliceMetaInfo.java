@@ -1,6 +1,6 @@
 package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService;
 
-public class DataStorageMetaInfo {
+public class DataSliceMetaInfo {
 
     private int primaryDataCount;
     private int backupDataCount;
@@ -8,10 +8,10 @@ public class DataStorageMetaInfo {
     private int storeBackupNumber;
     private String dataStoreMode;
     private String atomicityMode;
-    private String sqlSchema;
+    private String sliceGroupName;
     private Class keyClass;
     private Class valueClass;
-    private String storageName;
+    private String dataSliceName;
 
     public int getPrimaryDataCount() {
         return primaryDataCount;
@@ -61,12 +61,12 @@ public class DataStorageMetaInfo {
         this.atomicityMode = atomicityMode;
     }
 
-    public String getSqlSchema() {
-        return sqlSchema;
+    public String getSliceGroupName() {
+        return sliceGroupName;
     }
 
-    public void setSqlSchema(String sqlSchema) {
-        this.sqlSchema = sqlSchema;
+    public void setSliceGroupName(String sliceGroupName) {
+        this.sliceGroupName = sliceGroupName;
     }
 
     public Class getKeyClass() {
@@ -85,11 +85,11 @@ public class DataStorageMetaInfo {
         this.valueClass = valueClass;
     }
 
-    public String getStorageName() {
-        return storageName;
+    public String getDataSliceName() {
+        return dataSliceName;
     }
 
-    public void setStorageName(String storageName) {
-        this.storageName = storageName;
+    public void setDataSliceName(String dataSliceName) {
+        this.dataSliceName = dataSliceName;
     }
 }
