@@ -40,37 +40,37 @@ public class DataServiceInvoker implements AutoCloseable{
     //https://www.ignite-service.cn/doc/java/
 
 
-    public DataSlice createGridDataSlice(String dataSliceName, String dataSliceGroup, Map<String, Object> filedMap,List<String> primaryKeysList) throws DataCubeExistException{
+    public DataSlice createGridDataSlice(String dataSliceName, String dataSliceGroup, Map<String, Object> fieldsDefinitionMap,List<String> primaryKeysList) throws DataCubeExistException{
+        return createDataSlice(dataSliceName,dataSliceGroup,fieldsDefinitionMap,primaryKeysList,"PARTITIONED");
+    }
+
+    public DataSlice createPerUnitDataSlice(String dataSliceName, String dataSliceGroup, Map<String, Object> fieldsDefinitionMap,List<String> primaryKeysList) throws DataCubeExistException{
+        return createDataSlice(dataSliceName,dataSliceGroup,fieldsDefinitionMap,primaryKeysList,"REPLICATED");
+    }
+
+    private DataSlice createDataSlice(String dataSliceName, String dataSliceGroup, Map<String, Object> fieldsDefinitionMap,List<String> primaryKeysList,String templateType) throws DataCubeExistException{
         confirmDataSliceNotExist(dataSliceName);
         CacheConfiguration<?, ?> cacheCfg = new CacheConfiguration<>(TEMPLATE_OPERATION_CACHE).setSqlSchema(dataSliceGroup);
         IgniteCache<?, ?> cache = this.invokerIgnite.getOrCreateCache(cacheCfg);
-        cache.query(new SqlFieldsQuery(
-                "CREATE TABLE "+dataSliceName+" (id LONG PRIMARY KEY, name VARCHAR) " +
-                        "WITH \"CACHE_NAME="+dataSliceName+
-                        ",DATA_REGION=Default_DataStore_Region," +
-                        "TEMPLATE=replicated\"")).getAll();
+        String sliceCreateSentence = generateDataSliceCreateSentence(dataSliceName,fieldsDefinitionMap,primaryKeysList,templateType);
+        cache.query(new SqlFieldsQuery(sliceCreateSentence)).getAll();
         this.invokerIgnite.destroyCache(TEMPLATE_OPERATION_CACHE);
         IgniteCache igniteCache = this.invokerIgnite.cache(dataSliceName);
         DataSlice targetDataSlice = new DataSlice(this.invokerIgnite,igniteCache);
         return targetDataSlice;
     }
 
-    public DataCube createGridDataCube(String dataCubeName) throws DataCubeExistException {
-        confirmDataSliceNotExist(dataCubeName);
-        IgniteCache igniteCache = createIgniteCache(this.invokerIgnite,dataCubeName, CacheMode.PARTITIONED);
-        return new DataCube(this.invokerIgnite,igniteCache);
-    }
-
-    public DataCube createPerUnitDataCube(String dataCubeName) throws DataCubeExistException {
-        confirmDataSliceNotExist(dataCubeName);
-        IgniteCache igniteCache = createIgniteCache(this.invokerIgnite,dataCubeName, CacheMode.REPLICATED);
-        return new DataCube(this.invokerIgnite,igniteCache);
-    }
-
-    public DataCube createUnitLocalDataCube(String dataCubeName) throws DataCubeExistException {
-        confirmDataSliceNotExist(dataCubeName);
-        IgniteCache igniteCache = createIgniteCache(this.invokerIgnite,dataCubeName, CacheMode.LOCAL);
-        return new DataCube(this.invokerIgnite,igniteCache);
+    private String generateDataSliceCreateSentence(String dataSliceName,Map<String, Object> fieldsDefinitionMap,List<String> primaryKeysList,String templateType){
+        String dataStoreBackupNumberStr= DataComputeConfigurationHandler.getConfigPropertyValue("dataStoreBackupsNumber");
+        String dataStoreAtomicityModeStr= DataComputeConfigurationHandler.getConfigPropertyValue("dataStoreAtomicityMode");
+        String dataStoreRegionNameStr= DataComputeConfigurationHandler.getConfigPropertyValue("dataStoreRegionName");
+        String createSentence =  "CREATE TABLE "+dataSliceName+" (id LONG PRIMARY KEY, name VARCHAR) " +
+        "WITH \"CACHE_NAME="+dataSliceName+
+        ",DATA_REGION="+dataStoreRegionNameStr+
+        ",BACKUPS="+dataStoreBackupNumberStr+
+        ",ATOMICITY="+dataStoreAtomicityModeStr+
+        ",TEMPLATE="+templateType+"\"";
+        return createSentence;
     }
 
     public void eraseDataSlice(String dataSliceName){
