@@ -87,7 +87,7 @@ public class UnitdsCommandProcessor implements BaseCommandProcessor {
             }
             lsDataStoreMessageStringBuffer.append("Data Region:              " +  currentCacheConfig.getDataRegionName());
             lsDataStoreMessageStringBuffer.append("\n\r");
-            lsDataStoreMessageStringBuffer.append("SQL Schema:               " +  currentCacheConfig.getSqlSchema());
+            lsDataStoreMessageStringBuffer.append("Slice Group:              " +  currentCacheConfig.getSqlSchema());
             lsDataStoreMessageStringBuffer.append("\n\r");
         }
         lsDataStoreMessageStringBuffer.append("-------------------------------------------------------------");

@@ -4,7 +4,12 @@ import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.cache.CacheMode;
 import org.apache.ignite.cache.CachePeekMode;
+import org.apache.ignite.cache.QueryEntity;
 import org.apache.ignite.configuration.CacheConfiguration;
+
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Set;
 
 public class DataSlice {
 
@@ -14,6 +19,41 @@ public class DataSlice {
     public DataSlice(Ignite invokerIgnite, IgniteCache igniteCache){
         this.invokerIgnite=invokerIgnite;
         this.cache = igniteCache;
+    }
+
+    public void addData(){
+
+
+
+        CacheConfiguration ccfg = cache.getConfiguration(CacheConfiguration.class);
+        Collection<QueryEntity> entities = ccfg.getQueryEntities();
+
+        if(entities != null && entities.size()>0){
+            QueryEntity mainQueryEntity = entities.iterator().next();
+
+            LinkedHashMap<String,String> propertiesMap = mainQueryEntity.getFields();
+
+            System.out.println(propertiesMap);
+            Set<String> keyField = mainQueryEntity.getKeyFields();
+            System.out.println(keyField);
+
+        }
+
+
+
+
+
+
+
+
+
+        //this.cache.metrics().getTxKeyCollisions();
+
+
+        //this.cache.metrics().getValueType();
+        //this.cache.metrics().
+
+
     }
 
     public DataSliceMetaInfo getDataSliceMetaInfo(){

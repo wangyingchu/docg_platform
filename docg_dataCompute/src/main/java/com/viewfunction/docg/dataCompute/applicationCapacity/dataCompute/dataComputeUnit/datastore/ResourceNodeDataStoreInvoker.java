@@ -3,7 +3,7 @@ package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCo
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.DataComputeConfigurationHandler;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.UnitIgniteOperationUtil;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.ComputeGridNotActiveException;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataCubeExistException;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSliceExistException;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
@@ -35,37 +35,37 @@ public class ResourceNodeDataStoreInvoker implements AutoCloseable{
         return this.invokerIgnite;
     }
 
-    public ResourceNodeDataStore createGridSingletonDataStore(String dataStoreName) throws DataCubeExistException {
+    public ResourceNodeDataStore createGridSingletonDataStore(String dataStoreName) throws DataSliceExistException {
         confirmDataStoreNotExist(dataStoreName);
         ResourceNodeDataStore connectomeDataStore=new ResourceNodeDataStore(this.invokerIgnite,dataStoreName,CacheMode.PARTITIONED);
         return connectomeDataStore;
     }
 
-    public ResourceNodeDataStore createGridSingletonDataStore(String dataStoreName, Class keyType, Class valueType) throws DataCubeExistException {
+    public ResourceNodeDataStore createGridSingletonDataStore(String dataStoreName, Class keyType, Class valueType) throws DataSliceExistException {
         confirmDataStoreNotExist(dataStoreName);
         ResourceNodeDataStore connectomeDataStore=new ResourceNodeDataStore(this.invokerIgnite,dataStoreName,CacheMode.PARTITIONED,keyType,valueType);
         return connectomeDataStore;
     }
 
-    public ResourceNodeDataStore createGridPerNodeDataStore(String dataStoreName) throws DataCubeExistException {
+    public ResourceNodeDataStore createGridPerNodeDataStore(String dataStoreName) throws DataSliceExistException {
         confirmDataStoreNotExist(dataStoreName);
         ResourceNodeDataStore connectomeDataStore=new ResourceNodeDataStore(this.invokerIgnite,dataStoreName,CacheMode.REPLICATED);
         return connectomeDataStore;
     }
 
-    public ResourceNodeDataStore createGridPerNodeDataStore(String dataStoreName, Class keyType, Class valueType) throws DataCubeExistException {
+    public ResourceNodeDataStore createGridPerNodeDataStore(String dataStoreName, Class keyType, Class valueType) throws DataSliceExistException {
         confirmDataStoreNotExist(dataStoreName);
         ResourceNodeDataStore connectomeDataStore=new ResourceNodeDataStore(this.invokerIgnite,dataStoreName,CacheMode.REPLICATED,keyType,valueType);
         return connectomeDataStore;
     }
 
-    public ResourceNodeDataStore createConnectomeLocalDataStore(String dataStoreName) throws DataCubeExistException {
+    public ResourceNodeDataStore createConnectomeLocalDataStore(String dataStoreName) throws DataSliceExistException {
         confirmDataStoreNotExist(dataStoreName);
         ResourceNodeDataStore connectomeDataStore=new ResourceNodeDataStore(this.invokerIgnite,dataStoreName,CacheMode.LOCAL);
         return connectomeDataStore;
     }
 
-    public ResourceNodeDataStore createConnectomeLocalDataStore(String dataStoreName, Class keyType, Class valueType) throws DataCubeExistException {
+    public ResourceNodeDataStore createConnectomeLocalDataStore(String dataStoreName, Class keyType, Class valueType) throws DataSliceExistException {
         confirmDataStoreNotExist(dataStoreName);
         ResourceNodeDataStore connectomeDataStore=new ResourceNodeDataStore(this.invokerIgnite,dataStoreName,CacheMode.LOCAL,keyType,valueType);
         return connectomeDataStore;
@@ -75,10 +75,10 @@ public class ResourceNodeDataStoreInvoker implements AutoCloseable{
         this.invokerIgnite.destroyCache(dataStoreName);
     }
 
-    private void confirmDataStoreNotExist(String dataStoreName) throws DataCubeExistException {
+    private void confirmDataStoreNotExist(String dataStoreName) throws DataSliceExistException {
         IgniteCache targetCache=this.invokerIgnite.cache(dataStoreName);
         if(targetCache!=null){
-            throw new DataCubeExistException();
+            throw new DataSliceExistException();
         }
     }
 

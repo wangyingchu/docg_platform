@@ -3,7 +3,8 @@ package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCo
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.DataComputeConfigurationHandler;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.UnitIgniteOperationUtil;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.ComputeGridNotActiveException;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataCubeExistException;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSliceExistException;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSlicePropertiesStructureException;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
@@ -40,19 +41,20 @@ public class DataServiceInvoker implements AutoCloseable{
     //https://www.ignite-service.cn/doc/java/
 
 
-    public DataSlice createGridDataSlice(String dataSliceName, String dataSliceGroup, Map<String, Object> fieldsDefinitionMap,List<String> primaryKeysList) throws DataCubeExistException{
-        return createDataSlice(dataSliceName,dataSliceGroup,fieldsDefinitionMap,primaryKeysList,"PARTITIONED");
+    public DataSlice createGridDataSlice(String dataSliceName, String dataSliceGroup, Map<String, DataSlicePropertyType> propertiesDefinitionMap,List<String> primaryKeysList) throws DataSliceExistException,DataSlicePropertiesStructureException {
+        return createDataSlice(dataSliceName,dataSliceGroup,propertiesDefinitionMap,primaryKeysList,"PARTITIONED");
     }
 
-    public DataSlice createPerUnitDataSlice(String dataSliceName, String dataSliceGroup, Map<String, Object> fieldsDefinitionMap,List<String> primaryKeysList) throws DataCubeExistException{
-        return createDataSlice(dataSliceName,dataSliceGroup,fieldsDefinitionMap,primaryKeysList,"REPLICATED");
+    public DataSlice createPerUnitDataSlice(String dataSliceName, String dataSliceGroup, Map<String, DataSlicePropertyType> propertiesDefinitionMap,List<String> primaryKeysList) throws DataSliceExistException,DataSlicePropertiesStructureException {
+        return createDataSlice(dataSliceName,dataSliceGroup,propertiesDefinitionMap,primaryKeysList,"REPLICATED");
     }
 
-    private DataSlice createDataSlice(String dataSliceName, String dataSliceGroup, Map<String, Object> fieldsDefinitionMap,List<String> primaryKeysList,String templateType) throws DataCubeExistException{
+    private DataSlice createDataSlice(String dataSliceName, String dataSliceGroup, Map<String, DataSlicePropertyType> propertiesDefinitionMap,List<String> primaryKeysList,String templateType) throws DataSliceExistException,DataSlicePropertiesStructureException {
         confirmDataSliceNotExist(dataSliceName);
+        validateFieldsDefinition(propertiesDefinitionMap,primaryKeysList);
         CacheConfiguration<?, ?> cacheCfg = new CacheConfiguration<>(TEMPLATE_OPERATION_CACHE).setSqlSchema(dataSliceGroup);
         IgniteCache<?, ?> cache = this.invokerIgnite.getOrCreateCache(cacheCfg);
-        String sliceCreateSentence = generateDataSliceCreateSentence(dataSliceName,fieldsDefinitionMap,primaryKeysList,templateType);
+        String sliceCreateSentence = generateDataSliceCreateSentence(dataSliceName,propertiesDefinitionMap,primaryKeysList,templateType);
         cache.query(new SqlFieldsQuery(sliceCreateSentence)).getAll();
         this.invokerIgnite.destroyCache(TEMPLATE_OPERATION_CACHE);
         IgniteCache igniteCache = this.invokerIgnite.cache(dataSliceName);
@@ -60,11 +62,13 @@ public class DataServiceInvoker implements AutoCloseable{
         return targetDataSlice;
     }
 
-    private String generateDataSliceCreateSentence(String dataSliceName,Map<String, Object> fieldsDefinitionMap,List<String> primaryKeysList,String templateType){
+    private String generateDataSliceCreateSentence(String dataSliceName,Map<String, DataSlicePropertyType> propertiesDefinitionMap,List<String> primaryKeysList,String templateType){
         String dataStoreBackupNumberStr= DataComputeConfigurationHandler.getConfigPropertyValue("dataStoreBackupsNumber");
         String dataStoreAtomicityModeStr= DataComputeConfigurationHandler.getConfigPropertyValue("dataStoreAtomicityMode");
         String dataStoreRegionNameStr= DataComputeConfigurationHandler.getConfigPropertyValue("dataStoreRegionName");
-        String createSentence =  "CREATE TABLE "+dataSliceName+" (id LONG PRIMARY KEY, name VARCHAR) " +
+        String propertiesStructureSQL = DataSliceUtil.buildSliceStructureSQL(propertiesDefinitionMap,primaryKeysList);
+        String createSentence =  "CREATE TABLE "+dataSliceName+" ("+propertiesStructureSQL+") " +
+        //String createSentence =  "CREATE TABLE "+dataSliceName+" (id LONG PRIMARY KEY, name VARCHAR) " +
         "WITH \"CACHE_NAME="+dataSliceName+
         ",DATA_REGION="+dataStoreRegionNameStr+
         ",BACKUPS="+dataStoreBackupNumberStr+
@@ -154,10 +158,16 @@ public class DataServiceInvoker implements AutoCloseable{
         return resultIgniteCache;
     }
 
-    private void confirmDataSliceNotExist(String dataCubeName) throws DataCubeExistException {
+    private void confirmDataSliceNotExist(String dataCubeName) throws DataSliceExistException {
         IgniteCache targetCache=this.invokerIgnite.cache(dataCubeName);
         if(targetCache!=null){
-            throw new DataCubeExistException();
+            throw new DataSliceExistException();
+        }
+    }
+
+    private void validateFieldsDefinition(Map<String, DataSlicePropertyType> fieldsDefinitionMap,List<String> primaryKeysList) throws DataSlicePropertiesStructureException {
+        if(fieldsDefinitionMap == null || fieldsDefinitionMap.size() ==0){
+            throw new DataSlicePropertiesStructureException();
         }
     }
 
