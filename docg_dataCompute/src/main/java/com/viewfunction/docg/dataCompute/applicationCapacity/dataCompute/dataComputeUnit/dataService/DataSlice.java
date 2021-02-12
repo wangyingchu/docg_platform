@@ -6,6 +6,7 @@ import org.apache.ignite.IgniteCache;
 import org.apache.ignite.cache.CacheMode;
 import org.apache.ignite.cache.CachePeekMode;
 import org.apache.ignite.cache.QueryEntity;
+import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.apache.ignite.configuration.CacheConfiguration;
 
 import java.util.*;
@@ -22,39 +23,49 @@ public class DataSlice {
 
     public void addDataRecord(Map<String,Object> dataPropertiesValue) throws DataSlicePropertiesStructureException {
         Map<String,String> slicePropertiesMap = getDataSlicePropertiesInfo();
-        Set<String> propertiesSet = slicePropertiesMap.keySet();
+        Set<String> slicePropertiesNameSet = slicePropertiesMap.keySet();
 
         Set<String> dataPropertyNameSet = dataPropertiesValue.keySet();
 
         for(String currentPropertyName:dataPropertyNameSet){
-            if(!propertiesSet.contains(currentPropertyName)){
+            if(!slicePropertiesNameSet.contains(currentPropertyName.toUpperCase())){
                 throw new DataSlicePropertiesStructureException();
             }
         }
 
-        String[] arr = propertiesSet.stream().toArray(n -> new String[n]);
+        String[] dataPropertiesNameArray = dataPropertyNameSet.stream().toArray(n -> new String[n]);
 
+        StringBuffer propertiesNameSb = new StringBuffer();
+        StringBuffer propertiesValuePlaceHolderSb = new StringBuffer();
+        propertiesNameSb.append("(");
+        propertiesValuePlaceHolderSb.append("(");
 
+        Object[] propertiesValueArray = new Object[dataPropertyNameSet.size()];
 
+        for(int i = 0; i< dataPropertiesNameArray.length; i++){
+            String currentDataPropertyName = dataPropertiesNameArray[i];
+            // get dataType for property value validate
+            String dataType = slicePropertiesMap.get(currentDataPropertyName.toUpperCase());
+            propertiesNameSb.append(currentDataPropertyName);
+            propertiesValuePlaceHolderSb.append("?");
 
-
-
-
-
-
-        for(String currentPropertyName:dataPropertyNameSet){
-
+            if(i < dataPropertiesNameArray.length-1){
+                propertiesNameSb.append(",");
+                propertiesValuePlaceHolderSb.append(",");
+            }
+            propertiesValueArray[i] = dataPropertiesValue.get(currentDataPropertyName);
         }
 
-
+        propertiesNameSb.append(")");
+        propertiesValuePlaceHolderSb.append(")");
         String sliceName = this.cache.getName();
-        //SqlFieldsQuery qry = new SqlFieldsQuery("INSERT INTO city (id, name) VALUES (?, ?)");
 
-
-
+        String sqlFieldsQuerySQL = "INSERT INTO "+sliceName+" "+propertiesNameSb.toString() +" VALUES "+propertiesValuePlaceHolderSb.toString();
+        SqlFieldsQuery qry = new SqlFieldsQuery(sqlFieldsQuerySQL);
+        this.cache.query(qry.setArgs(propertiesValueArray)).getAll();
     }
 
-    public void addDataRecords(List<Map<String,Object>> dataPropertiesValueList){
+    public void addDataRecords(List<String> propertiesList,List<Map<String,Object>> dataPropertiesValueList){
         CacheConfiguration ccfg = cache.getConfiguration(CacheConfiguration.class);
         Collection<QueryEntity> entities = ccfg.getQueryEntities();
 

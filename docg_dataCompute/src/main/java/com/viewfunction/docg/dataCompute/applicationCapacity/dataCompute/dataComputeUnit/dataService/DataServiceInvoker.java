@@ -96,7 +96,7 @@ public class DataServiceInvoker implements AutoCloseable{
         Collection<String> igniteCacheNames = this.invokerIgnite.cacheNames();
         List<String> dataSliceNameList = new ArrayList<>();
         for(String currentString:igniteCacheNames){
-            if(!currentString.startsWith("SQL_")){
+            if(!currentString.equals(TEMPLATE_OPERATION_CACHE)){
                 dataSliceNameList.add(currentString);
             }
         }
