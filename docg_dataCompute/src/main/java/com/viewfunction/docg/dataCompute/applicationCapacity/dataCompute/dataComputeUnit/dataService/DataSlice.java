@@ -55,9 +55,9 @@ public class DataSlice {
             }
             propertiesValueArray[i] = dataPropertiesValue.get(currentDataPropertyName);
         }
-
         propertiesNameSb.append(")");
         propertiesValuePlaceHolderSb.append(")");
+
         String sliceName = this.cache.getName();
 
         String sqlFieldsQuerySQL = "INSERT INTO "+sliceName+" "+propertiesNameSb.toString() +" VALUES "+propertiesValuePlaceHolderSb.toString();
@@ -65,18 +65,48 @@ public class DataSlice {
         this.cache.query(qry.setArgs(propertiesValueArray)).getAll();
     }
 
-    public void addDataRecords(List<String> propertiesList,List<Map<String,Object>> dataPropertiesValueList){
-        CacheConfiguration ccfg = cache.getConfiguration(CacheConfiguration.class);
-        Collection<QueryEntity> entities = ccfg.getQueryEntities();
+    public void addDataRecords(List<String> propertiesList,List<Map<String,Object>> dataPropertiesValueList) throws DataSlicePropertiesStructureException{
+        Map<String,String> slicePropertiesMap = getDataSlicePropertiesInfo();
+        Set<String> slicePropertiesNameSet = slicePropertiesMap.keySet();
 
-        if(entities != null && entities.size()>0){
-            QueryEntity mainQueryEntity = entities.iterator().next();
+        for(String currentPropertyName:propertiesList){
+            if(!slicePropertiesNameSet.contains(currentPropertyName.toUpperCase())){
+                throw new DataSlicePropertiesStructureException();
+            }
+        }
 
-            LinkedHashMap<String,String> propertiesMap = mainQueryEntity.getFields();
+        StringBuffer propertiesNameSb = new StringBuffer();
+        StringBuffer propertiesValuePlaceHolderSb = new StringBuffer();
+        propertiesNameSb.append("(");
+        propertiesValuePlaceHolderSb.append("(");
 
-            System.out.println(propertiesMap);
-            Set<String> keyField = mainQueryEntity.getKeyFields();
-            System.out.println(keyField);
+        for(int i = 0; i< propertiesList.size(); i++){
+            String currentDataPropertyName = propertiesList.get(i);
+            // get dataType for property value validate
+            String dataType = slicePropertiesMap.get(currentDataPropertyName.toUpperCase());
+            propertiesNameSb.append(currentDataPropertyName);
+            propertiesValuePlaceHolderSb.append("?");
+
+            if(i < propertiesList.size() - 1){
+                propertiesNameSb.append(",");
+                propertiesValuePlaceHolderSb.append(",");
+            }
+        }
+        propertiesNameSb.append(")");
+        propertiesValuePlaceHolderSb.append(")");
+
+        String sliceName = this.cache.getName();
+
+        String sqlFieldsQuerySQL = "INSERT INTO "+sliceName+" "+propertiesNameSb.toString() +" VALUES "+propertiesValuePlaceHolderSb.toString();
+        SqlFieldsQuery qry = new SqlFieldsQuery(sqlFieldsQuerySQL);
+
+        for(Map<String,Object> currentDataValueRow :dataPropertiesValueList){
+            Object[] propertiesValueArray = new Object[propertiesList.size()];
+            for(int i =0;i<propertiesList.size();i++){
+                String currentPropertyName = propertiesList.get(i);
+                propertiesValueArray[i] = currentDataValueRow.get(currentPropertyName);
+            }
+            this.cache.query(qry.setArgs(propertiesValueArray)).getAll();
         }
     }
 

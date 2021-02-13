@@ -65,11 +65,11 @@ public class UnitdsCommandProcessor implements BaseCommandProcessor {
             lsDataStoreMessageStringBuffer.append("\n\r");
             lsDataStoreMessageStringBuffer.append("Local Data Total Count:   " + currentCache.localSize(CachePeekMode.ALL));
             lsDataStoreMessageStringBuffer.append("\n\r");
-            lsDataStoreMessageStringBuffer.append("Store Data Primary Count: " + currentCache.size(CachePeekMode.PRIMARY));
+            lsDataStoreMessageStringBuffer.append("Slice Data Primary Count: " + currentCache.size(CachePeekMode.PRIMARY));
             lsDataStoreMessageStringBuffer.append("\n\r");
-            lsDataStoreMessageStringBuffer.append("Store Data Backup Count:  " + currentCache.size(CachePeekMode.BACKUP));
+            lsDataStoreMessageStringBuffer.append("Slice Data Backup Count:  " + currentCache.size(CachePeekMode.BACKUP));
             lsDataStoreMessageStringBuffer.append("\n\r");
-            lsDataStoreMessageStringBuffer.append("Store Data Total Count:   " + currentCache.size(CachePeekMode.ALL));
+            lsDataStoreMessageStringBuffer.append("Slice Data Total Count:   " + currentCache.size(CachePeekMode.ALL));
             lsDataStoreMessageStringBuffer.append("\n\r");
             /*
             lsDataStoreMessageStringBuffer.append(currentCache.size(CachePeekMode.NEAR)+"\n\r");
