@@ -36,11 +36,6 @@ public class DataServiceInvoker implements AutoCloseable{
         }
     }
 
-    //https://ignite.apache.org/docs/latest/sql-reference/ddl#create-table
-    //https://ignite.apache.org/docs/latest/SQL/schemas#cache-and-schema-names
-    //https://www.ignite-service.cn/doc/java/
-
-
     public DataSlice createGridDataSlice(String dataSliceName, String dataSliceGroup, Map<String, DataSlicePropertyType> propertiesDefinitionMap,List<String> primaryKeysList) throws DataSliceExistException,DataSlicePropertiesStructureException {
         return createDataSlice(dataSliceName,dataSliceGroup,propertiesDefinitionMap,primaryKeysList,"PARTITIONED");
     }

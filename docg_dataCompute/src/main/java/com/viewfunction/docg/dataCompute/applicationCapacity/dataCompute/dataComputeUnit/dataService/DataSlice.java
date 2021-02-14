@@ -133,6 +133,7 @@ public class DataSlice {
                     }
                 }
             }catch (javax.cache.CacheException e){
+                e.printStackTrace();
                 dataSliceOperationResult.increaseFailCount();
             }
         }
