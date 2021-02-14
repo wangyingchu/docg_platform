@@ -17,9 +17,9 @@
       <module name="docg_coreRealm" target="11" />
       <module name="docg_dataCompute" target="11" />
       <module name="docg_dataCube" target="11" />
-      <module name="docg_platform" target="1.5" />
+      <module name="docg_platform" target="11" />
       <module name="docg_realmExample" target="11" />
-      <module name="docg_realmKnowledgeManage" target="1.5" />
+      <module name="docg_realmKnowledgeManage" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
