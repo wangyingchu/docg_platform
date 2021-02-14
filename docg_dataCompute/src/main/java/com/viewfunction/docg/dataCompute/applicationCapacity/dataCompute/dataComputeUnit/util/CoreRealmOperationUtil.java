@@ -12,6 +12,9 @@ import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCom
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSliceOperationResult;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.ComputeGridNotActiveException;
+import org.apache.ignite.Ignite;
+import org.apache.ignite.Ignition;
+import org.apache.ignite.configuration.IgniteConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +42,9 @@ public class CoreRealmOperationUtil {
             }
 
             ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
-            for(List<ConceptionEntityValue> currentConceptionEntityValueList:rsList){
-                DataSliceInsertDataThread dataSliceInsertDataThread = new DataSliceInsertDataThread(dataSliceName,attributeNamesList,currentConceptionEntityValueList,useConceptionEntityUIDAsPK);
+            for(int i = 0;i < rsList.size(); i++){
+                List<ConceptionEntityValue> currentConceptionEntityValueList = rsList.get(i);
+                DataSliceInsertDataThread dataSliceInsertDataThread = new DataSliceInsertDataThread(i,dataSliceName,attributeNamesList,currentConceptionEntityValueList,useConceptionEntityUIDAsPK);
                 executor.execute(dataSliceInsertDataThread);
             }
             executor.shutdown();
@@ -55,12 +59,14 @@ public class CoreRealmOperationUtil {
         private List<String> sliceDataProperties;
         private List<ConceptionEntityValue> sliceDataRows;
         private boolean useConceptionEntityUIDAsPK;
+        private int threadId;
 
-        public DataSliceInsertDataThread(String dataSliceName, List<String> sliceDataProperties,List<ConceptionEntityValue> sliceDataRows,boolean useConceptionEntityUIDAsPK){
+        public DataSliceInsertDataThread(int threadId,String dataSliceName, List<String> sliceDataProperties,List<ConceptionEntityValue> sliceDataRows,boolean useConceptionEntityUIDAsPK){
             this.dataSliceName = dataSliceName;
             this.sliceDataProperties = sliceDataProperties;
             this.sliceDataRows = sliceDataRows;
             this.useConceptionEntityUIDAsPK = useConceptionEntityUIDAsPK;
+            this.threadId = threadId;
         }
 
         @Override
@@ -73,9 +79,17 @@ public class CoreRealmOperationUtil {
                 }
                 sliceDataRowsDataList.add(currentDataMap);
             }
-            try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
+
+            IgniteConfiguration igniteConfiguration= new IgniteConfiguration();
+            igniteConfiguration.setClientMode(true);
+            igniteConfiguration.setIgniteInstanceName("DataSliceInsertDataThread_"+threadId);
+            Ignite invokerIgnite =Ignition.start(igniteConfiguration);
+
+            try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance(invokerIgnite)){
                 DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(this.dataSliceName);
                 DataSliceOperationResult dataSliceOperationResult = targetDataSlice.addDataRecords(this.sliceDataProperties,sliceDataRowsDataList);
+                System.out.println("--------------------------------------");
+                System.out.println("Execution result of : "+"DataSliceInsertDataThread_"+threadId);
                 System.out.println(dataSliceOperationResult.getOperationSummary());
                 System.out.println(dataSliceOperationResult.getStartTime());
                 System.out.println(dataSliceOperationResult.getFinishTime());

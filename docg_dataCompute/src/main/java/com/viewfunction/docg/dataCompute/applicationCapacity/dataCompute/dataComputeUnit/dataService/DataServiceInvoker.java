@@ -26,7 +26,7 @@ public class DataServiceInvoker implements AutoCloseable{
 
     public void openServiceSession() throws ComputeGridNotActiveException {
         Ignition.setClientMode(true);
-        this.invokerIgnite =Ignition.start(DataComputeConfigurationHandler.getDataComputeIgniteConfigurationFilePath());
+        this.invokerIgnite = Ignition.start(DataComputeConfigurationHandler.getDataComputeIgniteConfigurationFilePath());
         UnitIgniteOperationUtil.checkGridActiveStatus(this.invokerIgnite);
     }
 
@@ -106,6 +106,16 @@ public class DataServiceInvoker implements AutoCloseable{
             invokerInstance.closeServiceSession();
             throw e;
         }
+        return invokerInstance;
+    }
+
+    public void setServiceSession(Ignite invokerIgnite){
+        this.invokerIgnite=invokerIgnite;
+    }
+
+    public static DataServiceInvoker getInvokerInstance(Ignite invokerIgnite) throws ComputeGridNotActiveException {
+        DataServiceInvoker invokerInstance=new DataServiceInvoker();
+        invokerInstance.setServiceSession(invokerIgnite);
         return invokerInstance;
     }
 

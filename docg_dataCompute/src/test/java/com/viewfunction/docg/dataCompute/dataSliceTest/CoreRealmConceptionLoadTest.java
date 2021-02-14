@@ -58,6 +58,6 @@ public class CoreRealmConceptionLoadTest {
         QueryParameters queryParameters = new QueryParameters();
         queryParameters.setResultNumber(100000000);
 
-        CoreRealmOperationUtil.loadConceptionKindEntitiesToDataSlice(RoadWeatherInformationStationsRecordsConceptionType,conceptionKindPropertiesList,queryParameters,RoadWeatherInformationStationsRecordsConceptionType,true,1);
+        CoreRealmOperationUtil.loadConceptionKindEntitiesToDataSlice(RoadWeatherInformationStationsRecordsConceptionType,conceptionKindPropertiesList,queryParameters,RoadWeatherInformationStationsRecordsConceptionType,true,10);
     }
 }
