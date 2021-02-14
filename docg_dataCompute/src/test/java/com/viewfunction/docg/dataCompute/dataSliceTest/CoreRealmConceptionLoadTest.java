@@ -39,7 +39,7 @@ public class CoreRealmConceptionLoadTest {
                 List<String> pkList = new ArrayList<>();
                 pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
 
-                dataServiceInvoker.createPerUnitDataSlice(RoadWeatherInformationStationsRecordsConceptionType,"defaultSliceGroup",dataSlicePropertyMap,pkList);
+                dataServiceInvoker.createGridDataSlice(RoadWeatherInformationStationsRecordsConceptionType,"defaultSliceGroup",dataSlicePropertyMap,pkList);
             }
         } catch (ComputeGridNotActiveException e) {
             e.printStackTrace();

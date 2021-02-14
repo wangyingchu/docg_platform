@@ -8,7 +8,7 @@ public class DataServiceTest {
 
         try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
 
-/*
+
             Map<String,DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
             dataSlicePropertyMap.put("property1",DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put("property2",DataSlicePropertyType.INT);
@@ -16,7 +16,7 @@ public class DataServiceTest {
             List<String> pkList = new ArrayList<>();
             pkList.add("property1");
             pkList.add("property2");
-            DataSlice targetDataSlice = dataServiceInvoker.createGridDataSlice("gridDataSlice1","sliceGroup1",dataSlicePropertyMap,pkList);
+            DataSlice targetDataSlice = dataServiceInvoker.createPerUnitDataSlice("gridDataSlice1","sliceGroup1",dataSlicePropertyMap,pkList);
             System.out.println(targetDataSlice);
             System.out.println(targetDataSlice.getDataSliceMetaInfo().getDataSliceName());
             System.out.println(targetDataSlice.getDataSliceMetaInfo().getStoreBackupNumber());
@@ -35,7 +35,7 @@ public class DataServiceTest {
             System.out.println(targetDataSlice2.getDataSliceMetaInfo().getStoreBackupNumber());
             System.out.println(targetDataSlice2.getDataSliceMetaInfo().getSliceGroupName());
             System.out.println(dataServiceInvoker.listDataSlices());
-*/
+
 
 
             /*
@@ -49,7 +49,7 @@ public class DataServiceTest {
             }
             */
 
-
+/*
             DataSlice targetDataSlice = dataServiceInvoker.getDataSlice("gridDataSlice1");
 
 
@@ -90,7 +90,7 @@ public class DataServiceTest {
             System.out.println(dataSliceOperationResult.getSuccessItemsCount());
 
 
-
+*/
 
             //System.out.println(dataSliceOperationResult);
             //System.out.println(dataSliceOperationResult);
