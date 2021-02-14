@@ -49,7 +49,7 @@ public class UnitdsCommandProcessor implements BaseCommandProcessor {
             switch(currentStoreCacheMode){
                 case PARTITIONED:dataStoreMode="Grid Singleton";break;
                 case LOCAL:dataStoreMode="Unit Local";break;
-                case REPLICATED:dataStoreMode="Grid PerNode";break;
+                case REPLICATED:dataStoreMode="Grid PerUnit";break;
             }
             lsDataStoreMessageStringBuffer.append("-------------------------------------------------------------");
             lsDataStoreMessageStringBuffer.append("\n\r");
