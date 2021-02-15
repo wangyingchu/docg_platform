@@ -5,3 +5,6 @@
 /docg_realmExample/target/
 /docg_dataCompute/target/
 /docg_dataCompute/ignite/
+/docg_dataAnalyze/spark-warehouse/
+/docg_dataAnalyze/ignite/
+/docg_dataAnalyze/target/

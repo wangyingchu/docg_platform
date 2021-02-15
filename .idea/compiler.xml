@@ -7,14 +7,15 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="docg_dataCompute" />
+        <module name="docg_dataAnalyze" />
         <module name="docg_realmKnowledgeManage" />
         <module name="docg_realmExample" />
         <module name="docg_coreRealm" />
-        <module name="docg_platform" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="docg_coreRealm" target="11" />
+      <module name="docg_dataAnalyze" target="8" />
       <module name="docg_dataCompute" target="11" />
       <module name="docg_dataCube" target="11" />
       <module name="docg_platform" target="11" />

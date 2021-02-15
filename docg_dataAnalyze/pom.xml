@@ -2,15 +2,18 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>docg_platform</artifactId>
+        <groupId>com.viewfunction</groupId>
+        <version>0.1.0</version>
+    </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.viewfunction</groupId>
-    <artifactId>docg_dataCompute</artifactId>
-    <version>0.1.0</version>
+    <artifactId>docg_dataAnalyze</artifactId>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
 
         <ignite.version>2.9.1</ignite.version>
         <ignite.geospatial.version>2.7.2</ignite.geospatial.version>
@@ -19,12 +22,55 @@
     </properties>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-core -->
         <dependency>
-            <groupId>com.viewfunction</groupId>
-            <artifactId>docg_coreRealm</artifactId>
-            <version>0.5</version>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_2.11</artifactId>
+            <version>${spark.version}</version>
         </dependency>
-
+        <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-sql -->
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_2.11</artifactId>
+            <version>${spark.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-streaming -->
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming_2.11</artifactId>
+            <version>${spark.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-graphx -->
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-graphx_2.11</artifactId>
+            <version>${spark.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-mllib -->
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-mllib_2.11</artifactId>
+            <version>${spark.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.datasyslab/geospark -->
+        <dependency>
+            <groupId>org.datasyslab</groupId>
+            <artifactId>geospark</artifactId>
+            <version>${geospark.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.datasyslab/geospark-sql -->
+        <dependency>
+            <groupId>org.datasyslab</groupId>
+            <artifactId>geospark-sql_2.3</artifactId>
+            <version>${geospark.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.datasyslab/geospark-viz -->
+        <dependency>
+            <groupId>org.datasyslab</groupId>
+            <artifactId>geospark-viz_2.3</artifactId>
+            <version>${geospark.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.ignite/ignite-log4j2 -->
         <dependency>
             <groupId>org.apache.ignite</groupId>
             <artifactId>ignite-log4j2</artifactId>
@@ -66,31 +112,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.ignite/ignite-scalar -->
-        <dependency>
-            <groupId>org.apache.ignite</groupId>
-            <artifactId>ignite-scalar</artifactId>
-            <version>${ignite.version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.ignite/ignite-kafka -->
-        <dependency>
-            <groupId>org.apache.ignite</groupId>
-            <artifactId>ignite-kafka</artifactId>
-            <version>${ignite.version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.ignite/ignite-ml -->
-        <dependency>
-            <groupId>org.apache.ignite</groupId>
-            <artifactId>ignite-ml</artifactId>
-            <version>${ignite.version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.ignite/ignite-rest-http -->
-        <dependency>
-            <groupId>org.apache.ignite</groupId>
-            <artifactId>ignite-rest-http</artifactId>
-            <version>${ignite.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
