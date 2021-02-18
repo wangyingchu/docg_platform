@@ -23,63 +23,7 @@ public class DataSlice {
     }
 
     public boolean addDataRecord(Map<String,Object> dataPropertiesValue) throws DataSlicePropertiesStructureException, DataSliceDataException {
-        Map<String,String> slicePropertiesMap = getDataSlicePropertiesInfo();
-        Set<String> slicePropertiesNameSet = slicePropertiesMap.keySet();
-
-        Set<String> dataPropertyNameSet = dataPropertiesValue.keySet();
-        for(String currentPropertyName:dataPropertyNameSet){
-            if(!slicePropertiesNameSet.contains(currentPropertyName.toUpperCase())){
-                throw new DataSlicePropertiesStructureException();
-            }
-        }
-
-        String[] dataPropertiesNameArray = dataPropertyNameSet.stream().toArray(n -> new String[n]);
-        StringBuffer propertiesNameSb = new StringBuffer();
-        StringBuffer propertiesValuePlaceHolderSb = new StringBuffer();
-        propertiesNameSb.append("(");
-        propertiesValuePlaceHolderSb.append("(");
-
-        Object[] propertiesValueArray = new Object[dataPropertyNameSet.size()];
-
-        for(int i = 0; i< dataPropertiesNameArray.length; i++){
-            String currentDataPropertyName = dataPropertiesNameArray[i];
-            // get dataType for property value validate
-            //String dataType = slicePropertiesMap.get(currentDataPropertyName.toUpperCase());
-            propertiesNameSb.append(currentDataPropertyName);
-            propertiesValuePlaceHolderSb.append("?");
-
-            if(i < dataPropertiesNameArray.length-1){
-                propertiesNameSb.append(",");
-                propertiesValuePlaceHolderSb.append(",");
-            }
-            propertiesValueArray[i] = dataPropertiesValue.get(currentDataPropertyName);
-        }
-        propertiesNameSb.append(")");
-        propertiesValuePlaceHolderSb.append(")");
-
-        String sliceName = this.cache.getName();
-
-        String sqlFieldsQuerySQL = "INSERT INTO "+sliceName+" "+propertiesNameSb.toString() +" VALUES "+propertiesValuePlaceHolderSb.toString();
-        SqlFieldsQuery qry = new SqlFieldsQuery(sqlFieldsQuerySQL);
-
-        try {
-            List<List<?>> cursor = this.cache.query(qry.setArgs(propertiesValueArray)).getAll();
-            for (List next : cursor) {
-                for (Object item : next) {
-                    if(item instanceof Long){
-                        Long result = (Long) item;
-                        if(result == 1){
-                            return true;
-                        }
-                    }
-                }
-            }
-        }catch (javax.cache.CacheException e){
-            DataSliceDataException dataSliceDataException = new DataSliceDataException();
-            dataSliceDataException.addSuppressed(e);
-            throw dataSliceDataException;
-        }
-        return false;
+        return insertDataRecordOperation("INSERT INTO",dataPropertiesValue);
     }
 
     public DataSliceOperationResult addDataRecords(List<String> propertiesNameList,List<Map<String,Object>> dataPropertiesValueList) throws DataSlicePropertiesStructureException{
@@ -208,66 +152,7 @@ public class DataSlice {
     }
 
     public boolean addOrUpdateDataRecord(Map<String,Object> dataPropertiesValue) throws DataSlicePropertiesStructureException, DataSliceDataException {
-        /*
-        Map<String,String> slicePropertiesMap = getDataSlicePropertiesInfo();
-        Set<String> slicePropertiesNameSet = slicePropertiesMap.keySet();
-
-        Set<String> dataPropertyNameSet = dataPropertiesValue.keySet();
-        for(String currentPropertyName:dataPropertyNameSet){
-            if(!slicePropertiesNameSet.contains(currentPropertyName.toUpperCase())){
-                throw new DataSlicePropertiesStructureException();
-            }
-        }
-
-        String[] dataPropertiesNameArray = dataPropertyNameSet.stream().toArray(n -> new String[n]);
-        StringBuffer propertiesNameSb = new StringBuffer();
-        StringBuffer propertiesValuePlaceHolderSb = new StringBuffer();
-        propertiesNameSb.append("(");
-        propertiesValuePlaceHolderSb.append("(");
-
-        Object[] propertiesValueArray = new Object[dataPropertyNameSet.size()];
-
-        for(int i = 0; i< dataPropertiesNameArray.length; i++){
-            String currentDataPropertyName = dataPropertiesNameArray[i];
-            // get dataType for property value validate
-            //String dataType = slicePropertiesMap.get(currentDataPropertyName.toUpperCase());
-            propertiesNameSb.append(currentDataPropertyName);
-            propertiesValuePlaceHolderSb.append("?");
-
-            if(i < dataPropertiesNameArray.length-1){
-                propertiesNameSb.append(",");
-                propertiesValuePlaceHolderSb.append(",");
-            }
-            propertiesValueArray[i] = dataPropertiesValue.get(currentDataPropertyName);
-        }
-        propertiesNameSb.append(")");
-        propertiesValuePlaceHolderSb.append(")");
-
-        String sliceName = this.cache.getName();
-
-        String sqlFieldsQuerySQL = "INSERT INTO "+sliceName+" "+propertiesNameSb.toString() +" VALUES "+propertiesValuePlaceHolderSb.toString();
-        SqlFieldsQuery qry = new SqlFieldsQuery(sqlFieldsQuerySQL);
-
-        try {
-            List<List<?>> cursor = this.cache.query(qry.setArgs(propertiesValueArray)).getAll();
-            for (List next : cursor) {
-                for (Object item : next) {
-                    if(item instanceof Long){
-                        Long result = (Long) item;
-                        if(result == 1){
-                            return true;
-                        }
-                    }
-                }
-            }
-        }catch (javax.cache.CacheException e){
-            DataSliceDataException dataSliceDataException = new DataSliceDataException();
-            dataSliceDataException.addSuppressed(e);
-            throw dataSliceDataException;
-        }
-
-        */
-        return false;
+        return insertDataRecordOperation("MERGE INTO",dataPropertiesValue);
     }
 
     public Map<String,Object> getDataRecord(Map<String,Object> dataPKPropertiesValue) throws DataSlicePropertiesStructureException, DataSliceDataException {
@@ -344,5 +229,65 @@ public class DataSlice {
             }
         }
         return propertiesUpdatePartSb.toString();
+    }
+
+    private boolean insertDataRecordOperation(String insertType, Map<String,Object> dataPropertiesValue) throws DataSlicePropertiesStructureException, DataSliceDataException {
+        Map<String,String> slicePropertiesMap = getDataSlicePropertiesInfo();
+        Set<String> slicePropertiesNameSet = slicePropertiesMap.keySet();
+
+        Set<String> dataPropertyNameSet = dataPropertiesValue.keySet();
+        for(String currentPropertyName:dataPropertyNameSet){
+            if(!slicePropertiesNameSet.contains(currentPropertyName.toUpperCase())){
+                throw new DataSlicePropertiesStructureException();
+            }
+        }
+
+        String[] dataPropertiesNameArray = dataPropertyNameSet.stream().toArray(n -> new String[n]);
+        StringBuffer propertiesNameSb = new StringBuffer();
+        StringBuffer propertiesValuePlaceHolderSb = new StringBuffer();
+        propertiesNameSb.append("(");
+        propertiesValuePlaceHolderSb.append("(");
+
+        Object[] propertiesValueArray = new Object[dataPropertyNameSet.size()];
+
+        for(int i = 0; i< dataPropertiesNameArray.length; i++){
+            String currentDataPropertyName = dataPropertiesNameArray[i];
+            // get dataType for property value validate
+            //String dataType = slicePropertiesMap.get(currentDataPropertyName.toUpperCase());
+            propertiesNameSb.append(currentDataPropertyName);
+            propertiesValuePlaceHolderSb.append("?");
+
+            if(i < dataPropertiesNameArray.length-1){
+                propertiesNameSb.append(",");
+                propertiesValuePlaceHolderSb.append(",");
+            }
+            propertiesValueArray[i] = dataPropertiesValue.get(currentDataPropertyName);
+        }
+        propertiesNameSb.append(")");
+        propertiesValuePlaceHolderSb.append(")");
+
+        String sliceName = this.cache.getName();
+
+        String sqlFieldsQuerySQL = insertType+" "+sliceName+" "+propertiesNameSb.toString() +" VALUES "+propertiesValuePlaceHolderSb.toString();
+        SqlFieldsQuery qry = new SqlFieldsQuery(sqlFieldsQuerySQL);
+
+        try {
+            List<List<?>> cursor = this.cache.query(qry.setArgs(propertiesValueArray)).getAll();
+            for (List next : cursor) {
+                for (Object item : next) {
+                    if(item instanceof Long){
+                        Long result = (Long) item;
+                        if(result == 1){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }catch (javax.cache.CacheException e){
+            DataSliceDataException dataSliceDataException = new DataSliceDataException();
+            dataSliceDataException.addSuppressed(e);
+            throw dataSliceDataException;
+        }
+        return false;
     }
 }
