@@ -143,6 +143,151 @@ public class DataSlice {
         return dataSliceOperationResult;
     }
 
+    public boolean updateDataRecord(Map<String,Object> dataPropertiesValue) throws DataSlicePropertiesStructureException, DataSliceDataException {
+        Map<String,String> slicePropertiesMap = getDataSlicePropertiesInfo();
+        Set<String> slicePropertiesNameSet = slicePropertiesMap.keySet();
+
+        Set<String> dataPropertyNameSet = dataPropertiesValue.keySet();
+        for(String currentPropertyName:dataPropertyNameSet){
+            if(!slicePropertiesNameSet.contains(currentPropertyName.toUpperCase())){
+                throw new DataSlicePropertiesStructureException();
+            }
+        }
+
+        Set<String> slicePrimaryKeySet = getDataSlicePrimaryKeysInfo();
+        String[] dataPropertiesNameArray = dataPropertyNameSet.stream().toArray(n -> new String[n]);
+
+        List<String> normalPropertiesNameList = new ArrayList<>();
+        List<String> pkPropertiesNameList = new ArrayList<>();
+
+        for(String currentPropertyName:dataPropertiesNameArray){
+           if(slicePrimaryKeySet.contains(currentPropertyName.toUpperCase())){
+               // PK property For update operation
+               pkPropertiesNameList.add(currentPropertyName);
+           }else{
+               normalPropertiesNameList.add(currentPropertyName);
+           }
+        }
+
+        String normalPropertyHolderStr = generatePropertiesValuePlaceHolder(normalPropertiesNameList,",");
+        String pkPropertyHolderStr = generatePropertiesValuePlaceHolder(pkPropertiesNameList,"AND");
+
+        String sliceName = this.cache.getName();
+        String sqlFieldsQuerySQL = "UPDATE "+sliceName+" SET "+normalPropertyHolderStr.toString() +" WHERE ("+pkPropertyHolderStr + ")";
+        SqlFieldsQuery qry = new SqlFieldsQuery(sqlFieldsQuerySQL);
+
+        Object[] propertiesValueArray = new Object[normalPropertiesNameList.size()+pkPropertiesNameList.size()];
+        for(int i = 0 ; i < normalPropertiesNameList.size() ; i++){
+            String currentPropertyName = normalPropertiesNameList.get(i);
+            propertiesValueArray[i] = dataPropertiesValue.get(currentPropertyName);
+        }
+
+        for(int i = 0 ; i < pkPropertiesNameList.size() ; i++){
+            String currentPropertyName = pkPropertiesNameList.get(i);
+            propertiesValueArray[i+normalPropertiesNameList.size()] = dataPropertiesValue.get(currentPropertyName);
+        }
+
+        try{
+            List<List<?>> cursor = this.cache.query(qry.setArgs(propertiesValueArray)).getAll();
+            for (List next : cursor) {
+                for (Object item : next) {
+                    if(item instanceof Long){
+                        Long result = (Long) item;
+                        if(result == 1){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }catch (javax.cache.CacheException e){
+            DataSliceDataException dataSliceDataException = new DataSliceDataException();
+            dataSliceDataException.addSuppressed(e);
+            throw dataSliceDataException;
+        }
+        return false;
+    }
+
+    public boolean addOrUpdateDataRecord(Map<String,Object> dataPropertiesValue) throws DataSlicePropertiesStructureException, DataSliceDataException {
+        /*
+        Map<String,String> slicePropertiesMap = getDataSlicePropertiesInfo();
+        Set<String> slicePropertiesNameSet = slicePropertiesMap.keySet();
+
+        Set<String> dataPropertyNameSet = dataPropertiesValue.keySet();
+        for(String currentPropertyName:dataPropertyNameSet){
+            if(!slicePropertiesNameSet.contains(currentPropertyName.toUpperCase())){
+                throw new DataSlicePropertiesStructureException();
+            }
+        }
+
+        String[] dataPropertiesNameArray = dataPropertyNameSet.stream().toArray(n -> new String[n]);
+        StringBuffer propertiesNameSb = new StringBuffer();
+        StringBuffer propertiesValuePlaceHolderSb = new StringBuffer();
+        propertiesNameSb.append("(");
+        propertiesValuePlaceHolderSb.append("(");
+
+        Object[] propertiesValueArray = new Object[dataPropertyNameSet.size()];
+
+        for(int i = 0; i< dataPropertiesNameArray.length; i++){
+            String currentDataPropertyName = dataPropertiesNameArray[i];
+            // get dataType for property value validate
+            //String dataType = slicePropertiesMap.get(currentDataPropertyName.toUpperCase());
+            propertiesNameSb.append(currentDataPropertyName);
+            propertiesValuePlaceHolderSb.append("?");
+
+            if(i < dataPropertiesNameArray.length-1){
+                propertiesNameSb.append(",");
+                propertiesValuePlaceHolderSb.append(",");
+            }
+            propertiesValueArray[i] = dataPropertiesValue.get(currentDataPropertyName);
+        }
+        propertiesNameSb.append(")");
+        propertiesValuePlaceHolderSb.append(")");
+
+        String sliceName = this.cache.getName();
+
+        String sqlFieldsQuerySQL = "INSERT INTO "+sliceName+" "+propertiesNameSb.toString() +" VALUES "+propertiesValuePlaceHolderSb.toString();
+        SqlFieldsQuery qry = new SqlFieldsQuery(sqlFieldsQuerySQL);
+
+        try {
+            List<List<?>> cursor = this.cache.query(qry.setArgs(propertiesValueArray)).getAll();
+            for (List next : cursor) {
+                for (Object item : next) {
+                    if(item instanceof Long){
+                        Long result = (Long) item;
+                        if(result == 1){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }catch (javax.cache.CacheException e){
+            DataSliceDataException dataSliceDataException = new DataSliceDataException();
+            dataSliceDataException.addSuppressed(e);
+            throw dataSliceDataException;
+        }
+
+        */
+        return false;
+    }
+
+    public Map<String,Object> getDataRecord(Map<String,Object> dataPKPropertiesValue) throws DataSlicePropertiesStructureException, DataSliceDataException {
+        return null;
+    }
+
+    public boolean deleteDataRecord(Map<String,Object> dataPKPropertiesValue) throws DataSlicePropertiesStructureException, DataSliceDataException{
+        return false;
+    }
+
+    public DataSliceOperationResult deleteDataRecords(List<Map<String,Object>> dataPKPropertiesValueList) throws DataSlicePropertiesStructureException, DataSliceDataException{
+        return null;
+    }
+
+    public void queryDataRecords(){}
+
+    public void emptyDataSlice(){
+        this.cache.removeAll();
+    }
+
     public DataSliceMetaInfo getDataSliceMetaInfo(){
         CacheConfiguration currentCacheConfig = this.cache.getConfiguration(CacheConfiguration.class);
         DataSliceMetaInfo dataSliceMetaInfo = new DataSliceMetaInfo();
@@ -167,8 +312,8 @@ public class DataSlice {
     }
 
     private Set<String> getDataSlicePrimaryKeysInfo(){
-        CacheConfiguration ccfg = cache.getConfiguration(CacheConfiguration.class);
-        Collection<QueryEntity> entities = ccfg.getQueryEntities();
+        CacheConfiguration cfg = cache.getConfiguration(CacheConfiguration.class);
+        Collection<QueryEntity> entities = cfg.getQueryEntities();
         if(entities != null && entities.size()>0){
             QueryEntity mainQueryEntity = entities.iterator().next();
             Set<String> keysField = mainQueryEntity.getKeyFields();
@@ -186,5 +331,18 @@ public class DataSlice {
             return propertiesMap;
         }
         return null;
+    }
+
+    private String generatePropertiesValuePlaceHolder(List<String> propertiesNameList,String divStr){
+        StringBuffer propertiesUpdatePartSb = new StringBuffer();
+        for(int i = 0; i< propertiesNameList.size(); i++){
+            String currentPropertyName = propertiesNameList.get(i);
+            propertiesUpdatePartSb.append(currentPropertyName);
+            propertiesUpdatePartSb.append(" = ? ");
+            if(i < propertiesNameList.size()-1){
+                propertiesUpdatePartSb.append(divStr+" ");
+            }
+        }
+        return propertiesUpdatePartSb.toString();
     }
 }

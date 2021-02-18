@@ -1,4 +1,8 @@
-package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService;
+package com.viewfunction.docg.dataCompute.dataSliceTest;
+
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlicePropertyType;
 
 import java.util.*;
 
@@ -7,12 +11,13 @@ public class DataServiceTest {
     public static void main(String args[]) throws Exception {
 
         try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
-
-
-            Map<String,DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+            /*
+            //add record
+            Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
             dataSlicePropertyMap.put("property1",DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put("property2",DataSlicePropertyType.INT);
             dataSlicePropertyMap.put("property3",DataSlicePropertyType.DOUBLE);
+            dataSlicePropertyMap.put("property4",DataSlicePropertyType.STRING);
             List<String> pkList = new ArrayList<>();
             pkList.add("property1");
             pkList.add("property2");
@@ -23,6 +28,30 @@ public class DataServiceTest {
             System.out.println(targetDataSlice.getDataSliceMetaInfo().getSliceGroupName());
             System.out.println(dataServiceInvoker.listDataSlices());
 
+            for(int i=0;i<10;i++) {
+                Map<String, Object> dataPropertiesValue = new HashMap<>();
+                dataPropertiesValue.put("property1", "DataProperty1Value" + new Date().getTime());
+                dataPropertiesValue.put("property2", 1000+i);
+                dataPropertiesValue.put("property3", 1238.999d);
+                dataPropertiesValue.put("property4", "PROP$VALUE+"+i);
+                targetDataSlice.addDataRecord(dataPropertiesValue);
+            }
+            */
+
+            DataSlice targetDataSlice2 = dataServiceInvoker.getDataSlice("gridDataSlice1");
+
+            Map<String, Object> dataPropertiesValue = new HashMap<>();
+            dataPropertiesValue.put("property1", "DataProperty1Value1613636927853");
+            dataPropertiesValue.put("property3", 3001.234d);
+            dataPropertiesValue.put("property4", "HAHAHawAHA=======");
+            //dataPropertiesValue.put("property2", 1000);
+
+
+            boolean updateResult = targetDataSlice2.updateDataRecord(dataPropertiesValue);
+            System.out.println(updateResult);
+
+
+/*
             Map<String,DataSlicePropertyType> dataSlicePropertyMap2 = new HashMap<>();
             dataSlicePropertyMap2.put("property1",DataSlicePropertyType.DOUBLE);
             dataSlicePropertyMap2.put("property2",DataSlicePropertyType.LONG);
@@ -35,12 +64,17 @@ public class DataServiceTest {
             System.out.println(targetDataSlice2.getDataSliceMetaInfo().getStoreBackupNumber());
             System.out.println(targetDataSlice2.getDataSliceMetaInfo().getSliceGroupName());
             System.out.println(dataServiceInvoker.listDataSlices());
+*/
+
+
+
+
 
 
 
             /*
-            DataSlice targetDataSlice = dataServiceInvoker.getDataSlice("gridDataSlice1");
-            for(int i=0;i<1000000;i++) {
+
+            for(int i=0;i<10;i++) {
                 Map<String, Object> dataPropertiesValue = new HashMap<>();
                 dataPropertiesValue.put("property1", "DataProperty1Value" + new Date().getTime());
                 dataPropertiesValue.put("property2", 1000+i);
