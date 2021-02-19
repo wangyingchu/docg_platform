@@ -7,6 +7,7 @@ import org.apache.ignite.IgniteCache;
 import org.apache.ignite.cache.CacheMode;
 import org.apache.ignite.cache.CachePeekMode;
 import org.apache.ignite.cache.QueryEntity;
+import org.apache.ignite.cache.query.FieldsQueryCursor;
 import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.apache.ignite.configuration.CacheConfiguration;
 
@@ -148,12 +149,59 @@ public class DataSlice {
         return insertDataRecordOperation("MERGE INTO",dataPropertiesValue);
     }
 
-    public Map<String,Object> getDataRecord(Map<String,Object> dataPKPropertiesValue) throws DataSlicePropertiesStructureException, DataSliceDataException {
+    public Map<String,Object> getDataRecordByPrimaryKeys(Map<String,Object> dataPKPropertiesValue) throws DataSlicePropertiesStructureException, DataSliceDataException {
+        Set<String> slicePKPropertiesNameSet = getDataSlicePrimaryKeysInfo();
+        Set<String> dataPropertyNameSet = dataPKPropertiesValue.keySet();
 
+        if(dataPKPropertiesValue.size() != slicePKPropertiesNameSet.size()){
+            throw new DataSlicePropertiesStructureException();
+        }
+        List<String> pkPropertiesNameList = new ArrayList<>();
+        for(String currentPropertyName:dataPropertyNameSet){
+            if(!slicePKPropertiesNameSet.contains(currentPropertyName.toUpperCase())){
+                throw new DataSlicePropertiesStructureException();
+            }
+            pkPropertiesNameList.add(currentPropertyName);
+        }
 
+        String pkPropertyHolderStr = generatePropertiesValuePlaceHolder(pkPropertiesNameList,"AND");
+        String sliceName = this.cache.getName();
+        String sqlFieldsQuerySQL = "SELECT DISTINCT * FROM "+ sliceName +" WHERE "+pkPropertyHolderStr;
+        SqlFieldsQuery qry = new SqlFieldsQuery(sqlFieldsQuerySQL);
 
+        Object[] propertiesValueArray = new Object[pkPropertiesNameList.size()];
+        for(int i = 0 ; i < pkPropertiesNameList.size() ; i++){
+            String currentPropertyName = pkPropertiesNameList.get(i);
+            propertiesValueArray[i] = dataPKPropertiesValue.get(currentPropertyName);
+        }
 
-        return null;
+        try{
+            Map<String, Object> resultRecord = new HashMap<>();
+            FieldsQueryCursor<List<?>> cur = cache.query(qry.setArgs(propertiesValueArray));
+            Iterator<List<?>> it = cur.iterator();
+            if (!it.hasNext()) {
+                return null;
+            }
+
+            String[] colNames = new String[cur.getColumnsCount()];
+            for (int i = 0; i < colNames.length; ++i) {
+                String colName = cur.getFieldName(i);
+                colNames[i] = colName;
+            }
+            while (it.hasNext()) {
+                List<?> row = it.next();
+                for (int i = 0; i < colNames.length; ++i) {
+                    if (colNames[i] != null) {
+                        resultRecord.put(colNames[i], row.get(i));
+                    }
+                }
+            }
+            return resultRecord;
+        }catch (javax.cache.CacheException e){
+            DataSliceDataException dataSliceDataException = new DataSliceDataException();
+            dataSliceDataException.addSuppressed(e);
+            throw dataSliceDataException;
+        }
     }
 
     public boolean deleteDataRecord(Map<String,Object> dataPKPropertiesValue) throws DataSlicePropertiesStructureException, DataSliceDataException{
