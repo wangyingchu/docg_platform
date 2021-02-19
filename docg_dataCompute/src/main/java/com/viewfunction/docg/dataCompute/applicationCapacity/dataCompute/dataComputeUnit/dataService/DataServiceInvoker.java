@@ -63,7 +63,6 @@ public class DataServiceInvoker implements AutoCloseable{
         String dataStoreRegionNameStr= DataComputeConfigurationHandler.getConfigPropertyValue("dataStoreRegionName");
         String propertiesStructureSQL = DataSliceUtil.buildSliceStructureSQL(propertiesDefinitionMap,primaryKeysList);
         String createSentence =  "CREATE TABLE "+dataSliceName+" ("+propertiesStructureSQL+") " +
-        //String createSentence =  "CREATE TABLE "+dataSliceName+" (id LONG PRIMARY KEY, name VARCHAR) " +
         "WITH \"CACHE_NAME="+dataSliceName+
         ",DATA_REGION="+dataStoreRegionNameStr+
         ",BACKUPS="+dataStoreBackupNumberStr+
