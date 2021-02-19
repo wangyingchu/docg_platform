@@ -204,12 +204,67 @@ public class DataSlice {
         }
     }
 
-    public boolean deleteDataRecord(Map<String,Object> dataPKPropertiesValue) throws DataSlicePropertiesStructureException, DataSliceDataException{
+    public boolean deleteDataRecord(Map<String,Object> dataPKPropertiesValue) throws DataSlicePropertiesStructureException, DataSliceDataException {
+        Set<String> slicePKPropertiesNameSet = getDataSlicePrimaryKeysInfo();
+        Set<String> dataPropertyNameSet = dataPKPropertiesValue.keySet();
+
+        if(dataPKPropertiesValue.size() != slicePKPropertiesNameSet.size()){
+            throw new DataSlicePropertiesStructureException();
+        }
+        List<String> pkPropertiesNameList = new ArrayList<>();
+        for(String currentPropertyName:dataPropertyNameSet){
+            if(!slicePKPropertiesNameSet.contains(currentPropertyName.toUpperCase())){
+                throw new DataSlicePropertiesStructureException();
+            }
+            pkPropertiesNameList.add(currentPropertyName);
+        }
+
+        String pkPropertyHolderStr = generatePropertiesValuePlaceHolder(pkPropertiesNameList,"AND");
+        String sliceName = this.cache.getName();
+        String sqlFieldsQuerySQL = "DELETE FROM "+ sliceName +" WHERE "+pkPropertyHolderStr;
+        SqlFieldsQuery qry = new SqlFieldsQuery(sqlFieldsQuerySQL);
+
+        Object[] propertiesValueArray = new Object[pkPropertiesNameList.size()];
+        for(int i = 0 ; i < pkPropertiesNameList.size() ; i++){
+            String currentPropertyName = pkPropertiesNameList.get(i);
+            propertiesValueArray[i] = dataPKPropertiesValue.get(currentPropertyName);
+        }
+
+        try {
+            List<List<?>> cursor = this.cache.query(qry.setArgs(propertiesValueArray)).getAll();
+            for (List next : cursor) {
+                for (Object item : next) {
+                    if(item instanceof Long){
+                        Long result = (Long) item;
+                        if(result == 1){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }catch (javax.cache.CacheException e){
+            DataSliceDataException dataSliceDataException = new DataSliceDataException();
+            dataSliceDataException.addSuppressed(e);
+            throw dataSliceDataException;
+        }
         return false;
     }
 
     public DataSliceOperationResult deleteDataRecords(List<Map<String,Object>> dataPKPropertiesValueList) throws DataSlicePropertiesStructureException, DataSliceDataException{
-        return null;
+        DataSliceOperationResult dataSliceOperationResult = new DataSliceOperationResult();
+        if(dataPKPropertiesValueList != null){
+            for(Map<String,Object> currentDataMap:dataPKPropertiesValueList){
+                boolean deleteResult = deleteDataRecord(currentDataMap);
+                if(deleteResult){
+                    dataSliceOperationResult.increaseSuccessCount();
+                }else{
+                    dataSliceOperationResult.increaseFailCount();
+                }
+            }
+        }
+        dataSliceOperationResult.setOperationSummary("DataSlice deleteDataRecords Operation");
+        dataSliceOperationResult.finishOperation();
+        return dataSliceOperationResult;
     }
 
     public void queryDataRecords(){}
