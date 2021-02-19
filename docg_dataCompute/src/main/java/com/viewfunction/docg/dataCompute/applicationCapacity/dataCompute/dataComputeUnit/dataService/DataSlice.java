@@ -88,15 +88,8 @@ public class DataSlice {
     }
 
     public boolean updateDataRecord(Map<String,Object> dataPropertiesValue) throws DataSlicePropertiesStructureException, DataSliceDataException {
-        Map<String,String> slicePropertiesMap = getDataSlicePropertiesInfo();
-        Set<String> slicePropertiesNameSet = slicePropertiesMap.keySet();
-
         Set<String> dataPropertyNameSet = dataPropertiesValue.keySet();
-        for(String currentPropertyName:dataPropertyNameSet){
-            if(!slicePropertiesNameSet.contains(currentPropertyName.toUpperCase())){
-                throw new DataSlicePropertiesStructureException();
-            }
-        }
+        validateDataProperties(dataPropertyNameSet);
 
         Set<String> slicePrimaryKeySet = getDataSlicePrimaryKeysInfo();
         String[] dataPropertiesNameArray = dataPropertyNameSet.stream().toArray(n -> new String[n]);
@@ -156,6 +149,10 @@ public class DataSlice {
     }
 
     public Map<String,Object> getDataRecord(Map<String,Object> dataPKPropertiesValue) throws DataSlicePropertiesStructureException, DataSliceDataException {
+
+
+
+
         return null;
     }
 
@@ -208,8 +205,8 @@ public class DataSlice {
     }
 
     private Map<String,String> getDataSlicePropertiesInfo(){
-        CacheConfiguration ccfg = cache.getConfiguration(CacheConfiguration.class);
-        Collection<QueryEntity> entities = ccfg.getQueryEntities();
+        CacheConfiguration cfg = cache.getConfiguration(CacheConfiguration.class);
+        Collection<QueryEntity> entities = cfg.getQueryEntities();
         if(entities != null && entities.size()>0){
             QueryEntity mainQueryEntity = entities.iterator().next();
             LinkedHashMap<String,String> propertiesMap = mainQueryEntity.getFields();
@@ -231,16 +228,19 @@ public class DataSlice {
         return propertiesUpdatePartSb.toString();
     }
 
-    private boolean insertDataRecordOperation(String insertType, Map<String,Object> dataPropertiesValue) throws DataSlicePropertiesStructureException, DataSliceDataException {
+    private void validateDataProperties(Set<String> dataPropertyNameSet) throws DataSlicePropertiesStructureException{
         Map<String,String> slicePropertiesMap = getDataSlicePropertiesInfo();
         Set<String> slicePropertiesNameSet = slicePropertiesMap.keySet();
-
-        Set<String> dataPropertyNameSet = dataPropertiesValue.keySet();
         for(String currentPropertyName:dataPropertyNameSet){
             if(!slicePropertiesNameSet.contains(currentPropertyName.toUpperCase())){
                 throw new DataSlicePropertiesStructureException();
             }
         }
+    }
+
+    private boolean insertDataRecordOperation(String insertType, Map<String,Object> dataPropertiesValue) throws DataSlicePropertiesStructureException, DataSliceDataException {
+        Set<String> dataPropertyNameSet = dataPropertiesValue.keySet();
+        validateDataProperties(dataPropertyNameSet);
 
         String[] dataPropertiesNameArray = dataPropertyNameSet.stream().toArray(n -> new String[n]);
         StringBuffer propertiesNameSb = new StringBuffer();

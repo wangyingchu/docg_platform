@@ -29,6 +29,10 @@ public class DataServiceTest {
             System.out.println(dataServiceInvoker.listDataSlices());
 */
 
+
+
+
+/*
             DataSlice targetDataSlice = dataServiceInvoker.getDataSlice("gridDataSlice1");
 
             for(int i=0;i<10;i++) {
@@ -40,12 +44,12 @@ public class DataServiceTest {
                 boolean addResult = targetDataSlice.addDataRecord(dataPropertiesValue);
                 System.out.println(addResult);
             }
-
+*/
 
             DataSlice targetDataSlice2 = dataServiceInvoker.getDataSlice("gridDataSlice1");
 
             Map<String, Object> dataPropertiesValue = new HashMap<>();
-            dataPropertiesValue.put("property1", "DataProperty1Value1613636927853");
+            dataPropertiesValue.put("property1", "DataProperty1Value1613699647346");
             dataPropertiesValue.put("property3", 3001.234d);
             dataPropertiesValue.put("property4", "HAHAHawAHA=======");
             //dataPropertiesValue.put("property2", 1000);
@@ -62,6 +66,13 @@ public class DataServiceTest {
 
             boolean addOrUpdateResult = targetDataSlice2.addOrUpdateDataRecord(dataPropertiesValue);
             System.out.println(addOrUpdateResult);
+
+
+
+
+
+
+
 
 /*
             Map<String,DataSlicePropertyType> dataSlicePropertyMap2 = new HashMap<>();
