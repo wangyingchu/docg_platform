@@ -2,6 +2,7 @@ package com.viewfunction.docg.dataCompute.dataSliceTest;
 
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSliceOperationResult;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlicePropertyType;
 
 import java.util.*;
@@ -11,7 +12,7 @@ public class DataServiceTest {
     public static void main(String args[]) throws Exception {
 
         try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
-            /*
+
             //add record
             Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
             dataSlicePropertyMap.put("property1",DataSlicePropertyType.STRING);
@@ -27,13 +28,13 @@ public class DataServiceTest {
             System.out.println(targetDataSlice.getDataSliceMetaInfo().getStoreBackupNumber());
             System.out.println(targetDataSlice.getDataSliceMetaInfo().getSliceGroupName());
             System.out.println(dataServiceInvoker.listDataSlices());
-*/
 
 
 
 
-/*
-            DataSlice targetDataSlice = dataServiceInvoker.getDataSlice("gridDataSlice1");
+
+
+            //DataSlice targetDataSlice0 = dataServiceInvoker.getDataSlice("gridDataSlice1");
 
             for(int i=0;i<10;i++) {
                 Map<String, Object> dataPropertiesValue = new HashMap<>();
@@ -44,17 +45,16 @@ public class DataServiceTest {
                 boolean addResult = targetDataSlice.addDataRecord(dataPropertiesValue);
                 System.out.println(addResult);
             }
-*/
+
 
             DataSlice targetDataSlice2 = dataServiceInvoker.getDataSlice("gridDataSlice1");
-
             Map<String, Object> dataPropertiesValue = new HashMap<>();
+            /*
+
             dataPropertiesValue.put("property1", "DataProperty1Value1613699647346");
             dataPropertiesValue.put("property3", 3001.234d);
             dataPropertiesValue.put("property4", "HAHAHawAHA=======");
             //dataPropertiesValue.put("property2", 1000);
-
-
             boolean updateResult = targetDataSlice2.updateDataRecord(dataPropertiesValue);
             System.out.println(updateResult);
 
@@ -66,12 +66,46 @@ public class DataServiceTest {
 
             boolean addOrUpdateResult = targetDataSlice2.addOrUpdateDataRecord(dataPropertiesValue);
             System.out.println(addOrUpdateResult);
+ */
+            dataPropertiesValue = new HashMap<>();
+            dataPropertiesValue.put("property1", "DataProperty1Value1613719808845");
+            dataPropertiesValue.put("property2", 1000);
+            Map<String,Object> resultData = targetDataSlice2.getDataRecordByPrimaryKeys(dataPropertiesValue);
+            System.out.println(resultData);
 
 
+            //dataPropertiesValue = new HashMap<>();
+            //dataPropertiesValue.put("property2", 5000);
+            //resultData = targetDataSlice2.getDataRecordByPrimaryKeys(dataPropertiesValue);
+            //System.out.println(resultData);
 
 
+            dataPropertiesValue = new HashMap<>();
+            dataPropertiesValue.put("property2", 1003);
+            dataPropertiesValue.put("property1", "DataProperty1Value1613699647532");
+
+            boolean deleteRecordResult = targetDataSlice2.deleteDataRecord(dataPropertiesValue);
+            System.out.println(deleteRecordResult);
 
 
+            List<Map<String,Object>> pkValueList = new ArrayList<>();
+
+            pkValueList.add(dataPropertiesValue);
+
+
+            Map<String,Object> dataPropertiesValue2 = new HashMap<>();
+            dataPropertiesValue2.put("property2", 1003);
+            dataPropertiesValue2.put("property1", "DataProperty1Value1613710961612");
+            pkValueList.add(dataPropertiesValue2);
+
+
+            DataSliceOperationResult dataSliceOperationResult = targetDataSlice2.deleteDataRecords(pkValueList);
+
+            System.out.println(dataSliceOperationResult.getOperationSummary());
+            System.out.println(dataSliceOperationResult.getStartTime());
+            System.out.println(dataSliceOperationResult.getFinishTime());
+            System.out.println(dataSliceOperationResult.getSuccessItemsCount());
+            System.out.println(dataSliceOperationResult.getFailItemsCount());
 
 
 /*

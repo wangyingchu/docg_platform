@@ -40,9 +40,7 @@ object IgniteDataFrameExample extends App {
     // Executing examples.
     sparkDSLRealmTest
     sparkDSLExample
-
     nativeSparkSqlExample
-
 
   def sparkDSLRealmTest(implicit spark: SparkSession): Unit = {
     println("Querying using Spark DSL.")
