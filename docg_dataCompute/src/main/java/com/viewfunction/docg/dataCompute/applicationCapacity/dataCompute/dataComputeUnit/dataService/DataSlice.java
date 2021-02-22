@@ -1,5 +1,8 @@
 package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService;
 
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.QueryParameters;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.result.DataSliceOperationResult;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.result.DataSliceQueryResult;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSliceDataException;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSlicePropertiesStructureException;
 import org.apache.ignite.Ignite;
@@ -27,7 +30,7 @@ public class DataSlice {
         return insertDataRecordOperation("INSERT INTO",dataPropertiesValue);
     }
 
-    public DataSliceOperationResult addDataRecords(List<String> propertiesNameList,List<Map<String,Object>> dataPropertiesValueList) throws DataSlicePropertiesStructureException{
+    public DataSliceOperationResult addDataRecords(List<String> propertiesNameList, List<Map<String,Object>> dataPropertiesValueList) throws DataSlicePropertiesStructureException{
         Map<String,String> slicePropertiesMap = getDataSlicePropertiesInfo();
         Set<String> slicePropertiesNameSet = slicePropertiesMap.keySet();
 
@@ -267,31 +270,12 @@ public class DataSlice {
         return dataSliceOperationResult;
     }
 
-    public DataSliceQueryResult queryDataRecords(String querySQL) throws DataSliceDataException {
-        DataSliceQueryResult dataSliceQueryResult= new DataSliceQueryResult();
-        dataSliceQueryResult.setQueryLogic(querySQL);
-        SqlFieldsQuery qry = new SqlFieldsQuery(querySQL);
-        try{
-            FieldsQueryCursor<List<?>> cur = cache.query(qry);
-            int columnsCount = cur.getColumnsCount();
-            for (List<?> row : cur) {
-                Map<String,Object> currentRecordValue = new HashMap<>();
-                for(int i =0;i<columnsCount;i++){
-                    currentRecordValue.put(
-                            cur.getFieldName(i),
-                            row.get(i)
-                    );
-                }
-                dataSliceQueryResult.getResultRecords().add(currentRecordValue);
-            }
-        }catch (javax.cache.CacheException e){
-            DataSliceDataException dataSliceDataException = new DataSliceDataException();
-            dataSliceDataException.addSuppressed(e);
-            throw dataSliceDataException;
-        }
-        dataSliceQueryResult.setOperationSummary("DataSlice queryDataRecords Operation");
-        dataSliceQueryResult.finishOperation();
-        return dataSliceQueryResult;
+    public DataSliceQueryResult queryDataRecords(String queryLogic) throws DataSliceDataException {
+        return queryDataRecordsBySQL(queryLogic);
+    }
+
+    public DataSliceQueryResult queryDataRecords(QueryParameters queryParameters) throws DataSliceDataException {
+        return queryDataRecordsBySQL(null);
     }
 
     public void emptyDataSlice(){
@@ -417,5 +401,32 @@ public class DataSlice {
             throw dataSliceDataException;
         }
         return false;
+    }
+
+    private DataSliceQueryResult queryDataRecordsBySQL(String querySQL) throws DataSliceDataException {
+        DataSliceQueryResult dataSliceQueryResult= new DataSliceQueryResult();
+        dataSliceQueryResult.setQueryLogic(querySQL);
+        SqlFieldsQuery qry = new SqlFieldsQuery(querySQL);
+        try{
+            FieldsQueryCursor<List<?>> cur = cache.query(qry);
+            int columnsCount = cur.getColumnsCount();
+            for (List<?> row : cur) {
+                Map<String,Object> currentRecordValue = new HashMap<>();
+                for(int i =0;i<columnsCount;i++){
+                    currentRecordValue.put(
+                            cur.getFieldName(i),
+                            row.get(i)
+                    );
+                }
+                dataSliceQueryResult.getResultRecords().add(currentRecordValue);
+            }
+        }catch (javax.cache.CacheException e){
+            DataSliceDataException dataSliceDataException = new DataSliceDataException();
+            dataSliceDataException.addSuppressed(e);
+            throw dataSliceDataException;
+        }
+        dataSliceQueryResult.setOperationSummary("DataSlice queryDataRecords Operation");
+        dataSliceQueryResult.finishOperation();
+        return dataSliceQueryResult;
     }
 }
