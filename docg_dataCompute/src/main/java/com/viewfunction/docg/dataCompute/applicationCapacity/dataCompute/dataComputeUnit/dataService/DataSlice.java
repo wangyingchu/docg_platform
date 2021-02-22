@@ -267,7 +267,32 @@ public class DataSlice {
         return dataSliceOperationResult;
     }
 
-    public void queryDataRecords(){}
+    public DataSliceQueryResult queryDataRecords(String querySQL) throws DataSliceDataException {
+        DataSliceQueryResult dataSliceQueryResult= new DataSliceQueryResult();
+        dataSliceQueryResult.setQueryLogic(querySQL);
+        SqlFieldsQuery qry = new SqlFieldsQuery(querySQL);
+        try{
+            FieldsQueryCursor<List<?>> cur = cache.query(qry);
+            int columnsCount = cur.getColumnsCount();
+            for (List<?> row : cur) {
+                Map<String,Object> currentRecordValue = new HashMap<>();
+                for(int i =0;i<columnsCount;i++){
+                    currentRecordValue.put(
+                            cur.getFieldName(i),
+                            row.get(i)
+                    );
+                }
+                dataSliceQueryResult.getResultRecords().add(currentRecordValue);
+            }
+        }catch (javax.cache.CacheException e){
+            DataSliceDataException dataSliceDataException = new DataSliceDataException();
+            dataSliceDataException.addSuppressed(e);
+            throw dataSliceDataException;
+        }
+        dataSliceQueryResult.setOperationSummary("DataSlice queryDataRecords Operation");
+        dataSliceQueryResult.finishOperation();
+        return dataSliceQueryResult;
+    }
 
     public void emptyDataSlice(){
         this.cache.removeAll();
