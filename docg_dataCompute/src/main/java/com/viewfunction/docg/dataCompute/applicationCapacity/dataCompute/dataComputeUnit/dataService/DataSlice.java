@@ -3,8 +3,10 @@ package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCo
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.QueryParameters;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.result.DataSliceOperationResult;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.result.DataSliceQueryResult;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.util.DataSliceQueryBuilder;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSliceDataException;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSlicePropertiesStructureException;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSliceQueryStructureException;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.cache.CacheMode;
@@ -274,8 +276,10 @@ public class DataSlice {
         return queryDataRecordsBySQL(queryLogic);
     }
 
-    public DataSliceQueryResult queryDataRecords(QueryParameters queryParameters) throws DataSliceDataException {
-        return queryDataRecordsBySQL(null);
+    public DataSliceQueryResult queryDataRecords(QueryParameters queryParameters) throws DataSliceDataException, DataSliceQueryStructureException {
+        String sliceName = this.cache.getName();
+        String dataSliceQuerySQL = DataSliceQueryBuilder.buildSelectQuerySQL(sliceName,queryParameters);
+        return queryDataRecordsBySQL(dataSliceQuerySQL);
     }
 
     public void emptyDataSlice(){

@@ -1,8 +1,11 @@
 package com.viewfunction.docg.dataCompute.dataSliceTest;
 
+
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSliceMetaInfo;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.QueryParameters;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.filteringItem.EqualFilteringItem;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.result.DataSliceQueryResult;
 
 import java.util.List;
@@ -27,6 +30,12 @@ public class DataSliceQueryTest {
             for(Map<String,Object> currentRecord: recordResult){
                 System.out.println(currentRecord);
             }
+
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setDefaultFilteringItem(new EqualFilteringItem("AIRTEMPERATURE",66.65));
+            DataSliceQueryResult dataSliceQueryResult2 = targetDataSlice.queryDataRecords(queryParameters);
+            System.out.println(dataSliceQueryResult2.getResultRecords().size());
+
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.SortingItem;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.filteringItem.FilteringItem;
 
 import java.util.ArrayList;
 import java.util.List;
