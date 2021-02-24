@@ -1,6 +1,5 @@
 package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query;
 
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.SortingItem;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.filteringItem.FilteringItem;
 
 import java.util.ArrayList;
@@ -110,7 +109,7 @@ public class QueryParameters {
         return sortingItems;
     }
 
-    public void addSortingAttribute(String sortAttribute, com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters.SortingLogic sortingLogic) {
+    public void addSortingAttribute(String sortAttribute, SortingLogic sortingLogic) {
         this.sortingItems.add(new SortingItem(sortAttribute,sortingLogic));
     }
 }
