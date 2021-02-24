@@ -1,13 +1,10 @@
 package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.util;
 
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.QueryParameters;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.SortingItem;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.filteringItem.*;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSliceQueryStructureException;
-
-import org.jooq.Condition;
-import org.jooq.DSLContext;
-import org.jooq.Query;
-import org.jooq.SQLDialect;
+import org.jooq.*;
 import org.jooq.conf.ParamType;
 import org.jooq.impl.DSL;
 import org.slf4j.Logger;
@@ -56,8 +53,74 @@ public class DataSliceQueryBuilder {
                         }
                     }
                 }
-                query = create.select(field("*")).from(table(dataSliceName)).where(defaultCondition);
+                //query = create.select(field("*")).from(table(dataSliceName)).where(defaultCondition).limit(800).offset(50);
+                query = create.select(field("*")).from(table(dataSliceName)).where(defaultCondition).limit(800).offset(50);
+
+                SelectConditionStep selectConditionStep = create.select(field("*")).from(table(dataSliceName)).where(defaultCondition);
             }
+
+            int startPage = queryParameters.getStartPage();
+            int endPage = queryParameters.getEndPage();
+            int pageSize = queryParameters.getPageSize();
+            int resultNumber = queryParameters.getResultNumber();
+            boolean isDistinctMode = queryParameters.isDistinctMode();
+            List<SortingItem> sortingItemList = queryParameters.getSortingItems();
+
+            int defaultReturnRecordNumber = 10000000;
+            int skipRecordNumber = 0;
+            int limitRecordNumber = 0;
+
+            if (startPage != 0) {
+                if (startPage < 0) {
+                    String exceptionMessage = "start page must great then zero";
+                    DataSliceQueryStructureException dataSliceQueryStructureException = new DataSliceQueryStructureException();
+                    dataSliceQueryStructureException.setCauseMessage(exceptionMessage);
+                    throw dataSliceQueryStructureException;
+                }
+                if (pageSize < 0) {
+                    String exceptionMessage = "page size must great then zero";
+                    DataSliceQueryStructureException dataSliceQueryStructureException = new DataSliceQueryStructureException();
+                    dataSliceQueryStructureException.setCauseMessage(exceptionMessage);
+                    throw dataSliceQueryStructureException;
+                }
+
+                int runtimePageSize = pageSize != 0 ? pageSize : 50;
+                int runtimeStartPage = startPage - 1;
+
+                if (endPage != 0) {
+                    //get data from start page to end page, each page has runtimePageSize number of record
+                    if (endPage < 0 || endPage <= startPage) {
+                        String exceptionMessage = "end page must great than start page";
+                        DataSliceQueryStructureException dataSliceQueryStructureException = new DataSliceQueryStructureException();
+                        dataSliceQueryStructureException.setCauseMessage(exceptionMessage);
+                        throw dataSliceQueryStructureException;
+                    }
+                    int runtimeEndPage = endPage - 1;
+
+                    skipRecordNumber = runtimePageSize * runtimeStartPage;
+                    limitRecordNumber = (runtimeEndPage - runtimeStartPage) * runtimePageSize;
+                } else {
+                    //filter the data before the start page
+                    limitRecordNumber = runtimePageSize * runtimeStartPage;
+                }
+            } else {
+                //if there is no page parameters,use resultNumber to control result information number
+                if (resultNumber != 0) {
+                    if (resultNumber < 0) {
+                        String exceptionMessage = "result number must great then zero";
+                        DataSliceQueryStructureException dataSliceQueryStructureException = new DataSliceQueryStructureException();
+                        dataSliceQueryStructureException.setCauseMessage(exceptionMessage);
+                        throw dataSliceQueryStructureException;
+                    }
+                    limitRecordNumber = resultNumber;
+                }
+            }
+
+            if (limitRecordNumber == 0) {
+                limitRecordNumber = defaultReturnRecordNumber;
+            }
+        }else{
+            query = create.select(field("*")).from(table(dataSliceName));
         }
         String sql = query.getSQL(ParamType.NAMED_OR_INLINED);
         logger.debug("Generated SQL Statement: {}", sql);
