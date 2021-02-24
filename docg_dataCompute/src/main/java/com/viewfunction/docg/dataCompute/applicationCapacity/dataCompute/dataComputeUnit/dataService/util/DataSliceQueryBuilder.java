@@ -3,6 +3,7 @@ package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCo
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.QueryParameters;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.filteringItem.*;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSliceQueryStructureException;
+
 import org.jooq.Condition;
 import org.jooq.DSLContext;
 import org.jooq.Query;
@@ -39,6 +40,22 @@ public class DataSliceQueryBuilder {
                 }
             }else{
                 Condition defaultCondition = generateQueryCondition(defaultFilteringItem);
+                if(andFilteringItemList != null && andFilteringItemList.size() > 0){
+                    for(FilteringItem currentAndFilteringItem:andFilteringItemList){
+                        Condition currentAndCondition = generateQueryCondition(currentAndFilteringItem);
+                        if(currentAndCondition != null){
+                            defaultCondition = defaultCondition.and(currentAndCondition);
+                        }
+                    }
+                }
+                if(orFilteringItemList != null && orFilteringItemList.size() > 0){
+                    for(FilteringItem currentOrFilteringItem:orFilteringItemList){
+                        Condition currentOrCondition = generateQueryCondition(currentOrFilteringItem);
+                        if(currentOrCondition != null){
+                            defaultCondition = defaultCondition.or(currentOrCondition);
+                        }
+                    }
+                }
                 query = create.select(field("*")).from(table(dataSliceName)).where(defaultCondition);
             }
         }
@@ -102,7 +119,7 @@ public class DataSliceQueryBuilder {
             InValueFilteringItem currentFilteringItem = (InValueFilteringItem)filteringItem;
             String propertyName = currentFilteringItem.getAttributeName();
             List<Object> propertyValues = currentFilteringItem.getAttributeValues();
-            if(propertyName != null & propertyValues != null &propertyValues.size() > 0){
+            if(propertyName != null & propertyValues != null & propertyValues.size() > 0){
                 if(currentFilteringItem.isReversedCondition()){
                     currentQueryCondition = field(propertyName).notIn(propertyValues.toArray());
                 }else{

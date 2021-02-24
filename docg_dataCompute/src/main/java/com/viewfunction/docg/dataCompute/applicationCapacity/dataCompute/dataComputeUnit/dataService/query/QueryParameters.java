@@ -70,7 +70,7 @@ public class QueryParameters {
         this.defaultFilteringItem = filteringItem;
     }
 
-    public void addFilteringItem(FilteringItem filteringItem, com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters.FilteringLogic filteringLogic) {
+    public void addFilteringItem(FilteringItem filteringItem, FilteringLogic filteringLogic) {
         if (this.defaultFilteringItem == null) {
             this.defaultFilteringItem = filteringItem;
         } else {
