@@ -1,13 +1,14 @@
 package com.viewfunction.docg.dataCompute.dataSliceTest;
 
-
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSliceMetaInfo;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.QueryParameters;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.filteringItem.EqualFilteringItem;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.filteringItem.FilteringItem;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.filteringItem.SimilarFilteringItem;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.result.DataSliceQueryResult;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +33,27 @@ public class DataSliceQueryTest {
             }
 
             QueryParameters queryParameters = new QueryParameters();
-            queryParameters.setDefaultFilteringItem(new EqualFilteringItem("AIRTEMPERATURE",66.65));
+
+            List<Object> valueList = new ArrayList<>();
+            valueList.add(Double.valueOf("66.65"));
+            valueList.add(Double.valueOf("65.77"));
+
+            //FilteringItem filteringItem = new EqualFilteringItem("AIRTEMPERATURE",66.65);
+            //FilteringItem filteringItem = new BetweenFilteringItem("AirTemperature",Double.valueOf("65.66"),Double.valueOf("65.77"));
+            //FilteringItem filteringItem = new GreaterThanFilteringItem("AirTemperature",66.65);
+            //FilteringItem filteringItem = new GreaterThanEqualFilteringItem("AirTemperature",66.65);
+            //FilteringItem filteringItem = new InValueFilteringItem("AirTemperature",valueList);
+            //FilteringItem filteringItem = new LessThanEqualFilteringItem("AirTemperature",66.65);
+            //FilteringItem filteringItem = new LessThanFilteringItem("AirTemperature",66.65);
+            //FilteringItem filteringItem = new NotEqualFilteringItem("AIRTEMPERATURE",66.65);
+            //FilteringItem filteringItem = new NullValueFilteringItem("AirTemperature");
+
+            FilteringItem filteringItem = new SimilarFilteringItem("STATIONNAME","Bridge", SimilarFilteringItem.MatchingType.EndWith);
+            //FilteringItem filteringItem = new SimilarFilteringItem("STATIONNAME","Magno", SimilarFilteringItem.MatchingType.BeginWith);
+            //FilteringItem filteringItem = new SimilarFilteringItem("STATIONNAME","SWMy", SimilarFilteringItem.MatchingType.Contain);
+
+            filteringItem.reverseCondition();
+            queryParameters.setDefaultFilteringItem(filteringItem);
             DataSliceQueryResult dataSliceQueryResult2 = targetDataSlice.queryDataRecords(queryParameters);
             System.out.println(dataSliceQueryResult2.getResultRecords().size());
 
