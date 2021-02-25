@@ -11,7 +11,6 @@ public class QueryParameters {
     private int startPage;
     private int endPage;
     private int resultNumber;
-    private int topNumber;
     private boolean distinctMode = false;
     private List<SortingItem> sortingItems;
     private FilteringItem defaultFilteringItem;
@@ -24,14 +23,6 @@ public class QueryParameters {
         andFilteringItemList = new ArrayList<>();
         orFilteringItemList = new ArrayList<>();
         sortingItems = new ArrayList<>();
-    }
-
-    public int getTopNumber() {
-        return topNumber;
-    }
-
-    public void setTopNumber(int topNumber) {
-        this.topNumber = topNumber;
     }
 
     public int getPageSize() {

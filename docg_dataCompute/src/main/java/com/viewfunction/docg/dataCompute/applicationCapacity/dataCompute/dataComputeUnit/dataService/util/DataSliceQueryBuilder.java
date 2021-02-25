@@ -24,6 +24,8 @@ public class DataSliceQueryBuilder {
         DSLContext create = DSL.using((Connection) null, SQLDialect.SQL99);
         Query query = null;
         if(queryParameters != null){
+            SelectConditionStep selectConditionStep = null;
+
             FilteringItem defaultFilteringItem = queryParameters.getDefaultFilteringItem();
             List<FilteringItem> andFilteringItemList = queryParameters.getAndFilteringItemsList();
             List<FilteringItem> orFilteringItemList = queryParameters.getOrFilteringItemsList();
@@ -53,18 +55,33 @@ public class DataSliceQueryBuilder {
                         }
                     }
                 }
-                //query = create.select(field("*")).from(table(dataSliceName)).where(defaultCondition).limit(800).offset(50);
-                query = create.select(field("*")).from(table(dataSliceName)).where(defaultCondition).limit(800).offset(50);
 
-                SelectConditionStep selectConditionStep = create.select(field("*")).from(table(dataSliceName)).where(defaultCondition);
+                if(queryParameters.isDistinctMode()){
+                    selectConditionStep = create.selectDistinct(field("*")).from(table(dataSliceName)).where(defaultCondition);
+                }else{
+                    selectConditionStep = create.select(field("*")).from(table(dataSliceName)).where(defaultCondition);
+                }
+
+                List<SortingItem> sortingItemList = queryParameters.getSortingItems();
+                if(sortingItemList != null && sortingItemList.size() > 0){
+                    for(SortingItem currentSortingItem:sortingItemList){
+                        String fieldName = currentSortingItem.getAttributeName();
+                        QueryParameters.SortingLogic sortingLogic = currentSortingItem.getSortingLogic();
+                        switch (sortingLogic){
+                            case ASC:
+                                selectConditionStep.orderBy(field(fieldName).asc());
+                                break;
+                            case DESC:
+                                selectConditionStep.orderBy(field(fieldName).desc());
+                        }
+                    }
+                }
             }
 
             int startPage = queryParameters.getStartPage();
             int endPage = queryParameters.getEndPage();
             int pageSize = queryParameters.getPageSize();
             int resultNumber = queryParameters.getResultNumber();
-            boolean isDistinctMode = queryParameters.isDistinctMode();
-            List<SortingItem> sortingItemList = queryParameters.getSortingItems();
 
             int defaultReturnRecordNumber = 10000000;
             int skipRecordNumber = 0;
@@ -115,10 +132,13 @@ public class DataSliceQueryBuilder {
                     limitRecordNumber = resultNumber;
                 }
             }
-
             if (limitRecordNumber == 0) {
                 limitRecordNumber = defaultReturnRecordNumber;
             }
+
+            selectConditionStep.limit(limitRecordNumber).offset(skipRecordNumber);
+
+            query = selectConditionStep.getQuery();
         }else{
             query = create.select(field("*")).from(table(dataSliceName));
         }

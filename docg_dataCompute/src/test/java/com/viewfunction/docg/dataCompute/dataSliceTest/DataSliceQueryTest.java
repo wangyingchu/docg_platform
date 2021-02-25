@@ -69,6 +69,15 @@ public class DataSliceQueryTest {
             FilteringItem orFilteringItem2 = new LessThanEqualFilteringItem("AirTemperature",66.65);
             queryParameters.addFilteringItem(orFilteringItem2, QueryParameters.FilteringLogic.OR);
 
+            //queryParameters.setResultNumber(50000);
+            queryParameters.setStartPage(40);
+            queryParameters.setEndPage(60);
+            queryParameters.setPageSize(10);
+            queryParameters.setDistinctMode(true);
+
+            queryParameters.addSortingAttribute("AirTemperature", QueryParameters.SortingLogic.ASC);
+            queryParameters.addSortingAttribute("REALMGLOBALUID", QueryParameters.SortingLogic.DESC);
+
             DataSliceQueryResult dataSliceQueryResult2 = targetDataSlice.queryDataRecords(queryParameters);
             System.out.println(dataSliceQueryResult2.getResultRecords().size());
 
