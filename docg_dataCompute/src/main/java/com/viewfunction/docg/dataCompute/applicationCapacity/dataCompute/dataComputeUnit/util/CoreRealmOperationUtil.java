@@ -5,11 +5,15 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryPara
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSliceMetaInfo;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlicePropertyType;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.result.DataSliceOperationResult;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.ComputeGridNotActiveException;
 import org.apache.ignite.Ignite;
@@ -17,6 +21,7 @@ import org.apache.ignite.Ignition;
 import org.apache.ignite.configuration.IgniteConfiguration;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -25,14 +30,96 @@ import java.util.concurrent.Executors;
 public class CoreRealmOperationUtil {
 
     public final static String RealmGlobalUID = "RealmGlobalUID";
+    public final static String defaultSliceGroup = "DefaultSliceGroup";
+    private final static int defaultResultNumber = 100000000;
 
-    public static void loadConceptionKindEntitiesToDataSlice(String conceptionKindName, List<String> attributeNamesList,QueryParameters queryParameters, String dataSliceName,boolean useConceptionEntityUIDAsPK,int degreeOfParallelism) {
+    public static DataSliceOperationResult syncConceptionKindToDataSlice(String conceptionKindName,String dataSliceName,String dataSliceGroup){
+
+        String dataSliceRealName = dataSliceName != null ? dataSliceName : conceptionKindName;
+        String dataSliceRealGroup = dataSliceGroup != null ? dataSliceGroup : defaultSliceGroup;
+
+        Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+        dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID,DataSlicePropertyType.STRING);
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
-
         ConceptionKind targetConceptionKind = coreRealm.getConceptionKind(conceptionKindName);
+        List<AttributeKind> attributeKindList = targetConceptionKind.getContainsSingleValueAttributeKinds();
+        List<String> conceptionKindPropertiesList = new ArrayList<>();
+        if(attributeKindList != null && attributeKindList.size() >0){
+            for(AttributeKind currentAttributeKind :attributeKindList){
+                String currentAttributeKindName = currentAttributeKind.getAttributeKindName();
+                AttributeDataType currentAttributeDataType = currentAttributeKind.getAttributeDataType();
+                switch (currentAttributeDataType){
+                    case DECIMAL:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.DECIMAL);
+                        break;
+                    case BOOLEAN:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.BOOLEAN);
+                        break;
+                    case STRING:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.STRING);
+                        break;
+                    case DOUBLE:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.DOUBLE);
+                        break;
+                    case BINARY:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.BINARY);
+                        break;
+                    case SHORT:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.SHORT);
+                        break;
+                    case FLOAT:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.FLOAT);
+                        break;
+                    case DATE:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.DATE);
+                        break;
+                    case LONG:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.LONG);
+                        break;
+                    case BYTE:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.BYTE);
+                        break;
+                    case INT:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.INT);
+                        break;
+                }
+                conceptionKindPropertiesList.add(currentAttributeKindName);
+            }
+        }
+
+        try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
+            DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceRealName);
+            if(targetDataSlice == null){
+                List<String> pkList = new ArrayList<>();
+                pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
+                dataServiceInvoker.createGridDataSlice(dataSliceRealName,dataSliceRealGroup,dataSlicePropertyMap,pkList);
+            }
+        } catch (ComputeGridNotActiveException e) {
+                e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if(conceptionKindPropertiesList.size() > 0){
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setResultNumber(defaultResultNumber);
+            return loadConceptionKindEntitiesToDataSlice(conceptionKindName,conceptionKindPropertiesList,queryParameters,dataSliceRealName,true,10);
+        }else{
+            return null;
+        }
+    }
+
+    public static DataSliceOperationResult loadConceptionKindEntitiesToDataSlice(String conceptionKindName, List<String> attributeNamesList,QueryParameters queryParameters, String dataSliceName,boolean useConceptionEntityUIDAsPK,int degreeOfParallelism) {
+        DataSliceOperationResult dataSliceOperationResult = new DataSliceOperationResult();
+
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        ConceptionKind targetConceptionKind = coreRealm.getConceptionKind(conceptionKindName);
+        int totalResultConceptionEntitiesCount = 0;
+
         try {
             ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributeResult =  targetConceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeNamesList,queryParameters);
             List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
+            totalResultConceptionEntitiesCount = conceptionEntityValueList.size();
 
             int singlePartitionSize = (conceptionEntityValueList.size()/degreeOfParallelism)+1;
             List<List<ConceptionEntityValue>> rsList = Lists.partition(conceptionEntityValueList, singlePartitionSize);
@@ -52,6 +139,22 @@ public class CoreRealmOperationUtil {
         } catch (CoreRealmServiceEntityExploreException e) {
             e.printStackTrace();
         }
+
+        try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
+            DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+            DataSliceMetaInfo dataSliceMetaInfo = targetDataSlice.getDataSliceMetaInfo();
+            int successDataCount = dataSliceMetaInfo.getPrimaryDataCount() + dataSliceMetaInfo.getBackupDataCount();
+            dataSliceOperationResult.setSuccessItemsCount(successDataCount);
+            dataSliceOperationResult.setFailItemsCount(totalResultConceptionEntitiesCount-successDataCount);
+        } catch (ComputeGridNotActiveException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        dataSliceOperationResult.setOperationSummary("Load ConceptionKind Entities To DataSlice Operation");
+        dataSliceOperationResult.finishOperation();
+        return dataSliceOperationResult;
     }
 
     private static class DataSliceInsertDataThread implements Runnable{
