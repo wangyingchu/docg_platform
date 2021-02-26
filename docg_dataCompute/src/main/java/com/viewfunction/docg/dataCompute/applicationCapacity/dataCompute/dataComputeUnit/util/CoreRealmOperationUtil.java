@@ -23,6 +23,7 @@ import org.apache.ignite.configuration.IgniteConfiguration;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class CoreRealmOperationUtil {
 
@@ -173,8 +174,8 @@ public class CoreRealmOperationUtil {
                 executor.execute(dataSliceInsertDataThread);
             }
             executor.shutdown();
-
-        } catch (CoreRealmServiceEntityExploreException e) {
+            executor.awaitTermination(Long.MAX_VALUE,TimeUnit.NANOSECONDS);
+        } catch (CoreRealmServiceEntityExploreException | InterruptedException e) {
             e.printStackTrace();
         }
 
