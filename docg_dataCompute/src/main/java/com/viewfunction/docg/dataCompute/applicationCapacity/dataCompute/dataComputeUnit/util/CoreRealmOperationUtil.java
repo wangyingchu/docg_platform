@@ -20,10 +20,7 @@ import org.apache.ignite.Ignite;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.configuration.IgniteConfiguration;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -43,6 +40,10 @@ public class CoreRealmOperationUtil {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         ConceptionKind targetConceptionKind = coreRealm.getConceptionKind(conceptionKindName);
         List<AttributeKind> attributeKindList = targetConceptionKind.getContainsSingleValueAttributeKinds();
+        if(attributeKindList.size() == 0){
+            return null;
+        }
+
         List<String> conceptionKindPropertiesList = new ArrayList<>();
         if(attributeKindList != null && attributeKindList.size() >0){
             for(AttributeKind currentAttributeKind :attributeKindList){
@@ -104,6 +105,43 @@ public class CoreRealmOperationUtil {
             QueryParameters queryParameters = new QueryParameters();
             queryParameters.setResultNumber(defaultResultNumber);
             return loadConceptionKindEntitiesToDataSlice(conceptionKindName,conceptionKindPropertiesList,queryParameters,dataSliceRealName,true,10);
+        }else{
+            return null;
+        }
+    }
+
+    public static DataSliceOperationResult syncConceptionKindToDataSlice(String conceptionKindName,String dataSliceName,String dataSliceGroup,Map<String, DataSlicePropertyType> dataSlicePropertyMap){
+
+        String dataSliceRealName = dataSliceName != null ? dataSliceName : conceptionKindName;
+        String dataSliceRealGroup = dataSliceGroup != null ? dataSliceGroup : defaultSliceGroup;
+        List<String> conceptionKindPropertiesList = new ArrayList<>();
+
+        if(dataSlicePropertyMap != null && dataSlicePropertyMap.size() >0){
+
+            Set<String> propertiesNameSet = dataSlicePropertyMap.keySet();
+            conceptionKindPropertiesList.addAll(propertiesNameSet);
+            dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID,DataSlicePropertyType.STRING);
+
+            try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
+                DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceRealName);
+                if(targetDataSlice == null){
+                    List<String> pkList = new ArrayList<>();
+                    pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
+                    dataServiceInvoker.createGridDataSlice(dataSliceRealName,dataSliceRealGroup,dataSlicePropertyMap,pkList);
+                }
+            } catch (ComputeGridNotActiveException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if(conceptionKindPropertiesList.size() > 0){
+                QueryParameters queryParameters = new QueryParameters();
+                queryParameters.setResultNumber(defaultResultNumber);
+                return loadConceptionKindEntitiesToDataSlice(conceptionKindName,conceptionKindPropertiesList,queryParameters,dataSliceRealName,true,10);
+            }else{
+                return null;
+            }
         }else{
             return null;
         }
