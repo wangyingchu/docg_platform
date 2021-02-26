@@ -10,7 +10,7 @@ import java.util.LinkedList;
 
 public interface TimeScaleEntity {
 
-    public enum TimeScaleLevel {SELF, CHILD,OFFSPRING}
+    public enum TimeScaleLevel {SELF,CHILD,OFFSPRING}
 
     public TimeFlow.TimeScaleGrade getTimeScaleGrade();
     public int getEntityValue();
