@@ -39,11 +39,8 @@ public class CoreRealmOperationUtilTest {
             targetAttributesViewKind.attachAttributeKind(attributeKind07.getAttributeKindUID());
         }
 
-        DataSliceOperationResult dataSliceOperationResult = CoreRealmOperationUtil.syncConceptionKindToDataSlice("Fire911Call",null,null);
+        //DataSliceOperationResult dataSliceOperationResult = CoreRealmOperationUtil.syncConceptionKindToDataSlice("Fire911Call",null,null);
 
-
-
-/*
         Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
         dataSlicePropertyMap.put("address",DataSlicePropertyType.STRING);
         dataSlicePropertyMap.put("type",DataSlicePropertyType.STRING);
@@ -53,8 +50,7 @@ public class CoreRealmOperationUtilTest {
         dataSlicePropertyMap.put("location",DataSlicePropertyType.STRING);
         dataSlicePropertyMap.put("incidentNumber",DataSlicePropertyType.STRING);
 
-        DataSliceOperationResult dataSliceOperationResult = CoreRealmOperationUtil.syncConceptionKindToDataSlice("Fire911Call",null,null);
-   */
+        DataSliceOperationResult dataSliceOperationResult = CoreRealmOperationUtil.syncConceptionKindToDataSlice("Fire911Call",null,null,dataSlicePropertyMap);
 
         System.out.println(dataSliceOperationResult.getStartTime());
         System.out.println(dataSliceOperationResult.getFinishTime());

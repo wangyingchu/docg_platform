@@ -105,7 +105,9 @@ public class CoreRealmOperationUtil {
         if(conceptionKindPropertiesList.size() > 0){
             QueryParameters queryParameters = new QueryParameters();
             queryParameters.setResultNumber(defaultResultNumber);
-            return loadConceptionKindEntitiesToDataSlice(conceptionKindName,conceptionKindPropertiesList,queryParameters,dataSliceRealName,true,10);
+            int processorNumber = Runtime.getRuntime().availableProcessors();
+            int degreeOfParallelism = (processorNumber/2) >=4 ? (processorNumber/2) : 4;
+            return loadConceptionKindEntitiesToDataSlice(conceptionKindName,conceptionKindPropertiesList,queryParameters,dataSliceRealName,true,degreeOfParallelism);
         }else{
             return null;
         }
@@ -139,7 +141,9 @@ public class CoreRealmOperationUtil {
             if(conceptionKindPropertiesList.size() > 0){
                 QueryParameters queryParameters = new QueryParameters();
                 queryParameters.setResultNumber(defaultResultNumber);
-                return loadConceptionKindEntitiesToDataSlice(conceptionKindName,conceptionKindPropertiesList,queryParameters,dataSliceRealName,true,10);
+                int processorNumber = Runtime.getRuntime().availableProcessors();
+                int degreeOfParallelism = (processorNumber/2) >=4 ? (processorNumber/2) : 4;
+                return loadConceptionKindEntitiesToDataSlice(conceptionKindName,conceptionKindPropertiesList,queryParameters,dataSliceRealName,true,degreeOfParallelism);
             }else{
                 return null;
             }
@@ -190,9 +194,8 @@ public class CoreRealmOperationUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        dataSliceOperationResult.setOperationSummary("Load ConceptionKind Entities To DataSlice Operation");
         dataSliceOperationResult.finishOperation();
+        dataSliceOperationResult.setOperationSummary("Load ConceptionKind Entities To DataSlice Operation");
         return dataSliceOperationResult;
     }
 
