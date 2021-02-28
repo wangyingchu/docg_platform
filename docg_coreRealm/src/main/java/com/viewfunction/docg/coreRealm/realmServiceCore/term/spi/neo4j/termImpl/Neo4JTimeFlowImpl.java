@@ -11,8 +11,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.Time
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleMoment;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JTimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Neo4JTimeFlowImpl implements TimeFlow {
+public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
 
     private static Logger logger = LoggerFactory.getLogger(Neo4JTimeFlowImpl.class);
     private String coreRealmName;

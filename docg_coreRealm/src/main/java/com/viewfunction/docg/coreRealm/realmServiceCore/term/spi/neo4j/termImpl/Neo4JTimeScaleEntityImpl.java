@@ -2,7 +2,6 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
@@ -20,8 +19,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.structure.spi.common.str
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEntity;
-
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEvent;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JTimeScaleEntity;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
@@ -34,7 +33,7 @@ import java.util.List;
 
 import static com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant.TimeScaleEventClass;
 
-public class Neo4JTimeScaleEntityImpl implements TimeScaleEntity {
+public class Neo4JTimeScaleEntityImpl implements Neo4JTimeScaleEntity {
 
     private static Logger logger = LoggerFactory.getLogger(Neo4JTimeScaleEntityImpl.class);
     private String coreRealmName;

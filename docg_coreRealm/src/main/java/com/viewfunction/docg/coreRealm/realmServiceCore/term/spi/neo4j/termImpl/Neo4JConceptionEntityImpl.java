@@ -7,12 +7,12 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featur
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf.Neo4JTimeScaleFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JConceptionEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Neo4JConceptionEntityImpl extends Neo4JAttributesMeasurableImpl implements ConceptionEntity, Neo4JEntityRelationable,
+public class Neo4JConceptionEntityImpl extends Neo4JAttributesMeasurableImpl implements Neo4JConceptionEntity, Neo4JEntityRelationable,
         Neo4JClassificationAttachable, Neo4JMultiConceptionKindsSupportable, Neo4JTimeScaleFeatureSupportable {
 
     private String conceptionEntityUID;
