@@ -374,6 +374,38 @@ public interface CoreRealm {
     public List<TimeFlow> getTimeFlows();
 
     /**
+     * 获取默认地理空间区域,如默认地理空间区域不存在则自动创建
+     *
+     * @return 时间流对象
+     */
+    public GeospatialRegion getOrCreateGeospatialRegion();
+
+    /**
+     * 获取用户自定义地理空间区域,如自定义地理空间区域不存在则自动创建
+     *
+     * @param geospatialRegionName String 用户自定义地理空间区域名称
+     *
+     * @return 时间流对象
+     */
+    public GeospatialRegion getOrCreateGeospatialRegion(String geospatialRegionName);
+
+    /**
+     * 删除用户自定义地理空间区域
+     *
+     * @param geospatialRegionName String 用户自定义地理空间区域名称
+     *
+     * @return 如果操作成功返回 true
+     */
+    public boolean removeGeospatialRegion(String geospatialRegionName) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取领域所有地理空间区域
+     *
+     * @return 地理空间区域对象列表
+     */
+    public List<GeospatialRegion> getGeospatialRegions();
+
+    /**
      * 开启全局会话，此操作会创建一个持久化的后端数据库连接，执行该操作后由当前 CoreRealm 所创建的所有对象（以及这些对象创建的后续对象）将继承性的共享该持久化后端数据库连接。
      */
     public void openGlobalSession();

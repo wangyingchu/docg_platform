@@ -197,6 +197,26 @@ public class OrientDBCoreRealmImpl implements CoreRealm {
     }
 
     @Override
+    public GeospatialRegion getOrCreateGeospatialRegion() {
+        return null;
+    }
+
+    @Override
+    public GeospatialRegion getOrCreateGeospatialRegion(String geospatialRegionName) {
+        return null;
+    }
+
+    @Override
+    public boolean removeGeospatialRegion(String geospatialRegionName) throws CoreRealmServiceRuntimeException {
+        return false;
+    }
+
+    @Override
+    public List<GeospatialRegion> getGeospatialRegions() {
+        return null;
+    }
+
+    @Override
     public void openGlobalSession() {
 
     }

@@ -6,11 +6,10 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunct
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.TimeScaleOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachLinkLogic;
@@ -19,11 +18,9 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JCoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
-
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -959,6 +956,26 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         } catch (CoreRealmServiceEntityExploreException e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    @Override
+    public GeospatialRegion getOrCreateGeospatialRegion() {
+        return null;
+    }
+
+    @Override
+    public GeospatialRegion getOrCreateGeospatialRegion(String geospatialRegionName) {
+        return null;
+    }
+
+    @Override
+    public boolean removeGeospatialRegion(String geospatialRegionName) throws CoreRealmServiceRuntimeException {
+        return false;
+    }
+
+    @Override
+    public List<GeospatialRegion> getGeospatialRegions() {
         return null;
     }
 
