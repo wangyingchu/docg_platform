@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 
 public class Neo4JTimeScaleEventImpl extends Neo4JAttributesMeasurableImpl implements Neo4JClassificationAttachable, Neo4JTimeScaleEvent {
 
-    private static Logger logger = LoggerFactory.getLogger(Neo4JAttributesMeasurableImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(Neo4JTimeScaleEventImpl.class);
 
     private String timeFlowName;
     private String eventComment;
