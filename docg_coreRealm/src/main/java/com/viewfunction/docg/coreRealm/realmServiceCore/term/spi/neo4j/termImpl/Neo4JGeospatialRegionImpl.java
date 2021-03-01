@@ -1,14 +1,31 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JGeospatialRegion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
+
+    private static Logger logger = LoggerFactory.getLogger(Neo4JGeospatialRegionImpl.class);
+    private String coreRealmName;
+    private String geospatialRegionName;
+    private String geospatialRegionUID;
+
+    public Neo4JGeospatialRegionImpl(String coreRealmName, String geospatialRegionName,String geospatialRegionUID){
+        this.coreRealmName = coreRealmName;
+        this.geospatialRegionName = geospatialRegionName;
+        this.geospatialRegionUID = geospatialRegionUID;
+        this.graphOperationExecutorHelper = new GraphOperationExecutorHelper();
+    }
+
     @Override
     public String getGeospatialRegionName() {
-        return null;
+        return this.geospatialRegionName;
     }
 
     @Override
@@ -104,5 +121,12 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
     @Override
     public GeospatialScaleEntity getVillageEntity(String divisionCode) {
         return null;
+    }
+
+    //internal graphOperationExecutor management logic
+    private GraphOperationExecutorHelper graphOperationExecutorHelper;
+
+    public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
+        this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }
 }

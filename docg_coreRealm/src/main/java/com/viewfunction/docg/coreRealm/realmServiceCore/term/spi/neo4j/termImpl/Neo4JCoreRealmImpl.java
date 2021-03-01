@@ -893,7 +893,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         try{
             String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.TimeFlowClass,RealmConstant._NameProperty,RealmConstant._defaultTimeFlowName,1);
             GetSingleTimeFlowTransformer getSingleTimeFlowTransformer =
-                    new GetSingleTimeFlowTransformer(RealmConstant.TimeFlowClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    new GetSingleTimeFlowTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object getDefaultTimeFlowRes = workingGraphOperationExecutor.executeRead(getSingleTimeFlowTransformer,queryCql);
             if(getDefaultTimeFlowRes == null){
                 Map<String,Object> propertiesMap = new HashMap<>();
@@ -916,7 +916,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         try{
             String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.TimeFlowClass,RealmConstant._NameProperty,timeFlowName,1);
             GetSingleTimeFlowTransformer getSingleTimeFlowTransformer =
-                    new GetSingleTimeFlowTransformer(RealmConstant.TimeFlowClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    new GetSingleTimeFlowTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object getDefaultTimeFlowRes = workingGraphOperationExecutor.executeRead(getSingleTimeFlowTransformer,queryCql);
             if(getDefaultTimeFlowRes == null){
                 Map<String,Object> propertiesMap = new HashMap<>();
@@ -961,12 +961,48 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
     @Override
     public GeospatialRegion getOrCreateGeospatialRegion() {
-        return null;
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialRegionClass,RealmConstant._NameProperty,RealmConstant._defaultGeospatialRegionName,1);
+            GetSingleGeospatialRegionTransformer getSingleGeospatialRegionTransformer =
+                    new GetSingleGeospatialRegionTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object getDefaultGeospatialRegionRes = workingGraphOperationExecutor.executeRead(getSingleGeospatialRegionTransformer,queryCql);
+            if(getDefaultGeospatialRegionRes == null){
+                Map<String,Object> propertiesMap = new HashMap<>();
+                propertiesMap.put(RealmConstant._NameProperty,RealmConstant._defaultGeospatialRegionName);
+                CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
+                String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.GeospatialRegionClass},propertiesMap);
+                Object createGeospatialRegionRes = workingGraphOperationExecutor.executeWrite(getSingleGeospatialRegionTransformer,createCql);
+                GeospatialRegion resultNeo4JGeospatialRegionImpl = createGeospatialRegionRes != null ? (Neo4JGeospatialRegionImpl)createGeospatialRegionRes : null;
+                return resultNeo4JGeospatialRegionImpl;
+            }
+            return (GeospatialRegion)getDefaultGeospatialRegionRes;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
     public GeospatialRegion getOrCreateGeospatialRegion(String geospatialRegionName) {
-        return null;
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialRegionClass,RealmConstant._NameProperty,geospatialRegionName,1);
+            GetSingleGeospatialRegionTransformer getSingleGeospatialRegionTransformer =
+                    new GetSingleGeospatialRegionTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object getGeospatialRegionRes = workingGraphOperationExecutor.executeRead(getSingleGeospatialRegionTransformer,queryCql);
+            if(getGeospatialRegionRes == null){
+                Map<String,Object> propertiesMap = new HashMap<>();
+                propertiesMap.put(RealmConstant._NameProperty,geospatialRegionName);
+                CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
+                String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.GeospatialRegionClass},propertiesMap);
+                Object createGeospatialRegionRes = workingGraphOperationExecutor.executeWrite(getSingleGeospatialRegionTransformer,createCql);
+                GeospatialRegion resultTimeFlow = createGeospatialRegionRes != null ? (Neo4JGeospatialRegionImpl)createGeospatialRegionRes : null;
+                return resultTimeFlow;
+            }
+            return (GeospatialRegion)getGeospatialRegionRes;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
@@ -976,6 +1012,22 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
     @Override
     public List<GeospatialRegion> getGeospatialRegions() {
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(1000000);
+        try {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialRegionClass,queryParameters,null);
+                GetListGeospatialRegionTransformer getListGeospatialRegionTransformer =
+                        new GetListGeospatialRegionTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object geospatialRegionsRes = workingGraphOperationExecutor.executeRead(getListGeospatialRegionTransformer,queryCql);
+                return geospatialRegionsRes != null ? (List<GeospatialRegion>) geospatialRegionsRes : null;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
