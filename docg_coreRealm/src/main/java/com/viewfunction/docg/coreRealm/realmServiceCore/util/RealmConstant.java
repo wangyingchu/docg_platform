@@ -31,6 +31,21 @@ public interface RealmConstant {
     public final String TimeScale_TimeReferToRelationClass="DOCG_TS_TimeReferTo";
     public final String TimeScale_AttachToRelationClass="DOCG_AttachToTimeScale";
 
+    public final String GeospatialRegionClass="DOCG_GeospatialRegion";
+    public final String _defaultGeospatialRegionName = "DefaultGeospatialRegion";
+    public final String GeospatialScaleEntityClass="DOCG_GeospatialScaleEntity";
+    public final String GeospatialScaleContinentEntityClass="DOCG_GS_Continent";
+    public final String GeospatialScaleCountryRegionEntityClass="DOCG_GS_CountryRegion";
+    public final String GeospatialScaleProvinceEntityClass="DOCG_GS_Province";
+    public final String GeospatialScalePrefectureEntityClass="DOCG_GS_Prefecture";
+    public final String GeospatialScaleCountyEntityClass="DOCG_GS_County";
+    public final String GeospatialScaleTownshipEntityClass="DOCG_GS_Township";
+    public final String GeospatialScaleVillageEntityClass="DOCG_GS_Village";
+    public final String GeospatialScale_ContainsRelationClass="DOCG_GS_Contains";
+    public final String GeospatialScaleEventClass="DOCG_GeospatialScaleEvent";
+    public final String GeospatialScale_GeospatialReferToRelationClass="DOCG_GS_GeospatialReferTo";
+    public final String GeospatialScale_AttachToRelationClass="DOCG_AttachToGeospatialScale";
+
     public final String _NameProperty = "name";
     public final String _DescProperty = "description";
     public final String _createDateProperty = "createDate";
@@ -56,4 +71,8 @@ public interface RealmConstant {
     public final String _TimeScaleEventReferTime="DOCG_TimeScaleEventReferTime";
     public final String _TimeScaleEventScaleGrade="DOCG_TimeScaleEventScaleGrade";
     public final String _TimeScaleEventTimeFlow="DOCG_TimeScaleEventTimeFlow";
+
+    public final String _GeospatialScaleEventComment="DOCG_GeospatialScaleEventComment";
+    public final String _GeospatialScaleEventScaleGrade="DOCG_GeospatialScaleEventScaleGrade";
+    public final String _GeospatialScaleEventGeospatialRegion="DOCG_GeospatialScaleEventGeospatialRegion";
 }
