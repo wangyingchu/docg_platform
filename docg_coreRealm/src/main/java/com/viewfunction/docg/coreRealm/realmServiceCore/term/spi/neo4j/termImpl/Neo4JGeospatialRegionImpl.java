@@ -29,6 +29,11 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
     }
 
     @Override
+    public boolean createGeospatialScaleEntities() {
+        return false;
+    }
+
+    @Override
     public List<GeospatialScaleEntity> listContinentEntities() {
         return null;
     }

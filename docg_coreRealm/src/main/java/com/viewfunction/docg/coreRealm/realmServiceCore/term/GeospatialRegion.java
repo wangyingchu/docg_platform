@@ -14,6 +14,8 @@ public interface GeospatialRegion {
 
     public String getGeospatialRegionName();
 
+    public boolean createGeospatialScaleEntities();
+
     public List<GeospatialScaleEntity> listContinentEntities();
     public GeospatialScaleEntity getContinentEntity(String continentName);
 

@@ -1,0 +1,7 @@
+亚洲|亚细亚洲|Asia
+欧洲|欧罗巴洲|Europe
+北美洲|北亚美利加洲|North America
+南美洲|南亚美利加洲|South America
+非洲|阿非利加州|Africa
+大洋洲|-|Oceania
+南极洲|-|Antarctica
