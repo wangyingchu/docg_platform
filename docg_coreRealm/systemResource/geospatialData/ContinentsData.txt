@@ -1,7 +1,8 @@
-亚洲|亚细亚洲|Asia
-欧洲|欧罗巴洲|Europe
-北美洲|北亚美利加洲|North America
-南美洲|南亚美利加洲|South America
-非洲|阿非利加州|Africa
-大洋洲|-|Oceania
-南极洲|-|Antarctica
+# ISO Code	英文名称	中文名称 中文全名称
+AF	Africa	非洲	阿非利加州
+AS	Asia	亚洲	亚细亚洲
+EU	Europe	欧洲	欧罗巴洲
+NA	North America	北美洲	北亚美利加洲
+OC	Oceania	大洋洲	-
+SA	South America	南美洲	南亚美利加洲
+AN	Antarctica	南极洲	-
