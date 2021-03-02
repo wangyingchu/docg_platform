@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class PropertiesHandler {
+    public static final String SYSTEM_RESOURCE_ROOT = "systemResource";
 
     private static Properties _properties;
 

@@ -13,8 +13,7 @@ public interface GeospatialScaleEntity {
     public enum GeospatialScaleLevel {SELF,CHILD,OFFSPRING}
 
     public GeospatialRegion.GeospatialScaleGrade getGeospatialScaleGrade();
-
-    //get value methods......
+    public String getEntityCode();
 
     public GeospatialScaleEntity getParentEntity();
     public List<GeospatialScaleEntity> getFellowEntities();

@@ -19,6 +19,11 @@ public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntit
     }
 
     @Override
+    public String getEntityCode() {
+        return null;
+    }
+
+    @Override
     public GeospatialScaleEntity getParentEntity() {
         return null;
     }
