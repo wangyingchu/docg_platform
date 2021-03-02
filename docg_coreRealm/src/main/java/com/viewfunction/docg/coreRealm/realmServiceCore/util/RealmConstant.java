@@ -41,7 +41,7 @@ public interface RealmConstant {
     public final String GeospatialScaleCountyEntityClass="DOCG_GS_County";
     public final String GeospatialScaleTownshipEntityClass="DOCG_GS_Township";
     public final String GeospatialScaleVillageEntityClass="DOCG_GS_Village";
-    public final String GeospatialScale_ContainsRelationClass="DOCG_GS_Contains";
+    public final String GeospatialScale_SpatialContainsRelationClass="DOCG_GS_SpatialContains";
     public final String GeospatialScaleEventClass="DOCG_GeospatialScaleEvent";
     public final String GeospatialScale_GeospatialReferToRelationClass="DOCG_GS_GeospatialReferTo";
     public final String GeospatialScale_AttachToRelationClass="DOCG_AttachToGeospatialScale";
