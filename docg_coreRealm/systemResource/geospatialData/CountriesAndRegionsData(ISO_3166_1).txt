@@ -245,3 +245,4 @@ MU|MUS 	|480 	|ISO 3166-2:MU 	|Mauritius|毛里求斯|Africa|路易港|PortLouis
 CI|CIV 	|384 	|ISO 3166-2:CI 	|Ivory Coast|科特迪瓦|Africa|亚穆苏克罗|Yamoussoukro
 KE|KEN 	|404 	|ISO 3166-2:KE 	|Kenya|肯尼亚|Africa|内罗毕|Nairobi
 MN|MNG 	|496 	|ISO 3166-2:MN 	|Mongolia|蒙古|Asia|乌兰巴托|Ulaanbaatar
+CW|CUW 	|531 	|ISO 3166-2:CW 	|Curacao|库拉索|South America|威廉斯塔德|Willemstad

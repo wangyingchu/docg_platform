@@ -133,12 +133,13 @@ public class GeospatialScaleOperationUtil {
                     String _EnglishName = countriesAndRegionInfoValueArray[4].trim();
                     String _ChineseName = countriesAndRegionInfoValueArray[5].trim();
 
-                    propertiesMap.put("twoBitCode",_2bitCode);
-                    propertiesMap.put("threeBitCode",_3bitCode);
-                    propertiesMap.put("number",_number);
-                    propertiesMap.put("ISO3122_2Code",_ISO3122_2Code);
+                    propertiesMap.put("Alpha_2Code",_2bitCode);
+                    propertiesMap.put("Alpha_3Code",_3bitCode);
+                    propertiesMap.put("NumericCode",_number);
+                    propertiesMap.put("ISO3166_2Code",_ISO3122_2Code);
                     propertiesMap.put("EnglishName",_EnglishName);
                     propertiesMap.put("ChineseName",_ChineseName);
+                    propertiesMap.put("sourceStandard","ISO-3166-1");
 
                     if(!"-".equals(countriesAndRegionInfoValueArray[6].trim())){
                         String _belongedContinent = countriesAndRegionInfoValueArray[6].trim();
