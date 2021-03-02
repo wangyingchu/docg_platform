@@ -32,7 +32,7 @@ public class PropertiesHandler {
 
     public static String getPropertyValue(String propertyName) {
         if(_properties == null){
-            //String configPath= RuntimeEnvironmentHandler.getApplicationRootPath() + "InfoDiscoverEngineCfg.properties";
+            //String configPath= RuntimeEnvironmentHandler.getApplicationRootPath() + "CoreRealmCfg.properties";
             String configPath = "CoreRealmCfg.properties";
             _properties = new Properties();
             try {
