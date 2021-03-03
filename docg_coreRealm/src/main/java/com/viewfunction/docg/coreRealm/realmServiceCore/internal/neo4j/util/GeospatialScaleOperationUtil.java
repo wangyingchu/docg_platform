@@ -25,6 +25,9 @@ public class GeospatialScaleOperationUtil {
 
     private static Logger logger = LoggerFactory.getLogger(GeospatialScaleOperationUtil.class);
     private static final String GEOSPATIAL_DATA_FOLDER = "geospatialData";
+    public static final String GeospatialCodeProperty = "DOCG_GeospatialCode";
+    public static final String GeospatialRegionProperty = "DOCG_GeospatialRegion";
+    public static final String GeospatialScaleGradeProperty = "DOCG_GeospatialScaleGrade";
 
     public static void generateGeospatialScaleEntities(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
 
@@ -68,9 +71,9 @@ public class GeospatialScaleOperationUtil {
                     propertiesMap.put("ChineseName",_ChnName);
                     propertiesMap.put("EnglishName",_EngName);
                     propertiesMap.put("ChineseFullName",_ChnFullName);
-                    propertiesMap.put("code",_EngName);
-                    propertiesMap.put("geospatialRegion",geospatialRegionName);
-                    propertiesMap.put("geospatialScaleGrade", ""+GeospatialRegion.GeospatialScaleGrade.CONTINENT);
+                    propertiesMap.put(GeospatialCodeProperty,_EngName);
+                    propertiesMap.put(GeospatialRegionProperty,geospatialRegionName);
+                    propertiesMap.put(GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.CONTINENT);
 
                     String createGeospatialScaleEntitiesCql = CypherBuilder.createLabeledNodeWithProperties(conceptionTypeNameArray,propertiesMap);
                     Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,createGeospatialScaleEntitiesCql);
@@ -98,7 +101,7 @@ public class GeospatialScaleOperationUtil {
 
     private static void generateGeospatialScaleEntities_CountryRegion(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
         Map<String,String> ContinentCode_EntityUIDMap = new HashMap<>();
-        String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialScaleContinentEntityClass,"geospatialRegion",geospatialRegionName,100000);
+        String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialScaleContinentEntityClass,GeospatialRegionProperty,geospatialRegionName,100000);
 
         GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(RealmConstant.GeospatialScaleContinentEntityClass,workingGraphOperationExecutor);
         Object resultEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
@@ -106,7 +109,7 @@ public class GeospatialScaleOperationUtil {
             List<ConceptionEntity> resultContinentList =  (List<ConceptionEntity>)resultEntityList;
             for(ConceptionEntity currentConceptionEntity : resultContinentList){
                 ContinentCode_EntityUIDMap.put(
-                    currentConceptionEntity.getAttribute("code").getAttributeValue().toString(),
+                    currentConceptionEntity.getAttribute(GeospatialCodeProperty).getAttributeValue().toString(),
                         currentConceptionEntity.getConceptionEntityUID());
             }
         }
@@ -139,7 +142,8 @@ public class GeospatialScaleOperationUtil {
                     propertiesMap.put("ISO3166_2Code",_ISO3122_2Code);
                     propertiesMap.put("EnglishName",_EnglishName);
                     propertiesMap.put("ChineseName",_ChineseName);
-                    propertiesMap.put("sourceStandard","ISO-3166-1");
+                    propertiesMap.put("Standard","ISO 3166-1:2013");
+                    propertiesMap.put("StandardStatus","Officially assigned");
 
                     if(!"-".equals(countriesAndRegionInfoValueArray[6].trim())){
                         String _belongedContinent = countriesAndRegionInfoValueArray[6].trim();
@@ -155,9 +159,9 @@ public class GeospatialScaleOperationUtil {
                         propertiesMap.put("capitalEnglishName",_capitalEnglishName);
                     }
 
-                    propertiesMap.put("code",_2bitCode);
-                    propertiesMap.put("geospatialRegion",geospatialRegionName);
-                    propertiesMap.put("geospatialScaleGrade", ""+GeospatialRegion.GeospatialScaleGrade.COUNTRY_REGION);
+                    propertiesMap.put(GeospatialCodeProperty,_2bitCode);
+                    propertiesMap.put(GeospatialRegionProperty,geospatialRegionName);
+                    propertiesMap.put(GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.COUNTRY_REGION);
 
                     GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
                             new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleCountryRegionEntityClass,workingGraphOperationExecutor);
@@ -187,7 +191,7 @@ public class GeospatialScaleOperationUtil {
 
     public static void main(String[] args){
         GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
-        //generateGeospatialScaleEntities_Continent(graphOperationExecutor,"DefaultGeospatialRegion");
+        generateGeospatialScaleEntities_Continent(graphOperationExecutor,"DefaultGeospatialRegion");
         generateGeospatialScaleEntities_CountryRegion(graphOperationExecutor,"DefaultGeospatialRegion");
         graphOperationExecutor.close();
     }
