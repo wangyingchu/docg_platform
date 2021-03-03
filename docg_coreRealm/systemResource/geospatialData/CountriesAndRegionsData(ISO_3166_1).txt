@@ -246,3 +246,4 @@ CI|CIV 	|384 	|ISO 3166-2:CI 	|Ivory Coast|科特迪瓦|Africa|亚穆苏克罗|Y
 KE|KEN 	|404 	|ISO 3166-2:KE 	|Kenya|肯尼亚|Africa|内罗毕|Nairobi
 MN|MNG 	|496 	|ISO 3166-2:MN 	|Mongolia|蒙古|Asia|乌兰巴托|Ulaanbaatar
 CW|CUW 	|531 	|ISO 3166-2:CW 	|Curacao|库拉索|South America|威廉斯塔德|Willemstad
+SX|SXM 	|534 	|ISO 3166-2:SX 	|Sint Maarten (Dutch part)|荷兰属圣马丁|North America|菲利浦斯堡|Philipsburg
