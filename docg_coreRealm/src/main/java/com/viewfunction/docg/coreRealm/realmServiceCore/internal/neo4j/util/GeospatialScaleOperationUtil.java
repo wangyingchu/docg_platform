@@ -30,7 +30,8 @@ public class GeospatialScaleOperationUtil {
     public static final String GeospatialScaleGradeProperty = "DOCG_GeospatialScaleGrade";
 
     public static void generateGeospatialScaleEntities(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
-
+        generateGeospatialScaleEntities_Continent(workingGraphOperationExecutor,geospatialRegionName);
+        generateGeospatialScaleEntities_CountryRegion(workingGraphOperationExecutor,geospatialRegionName);
     }
 
     private static void generateGeospatialScaleEntities_Continent(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
@@ -188,6 +189,22 @@ public class GeospatialScaleOperationUtil {
             }
         }
     }
+
+    private static void generateGeospatialScaleEntities_ProvinceOfChina(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
+
+
+
+
+
+
+    }
+
+
+
+
+
+
+
 
     public static void main(String[] args){
         GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();

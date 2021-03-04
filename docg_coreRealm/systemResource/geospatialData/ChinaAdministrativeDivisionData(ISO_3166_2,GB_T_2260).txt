@@ -1,0 +1,35 @@
+#DivisionCategory_EN|DivisionCategory_CH|3166_2Code|DivisionName_EN|ChinaDivisionCode|DivisionName_CH
+province|省|CN-AH|Anhui Sheng|340000|安徽省
+special administrative region|特别行政区|CN-MO|Aomen Tebiexingzhengqu|820000|澳门特别行政区
+municipality|直辖市|CN-BJ|Beijing Shi|110000|北京市
+municipality|直辖市|CN-CQ|Chongqing Shi|500000|重庆市
+province|省|CN-FJ|Fujian Sheng|350000|福建省
+province|省|CN-GS|Gansu Sheng|620000|甘肃省
+province|省|CN-GD|Guangdong Sheng|440000|广东省
+autonomous region|自治区|CN-GX|Guangxi Zhuangzu Zizhiqu|450000|广西壮族自治区
+province|省|CN-GZ|Guizhou Sheng|520000|贵州省
+province|省|CN-HI|Hainan Sheng|460000|海南省
+province|省|CN-HE|Hebei Sheng|130000|河北省
+province|省|CN-HL|Heilongjiang Sheng|230000|黑龙江省
+province|省|CN-HA|Henan Sheng|410000|河南省
+province|省|CN-HB|Hubei Sheng|130000|河北省
+province|省|CN-HN|Hunan Sheng|430000|湖南省
+province|省|CN-JS|Jiangsu Sheng|320000|江苏省
+province|省|CN-JX|Jiangxi Sheng|360000|江西省
+province|省|CN-JL|Jilin Sheng|220000|吉林省
+province|省|CN-LN|Liaoning Sheng|210000|辽宁省
+autonomous region|自治区|CN-NM|Nei Mongol Zizhiqu|150000|内蒙古自治区
+autonomous region|自治区|CN-NX|Ningxia Huizi Zizhiqu|640000|宁夏回族自治区
+province|省|CN-QH|Qinghai Sheng|630000|青海省
+province|省|CN-SN|Shaanxi Sheng|610000|陕西省
+province|省|CN-SD|Shandong Sheng|370000|山东省
+municipality|直辖市|CN-SH|Shanghai Shi|310000|上海市
+province|省|CN-SX|Shanxi Sheng|140000|山西省
+province|省|CN-SC|Sichuan Sheng|510000|四川省
+province|省|CN-TW|Taiwan Sheng|710000|台湾省
+municipality|直辖市|CN-TJ|Tianjin Shi|120000|天津市
+special administrative region|特别行政区|CN-HK|Xianggang Tebiexingzhengqu|810000|香港特别行政区
+autonomous region|自治区|CN-XJ|Xinjiang Uygur Zizhiqu|650000|新疆维吾尔自治区
+autonomous region|自治区|CN-XZ|Xizang Zizhiqu|540000|西藏自治区
+province|省|CN-YN|Yunnan Sheng|530000|云南省
+province|省|CN-ZJ|Zhejiang Sheng|330000|浙江省
