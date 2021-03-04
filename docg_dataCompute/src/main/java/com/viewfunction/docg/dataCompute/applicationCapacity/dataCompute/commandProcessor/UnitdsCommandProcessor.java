@@ -1,17 +1,20 @@
 package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.commandProcessor;
 
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.UnitOperationResult;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.UnitIgniteOperationUtil;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.UnitOperationResult;
 import com.viewfunction.docg.dataCompute.consoleApplication.feature.BaseCommandProcessor;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.cache.CacheMetrics;
 import org.apache.ignite.cache.CacheMode;
 import org.apache.ignite.cache.CachePeekMode;
+import org.apache.ignite.cache.QueryEntity;
 import org.apache.ignite.configuration.CacheConfiguration;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Set;
 
 public class UnitdsCommandProcessor implements BaseCommandProcessor {
 
@@ -51,13 +54,17 @@ public class UnitdsCommandProcessor implements BaseCommandProcessor {
                 case LOCAL:dataStoreMode="Unit Local";break;
                 case REPLICATED:dataStoreMode="Grid PerUnit";break;
             }
+
+            Collection<QueryEntity> entities = currentCacheConfig.getQueryEntities();
+            LinkedHashMap<String,String> propertiesMap = null;
+            if(entities != null && entities.size()>0){
+                QueryEntity mainQueryEntity = entities.iterator().next();
+                propertiesMap = mainQueryEntity.getFields();
+            }
+
             lsDataStoreMessageStringBuffer.append("-------------------------------------------------------------");
             lsDataStoreMessageStringBuffer.append("\n\r");
             lsDataStoreMessageStringBuffer.append("Data Slice Name:          " + currentCacheMetrics.name());
-            lsDataStoreMessageStringBuffer.append("\n\r");
-            lsDataStoreMessageStringBuffer.append("Data Key Type:            " + currentCacheConfig.getKeyType().getName());
-            lsDataStoreMessageStringBuffer.append("\n\r");
-            lsDataStoreMessageStringBuffer.append("Data Value Type:          " + currentCacheConfig.getValueType().getName());
             lsDataStoreMessageStringBuffer.append("\n\r");
             lsDataStoreMessageStringBuffer.append("Local Data Primary Count: " + currentCache.localSize(CachePeekMode.PRIMARY));
             lsDataStoreMessageStringBuffer.append("\n\r");
@@ -75,7 +82,6 @@ public class UnitdsCommandProcessor implements BaseCommandProcessor {
             lsDataStoreMessageStringBuffer.append(currentCache.size(CachePeekMode.NEAR)+"\n\r");
             lsDataStoreMessageStringBuffer.append(currentCache.size(CachePeekMode.OFFHEAP)+"\n\r");
             lsDataStoreMessageStringBuffer.append(currentCache.size(CachePeekMode.ONHEAP)+"\n\r");
-            lsDataStoreMessageStringBuffer.append(currentCache.size(CachePeekMode.SWAP)+"\n\r");
             */
             lsDataStoreMessageStringBuffer.append("Data Slice Mode:          " + dataStoreMode);
             lsDataStoreMessageStringBuffer.append("\n\r");
@@ -89,6 +95,20 @@ public class UnitdsCommandProcessor implements BaseCommandProcessor {
             lsDataStoreMessageStringBuffer.append("\n\r");
             lsDataStoreMessageStringBuffer.append("Slice Group:              " +  currentCacheConfig.getSqlSchema());
             lsDataStoreMessageStringBuffer.append("\n\r");
+
+            if(propertiesMap != null){
+                lsDataStoreMessageStringBuffer.append("Slice Properties:");
+                lsDataStoreMessageStringBuffer.append("\n\r");
+                lsDataStoreMessageStringBuffer.append("\n\r");
+                Set<String> propertyNameSet = propertiesMap.keySet();
+
+                for(String currentPropertyName : propertyNameSet){
+                    String propertyType = propertiesMap.get(currentPropertyName);
+                    lsDataStoreMessageStringBuffer.append("  "+currentPropertyName+" -> "+propertyType);
+                    lsDataStoreMessageStringBuffer.append("\n\r");
+                }
+                lsDataStoreMessageStringBuffer.append("\n\r");
+            }
         }
         lsDataStoreMessageStringBuffer.append("-------------------------------------------------------------");
         lsDataStoreMessageStringBuffer.append("\n\r");
