@@ -1,4 +1,4 @@
-#DivisionCategory_EN|DivisionCategory_CH|3166_2Code|DivisionName_EN|ChinaDivisionCode|DivisionName_CH
+# DivisionCategory_EN|DivisionCategory_CH|3166_2Code|DivisionName_EN|ChinaDivisionCode|DivisionName_CH
 province|省|CN-AH|Anhui Sheng|340000|安徽省
 special administrative region|特别行政区|CN-MO|Aomen Tebiexingzhengqu|820000|澳门特别行政区
 municipality|直辖市|CN-BJ|Beijing Shi|110000|北京市
