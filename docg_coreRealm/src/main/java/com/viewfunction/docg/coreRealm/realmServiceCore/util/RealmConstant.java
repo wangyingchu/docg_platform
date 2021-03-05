@@ -75,4 +75,12 @@ public interface RealmConstant {
     public final String _GeospatialScaleEventComment="DOCG_GeospatialScaleEventComment";
     public final String _GeospatialScaleEventScaleGrade="DOCG_GeospatialScaleEventScaleGrade";
     public final String _GeospatialScaleEventGeospatialRegion="DOCG_GeospatialScaleEventGeospatialRegion";
+
+    public final String _GeospatialGeometryType="DOCG_GS_GeometryType";
+    public final String _GeospatialGlobalCRSAID="DOCG_GS_GlobalCRSAID";
+    public final String _GeospatialCountryCRSAID="DOCG_GS_CountryCRSAID";
+    public final String _GeospatialLocalCRSAID="DOCG_GS_LocalCRSAID";
+    public final String _GeospatialGLGeometryContent="DOCG_GS_GLGeometryContent";
+    public final String _GeospatialCLGeometryContent="DOCG_GS_CLGeometryContent";
+    public final String _GeospatialLLGeometryContent="DOCG_GS_LLGeometryContent";
 }
