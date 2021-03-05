@@ -376,7 +376,7 @@ public interface CoreRealm {
     /**
      * 获取默认地理空间区域,如默认地理空间区域不存在则自动创建
      *
-     * @return 时间流对象
+     * @return 地理空间区域对象
      */
     public GeospatialRegion getOrCreateGeospatialRegion();
 
@@ -385,7 +385,7 @@ public interface CoreRealm {
      *
      * @param geospatialRegionName String 用户自定义地理空间区域名称
      *
-     * @return 时间流对象
+     * @return 地理空间区域对象
      */
     public GeospatialRegion getOrCreateGeospatialRegion(String geospatialRegionName);
 
