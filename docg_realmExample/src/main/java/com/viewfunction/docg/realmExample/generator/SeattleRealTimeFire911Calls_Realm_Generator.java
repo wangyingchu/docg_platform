@@ -45,7 +45,7 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa");
 
         List<ConceptionEntityValue> _Fire911CallEntityValueList = Lists.newArrayList();
-
+        //Please unzip Seattle_Real_Time_Fire_911_Calls_huge.csv.zip before execute
         File file = new File("realmExampleData/seattle_fire_911_calls/Seattle_Real_Time_Fire_911_Calls_huge.csv");
         BufferedReader reader = null;
         try {

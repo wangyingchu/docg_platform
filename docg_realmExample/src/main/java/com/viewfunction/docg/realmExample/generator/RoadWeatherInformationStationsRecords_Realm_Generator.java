@@ -45,7 +45,7 @@ public class RoadWeatherInformationStationsRecords_Realm_Generator {
 
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss aa");
         List<ConceptionEntityValue> _WeatherInformationStationsRecordEntityValueList = Lists.newArrayList();
-
+        //Please unzip Road_Weather_Information_Stations_huge.csv.zip before execute
         File file = new File("realmExampleData/road_weather_information_stations_records/Road_Weather_Information_Stations_huge.csv");
         BufferedReader reader = null;
         try {
