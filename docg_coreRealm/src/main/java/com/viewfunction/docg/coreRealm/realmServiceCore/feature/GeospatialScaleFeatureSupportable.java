@@ -12,37 +12,8 @@ public interface GeospatialScaleFeatureSupportable {
      * GEOMETRYCOLLECTION : 复杂结构状数据
      */
     public enum WKTGeometryType {
-        POINT,LINESTRING,POLYGON,MULTIPOINT,MULTILINESTRING, MULTIPOLYGON, GEOMETRYCOLLECTION}
-
-    /**
-     * 空间计算的距离单位
-     * M : 米
-     * KM : 公里
-     */
-    public enum Unit{M,KM}
-
-    /**
-     * 空间坐标系类型
-     * EARTH : 大地坐标系
-     * PROJECTED : 投影坐标系
-     */
-    public enum CoordinateSystemType{EARTH,PROJECTED}
-
-    /**
-     * 获取当前对象的空间参考坐标系(CoordinateReferenceSystem)编码
-     *
-     * @return 空间参考坐标系代码
-     */
-    public String getCRS();
-
-    /**
-     * 为当前对象添加或更新空间参考坐标系(CoordinateReferenceSystem)编码
-     *
-     * @param coordinateReferenceSystem String 空间参考坐标系代码
-     *
-     * @return 如操作成功，返回结果为 true
-     */
-    public boolean addOrUpdateCRS(String coordinateReferenceSystem);
+        POINT,LINESTRING,POLYGON,MULTIPOINT,MULTILINESTRING, MULTIPOLYGON, GEOMETRYCOLLECTION
+    }
 
     /**
      * 获取当前对象的空间数据结构
@@ -61,34 +32,97 @@ public interface GeospatialScaleFeatureSupportable {
     public boolean addOrUpdateGeometryType(WKTGeometryType wKTGeometryType);
 
     /**
-     * 获取当前对象的空间距离单位
-     *
-     * @return Unit
+     * 获取当前对象的全球尺度空间参考坐标系(CoordinateReferenceSystem) Authority ID
+     * 默认值为 EPSG:4326 (WGS-84)
+     * @return 空间参考坐标系权威ID
      */
-    public Unit getUnit();
+    public String getGlobalCRSAID();
 
     /**
-     * 为当前对象添加或更新空间距离单位
+     * 为当前对象添加或更新全球尺度空间参考坐标系(CoordinateReferenceSystem) Authority ID
      *
-     * @param unit Unit 空间距离单位
+     * @param crsAID String 空间参考坐标系权威ID
      *
      * @return 如操作成功，返回结果为 true
      */
-    public boolean addOrUpdateUnit(Unit unit);
+    public boolean addOrUpdateGlobalCRSAID(String crsAID);
 
     /**
-     * 获取当前对象的空间坐标系类型
-     *
-     * @return CoordinateSystemType
+     * 获取当前对象的国家尺度空间参考坐标系(CoordinateReferenceSystem) Authority ID
+     * 默认值为 EPSG:4490 (CGCS2000)
+     * @return 空间参考坐标系权威ID
      */
-    public CoordinateSystemType getCSType();
+    public String getCountryCRSAID();
 
     /**
-     * 为当前对象添加或更新空间坐标系类型
+     * 为当前对象添加或更新国家尺度空间参考坐标系(CoordinateReferenceSystem) Authority ID
      *
-     * @param coordinateSystemType CoordinateSystemType 空间坐标系类型
+     * @param crsAID String 空间参考坐标系权威ID
      *
      * @return 如操作成功，返回结果为 true
      */
-    public boolean addOrUpdateCSType(CoordinateSystemType coordinateSystemType);
+    public boolean addOrUpdateCountryCRSAID(String crsAID);
+
+    /**
+     * 获取当前对象的地方尺度空间参考坐标系(CoordinateReferenceSystem) Authority ID
+     * @return 空间参考坐标系权威ID
+     */
+    public String getLocalCRSAID();
+
+    /**
+     * 为当前对象添加或更新地方尺度空间参考坐标系(CoordinateReferenceSystem) Authority ID
+     *
+     * @param crsAID String 空间参考坐标系权威ID
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean addOrUpdateLocalCRSAID(String crsAID);
+
+    /**
+     * 获取当前对象的(WKT格式)全球尺度地理空间数据内容 GlobalLevel
+     *
+     * @return (WKT格式)地理空间数据内容
+     */
+    public String getGLGeometryContent();
+
+    /**
+     * 为当前对象添加或更新(WKT格式)全球尺度地理空间数据内容 Global Level
+     *
+     * @param wKTContent String (WKT格式)地理空间数据内容
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean addOrUpdateGLGeometryContent(String wKTContent);
+
+    /**
+     * 获取当前对象的(WKT格式)国家尺度地理空间数据内容 Country Level
+     *
+     * @return (WKT格式)地理空间数据内容
+     */
+    public String getCLGeometryContent();
+
+    /**
+     * 为当前对象添加或更新(WKT格式)国家尺度地理空间数据内容 Country Level
+     *
+     * @param wKTContent String (WKT格式)地理空间数据内容
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean addOrUpdateCLGeometryContent(String wKTContent);
+
+    /**
+     * 获取当前对象的(WKT格式)地方尺度地理空间数据内容 Local Level
+     *
+     * @return (WKT格式)地理空间数据内容
+     */
+    public String getLLGeometryContent();
+
+    /**
+     * 为当前对象添加或更新(WKT格式)地方尺度地理空间数据内容 Local Level
+     *
+     * @param wKTContent String (WKT格式)地理空间数据内容
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean addOrUpdateLLGeometryContent(String wKTContent);
 }
