@@ -4,7 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.*;
 
 import java.util.List;
 
-public interface ConceptionEntity extends AttributesMeasurable, EntityRelationable, ClassificationAttachable, MultiConceptionKindsSupportable, TimeScaleFeatureSupportable {
+public interface ConceptionEntity extends AttributesMeasurable, EntityRelationable, ClassificationAttachable, MultiConceptionKindsSupportable, TimeScaleFeatureSupportable, GeospatialScaleFeatureSupportable {
     /**
      * 获取当前概念实体对象唯一ID
      *

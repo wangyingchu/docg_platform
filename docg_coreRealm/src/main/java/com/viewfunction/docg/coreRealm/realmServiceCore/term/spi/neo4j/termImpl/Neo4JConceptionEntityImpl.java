@@ -1,10 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureImpl.Neo4JAttributesMeasurableImpl;
-import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf.Neo4JClassificationAttachable;
-import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf.Neo4JEntityRelationable;
-import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf.Neo4JMultiConceptionKindsSupportable;
-import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf.Neo4JTimeScaleFeatureSupportable;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JConceptionEntity;
@@ -13,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Neo4JConceptionEntityImpl extends Neo4JAttributesMeasurableImpl implements Neo4JConceptionEntity, Neo4JEntityRelationable,
-        Neo4JClassificationAttachable, Neo4JMultiConceptionKindsSupportable, Neo4JTimeScaleFeatureSupportable {
+        Neo4JClassificationAttachable, Neo4JMultiConceptionKindsSupportable, Neo4JTimeScaleFeatureSupportable, Neo4JGeospatialScaleFeatureSupportable {
 
     private String conceptionEntityUID;
     private String conceptionKindName;
