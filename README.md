@@ -1,7 +1,7 @@
 ###### Data Ocean & Cloud Graph  数海云图
 
 ***
-# <span style="color:#CE0000;"> DOCG Core Realm  </span>数据分析平台开发指南
+# <span style="color:#CE0000;"> DOCG Platform  </span>数据分析平台开发指南
 
 #### ➜ 术语 - Term 
 
@@ -2212,7 +2212,13 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public Map<String,List<ConceptionEntity>> statisticRelatedClassifications(QueryParameters queryParameters, String relationKindName, RelationDirection relationDirection);
 ```
 
+###### *时间分析类特性*
 
+###### ↳ TimeFlow
+
+###### ↳ TimeScaleEntity
+
+###### ↳ TimeScaleEvent
 
 #### ➜ 领域模型数据分析
 
