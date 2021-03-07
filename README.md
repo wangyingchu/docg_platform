@@ -2264,6 +2264,8 @@ com.viewfunction.docg.realmExample.generator.SongPlaylists_Realm_Generator
 
 中型领域模型,包含概念实体 ***Fire911Call***（数量 1471980个） ，时间刻度事件实体 ***occurredAt*** （数量 1471980个）。
 
+领域概念类型关联关系示例：![image](documentPic/graph_SeattleRealTimeFire911CallsRealm.png)
+
 创建程序：
 
 ```java
