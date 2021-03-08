@@ -12,7 +12,14 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.config.PropertiesHandler;
-
+import org.geotools.data.FileDataStore;
+import org.geotools.data.FileDataStoreFinder;
+import org.geotools.data.shapefile.ShapefileDataStore;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.filter.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +27,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -278,11 +286,93 @@ public class GeospatialScaleOperationUtil {
         }
     }
 
+    private static void generateStates_ProvincesISO_3166_2DataMap(){
+        String filePath =
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/statesAndProvinces/ne_10m_admin_1_states_provinces/"+"ne_10m_admin_1_states_provinces.shp";
+        /*
+        DbaseFileReader reader = null;
+        try {
+            reader = new DbaseFileReader(new ShpFiles(filePath), false, Charset.forName("UTF-8"));
+            DbaseFileHeader header = reader.getHeader();
+            int numFields = header.getNumFields();
+            //迭代读取记录
+            while (reader.hasNext()) {
+                try {
+                    Object[] entry = reader.readEntry();
+                    for (int i=0; i< numFields; i++) {
+                        String title = header.getFieldName(i);
+                        Object value = entry[i];
+                        System.out.println(title+"="+value);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            System.out.println(numFields);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {reader.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        */
+
+
+
+
+        //读取shp
+        SimpleFeatureCollection colls1 = readShp(filePath,null);
+        //拿到所有features
+        SimpleFeatureIterator iters = colls1.features();
+        //遍历打印
+        while(iters.hasNext()){
+            SimpleFeature sf = iters.next();
+            System.out.println(sf.getID() + " , " + sf.getAttributes());
+            System.out.println();System.out.println();
+            System.out.println(sf.getDefaultGeometry());
+            System.out.println(sf.getAttribute("iso_3166_2")+" ------- "+sf.getAttribute("the_geom"));
+        }
+    }
+
+    private static SimpleFeatureCollection  readShp(String path , Filter filter){
+        SimpleFeatureSource featureSource = readStoreByShp(path);
+        if(featureSource == null){
+            return null;
+        }
+        try {
+            return filter != null ? featureSource.getFeatures(filter) : featureSource.getFeatures() ;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null ;
+    }
+
+    private static  SimpleFeatureSource readStoreByShp(String path ){
+        File file = new File(path);
+        FileDataStore store;
+        SimpleFeatureSource featureSource = null;
+        try {
+            store = FileDataStoreFinder.getDataStore(file);
+            ((ShapefileDataStore) store).setCharset(Charset.forName("UTF-8"));
+            featureSource = store.getFeatureSource();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return featureSource;
+    }
+
     public static void main(String[] args){
-        GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
+        //GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
         //generateGeospatialScaleEntities_Continent(graphOperationExecutor,"DefaultGeospatialRegion");
         //generateGeospatialScaleEntities_CountryRegion(graphOperationExecutor,"DefaultGeospatialRegion");
-        generateGeospatialScaleEntities_ProvinceOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
-        graphOperationExecutor.close();
+        //generateGeospatialScaleEntities_ProvinceOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
+        //graphOperationExecutor.close();
+        generateStates_ProvincesISO_3166_2DataMap();
     }
 }
