@@ -337,6 +337,9 @@ public class GeospatialScaleOperationUtil {
             System.out.println();System.out.println();
             System.out.println(sf.getDefaultGeometry());
             System.out.println(sf.getAttribute("iso_3166_2")+" ------- "+sf.getAttribute("the_geom"));
+
+
+            //"name_en","name_zh","gns_name","geonunit","latitude","longitude","iso_a2","name_local","type","type_en",""gn_name","woe_label","woe_name"
         }
     }
 
