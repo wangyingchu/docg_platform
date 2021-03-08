@@ -11,6 +11,7 @@
     <properties>
         <neo4j.version>4.1.1</neo4j.version>
         <neo4j-cypher-dsl.version>2020.0.1</neo4j-cypher-dsl.version>
+        <geotools.version>23.2</geotools.version>
     </properties>
 
     <dependencies>
@@ -62,7 +63,16 @@
             <artifactId>ehcache-clustered</artifactId>
             <version>3.8.1</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-shapefile</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-metadata</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
         <!-- Test lib -->
         <!-- https://mvnrepository.com/artifact/org.testng/testng -->
         <dependency>
@@ -72,6 +82,16 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>osgeo</id>
+            <name>OSGeo Release Repository</name>
+            <url>https://repo.osgeo.org/repository/release/</url>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
+        </repository>
+    </repositories>
 
     <build>
         <plugins>
