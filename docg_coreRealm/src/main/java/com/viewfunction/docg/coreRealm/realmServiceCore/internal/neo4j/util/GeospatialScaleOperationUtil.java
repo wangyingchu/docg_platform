@@ -236,7 +236,7 @@ public class GeospatialScaleOperationUtil {
                 reader = new BufferedReader(new FileReader(file));
                 String tempStr;
                 while ((tempStr = reader.readLine()) != null) {
-                    String[] iso_3166_2DataArray = tempStr.split(",");
+                    String[] iso_3166_2DataArray = tempStr.split("\\|");
                     String subdivisionCategory = iso_3166_2DataArray[0];
                     String _3166_2Code = iso_3166_2DataArray[1];
                     String subdivisionName = iso_3166_2DataArray[2];
