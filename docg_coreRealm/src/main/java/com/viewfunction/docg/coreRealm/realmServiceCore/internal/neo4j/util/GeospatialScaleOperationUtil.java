@@ -4,6 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryPara
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityTransformer;
@@ -43,6 +44,7 @@ public class GeospatialScaleOperationUtil {
     public static void generateGeospatialScaleEntities(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
         generateGeospatialScaleEntities_Continent(workingGraphOperationExecutor,geospatialRegionName);
         generateGeospatialScaleEntities_CountryRegion(workingGraphOperationExecutor,geospatialRegionName);
+        updateCountryRegionEntities_GeospatialScaleInfo(workingGraphOperationExecutor,geospatialRegionName);
         generateGeospatialScaleEntities_ProvinceOfChina(workingGraphOperationExecutor,geospatialRegionName);
     }
 
@@ -202,13 +204,31 @@ public class GeospatialScaleOperationUtil {
         }
     }
 
-    private static void generateGeospatialScaleEntities_ProvinceOfWorld(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
-
-        Map<String,Map<String,Object>> _ProvincesISO_3166_2DataMap = generateStates_ProvincesISO_3166_2DataMap();
-
-
+    private static void updateCountryRegionEntities_GeospatialScaleInfo(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
+        Map<String,Map<String,Object>> _CountriesDataMap = generateNE_10m_CountriesDataMap();
         String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialScaleCountryRegionEntityClass,GeospatialRegionProperty,geospatialRegionName,100000);
+        GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(RealmConstant.GeospatialScaleCountryRegionEntityClass,workingGraphOperationExecutor);
+        Object resultEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
+        if(resultEntityList != null){
+            List<ConceptionEntity> resultContinentList =  (List<ConceptionEntity>)resultEntityList;
+            for(ConceptionEntity currentConceptionEntity : resultContinentList){
+                String _CountryRegionAlpha_2Code = currentConceptionEntity.getAttribute("Alpha_2Code").getAttributeValue().toString();
+                if(!_CountryRegionAlpha_2Code.equals("CN")&&!_CountryRegionAlpha_2Code.equals("TW")&&!_CountryRegionAlpha_2Code.equals("HK")&&!_CountryRegionAlpha_2Code.equals("MO")){
+                    Map<String,Object> _CountriesData = _CountriesDataMap.get(_CountryRegionAlpha_2Code);
+                    if(_CountriesData != null && _CountriesData.get("the_geom")!= null){
+                        String geomWKT = _CountriesData.get("the_geom").toString();
+                        currentConceptionEntity.addOrUpdateGeometryType(GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                        currentConceptionEntity.addOrUpdateGlobalCRSAID("EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
+                        currentConceptionEntity.addOrUpdateGLGeometryContent(geomWKT);
+                    }
+                }
+            }
+        }
+    }
 
+    private static void generateGeospatialScaleEntities_ProvinceOfWorld(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
+        Map<String,Map<String,Object>> _ProvincesISO_3166_2DataMap = generateStates_ProvincesISO_3166_2DataMap();
+        String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialScaleCountryRegionEntityClass,GeospatialRegionProperty,geospatialRegionName,100000);
         GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(RealmConstant.GeospatialScaleCountryRegionEntityClass,workingGraphOperationExecutor);
         Object resultEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
         if(resultEntityList != null){
@@ -216,13 +236,8 @@ public class GeospatialScaleOperationUtil {
             for(ConceptionEntity currentConceptionEntity : resultContinentList){
                 xxxx(currentConceptionEntity,_ProvincesISO_3166_2DataMap);
             }
-
-
             System.out.println(resultContinentList.size());
-
-
         }
-
     }
 
     private static void xxxx(ConceptionEntity _CountryRegionConceptionEntity,Map<String,Map<String,Object>> _ProvincesDataMap){
@@ -403,6 +418,32 @@ public class GeospatialScaleOperationUtil {
         return _ProvincesISO_3166_2DataMap;
     }
 
+    private static Map<String,Map<String,Object>> generateNE_10m_CountriesDataMap(){
+        Map<String,Map<String,Object>> _NE_10m_CountriesDataMap = new HashMap<>();
+        String filePath =
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/statesAndProvinces/ne_10m_admin_0_countries/"+"ne_10m_admin_0_countries.shp";
+        SimpleFeatureCollection colls = readShp(filePath,null);
+        SimpleFeatureIterator iters = colls.features();
+
+        while(iters.hasNext()){
+            SimpleFeature sf = iters.next();
+            Map<String,Object> _ISO_3166_1Data = new HashMap<>();
+            String iso_3166_1Code = sf.getAttribute("ISO_A2").toString();
+            _ISO_3166_1Data.put("the_geom",sf.getAttribute("the_geom"));
+            if(!iso_3166_1Code.equals("-99")){
+                _NE_10m_CountriesDataMap.put(iso_3166_1Code,_ISO_3166_1Data);
+            }else{
+                String countryName = sf.getAttribute("ADMIN").toString();
+                if(countryName.equals("France")){
+                    _NE_10m_CountriesDataMap.put("FR",_ISO_3166_1Data);
+                }else if(countryName.equals("Norway")){
+                    _NE_10m_CountriesDataMap.put("NO",_ISO_3166_1Data);
+                }
+            }
+        }
+        return _NE_10m_CountriesDataMap;
+    }
+
     private static SimpleFeatureCollection  readShp(String path , Filter filter){
         SimpleFeatureSource featureSource = readStoreByShp(path);
         if(featureSource == null){
@@ -435,8 +476,11 @@ public class GeospatialScaleOperationUtil {
         //generateGeospatialScaleEntities_Continent(graphOperationExecutor,"DefaultGeospatialRegion");
         //generateGeospatialScaleEntities_CountryRegion(graphOperationExecutor,"DefaultGeospatialRegion");
         //generateGeospatialScaleEntities_ProvinceOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
+        //generateGeospatialScaleEntities_ProvinceOfWorld(graphOperationExecutor,"DefaultGeospatialRegion");
+        //generateNE_10m_CountriesDataMap();
+        //updateCountryRegionEntities_GeospatialScaleInfo(graphOperationExecutor,"DefaultGeospatialRegion");
 
-        generateGeospatialScaleEntities_ProvinceOfWorld(graphOperationExecutor,"DefaultGeospatialRegion");
+        generateGeospatialScaleEntities(graphOperationExecutor,"DefaultGeospatialRegion");
         graphOperationExecutor.close();
 
         //generateStates_ProvincesISO_3166_2DataMap();

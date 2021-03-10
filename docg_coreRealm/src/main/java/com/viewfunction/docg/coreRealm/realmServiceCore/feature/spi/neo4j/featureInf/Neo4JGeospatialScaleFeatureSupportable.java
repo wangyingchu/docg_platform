@@ -40,7 +40,7 @@ public interface Neo4JGeospatialScaleFeatureSupportable extends GeospatialScaleF
     }
 
     public default boolean addOrUpdateGeometryType(WKTGeometryType wKTGeometryType){
-        return addOrUpdateAttributeValue(RealmConstant._GeospatialGeometryType,wKTGeometryType);
+        return addOrUpdateAttributeValue(RealmConstant._GeospatialGeometryType,""+wKTGeometryType);
     }
 
     public default String getGlobalCRSAID(){
