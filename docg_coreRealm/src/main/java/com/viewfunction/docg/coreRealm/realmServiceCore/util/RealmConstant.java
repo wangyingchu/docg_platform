@@ -83,4 +83,10 @@ public interface RealmConstant {
     public final String _GeospatialGLGeometryContent="DOCG_GS_GLGeometryContent";
     public final String _GeospatialCLGeometryContent="DOCG_GS_CLGeometryContent";
     public final String _GeospatialLLGeometryContent="DOCG_GS_LLGeometryContent";
+    public final String _GeospatialGLGeometryPOI_Latitude="DOCG_GS_GLGeometryPOI_Latitude";
+    public final String _GeospatialGLGeometryPOI_Longitude="DOCG_GS_GLGeometryPOI_Longitude";
+    public final String _GeospatialCLGeometryPOI_Latitude="DOCG_GS_CLGeometryPOI_Latitude";
+    public final String _GeospatialCLGeometryPOI_Longitude="DOCG_GS_CLGeometryPOI_Longitude";
+    public final String _GeospatialLLGeometryPOI_Latitude="DOCG_GS_LLGeometryPOI_Latitude";
+    public final String _GeospatialLLGeometryPOI_Longitude="DOCG_GS_LLGeometryPOI_Longitude";
 }

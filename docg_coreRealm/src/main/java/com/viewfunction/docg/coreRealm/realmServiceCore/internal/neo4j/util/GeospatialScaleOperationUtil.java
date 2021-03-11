@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,8 @@ public class GeospatialScaleOperationUtil {
         generateGeospatialScaleEntities_Continent(workingGraphOperationExecutor,geospatialRegionName);
         generateGeospatialScaleEntities_CountryRegion(workingGraphOperationExecutor,geospatialRegionName);
         updateCountryRegionEntities_GeospatialScaleInfo(workingGraphOperationExecutor,geospatialRegionName);
+        generateGeospatialScaleEntities_ProvinceOfWorld(workingGraphOperationExecutor,geospatialRegionName);
+
         generateGeospatialScaleEntities_ProvinceOfChina(workingGraphOperationExecutor,geospatialRegionName);
     }
 
@@ -227,60 +230,96 @@ public class GeospatialScaleOperationUtil {
     }
 
     private static void generateGeospatialScaleEntities_ProvinceOfWorld(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
-        Map<String,Map<String,Object>> _ProvincesISO_3166_2DataMap = generateStates_ProvincesISO_3166_2DataMap();
+        Map<String,Map<String,Object>> _ProvincesISO_3166_2DataMap = generateNE_10m_admin_states_provincesDataMap();
         String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialScaleCountryRegionEntityClass,GeospatialRegionProperty,geospatialRegionName,100000);
         GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(RealmConstant.GeospatialScaleCountryRegionEntityClass,workingGraphOperationExecutor);
         Object resultEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
         if(resultEntityList != null){
             List<ConceptionEntity> resultContinentList =  (List<ConceptionEntity>)resultEntityList;
             for(ConceptionEntity currentConceptionEntity : resultContinentList){
-                xxxx(currentConceptionEntity,_ProvincesISO_3166_2DataMap);
+                generateProvinceLevelEntitiesOfWorld(currentConceptionEntity,_ProvincesISO_3166_2DataMap,geospatialRegionName,workingGraphOperationExecutor);
             }
-            System.out.println(resultContinentList.size());
         }
     }
 
-    private static void xxxx(ConceptionEntity _CountryRegionConceptionEntity,Map<String,Map<String,Object>> _ProvincesDataMap){
+    private static void generateProvinceLevelEntitiesOfWorld(ConceptionEntity _CountryRegionConceptionEntity,Map<String,Map<String,Object>> _ProvincesDataMap,String geospatialRegionName,GraphOperationExecutor workingGraphOperationExecutor){
         String _CountryRegionAlpha_2Code = _CountryRegionConceptionEntity.getAttribute("Alpha_2Code").getAttributeValue().toString();
-        String filePath =
-                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/statesAndProvinces/states_provinces(ISO_3166_2)/"+_CountryRegionAlpha_2Code+".csv";
-        File file = new File(filePath);
-        if (file.exists()){
-            BufferedReader reader = null;
-            try {
-                reader = new BufferedReader(new FileReader(file));
-                String tempStr;
-                while ((tempStr = reader.readLine()) != null) {
-                    String[] iso_3166_2DataArray = tempStr.split("\\|");
-                    String subdivisionCategory = iso_3166_2DataArray[0];
-                    String _3166_2Code = iso_3166_2DataArray[1];
-                    String subdivisionName = iso_3166_2DataArray[2];
-                    String localVariant = iso_3166_2DataArray[3];
-                    String languageCode = iso_3166_2DataArray[4];
-                    //String romanizationSystem = iso_3166_2DataArray[5];
-                    //String parentSubdivision = iso_3166_2DataArray[6];
+        String _CountryRegionConceptionEntityUID = _CountryRegionConceptionEntity.getConceptionEntityUID();
+        if(!_CountryRegionAlpha_2Code.equals("CN")&&!_CountryRegionAlpha_2Code.equals("TW")&&
+                !_CountryRegionAlpha_2Code.equals("HK")&&!_CountryRegionAlpha_2Code.equals("MO")){
+            String[] conceptionTypeNameArray = new String[2];
+            conceptionTypeNameArray[0] = RealmConstant.GeospatialScaleEntityClass;
+            conceptionTypeNameArray[1] = RealmConstant.GeospatialScaleProvinceEntityClass;
+            String filePath =
+                    PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/statesAndProvinces/states_provinces(ISO_3166_2)/"+_CountryRegionAlpha_2Code+".csv";
+            File file = new File(filePath);
+            List<String> operatedItem = new ArrayList<>();
+            if (file.exists()){
+                BufferedReader reader = null;
+                try {
+                    reader = new BufferedReader(new FileReader(file));
+                    String tempStr;
+                    while ((tempStr = reader.readLine()) != null) {
+                        String[] iso_3166_2DataArray = tempStr.split("\\|");
+                        String subdivisionCategory = iso_3166_2DataArray[0];
+                        String _3166_2Code = iso_3166_2DataArray[1];
+                        String subdivisionName = iso_3166_2DataArray[2];
+                        //String localVariant = iso_3166_2DataArray[3];
+                        //String languageCode = iso_3166_2DataArray[4];
+                        _3166_2Code=_3166_2Code.replace("*","");
+                        if(!operatedItem.contains(_3166_2Code)){
+                            Map<String,Object> propertiesMap = new HashMap<>();
+                            propertiesMap.put("ISO3166_1Alpha_2Code",_CountryRegionAlpha_2Code);
+                            propertiesMap.put("ISO3166_2SubDivisionCode",_3166_2Code);
+                            propertiesMap.put("ISO3166_2SubdivisionName",subdivisionName);
+                            propertiesMap.put("ISO3166_2SubdivisionCategory",subdivisionCategory);
+                            propertiesMap.put("Standard","ISO 3166-2:2013");
+                            propertiesMap.put("StandardStatus","Officially assigned");
+                            propertiesMap.put(GeospatialCodeProperty,_3166_2Code);
+                            propertiesMap.put(GeospatialRegionProperty,geospatialRegionName);
+                            propertiesMap.put(GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.PROVINCE);
 
-                    //System.out.println(subdivisionCategory+"-"+_3166_2Code+"="+subdivisionName);
+                            Map<String,Object> _currentProvincesDataMap =  _ProvincesDataMap.get(_3166_2Code);
 
-                    _3166_2Code=_3166_2Code.replace("*","");
+                            if(_currentProvincesDataMap == null){
+                                logger.debug("CountryRegionAlpha_2Code {} not found in NE_10m_admin_states_provincesDataMap.",_CountryRegionAlpha_2Code);
+                            }else{
+                                propertiesMap.put("DivisionCategory_EN",_currentProvincesDataMap.get("type_en"));
+                                //propertiesMap.put("DivisionCategory_CH",_DivisionCategory_CH);
+                                propertiesMap.put("EnglishName",_currentProvincesDataMap.get("name_en"));
+                                propertiesMap.put("ChineseName",_currentProvincesDataMap.get("name_zh"));
 
-                    Map<String,Object> _currentProvincesDataMap =  _ProvincesDataMap.get(_3166_2Code);
-                    //System.out.println(_currentProvincesDataMap);
+                                propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI_Latitude,Double.valueOf(_currentProvincesDataMap.get("latitude").toString()));
+                                propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI_Longitude,Double.valueOf(_currentProvincesDataMap.get("longitude").toString()));
+                                propertiesMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
+                                propertiesMap.put(RealmConstant._GeospatialGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                                String geomWKT = _currentProvincesDataMap.get("the_geom").toString();
+                                propertiesMap.put(RealmConstant._GeospatialGLGeometryContent,geomWKT);
 
-                    if(_currentProvincesDataMap == null){
-                        System.out.println(_CountryRegionAlpha_2Code+" NOTFOUND  "+_3166_2Code);
+                                GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                                        new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleProvinceEntityClass,workingGraphOperationExecutor);
+
+                                String createGeospatialScaleEntitiesCql = CypherBuilder.createLabeledNodeWithProperties(conceptionTypeNameArray,propertiesMap);
+                                Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,createGeospatialScaleEntitiesCql);
+
+                                if(newEntityRes != null && _CountryRegionConceptionEntityUID != null){
+                                    ConceptionEntity geospatialEntity = (ConceptionEntity) newEntityRes;
+                                    geospatialEntity.attachToRelation(_CountryRegionConceptionEntityUID, RealmConstant.GeospatialScale_SpatialContainsRelationClass, null, true);
+                                }
+                            }
+                            operatedItem.add(_3166_2Code);
+                        }
                     }
-
-                }
-                reader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
+                    reader.close();
+                } catch (IOException | CoreRealmServiceRuntimeException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException e1) {
+                            e1.printStackTrace();
+                        }
                     }
                 }
             }
@@ -371,7 +410,7 @@ public class GeospatialScaleOperationUtil {
         }
     }
 
-    private static Map<String,Map<String,Object>> generateStates_ProvincesISO_3166_2DataMap(){
+    private static Map<String,Map<String,Object>> generateNE_10m_admin_states_provincesDataMap(){
         Map<String,Map<String,Object>> _ProvincesISO_3166_2DataMap = new HashMap<>();
         String filePath =
                 PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/statesAndProvinces/ne_10m_admin_1_states_provinces/"+"ne_10m_admin_1_states_provinces.shp";
@@ -382,21 +421,11 @@ public class GeospatialScaleOperationUtil {
             SimpleFeature sf = iters.next();
             Map<String,Object> _ISO_3166_2Data = new HashMap<>();
             String iso_3166_2Code = sf.getAttribute("iso_3166_2").toString();
-
             iso_3166_2Code = iso_3166_2Code.replace("~","");
-
-
-
             _ProvincesISO_3166_2DataMap.put(iso_3166_2Code,_ISO_3166_2Data);
 
-/*
-            System.out.println(sf.getID() + " , " + sf.getAttributes());
-            System.out.println();System.out.println();
-            System.out.println(sf.getDefaultGeometry());
-            System.out.println(sf.getAttribute("iso_3166_2")+" ------- "+sf.getAttribute("the_geom"));
-*/
             _ISO_3166_2Data.put("the_geom",sf.getAttribute("the_geom"));
-            _ISO_3166_2Data.put("name_en",sf.getAttribute("iso_3166_2"));
+            _ISO_3166_2Data.put("name_en",sf.getAttribute("name_en"));
             _ISO_3166_2Data.put("name_zh",sf.getAttribute("name_zh"));
             _ISO_3166_2Data.put("gns_name",sf.getAttribute("gns_name"));
             _ISO_3166_2Data.put("geonunit",sf.getAttribute("geonunit"));
@@ -409,11 +438,6 @@ public class GeospatialScaleOperationUtil {
             _ISO_3166_2Data.put("gn_name",sf.getAttribute("gn_name"));
             _ISO_3166_2Data.put("woe_label",sf.getAttribute("woe_label"));
             _ISO_3166_2Data.put("woe_name",sf.getAttribute("woe_name"));
-            //_ISO_3166_2Data.put("name_en",sf.getAttribute("iso_3166_2"));
-           // _ISO_3166_2Data.put("name_en",sf.getAttribute("iso_3166_2"));
-
-
-            //"name_en","name_zh","gns_name","geonunit","latitude","longitude","iso_a2","name_local","type","type_en",""gn_name","woe_label","woe_name"
         }
         return _ProvincesISO_3166_2DataMap;
     }
@@ -480,7 +504,10 @@ public class GeospatialScaleOperationUtil {
         //generateNE_10m_CountriesDataMap();
         //updateCountryRegionEntities_GeospatialScaleInfo(graphOperationExecutor,"DefaultGeospatialRegion");
 
-        generateGeospatialScaleEntities(graphOperationExecutor,"DefaultGeospatialRegion");
+        //generateGeospatialScaleEntities(graphOperationExecutor,"DefaultGeospatialRegion");
+
+
+        generateGeospatialScaleEntities_ProvinceOfWorld(graphOperationExecutor,"DefaultGeospatialRegion");
         graphOperationExecutor.close();
 
         //generateStates_ProvincesISO_3166_2DataMap();
