@@ -216,7 +216,7 @@ public class GeospatialScaleOperationUtil {
             List<ConceptionEntity> resultContinentList =  (List<ConceptionEntity>)resultEntityList;
             for(ConceptionEntity currentConceptionEntity : resultContinentList){
                 String _CountryRegionAlpha_2Code = currentConceptionEntity.getAttribute("Alpha_2Code").getAttributeValue().toString();
-                if(!_CountryRegionAlpha_2Code.equals("CN")&&!_CountryRegionAlpha_2Code.equals("TW")&&!_CountryRegionAlpha_2Code.equals("HK")&&!_CountryRegionAlpha_2Code.equals("MO")){
+                //if(!_CountryRegionAlpha_2Code.equals("CN")&&!_CountryRegionAlpha_2Code.equals("TW")&&!_CountryRegionAlpha_2Code.equals("HK")&&!_CountryRegionAlpha_2Code.equals("MO")){
                     Map<String,Object> _CountriesData = _CountriesDataMap.get(_CountryRegionAlpha_2Code);
                     if(_CountriesData != null && _CountriesData.get("the_geom")!= null){
                         String geomWKT = _CountriesData.get("the_geom").toString();
@@ -224,7 +224,7 @@ public class GeospatialScaleOperationUtil {
                         currentConceptionEntity.addOrUpdateGlobalCRSAID("EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
                         currentConceptionEntity.addOrUpdateGLGeometryContent(geomWKT);
                     }
-                }
+                //}
             }
         }
     }
@@ -445,7 +445,7 @@ public class GeospatialScaleOperationUtil {
     private static Map<String,Map<String,Object>> generateNE_10m_CountriesDataMap(){
         Map<String,Map<String,Object>> _NE_10m_CountriesDataMap = new HashMap<>();
         String filePath =
-                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/statesAndProvinces/ne_10m_admin_0_countries/"+"ne_10m_admin_0_countries.shp";
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/statesAndProvinces/ne_10m_admin_0_countries_modified/"+"ne_10m_admin_0_countries_modified.shp";
         SimpleFeatureCollection colls = readShp(filePath,null);
         SimpleFeatureIterator iters = colls.features();
 
@@ -503,13 +503,9 @@ public class GeospatialScaleOperationUtil {
         //generateGeospatialScaleEntities_ProvinceOfWorld(graphOperationExecutor,"DefaultGeospatialRegion");
         //generateNE_10m_CountriesDataMap();
         //updateCountryRegionEntities_GeospatialScaleInfo(graphOperationExecutor,"DefaultGeospatialRegion");
+        //generateGeospatialScaleEntities_ProvinceOfWorld(graphOperationExecutor,"DefaultGeospatialRegion");
 
-        //generateGeospatialScaleEntities(graphOperationExecutor,"DefaultGeospatialRegion");
-
-
-        generateGeospatialScaleEntities_ProvinceOfWorld(graphOperationExecutor,"DefaultGeospatialRegion");
+        generateGeospatialScaleEntities(graphOperationExecutor,"DefaultGeospatialRegion");
         graphOperationExecutor.close();
-
-        //generateStates_ProvincesISO_3166_2DataMap();
     }
 }
