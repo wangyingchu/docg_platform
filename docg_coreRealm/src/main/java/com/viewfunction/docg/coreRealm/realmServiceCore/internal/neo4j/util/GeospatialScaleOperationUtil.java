@@ -8,9 +8,14 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleF
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityValueTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JAttributeKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.config.PropertiesHandler;
 import org.geotools.data.FileDataStore;
@@ -529,11 +534,10 @@ public class GeospatialScaleOperationUtil {
                         GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
                                 new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleEntityClass,workingGraphOperationExecutor);
                         String createGeospatialScaleEntitiesCql = CypherBuilder.createLabeledNodeWithProperties(conceptionTypeNameArray,propertiesMap);
-                        Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,createGeospatialScaleEntitiesCql);
+                        workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,createGeospatialScaleEntitiesCql);
                     }
                 }
                 reader.close();
-                //} catch (IOException | CoreRealmServiceRuntimeException e) {
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -546,6 +550,56 @@ public class GeospatialScaleOperationUtil {
                 }
             }
         }
+    }
+
+    private static void linkGeospatialScaleEntitiesOfChina(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
+        try {
+            Map<String,String> _ChinaDivisionCodeAndEntityUIDMap = new HashMap<>();
+
+            //get Province level entities info
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setResultNumber(100);
+            queryParameters.setDefaultFilteringItem(new EqualFilteringItem("ISO3166_1Alpha_2Code","CN"));
+            queryParameters.addFilteringItem(new EqualFilteringItem(GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
+
+            List<String> attributeNamesList = new ArrayList<>();
+            attributeNamesList.add(GeospatialCodeProperty);
+            List<AttributeKind> attributeKindList = new ArrayList<>();
+            attributeKindList.add(new Neo4JAttributeKindImpl(null,GeospatialCodeProperty,null, AttributeDataType.STRING,null));
+            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(RealmConstant.GeospatialScaleProvinceEntityClass,queryParameters,attributeNamesList);
+
+            GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer =
+                    new GetListConceptionEntityValueTransformer(attributeNamesList,attributeKindList);
+            Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
+
+            if(resEntityRes != null){
+                List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
+                for(ConceptionEntityValue currentConceptionEntityValue : resultEntitiesValues){
+                    _ChinaDivisionCodeAndEntityUIDMap.put(currentConceptionEntityValue.getEntityAttributesValue().get(GeospatialCodeProperty).toString(),
+                            currentConceptionEntityValue.getConceptionEntityUID());
+                }
+            }
+
+            System.out.println(_ChinaDivisionCodeAndEntityUIDMap);
+
+
+
+
+
+
+
+
+
+
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+
+
     }
 
     private static Map<String,Map<String,Object>> generateNE_10m_admin_states_provincesDataMap(){
@@ -644,7 +698,8 @@ public class GeospatialScaleOperationUtil {
         //generateGeospatialScaleEntities_ProvinceOfWorld(graphOperationExecutor,"DefaultGeospatialRegion");
 
 
-        generateGeospatialScaleEntities_PrefectureAndLaterOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
+        //generateGeospatialScaleEntities_PrefectureAndLaterOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
+        linkGeospatialScaleEntitiesOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
         //generateGeospatialScaleEntities(graphOperationExecutor,"DefaultGeospatialRegion");
         graphOperationExecutor.close();
     }
