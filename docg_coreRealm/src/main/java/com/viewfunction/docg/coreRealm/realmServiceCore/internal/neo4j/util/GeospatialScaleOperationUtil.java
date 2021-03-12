@@ -8,10 +8,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleF
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityValueTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionEntityTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
@@ -453,8 +450,7 @@ public class GeospatialScaleOperationUtil {
                     String secondPartCode = codeInfoValueArray[1].trim();
                     String administrativeDivisionContent = codeInfoValueArray[2];
                     String[] divisionNameArray = administrativeDivisionContent.split("-");
-                    //System.out.println(administrativeDivisionContent+ ">>>"+divisionNameArray.length);
-                    if(divisionNameArray.length != 1){
+                    if(divisionNameArray.length == 1){
                         //length == 1 means is province level entity itself, ignore it
                     }else{
                         String _ChinaDivisionCode = null;
@@ -462,18 +458,18 @@ public class GeospatialScaleOperationUtil {
                         if(secondPartCode.equals("000000")){
                             _ChinaDivisionCode = firstPartCode;
                             if(_ChinaDivisionCode.endsWith("00")){
-                                _ChinaParentDivisionCode = firstPartCode.substring(0,1)+"0000";
+                                _ChinaParentDivisionCode = firstPartCode.substring(0,2)+"0000";
                             }else {
-                                _ChinaParentDivisionCode = firstPartCode.substring(0, 3) + "00";
+                                _ChinaParentDivisionCode = firstPartCode.substring(0, 4) + "00";
                             }
                         }else{
                             if(secondPartCode.endsWith("000")){
                                 _ChinaParentDivisionCode = firstPartCode;
                                 _ChinaDivisionCode = firstPartCode+secondPartCode;
-                                _ChinaDivisionCode = _ChinaDivisionCode.substring(0,8);
+                                _ChinaDivisionCode = _ChinaDivisionCode.substring(0,9);
                             }else{
                                 _ChinaDivisionCode = firstPartCode+secondPartCode;
-                                _ChinaParentDivisionCode = _ChinaDivisionCode.substring(0,8);
+                                _ChinaParentDivisionCode = _ChinaDivisionCode.substring(0,9);
                             }
                         }
 
@@ -530,72 +526,11 @@ public class GeospatialScaleOperationUtil {
                             propertiesMap.put("ChinaTownshipName",TOWNSHIP_Name);
                             propertiesMap.put("ChineseName",VILLAGE_Name);
                         }
-
-
-
-
-
-
-
+                        GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                                new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleEntityClass,workingGraphOperationExecutor);
+                        String createGeospatialScaleEntitiesCql = CypherBuilder.createLabeledNodeWithProperties(conceptionTypeNameArray,propertiesMap);
+                        Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,createGeospatialScaleEntitiesCql);
                     }
-
-                    /*
-
-                    String[] iso_3166_2DataArray = tempStr.split("\\|");
-                    String subdivisionCategory = iso_3166_2DataArray[0];
-                    String _3166_2Code = iso_3166_2DataArray[1];
-                    String subdivisionName = iso_3166_2DataArray[2];
-                    //String localVariant = iso_3166_2DataArray[3];
-                    //String languageCode = iso_3166_2DataArray[4];
-                    _3166_2Code=_3166_2Code.replace("*","");
-                    if(!operatedItem.contains(_3166_2Code)){
-                        Map<String,Object> propertiesMap = new HashMap<>();
-                        propertiesMap.put("ISO3166_1Alpha_2Code",_CountryRegionAlpha_2Code);
-                        propertiesMap.put("ISO3166_2SubDivisionCode",_3166_2Code);
-                        propertiesMap.put("ISO3166_2SubdivisionName",subdivisionName);
-                        propertiesMap.put("ISO3166_2SubdivisionCategory",subdivisionCategory);
-                        propertiesMap.put("Standard","ISO 3166-2:2013");
-                        propertiesMap.put("StandardStatus","Officially assigned");
-                        propertiesMap.put(GeospatialCodeProperty,_3166_2Code);
-                        propertiesMap.put(GeospatialRegionProperty,geospatialRegionName);
-                        propertiesMap.put(GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.PROVINCE);
-
-                        Map<String,Object> _currentProvincesDataMap =  _ProvincesDataMap.get(_3166_2Code);
-
-                        if(_currentProvincesDataMap == null){
-                            logger.debug("CountryRegionAlpha_2Code {} not found in NE_10m_admin_states_provincesDataMap.",_CountryRegionAlpha_2Code);
-                        }else{
-                            propertiesMap.put("DivisionCategory_EN",_currentProvincesDataMap.get("type_en"));
-                            //propertiesMap.put("DivisionCategory_CH",_DivisionCategory_CH);
-                            propertiesMap.put("EnglishName",_currentProvincesDataMap.get("name_en"));
-                            propertiesMap.put("ChineseName",_currentProvincesDataMap.get("name_zh"));
-
-                            propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI_Latitude,Double.valueOf(_currentProvincesDataMap.get("latitude").toString()));
-                            propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI_Longitude,Double.valueOf(_currentProvincesDataMap.get("longitude").toString()));
-                            propertiesMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
-                            propertiesMap.put(RealmConstant._GeospatialGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
-                            String geomWKT = _currentProvincesDataMap.get("the_geom").toString();
-                            propertiesMap.put(RealmConstant._GeospatialGLGeometryContent,geomWKT);
-
-                            GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
-                                    new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleProvinceEntityClass,workingGraphOperationExecutor);
-
-                            String createGeospatialScaleEntitiesCql = CypherBuilder.createLabeledNodeWithProperties(conceptionTypeNameArray,propertiesMap);
-                            Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,createGeospatialScaleEntitiesCql);
-
-                            if(newEntityRes != null && _CountryRegionConceptionEntityUID != null){
-                                ConceptionEntity geospatialEntity = (ConceptionEntity) newEntityRes;
-                                geospatialEntity.attachToRelation(_CountryRegionConceptionEntityUID, RealmConstant.GeospatialScale_SpatialContainsRelationClass, null, true);
-                            }
-                        }
-                        operatedItem.add(_3166_2Code);
-
-
-
-
-                    }
-
-                     */
                 }
                 reader.close();
                 //} catch (IOException | CoreRealmServiceRuntimeException e) {
@@ -610,8 +545,6 @@ public class GeospatialScaleOperationUtil {
                     }
                 }
             }
-
-
         }
     }
 
