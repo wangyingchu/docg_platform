@@ -8,7 +8,10 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleF
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityValueTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
@@ -47,8 +50,8 @@ public class GeospatialScaleOperationUtil {
         generateGeospatialScaleEntities_CountryRegion(workingGraphOperationExecutor,geospatialRegionName);
         updateCountryRegionEntities_GeospatialScaleInfo(workingGraphOperationExecutor,geospatialRegionName);
         generateGeospatialScaleEntities_ProvinceOfWorld(workingGraphOperationExecutor,geospatialRegionName);
-
         generateGeospatialScaleEntities_ProvinceOfChina(workingGraphOperationExecutor,geospatialRegionName);
+        generateGeospatialScaleEntities_PrefectureAndLaterOfChina(workingGraphOperationExecutor,geospatialRegionName);
     }
 
     private static void generateGeospatialScaleEntities_Continent(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
@@ -372,6 +375,7 @@ public class GeospatialScaleOperationUtil {
                     propertiesMap.put("DivisionCategory_EN",_DivisionCategory_EN);
                     propertiesMap.put("DivisionCategory_CH",_DivisionCategory_CH);
                     propertiesMap.put("ISO3166_2SubDivisionCode",_ISO3166_2SubDivisionCode);
+                    propertiesMap.put("ISO3166_1Alpha_2Code","CN");
                     propertiesMap.put("ChinaDivisionCode",ChinaDivisionCode);
                     propertiesMap.put("EnglishName",DivisionName_EN);
                     propertiesMap.put("ChineseName",DivisionName_CH);
@@ -405,6 +409,142 @@ public class GeospatialScaleOperationUtil {
                     e1.printStackTrace();
                 }
             }
+        }
+    }
+
+    private static void generateGeospatialScaleEntities_PrefectureAndLaterOfChina(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(100);
+        queryParameters.setDefaultFilteringItem(new EqualFilteringItem("ISO3166_1Alpha_2Code","CN"));
+        queryParameters.addFilteringItem(new EqualFilteringItem(GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
+        try {
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleProvinceEntityClass,queryParameters,null);
+            GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(RealmConstant.GeospatialScaleProvinceEntityClass,workingGraphOperationExecutor);
+            Object resultEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
+            if(resultEntityList != null){
+                List<ConceptionEntity> resultContinentList =  (List<ConceptionEntity>)resultEntityList;
+                for(ConceptionEntity currentConceptionEntity : resultContinentList){
+                    generatePrefectureAndLaterLevelEntitiesOfChina(currentConceptionEntity,geospatialRegionName,workingGraphOperationExecutor);
+                }
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void generatePrefectureAndLaterLevelEntitiesOfChina(ConceptionEntity _ProvinceRegionConceptionEntity,String geospatialRegionName,GraphOperationExecutor workingGraphOperationExecutor){
+        String currentProvinceName = _ProvinceRegionConceptionEntity.getAttribute("ChineseName").getAttributeValue().toString();
+        String[] conceptionTypeNameArray = new String[2];
+        conceptionTypeNameArray[0] = RealmConstant.GeospatialScaleEntityClass;
+        conceptionTypeNameArray[1] = RealmConstant.GeospatialScaleProvinceEntityClass;
+        String filePath =
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/China_DetailInfo(MinistryOfCivilAffairs)/"+currentProvinceName+".txt";
+        File file = new File(filePath);
+        if (file.exists()) {
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new FileReader(file));
+                String tempStr;
+                while ((tempStr = reader.readLine()) != null) {
+                    String administrativeDivision_CodeInfoStr=tempStr.trim();
+                    String[] codeInfoValueArray = administrativeDivision_CodeInfoStr.split(" ");
+
+                    String firstPartCode = codeInfoValueArray[0];
+                    String secondPartCode = codeInfoValueArray[1];
+                    String administrativeDivisionContent = codeInfoValueArray[2];
+
+                    String[] divisionNameArray = administrativeDivisionContent.split("-");
+
+
+                    System.out.println(administrativeDivisionContent+ ">>>"+divisionNameArray.length);
+                    if(divisionNameArray.length != 1){
+                        //length == 1 means is province level entity itself, ignore it
+                    }else{
+                        if(divisionNameArray.length == 2){
+
+
+                        }
+
+
+
+
+
+
+                    }
+
+                    /*
+
+                    String[] iso_3166_2DataArray = tempStr.split("\\|");
+                    String subdivisionCategory = iso_3166_2DataArray[0];
+                    String _3166_2Code = iso_3166_2DataArray[1];
+                    String subdivisionName = iso_3166_2DataArray[2];
+                    //String localVariant = iso_3166_2DataArray[3];
+                    //String languageCode = iso_3166_2DataArray[4];
+                    _3166_2Code=_3166_2Code.replace("*","");
+                    if(!operatedItem.contains(_3166_2Code)){
+                        Map<String,Object> propertiesMap = new HashMap<>();
+                        propertiesMap.put("ISO3166_1Alpha_2Code",_CountryRegionAlpha_2Code);
+                        propertiesMap.put("ISO3166_2SubDivisionCode",_3166_2Code);
+                        propertiesMap.put("ISO3166_2SubdivisionName",subdivisionName);
+                        propertiesMap.put("ISO3166_2SubdivisionCategory",subdivisionCategory);
+                        propertiesMap.put("Standard","ISO 3166-2:2013");
+                        propertiesMap.put("StandardStatus","Officially assigned");
+                        propertiesMap.put(GeospatialCodeProperty,_3166_2Code);
+                        propertiesMap.put(GeospatialRegionProperty,geospatialRegionName);
+                        propertiesMap.put(GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.PROVINCE);
+
+                        Map<String,Object> _currentProvincesDataMap =  _ProvincesDataMap.get(_3166_2Code);
+
+                        if(_currentProvincesDataMap == null){
+                            logger.debug("CountryRegionAlpha_2Code {} not found in NE_10m_admin_states_provincesDataMap.",_CountryRegionAlpha_2Code);
+                        }else{
+                            propertiesMap.put("DivisionCategory_EN",_currentProvincesDataMap.get("type_en"));
+                            //propertiesMap.put("DivisionCategory_CH",_DivisionCategory_CH);
+                            propertiesMap.put("EnglishName",_currentProvincesDataMap.get("name_en"));
+                            propertiesMap.put("ChineseName",_currentProvincesDataMap.get("name_zh"));
+
+                            propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI_Latitude,Double.valueOf(_currentProvincesDataMap.get("latitude").toString()));
+                            propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI_Longitude,Double.valueOf(_currentProvincesDataMap.get("longitude").toString()));
+                            propertiesMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
+                            propertiesMap.put(RealmConstant._GeospatialGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                            String geomWKT = _currentProvincesDataMap.get("the_geom").toString();
+                            propertiesMap.put(RealmConstant._GeospatialGLGeometryContent,geomWKT);
+
+                            GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                                    new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleProvinceEntityClass,workingGraphOperationExecutor);
+
+                            String createGeospatialScaleEntitiesCql = CypherBuilder.createLabeledNodeWithProperties(conceptionTypeNameArray,propertiesMap);
+                            Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,createGeospatialScaleEntitiesCql);
+
+                            if(newEntityRes != null && _CountryRegionConceptionEntityUID != null){
+                                ConceptionEntity geospatialEntity = (ConceptionEntity) newEntityRes;
+                                geospatialEntity.attachToRelation(_CountryRegionConceptionEntityUID, RealmConstant.GeospatialScale_SpatialContainsRelationClass, null, true);
+                            }
+                        }
+                        operatedItem.add(_3166_2Code);
+
+
+
+
+                    }
+
+                     */
+                }
+                reader.close();
+                //} catch (IOException | CoreRealmServiceRuntimeException e) {
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+
+
         }
     }
 
@@ -503,7 +643,9 @@ public class GeospatialScaleOperationUtil {
         //updateCountryRegionEntities_GeospatialScaleInfo(graphOperationExecutor,"DefaultGeospatialRegion");
         //generateGeospatialScaleEntities_ProvinceOfWorld(graphOperationExecutor,"DefaultGeospatialRegion");
 
-        generateGeospatialScaleEntities(graphOperationExecutor,"DefaultGeospatialRegion");
+
+        generateGeospatialScaleEntities_PrefectureAndLaterOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
+        //generateGeospatialScaleEntities(graphOperationExecutor,"DefaultGeospatialRegion");
         graphOperationExecutor.close();
     }
 }
