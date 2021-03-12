@@ -216,15 +216,13 @@ public class GeospatialScaleOperationUtil {
             List<ConceptionEntity> resultContinentList =  (List<ConceptionEntity>)resultEntityList;
             for(ConceptionEntity currentConceptionEntity : resultContinentList){
                 String _CountryRegionAlpha_2Code = currentConceptionEntity.getAttribute("Alpha_2Code").getAttributeValue().toString();
-                //if(!_CountryRegionAlpha_2Code.equals("CN")&&!_CountryRegionAlpha_2Code.equals("TW")&&!_CountryRegionAlpha_2Code.equals("HK")&&!_CountryRegionAlpha_2Code.equals("MO")){
-                    Map<String,Object> _CountriesData = _CountriesDataMap.get(_CountryRegionAlpha_2Code);
-                    if(_CountriesData != null && _CountriesData.get("the_geom")!= null){
-                        String geomWKT = _CountriesData.get("the_geom").toString();
-                        currentConceptionEntity.addOrUpdateGeometryType(GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
-                        currentConceptionEntity.addOrUpdateGlobalCRSAID("EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
-                        currentConceptionEntity.addOrUpdateGLGeometryContent(geomWKT);
-                    }
-                //}
+                Map<String,Object> _CountriesData = _CountriesDataMap.get(_CountryRegionAlpha_2Code);
+                if(_CountriesData != null && _CountriesData.get("the_geom")!= null){
+                    String geomWKT = _CountriesData.get("the_geom").toString();
+                    currentConceptionEntity.addOrUpdateGeometryType(GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                    currentConceptionEntity.addOrUpdateGlobalCRSAID("EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
+                    currentConceptionEntity.addOrUpdateGLGeometryContent(geomWKT);
+                }
             }
         }
     }
