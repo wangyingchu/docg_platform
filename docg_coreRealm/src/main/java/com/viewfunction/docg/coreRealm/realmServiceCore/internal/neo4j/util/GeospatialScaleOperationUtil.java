@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util;
 
+import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
@@ -10,11 +11,9 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOper
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityValueTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleRelationEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeKind;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JAttributeKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.config.PropertiesHandler;
@@ -34,10 +33,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class GeospatialScaleOperationUtil {
 
@@ -580,26 +578,87 @@ public class GeospatialScaleOperationUtil {
                 }
             }
 
-            System.out.println(_ChinaDivisionCodeAndEntityUIDMap);
+            queryParameters = new QueryParameters();
+            queryParameters.setResultNumber(1000000);
+            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(GeospatialRegionProperty,geospatialRegionName));
+            attributeNamesList.add("ChinaParentDivisionCode");
+            attributeKindList.add(new Neo4JAttributeKindImpl(null,"ChinaParentDivisionCode",null, AttributeDataType.STRING,null));
+            getListConceptionEntityValueTransformer =  new GetListConceptionEntityValueTransformer(attributeNamesList,attributeKindList);
 
+            List<DivisionCodeInfo> divisionCodeInfoList = new ArrayList<>();
 
+            queryCql = CypherBuilder.matchAttributesWithQueryParameters(RealmConstant.GeospatialScalePrefectureEntityClass,queryParameters,attributeNamesList);
+            loadGeospatialScaleEntitiesOfChina(getListConceptionEntityValueTransformer,queryCql,workingGraphOperationExecutor,divisionCodeInfoList,_ChinaDivisionCodeAndEntityUIDMap);
 
+            queryCql = CypherBuilder.matchAttributesWithQueryParameters(RealmConstant.GeospatialScaleCountyEntityClass,queryParameters,attributeNamesList);
+            loadGeospatialScaleEntitiesOfChina(getListConceptionEntityValueTransformer,queryCql,workingGraphOperationExecutor,divisionCodeInfoList,_ChinaDivisionCodeAndEntityUIDMap);
 
+            queryCql = CypherBuilder.matchAttributesWithQueryParameters(RealmConstant.GeospatialScaleTownshipEntityClass,queryParameters,attributeNamesList);
+            loadGeospatialScaleEntitiesOfChina(getListConceptionEntityValueTransformer,queryCql,workingGraphOperationExecutor,divisionCodeInfoList,_ChinaDivisionCodeAndEntityUIDMap);
 
+            queryCql = CypherBuilder.matchAttributesWithQueryParameters(RealmConstant.GeospatialScaleVillageEntityClass,queryParameters,attributeNamesList);
+            loadGeospatialScaleEntitiesOfChina(getListConceptionEntityValueTransformer,queryCql,workingGraphOperationExecutor,divisionCodeInfoList,_ChinaDivisionCodeAndEntityUIDMap);
 
+            int degreeOfParallelism = Runtime.getRuntime().availableProcessors()/4 >4? Runtime.getRuntime().availableProcessors()/4 : 4;
+            int singlePartitionSize = (divisionCodeInfoList.size()/degreeOfParallelism)+1;
+            List<List<DivisionCodeInfo>> rsList = Lists.partition(divisionCodeInfoList, singlePartitionSize);
 
-
-
+            ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+            for(List<DivisionCodeInfo> currentConceptionEntityValueList:rsList){
+                LinkGeospatialScaleEventThread linkGeospatialScaleEventThread = new LinkGeospatialScaleEventThread(currentConceptionEntityValueList);
+                executor.execute(linkGeospatialScaleEventThread);
+            }
+            executor.shutdown();
 
         } catch (CoreRealmServiceEntityExploreException e) {
             e.printStackTrace();
         }
+    }
 
+    private static class LinkGeospatialScaleEventThread implements Runnable{
 
+        private List<DivisionCodeInfo> divisionCodeInfoList;
+        public LinkGeospatialScaleEventThread(List<DivisionCodeInfo> divisionCodeInfoList){
+            this.divisionCodeInfoList = divisionCodeInfoList;
+        }
 
+        @Override
+        public void run() {
+            GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
 
+            GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
+                    (RealmConstant.TimeScale_AttachToRelationClass,graphOperationExecutor);
+            for(DivisionCodeInfo currentDivisionCodeInfo:divisionCodeInfoList){
+                if(currentDivisionCodeInfo.getDivisionCode() !=null &&
+                        currentDivisionCodeInfo.getDivisionEntityUID() !=null &&
+                        currentDivisionCodeInfo.getParentDivisionEntityUID() !=null &&
+                        currentDivisionCodeInfo.getParentDivisionCode() !=null){
+                    Map<String,Object> relationPropertiesMap = new HashMap<>();
+                    String linkToTimeScaleEntityCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(currentDivisionCodeInfo.getParentDivisionEntityUID()),Long.parseLong(currentDivisionCodeInfo.getDivisionEntityUID()),RealmConstant.GeospatialScale_SpatialContainsRelationClass,relationPropertiesMap);
+                    graphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, linkToTimeScaleEntityCql);
+                }
+            }
+            graphOperationExecutor.close();
+        }
+    }
 
-
+    private static void loadGeospatialScaleEntitiesOfChina(GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer,
+                                                           String queryCql,GraphOperationExecutor workingGraphOperationExecutor,
+                                                           List<DivisionCodeInfo> divisionCodeInfoList,Map<String,String> _ChinaDivisionCodeAndEntityUIDMap){
+        Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
+        if(resEntityRes != null){
+            List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
+            for(ConceptionEntityValue currentConceptionEntityValue : resultEntitiesValues){
+                _ChinaDivisionCodeAndEntityUIDMap.put(currentConceptionEntityValue.getEntityAttributesValue().get(GeospatialCodeProperty).toString(),
+                        currentConceptionEntityValue.getConceptionEntityUID());
+                divisionCodeInfoList.add(new DivisionCodeInfo(
+                        currentConceptionEntityValue.getEntityAttributesValue().get(GeospatialCodeProperty).toString(),
+                        currentConceptionEntityValue.getConceptionEntityUID(),
+                        currentConceptionEntityValue.getEntityAttributesValue().get("ChinaParentDivisionCode").toString(),
+                        _ChinaDivisionCodeAndEntityUIDMap.get(currentConceptionEntityValue.getEntityAttributesValue().get("ChinaParentDivisionCode").toString())
+                ));
+            }
+        }
     }
 
     private static Map<String,Map<String,Object>> generateNE_10m_admin_states_provincesDataMap(){
@@ -702,5 +761,35 @@ public class GeospatialScaleOperationUtil {
         linkGeospatialScaleEntitiesOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
         //generateGeospatialScaleEntities(graphOperationExecutor,"DefaultGeospatialRegion");
         graphOperationExecutor.close();
+    }
+
+    private static class DivisionCodeInfo {
+        private String divisionEntityUID;
+        private String parentDivisionEntityUID;
+        private String parentDivisionCode;
+        private String divisionCode;
+
+        DivisionCodeInfo(String divisionCode, String divisionEntityUID, String parentDivisionCode,String parentDivisionEntityUID) {
+            this.divisionCode = divisionCode;
+            this.divisionEntityUID = divisionEntityUID;
+            this.parentDivisionCode = parentDivisionCode;
+            this.parentDivisionEntityUID = parentDivisionEntityUID;
+        }
+
+        public String getDivisionEntityUID() {
+            return divisionEntityUID;
+        }
+
+        public String getParentDivisionEntityUID() {
+            return parentDivisionEntityUID;
+        }
+
+        public String getParentDivisionCode() {
+            return parentDivisionCode;
+        }
+
+        public String getDivisionCode() {
+            return divisionCode;
+        }
     }
 }
