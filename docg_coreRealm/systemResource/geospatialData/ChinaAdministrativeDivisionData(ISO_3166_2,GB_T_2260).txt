@@ -12,7 +12,7 @@ province|省|CN-HI|Hainan Sheng|460000|海南省
 province|省|CN-HE|Hebei Sheng|130000|河北省
 province|省|CN-HL|Heilongjiang Sheng|230000|黑龙江省
 province|省|CN-HA|Henan Sheng|410000|河南省
-province|省|CN-HB|Hubei Sheng|130000|河北省
+province|省|CN-HB|Hubei Sheng|420000|湖北省
 province|省|CN-HN|Hunan Sheng|430000|湖南省
 province|省|CN-JS|Jiangsu Sheng|320000|江苏省
 province|省|CN-JX|Jiangxi Sheng|360000|江西省

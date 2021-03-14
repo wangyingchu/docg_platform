@@ -52,6 +52,7 @@ public class GeospatialScaleOperationUtil {
         generateGeospatialScaleEntities_ProvinceOfWorld(workingGraphOperationExecutor,geospatialRegionName);
         generateGeospatialScaleEntities_ProvinceOfChina(workingGraphOperationExecutor,geospatialRegionName);
         generateGeospatialScaleEntities_PrefectureAndLaterOfChina(workingGraphOperationExecutor,geospatialRegionName);
+        linkGeospatialScaleEntitiesOfChina(workingGraphOperationExecutor,geospatialRegionName);
     }
 
     private static void generateGeospatialScaleEntities_Continent(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
@@ -758,8 +759,8 @@ public class GeospatialScaleOperationUtil {
 
 
         //generateGeospatialScaleEntities_PrefectureAndLaterOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
-        linkGeospatialScaleEntitiesOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
-        //generateGeospatialScaleEntities(graphOperationExecutor,"DefaultGeospatialRegion");
+        //linkGeospatialScaleEntitiesOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
+        generateGeospatialScaleEntities(graphOperationExecutor,"DefaultGeospatialRegion");
         graphOperationExecutor.close();
     }
 
