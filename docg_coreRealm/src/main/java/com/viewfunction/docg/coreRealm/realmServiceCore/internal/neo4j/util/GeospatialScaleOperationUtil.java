@@ -811,6 +811,90 @@ public class GeospatialScaleOperationUtil {
         return _NE_10m_CountriesDataMap;
     }
 
+    private static Map<String,Map<String,Object>> generateNE_10m_admin_states_provincesForChinaDataMap(){
+        Map<String,Map<String,Object>> _ProvincesISO_3166_2DataMap = new HashMap<>();
+        String filePath =
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/statesAndProvinces/ne_10m_admin_1_states_provinces_modifiedForChina/"+"ne_10m_admin_1_states_provinces.shp";
+        SimpleFeatureCollection colls = readShp(filePath,null);
+        SimpleFeatureIterator iters = colls.features();
+
+        Map<String,String> ne_ChinaCodeMapping = new HashMap<>();
+        ne_ChinaCodeMapping.put("CN-11","CN-BJ");
+        ne_ChinaCodeMapping.put("CN-12","CN-TJ");
+        ne_ChinaCodeMapping.put("CN-13","CN-HE");
+        ne_ChinaCodeMapping.put("CN-14","CN-SX");
+        ne_ChinaCodeMapping.put("CN-15","CN-NM");
+        ne_ChinaCodeMapping.put("CN-21","CN-LN");
+        ne_ChinaCodeMapping.put("CN-22","CN-JL");
+        ne_ChinaCodeMapping.put("CN-23","CN-HL");
+        ne_ChinaCodeMapping.put("CN-31","CN-SH");
+        ne_ChinaCodeMapping.put("CN-32","CN-JS");
+        ne_ChinaCodeMapping.put("CN-33","CN-ZJ");
+        ne_ChinaCodeMapping.put("CN-34","CN-AH");
+        ne_ChinaCodeMapping.put("CN-35","CN-FJ");
+        ne_ChinaCodeMapping.put("CN-36","CN-JX");
+        ne_ChinaCodeMapping.put("CN-37","CN-SD");
+        ne_ChinaCodeMapping.put("CN-41","CN-HA");
+        ne_ChinaCodeMapping.put("CN-42","CN-HB");
+        ne_ChinaCodeMapping.put("CN-43","CN-HN");
+        ne_ChinaCodeMapping.put("CN-44","CN-GD");
+        ne_ChinaCodeMapping.put("CN-45","CN-GX");
+        ne_ChinaCodeMapping.put("CN-46","CN-HI");
+        ne_ChinaCodeMapping.put("CN-50","CN-CQ");
+        ne_ChinaCodeMapping.put("CN-51","CN-SC");
+        ne_ChinaCodeMapping.put("CN-52","CN-GZ");
+        ne_ChinaCodeMapping.put("CN-53","CN-YN");
+        ne_ChinaCodeMapping.put("CN-54","CN-XZ");
+        ne_ChinaCodeMapping.put("CN-61","CN-SN");
+        ne_ChinaCodeMapping.put("CN-62","CN-GS");
+        ne_ChinaCodeMapping.put("CN-63","CN-QH");
+        ne_ChinaCodeMapping.put("CN-64","CN-NX");
+        ne_ChinaCodeMapping.put("CN-65","CN-XJ");
+
+        ne_ChinaCodeMapping.put("HK-X01~", "810101");
+        ne_ChinaCodeMapping.put("HK-X02~", "810102");
+        ne_ChinaCodeMapping.put("HK-X03~", "810103");
+        ne_ChinaCodeMapping.put("HK-X04~", "810104");
+        ne_ChinaCodeMapping.put("HK-X05~", "810201");
+        ne_ChinaCodeMapping.put("HK-X06~", "810203");
+        ne_ChinaCodeMapping.put("HK-X07~", "810202");
+        ne_ChinaCodeMapping.put("HK-X08~", "810204");
+        ne_ChinaCodeMapping.put("HK-X09~", "810205");
+        ne_ChinaCodeMapping.put("HK-X10~", "810306");
+        ne_ChinaCodeMapping.put("HK-X11~", "810307");
+        ne_ChinaCodeMapping.put("HK-X12~", "810308");
+        ne_ChinaCodeMapping.put("HK-X13~", "810301");
+        ne_ChinaCodeMapping.put("HK-X14~", "810302");
+        ne_ChinaCodeMapping.put("HK-X15~", "810303");
+        ne_ChinaCodeMapping.put("HK-X16~", "810304");
+        ne_ChinaCodeMapping.put("HK-X17~", "810305");
+        ne_ChinaCodeMapping.put("HK-X18~", "810309");
+
+        while(iters.hasNext()){
+            SimpleFeature sf = iters.next();
+            Map<String,Object> _ISO_3166_2Data = new HashMap<>();
+            String iso_3166_2Code = sf.getAttribute("iso_3166_2").toString();
+            iso_3166_2Code = iso_3166_2Code.replace("~","");
+            _ProvincesISO_3166_2DataMap.put(iso_3166_2Code,_ISO_3166_2Data);
+
+            _ISO_3166_2Data.put("the_geom",sf.getAttribute("the_geom"));
+            _ISO_3166_2Data.put("name_en",sf.getAttribute("name_en"));
+            _ISO_3166_2Data.put("name_zh",sf.getAttribute("name_zh"));
+            _ISO_3166_2Data.put("gns_name",sf.getAttribute("gns_name"));
+            _ISO_3166_2Data.put("geonunit",sf.getAttribute("geonunit"));
+            _ISO_3166_2Data.put("latitude",sf.getAttribute("latitude"));
+            _ISO_3166_2Data.put("longitude",sf.getAttribute("longitude"));
+            _ISO_3166_2Data.put("iso_a2",sf.getAttribute("iso_a2"));
+            _ISO_3166_2Data.put("name_local",sf.getAttribute("name_local"));
+            _ISO_3166_2Data.put("type",sf.getAttribute("type"));
+            _ISO_3166_2Data.put("type_en",sf.getAttribute("type_en"));
+            _ISO_3166_2Data.put("gn_name",sf.getAttribute("gn_name"));
+            _ISO_3166_2Data.put("woe_label",sf.getAttribute("woe_label"));
+            _ISO_3166_2Data.put("woe_name",sf.getAttribute("woe_name"));
+        }
+        return _ProvincesISO_3166_2DataMap;
+    }
+
     private static SimpleFeatureCollection  readShp(String path , Filter filter){
         SimpleFeatureSource featureSource = readStoreByShp(path);
         if(featureSource == null){
