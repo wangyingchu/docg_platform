@@ -449,91 +449,92 @@ public class GeospatialScaleOperationUtil {
                 while ((tempStr = reader.readLine()) != null) {
                     String administrativeDivision_CodeInfoStr=tempStr.trim();
                     String[] codeInfoValueArray = administrativeDivision_CodeInfoStr.split(" ");
-
-                    String firstPartCode = codeInfoValueArray[0].trim();
-                    String secondPartCode = codeInfoValueArray[1].trim();
-                    String administrativeDivisionContent = codeInfoValueArray[2];
-                    String[] divisionNameArray = administrativeDivisionContent.split("-");
-                    if(divisionNameArray.length == 1){
-                        //length == 1 means is province level entity itself, ignore it
-                    }else{
-                        String _ChinaDivisionCode = null;
-                        String _ChinaParentDivisionCode = null;
-                        if(secondPartCode.equals("000000")){
-                            _ChinaDivisionCode = firstPartCode;
-                            if(_ChinaDivisionCode.endsWith("00")){
-                                _ChinaParentDivisionCode = firstPartCode.substring(0,2)+"0000";
-                            }else {
-                                _ChinaParentDivisionCode = firstPartCode.substring(0, 4) + "00";
-                            }
+                    if(codeInfoValueArray.length ==3){
+                        String firstPartCode = codeInfoValueArray[0].trim();
+                        String secondPartCode = codeInfoValueArray[1].trim();
+                        String administrativeDivisionContent = codeInfoValueArray[2];
+                        String[] divisionNameArray = administrativeDivisionContent.split("-");
+                        if(divisionNameArray.length == 1){
+                            //length == 1 means is province level entity itself, ignore it
                         }else{
-                            if(secondPartCode.endsWith("000")){
-                                _ChinaParentDivisionCode = firstPartCode;
-                                _ChinaDivisionCode = firstPartCode+secondPartCode;
-                                _ChinaDivisionCode = _ChinaDivisionCode.substring(0,9);
+                            String _ChinaDivisionCode = null;
+                            String _ChinaParentDivisionCode = null;
+                            if(secondPartCode.equals("000000")){
+                                _ChinaDivisionCode = firstPartCode;
+                                if(_ChinaDivisionCode.endsWith("00")){
+                                    _ChinaParentDivisionCode = firstPartCode.substring(0,2)+"0000";
+                                }else {
+                                    _ChinaParentDivisionCode = firstPartCode.substring(0, 4) + "00";
+                                }
                             }else{
-                                _ChinaDivisionCode = firstPartCode+secondPartCode;
-                                _ChinaParentDivisionCode = _ChinaDivisionCode.substring(0,9);
+                                if(secondPartCode.endsWith("000")){
+                                    _ChinaParentDivisionCode = firstPartCode;
+                                    _ChinaDivisionCode = firstPartCode+secondPartCode;
+                                    _ChinaDivisionCode = _ChinaDivisionCode.substring(0,9);
+                                }else{
+                                    _ChinaDivisionCode = firstPartCode+secondPartCode;
+                                    _ChinaParentDivisionCode = _ChinaDivisionCode.substring(0,9);
+                                }
                             }
+
+                            String PROVINCE_Name = divisionNameArray[0].trim();
+                            Map<String,Object> propertiesMap = new HashMap<>();
+
+                            propertiesMap.put("ChinaParentDivisionCode",_ChinaParentDivisionCode);
+                            propertiesMap.put("ChinaDivisionCode",_ChinaDivisionCode);
+                            propertiesMap.put("Standard","GB/T 2260 | GB/T 10114");
+                            propertiesMap.put("StandardStatus","Officially assigned");
+                            propertiesMap.put("ChinaProvinceName",PROVINCE_Name);
+
+                            propertiesMap.put(GeospatialCodeProperty,_ChinaDivisionCode);
+                            propertiesMap.put(GeospatialRegionProperty,geospatialRegionName);
+
+                            if(divisionNameArray.length == 2){
+                                conceptionTypeNameArray[1] = RealmConstant.GeospatialScalePrefectureEntityClass;
+                                propertiesMap.put(GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.PREFECTURE);
+                                String PREFECTURE_Name = divisionNameArray[1].trim();
+
+                                propertiesMap.put("ChinaProvinceName",PROVINCE_Name);
+                                propertiesMap.put("ChineseName",PREFECTURE_Name);
+                            }else if(divisionNameArray.length == 3){
+                                conceptionTypeNameArray[1] = RealmConstant.GeospatialScaleCountyEntityClass;
+                                propertiesMap.put(GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.COUNTY);
+                                String PREFECTURE_Name = divisionNameArray[1].trim();
+                                String COUNTY_Name = divisionNameArray[2].trim();
+
+                                propertiesMap.put("ChinaProvinceName",PROVINCE_Name);
+                                propertiesMap.put("ChinaPrefectureName",PREFECTURE_Name);
+                                propertiesMap.put("ChineseName",COUNTY_Name);
+                            }else if(divisionNameArray.length == 4){
+                                conceptionTypeNameArray[1] = RealmConstant.GeospatialScaleTownshipEntityClass;
+                                propertiesMap.put(GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.TOWNSHIP);
+                                String PREFECTURE_Name = divisionNameArray[1].trim();
+                                String COUNTY_Name = divisionNameArray[2].trim();
+                                String TOWNSHIP_Name = divisionNameArray[3].trim();
+
+                                propertiesMap.put("ChinaProvinceName",PROVINCE_Name);
+                                propertiesMap.put("ChinaPrefectureName",PREFECTURE_Name);
+                                propertiesMap.put("ChinaCountyName",COUNTY_Name);
+                                propertiesMap.put("ChineseName",TOWNSHIP_Name);
+                            }else if(divisionNameArray.length == 5){
+                                conceptionTypeNameArray[1] = RealmConstant.GeospatialScaleVillageEntityClass;
+                                propertiesMap.put(GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.VILLAGE);
+                                String PREFECTURE_Name = divisionNameArray[1].trim();
+                                String COUNTY_Name = divisionNameArray[2].trim();
+                                String TOWNSHIP_Name = divisionNameArray[3].trim();
+                                String VILLAGE_Name = divisionNameArray[4].trim();
+
+                                propertiesMap.put("ChinaProvinceName",PROVINCE_Name);
+                                propertiesMap.put("ChinaPrefectureName",PREFECTURE_Name);
+                                propertiesMap.put("ChinaCountyName",COUNTY_Name);
+                                propertiesMap.put("ChinaTownshipName",TOWNSHIP_Name);
+                                propertiesMap.put("ChineseName",VILLAGE_Name);
+                            }
+                            GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                                    new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleEntityClass,workingGraphOperationExecutor);
+                            String createGeospatialScaleEntitiesCql = CypherBuilder.createLabeledNodeWithProperties(conceptionTypeNameArray,propertiesMap);
+                            workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,createGeospatialScaleEntitiesCql);
                         }
-
-                        String PROVINCE_Name = divisionNameArray[0].trim();
-                        Map<String,Object> propertiesMap = new HashMap<>();
-
-                        propertiesMap.put("ChinaParentDivisionCode",_ChinaParentDivisionCode);
-                        propertiesMap.put("ChinaDivisionCode",_ChinaDivisionCode);
-                        propertiesMap.put("Standard","GB/T 2260 | GB/T 10114");
-                        propertiesMap.put("StandardStatus","Officially assigned");
-                        propertiesMap.put("ChinaProvinceName",PROVINCE_Name);
-
-                        propertiesMap.put(GeospatialCodeProperty,_ChinaDivisionCode);
-                        propertiesMap.put(GeospatialRegionProperty,geospatialRegionName);
-
-                        if(divisionNameArray.length == 2){
-                            conceptionTypeNameArray[1] = RealmConstant.GeospatialScalePrefectureEntityClass;
-                            propertiesMap.put(GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.PREFECTURE);
-                            String PREFECTURE_Name = divisionNameArray[1].trim();
-
-                            propertiesMap.put("ChinaProvinceName",PROVINCE_Name);
-                            propertiesMap.put("ChineseName",PREFECTURE_Name);
-                        }else if(divisionNameArray.length == 3){
-                            conceptionTypeNameArray[1] = RealmConstant.GeospatialScaleCountyEntityClass;
-                            propertiesMap.put(GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.COUNTY);
-                            String PREFECTURE_Name = divisionNameArray[1].trim();
-                            String COUNTY_Name = divisionNameArray[2].trim();
-
-                            propertiesMap.put("ChinaProvinceName",PROVINCE_Name);
-                            propertiesMap.put("ChinaPrefectureName",PREFECTURE_Name);
-                            propertiesMap.put("ChineseName",COUNTY_Name);
-                        }else if(divisionNameArray.length == 4){
-                            conceptionTypeNameArray[1] = RealmConstant.GeospatialScaleTownshipEntityClass;
-                            propertiesMap.put(GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.TOWNSHIP);
-                            String PREFECTURE_Name = divisionNameArray[1].trim();
-                            String COUNTY_Name = divisionNameArray[2].trim();
-                            String TOWNSHIP_Name = divisionNameArray[3].trim();
-
-                            propertiesMap.put("ChinaProvinceName",PROVINCE_Name);
-                            propertiesMap.put("ChinaPrefectureName",PREFECTURE_Name);
-                            propertiesMap.put("ChinaCountyName",COUNTY_Name);
-                            propertiesMap.put("ChineseName",TOWNSHIP_Name);
-                        }else if(divisionNameArray.length == 5){
-                            conceptionTypeNameArray[1] = RealmConstant.GeospatialScaleVillageEntityClass;
-                            propertiesMap.put(GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.VILLAGE);
-                            String PREFECTURE_Name = divisionNameArray[1].trim();
-                            String COUNTY_Name = divisionNameArray[2].trim();
-                            String TOWNSHIP_Name = divisionNameArray[3].trim();
-                            String VILLAGE_Name = divisionNameArray[4].trim();
-
-                            propertiesMap.put("ChinaProvinceName",PROVINCE_Name);
-                            propertiesMap.put("ChinaPrefectureName",PREFECTURE_Name);
-                            propertiesMap.put("ChinaCountyName",COUNTY_Name);
-                            propertiesMap.put("ChinaTownshipName",TOWNSHIP_Name);
-                            propertiesMap.put("ChineseName",VILLAGE_Name);
-                        }
-                        GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
-                                new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleEntityClass,workingGraphOperationExecutor);
-                        String createGeospatialScaleEntitiesCql = CypherBuilder.createLabeledNodeWithProperties(conceptionTypeNameArray,propertiesMap);
-                        workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,createGeospatialScaleEntitiesCql);
                     }
                 }
                 reader.close();
