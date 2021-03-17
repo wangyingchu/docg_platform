@@ -46,13 +46,17 @@ public class GeospatialScaleOperationUtil {
     public static final String GeospatialScaleGradeProperty = "DOCG_GeospatialScaleGrade";
 
     public static void generateGeospatialScaleEntities(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
-        generateGeospatialScaleEntities_Continent(workingGraphOperationExecutor,geospatialRegionName);
-        generateGeospatialScaleEntities_CountryRegion(workingGraphOperationExecutor,geospatialRegionName);
-        updateCountryRegionEntities_GeospatialScaleInfo(workingGraphOperationExecutor,geospatialRegionName);
-        generateGeospatialScaleEntities_ProvinceOfWorld(workingGraphOperationExecutor,geospatialRegionName);
-        generateGeospatialScaleEntities_ProvinceOfChina(workingGraphOperationExecutor,geospatialRegionName);
+        //generateGeospatialScaleEntities_Continent(workingGraphOperationExecutor,geospatialRegionName);
+        //generateGeospatialScaleEntities_CountryRegion(workingGraphOperationExecutor,geospatialRegionName);
+        //updateCountryRegionEntities_GeospatialScaleInfo(workingGraphOperationExecutor,geospatialRegionName);
+        //generateGeospatialScaleEntities_ProvinceOfWorld(workingGraphOperationExecutor,geospatialRegionName);
+        //generateGeospatialScaleEntities_ProvinceOfChina(workingGraphOperationExecutor,geospatialRegionName);
+
+
         generateGeospatialScaleEntities_PrefectureAndLaterOfChina(workingGraphOperationExecutor,geospatialRegionName);
         linkGeospatialScaleEntitiesOfChina(workingGraphOperationExecutor,geospatialRegionName);
+
+
         linkSpecialAdministrativeRegionEntitiesOfChina(workingGraphOperationExecutor,geospatialRegionName);
     }
 
@@ -425,9 +429,24 @@ public class GeospatialScaleOperationUtil {
             Object resultEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
             if(resultEntityList != null){
                 List<ConceptionEntity> resultContinentList =  (List<ConceptionEntity>)resultEntityList;
+
+                int degreeOfParallelism = Runtime.getRuntime().availableProcessors()/4 >4? Runtime.getRuntime().availableProcessors()/4 : 4;
+                int singlePartitionSize = (resultContinentList.size()/degreeOfParallelism)+1;
+                List<List<ConceptionEntity>> rsList = Lists.partition(resultContinentList, singlePartitionSize);
+
+                ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+                for(List<ConceptionEntity> currentConceptionEntityValueList:rsList){
+                    GeneratePrefectureAndLaterLevelEntitiesOfChinaThread generatePrefectureAndLaterLevelEntitiesOfChinaThread =
+                            new GeneratePrefectureAndLaterLevelEntitiesOfChinaThread(currentConceptionEntityValueList,geospatialRegionName);
+                    executor.execute(generatePrefectureAndLaterLevelEntitiesOfChinaThread);
+                }
+                executor.shutdown();
+
+                /*
                 for(ConceptionEntity currentConceptionEntity : resultContinentList){
                     generatePrefectureAndLaterLevelEntitiesOfChina(currentConceptionEntity,geospatialRegionName,workingGraphOperationExecutor);
                 }
+                */
             }
         } catch (CoreRealmServiceEntityExploreException e) {
             e.printStackTrace();
@@ -608,8 +627,8 @@ public class GeospatialScaleOperationUtil {
 
             ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
             for(List<DivisionCodeInfo> currentConceptionEntityValueList:rsList){
-                LinkGeospatialScaleEventThread linkGeospatialScaleEventThread = new LinkGeospatialScaleEventThread(currentConceptionEntityValueList);
-                executor.execute(linkGeospatialScaleEventThread);
+                LinkGeospatialScaleEntityThread linkGeospatialScaleEntityThread = new LinkGeospatialScaleEntityThread(currentConceptionEntityValueList);
+                executor.execute(linkGeospatialScaleEntityThread);
             }
             executor.shutdown();
 
@@ -618,10 +637,10 @@ public class GeospatialScaleOperationUtil {
         }
     }
 
-    private static class LinkGeospatialScaleEventThread implements Runnable{
+    private static class LinkGeospatialScaleEntityThread implements Runnable{
 
         private List<DivisionCodeInfo> divisionCodeInfoList;
-        public LinkGeospatialScaleEventThread(List<DivisionCodeInfo> divisionCodeInfoList){
+        public LinkGeospatialScaleEntityThread(List<DivisionCodeInfo> divisionCodeInfoList){
             this.divisionCodeInfoList = divisionCodeInfoList;
         }
 
@@ -630,7 +649,7 @@ public class GeospatialScaleOperationUtil {
             GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
 
             GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
-                    (RealmConstant.TimeScale_AttachToRelationClass,graphOperationExecutor);
+                    (RealmConstant.GeospatialScale_SpatialContainsRelationClass,graphOperationExecutor);
             for(DivisionCodeInfo currentDivisionCodeInfo:divisionCodeInfoList){
                 if(currentDivisionCodeInfo.getDivisionCode() !=null &&
                         currentDivisionCodeInfo.getDivisionEntityUID() !=null &&
@@ -640,6 +659,25 @@ public class GeospatialScaleOperationUtil {
                     String linkToTimeScaleEntityCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(currentDivisionCodeInfo.getParentDivisionEntityUID()),Long.parseLong(currentDivisionCodeInfo.getDivisionEntityUID()),RealmConstant.GeospatialScale_SpatialContainsRelationClass,relationPropertiesMap);
                     graphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, linkToTimeScaleEntityCql);
                 }
+            }
+            graphOperationExecutor.close();
+        }
+    }
+
+    private static class GeneratePrefectureAndLaterLevelEntitiesOfChinaThread implements Runnable{
+
+        private List<ConceptionEntity> _ChinaProvinceConceptionEntityList;
+        private String geospatialRegionName;
+        public GeneratePrefectureAndLaterLevelEntitiesOfChinaThread(List<ConceptionEntity> _ChinaProvinceConceptionEntityList,String geospatialRegionName){
+            this._ChinaProvinceConceptionEntityList = _ChinaProvinceConceptionEntityList;
+            this.geospatialRegionName = geospatialRegionName;
+        }
+
+        @Override
+        public void run() {
+            GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
+            for(ConceptionEntity currentConceptionEntity : this._ChinaProvinceConceptionEntityList){
+                generatePrefectureAndLaterLevelEntitiesOfChina(currentConceptionEntity,this.geospatialRegionName,graphOperationExecutor);
             }
             graphOperationExecutor.close();
         }
