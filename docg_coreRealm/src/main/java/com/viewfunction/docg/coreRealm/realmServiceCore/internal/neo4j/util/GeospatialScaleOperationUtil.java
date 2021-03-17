@@ -331,6 +331,7 @@ public class GeospatialScaleOperationUtil {
     }
 
     private static void generateGeospatialScaleEntities_ProvinceOfChina(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName) {
+        Map<String,Map<String,Object>> _ChinaProvinceGISInfoMap = generateNE_10m_admin_states_provincesForChinaDataMap();
         String _ChinaGeospatialEntityUID = null;
         try {
             QueryParameters queryParameters = new QueryParameters();
@@ -391,6 +392,19 @@ public class GeospatialScaleOperationUtil {
 
                     GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
                             new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleProvinceEntityClass,workingGraphOperationExecutor);
+
+                    if(_ChinaProvinceGISInfoMap.get(ChinaDivisionCode) != null){
+                        propertiesMap.put(RealmConstant._GeospatialGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                        String geomWKT = _ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("the_geom").toString();
+                        propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI_Latitude,Double.valueOf(_ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("latitude").toString()));
+                        propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI_Longitude,Double.valueOf(_ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("longitude").toString()));
+                        propertiesMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
+                        propertiesMap.put(RealmConstant._GeospatialGLGeometryContent,geomWKT);
+                        propertiesMap.put(RealmConstant._GeospatialCLGeometryPOI_Latitude,Double.valueOf(_ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("latitude").toString()));
+                        propertiesMap.put(RealmConstant._GeospatialCLGeometryPOI_Longitude,Double.valueOf(_ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("longitude").toString()));
+                        propertiesMap.put(RealmConstant._GeospatialCountryCRSAID,"EPSG:4490"); // CRS EPSG:4490 - CGCS2000 - Geographic
+                        propertiesMap.put(RealmConstant._GeospatialCLGeometryContent,geomWKT);
+                    }
 
                     String createGeospatialScaleEntitiesCql = CypherBuilder.createLabeledNodeWithProperties(conceptionTypeNameArray,propertiesMap);
                     Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,createGeospatialScaleEntitiesCql);
@@ -929,7 +943,7 @@ public class GeospatialScaleOperationUtil {
             Map<String,Object> _ISO_3166_2Data = new HashMap<>();
             String iso_3166_2Code = sf.getAttribute("iso_3166_2").toString();
             if(ne_ChinaCodeMapping.containsKey(iso_3166_2Code)){
-                _ProvincesISO_3166_2DataMap.put(iso_3166_2Code,_ISO_3166_2Data);
+                _ProvincesISO_3166_2DataMap.put(ne_ChinaCodeMapping.get(iso_3166_2Code),_ISO_3166_2Data);
                 _ISO_3166_2Data.put("the_geom",sf.getAttribute("the_geom"));
                 _ISO_3166_2Data.put("name_en",sf.getAttribute("name_en"));
                 _ISO_3166_2Data.put("name_zh",sf.getAttribute("name_zh"));
@@ -980,7 +994,7 @@ public class GeospatialScaleOperationUtil {
         GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
         //generateGeospatialScaleEntities_Continent(graphOperationExecutor,"DefaultGeospatialRegion");
         //generateGeospatialScaleEntities_CountryRegion(graphOperationExecutor,"DefaultGeospatialRegion");
-        //generateGeospatialScaleEntities_ProvinceOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
+        generateGeospatialScaleEntities_ProvinceOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
         //generateGeospatialScaleEntities_ProvinceOfWorld(graphOperationExecutor,"DefaultGeospatialRegion");
         //generateNE_10m_CountriesDataMap();
         //updateCountryRegionEntities_GeospatialScaleInfo(graphOperationExecutor,"DefaultGeospatialRegion");
@@ -988,7 +1002,7 @@ public class GeospatialScaleOperationUtil {
         //generateGeospatialScaleEntities_PrefectureAndLaterOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
         //linkGeospatialScaleEntitiesOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
         //linkSpecialAdministrativeRegionEntitiesOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
-        generateGeospatialScaleEntities(graphOperationExecutor,"DefaultGeospatialRegion");
+        //generateGeospatialScaleEntities(graphOperationExecutor,"DefaultGeospatialRegion");
         graphOperationExecutor.close();
     }
 
