@@ -36,6 +36,7 @@ import java.nio.charset.Charset;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class GeospatialScaleOperationUtil {
 
@@ -46,17 +47,13 @@ public class GeospatialScaleOperationUtil {
     public static final String GeospatialScaleGradeProperty = "DOCG_GeospatialScaleGrade";
 
     public static void generateGeospatialScaleEntities(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
-        //generateGeospatialScaleEntities_Continent(workingGraphOperationExecutor,geospatialRegionName);
-        //generateGeospatialScaleEntities_CountryRegion(workingGraphOperationExecutor,geospatialRegionName);
-        //updateCountryRegionEntities_GeospatialScaleInfo(workingGraphOperationExecutor,geospatialRegionName);
-        //generateGeospatialScaleEntities_ProvinceOfWorld(workingGraphOperationExecutor,geospatialRegionName);
-        //generateGeospatialScaleEntities_ProvinceOfChina(workingGraphOperationExecutor,geospatialRegionName);
-
-
+        generateGeospatialScaleEntities_Continent(workingGraphOperationExecutor,geospatialRegionName);
+        generateGeospatialScaleEntities_CountryRegion(workingGraphOperationExecutor,geospatialRegionName);
+        updateCountryRegionEntities_GeospatialScaleInfo(workingGraphOperationExecutor,geospatialRegionName);
+        generateGeospatialScaleEntities_ProvinceOfWorld(workingGraphOperationExecutor,geospatialRegionName);
+        generateGeospatialScaleEntities_ProvinceOfChina(workingGraphOperationExecutor,geospatialRegionName);
         generateGeospatialScaleEntities_PrefectureAndLaterOfChina(workingGraphOperationExecutor,geospatialRegionName);
         linkGeospatialScaleEntitiesOfChina(workingGraphOperationExecutor,geospatialRegionName);
-
-
         linkSpecialAdministrativeRegionEntitiesOfChina(workingGraphOperationExecutor,geospatialRegionName);
     }
 
@@ -441,14 +438,9 @@ public class GeospatialScaleOperationUtil {
                     executor.execute(generatePrefectureAndLaterLevelEntitiesOfChinaThread);
                 }
                 executor.shutdown();
-
-                /*
-                for(ConceptionEntity currentConceptionEntity : resultContinentList){
-                    generatePrefectureAndLaterLevelEntitiesOfChina(currentConceptionEntity,geospatialRegionName,workingGraphOperationExecutor);
-                }
-                */
+                executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
             }
-        } catch (CoreRealmServiceEntityExploreException e) {
+        } catch (CoreRealmServiceEntityExploreException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -631,8 +623,8 @@ public class GeospatialScaleOperationUtil {
                 executor.execute(linkGeospatialScaleEntityThread);
             }
             executor.shutdown();
-
-        } catch (CoreRealmServiceEntityExploreException e) {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (CoreRealmServiceEntityExploreException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -908,27 +900,51 @@ public class GeospatialScaleOperationUtil {
         ne_ChinaCodeMapping.put("HK-X17~", "810305");
         ne_ChinaCodeMapping.put("HK-X18~", "810309");
 
+        ne_ChinaCodeMapping.put("TW-CHA", "712700");
+        ne_ChinaCodeMapping.put("TW-CYI", "710700");
+        ne_ChinaCodeMapping.put("TW-CYQ", "713000");
+        ne_ChinaCodeMapping.put("TW-HSQ", "712400");
+        ne_ChinaCodeMapping.put("TW-HSZ", "710600");
+        ne_ChinaCodeMapping.put("TW-HUA", "713500");
+        ne_ChinaCodeMapping.put("TW-ILA", "712200");
+        ne_ChinaCodeMapping.put("TW-KEE", "710300");
+        ne_ChinaCodeMapping.put("TW-KHH", "710200");
+        ne_ChinaCodeMapping.put("TW-KIN", "713700");
+        ne_ChinaCodeMapping.put("TW-MIA", "712500");
+        ne_ChinaCodeMapping.put("TW-NAN", "712800");
+        ne_ChinaCodeMapping.put("TW-PEN", "713600");
+        ne_ChinaCodeMapping.put("TW-PIF", "713300");
+        ne_ChinaCodeMapping.put("TW_TAO", "712300");
+        ne_ChinaCodeMapping.put("TW_TNN", "710500");
+        ne_ChinaCodeMapping.put("TW-TPE", "710100");
+        ne_ChinaCodeMapping.put("TW-TPQ", "710800");
+        ne_ChinaCodeMapping.put("TW-TTT", "713400");
+        ne_ChinaCodeMapping.put("TW-TXG", "710400");
+        ne_ChinaCodeMapping.put("TW-YUN", "712900");
+
+        ne_ChinaCodeMapping.put("MO-M", "820000");
+
         while(iters.hasNext()){
             SimpleFeature sf = iters.next();
             Map<String,Object> _ISO_3166_2Data = new HashMap<>();
             String iso_3166_2Code = sf.getAttribute("iso_3166_2").toString();
-            iso_3166_2Code = iso_3166_2Code.replace("~","");
-            _ProvincesISO_3166_2DataMap.put(iso_3166_2Code,_ISO_3166_2Data);
-
-            _ISO_3166_2Data.put("the_geom",sf.getAttribute("the_geom"));
-            _ISO_3166_2Data.put("name_en",sf.getAttribute("name_en"));
-            _ISO_3166_2Data.put("name_zh",sf.getAttribute("name_zh"));
-            _ISO_3166_2Data.put("gns_name",sf.getAttribute("gns_name"));
-            _ISO_3166_2Data.put("geonunit",sf.getAttribute("geonunit"));
-            _ISO_3166_2Data.put("latitude",sf.getAttribute("latitude"));
-            _ISO_3166_2Data.put("longitude",sf.getAttribute("longitude"));
-            _ISO_3166_2Data.put("iso_a2",sf.getAttribute("iso_a2"));
-            _ISO_3166_2Data.put("name_local",sf.getAttribute("name_local"));
-            _ISO_3166_2Data.put("type",sf.getAttribute("type"));
-            _ISO_3166_2Data.put("type_en",sf.getAttribute("type_en"));
-            _ISO_3166_2Data.put("gn_name",sf.getAttribute("gn_name"));
-            _ISO_3166_2Data.put("woe_label",sf.getAttribute("woe_label"));
-            _ISO_3166_2Data.put("woe_name",sf.getAttribute("woe_name"));
+            if(ne_ChinaCodeMapping.containsKey(iso_3166_2Code)){
+                _ProvincesISO_3166_2DataMap.put(iso_3166_2Code,_ISO_3166_2Data);
+                _ISO_3166_2Data.put("the_geom",sf.getAttribute("the_geom"));
+                _ISO_3166_2Data.put("name_en",sf.getAttribute("name_en"));
+                _ISO_3166_2Data.put("name_zh",sf.getAttribute("name_zh"));
+                _ISO_3166_2Data.put("gns_name",sf.getAttribute("gns_name"));
+                _ISO_3166_2Data.put("geonunit",sf.getAttribute("geonunit"));
+                _ISO_3166_2Data.put("latitude",sf.getAttribute("latitude"));
+                _ISO_3166_2Data.put("longitude",sf.getAttribute("longitude"));
+                _ISO_3166_2Data.put("iso_a2",sf.getAttribute("iso_a2"));
+                _ISO_3166_2Data.put("name_local",sf.getAttribute("name_local"));
+                _ISO_3166_2Data.put("type",sf.getAttribute("type"));
+                _ISO_3166_2Data.put("type_en",sf.getAttribute("type_en"));
+                _ISO_3166_2Data.put("gn_name",sf.getAttribute("gn_name"));
+                _ISO_3166_2Data.put("woe_label",sf.getAttribute("woe_label"));
+                _ISO_3166_2Data.put("woe_name",sf.getAttribute("woe_name"));
+            }
         }
         return _ProvincesISO_3166_2DataMap;
     }
