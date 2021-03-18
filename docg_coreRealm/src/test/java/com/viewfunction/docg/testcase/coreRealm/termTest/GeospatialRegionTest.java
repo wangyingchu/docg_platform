@@ -58,10 +58,12 @@ public class GeospatialRegionTest {
             System.out.println(currentGeospatialScaleEntity.getGeospatialScaleGrade());
             System.out.println(currentGeospatialScaleEntity.getChineseName());
             System.out.println(currentGeospatialScaleEntity.getEnglishName());
-
-
         }
 
-
+        GeospatialScaleEntity geospatialScaleEntity1 = defaultGeospatialRegion.getContinentEntity("Asia");
+        System.out.println(geospatialScaleEntity1.getGeospatialCode());
+        System.out.println(geospatialScaleEntity1.getGeospatialScaleGrade());
+        System.out.println(geospatialScaleEntity1.getChineseName());
+        System.out.println(geospatialScaleEntity1.getEnglishName());
     }
 }
