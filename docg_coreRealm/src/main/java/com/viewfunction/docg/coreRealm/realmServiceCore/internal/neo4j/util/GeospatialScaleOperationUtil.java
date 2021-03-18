@@ -446,10 +446,11 @@ public class GeospatialScaleOperationUtil {
                 int singlePartitionSize = (resultContinentList.size()/degreeOfParallelism)+1;
                 List<List<ConceptionEntity>> rsList = Lists.partition(resultContinentList, singlePartitionSize);
 
+                Map<String,String> _ChinaEntityWKTMap = generateChinaEntityWKTMap();
                 ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
                 for(List<ConceptionEntity> currentConceptionEntityValueList:rsList){
                     GeneratePrefectureAndLaterLevelEntitiesOfChinaThread generatePrefectureAndLaterLevelEntitiesOfChinaThread =
-                            new GeneratePrefectureAndLaterLevelEntitiesOfChinaThread(currentConceptionEntityValueList,geospatialRegionName);
+                            new GeneratePrefectureAndLaterLevelEntitiesOfChinaThread(currentConceptionEntityValueList,geospatialRegionName,_ChinaEntityWKTMap);
                     executor.execute(generatePrefectureAndLaterLevelEntitiesOfChinaThread);
                 }
                 executor.shutdown();
@@ -460,7 +461,8 @@ public class GeospatialScaleOperationUtil {
         }
     }
 
-    private static void generatePrefectureAndLaterLevelEntitiesOfChina(ConceptionEntity _ProvinceRegionConceptionEntity,String geospatialRegionName,GraphOperationExecutor workingGraphOperationExecutor){
+    private static void generatePrefectureAndLaterLevelEntitiesOfChina(ConceptionEntity _ProvinceRegionConceptionEntity,
+                                                                       String geospatialRegionName,GraphOperationExecutor workingGraphOperationExecutor,Map<String,String> _ChinaEntityWKTMap){
         String currentProvinceName = _ProvinceRegionConceptionEntity.getAttribute("ChineseName").getAttributeValue().toString();
         String[] conceptionTypeNameArray = new String[2];
         conceptionTypeNameArray[0] = RealmConstant.GeospatialScaleEntityClass;
@@ -556,6 +558,17 @@ public class GeospatialScaleOperationUtil {
                                 propertiesMap.put("ChinaCountyName",COUNTY_Name);
                                 propertiesMap.put("ChinaTownshipName",TOWNSHIP_Name);
                                 propertiesMap.put("ChineseName",VILLAGE_Name);
+                            }
+                            if(_ChinaEntityWKTMap.containsKey(_ChinaDivisionCode)){
+                                propertiesMap.put(RealmConstant._GeospatialGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                                //propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI_Latitude,Double.valueOf(_ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("latitude").toString()));
+                                //propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI_Longitude,Double.valueOf(_ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("longitude").toString()));
+                                propertiesMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
+                                propertiesMap.put(RealmConstant._GeospatialGLGeometryContent,_ChinaEntityWKTMap.get(_ChinaDivisionCode));
+                                //propertiesMap.put(RealmConstant._GeospatialCLGeometryPOI_Latitude,Double.valueOf(_ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("latitude").toString()));
+                                //propertiesMap.put(RealmConstant._GeospatialCLGeometryPOI_Longitude,Double.valueOf(_ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("longitude").toString()));
+                                propertiesMap.put(RealmConstant._GeospatialCountryCRSAID,"EPSG:4490"); // CRS EPSG:4490 - CGCS2000 - Geographic
+                                propertiesMap.put(RealmConstant._GeospatialCLGeometryContent,_ChinaEntityWKTMap.get(_ChinaDivisionCode));
                             }
                             GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
                                     new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleEntityClass,workingGraphOperationExecutor);
@@ -675,16 +688,18 @@ public class GeospatialScaleOperationUtil {
 
         private List<ConceptionEntity> _ChinaProvinceConceptionEntityList;
         private String geospatialRegionName;
-        public GeneratePrefectureAndLaterLevelEntitiesOfChinaThread(List<ConceptionEntity> _ChinaProvinceConceptionEntityList,String geospatialRegionName){
+        private Map<String,String> _ChinaEntityWKTMap;
+        public GeneratePrefectureAndLaterLevelEntitiesOfChinaThread(List<ConceptionEntity> _ChinaProvinceConceptionEntityList,String geospatialRegionName,Map<String,String> _ChinaEntityWKTMap){
             this._ChinaProvinceConceptionEntityList = _ChinaProvinceConceptionEntityList;
             this.geospatialRegionName = geospatialRegionName;
+            this._ChinaEntityWKTMap = _ChinaEntityWKTMap;
         }
 
         @Override
         public void run() {
             GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
             for(ConceptionEntity currentConceptionEntity : this._ChinaProvinceConceptionEntityList){
-                generatePrefectureAndLaterLevelEntitiesOfChina(currentConceptionEntity,this.geospatialRegionName,graphOperationExecutor);
+                generatePrefectureAndLaterLevelEntitiesOfChina(currentConceptionEntity,this.geospatialRegionName,graphOperationExecutor,this._ChinaEntityWKTMap);
             }
             graphOperationExecutor.close();
         }
@@ -991,6 +1006,38 @@ public class GeospatialScaleOperationUtil {
         return featureSource;
     }
 
+    private static Map<String,String> generateChinaEntityWKTMap(){
+        Map<String,String> _ChinaEntityWKTMap = new HashMap<>();
+        String filePath = PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/China_GISInfo_WKT.txt";
+        File file = new File(filePath);
+        if (file.exists()) {
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new FileReader(file));
+                String tempStr;
+                while ((tempStr = reader.readLine()) != null) {
+                    String _ChinaEntityWKTStr = tempStr.trim();
+                    String[] wktDataValueArray = _ChinaEntityWKTStr.split("-");
+                    String entityGeospatialCode = wktDataValueArray[0];
+                    String entityWKT = wktDataValueArray[2];
+                    _ChinaEntityWKTMap.put(entityGeospatialCode.trim(),entityWKT);
+                }
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+        }
+        return _ChinaEntityWKTMap;
+    }
+
     public static void main(String[] args){
         GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
         //generateGeospatialScaleEntities_Continent(graphOperationExecutor,"DefaultGeospatialRegion");
@@ -1004,6 +1051,8 @@ public class GeospatialScaleOperationUtil {
         //linkGeospatialScaleEntitiesOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
         //linkSpecialAdministrativeRegionEntitiesOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
         generateGeospatialScaleEntities(graphOperationExecutor,"DefaultGeospatialRegion");
+
+        //generateChinaEntityWKTMap();
         graphOperationExecutor.close();
     }
 
