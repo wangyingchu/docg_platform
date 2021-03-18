@@ -46,7 +46,7 @@ public class GeospatialScaleOperationUtil {
     public static final String GeospatialRegionProperty = "DOCG_GeospatialRegion";
     public static final String GeospatialScaleGradeProperty = "DOCG_GeospatialScaleGrade";
 
-    public static void generateGeospatialScaleEntities(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
+    public static boolean generateGeospatialScaleEntities(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
         generateGeospatialScaleEntities_Continent(workingGraphOperationExecutor,geospatialRegionName);
         generateGeospatialScaleEntities_CountryRegion(workingGraphOperationExecutor,geospatialRegionName);
         updateCountryRegionEntities_GeospatialScaleInfo(workingGraphOperationExecutor,geospatialRegionName);
@@ -55,6 +55,7 @@ public class GeospatialScaleOperationUtil {
         generateGeospatialScaleEntities_PrefectureAndLaterOfChina(workingGraphOperationExecutor,geospatialRegionName);
         linkGeospatialScaleEntitiesOfChina(workingGraphOperationExecutor,geospatialRegionName);
         linkSpecialAdministrativeRegionEntitiesOfChina(workingGraphOperationExecutor,geospatialRegionName);
+        return true;
     }
 
     private static void generateGeospatialScaleEntities_Continent(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
@@ -994,7 +995,7 @@ public class GeospatialScaleOperationUtil {
         GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
         //generateGeospatialScaleEntities_Continent(graphOperationExecutor,"DefaultGeospatialRegion");
         //generateGeospatialScaleEntities_CountryRegion(graphOperationExecutor,"DefaultGeospatialRegion");
-        generateGeospatialScaleEntities_ProvinceOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
+        //generateGeospatialScaleEntities_ProvinceOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
         //generateGeospatialScaleEntities_ProvinceOfWorld(graphOperationExecutor,"DefaultGeospatialRegion");
         //generateNE_10m_CountriesDataMap();
         //updateCountryRegionEntities_GeospatialScaleInfo(graphOperationExecutor,"DefaultGeospatialRegion");
@@ -1002,7 +1003,7 @@ public class GeospatialScaleOperationUtil {
         //generateGeospatialScaleEntities_PrefectureAndLaterOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
         //linkGeospatialScaleEntitiesOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
         //linkSpecialAdministrativeRegionEntitiesOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
-        //generateGeospatialScaleEntities(graphOperationExecutor,"DefaultGeospatialRegion");
+        generateGeospatialScaleEntities(graphOperationExecutor,"DefaultGeospatialRegion");
         graphOperationExecutor.close();
     }
 

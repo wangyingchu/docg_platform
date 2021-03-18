@@ -1,12 +1,19 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListGeospatialScaleEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GeospatialScaleOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JGeospatialRegion;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
@@ -30,12 +37,29 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
 
     @Override
     public boolean createGeospatialScaleEntities() {
-        return false;
+        try{
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            return GeospatialScaleOperationUtil.generateGeospatialScaleEntities(workingGraphOperationExecutor,this.geospatialRegionName);
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
     public List<GeospatialScaleEntity> listContinentEntities() {
-        return null;
+      try{
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialScaleContinentEntityClass,
+                    GeospatialScaleOperationUtil.GeospatialRegionProperty,geospatialRegionName,100);
+            GetListGeospatialScaleEntityTransformer getListGeospatialScaleEntityTransformer = new GetListGeospatialScaleEntityTransformer(this.coreRealmName,this.geospatialRegionName,workingGraphOperationExecutor);
+            Object resultEntityList = workingGraphOperationExecutor.executeRead(getListGeospatialScaleEntityTransformer,queryCql);
+            if(resultEntityList != null){
+                return (List<GeospatialScaleEntity>)resultEntityList;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return new ArrayList<>();
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 import org.testng.Assert;
@@ -34,6 +35,7 @@ public class GeospatialRegionTest {
         GeospatialRegion defaultGeospatialRegion = coreRealm.getOrCreateGeospatialRegion();
         System.out.println(defaultGeospatialRegion.getGeospatialRegionName());
 
+        /*
         GeospatialRegion geospatialRegion1 = coreRealm.getOrCreateGeospatialRegion("geospatialRegion1");
         System.out.println(geospatialRegion1.getGeospatialRegionName());
 
@@ -46,6 +48,18 @@ public class GeospatialRegionTest {
         geospatialRegionList = coreRealm.getGeospatialRegions();
         for(GeospatialRegion currentGeospatialRegion: geospatialRegionList){
             System.out.println(currentGeospatialRegion.getGeospatialRegionName());
+        }
+        */
+
+        List<GeospatialScaleEntity> continentGeospatialScaleEntityList = defaultGeospatialRegion.listContinentEntities();
+
+        for(GeospatialScaleEntity currentGeospatialScaleEntity:continentGeospatialScaleEntityList){
+            System.out.println(currentGeospatialScaleEntity.getGeospatialCode());
+            System.out.println(currentGeospatialScaleEntity.getGeospatialScaleGrade());
+            System.out.println(currentGeospatialScaleEntity.getChineseName());
+            System.out.println(currentGeospatialScaleEntity.getEnglishName());
+
+
         }
 
 
