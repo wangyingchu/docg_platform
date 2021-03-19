@@ -1071,24 +1071,6 @@ public class GeospatialScaleOperationUtil {
         return _ChinaEntityWKTMap;
     }
 
-    public static void main(String[] args){
-        GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
-        //generateGeospatialScaleEntities_Continent(graphOperationExecutor,"DefaultGeospatialRegion");
-        //generateGeospatialScaleEntities_CountryRegion(graphOperationExecutor,"DefaultGeospatialRegion");
-        //generateGeospatialScaleEntities_ProvinceOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
-        //generateGeospatialScaleEntities_ProvinceOfWorld(graphOperationExecutor,"DefaultGeospatialRegion");
-        //generateNE_10m_CountriesDataMap();
-        //updateCountryRegionEntities_GeospatialScaleInfo(graphOperationExecutor,"DefaultGeospatialRegion");
-        //generateGeospatialScaleEntities_ProvinceOfWorld(graphOperationExecutor,"DefaultGeospatialRegion");
-        //generateGeospatialScaleEntities_PrefectureAndLaterOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
-        //linkGeospatialScaleEntitiesOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
-        //linkSpecialAdministrativeRegionEntitiesOfChina(graphOperationExecutor,"DefaultGeospatialRegion");
-        generateGeospatialScaleEntities(graphOperationExecutor,"DefaultGeospatialRegion");
-
-        //generateChinaEntityWKTMap();
-        graphOperationExecutor.close();
-    }
-
     private static class DivisionCodeInfo {
         private String divisionEntityUID;
         private String parentDivisionEntityUID;

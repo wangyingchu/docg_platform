@@ -51,6 +51,8 @@ public class GeospatialRegionTest {
         }
         */
 
+        //defaultGeospatialRegion.createGeospatialScaleEntities();
+
         List<GeospatialScaleEntity> continentGeospatialScaleEntityList = defaultGeospatialRegion.listContinentEntities();
 
         for(GeospatialScaleEntity currentGeospatialScaleEntity:continentGeospatialScaleEntityList){
