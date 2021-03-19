@@ -17,7 +17,7 @@ public interface GeospatialRegion {
     public String getGeospatialRegionName();
 
     public boolean createGeospatialScaleEntities();
-
+    public GeospatialScaleEntity getEntityByGeospatialCode(String geospatialCode);
     public List<GeospatialScaleEntity> listContinentEntities();
     public GeospatialScaleEntity getContinentEntity(GeospatialProperty geospatialProperty,String continentValue);
 
@@ -28,9 +28,7 @@ public interface GeospatialRegion {
 
 
 
-    public GeospatialScaleEntity getContinentEntity(String continentName);
 
-    public GeospatialScaleEntity getEntityByGeospatialCode(String geospatialCode);
 
     public List<GeospatialScaleEntity> listCountryRegionEntities(String countryName);
 
