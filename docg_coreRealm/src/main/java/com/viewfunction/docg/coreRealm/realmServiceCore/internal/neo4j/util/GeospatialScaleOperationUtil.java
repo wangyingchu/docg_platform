@@ -294,8 +294,8 @@ public class GeospatialScaleOperationUtil {
                                 propertiesMap.put("EnglishName",_currentProvincesDataMap.get("name_en"));
                                 propertiesMap.put("ChineseName",_currentProvincesDataMap.get("name_zh"));
 
-                                propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI_Latitude,Double.valueOf(_currentProvincesDataMap.get("latitude").toString()));
-                                propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI_Longitude,Double.valueOf(_currentProvincesDataMap.get("longitude").toString()));
+                                String poiPointWKT = "POINT ("+_currentProvincesDataMap.get("longitude")+" "+_currentProvincesDataMap.get("latitude")+")";
+                                propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI,poiPointWKT);
                                 propertiesMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
                                 propertiesMap.put(RealmConstant._GeospatialGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
                                 String geomWKT = _currentProvincesDataMap.get("the_geom").toString();
@@ -397,12 +397,11 @@ public class GeospatialScaleOperationUtil {
                     if(_ChinaProvinceGISInfoMap.get(ChinaDivisionCode) != null){
                         propertiesMap.put(RealmConstant._GeospatialGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
                         String geomWKT = _ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("the_geom").toString();
-                        propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI_Latitude,Double.valueOf(_ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("latitude").toString()));
-                        propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI_Longitude,Double.valueOf(_ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("longitude").toString()));
+                        String poiPointWKT = "POINT ("+_ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("longitude")+" "+_ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("latitude")+")";
+                        propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI,poiPointWKT);
                         propertiesMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
                         propertiesMap.put(RealmConstant._GeospatialGLGeometryContent,geomWKT);
-                        propertiesMap.put(RealmConstant._GeospatialCLGeometryPOI_Latitude,Double.valueOf(_ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("latitude").toString()));
-                        propertiesMap.put(RealmConstant._GeospatialCLGeometryPOI_Longitude,Double.valueOf(_ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("longitude").toString()));
+                        propertiesMap.put(RealmConstant._GeospatialCLGeometryPOI,poiPointWKT);
                         propertiesMap.put(RealmConstant._GeospatialCountryCRSAID,"EPSG:4490"); // CRS EPSG:4490 - CGCS2000 - Geographic
                         propertiesMap.put(RealmConstant._GeospatialCLGeometryContent,geomWKT);
                     }
@@ -561,14 +560,18 @@ public class GeospatialScaleOperationUtil {
                             }
                             if(_ChinaEntityWKTMap.containsKey(_ChinaDivisionCode)){
                                 propertiesMap.put(RealmConstant._GeospatialGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
-                                //propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI_Latitude,Double.valueOf(_ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("latitude").toString()));
-                                //propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI_Longitude,Double.valueOf(_ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("longitude").toString()));
                                 propertiesMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
                                 propertiesMap.put(RealmConstant._GeospatialGLGeometryContent,_ChinaEntityWKTMap.get(_ChinaDivisionCode));
-                                //propertiesMap.put(RealmConstant._GeospatialCLGeometryPOI_Latitude,Double.valueOf(_ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("latitude").toString()));
-                                //propertiesMap.put(RealmConstant._GeospatialCLGeometryPOI_Longitude,Double.valueOf(_ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("longitude").toString()));
                                 propertiesMap.put(RealmConstant._GeospatialCountryCRSAID,"EPSG:4490"); // CRS EPSG:4490 - CGCS2000 - Geographic
                                 propertiesMap.put(RealmConstant._GeospatialCLGeometryContent,_ChinaEntityWKTMap.get(_ChinaDivisionCode));
+                            }
+                            if(_ChinaEntityWKTMap.containsKey(_ChinaDivisionCode+"_POINT")){
+                                propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI,_ChinaEntityWKTMap.get(_ChinaDivisionCode+"_POINT"));
+                                propertiesMap.put(RealmConstant._GeospatialCLGeometryPOI,_ChinaEntityWKTMap.get(_ChinaDivisionCode+"_POINT"));
+                            }
+                            if(_ChinaEntityWKTMap.containsKey(_ChinaDivisionCode+"_BORDER")){
+                                propertiesMap.put(RealmConstant._GeospatialGLGeometryBorder,_ChinaEntityWKTMap.get(_ChinaDivisionCode+"_BORDER"));
+                                propertiesMap.put(RealmConstant._GeospatialCLGeometryBorder,_ChinaEntityWKTMap.get(_ChinaDivisionCode+"_BORDER"));
                             }
                             GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
                                     new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleEntityClass,workingGraphOperationExecutor);
@@ -1021,6 +1024,36 @@ public class GeospatialScaleOperationUtil {
                     String entityGeospatialCode = wktDataValueArray[0];
                     String entityWKT = wktDataValueArray[2];
                     _ChinaEntityWKTMap.put(entityGeospatialCode.trim(),entityWKT);
+                }
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        filePath = PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/China_GISInfo_Point_Border.txt";
+        file = new File(filePath);
+        if (file.exists()) {
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new FileReader(file));
+                String tempStr;
+                while ((tempStr = reader.readLine()) != null) {
+                    String _ChinaEntityWKTStr = tempStr.trim();
+                    String[] wktDataValueArray = _ChinaEntityWKTStr.split("-");
+                    String entityGeospatialCode = wktDataValueArray[0];
+                    String entityPoint = wktDataValueArray[2];
+                    String entityBorder = wktDataValueArray[3];
+                    _ChinaEntityWKTMap.put(entityGeospatialCode.trim()+"_POINT",entityPoint);
+                    _ChinaEntityWKTMap.put(entityGeospatialCode.trim()+"_BORDER",entityBorder);
                 }
                 reader.close();
             } catch (IOException e) {
