@@ -3,7 +3,6 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTran
 import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GeospatialScaleOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JGeospatialScaleEntityImpl;
@@ -47,8 +46,8 @@ public class GetListGeospatialScaleEntityTransformer implements DataTransformer<
             if(isMatchedConceptionKind){
                 long nodeUID = resultNode.id();
                 String conceptionEntityUID = ""+nodeUID;
-                String targetGeospatialCode = resultNode.get(GeospatialScaleOperationUtil.GeospatialCodeProperty).asString();
-                String targetGeospatialScaleGradeString = resultNode.get(GeospatialScaleOperationUtil.GeospatialScaleGradeProperty).asString();
+                String targetGeospatialCode = resultNode.get(RealmConstant.GeospatialCodeProperty).asString();
+                String targetGeospatialScaleGradeString = resultNode.get(RealmConstant.GeospatialScaleGradeProperty).asString();
                 String _ChineseName = null;
                 String _EnglishName = null;
                 if(resultNode.containsKey("ChineseName")){

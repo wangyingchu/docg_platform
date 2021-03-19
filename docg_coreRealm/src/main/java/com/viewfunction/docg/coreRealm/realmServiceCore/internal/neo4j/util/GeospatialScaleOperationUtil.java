@@ -42,9 +42,6 @@ public class GeospatialScaleOperationUtil {
 
     private static Logger logger = LoggerFactory.getLogger(GeospatialScaleOperationUtil.class);
     private static final String GEOSPATIAL_DATA_FOLDER = "geospatialData";
-    public static final String GeospatialCodeProperty = "DOCG_GeospatialCode";
-    public static final String GeospatialRegionProperty = "DOCG_GeospatialRegion";
-    public static final String GeospatialScaleGradeProperty = "DOCG_GeospatialScaleGrade";
 
     public static boolean generateGeospatialScaleEntities(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
         generateGeospatialScaleEntities_Continent(workingGraphOperationExecutor,geospatialRegionName);
@@ -96,9 +93,9 @@ public class GeospatialScaleOperationUtil {
                     propertiesMap.put("ChineseName",_ChnName);
                     propertiesMap.put("EnglishName",_EngName);
                     propertiesMap.put("ChineseFullName",_ChnFullName);
-                    propertiesMap.put(GeospatialCodeProperty,_EngName);
-                    propertiesMap.put(GeospatialRegionProperty,geospatialRegionName);
-                    propertiesMap.put(GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.CONTINENT);
+                    propertiesMap.put(RealmConstant.GeospatialCodeProperty,_EngName);
+                    propertiesMap.put(RealmConstant.GeospatialRegionProperty,geospatialRegionName);
+                    propertiesMap.put(RealmConstant.GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.CONTINENT);
 
                     String createGeospatialScaleEntitiesCql = CypherBuilder.createLabeledNodeWithProperties(conceptionTypeNameArray,propertiesMap);
                     Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,createGeospatialScaleEntitiesCql);
@@ -126,7 +123,7 @@ public class GeospatialScaleOperationUtil {
 
     private static void generateGeospatialScaleEntities_CountryRegion(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
         Map<String,String> ContinentCode_EntityUIDMap = new HashMap<>();
-        String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialScaleContinentEntityClass,GeospatialRegionProperty,geospatialRegionName,100000);
+        String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialScaleContinentEntityClass, RealmConstant.GeospatialRegionProperty,geospatialRegionName,100000);
 
         GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(RealmConstant.GeospatialScaleContinentEntityClass,workingGraphOperationExecutor);
         Object resultEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
@@ -134,7 +131,7 @@ public class GeospatialScaleOperationUtil {
             List<ConceptionEntity> resultContinentList =  (List<ConceptionEntity>)resultEntityList;
             for(ConceptionEntity currentConceptionEntity : resultContinentList){
                 ContinentCode_EntityUIDMap.put(
-                    currentConceptionEntity.getAttribute(GeospatialCodeProperty).getAttributeValue().toString(),
+                    currentConceptionEntity.getAttribute(RealmConstant.GeospatialCodeProperty).getAttributeValue().toString(),
                         currentConceptionEntity.getConceptionEntityUID());
             }
         }
@@ -184,9 +181,9 @@ public class GeospatialScaleOperationUtil {
                         propertiesMap.put("capitalEnglishName",_capitalEnglishName);
                     }
 
-                    propertiesMap.put(GeospatialCodeProperty,_2bitCode);
-                    propertiesMap.put(GeospatialRegionProperty,geospatialRegionName);
-                    propertiesMap.put(GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.COUNTRY_REGION);
+                    propertiesMap.put(RealmConstant.GeospatialCodeProperty,_2bitCode);
+                    propertiesMap.put(RealmConstant.GeospatialRegionProperty,geospatialRegionName);
+                    propertiesMap.put(RealmConstant.GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.COUNTRY_REGION);
 
                     GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
                             new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleCountryRegionEntityClass,workingGraphOperationExecutor);
@@ -216,7 +213,7 @@ public class GeospatialScaleOperationUtil {
 
     private static void updateCountryRegionEntities_GeospatialScaleInfo(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
         Map<String,Map<String,Object>> _CountriesDataMap = generateNE_10m_CountriesDataMap();
-        String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialScaleCountryRegionEntityClass,GeospatialRegionProperty,geospatialRegionName,100000);
+        String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialScaleCountryRegionEntityClass, RealmConstant.GeospatialRegionProperty,geospatialRegionName,100000);
         GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(RealmConstant.GeospatialScaleCountryRegionEntityClass,workingGraphOperationExecutor);
         Object resultEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
         if(resultEntityList != null){
@@ -236,7 +233,7 @@ public class GeospatialScaleOperationUtil {
 
     private static void generateGeospatialScaleEntities_ProvinceOfWorld(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
         Map<String,Map<String,Object>> _ProvincesISO_3166_2DataMap = generateNE_10m_admin_states_provincesDataMap();
-        String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialScaleCountryRegionEntityClass,GeospatialRegionProperty,geospatialRegionName,100000);
+        String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialScaleCountryRegionEntityClass, RealmConstant.GeospatialRegionProperty,geospatialRegionName,100000);
         GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(RealmConstant.GeospatialScaleCountryRegionEntityClass,workingGraphOperationExecutor);
         Object resultEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
         if(resultEntityList != null){
@@ -280,9 +277,9 @@ public class GeospatialScaleOperationUtil {
                             propertiesMap.put("ISO3166_2SubdivisionCategory",subdivisionCategory);
                             propertiesMap.put("Standard","ISO 3166-2:2013");
                             propertiesMap.put("StandardStatus","Officially assigned");
-                            propertiesMap.put(GeospatialCodeProperty,_3166_2Code);
-                            propertiesMap.put(GeospatialRegionProperty,geospatialRegionName);
-                            propertiesMap.put(GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.PROVINCE);
+                            propertiesMap.put(RealmConstant.GeospatialCodeProperty,_3166_2Code);
+                            propertiesMap.put(RealmConstant.GeospatialRegionProperty,geospatialRegionName);
+                            propertiesMap.put(RealmConstant.GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.PROVINCE);
 
                             Map<String,Object> _currentProvincesDataMap =  _ProvincesDataMap.get(_3166_2Code);
 
@@ -337,8 +334,8 @@ public class GeospatialScaleOperationUtil {
         try {
             QueryParameters queryParameters = new QueryParameters();
             queryParameters.setResultNumber(1);
-            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(GeospatialCodeProperty,"CN"));
-            queryParameters.addFilteringItem(new EqualFilteringItem(GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
+            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialCodeProperty,"CN"));
+            queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
             String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleCountryRegionEntityClass,queryParameters,null);
             GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
                     new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleCountryRegionEntityClass,workingGraphOperationExecutor);
@@ -387,9 +384,9 @@ public class GeospatialScaleOperationUtil {
                     propertiesMap.put("Standard","GB/T 2260 | ISO 3166-2:2013");
                     propertiesMap.put("StandardStatus","Officially assigned");
 
-                    propertiesMap.put(GeospatialCodeProperty,ChinaDivisionCode);
-                    propertiesMap.put(GeospatialRegionProperty,geospatialRegionName);
-                    propertiesMap.put(GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.PROVINCE);
+                    propertiesMap.put(RealmConstant.GeospatialCodeProperty,ChinaDivisionCode);
+                    propertiesMap.put(RealmConstant.GeospatialRegionProperty,geospatialRegionName);
+                    propertiesMap.put(RealmConstant.GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.PROVINCE);
 
                     GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
                             new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleProvinceEntityClass,workingGraphOperationExecutor);
@@ -433,7 +430,7 @@ public class GeospatialScaleOperationUtil {
         QueryParameters queryParameters = new QueryParameters();
         queryParameters.setResultNumber(100);
         queryParameters.setDefaultFilteringItem(new EqualFilteringItem("ISO3166_1Alpha_2Code","CN"));
-        queryParameters.addFilteringItem(new EqualFilteringItem(GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
+        queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
         try {
             String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleProvinceEntityClass,queryParameters,null);
             GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(RealmConstant.GeospatialScaleProvinceEntityClass,workingGraphOperationExecutor);
@@ -514,19 +511,19 @@ public class GeospatialScaleOperationUtil {
                             propertiesMap.put("StandardStatus","Officially assigned");
                             propertiesMap.put("ChinaProvinceName",PROVINCE_Name);
 
-                            propertiesMap.put(GeospatialCodeProperty,_ChinaDivisionCode);
-                            propertiesMap.put(GeospatialRegionProperty,geospatialRegionName);
+                            propertiesMap.put(RealmConstant.GeospatialCodeProperty,_ChinaDivisionCode);
+                            propertiesMap.put(RealmConstant.GeospatialRegionProperty,geospatialRegionName);
 
                             if(divisionNameArray.length == 2){
                                 conceptionTypeNameArray[1] = RealmConstant.GeospatialScalePrefectureEntityClass;
-                                propertiesMap.put(GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.PREFECTURE);
+                                propertiesMap.put(RealmConstant.GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.PREFECTURE);
                                 String PREFECTURE_Name = divisionNameArray[1].trim();
 
                                 propertiesMap.put("ChinaProvinceName",PROVINCE_Name);
                                 propertiesMap.put("ChineseName",PREFECTURE_Name);
                             }else if(divisionNameArray.length == 3){
                                 conceptionTypeNameArray[1] = RealmConstant.GeospatialScaleCountyEntityClass;
-                                propertiesMap.put(GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.COUNTY);
+                                propertiesMap.put(RealmConstant.GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.COUNTY);
                                 String PREFECTURE_Name = divisionNameArray[1].trim();
                                 String COUNTY_Name = divisionNameArray[2].trim();
 
@@ -535,7 +532,7 @@ public class GeospatialScaleOperationUtil {
                                 propertiesMap.put("ChineseName",COUNTY_Name);
                             }else if(divisionNameArray.length == 4){
                                 conceptionTypeNameArray[1] = RealmConstant.GeospatialScaleTownshipEntityClass;
-                                propertiesMap.put(GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.TOWNSHIP);
+                                propertiesMap.put(RealmConstant.GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.TOWNSHIP);
                                 String PREFECTURE_Name = divisionNameArray[1].trim();
                                 String COUNTY_Name = divisionNameArray[2].trim();
                                 String TOWNSHIP_Name = divisionNameArray[3].trim();
@@ -546,7 +543,7 @@ public class GeospatialScaleOperationUtil {
                                 propertiesMap.put("ChineseName",TOWNSHIP_Name);
                             }else if(divisionNameArray.length == 5){
                                 conceptionTypeNameArray[1] = RealmConstant.GeospatialScaleVillageEntityClass;
-                                propertiesMap.put(GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.VILLAGE);
+                                propertiesMap.put(RealmConstant.GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.VILLAGE);
                                 String PREFECTURE_Name = divisionNameArray[1].trim();
                                 String COUNTY_Name = divisionNameArray[2].trim();
                                 String TOWNSHIP_Name = divisionNameArray[3].trim();
@@ -603,12 +600,12 @@ public class GeospatialScaleOperationUtil {
             QueryParameters queryParameters = new QueryParameters();
             queryParameters.setResultNumber(100);
             queryParameters.setDefaultFilteringItem(new EqualFilteringItem("ISO3166_1Alpha_2Code","CN"));
-            queryParameters.addFilteringItem(new EqualFilteringItem(GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
+            queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
 
             List<String> attributeNamesList = new ArrayList<>();
-            attributeNamesList.add(GeospatialCodeProperty);
+            attributeNamesList.add(RealmConstant.GeospatialCodeProperty);
             List<AttributeKind> attributeKindList = new ArrayList<>();
-            attributeKindList.add(new Neo4JAttributeKindImpl(null,GeospatialCodeProperty,null, AttributeDataType.STRING,null));
+            attributeKindList.add(new Neo4JAttributeKindImpl(null, RealmConstant.GeospatialCodeProperty,null, AttributeDataType.STRING,null));
             String queryCql = CypherBuilder.matchAttributesWithQueryParameters(RealmConstant.GeospatialScaleProvinceEntityClass,queryParameters,attributeNamesList);
 
             GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer =
@@ -618,14 +615,14 @@ public class GeospatialScaleOperationUtil {
             if(resEntityRes != null){
                 List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
                 for(ConceptionEntityValue currentConceptionEntityValue : resultEntitiesValues){
-                    _ChinaDivisionCodeAndEntityUIDMap.put(currentConceptionEntityValue.getEntityAttributesValue().get(GeospatialCodeProperty).toString(),
+                    _ChinaDivisionCodeAndEntityUIDMap.put(currentConceptionEntityValue.getEntityAttributesValue().get(RealmConstant.GeospatialCodeProperty).toString(),
                             currentConceptionEntityValue.getConceptionEntityUID());
                 }
             }
 
             queryParameters = new QueryParameters();
             queryParameters.setResultNumber(1000000);
-            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(GeospatialRegionProperty,geospatialRegionName));
+            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName));
             attributeNamesList.add("ChinaParentDivisionCode");
             attributeKindList.add(new Neo4JAttributeKindImpl(null,"ChinaParentDivisionCode",null, AttributeDataType.STRING,null));
             getListConceptionEntityValueTransformer =  new GetListConceptionEntityValueTransformer(attributeNamesList,attributeKindList);
@@ -722,8 +719,8 @@ public class GeospatialScaleOperationUtil {
 
             QueryParameters queryParameters = new QueryParameters();
             queryParameters.setResultNumber(1);
-            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(GeospatialCodeProperty,"MO"));
-            queryParameters.addFilteringItem(new EqualFilteringItem(GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
+            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialCodeProperty,"MO"));
+            queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
             String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleCountryRegionEntityClass,queryParameters,null);
             Object geospatialEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,queryCql);
             if(geospatialEntityRes != null ){
@@ -732,8 +729,8 @@ public class GeospatialScaleOperationUtil {
 
             queryParameters = new QueryParameters();
             queryParameters.setResultNumber(1);
-            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(GeospatialCodeProperty,"TW"));
-            queryParameters.addFilteringItem(new EqualFilteringItem(GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
+            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialCodeProperty,"TW"));
+            queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
             queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleCountryRegionEntityClass,queryParameters,null);
             geospatialEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,queryCql);
             if(geospatialEntityRes != null ){
@@ -742,8 +739,8 @@ public class GeospatialScaleOperationUtil {
 
             queryParameters = new QueryParameters();
             queryParameters.setResultNumber(1);
-            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(GeospatialCodeProperty,"HK"));
-            queryParameters.addFilteringItem(new EqualFilteringItem(GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
+            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialCodeProperty,"HK"));
+            queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
             queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleCountryRegionEntityClass,queryParameters,null);
             geospatialEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,queryCql);
             if(geospatialEntityRes != null ){
@@ -756,7 +753,7 @@ public class GeospatialScaleOperationUtil {
             queryParameters = new QueryParameters();
             queryParameters.setResultNumber(1);
             queryParameters.setDefaultFilteringItem(new EqualFilteringItem("ISO3166_2SubDivisionCode","CN-TW"));
-            queryParameters.addFilteringItem(new EqualFilteringItem(GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
+            queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
             queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleProvinceEntityClass,queryParameters,null);
             geospatialEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,queryCql);
             if(geospatialEntityRes != null ){
@@ -766,7 +763,7 @@ public class GeospatialScaleOperationUtil {
             queryParameters = new QueryParameters();
             queryParameters.setResultNumber(1);
             queryParameters.setDefaultFilteringItem(new EqualFilteringItem("ISO3166_2SubDivisionCode","CN-HK"));
-            queryParameters.addFilteringItem(new EqualFilteringItem(GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
+            queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
             queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleProvinceEntityClass,queryParameters,null);
             geospatialEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,queryCql);
             if(geospatialEntityRes != null ){
@@ -776,7 +773,7 @@ public class GeospatialScaleOperationUtil {
             queryParameters = new QueryParameters();
             queryParameters.setResultNumber(1);
             queryParameters.setDefaultFilteringItem(new EqualFilteringItem("ISO3166_2SubDivisionCode","CN-MO"));
-            queryParameters.addFilteringItem(new EqualFilteringItem(GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
+            queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
             queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleProvinceEntityClass,queryParameters,null);
             geospatialEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,queryCql);
             if(geospatialEntityRes != null ){
@@ -804,10 +801,10 @@ public class GeospatialScaleOperationUtil {
         if(resEntityRes != null){
             List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
             for(ConceptionEntityValue currentConceptionEntityValue : resultEntitiesValues){
-                _ChinaDivisionCodeAndEntityUIDMap.put(currentConceptionEntityValue.getEntityAttributesValue().get(GeospatialCodeProperty).toString(),
+                _ChinaDivisionCodeAndEntityUIDMap.put(currentConceptionEntityValue.getEntityAttributesValue().get(RealmConstant.GeospatialCodeProperty).toString(),
                         currentConceptionEntityValue.getConceptionEntityUID());
                 divisionCodeInfoList.add(new DivisionCodeInfo(
-                        currentConceptionEntityValue.getEntityAttributesValue().get(GeospatialCodeProperty).toString(),
+                        currentConceptionEntityValue.getEntityAttributesValue().get(RealmConstant.GeospatialCodeProperty).toString(),
                         currentConceptionEntityValue.getConceptionEntityUID(),
                         currentConceptionEntityValue.getEntityAttributesValue().get("ChinaParentDivisionCode").toString(),
                         _ChinaDivisionCodeAndEntityUIDMap.get(currentConceptionEntityValue.getEntityAttributesValue().get("ChinaParentDivisionCode").toString())

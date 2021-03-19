@@ -19,6 +19,8 @@ public interface GeospatialRegion {
     public List<GeospatialScaleEntity> listContinentEntities();
     public GeospatialScaleEntity getContinentEntity(String continentName);
 
+    public GeospatialScaleEntity getEntityByGeospatialCode(String geospatialCode);
+
     public List<GeospatialScaleEntity> listCountryRegionEntities(String countryName);
     public GeospatialScaleEntity getCountryRegionEntity(String countryName);
 
@@ -40,6 +42,8 @@ public interface GeospatialRegion {
 
     public List<GeospatialScaleEntity> listVillageEntities(String countryName, String provinceName, String prefectureName, String countyName,String townshipName,String villageName);
     public GeospatialScaleEntity getVillageEntity(String countryName, String provinceName, String prefectureName, String countyName,String townshipName,String villageName);
-    public GeospatialScaleEntity getVillageEntity(String divisionCode);
+    public GeospatialScaleEntity getVillageEntity(String geospatialCode);
+
+
 
 }

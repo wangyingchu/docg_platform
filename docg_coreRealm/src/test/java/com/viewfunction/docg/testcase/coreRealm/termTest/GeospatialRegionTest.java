@@ -67,5 +67,20 @@ public class GeospatialRegionTest {
         System.out.println(geospatialScaleEntity1.getGeospatialScaleGrade());
         System.out.println(geospatialScaleEntity1.getChineseName());
         System.out.println(geospatialScaleEntity1.getEnglishName());
+
+        List<GeospatialScaleEntity> countryRegionGeospatialScaleEntityList  = defaultGeospatialRegion.listCountryRegionEntities("北");
+        for(GeospatialScaleEntity currentGeospatialScaleEntity:countryRegionGeospatialScaleEntityList){
+            System.out.println(currentGeospatialScaleEntity.getGeospatialCode());
+            System.out.println(currentGeospatialScaleEntity.getGeospatialScaleGrade());
+            System.out.println(currentGeospatialScaleEntity.getChineseName());
+            System.out.println(currentGeospatialScaleEntity.getEnglishName());
+        }
+        System.out.println(countryRegionGeospatialScaleEntityList.size());
+
+        GeospatialScaleEntity countryRegionGeospatialScaleEntity = defaultGeospatialRegion.getCountryRegionEntity("北");
+        System.out.println(countryRegionGeospatialScaleEntity.getGeospatialCode());
+        System.out.println(countryRegionGeospatialScaleEntity.getGeospatialScaleGrade());
+        System.out.println(countryRegionGeospatialScaleEntity.getChineseName());
+        System.out.println(countryRegionGeospatialScaleEntity.getEnglishName());
     }
 }
