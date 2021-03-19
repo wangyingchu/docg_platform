@@ -53,6 +53,7 @@ public class GeospatialRegionTest {
 
         //defaultGeospatialRegion.createGeospatialScaleEntities();
 
+
         List<GeospatialScaleEntity> continentGeospatialScaleEntityList = defaultGeospatialRegion.listContinentEntities();
 
         for(GeospatialScaleEntity currentGeospatialScaleEntity:continentGeospatialScaleEntityList){
@@ -82,5 +83,18 @@ public class GeospatialRegionTest {
         System.out.println(countryRegionGeospatialScaleEntity.getGeospatialScaleGrade());
         System.out.println(countryRegionGeospatialScaleEntity.getChineseName());
         System.out.println(countryRegionGeospatialScaleEntity.getEnglishName());
+
+        GeospatialScaleEntity targetGeospatialScaleEntity1 = defaultGeospatialRegion.getEntityByGeospatialCode("640522406498");
+        System.out.println(targetGeospatialScaleEntity1.getGeospatialCode());
+        System.out.println(targetGeospatialScaleEntity1.getGeospatialScaleGrade());
+        System.out.println(targetGeospatialScaleEntity1.getChineseName());
+        System.out.println(targetGeospatialScaleEntity1.getEnglishName());
+
+        GeospatialScaleEntity targetGeospatialScaleEntity2 = defaultGeospatialRegion.getEntityByGeospatialCode("AD-07");
+        System.out.println(targetGeospatialScaleEntity2.getGeospatialCode());
+        System.out.println(targetGeospatialScaleEntity2.getGeospatialScaleGrade());
+        System.out.println(targetGeospatialScaleEntity2.getChineseName());
+        System.out.println(targetGeospatialScaleEntity2.getEnglishName());
+
     }
 }

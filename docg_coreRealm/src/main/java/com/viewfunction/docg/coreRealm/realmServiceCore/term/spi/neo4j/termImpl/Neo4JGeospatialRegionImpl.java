@@ -67,13 +67,60 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
     }
 
     @Override
+    public GeospatialScaleEntity getContinentEntity(GeospatialProperty geospatialProperty, String continentValue) {
+
+        try {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setResultNumber(1);
+            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName));
+
+
+            switch(geospatialProperty){
+                case GeospatialCode:
+                    queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialCodeProperty,continentValue), QueryParameters.FilteringLogic.AND);
+                    break;
+                case ChineseName:
+
+                    break;
+                case EnglishName:
+
+                    break;
+            }
+
+
+
+
+
+
+
+
+
+            queryParameters.setDistinctMode(true);
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleContinentEntityClass,queryParameters,null);
+            GetSingleGeospatialScaleEntityTransformer getSingleGeospatialScaleEntityTransformer = new GetSingleGeospatialScaleEntityTransformer(this.coreRealmName,this.geospatialRegionName,workingGraphOperationExecutor);
+            Object resultEntityRes = workingGraphOperationExecutor.executeRead(getSingleGeospatialScaleEntityTransformer,queryCql);
+            if(resultEntityRes != null){
+                return (GeospatialScaleEntity)resultEntityRes;
+            }
+
+
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return null;
+    }
+
+    @Override
     public GeospatialScaleEntity getContinentEntity(String continentName) {
         try {
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             QueryParameters queryParameters = new QueryParameters();
             queryParameters.setResultNumber(1);
             queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName));
-            queryParameters.addFilteringItem(new EqualFilteringItem("ChineseName",continentName), QueryParameters.FilteringLogic.AND);
+            queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialChineseNameProperty,continentName), QueryParameters.FilteringLogic.AND);
             queryParameters.setDistinctMode(true);
             String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleContinentEntityClass,queryParameters,null);
             GetSingleGeospatialScaleEntityTransformer getSingleGeospatialScaleEntityTransformer = new GetSingleGeospatialScaleEntityTransformer(this.coreRealmName,this.geospatialRegionName,workingGraphOperationExecutor);
@@ -84,7 +131,7 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
                 queryParameters = new QueryParameters();
                 queryParameters.setResultNumber(1);
                 queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName));
-                queryParameters.addFilteringItem(new EqualFilteringItem("EnglishName",continentName), QueryParameters.FilteringLogic.AND);
+                queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialEnglishNameProperty,continentName), QueryParameters.FilteringLogic.AND);
                 queryParameters.setDistinctMode(true);
                 queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleContinentEntityClass,queryParameters,null);
                 resultEntityRes = workingGraphOperationExecutor.executeRead(getSingleGeospatialScaleEntityTransformer,queryCql);
@@ -108,32 +155,19 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
                 QueryParameters queryParameters = new QueryParameters();
                 queryParameters.setResultNumber(1);
                 queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName));
-                queryParameters.addFilteringItem(new EqualFilteringItem("ChineseName",geospatialCode), QueryParameters.FilteringLogic.AND);
+                queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialCodeProperty,geospatialCode), QueryParameters.FilteringLogic.AND);
                 queryParameters.setDistinctMode(true);
-                String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleContinentEntityClass,queryParameters,null);
+                String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleEntityClass,queryParameters,null);
                 GetSingleGeospatialScaleEntityTransformer getSingleGeospatialScaleEntityTransformer = new GetSingleGeospatialScaleEntityTransformer(this.coreRealmName,this.geospatialRegionName,workingGraphOperationExecutor);
                 Object resultEntityRes = workingGraphOperationExecutor.executeRead(getSingleGeospatialScaleEntityTransformer,queryCql);
                 if(resultEntityRes != null){
                     return (GeospatialScaleEntity)resultEntityRes;
-                }else{
-                    queryParameters = new QueryParameters();
-                    queryParameters.setResultNumber(1);
-                    queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName));
-                    queryParameters.addFilteringItem(new EqualFilteringItem("EnglishName",geospatialCode), QueryParameters.FilteringLogic.AND);
-                    queryParameters.setDistinctMode(true);
-                    queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleContinentEntityClass,queryParameters,null);
-                    resultEntityRes = workingGraphOperationExecutor.executeRead(getSingleGeospatialScaleEntityTransformer,queryCql);
-                    if(resultEntityRes != null){
-                        return (GeospatialScaleEntity)resultEntityRes;
-                    }
                 }
             } catch (CoreRealmServiceEntityExploreException e) {
                 e.printStackTrace();
             }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
-
-
         }
         return null;
     }
@@ -154,7 +188,7 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
                     return (List<GeospatialScaleEntity>)resultEntityList;
                 }
             }else{
-                queryParameters.addFilteringItem(new SimilarFilteringItem("ChineseName",countryName, SimilarFilteringItem.MatchingType.Contain), QueryParameters.FilteringLogic.AND);
+                queryParameters.addFilteringItem(new SimilarFilteringItem(RealmConstant.GeospatialChineseNameProperty,countryName, SimilarFilteringItem.MatchingType.Contain), QueryParameters.FilteringLogic.AND);
                 String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleCountryRegionEntityClass,queryParameters,null);
                 GetListGeospatialScaleEntityTransformer getListGeospatialScaleEntityTransformer =
                         new GetListGeospatialScaleEntityTransformer(this.coreRealmName,this.geospatialRegionName,workingGraphOperationExecutor);
@@ -167,7 +201,7 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
                         queryParameters = new QueryParameters();
                         queryParameters.setResultNumber(500);
                         queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName));
-                        queryParameters.addFilteringItem(new SimilarFilteringItem("EnglishName",countryName, SimilarFilteringItem.MatchingType.Contain), QueryParameters.FilteringLogic.AND);
+                        queryParameters.addFilteringItem(new SimilarFilteringItem(RealmConstant.GeospatialEnglishNameProperty,countryName, SimilarFilteringItem.MatchingType.Contain), QueryParameters.FilteringLogic.AND);
                         queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleCountryRegionEntityClass,queryParameters,null);
                         resultEntityList = workingGraphOperationExecutor.executeRead(getListGeospatialScaleEntityTransformer,queryCql);
                         resultList = (List<GeospatialScaleEntity>)resultEntityList;
@@ -191,7 +225,7 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
                 QueryParameters queryParameters = new QueryParameters();
                 queryParameters.setResultNumber(1);
                 queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName));
-                queryParameters.addFilteringItem(new SimilarFilteringItem("ChineseName",countryName, SimilarFilteringItem.MatchingType.BeginWith), QueryParameters.FilteringLogic.AND);
+                queryParameters.addFilteringItem(new SimilarFilteringItem(RealmConstant.GeospatialChineseNameProperty,countryName, SimilarFilteringItem.MatchingType.BeginWith), QueryParameters.FilteringLogic.AND);
                 String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleCountryRegionEntityClass,queryParameters,null);
 
                 GetSingleGeospatialScaleEntityTransformer getSingleGeospatialScaleEntityTransformer = new GetSingleGeospatialScaleEntityTransformer(this.coreRealmName,this.geospatialRegionName,workingGraphOperationExecutor);
@@ -202,7 +236,7 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
                     queryParameters = new QueryParameters();
                     queryParameters.setResultNumber(1);
                     queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName));
-                    queryParameters.addFilteringItem(new EqualFilteringItem("EnglishName",countryName), QueryParameters.FilteringLogic.AND);
+                    queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialEnglishNameProperty,countryName), QueryParameters.FilteringLogic.AND);
                     queryParameters.setDistinctMode(true);
                     queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleCountryRegionEntityClass,queryParameters,null);
                     resultEntityRes = workingGraphOperationExecutor.executeRead(getSingleGeospatialScaleEntityTransformer,queryCql);
@@ -230,22 +264,12 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
     }
 
     @Override
-    public GeospatialScaleEntity getProvinceEntity(String divisionCode) {
-        return null;
-    }
-
-    @Override
     public List<GeospatialScaleEntity> listPrefectureEntities(String countryName, String provinceName, String prefectureName) {
         return null;
     }
 
     @Override
     public GeospatialScaleEntity getPrefectureEntity(String countryName, String provinceName, String prefectureName) {
-        return null;
-    }
-
-    @Override
-    public GeospatialScaleEntity getPrefectureEntity(String divisionCode) {
         return null;
     }
 
@@ -260,11 +284,6 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
     }
 
     @Override
-    public GeospatialScaleEntity getCountyEntity(String divisionCode) {
-        return null;
-    }
-
-    @Override
     public List<GeospatialScaleEntity> listTownshipEntities(String countryName, String provinceName, String prefectureName, String countyName, String townshipName) {
         return null;
     }
@@ -275,22 +294,12 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
     }
 
     @Override
-    public GeospatialScaleEntity getTownshipEntity(String divisionCode) {
-        return null;
-    }
-
-    @Override
     public List<GeospatialScaleEntity> listVillageEntities(String countryName, String provinceName, String prefectureName, String countyName, String townshipName, String villageName) {
         return null;
     }
 
     @Override
     public GeospatialScaleEntity getVillageEntity(String countryName, String provinceName, String prefectureName, String countyName, String townshipName, String villageName) {
-        return null;
-    }
-
-    @Override
-    public GeospatialScaleEntity getVillageEntity(String divisionCode) {
         return null;
     }
 

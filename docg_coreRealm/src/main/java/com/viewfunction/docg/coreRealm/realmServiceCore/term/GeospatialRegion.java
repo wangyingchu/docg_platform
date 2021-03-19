@@ -12,38 +12,43 @@ public interface GeospatialRegion {
     //村级行政区(Village) 村
     public enum GeospatialScaleGrade {CONTINENT,COUNTRY_REGION,PROVINCE,PREFECTURE,COUNTY,TOWNSHIP,VILLAGE}
 
+    public enum GeospatialProperty {GeospatialCode,ChineseName,EnglishName}
+
     public String getGeospatialRegionName();
 
     public boolean createGeospatialScaleEntities();
 
     public List<GeospatialScaleEntity> listContinentEntities();
+    public GeospatialScaleEntity getContinentEntity(GeospatialProperty geospatialProperty,String continentValue);
+
+
+
+
+
+
+
+
     public GeospatialScaleEntity getContinentEntity(String continentName);
 
     public GeospatialScaleEntity getEntityByGeospatialCode(String geospatialCode);
 
     public List<GeospatialScaleEntity> listCountryRegionEntities(String countryName);
+
+
     public GeospatialScaleEntity getCountryRegionEntity(String countryName);
 
     public List<GeospatialScaleEntity> listProvinceEntities(String countryName,String provinceName);
     public GeospatialScaleEntity getProvinceEntity(String countryName,String provinceName);
-    public GeospatialScaleEntity getProvinceEntity(String divisionCode);
 
     public List<GeospatialScaleEntity> listPrefectureEntities(String countryName,String provinceName,String prefectureName);
     public GeospatialScaleEntity getPrefectureEntity(String countryName,String provinceName,String prefectureName);
-    public GeospatialScaleEntity getPrefectureEntity(String divisionCode);
 
     public List<GeospatialScaleEntity> listCountyEntities(String countryName, String provinceName, String prefectureName, String countyName);
     public GeospatialScaleEntity getCountyEntity(String countryName, String provinceName, String prefectureName, String countyName);
-    public GeospatialScaleEntity getCountyEntity(String divisionCode);
 
     public List<GeospatialScaleEntity> listTownshipEntities(String countryName, String provinceName, String prefectureName, String countyName,String townshipName);
     public GeospatialScaleEntity getTownshipEntity(String countryName, String provinceName, String prefectureName, String countyName,String townshipName);
-    public GeospatialScaleEntity getTownshipEntity(String divisionCode);
 
     public List<GeospatialScaleEntity> listVillageEntities(String countryName, String provinceName, String prefectureName, String countyName,String townshipName,String villageName);
     public GeospatialScaleEntity getVillageEntity(String countryName, String provinceName, String prefectureName, String countyName,String townshipName,String villageName);
-    public GeospatialScaleEntity getVillageEntity(String geospatialCode);
-
-
-
 }

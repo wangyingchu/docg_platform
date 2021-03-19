@@ -44,11 +44,11 @@ public class GetSingleGeospatialScaleEntityTransformer  implements DataTransform
                     String targetGeospatialScaleGradeString = resultNode.get(RealmConstant.GeospatialScaleGradeProperty).asString();
                     String _ChineseName = null;
                     String _EnglishName = null;
-                    if(resultNode.containsKey("ChineseName")){
-                        _ChineseName = resultNode.get("ChineseName").asString();
+                    if(resultNode.containsKey(RealmConstant.GeospatialChineseNameProperty)){
+                        _ChineseName = resultNode.get(RealmConstant.GeospatialChineseNameProperty).asString();
                     }
-                    if(resultNode.containsKey("EnglishName")){
-                        _EnglishName = resultNode.get("EnglishName").asString();
+                    if(resultNode.containsKey(RealmConstant.GeospatialEnglishNameProperty)){
+                        _EnglishName = resultNode.get(RealmConstant.GeospatialEnglishNameProperty).asString();
                     }
 
                     GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade = null;
