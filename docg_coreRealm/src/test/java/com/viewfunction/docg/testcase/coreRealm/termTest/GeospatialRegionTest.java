@@ -63,21 +63,6 @@ public class GeospatialRegionTest {
             System.out.println(currentGeospatialScaleEntity.getEnglishName());
         }
 
-        List<GeospatialScaleEntity> countryRegionGeospatialScaleEntityList  = defaultGeospatialRegion.listCountryRegionEntities("北");
-        for(GeospatialScaleEntity currentGeospatialScaleEntity:countryRegionGeospatialScaleEntityList){
-            System.out.println(currentGeospatialScaleEntity.getGeospatialCode());
-            System.out.println(currentGeospatialScaleEntity.getGeospatialScaleGrade());
-            System.out.println(currentGeospatialScaleEntity.getChineseName());
-            System.out.println(currentGeospatialScaleEntity.getEnglishName());
-        }
-        System.out.println(countryRegionGeospatialScaleEntityList.size());
-
-        GeospatialScaleEntity countryRegionGeospatialScaleEntity = defaultGeospatialRegion.getCountryRegionEntity("北");
-        System.out.println(countryRegionGeospatialScaleEntity.getGeospatialCode());
-        System.out.println(countryRegionGeospatialScaleEntity.getGeospatialScaleGrade());
-        System.out.println(countryRegionGeospatialScaleEntity.getChineseName());
-        System.out.println(countryRegionGeospatialScaleEntity.getEnglishName());
-
         GeospatialScaleEntity targetGeospatialScaleEntity1 = defaultGeospatialRegion.getEntityByGeospatialCode("640522406498");
         System.out.println(targetGeospatialScaleEntity1.getGeospatialCode());
         System.out.println(targetGeospatialScaleEntity1.getGeospatialScaleGrade());
@@ -95,6 +80,23 @@ public class GeospatialRegionTest {
         System.out.println(targetGeospatialScaleEntity3.getGeospatialScaleGrade());
         System.out.println(targetGeospatialScaleEntity3.getChineseName());
         System.out.println(targetGeospatialScaleEntity3.getEnglishName());
+
+        List<GeospatialScaleEntity> countryRegionGeospatialScaleEntityList2  = defaultGeospatialRegion.listCountryRegionEntities(GeospatialRegion.GeospatialProperty.GeospatialCode,"U");
+        for(GeospatialScaleEntity currentGeospatialScaleEntity:countryRegionGeospatialScaleEntityList2){
+            System.out.println(currentGeospatialScaleEntity.getGeospatialCode());
+            System.out.println(currentGeospatialScaleEntity.getGeospatialScaleGrade());
+            System.out.println(currentGeospatialScaleEntity.getChineseName());
+            System.out.println(currentGeospatialScaleEntity.getEnglishName());
+        }
+        System.out.println(countryRegionGeospatialScaleEntityList2.size());
+
+        GeospatialScaleEntity targetGeospatialScaleEntity4 = defaultGeospatialRegion.getCountryRegionEntity(GeospatialRegion.GeospatialProperty.GeospatialCode,"CN");
+        System.out.println(targetGeospatialScaleEntity4.getGeospatialCode());
+        System.out.println(targetGeospatialScaleEntity4.getGeospatialScaleGrade());
+        System.out.println(targetGeospatialScaleEntity4.getChineseName());
+        System.out.println(targetGeospatialScaleEntity4.getEnglishName());
+
+
 
     }
 }

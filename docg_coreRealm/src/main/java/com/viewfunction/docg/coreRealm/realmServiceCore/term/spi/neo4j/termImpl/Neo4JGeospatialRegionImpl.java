@@ -93,114 +93,107 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
 
     @Override
     public GeospatialScaleEntity getContinentEntity(GeospatialProperty geospatialProperty, String continentValue) {
-        try {
-            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-            QueryParameters queryParameters = new QueryParameters();
-            queryParameters.setResultNumber(1);
-            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName));
-            switch(geospatialProperty){
-                case GeospatialCode:
-                    queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialCodeProperty,continentValue),QueryParameters.FilteringLogic.AND);
-                    break;
-                case ChineseName:
-                    queryParameters.addFilteringItem(new SimilarFilteringItem(RealmConstant.GeospatialChineseNameProperty,continentValue,
-                            SimilarFilteringItem.MatchingType.BeginWith), QueryParameters.FilteringLogic.AND);
-                    break;
-                case EnglishName:
-                    queryParameters.addFilteringItem(new SimilarFilteringItem(RealmConstant.GeospatialEnglishNameProperty,continentValue,
-                            SimilarFilteringItem.MatchingType.BeginWith), QueryParameters.FilteringLogic.AND);
-                    break;
-            }
-            String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleContinentEntityClass,queryParameters,null);
-            GetSingleGeospatialScaleEntityTransformer getSingleGeospatialScaleEntityTransformer =
-                    new GetSingleGeospatialScaleEntityTransformer(this.coreRealmName,this.geospatialRegionName,workingGraphOperationExecutor);
-            Object resultEntityRes = workingGraphOperationExecutor.executeRead(getSingleGeospatialScaleEntityTransformer,queryCql);
-            if(resultEntityRes != null){
-                return (GeospatialScaleEntity)resultEntityRes;
-            }
-        } catch (CoreRealmServiceEntityExploreException e) {
-            e.printStackTrace();
-        }finally {
-            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-        }
-        return null;
-    }
-
-
-
-
-
-    @Override
-    public List<GeospatialScaleEntity> listCountryRegionEntities(String countryName) {
-        try {
-            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-            QueryParameters queryParameters = new QueryParameters();
-            queryParameters.setResultNumber(500);
-            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName));
-            if(countryName == null){
-                String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleCountryRegionEntityClass,queryParameters,null);
-                GetListGeospatialScaleEntityTransformer getListGeospatialScaleEntityTransformer =
-                        new GetListGeospatialScaleEntityTransformer(this.coreRealmName,this.geospatialRegionName,workingGraphOperationExecutor);
-                Object resultEntityList = workingGraphOperationExecutor.executeRead(getListGeospatialScaleEntityTransformer,queryCql);
-                if(resultEntityList != null){
-                    return (List<GeospatialScaleEntity>)resultEntityList;
-                }
-            }else{
-                queryParameters.addFilteringItem(new SimilarFilteringItem(RealmConstant.GeospatialChineseNameProperty,countryName, SimilarFilteringItem.MatchingType.Contain), QueryParameters.FilteringLogic.AND);
-                String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleCountryRegionEntityClass,queryParameters,null);
-                GetListGeospatialScaleEntityTransformer getListGeospatialScaleEntityTransformer =
-                        new GetListGeospatialScaleEntityTransformer(this.coreRealmName,this.geospatialRegionName,workingGraphOperationExecutor);
-                Object resultEntityList = workingGraphOperationExecutor.executeRead(getListGeospatialScaleEntityTransformer,queryCql);
-                if(resultEntityList != null){
-                    List<GeospatialScaleEntity> resultList = (List<GeospatialScaleEntity>)resultEntityList;
-                    if(resultList.size() != 0){
-                        return resultList;
-                    }else{
-                        queryParameters = new QueryParameters();
-                        queryParameters.setResultNumber(500);
-                        queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName));
-                        queryParameters.addFilteringItem(new SimilarFilteringItem(RealmConstant.GeospatialEnglishNameProperty,countryName, SimilarFilteringItem.MatchingType.Contain), QueryParameters.FilteringLogic.AND);
-                        queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleCountryRegionEntityClass,queryParameters,null);
-                        resultEntityList = workingGraphOperationExecutor.executeRead(getListGeospatialScaleEntityTransformer,queryCql);
-                        resultList = (List<GeospatialScaleEntity>)resultEntityList;
-                        return resultList;
-                    }
-                }
-            }
-        } catch (CoreRealmServiceEntityExploreException e) {
-            e.printStackTrace();
-        }finally {
-            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-        }
-        return null;
-    }
-
-    @Override
-    public GeospatialScaleEntity getCountryRegionEntity(String countryName) {
-        if(countryName != null){
+        if(continentValue != null){
             try {
                 GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
                 QueryParameters queryParameters = new QueryParameters();
                 queryParameters.setResultNumber(1);
                 queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName));
-                queryParameters.addFilteringItem(new SimilarFilteringItem(RealmConstant.GeospatialChineseNameProperty,countryName, SimilarFilteringItem.MatchingType.BeginWith), QueryParameters.FilteringLogic.AND);
-                String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleCountryRegionEntityClass,queryParameters,null);
+                switch(geospatialProperty){
+                    case GeospatialCode:
+                        queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialCodeProperty,continentValue),QueryParameters.FilteringLogic.AND);
+                        break;
+                    case ChineseName:
+                        queryParameters.addFilteringItem(new SimilarFilteringItem(RealmConstant.GeospatialChineseNameProperty,continentValue,
+                                SimilarFilteringItem.MatchingType.BeginWith), QueryParameters.FilteringLogic.AND);
+                        break;
+                    case EnglishName:
+                        queryParameters.addFilteringItem(new SimilarFilteringItem(RealmConstant.GeospatialEnglishNameProperty,continentValue,
+                                SimilarFilteringItem.MatchingType.BeginWith), QueryParameters.FilteringLogic.AND);
+                        break;
+                }
+                String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleContinentEntityClass,queryParameters,null);
+                GetSingleGeospatialScaleEntityTransformer getSingleGeospatialScaleEntityTransformer =
+                        new GetSingleGeospatialScaleEntityTransformer(this.coreRealmName,this.geospatialRegionName,workingGraphOperationExecutor);
+                Object resultEntityRes = workingGraphOperationExecutor.executeRead(getSingleGeospatialScaleEntityTransformer,queryCql);
+                if(resultEntityRes != null){
+                    return (GeospatialScaleEntity)resultEntityRes;
+                }
+            } catch (CoreRealmServiceEntityExploreException e) {
+                e.printStackTrace();
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
+    }
 
+    @Override
+    public List<GeospatialScaleEntity> listCountryRegionEntities(GeospatialProperty geospatialProperty, String countryValue) {
+        try {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setResultNumber(500);
+            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty, geospatialRegionName));
+            if(countryValue != null) {
+                switch (geospatialProperty) {
+                    case GeospatialCode:
+                        queryParameters.addFilteringItem(new SimilarFilteringItem(RealmConstant.GeospatialCodeProperty, countryValue,
+                                SimilarFilteringItem.MatchingType.BeginWith), QueryParameters.FilteringLogic.AND);
+                        break;
+                    case ChineseName:
+                        queryParameters.addFilteringItem(new SimilarFilteringItem(RealmConstant.GeospatialChineseNameProperty, countryValue,
+                                SimilarFilteringItem.MatchingType.BeginWith), QueryParameters.FilteringLogic.AND);
+                        break;
+                    case EnglishName:
+                        queryParameters.addFilteringItem(new SimilarFilteringItem(RealmConstant.GeospatialEnglishNameProperty, countryValue,
+                                SimilarFilteringItem.MatchingType.BeginWith), QueryParameters.FilteringLogic.AND);
+                        break;
+                }
+            }
+
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleCountryRegionEntityClass, queryParameters, null);
+            GetListGeospatialScaleEntityTransformer getListGeospatialScaleEntityTransformer =
+                    new GetListGeospatialScaleEntityTransformer(this.coreRealmName, this.geospatialRegionName, workingGraphOperationExecutor);
+            Object resultEntityList = workingGraphOperationExecutor.executeRead(getListGeospatialScaleEntityTransformer, queryCql);
+            if (resultEntityList != null) {
+                return (List<GeospatialScaleEntity>) resultEntityList;
+            }
+
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return null;
+    }
+
+    @Override
+    public GeospatialScaleEntity getCountryRegionEntity(GeospatialProperty geospatialProperty, String countryValue) {
+        if(countryValue != null){
+            try {
+                GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+                QueryParameters queryParameters = new QueryParameters();
+                queryParameters.setResultNumber(1);
+                queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName));
+                switch(geospatialProperty){
+                    case GeospatialCode:
+                        queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialCodeProperty,countryValue),QueryParameters.FilteringLogic.AND);
+                        break;
+                    case ChineseName:
+                        queryParameters.addFilteringItem(new SimilarFilteringItem(RealmConstant.GeospatialChineseNameProperty,countryValue,
+                                SimilarFilteringItem.MatchingType.BeginWith), QueryParameters.FilteringLogic.AND);
+                        break;
+                    case EnglishName:
+                        queryParameters.addFilteringItem(new SimilarFilteringItem(RealmConstant.GeospatialEnglishNameProperty,countryValue,
+                                SimilarFilteringItem.MatchingType.BeginWith), QueryParameters.FilteringLogic.AND);
+                        break;
+                }
+                String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleCountryRegionEntityClass,queryParameters,null);
                 GetSingleGeospatialScaleEntityTransformer getSingleGeospatialScaleEntityTransformer = new GetSingleGeospatialScaleEntityTransformer(this.coreRealmName,this.geospatialRegionName,workingGraphOperationExecutor);
                 Object resultEntityRes = workingGraphOperationExecutor.executeRead(getSingleGeospatialScaleEntityTransformer,queryCql);
                 if(resultEntityRes != null){
                     return (GeospatialScaleEntity)resultEntityRes;
-                }else{
-                    queryParameters = new QueryParameters();
-                    queryParameters.setResultNumber(1);
-                    queryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName));
-                    queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialEnglishNameProperty,countryName), QueryParameters.FilteringLogic.AND);
-                    queryParameters.setDistinctMode(true);
-                    queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleCountryRegionEntityClass,queryParameters,null);
-                    resultEntityRes = workingGraphOperationExecutor.executeRead(getSingleGeospatialScaleEntityTransformer,queryCql);
-                    if(resultEntityRes != null){
-                        return (GeospatialScaleEntity)resultEntityRes;
-                    }
                 }
             } catch (CoreRealmServiceEntityExploreException e) {
                 e.printStackTrace();

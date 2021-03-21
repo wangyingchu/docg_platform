@@ -18,22 +18,12 @@ public interface GeospatialRegion {
 
     public boolean createGeospatialScaleEntities();
     public GeospatialScaleEntity getEntityByGeospatialCode(String geospatialCode);
+
     public List<GeospatialScaleEntity> listContinentEntities();
     public GeospatialScaleEntity getContinentEntity(GeospatialProperty geospatialProperty,String continentValue);
 
-
-
-
-
-
-
-
-
-
-    public List<GeospatialScaleEntity> listCountryRegionEntities(String countryName);
-
-
-    public GeospatialScaleEntity getCountryRegionEntity(String countryName);
+    public List<GeospatialScaleEntity> listCountryRegionEntities(GeospatialProperty geospatialProperty,String countryValue);
+    public GeospatialScaleEntity getCountryRegionEntity(GeospatialProperty geospatialProperty,String countryValue);
 
     public List<GeospatialScaleEntity> listProvinceEntities(String countryName,String provinceName);
     public GeospatialScaleEntity getProvinceEntity(String countryName,String provinceName);
