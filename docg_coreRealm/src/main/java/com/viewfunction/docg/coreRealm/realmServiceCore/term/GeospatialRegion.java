@@ -30,15 +30,15 @@ public interface GeospatialRegion {
     public List<GeospatialScaleEntity> listProvinceEntities(GeospatialProperty geospatialProperty,String countryValue,String provinceValue) throws CoreRealmServiceRuntimeException;
     public GeospatialScaleEntity getProvinceEntity(GeospatialProperty geospatialProperty,String countryValue,String provinceValue) throws CoreRealmServiceRuntimeException;
 
-    public List<GeospatialScaleEntity> listPrefectureEntities(String countryName,String provinceName,String prefectureName);
-    public GeospatialScaleEntity getPrefectureEntity(String countryName,String provinceName,String prefectureName);
+    public List<GeospatialScaleEntity> listPrefectureEntities(GeospatialProperty geospatialProperty,String countryValue,String provinceValue,String prefectureValue) throws CoreRealmServiceRuntimeException;
+    public GeospatialScaleEntity getPrefectureEntity(GeospatialProperty geospatialProperty,String countryValue,String provinceValue,String prefectureValue) throws CoreRealmServiceRuntimeException;
 
-    public List<GeospatialScaleEntity> listCountyEntities(String countryName, String provinceName, String prefectureName, String countyName);
-    public GeospatialScaleEntity getCountyEntity(String countryName, String provinceName, String prefectureName, String countyName);
+    public List<GeospatialScaleEntity> listCountyEntities(GeospatialProperty geospatialProperty,String countryValue, String provinceValue, String prefectureValue, String countyValue) throws CoreRealmServiceRuntimeException;
+    public GeospatialScaleEntity getCountyEntity(GeospatialProperty geospatialProperty,String countryValue, String provinceValue, String prefectureValue, String countyValue) throws CoreRealmServiceRuntimeException;
 
-    public List<GeospatialScaleEntity> listTownshipEntities(String countryName, String provinceName, String prefectureName, String countyName,String townshipName);
-    public GeospatialScaleEntity getTownshipEntity(String countryName, String provinceName, String prefectureName, String countyName,String townshipName);
+    public List<GeospatialScaleEntity> listTownshipEntities(GeospatialProperty geospatialProperty,String countryValue, String provinceValue, String prefectureValue, String countyValue,String townshipValue) throws CoreRealmServiceRuntimeException;
+    public GeospatialScaleEntity getTownshipEntity(GeospatialProperty geospatialProperty,String countryValue, String provinceValue, String prefectureValue, String countyValue,String townshipValue) throws CoreRealmServiceRuntimeException;
 
-    public List<GeospatialScaleEntity> listVillageEntities(String countryName, String provinceName, String prefectureName, String countyName,String townshipName,String villageName);
-    public GeospatialScaleEntity getVillageEntity(String countryName, String provinceName, String prefectureName, String countyName,String townshipName,String villageName);
+    public List<GeospatialScaleEntity> listVillageEntities(GeospatialProperty geospatialProperty,String countryValue, String provinceValue, String prefectureValue, String countyValue,String townshipValue,String villageValue) throws CoreRealmServiceRuntimeException;
+    public GeospatialScaleEntity getVillageEntity(GeospatialProperty geospatialProperty,String countryValue, String provinceValue, String prefectureValue, String countyValue,String townshipValue,String villageValue) throws CoreRealmServiceRuntimeException;
 }

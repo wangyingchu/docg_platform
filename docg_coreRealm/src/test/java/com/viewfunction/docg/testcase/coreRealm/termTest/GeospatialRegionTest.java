@@ -98,7 +98,7 @@ public class GeospatialRegionTest {
         System.out.println(targetGeospatialScaleEntity4.getChineseName());
         System.out.println(targetGeospatialScaleEntity4.getEnglishName());
 
-        List<GeospatialScaleEntity> countryRegionGeospatialScaleEntityList3 = defaultGeospatialRegion.listProvinceEntities(GeospatialRegion.GeospatialProperty.ChineseName,"中国","江");
+        List<GeospatialScaleEntity> countryRegionGeospatialScaleEntityList3 = defaultGeospatialRegion.listProvinceEntities(GeospatialRegion.GeospatialProperty.ChineseName,"中国",null);
         for(GeospatialScaleEntity currentGeospatialScaleEntity:countryRegionGeospatialScaleEntityList3){
             System.out.println(currentGeospatialScaleEntity.getGeospatialCode());
             System.out.println(currentGeospatialScaleEntity.getGeospatialScaleGrade());
@@ -112,6 +112,66 @@ public class GeospatialRegionTest {
         System.out.println(targetGeospatialScaleEntity5.getGeospatialScaleGrade());
         System.out.println(targetGeospatialScaleEntity5.getChineseName());
         System.out.println(targetGeospatialScaleEntity5.getEnglishName());
+
+        List<GeospatialScaleEntity> countryRegionGeospatialScaleEntityList4 = defaultGeospatialRegion.listPrefectureEntities(GeospatialRegion.GeospatialProperty.ChineseName,"中国","江西省",null);
+        for(GeospatialScaleEntity currentGeospatialScaleEntity:countryRegionGeospatialScaleEntityList4){
+            System.out.println(currentGeospatialScaleEntity.getGeospatialCode());
+            System.out.println(currentGeospatialScaleEntity.getGeospatialScaleGrade());
+            System.out.println(currentGeospatialScaleEntity.getChineseName());
+            System.out.println(currentGeospatialScaleEntity.getEnglishName());
+        }
+        System.out.println(countryRegionGeospatialScaleEntityList4.size());
+
+        GeospatialScaleEntity targetGeospatialScaleEntity6 = defaultGeospatialRegion.getPrefectureEntity(GeospatialRegion.GeospatialProperty.ChineseName,"中国","江西省","宜春市");
+        System.out.println(targetGeospatialScaleEntity6.getGeospatialCode());
+        System.out.println(targetGeospatialScaleEntity6.getGeospatialScaleGrade());
+        System.out.println(targetGeospatialScaleEntity6.getChineseName());
+        System.out.println(targetGeospatialScaleEntity6.getEnglishName());
+
+        List<GeospatialScaleEntity> countryRegionGeospatialScaleEntityList5 = defaultGeospatialRegion.listCountyEntities(GeospatialRegion.GeospatialProperty.ChineseName,"中国","江西省","宜春市",null);
+        for(GeospatialScaleEntity currentGeospatialScaleEntity:countryRegionGeospatialScaleEntityList5){
+            System.out.println(currentGeospatialScaleEntity.getGeospatialCode());
+            System.out.println(currentGeospatialScaleEntity.getGeospatialScaleGrade());
+            System.out.println(currentGeospatialScaleEntity.getChineseName());
+            System.out.println(currentGeospatialScaleEntity.getEnglishName());
+        }
+        System.out.println(countryRegionGeospatialScaleEntityList5.size());
+
+        GeospatialScaleEntity targetGeospatialScaleEntity7 = defaultGeospatialRegion.getCountyEntity(GeospatialRegion.GeospatialProperty.ChineseName,"中国","江西省","宜春市","袁州区");
+        System.out.println(targetGeospatialScaleEntity7.getGeospatialCode());
+        System.out.println(targetGeospatialScaleEntity7.getGeospatialScaleGrade());
+        System.out.println(targetGeospatialScaleEntity7.getChineseName());
+        System.out.println(targetGeospatialScaleEntity7.getEnglishName());
+
+        List<GeospatialScaleEntity> countryRegionGeospatialScaleEntityList6 = defaultGeospatialRegion.listTownshipEntities(GeospatialRegion.GeospatialProperty.ChineseName,"中国","江西省","宜春市","袁州区",null);
+        for(GeospatialScaleEntity currentGeospatialScaleEntity:countryRegionGeospatialScaleEntityList6){
+            System.out.println(currentGeospatialScaleEntity.getGeospatialCode());
+            System.out.println(currentGeospatialScaleEntity.getGeospatialScaleGrade());
+            System.out.println(currentGeospatialScaleEntity.getChineseName());
+            System.out.println(currentGeospatialScaleEntity.getEnglishName());
+        }
+        System.out.println(countryRegionGeospatialScaleEntityList6.size());
+
+        GeospatialScaleEntity targetGeospatialScaleEntity8 = defaultGeospatialRegion.getTownshipEntity(GeospatialRegion.GeospatialProperty.ChineseName,"中国","江西省","宜春市","袁州区","飞剑潭乡");
+        System.out.println(targetGeospatialScaleEntity8.getGeospatialCode());
+        System.out.println(targetGeospatialScaleEntity8.getGeospatialScaleGrade());
+        System.out.println(targetGeospatialScaleEntity8.getChineseName());
+        System.out.println(targetGeospatialScaleEntity8.getEnglishName());
+
+        List<GeospatialScaleEntity> countryRegionGeospatialScaleEntityList7 = defaultGeospatialRegion.listVillageEntities(GeospatialRegion.GeospatialProperty.ChineseName,"中国","江西省","宜春市","袁州区","飞剑潭乡",null);
+        for(GeospatialScaleEntity currentGeospatialScaleEntity:countryRegionGeospatialScaleEntityList7){
+            System.out.println(currentGeospatialScaleEntity.getGeospatialCode());
+            System.out.println(currentGeospatialScaleEntity.getGeospatialScaleGrade());
+            System.out.println(currentGeospatialScaleEntity.getChineseName());
+            System.out.println(currentGeospatialScaleEntity.getEnglishName());
+        }
+        System.out.println(countryRegionGeospatialScaleEntityList7.size());
+
+        GeospatialScaleEntity targetGeospatialScaleEntity9 = defaultGeospatialRegion.getVillageEntity(GeospatialRegion.GeospatialProperty.ChineseName,"中国","江西省","宜春市","袁州区","飞剑潭乡","塘源村委会");
+        System.out.println(targetGeospatialScaleEntity9.getGeospatialCode());
+        System.out.println(targetGeospatialScaleEntity9.getGeospatialScaleGrade());
+        System.out.println(targetGeospatialScaleEntity9.getChineseName());
+        System.out.println(targetGeospatialScaleEntity9.getEnglishName());
 
         coreRealm.closeGlobalSession();
     }

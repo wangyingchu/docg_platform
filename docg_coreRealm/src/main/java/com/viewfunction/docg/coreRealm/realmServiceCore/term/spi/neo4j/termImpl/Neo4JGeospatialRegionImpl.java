@@ -235,30 +235,7 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
                 }else{
                     GeospatialScaleEntity targetCountryRegionEntity = (GeospatialScaleEntity)resultEntityRes;
                     List<GeospatialScaleEntity> allChildrenGeospatialScaleEntities = targetCountryRegionEntity.getChildEntities();
-                    if(provinceValue == null){
-                        return allChildrenGeospatialScaleEntities;
-                    }
-                    List<GeospatialScaleEntity> matchedProvinceEntities = new ArrayList<>();
-                    for(GeospatialScaleEntity currentChildEntity:allChildrenGeospatialScaleEntities){
-                        switch(geospatialProperty){
-                            case GeospatialCode:
-                                if(currentChildEntity.getGeospatialCode().startsWith(provinceValue)){
-                                    matchedProvinceEntities.add(currentChildEntity);
-                                }
-                                break;
-                            case ChineseName:
-                                if(currentChildEntity.getChineseName() != null && currentChildEntity.getChineseName().startsWith(provinceValue)){
-                                    matchedProvinceEntities.add(currentChildEntity);
-                                }
-                                break;
-                            case EnglishName:
-                                if(currentChildEntity.getEnglishName() != null && currentChildEntity.getEnglishName().startsWith(provinceValue)){
-                                    matchedProvinceEntities.add(currentChildEntity);
-                                }
-                                break;
-                        }
-                    }
-                    return matchedProvinceEntities;
+                    return getFullMatchedEntitiesList(allChildrenGeospatialScaleEntities,geospatialProperty,provinceValue);
                 }
             } catch (CoreRealmServiceEntityExploreException e) {
                 e.printStackTrace();
@@ -299,25 +276,7 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
                 }else{
                     GeospatialScaleEntity targetCountryRegionEntity = (GeospatialScaleEntity)resultEntityRes;
                     List<GeospatialScaleEntity> allChildrenGeospatialScaleEntities = targetCountryRegionEntity.getChildEntities();
-                    for(GeospatialScaleEntity currentChildEntity:allChildrenGeospatialScaleEntities){
-                        switch(geospatialProperty){
-                            case GeospatialCode:
-                                if(currentChildEntity.getGeospatialCode().equals(provinceValue)){
-                                    return currentChildEntity;
-                                }
-                                break;
-                            case ChineseName:
-                                if(currentChildEntity.getChineseName() != null && currentChildEntity.getChineseName().equals(provinceValue)){
-                                    return currentChildEntity;
-                                }
-                                break;
-                            case EnglishName:
-                                if(currentChildEntity.getEnglishName() != null && currentChildEntity.getEnglishName().equals(provinceValue)){
-                                    return currentChildEntity;
-                                }
-                                break;
-                        }
-                    }
+                    return getFullMatchedEntity(allChildrenGeospatialScaleEntities,geospatialProperty,provinceValue);
                 }
             } catch (CoreRealmServiceEntityExploreException e) {
                 e.printStackTrace();
@@ -329,43 +288,167 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
     }
 
     @Override
-    public List<GeospatialScaleEntity> listPrefectureEntities(String countryName, String provinceName, String prefectureName) {
-        return null;
+    public List<GeospatialScaleEntity> listPrefectureEntities(GeospatialProperty geospatialProperty, String countryValue, String provinceValue, String prefectureValue) throws CoreRealmServiceRuntimeException{
+        GeospatialScaleEntity provinceGeospatialScaleEntity = getProvinceEntity(geospatialProperty,countryValue,provinceValue);
+        if(provinceGeospatialScaleEntity == null){
+            logger.error("PROVINCE GeospatialScaleEntity with {} = {} , doesn't exist.", ""+geospatialProperty, countryValue+","+provinceValue);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("PROVINCE GeospatialScaleEntity with "+geospatialProperty+" = "+countryValue+","+provinceValue+" doesn't exist.");
+            throw exception;
+        }else{
+            List<GeospatialScaleEntity> allChildrenGeospatialScaleEntities = provinceGeospatialScaleEntity.getChildEntities();
+            return getFullMatchedEntitiesList(allChildrenGeospatialScaleEntities,geospatialProperty,prefectureValue);
+        }
     }
 
     @Override
-    public GeospatialScaleEntity getPrefectureEntity(String countryName, String provinceName, String prefectureName) {
-        return null;
+    public GeospatialScaleEntity getPrefectureEntity(GeospatialProperty geospatialProperty, String countryValue, String provinceValue, String prefectureValue) throws CoreRealmServiceRuntimeException{
+        GeospatialScaleEntity provinceGeospatialScaleEntity = getProvinceEntity(geospatialProperty,countryValue,provinceValue);
+        if(provinceGeospatialScaleEntity == null){
+            logger.error("PROVINCE GeospatialScaleEntity with {} = {} , doesn't exist.", ""+geospatialProperty, countryValue+","+provinceValue);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("PROVINCE GeospatialScaleEntity with "+geospatialProperty+" = "+countryValue+","+provinceValue+" doesn't exist.");
+            throw exception;
+        }else{
+            List<GeospatialScaleEntity> allChildrenGeospatialScaleEntities = provinceGeospatialScaleEntity.getChildEntities();
+            return getFullMatchedEntity(allChildrenGeospatialScaleEntities,geospatialProperty,prefectureValue);
+        }
     }
 
     @Override
-    public List<GeospatialScaleEntity> listCountyEntities(String countryName, String provinceName, String prefectureName, String countyName) {
-        return null;
+    public List<GeospatialScaleEntity> listCountyEntities(GeospatialProperty geospatialProperty, String countryValue, String provinceValue, String prefectureValue, String countyValue) throws CoreRealmServiceRuntimeException{
+        GeospatialScaleEntity provinceGeospatialScaleEntity = getPrefectureEntity(geospatialProperty,countryValue,provinceValue,prefectureValue);
+        if(provinceGeospatialScaleEntity == null){
+            logger.error("PREFECTURE GeospatialScaleEntity with {} = {} , doesn't exist.", ""+geospatialProperty, countryValue+","+provinceValue+","+prefectureValue);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("PREFECTURE GeospatialScaleEntity with "+geospatialProperty+" = "+countryValue+","+provinceValue+","+prefectureValue+" doesn't exist.");
+            throw exception;
+        }else{
+            List<GeospatialScaleEntity> allChildrenGeospatialScaleEntities = provinceGeospatialScaleEntity.getChildEntities();
+            return getFullMatchedEntitiesList(allChildrenGeospatialScaleEntities,geospatialProperty,countyValue);
+        }
     }
 
     @Override
-    public GeospatialScaleEntity getCountyEntity(String countryName, String provinceName, String prefectureName, String countyName) {
-        return null;
+    public GeospatialScaleEntity getCountyEntity(GeospatialProperty geospatialProperty, String countryValue, String provinceValue, String prefectureValue, String countyValue) throws CoreRealmServiceRuntimeException {
+        GeospatialScaleEntity provinceGeospatialScaleEntity = getPrefectureEntity(geospatialProperty,countryValue,provinceValue,prefectureValue);
+        if(provinceGeospatialScaleEntity == null){
+            logger.error("PREFECTURE GeospatialScaleEntity with {} = {} , doesn't exist.", ""+geospatialProperty, countryValue+","+provinceValue+","+prefectureValue);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("PREFECTURE GeospatialScaleEntity with "+geospatialProperty+" = "+countryValue+","+provinceValue+","+prefectureValue+" doesn't exist.");
+            throw exception;
+        }else{
+            List<GeospatialScaleEntity> allChildrenGeospatialScaleEntities = provinceGeospatialScaleEntity.getChildEntities();
+            return getFullMatchedEntity(allChildrenGeospatialScaleEntities,geospatialProperty,countyValue);
+        }
     }
 
     @Override
-    public List<GeospatialScaleEntity> listTownshipEntities(String countryName, String provinceName, String prefectureName, String countyName, String townshipName) {
-        return null;
+    public List<GeospatialScaleEntity> listTownshipEntities(GeospatialProperty geospatialProperty, String countryValue, String provinceValue, String prefectureValue, String countyValue, String townshipValue) throws CoreRealmServiceRuntimeException {
+        GeospatialScaleEntity provinceGeospatialScaleEntity = getCountyEntity(geospatialProperty,countryValue,provinceValue,prefectureValue,countyValue);
+        if(provinceGeospatialScaleEntity == null){
+            logger.error("COUNTY GeospatialScaleEntity with {} = {} , doesn't exist.", ""+geospatialProperty, countryValue+","+provinceValue+","+prefectureValue+","+countyValue);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("COUNTY GeospatialScaleEntity with "+geospatialProperty+" = "+countryValue+","+provinceValue+","+prefectureValue+","+countyValue+" doesn't exist.");
+            throw exception;
+        }else{
+            List<GeospatialScaleEntity> allChildrenGeospatialScaleEntities = provinceGeospatialScaleEntity.getChildEntities();
+            return getFullMatchedEntitiesList(allChildrenGeospatialScaleEntities,geospatialProperty,townshipValue);
+        }
     }
 
     @Override
-    public GeospatialScaleEntity getTownshipEntity(String countryName, String provinceName, String prefectureName, String countyName, String townshipName) {
-        return null;
+    public GeospatialScaleEntity getTownshipEntity(GeospatialProperty geospatialProperty, String countryValue, String provinceValue, String prefectureValue, String countyValue, String townshipValue) throws CoreRealmServiceRuntimeException {
+        GeospatialScaleEntity provinceGeospatialScaleEntity = getCountyEntity(geospatialProperty,countryValue,provinceValue,prefectureValue,countyValue);
+        if(provinceGeospatialScaleEntity == null){
+            logger.error("COUNTY GeospatialScaleEntity with {} = {} , doesn't exist.", ""+geospatialProperty, countryValue+","+provinceValue+","+prefectureValue+","+countyValue);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("COUNTY GeospatialScaleEntity with "+geospatialProperty+" = "+countryValue+","+provinceValue+","+prefectureValue+","+countyValue+" doesn't exist.");
+            throw exception;
+        }else{
+            List<GeospatialScaleEntity> allChildrenGeospatialScaleEntities = provinceGeospatialScaleEntity.getChildEntities();
+            return getFullMatchedEntity(allChildrenGeospatialScaleEntities,geospatialProperty,townshipValue);
+        }
     }
 
     @Override
-    public List<GeospatialScaleEntity> listVillageEntities(String countryName, String provinceName, String prefectureName, String countyName, String townshipName, String villageName) {
-        return null;
+    public List<GeospatialScaleEntity> listVillageEntities(GeospatialProperty geospatialProperty, String countryValue, String provinceValue, String prefectureValue, String countyValue, String townshipValue, String villageValue) throws CoreRealmServiceRuntimeException {
+        GeospatialScaleEntity provinceGeospatialScaleEntity = getTownshipEntity(geospatialProperty,countryValue,provinceValue,prefectureValue,countyValue,townshipValue);
+        if(provinceGeospatialScaleEntity == null){
+            logger.error("TOWNSHIP GeospatialScaleEntity with {} = {} , doesn't exist.", ""+geospatialProperty, countryValue+","+provinceValue+","+prefectureValue+","+countyValue+","+townshipValue);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("TOWNSHIP GeospatialScaleEntity with "+geospatialProperty+" = "+countryValue+","+provinceValue+","+prefectureValue+","+countyValue+","+townshipValue+" doesn't exist.");
+            throw exception;
+        }else{
+            List<GeospatialScaleEntity> allChildrenGeospatialScaleEntities = provinceGeospatialScaleEntity.getChildEntities();
+            return getFullMatchedEntitiesList(allChildrenGeospatialScaleEntities,geospatialProperty,villageValue);
+        }
     }
 
     @Override
-    public GeospatialScaleEntity getVillageEntity(String countryName, String provinceName, String prefectureName, String countyName, String townshipName, String villageName) {
+    public GeospatialScaleEntity getVillageEntity(GeospatialProperty geospatialProperty, String countryValue, String provinceValue, String prefectureValue, String countyValue, String townshipValue, String villageValue) throws CoreRealmServiceRuntimeException {
+        GeospatialScaleEntity provinceGeospatialScaleEntity = getTownshipEntity(geospatialProperty,countryValue,provinceValue,prefectureValue,countyValue,townshipValue);
+        if(provinceGeospatialScaleEntity == null){
+            logger.error("TOWNSHIP GeospatialScaleEntity with {} = {} , doesn't exist.", ""+geospatialProperty, countryValue+","+provinceValue+","+prefectureValue+","+countyValue+","+townshipValue);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("TOWNSHIP GeospatialScaleEntity with "+geospatialProperty+" = "+countryValue+","+provinceValue+","+prefectureValue+","+countyValue+","+townshipValue+" doesn't exist.");
+            throw exception;
+        }else{
+            List<GeospatialScaleEntity> allChildrenGeospatialScaleEntities = provinceGeospatialScaleEntity.getChildEntities();
+            return getFullMatchedEntity(allChildrenGeospatialScaleEntities,geospatialProperty,villageValue);
+        }
+    }
+
+    private GeospatialScaleEntity getFullMatchedEntity(List<GeospatialScaleEntity> geospatialScaleEntitiesList,
+                                                       GeospatialProperty geospatialProperty,String propertyValue){
+        for(GeospatialScaleEntity currentChildEntity:geospatialScaleEntitiesList){
+            switch(geospatialProperty){
+                case GeospatialCode:
+                    if(currentChildEntity.getGeospatialCode().equals(propertyValue)){
+                        return currentChildEntity;
+                    }
+                    break;
+                case ChineseName:
+                    if(currentChildEntity.getChineseName() != null && currentChildEntity.getChineseName().equals(propertyValue)){
+                        return currentChildEntity;
+                    }
+                    break;
+                case EnglishName:
+                    if(currentChildEntity.getEnglishName() != null && currentChildEntity.getEnglishName().equals(propertyValue)){
+                        return currentChildEntity;
+                    }
+                    break;
+            }
+        }
         return null;
+    }
+
+    private List<GeospatialScaleEntity> getFullMatchedEntitiesList(List<GeospatialScaleEntity> geospatialScaleEntitiesList,
+                                                       GeospatialProperty geospatialProperty,String propertyValue){
+        if(propertyValue == null){
+            return geospatialScaleEntitiesList;
+        }
+        List<GeospatialScaleEntity> matchedProvinceEntities = new ArrayList<>();
+        for(GeospatialScaleEntity currentChildEntity:geospatialScaleEntitiesList){
+            switch(geospatialProperty){
+                case GeospatialCode:
+                    if(currentChildEntity.getGeospatialCode().startsWith(propertyValue)){
+                        matchedProvinceEntities.add(currentChildEntity);
+                    }
+                    break;
+                case ChineseName:
+                    if(currentChildEntity.getChineseName() != null && currentChildEntity.getChineseName().startsWith(propertyValue)){
+                        matchedProvinceEntities.add(currentChildEntity);
+                    }
+                    break;
+                case EnglishName:
+                    if(currentChildEntity.getEnglishName() != null && currentChildEntity.getEnglishName().startsWith(propertyValue)){
+                        matchedProvinceEntities.add(currentChildEntity);
+                    }
+                    break;
+            }
+        }
+        return matchedProvinceEntities;
     }
 
     //internal graphOperationExecutor management logic
