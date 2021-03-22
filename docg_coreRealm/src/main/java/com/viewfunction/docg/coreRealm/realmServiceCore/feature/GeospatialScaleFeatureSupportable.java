@@ -1,5 +1,13 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.feature;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GeospatialScaleDataPair;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEvent;
+
+import java.util.List;
+import java.util.Map;
+
 public interface GeospatialScaleFeatureSupportable {
     /**
      * WKT 结构的空间数据类型
@@ -125,4 +133,16 @@ public interface GeospatialScaleFeatureSupportable {
      * @return 如操作成功，返回结果为 true
      */
     public boolean addOrUpdateLLGeometryContent(String wKTContent);
+
+    public GeospatialScaleEvent attachGeospatialScaleEvent(String geospatialCode, String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException;
+
+    public GeospatialScaleEvent attachGeospatialScaleEvent(String geospatialRegionName,String geospatialCode, String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException;
+
+    public boolean detachGeospatialScaleEvent(String geospatialScaleEventUID) throws CoreRealmServiceRuntimeException;
+
+    public List<GeospatialScaleEvent> getAttachedGeospatialScaleEvents();
+
+    public List<GeospatialScaleEntity> getAttachedGeospatialScaleEntities();
+
+    public List<GeospatialScaleDataPair> getAttachedGeospatialScaleDataPairs();
 }
