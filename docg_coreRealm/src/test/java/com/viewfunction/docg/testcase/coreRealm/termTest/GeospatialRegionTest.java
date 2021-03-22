@@ -2,6 +2,7 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEntity;
@@ -172,6 +173,25 @@ public class GeospatialRegionTest {
         System.out.println(targetGeospatialScaleEntity9.getGeospatialScaleGrade());
         System.out.println(targetGeospatialScaleEntity9.getChineseName());
         System.out.println(targetGeospatialScaleEntity9.getEnglishName());
+
+        GeospatialScaleEntity targetGeospatialScaleEntity10 = targetGeospatialScaleEntity9.getParentEntity();
+        System.out.println(targetGeospatialScaleEntity10.getGeospatialCode());
+        System.out.println(targetGeospatialScaleEntity10.getGeospatialScaleGrade());
+        System.out.println(targetGeospatialScaleEntity10.getChineseName());
+        System.out.println(targetGeospatialScaleEntity10.getEnglishName());
+
+        List<GeospatialScaleEntity> countryRegionGeospatialScaleEntityList8 = targetGeospatialScaleEntity9.getFellowEntities();
+        for(GeospatialScaleEntity currentGeospatialScaleEntity:countryRegionGeospatialScaleEntityList8){
+            System.out.println(currentGeospatialScaleEntity.getGeospatialCode());
+            System.out.println(currentGeospatialScaleEntity.getGeospatialScaleGrade());
+            System.out.println(currentGeospatialScaleEntity.getChineseName());
+            System.out.println(currentGeospatialScaleEntity.getEnglishName());
+        }
+        System.out.println(countryRegionGeospatialScaleEntityList8.size());
+
+        InheritanceTree<GeospatialScaleEntity> geospatialScaleEntityTree = targetGeospatialScaleEntity6.getOffspringEntities();
+        System.out.println(geospatialScaleEntityTree.getRootID());
+        System.out.println(geospatialScaleEntityTree.size());
 
         coreRealm.closeGlobalSession();
     }
