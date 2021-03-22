@@ -27,6 +27,8 @@ public class GeospatialRegionTest {
     @Test
     public void testGeospatialRegionFunction() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        coreRealm.openGlobalSession();
+
         Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
 
         List<GeospatialRegion> geospatialRegionList = coreRealm.getGeospatialRegions();
@@ -96,7 +98,21 @@ public class GeospatialRegionTest {
         System.out.println(targetGeospatialScaleEntity4.getChineseName());
         System.out.println(targetGeospatialScaleEntity4.getEnglishName());
 
+        List<GeospatialScaleEntity> countryRegionGeospatialScaleEntityList3 = defaultGeospatialRegion.listProvinceEntities(GeospatialRegion.GeospatialProperty.ChineseName,"中国","江");
+        for(GeospatialScaleEntity currentGeospatialScaleEntity:countryRegionGeospatialScaleEntityList3){
+            System.out.println(currentGeospatialScaleEntity.getGeospatialCode());
+            System.out.println(currentGeospatialScaleEntity.getGeospatialScaleGrade());
+            System.out.println(currentGeospatialScaleEntity.getChineseName());
+            System.out.println(currentGeospatialScaleEntity.getEnglishName());
+        }
+        System.out.println(countryRegionGeospatialScaleEntityList3.size());
 
+        GeospatialScaleEntity targetGeospatialScaleEntity5 = defaultGeospatialRegion.getProvinceEntity(GeospatialRegion.GeospatialProperty.ChineseName,"中国","江西省");
+        System.out.println(targetGeospatialScaleEntity5.getGeospatialCode());
+        System.out.println(targetGeospatialScaleEntity5.getGeospatialScaleGrade());
+        System.out.println(targetGeospatialScaleEntity5.getChineseName());
+        System.out.println(targetGeospatialScaleEntity5.getEnglishName());
 
+        coreRealm.closeGlobalSession();
     }
 }

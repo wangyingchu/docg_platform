@@ -3,6 +3,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListGeospatialScaleEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GeospatialScaleEventsRetrieveResult;
@@ -13,6 +14,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.N
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntity {
@@ -71,7 +73,8 @@ public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntit
 
     @Override
     public List<GeospatialScaleEntity> getChildEntities() {
-        return null;
+        String queryCql = "MATCH(currentEntity:DOCG_GeospatialScaleEntity)-[:DOCG_GS_SpatialContains]->(targetEntities:DOCG_GeospatialScaleEntity) WHERE id(currentEntity) = "+ this.geospatialScaleEntityUID +" RETURN targetEntities as operationResult ORDER BY targetEntities.id";
+        return getListGeospatialScaleEntity(queryCql);
     }
 
     @Override
@@ -102,6 +105,22 @@ public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntit
     @Override
     public ConceptionEntitiesRetrieveResult getAttachedConceptionEntities(String conceptionKindName, QueryParameters queryParameters, GeospatialScaleLevel geospatialScaleLevel) {
         return null;
+    }
+
+    private List<GeospatialScaleEntity> getListGeospatialScaleEntity(String queryCql){
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            GetListGeospatialScaleEntityTransformer getListGeospatialScaleEntityTransformer =
+                    new GetListGeospatialScaleEntityTransformer(this.coreRealmName, this.geospatialRegionName, workingGraphOperationExecutor);
+            Object queryRes = workingGraphOperationExecutor.executeRead(getListGeospatialScaleEntityTransformer,queryCql);
+            if(queryRes != null){
+                return (List<GeospatialScaleEntity>)queryRes;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return new ArrayList<>();
     }
 
     //internal graphOperationExecutor management logic

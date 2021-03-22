@@ -1,5 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+
 import java.util.List;
 
 public interface GeospatialRegion {
@@ -25,8 +27,8 @@ public interface GeospatialRegion {
     public List<GeospatialScaleEntity> listCountryRegionEntities(GeospatialProperty geospatialProperty,String countryValue);
     public GeospatialScaleEntity getCountryRegionEntity(GeospatialProperty geospatialProperty,String countryValue);
 
-    public List<GeospatialScaleEntity> listProvinceEntities(String countryName,String provinceName);
-    public GeospatialScaleEntity getProvinceEntity(String countryName,String provinceName);
+    public List<GeospatialScaleEntity> listProvinceEntities(GeospatialProperty geospatialProperty,String countryValue,String provinceValue) throws CoreRealmServiceRuntimeException;
+    public GeospatialScaleEntity getProvinceEntity(GeospatialProperty geospatialProperty,String countryValue,String provinceValue) throws CoreRealmServiceRuntimeException;
 
     public List<GeospatialScaleEntity> listPrefectureEntities(String countryName,String provinceName,String prefectureName);
     public GeospatialScaleEntity getPrefectureEntity(String countryName,String provinceName,String prefectureName);
