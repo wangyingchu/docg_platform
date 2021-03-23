@@ -2245,6 +2245,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     /**
      * 为当前对象在指定时间流上附加时间刻度事件
      *
+     * @param timeFlowName String 指定时间流名称
      * @param dateTime long 事件发生时间
      * @param eventComment String 事件备注
      * @param eventData Map<String, Object> 事件数据
@@ -2260,7 +2261,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @param timeScaleEventUID String 时间刻度事件唯一ID
      *
-     * @return 如操作成功，返回结果为相应时间刻度事件对象
+     * @return 如操作成功，返回true
      */
     public boolean detachTimeScaleEvent(String timeScaleEventUID) throws CoreRealmServiceRuntimeException;
 
@@ -2415,6 +2416,59 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 如操作成功，返回结果为 true
      */
     public boolean addOrUpdateLLGeometryContent(String wKTContent);
+
+    /**
+     * 为当前对象在默认地理空间区域上附加地理空间刻度事件
+     *
+     * @param geospatialCode String 地理空间刻度实体全局空间编码
+     * @param eventComment String 事件备注
+     * @param eventData Map<String, Object> 事件数据
+     *
+     * @return 如操作成功，返回结果为相应地理空间刻度事件
+     */
+    public GeospatialScaleEvent attachGeospatialScaleEvent(String geospatialCode, String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 为当前对象在默认地理空间区域上附加地理空间刻度事件
+     *
+     * @param geospatialRegionName String 指定地理空间区域名称
+     * @param geospatialCode String 地理空间刻度实体全局空间编码
+     * @param eventComment String 事件备注
+     * @param eventData Map<String, Object> 事件数据
+     *
+     * @return 如操作成功，返回结果为相应地理空间刻度事件
+     */
+    public GeospatialScaleEvent attachGeospatialScaleEvent(String geospatialRegionName,String geospatialCode, String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 删除当前对象上关联的指定地理空间刻度事件
+     *
+     * @param geospatialScaleEventUID String 地理空间刻度事件唯一ID
+     *
+     * @return 如操作成功，返回 true
+     */
+    public boolean detachGeospatialScaleEvent(String geospatialScaleEventUID) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取当前对象上关联的所有地理空间刻度事件
+     *
+     * @return 地理空间刻度事件对象列表
+     */
+    public List<GeospatialScaleEvent> getAttachedGeospatialScaleEvents();
+
+    /**
+     * 获取当前对象上关联的所有地理空间刻度实体
+     *
+     * @return 地理空间刻度实体对象列表
+     */
+    public List<GeospatialScaleEntity> getAttachedGeospatialScaleEntities();
+
+    /**
+     * 获取当前对象上关联的所有地理空间刻度数据对
+     *
+     * @return 地理空间刻度数据对对象列表
+     */
+    public List<GeospatialScaleDataPair> getAttachedGeospatialScaleDataPairs();
 ```
 
 ###### *时间分析类特性*

@@ -1,9 +1,13 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GeospatialScaleDataPair;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEvent;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
@@ -11,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public interface Neo4JGeospatialScaleFeatureSupportable extends GeospatialScaleFeatureSupportable,Neo4JKeyResourcesRetrievable{
@@ -89,6 +94,32 @@ public interface Neo4JGeospatialScaleFeatureSupportable extends GeospatialScaleF
 
     public default boolean addOrUpdateLLGeometryContent(String wKTContent){
         return addOrUpdateAttributeValue(RealmConstant._GeospatialLLGeometryContent,wKTContent);
+    }
+
+    public default GeospatialScaleEvent attachGeospatialScaleEvent(String geospatialCode, String eventComment,
+                                                                   Map<String, Object> eventData) throws CoreRealmServiceRuntimeException{
+        return null;
+    }
+
+    public default GeospatialScaleEvent attachGeospatialScaleEvent(String geospatialRegionName,String geospatialCode,
+                                                                   String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException{
+        return null;
+    }
+
+    public default boolean detachGeospatialScaleEvent(String geospatialScaleEventUID) throws CoreRealmServiceRuntimeException{
+        return false;
+    }
+
+    public default List<GeospatialScaleEvent> getAttachedGeospatialScaleEvents(){
+        return null;
+    }
+
+    public default List<GeospatialScaleEntity> getAttachedGeospatialScaleEntities(){
+        return null;
+    }
+
+    public default List<GeospatialScaleDataPair> getAttachedGeospatialScaleDataPairs(){
+        return null;
     }
 
     private String getAttributeValue(String attributeName){

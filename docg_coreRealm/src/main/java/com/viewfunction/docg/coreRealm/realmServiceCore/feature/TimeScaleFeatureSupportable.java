@@ -26,6 +26,7 @@ public interface TimeScaleFeatureSupportable {
     /**
      * 为当前对象在指定时间流上附加时间刻度事件
      *
+     * @param timeFlowName String 指定时间流名称
      * @param dateTime long 事件发生时间
      * @param eventComment String 事件备注
      * @param eventData Map<String, Object> 事件数据
@@ -41,7 +42,7 @@ public interface TimeScaleFeatureSupportable {
      *
      * @param timeScaleEventUID String 时间刻度事件唯一ID
      *
-     * @return 如操作成功，返回结果为相应时间刻度事件对象
+     * @return 如操作成功，返回 true
      */
     public boolean detachTimeScaleEvent(String timeScaleEventUID) throws CoreRealmServiceRuntimeException;
 

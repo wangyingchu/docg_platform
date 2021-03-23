@@ -134,15 +134,56 @@ public interface GeospatialScaleFeatureSupportable {
      */
     public boolean addOrUpdateLLGeometryContent(String wKTContent);
 
+    /**
+     * 为当前对象在默认地理空间区域上附加地理空间刻度事件
+     *
+     * @param geospatialCode String 地理空间刻度实体全局空间编码
+     * @param eventComment String 事件备注
+     * @param eventData Map<String, Object> 事件数据
+     *
+     * @return 如操作成功，返回结果为相应地理空间刻度事件
+     */
     public GeospatialScaleEvent attachGeospatialScaleEvent(String geospatialCode, String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException;
 
+    /**
+     * 为当前对象在默认地理空间区域上附加地理空间刻度事件
+     *
+     * @param geospatialRegionName String 指定地理空间区域名称
+     * @param geospatialCode String 地理空间刻度实体全局空间编码
+     * @param eventComment String 事件备注
+     * @param eventData Map<String, Object> 事件数据
+     *
+     * @return 如操作成功，返回结果为相应地理空间刻度事件
+     */
     public GeospatialScaleEvent attachGeospatialScaleEvent(String geospatialRegionName,String geospatialCode, String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException;
 
+    /**
+     * 删除当前对象上关联的指定地理空间刻度事件
+     *
+     * @param geospatialScaleEventUID String 地理空间刻度事件唯一ID
+     *
+     * @return 如操作成功，返回 true
+     */
     public boolean detachGeospatialScaleEvent(String geospatialScaleEventUID) throws CoreRealmServiceRuntimeException;
 
+    /**
+     * 获取当前对象上关联的所有地理空间刻度事件
+     *
+     * @return 地理空间刻度事件对象列表
+     */
     public List<GeospatialScaleEvent> getAttachedGeospatialScaleEvents();
 
+    /**
+     * 获取当前对象上关联的所有地理空间刻度实体
+     *
+     * @return 地理空间刻度实体对象列表
+     */
     public List<GeospatialScaleEntity> getAttachedGeospatialScaleEntities();
 
+    /**
+     * 获取当前对象上关联的所有地理空间刻度数据对
+     *
+     * @return 地理空间刻度数据对对象列表
+     */
     public List<GeospatialScaleDataPair> getAttachedGeospatialScaleDataPairs();
 }
