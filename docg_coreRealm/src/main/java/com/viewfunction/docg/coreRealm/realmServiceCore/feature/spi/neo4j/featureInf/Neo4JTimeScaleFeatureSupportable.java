@@ -218,6 +218,7 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
                     if(linkToTimeScaleEntityRelation != null){
                         Neo4JTimeScaleEventImpl neo4JTimeScaleEventImpl = new Neo4JTimeScaleEventImpl(timeFlowName,
                                 eventComment,dateTime,timeScaleGrade,timeScaleEventEntity.getConceptionEntityUID());
+                        neo4JTimeScaleEventImpl.setGlobalGraphOperationExecutor(getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
                         return neo4JTimeScaleEventImpl;
                     }
                 }

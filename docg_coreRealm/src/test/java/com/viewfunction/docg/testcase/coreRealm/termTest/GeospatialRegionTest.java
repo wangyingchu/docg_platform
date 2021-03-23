@@ -2,17 +2,19 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GeospatialRegionTest {
 
@@ -193,6 +195,30 @@ public class GeospatialRegionTest {
         System.out.println(geospatialScaleEntityTree.getRootID());
         System.out.println(geospatialScaleEntityTree.size());
 
+
+        //coreRealm.createConceptionKind()
+
+
+        ConceptionKind _ConceptionKind01 = coreRealm.getConceptionKind("GeospatialFeatureTestKind");
+        if(_ConceptionKind01 != null){
+            coreRealm.removeConceptionKind("GeospatialFeatureTestKind",true);
+        }
+        _ConceptionKind01 = coreRealm.getConceptionKind("GeospatialFeatureTestKind");
+        if(_ConceptionKind01 == null){
+            _ConceptionKind01 = coreRealm.createConceptionKind("GeospatialFeatureTestKind","-");
+        }
+
+        Map<String,Object> newEntityValue= new HashMap<>();
+        newEntityValue.put("prop1",10000l);
+
+        ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValue);
+        ConceptionEntity _ConceptionEntity01 = _ConceptionKind01.newEntity(conceptionEntityValue,false);
+
+        Map<String,Object> eventDataMap= new HashMap<>();
+        eventDataMap.put("data1","this is s data");
+        eventDataMap.put("data2",new Date());
+
+        _ConceptionEntity01.attachGeospatialScaleEvent("360902213200","eventAttachComment",eventDataMap);
         coreRealm.closeGlobalSession();
     }
 }

@@ -73,6 +73,7 @@ public interface RealmConstant {
     public final String _TimeScaleEventScaleGrade="DOCG_TimeScaleEventScaleGrade";
     public final String _TimeScaleEventTimeFlow="DOCG_TimeScaleEventTimeFlow";
 
+    public final String _GeospatialScaleEventReferLocation="DOCG_GeospatialScaleEventReferLocation";
     public final String _GeospatialScaleEventComment="DOCG_GeospatialScaleEventComment";
     public final String _GeospatialScaleEventScaleGrade="DOCG_GeospatialScaleEventScaleGrade";
     public final String _GeospatialScaleEventGeospatialRegion="DOCG_GeospatialScaleEventGeospatialRegion";
