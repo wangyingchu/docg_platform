@@ -12,6 +12,13 @@ public interface GeospatialScaleEvent  extends AttributesMeasurable, Classificat
     public String getGeospatialRegionName();
 
     /**
+     * 获取当前地理空间刻度事件发生的地理空间刻度实体的全局空间编码
+     *
+     * @return 时间值
+     */
+    public String getReferLocation();
+
+    /**
      * 获取当前地理空间刻度事件的地理空间刻度等级
      *
      * @return 地理空间刻度等级

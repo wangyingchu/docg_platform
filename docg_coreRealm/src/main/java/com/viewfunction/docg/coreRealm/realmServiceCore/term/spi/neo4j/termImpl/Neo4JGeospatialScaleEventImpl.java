@@ -3,11 +3,14 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureImpl.Neo4JAttributesMeasurableImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf.Neo4JClassificationAttachable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleGeospatialScaleEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JGeospatialScaleEvent;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,31 +36,62 @@ public class Neo4JGeospatialScaleEventImpl extends Neo4JAttributesMeasurableImpl
 
     @Override
     public String getGeospatialRegionName() {
-        return null;
+        return this.geospatialRegionName;
+    }
+
+    @Override
+    public String getReferLocation() {
+        return this.referLocation;
     }
 
     @Override
     public GeospatialRegion.GeospatialScaleGrade getGeospatialScaleGrade() {
-        return null;
+        return this.geospatialScaleGrade;
     }
 
     @Override
     public String getGeospatialScaleEventUID() {
-        return null;
+        return this.geospatialScaleEventUID;
     }
 
     @Override
     public String getEventComment() {
-        return null;
+        return this.eventComment;
     }
 
     @Override
     public GeospatialScaleEntity getReferGeospatialScaleEntity() {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = "MATCH(currentEntity:"+ RealmConstant.GeospatialScaleEventClass+")<-[:"+RealmConstant.GeospatialScale_GeospatialReferToRelationClass+"]-(geospatialScaleEntity:"+RealmConstant.GeospatialScaleEntityClass+") WHERE id(currentEntity) = "+ this.geospatialScaleEventUID +" RETURN geospatialScaleEntity as operationResult";
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            GetSingleGeospatialScaleEntityTransformer getSingleGeospatialScaleEntityTransformer =
+                    new GetSingleGeospatialScaleEntityTransformer(null,this.geospatialRegionName,graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object queryRes = workingGraphOperationExecutor.executeRead(getSingleGeospatialScaleEntityTransformer,queryCql);
+            if(queryRes != null){
+                return (GeospatialScaleEntity)queryRes;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
         return null;
     }
 
     @Override
     public ConceptionEntity getAttachConceptionEntity() {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = "MATCH(currentEntity:"+ RealmConstant.GeospatialScaleEventClass+")<-[:"+RealmConstant.GeospatialScale_AttachToRelationClass+"]-(conceptionEntity) WHERE id(currentEntity) = "+ this.geospatialScaleEventUID +" RETURN conceptionEntity as operationResult";
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                    new GetSingleConceptionEntityTransformer(null,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object queryRes = workingGraphOperationExecutor.executeRead(getSingleConceptionEntityTransformer,queryCql);
+            if(queryRes != null){
+                return (ConceptionEntity)queryRes;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
         return null;
     }
 

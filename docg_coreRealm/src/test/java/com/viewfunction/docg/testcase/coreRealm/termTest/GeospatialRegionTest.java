@@ -195,10 +195,6 @@ public class GeospatialRegionTest {
         System.out.println(geospatialScaleEntityTree.getRootID());
         System.out.println(geospatialScaleEntityTree.size());
 
-
-        //coreRealm.createConceptionKind()
-
-
         ConceptionKind _ConceptionKind01 = coreRealm.getConceptionKind("GeospatialFeatureTestKind");
         if(_ConceptionKind01 != null){
             coreRealm.removeConceptionKind("GeospatialFeatureTestKind",true);
@@ -218,7 +214,25 @@ public class GeospatialRegionTest {
         eventDataMap.put("data1","this is s data");
         eventDataMap.put("data2",new Date());
 
-        _ConceptionEntity01.attachGeospatialScaleEvent("360902213200","eventAttachComment",eventDataMap);
+        GeospatialScaleEvent _GeospatialScaleEvent1 = _ConceptionEntity01.attachGeospatialScaleEvent("360902213200","eventAttachComment",eventDataMap);
+        System.out.println(_GeospatialScaleEvent1.getGeospatialScaleEventUID());
+        System.out.println(_GeospatialScaleEvent1.getReferLocation());
+        System.out.println(_GeospatialScaleEvent1.getGeospatialScaleGrade());
+        System.out.println(_GeospatialScaleEvent1.getGeospatialRegionName());
+        System.out.println(_GeospatialScaleEvent1.getEventComment());
+
+        System.out.println("----------------------------------------------------");
+        GeospatialScaleEntity targetGeospatialScaleEntity = _GeospatialScaleEvent1.getReferGeospatialScaleEntity();
+        System.out.println(targetGeospatialScaleEntity.getEnglishName());
+        System.out.println(targetGeospatialScaleEntity.getChineseName());
+        System.out.println(targetGeospatialScaleEntity.getGeospatialScaleGrade());
+        System.out.println(targetGeospatialScaleEntity.getGeospatialCode());
+        System.out.println(targetGeospatialScaleEntity.getParentEntity().getGeospatialCode());
+
+        ConceptionEntity targetConceptionEntity = _GeospatialScaleEvent1.getAttachConceptionEntity();
+        System.out.println(targetConceptionEntity.getConceptionKindName());
+        System.out.println(targetConceptionEntity.getConceptionEntityUID());
+        System.out.println("----------------------------------------------------");
         coreRealm.closeGlobalSession();
     }
 }
