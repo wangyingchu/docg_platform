@@ -5,8 +5,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featur
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEntity;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JGeospatialScaleEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,7 @@ public class Neo4JGeospatialScaleEventImpl extends Neo4JAttributesMeasurableImpl
     }
 
     @Override
-    public TimeFlow.TimeScaleGrade getGeospatialScaleGrade() {
+    public GeospatialRegion.GeospatialScaleGrade getGeospatialScaleGrade() {
         return null;
     }
 
