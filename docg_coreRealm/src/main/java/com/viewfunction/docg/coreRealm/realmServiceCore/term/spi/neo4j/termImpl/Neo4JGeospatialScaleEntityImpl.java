@@ -4,6 +4,8 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
@@ -16,6 +18,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTre
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.spi.common.structureImpl.CommonInheritanceTreeImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JGeospatialScaleEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
@@ -27,6 +30,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant.GeospatialScaleEventClass;
+import static com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant.TimeScaleEventClass;
 
 public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntity {
 
@@ -172,7 +178,56 @@ public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntit
 
     @Override
     public Long countAttachedGeospatialScaleEvents(AttributesParameters attributesParameters, boolean isDistinctMode, GeospatialScaleLevel geospatialScaleLevel) {
-        return null;
+        if(attributesParameters != null){
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setDistinctMode(isDistinctMode);
+            queryParameters.setResultNumber(100000000);
+            queryParameters.setDefaultFilteringItem(attributesParameters.getDefaultFilteringItem());
+            if (attributesParameters.getAndFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getAndFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.AND);
+                }
+            }
+            if (attributesParameters.getOrFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getOrFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.OR);
+                }
+            }
+            try {
+                String eventEntitiesQueryCql = CypherBuilder.matchNodesWithQueryParameters(GeospatialScaleEventClass,queryParameters,CypherBuilder.CypherFunctionType.COUNT);
+                eventEntitiesQueryCql = eventEntitiesQueryCql.replace("(operationResult:`DOCG_GeospatialScaleEvent`)","(childEntities)-[:`DOCG_GS_GeospatialReferTo`]->(operationResult:`DOCG_GeospatialScaleEvent`)");
+                String queryCql = addGeospatialScaleLevelTravelLogic(geospatialScaleLevel,eventEntitiesQueryCql);
+                logger.debug("Generated Cypher Statement: {}", queryCql);
+
+                DataTransformer<Long> _DataTransformer = new DataTransformer<Long>() {
+                    @Override
+                    public Long transformResult(Result result) {
+                        if (result.hasNext()) {
+                            Record record = result.next();
+                            if (record.containsKey("count("+CypherBuilder.operationResultName+")")) {
+                                return record.get("count("+CypherBuilder.operationResultName+")").asLong();
+                            }
+                            return null;
+                        }
+                        return null;
+                    }
+                };
+                Long resultNumber = 0l;
+                GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+                try{
+                    Object countRes = workingGraphOperationExecutor.executeRead(_DataTransformer,queryCql);
+                    resultNumber = countRes != null ? (Long) countRes: 0l;
+                    return resultNumber;
+                }finally {
+                    this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+                }
+            } catch (CoreRealmServiceEntityExploreException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }else{
+            return countAttachedConceptionEntities(geospatialScaleLevel);
+        }
     }
 
     @Override
@@ -225,6 +280,43 @@ public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntit
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
         return null;
+    }
+
+    private String addGeospatialScaleLevelTravelLogic(GeospatialScaleLevel geospatialScaleLevel, String eventEntitiesQueryCql){
+        String relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..3";
+        switch (geospatialScaleLevel){
+            case SELF: relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`";
+                break;
+            case CHILD: relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1";
+                break;
+            case OFFSPRING:
+                switch(this.geospatialScaleGrade){
+                    case CONTINENT:
+                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..6";
+                        break;
+                    case COUNTRY_REGION:
+                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..5";
+                        break;
+                    case PROVINCE:
+                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..4";
+                        break;
+                    case PREFECTURE:
+                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..3";
+                        break;
+                    case COUNTY:
+                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..2";
+                        break;
+                    case TOWNSHIP:
+                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1";
+                        break;
+                    case VILLAGE:
+                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1";
+                        break;
+                }
+        }
+        String queryCql = "MATCH(currentEntity:DOCG_GeospatialScaleEntity)-["+relationTravelLogic+"]->(childEntities:`DOCG_GeospatialScaleEntity`) WHERE id(currentEntity) = "+this.geospatialScaleEntityUID+" \n" +
+                eventEntitiesQueryCql;
+        return queryCql;
     }
 
     public String getGeospatialScaleEntityUID() {

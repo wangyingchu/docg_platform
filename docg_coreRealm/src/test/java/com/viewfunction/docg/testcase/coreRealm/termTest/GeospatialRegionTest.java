@@ -1,5 +1,6 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
@@ -284,6 +285,10 @@ public class GeospatialRegionTest {
         System.out.println(targetGeospatialScaleDataPairList.size());
 
         //_ConceptionEntity01.detachGeospatialScaleEvent("12345678900000000");
+
+        GeospatialScaleEntity targetGeospatialScaleEntity11 = defaultGeospatialRegion.getEntityByGeospatialCode("360902213209");
+
+        System.out.println(targetGeospatialScaleEntity11.countAttachedGeospatialScaleEvents(new AttributesParameters(),true, GeospatialScaleEntity.GeospatialScaleLevel.OFFSPRING));
 
         coreRealm.closeGlobalSession();
     }
