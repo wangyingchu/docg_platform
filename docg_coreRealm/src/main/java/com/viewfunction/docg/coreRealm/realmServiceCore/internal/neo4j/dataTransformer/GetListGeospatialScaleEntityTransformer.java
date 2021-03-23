@@ -56,6 +56,8 @@ public class GetListGeospatialScaleEntityTransformer implements DataTransformer<
                 if(resultNode.containsKey(RealmConstant.GeospatialEnglishNameProperty)){
                     _EnglishName = resultNode.get(RealmConstant.GeospatialEnglishNameProperty).asString();
                 }
+                String currentGeospatialRegionName = this.geospatialRegionName != null ? this.geospatialRegionName:
+                        resultNode.get(RealmConstant.GeospatialRegionProperty).asString();
 
                 GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade = null;
                 switch (targetGeospatialScaleGradeString){
@@ -68,7 +70,7 @@ public class GetListGeospatialScaleEntityTransformer implements DataTransformer<
                     case "VILLAGE":geospatialScaleGrade = GeospatialRegion.GeospatialScaleGrade.VILLAGE;break;
                 }
                 Neo4JGeospatialScaleEntityImpl neo4JGeospatialScaleEntityImpl =
-                        new Neo4JGeospatialScaleEntityImpl(this.coreRealmName,this.geospatialRegionName,conceptionEntityUID,geospatialScaleGrade,targetGeospatialCode,_ChineseName,_EnglishName);
+                        new Neo4JGeospatialScaleEntityImpl(this.coreRealmName,currentGeospatialRegionName,conceptionEntityUID,geospatialScaleGrade,targetGeospatialCode,_ChineseName,_EnglishName);
                 neo4JGeospatialScaleEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
                 geospatialScaleEntityList.add(neo4JGeospatialScaleEntityImpl);
             }

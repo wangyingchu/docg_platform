@@ -3,6 +3,7 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GeospatialScaleDataPair;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
@@ -233,6 +234,57 @@ public class GeospatialRegionTest {
         System.out.println(targetConceptionEntity.getConceptionKindName());
         System.out.println(targetConceptionEntity.getConceptionEntityUID());
         System.out.println("----------------------------------------------------");
+
+        _ConceptionEntity01.attachGeospatialScaleEvent("360902213209","eventAttachComment",eventDataMap);
+        GeospatialScaleEvent _GeospatialScaleEventForDelete = _ConceptionEntity01.attachGeospatialScaleEvent("360902213","eventAttachComment",eventDataMap);
+
+        List<GeospatialScaleEvent> targetGeospatialScaleEventList = _ConceptionEntity01.getAttachedGeospatialScaleEvents();
+
+        for(GeospatialScaleEvent currentGeospatialScaleEvent:targetGeospatialScaleEventList){
+            System.out.println(currentGeospatialScaleEvent.getGeospatialScaleEventUID());
+            System.out.println(currentGeospatialScaleEvent.getReferLocation());
+            System.out.println(currentGeospatialScaleEvent.getGeospatialScaleGrade());
+            System.out.println(currentGeospatialScaleEvent.getGeospatialRegionName());
+            System.out.println(currentGeospatialScaleEvent.getEventComment());
+        }
+        System.out.println(targetGeospatialScaleEventList.size());
+
+        List<GeospatialScaleEntity> targetGeospatialScaleEntityList = _ConceptionEntity01.getAttachedGeospatialScaleEntities();
+        for(GeospatialScaleEntity currentGeospatialScaleEntity:targetGeospatialScaleEntityList){
+            System.out.println(currentGeospatialScaleEntity.getEnglishName());
+            System.out.println(currentGeospatialScaleEntity.getChineseName());
+            System.out.println(currentGeospatialScaleEntity.getGeospatialScaleGrade());
+            System.out.println(currentGeospatialScaleEntity.getGeospatialCode());
+            System.out.println(currentGeospatialScaleEntity.getParentEntity().getGeospatialCode());
+        }
+        System.out.println(targetGeospatialScaleEntityList.size());
+
+        List<GeospatialScaleDataPair> targetGeospatialScaleDataPairList = _ConceptionEntity01.getAttachedGeospatialScaleDataPairs();
+        for(GeospatialScaleDataPair currentGeospatialScaleDataPair:targetGeospatialScaleDataPairList){
+            System.out.println("========================");
+            GeospatialScaleEntity currentGeospatialScaleEntity = currentGeospatialScaleDataPair.getGeospatialScaleEntity();
+            System.out.println(currentGeospatialScaleEntity.getEnglishName());
+            System.out.println(currentGeospatialScaleEntity.getChineseName());
+            System.out.println(currentGeospatialScaleEntity.getGeospatialScaleGrade());
+            System.out.println(currentGeospatialScaleEntity.getGeospatialCode());
+            System.out.println(currentGeospatialScaleEntity.getParentEntity().getGeospatialCode());
+
+            GeospatialScaleEvent currentGeospatialScaleEvent = currentGeospatialScaleDataPair.getGeospatialScaleEvent();
+            System.out.println(currentGeospatialScaleEvent.getGeospatialScaleEventUID());
+            System.out.println(currentGeospatialScaleEvent.getReferLocation());
+            System.out.println(currentGeospatialScaleEvent.getGeospatialScaleGrade());
+            System.out.println(currentGeospatialScaleEvent.getGeospatialRegionName());
+            System.out.println(currentGeospatialScaleEvent.getEventComment());
+        }
+        System.out.println(targetGeospatialScaleDataPairList.size());
+
+        boolean detachGeospatialScaleEventResult = _ConceptionEntity01.detachGeospatialScaleEvent(_GeospatialScaleEventForDelete.getGeospatialScaleEventUID());
+        System.out.println(detachGeospatialScaleEventResult);
+        targetGeospatialScaleDataPairList = _ConceptionEntity01.getAttachedGeospatialScaleDataPairs();
+        System.out.println(targetGeospatialScaleDataPairList.size());
+
+        //_ConceptionEntity01.detachGeospatialScaleEvent("12345678900000000");
+
         coreRealm.closeGlobalSession();
     }
 }
