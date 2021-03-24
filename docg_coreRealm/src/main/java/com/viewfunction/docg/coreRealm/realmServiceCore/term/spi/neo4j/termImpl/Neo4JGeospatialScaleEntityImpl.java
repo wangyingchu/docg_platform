@@ -8,19 +8,15 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filtering
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListGeospatialScaleEntityTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleGeospatialScaleEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GeospatialScaleEventsRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonConceptionEntitiesRetrieveResultImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonGeospatialScaleEventsRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.spi.common.structureImpl.CommonInheritanceTreeImpl;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JGeospatialScaleEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
@@ -32,6 +28,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant.TimeScaleEventClass;
 
 public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntity {
 
@@ -234,6 +232,33 @@ public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntit
 
     @Override
     public GeospatialScaleEventsRetrieveResult getAttachedGeospatialScaleEvents(QueryParameters queryParameters, GeospatialScaleLevel geospatialScaleLevel) {
+        try {
+            CommonGeospatialScaleEventsRetrieveResultImpl commonGeospatialScaleEventsRetrieveResultImpl = new CommonGeospatialScaleEventsRetrieveResultImpl();
+            commonGeospatialScaleEventsRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+            String eventEntitiesQueryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleEventClass,queryParameters,null);
+            eventEntitiesQueryCql = eventEntitiesQueryCql.replace("(operationResult:`DOCG_GeospatialScaleEvent`)","(childEntities)-[:`DOCG_GS_GeospatialReferTo`]->(operationResult:`DOCG_GeospatialScaleEvent`)");
+            String queryCql = addGeospatialScaleGradeTravelLogic(geospatialScaleLevel,eventEntitiesQueryCql);
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+
+            try{
+                GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+                GetListGeospatialScaleEventTransformer getListGeospatialScaleEventTransformer =
+                        new GetListGeospatialScaleEventTransformer(this.geospatialRegionName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object queryRes = workingGraphOperationExecutor.executeRead(getListGeospatialScaleEventTransformer,queryCql);
+                if(queryRes != null){
+                    List<GeospatialScaleEvent> res = (List<GeospatialScaleEvent>)queryRes;
+                    commonGeospatialScaleEventsRetrieveResultImpl.addGeospatialScaleEvents(res);
+                    commonGeospatialScaleEventsRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(res.size());
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            commonGeospatialScaleEventsRetrieveResultImpl.finishEntitiesRetrieving();
+            return commonGeospatialScaleEventsRetrieveResultImpl;
+
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
