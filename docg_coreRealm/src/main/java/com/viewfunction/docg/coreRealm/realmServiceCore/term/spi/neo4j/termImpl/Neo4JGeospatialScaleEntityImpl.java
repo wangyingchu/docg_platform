@@ -29,8 +29,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant.TimeScaleEventClass;
-
 public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntity {
 
     private static Logger logger = LoggerFactory.getLogger(Neo4JGeospatialScaleEntityImpl.class);
