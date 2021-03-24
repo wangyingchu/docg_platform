@@ -175,7 +175,6 @@ public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntit
 
     @Override
     public Long countAttachedGeospatialScaleEvents(AttributesParameters attributesParameters, boolean isDistinctMode, GeospatialScaleLevel geospatialScaleLevel) {
-        /*
         if(attributesParameters != null){
             QueryParameters queryParameters = new QueryParameters();
             queryParameters.setDistinctMode(isDistinctMode);
@@ -192,9 +191,9 @@ public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntit
                 }
             }
             try {
-                String eventEntitiesQueryCql = CypherBuilder.matchNodesWithQueryParameters(GeospatialScaleEventClass,queryParameters,CypherBuilder.CypherFunctionType.COUNT);
+                String eventEntitiesQueryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleEventClass,queryParameters,CypherBuilder.CypherFunctionType.COUNT);
                 eventEntitiesQueryCql = eventEntitiesQueryCql.replace("(operationResult:`DOCG_GeospatialScaleEvent`)","(childEntities)-[:`DOCG_GS_GeospatialReferTo`]->(operationResult:`DOCG_GeospatialScaleEvent`)");
-                String queryCql = addGeospatialScaleLevelTravelLogic(geospatialScaleLevel,eventEntitiesQueryCql);
+                String queryCql = addGeospatialScaleGradeTravelLogic(geospatialScaleLevel,eventEntitiesQueryCql);
                 logger.debug("Generated Cypher Statement: {}", queryCql);
 
                 DataTransformer<Long> _DataTransformer = new DataTransformer<Long>() {
@@ -226,8 +225,6 @@ public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntit
         }else{
             return countAttachedConceptionEntities(geospatialScaleLevel);
         }
-        */
-        return null;
     }
 
     @Override
