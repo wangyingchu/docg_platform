@@ -2927,6 +2927,402 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      */
     public ConceptionEntity getAttachConceptionEntity();
 ```
+###### *地理空间分析类特性*
+
+###### ↳ GeospatialRegion
+
+---
+
+```java
+    /**
+     * 地理空间刻度等级
+     * CONTINENT : 表示洲际粒度的时间地理空间
+     * COUNTRY_REGION : 表示国家，地区粒度的地理空间
+     * PROVINCE : 表示省级行政区粒度的地理空间，例如 省、直辖市、自治区、特别行政区
+     * PREFECTURE : 表示地级行政区粒度的地理空间，例如 地级市、地区、自治州、盟
+     * COUNTY : 表示县级行政区粒度的地理空间，例如 市辖区、县级市、县、自治县等
+     * TOWNSHIP : 表示乡级行政区粒度的地理空间，例如 街道、镇、乡、民族乡
+     * VILLAGE : 表示村级行政区粒度的地理空间，例如 村庄，社区
+     */
+    public enum GeospatialScaleGrade {CONTINENT,COUNTRY_REGION,PROVINCE,PREFECTURE,COUNTY,TOWNSHIP,VILLAGE}
+
+    /**
+     * 地理空间刻度实体标准属性
+     * GeospatialCode : 实体全局地理空间编码
+     * ChineseName : 实体中文名称
+     * EnglishName : 实体英文名称
+     */
+    public enum GeospatialProperty {GeospatialCode,ChineseName,EnglishName}
+
+    /**
+     * 获取当前地理空间区域名称
+     *
+     * @return 地理空间区域名称
+     */
+    public String getGeospatialRegionName();
+
+    /**
+     * 创建当前地理空间区域范围内的所有各级地理空间刻度实体并构建相应的关联关系
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean createGeospatialScaleEntities();
+
+    /**
+     * 获取当前地理空间区域中指定全局地理空间编码的地理空间刻度实体
+     *
+     * @param geospatialCode String 指定目标全局地理空间编码（完全精确匹配）
+     *
+     * @return 目标地理空间刻度实体对象
+     */
+    public GeospatialScaleEntity getEntityByGeospatialCode(String geospatialCode);
+
+    /**
+     * 获取当前地理空间区域中的洲际地理空间刻度实体列表
+     *
+     * @return 洲际地理空间刻度实体对象列表
+     */
+    public List<GeospatialScaleEntity> listContinentEntities();
+
+    /**
+     * 获取当前地理空间区域范围内的指定洲际地理空间刻度实体
+     *
+     * @param geospatialProperty GeospatialProperty 地理空间刻度实体标准属性类型
+     * @param continentValue String 指定洲际目标属性值（完全精确匹配）
+     *
+     * @return 目标地理空间刻度实体对象
+     */
+    public GeospatialScaleEntity getContinentEntity(GeospatialProperty geospatialProperty,String continentValue);
+
+    /**
+     * 获取当前地理空间区域范围内的指定国家地区地理空间刻度实体列表
+     *
+     * @param geospatialProperty GeospatialProperty 地理空间刻度实体标准属性类型
+     * @param countryValue String 指定国家地区目标属性值（模糊匹配）
+     *
+     * @return 目标地理空间刻度实体对象列表
+     */
+    public List<GeospatialScaleEntity> listCountryRegionEntities(GeospatialProperty geospatialProperty,String countryValue);
+
+    /**
+     * 获取当前地理空间区域范围内的指定国家地区地理空间刻度实体
+     *
+     * @param geospatialProperty GeospatialProperty 地理空间刻度实体标准属性类型
+     * @param countryValue String 指定国家地区目标属性值（完全精确匹配）
+     *
+     * @return 目标地理空间刻度实体对象
+     */
+    public GeospatialScaleEntity getCountryRegionEntity(GeospatialProperty geospatialProperty,String countryValue);
+
+    /**
+     * 获取当前地理空间区域范围内的指定省级行政区地理空间刻度实体列表
+     *
+     * @param geospatialProperty GeospatialProperty 地理空间刻度实体标准属性类型
+     * @param countryValue String 指定国家地区目标属性值（完全精确匹配）
+     * @param provinceValue String 指定省级行政区目标属性值（模糊匹配）
+     *
+     * @return 目标地理空间刻度实体对象列表
+     */
+    public List<GeospatialScaleEntity> listProvinceEntities(GeospatialProperty geospatialProperty,String countryValue,String provinceValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取当前地理空间区域范围内的指定省级行政区地理空间刻度实体
+     *
+     * @param geospatialProperty GeospatialProperty 地理空间刻度实体标准属性类型
+     * @param countryValue String 指定国家地区目标属性值（完全精确匹配）
+     * @param provinceValue String 指定省级行政区目标属性值（完全精确匹配）
+     *
+     * @return 目标地理空间刻度实体对象
+     */
+    public GeospatialScaleEntity getProvinceEntity(GeospatialProperty geospatialProperty,String countryValue,String provinceValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取当前地理空间区域范围内的指定地级行政区地理空间刻度实体列表
+     *
+     * @param geospatialProperty GeospatialProperty 地理空间刻度实体标准属性类型
+     * @param countryValue String 指定国家地区目标属性值（完全精确匹配）
+     * @param provinceValue String 指定省级行政区目标属性值（完全精确匹配）
+     * @param prefectureValue String 指定地级行政区目标属性值（模糊匹配）
+     *
+     * @return 目标地理空间刻度实体对象列表
+     */
+    public List<GeospatialScaleEntity> listPrefectureEntities(GeospatialProperty geospatialProperty,String countryValue,String provinceValue,String prefectureValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取当前地理空间区域范围内的指定地级行政区地理空间刻度实体
+     *
+     * @param geospatialProperty GeospatialProperty 地理空间刻度实体标准属性类型
+     * @param countryValue String 指定国家地区目标属性值（完全精确匹配）
+     * @param provinceValue String 指定省级行政区目标属性值（完全精确匹配）
+     * @param prefectureValue String 指定地级行政区目标属性值（完全精确匹配）
+     *
+     * @return 目标地理空间刻度实体对象
+     */
+    public GeospatialScaleEntity getPrefectureEntity(GeospatialProperty geospatialProperty,String countryValue,String provinceValue,String prefectureValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取当前地理空间区域范围内的指定县级行政区地理空间刻度实体列表
+     *
+     * @param geospatialProperty GeospatialProperty 地理空间刻度实体标准属性类型
+     * @param countryValue String 指定国家地区目标属性值（完全精确匹配）
+     * @param provinceValue String 指定省级行政区目标属性值（完全精确匹配）
+     * @param prefectureValue String 指定地级行政区目标属性值（完全精确匹配）
+     * @param countyValue String 指定县级行政区目标属性值（模糊匹配）
+     *
+     * @return 目标地理空间刻度实体对象列表
+     */
+    public List<GeospatialScaleEntity> listCountyEntities(GeospatialProperty geospatialProperty,String countryValue, String provinceValue, String prefectureValue, String countyValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取当前地理空间区域范围内的指定县级行政区地理空间刻度实体
+     *
+     * @param geospatialProperty GeospatialProperty 地理空间刻度实体标准属性类型
+     * @param countryValue String 指定国家地区目标属性值（完全精确匹配）
+     * @param provinceValue String 指定省级行政区目标属性值（完全精确匹配）
+     * @param prefectureValue String 指定地级行政区目标属性值（完全精确匹配）
+     * @param countyValue String 指定县级行政区目标属性值（完全精确匹配）
+     *
+     * @return 目标地理空间刻度实体对象
+     */
+    public GeospatialScaleEntity getCountyEntity(GeospatialProperty geospatialProperty,String countryValue, String provinceValue, String prefectureValue, String countyValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取当前地理空间区域范围内的指定乡级行政区地理空间刻度实体列表
+     *
+     * @param geospatialProperty GeospatialProperty 地理空间刻度实体标准属性类型
+     * @param countryValue String 指定国家地区目标属性值（完全精确匹配）
+     * @param provinceValue String 指定省级行政区目标属性值（完全精确匹配）
+     * @param prefectureValue String 指定地级行政区目标属性值（完全精确匹配）
+     * @param countyValue String 指定县级行政区目标属性值（完全精确匹配）
+     * @param townshipValue String 指定乡级行政区目标属性值（模糊匹配）
+     *
+     * @return 目标地理空间刻度实体对象列表
+     */
+    public List<GeospatialScaleEntity> listTownshipEntities(GeospatialProperty geospatialProperty,String countryValue, String provinceValue, String prefectureValue, String countyValue,String townshipValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取当前地理空间区域范围内的指定乡级行政区地理空间刻度实体
+     *
+     * @param geospatialProperty GeospatialProperty 地理空间刻度实体标准属性类型
+     * @param countryValue String 指定国家地区目标属性值（完全精确匹配）
+     * @param provinceValue String 指定省级行政区目标属性值（完全精确匹配）
+     * @param prefectureValue String 指定地级行政区目标属性值（完全精确匹配）
+     * @param countyValue String 指定县级行政区目标属性值（完全精确匹配）
+     * @param townshipValue String 指定乡级行政区目标属性值（完全精确匹配）
+     *
+     * @return 目标地理空间刻度实体对象
+     */
+    public GeospatialScaleEntity getTownshipEntity(GeospatialProperty geospatialProperty,String countryValue, String provinceValue, String prefectureValue, String countyValue,String townshipValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取当前地理空间区域范围内的指定村级行政区地理空间刻度实体列表
+     *
+     * @param geospatialProperty GeospatialProperty 地理空间刻度实体标准属性类型
+     * @param countryValue String 指定国家地区目标属性值（完全精确匹配）
+     * @param provinceValue String 指定省级行政区目标属性值（完全精确匹配）
+     * @param prefectureValue String 指定地级行政区目标属性值（完全精确匹配）
+     * @param countyValue String 指定县级行政区目标属性值（完全精确匹配）
+     * @param townshipValue String 指定乡级行政区目标属性值（完全精确匹配）
+     * @param villageValue String 指定村级行政区目标属性值（模糊匹配）
+     *
+     * @return 目标地理空间刻度实体对象列表
+     */
+    public List<GeospatialScaleEntity> listVillageEntities(GeospatialProperty geospatialProperty,String countryValue, String provinceValue, String prefectureValue, String countyValue,String townshipValue,String villageValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取当前地理空间区域范围内的指定村级行政区地理空间刻度实体
+     *
+     * @param geospatialProperty GeospatialProperty 地理空间刻度实体标准属性类型
+     * @param countryValue String 指定国家地区目标属性值（完全精确匹配）
+     * @param provinceValue String 指定省级行政区目标属性值（完全精确匹配）
+     * @param prefectureValue String 指定地级行政区目标属性值（完全精确匹配）
+     * @param countyValue String 指定县级行政区目标属性值（完全精确匹配）
+     * @param townshipValue String 指定乡级行政区目标属性值（完全精确匹配）
+     * @param villageValue String 指定村级行政区目标属性值（完全精确匹配）
+     *
+     * @return 目标地理空间刻度实体对象
+     */
+    public GeospatialScaleEntity getVillageEntity(GeospatialProperty geospatialProperty,String countryValue, String provinceValue, String prefectureValue, String countyValue,String townshipValue,String villageValue) throws CoreRealmServiceRuntimeException;
+
+```
+###### ↳ GeospatialScaleEntity
+
+---
+
+```java
+    /**
+     * 地理空间刻度层级
+     * SELF : 表示当前地理空间刻度实体自身
+     * CHILD : 表示当前地理空间刻度实体下一层级
+     * OFFSPRING : 表示当前地理空间刻度实体所有后代层级
+     */
+    public enum GeospatialScaleLevel {SELF,CHILD,OFFSPRING}
+
+    /**
+     * 获取当前地理空间刻度实体对象的地理空间刻度等级
+     *
+     * @return 地理空间刻度等级
+     */
+    public GeospatialRegion.GeospatialScaleGrade getGeospatialScaleGrade();
+
+    /**
+     * 获取当前地理空间刻度实体对象的全局地理空间编码
+     *
+     * @return 全局地理空间编码
+     */
+    public String getGeospatialCode();
+
+    /**
+     * 获取当前地理空间刻度实体对象的实体中文名称
+     *
+     * @return 实体中文名称
+     */
+    public String getChineseName();
+
+    /**
+     * 获取当前地理空间刻度实体对象的实体英文名称
+     *
+     * @return 实体英文名称
+     */
+    public String getEnglishName();
+
+    /**
+     * 获取当前对象的上一级地理空间刻度实体对象
+     *
+     * @return 上一级地理空间刻度实体对象
+     */
+    public GeospatialScaleEntity getParentEntity();
+
+    /**
+     * 获取当前对象同一地理空间刻度中的所有同一上层对象的地理空间刻度实体列表，例如广东省对应的同级地理空间刻度实体为中国的全部由34个省级行政区划对象
+     *
+     * @return 同一上层对象的时间刻度实体列表
+     */
+    public List<GeospatialScaleEntity> getFellowEntities();
+
+    /**
+     * 获取当前对象的所有下一级地理空间刻度中的地理空间刻度实体列表，例如中国对应的下级地理空间刻度实体为中国的全部由34个省级行政区划对象
+     *
+     * @return 所有下一级地理空间刻度的地理空间刻度实体列表
+     */
+    public List<GeospatialScaleEntity> getChildEntities();
+
+    /**
+     * 遍历获取当前对象的所有后代地理空间刻度实体
+     *
+     * @return 所有后代地理空间刻度实体构成的继承树
+     */
+    public InheritanceTree<GeospatialScaleEntity> getOffspringEntities();
+
+    /**
+     * 获取当前地理空间刻度实体对象上附着的地理空间刻度事件的数量
+     *
+     * @param attributesParameters AttributesParameters 地理空间刻度事件查询条件
+     * @param isDistinctMode boolean 是否剔除重复返回值
+     * @param geospatialScaleLevel GeospatialScaleLevel 目标地理空间刻度等级，如 SELF只返回自身关联事件，CHILD返回包含下一级地理空间刻度实体关联的事件，OFFSPRING返回包含所有后代地理空间刻度实体关联的事件
+     *
+     * @return 时间刻度事件数量
+     */
+    public Long countAttachedGeospatialScaleEvents(AttributesParameters attributesParameters, boolean isDistinctMode, GeospatialScaleLevel geospatialScaleLevel);
+
+    /**
+     * 获取当前地理空间刻度实体对象上附着的地理空间刻度事件
+     *
+     * @param queryParameters QueryParameters 地理空间刻度事件查询条件
+     * @param geospatialScaleLevel GeospatialScaleLevel 目标地理空间刻度等级，如 SELF只返回自身关联事件，CHILD返回包含下一级地理空间刻度实体关联的事件，OFFSPRING返回包含所有后代地理空间刻度实体关联的事件
+     *
+     * @return 地理空间刻度事件返回结果集
+     */
+    public GeospatialScaleEventsRetrieveResult getAttachedGeospatialScaleEvents(QueryParameters queryParameters, GeospatialScaleLevel geospatialScaleLevel);
+
+    /**
+     * 获取当前地理空间刻度实体对象上附着的常规概念实体的数量
+     *
+     * @param geospatialScaleLevel GeospatialScaleLevel 目标地理空间刻度等级，如 SELF只返回自身关联事件，CHILD返回包含下一级地理空间刻度实体关联的事件，OFFSPRING返回包含所有后代地理空间刻度实体关联的事件
+     *
+     * @return 常规概念实体的数量
+     */
+    public Long countAttachedConceptionEntities(GeospatialScaleLevel geospatialScaleLevel);
+
+    /**
+     * 获取当前地理空间刻度实体对象上附着的常规概念实体的数量
+     *
+     * @param conceptionKindName String 目标概念类型名称
+     * @param attributesParameters AttributesParameters 概念实体查询条件
+     * @param isDistinctMode boolean 是否剔除重复返回值
+     * @param geospatialScaleLevel GeospatialScaleLevel 目标地理空间刻度等级，如 SELF只返回自身关联事件，CHILD返回包含下一级地理空间刻度实体关联的事件，OFFSPRING返回包含所有后代地理空间刻度实体关联的事件
+     *
+     * @return 常规概念实体的数量
+     */
+    public Long countAttachedConceptionEntities(String conceptionKindName,AttributesParameters attributesParameters, boolean isDistinctMode, GeospatialScaleLevel geospatialScaleLevel);
+
+    /**
+     * 获取当前地理空间刻度实体对象上附着的常规概念实体对象
+     *
+     * @param conceptionKindName String 目标概念类型名称
+     * @param queryParameters QueryParameters 概念实体查询条件
+     * @param geospatialScaleLevel GeospatialScaleLevel 目标地理空间刻度等级，如 SELF只返回自身关联事件，CHILD返回包含下一级地理空间刻度实体关联的事件，OFFSPRING返回包含所有后代地理空间刻度实体关联的事件
+     *
+     * @return 概念实体返回结果集
+     */
+    public ConceptionEntitiesRetrieveResult getAttachedConceptionEntities(String conceptionKindName, QueryParameters queryParameters, GeospatialScaleLevel geospatialScaleLevel);
+
+```
+
+###### ↳ GeospatialScaleEvent
+
+---
+
+```java
+     /**
+     * 获取当前地理空间刻度事件所属的地理空间区域名称
+     *
+     * @return 地理空间区域名称
+     */
+    public String getGeospatialRegionName();
+
+    /**
+     * 获取当前地理空间刻度事件发生的地理空间刻度实体的全局空间编码
+     *
+     * @return 时间值
+     */
+    public String getReferLocation();
+
+    /**
+     * 获取当前地理空间刻度事件的地理空间刻度等级
+     *
+     * @return 地理空间刻度等级
+     */
+    public GeospatialRegion.GeospatialScaleGrade getGeospatialScaleGrade();
+
+    /**
+     * 获取当前地理空间刻度事件的唯一ID
+     *
+     * @return 地理空间刻度事件唯一ID
+     */
+    public String getGeospatialScaleEventUID();
+
+    /**
+     * 获取当前地理空间刻度事件的事件备注
+     *
+     * @return 地理空间刻度事件事件备注
+     */
+    public String getEventComment();
+
+    /**
+     * 获取当前地理空间刻度事件相关的地理空间刻度实体
+     *
+     * @return 地理空间刻度实体对象
+     */
+    public GeospatialScaleEntity getReferGeospatialScaleEntity();
+
+    /**
+     * 获取当前地理空间刻度事件相关的常规概念实体
+     *
+     * @return 常规概念实体对象
+     */
+    public ConceptionEntity getAttachConceptionEntity();
+```
 
 #### ➜ 领域模型数据分析
 
