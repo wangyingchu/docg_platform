@@ -286,10 +286,13 @@ public class GeospatialRegionTest {
 
         //_ConceptionEntity01.detachGeospatialScaleEvent("12345678900000000");
 
-        GeospatialScaleEntity targetGeospatialScaleEntity11 = defaultGeospatialRegion.getEntityByGeospatialCode("360902213209");
+        GeospatialScaleEntity targetGeospatialScaleEntity11 = defaultGeospatialRegion.getEntityByGeospatialCode("360902213");
 
-        System.out.println(targetGeospatialScaleEntity11.countAttachedGeospatialScaleEvents(new AttributesParameters(),true, GeospatialScaleEntity.GeospatialScaleLevel.OFFSPRING));
+        System.out.println(targetGeospatialScaleEntity11.countAttachedGeospatialScaleEvents(null,true, GeospatialScaleEntity.GeospatialScaleLevel.SELF));
 
+        System.out.println(targetGeospatialScaleEntity11.countAttachedConceptionEntities(GeospatialScaleEntity.GeospatialScaleLevel.SELF));
+        System.out.println(targetGeospatialScaleEntity11.countAttachedConceptionEntities(GeospatialScaleEntity.GeospatialScaleLevel.CHILD));
+        System.out.println(targetGeospatialScaleEntity11.countAttachedConceptionEntities(GeospatialScaleEntity.GeospatialScaleLevel.OFFSPRING));
         coreRealm.closeGlobalSession();
     }
 }

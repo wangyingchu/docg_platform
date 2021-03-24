@@ -4,21 +4,22 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListGeospatialScaleEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleGeospatialScaleEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GeospatialScaleEventsRetrieveResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonConceptionEntitiesRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.spi.common.structureImpl.CommonInheritanceTreeImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEntity;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JGeospatialScaleEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
@@ -30,9 +31,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant.GeospatialScaleEventClass;
-import static com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant.TimeScaleEventClass;
 
 public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntity {
 
@@ -178,6 +176,7 @@ public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntit
 
     @Override
     public Long countAttachedGeospatialScaleEvents(AttributesParameters attributesParameters, boolean isDistinctMode, GeospatialScaleLevel geospatialScaleLevel) {
+        /*
         if(attributesParameters != null){
             QueryParameters queryParameters = new QueryParameters();
             queryParameters.setDistinctMode(isDistinctMode);
@@ -228,6 +227,8 @@ public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntit
         }else{
             return countAttachedConceptionEntities(geospatialScaleLevel);
         }
+        */
+        return null;
     }
 
     @Override
@@ -237,6 +238,82 @@ public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntit
 
     @Override
     public Long countAttachedConceptionEntities(GeospatialScaleLevel geospatialScaleLevel) {
+        /*
+
+
+        String relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..3";
+        switch (geospatialScaleLevel){
+            case SELF: relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`";
+                break;
+            case CHILD: relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1";
+                break;
+            case OFFSPRING:
+                switch(this.geospatialScaleGrade){
+                    case CONTINENT:
+                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..6";
+                        break;
+                    case COUNTRY_REGION:
+                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..5";
+                        break;
+                    case PROVINCE:
+                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..4";
+                        break;
+                    case PREFECTURE:
+                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..3";
+                        break;
+                    case COUNTY:
+                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..2";
+                        break;
+                    case TOWNSHIP:
+                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1";
+                        break;
+                    case VILLAGE:
+                        return 0l;
+                }
+        }
+        switch(this.geospatialScaleGrade){
+            case CONTINENT: break;
+            case COUNTRY_REGION: break;
+            case PROVINCE:break;
+            case PREFECTURE:break;
+            case COUNTY:break;
+            case TOWNSHIP:
+                switch (geospatialScaleLevel){
+                    case CHILD:return 0l;
+                }
+                break;
+
+        }
+        String queryCql = "MATCH(currentEntity:DOCG_GeospatialScaleEntity)-["+relationTravelLogic+"]->(childEntities:`DOCG_GeospatialScaleEntity`) WHERE id(currentEntity) = "+this.geospatialScaleEntityUID+" \n" +
+                "MATCH (childEntities)-[:`DOCG_GS_GeospatialReferTo`]->(relatedEvents:`DOCG_GeospatialScaleEvent`) RETURN count(relatedEvents) as operationResult";
+        logger.debug("Generated Cypher Statement: {}", queryCql);
+
+        DataTransformer<Long> _DataTransformer = new DataTransformer<Long>() {
+            @Override
+            public Long transformResult(Result result) {
+
+                if (result.hasNext()) {
+                    Record record = result.next();
+                    if (record.containsKey(CypherBuilder.operationResultName)) {
+                        return record.get(CypherBuilder.operationResultName).asLong();
+                    }
+                    return null;
+                }
+                return null;
+            }
+        };
+        Long resultNumber = 0l;
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            Object countRes = workingGraphOperationExecutor.executeRead(_DataTransformer,queryCql);
+            resultNumber = countRes != null ? (Long) countRes: 0l;
+            return resultNumber;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+
+
+        */
         return null;
     }
 
@@ -247,7 +324,78 @@ public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntit
 
     @Override
     public ConceptionEntitiesRetrieveResult getAttachedConceptionEntities(String conceptionKindName, QueryParameters queryParameters, GeospatialScaleLevel geospatialScaleLevel) {
+        try {
+            CommonConceptionEntitiesRetrieveResultImpl commonConceptionEntitiesRetrieveResultImpl = new CommonConceptionEntitiesRetrieveResultImpl();
+            commonConceptionEntitiesRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+            String eventEntitiesQueryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleEntityClass,queryParameters,null);
+            if(conceptionKindName != null){
+                eventEntitiesQueryCql = eventEntitiesQueryCql.replace("(operationResult:`DOCG_GeospatialScaleEntity`)","(childEntities)-[:`DOCG_GS_GeospatialReferTo`]->(geospatialScaleEvents:`DOCG_GeospatialScaleEvent`)<-[:`DOCG_AttachToGeospatialScale`]-(operationResult:`"+conceptionKindName+"`)");
+            }else{
+                eventEntitiesQueryCql = eventEntitiesQueryCql.replace("(operationResult:`DOCG_GeospatialScaleEntity`)","(childEntities)-[:`DOCG_GS_GeospatialReferTo`]->(geospatialScaleEvents:`DOCG_GeospatialScaleEvent`)<-[:`DOCG_AttachToGeospatialScale`]-(operationResult)");
+            }
+            String queryCql = addGeospatialScaleGradeTravelLogic(geospatialScaleLevel,eventEntitiesQueryCql);
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+
+            try{
+                GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+                GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(null,
+                        this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object queryRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
+                if(queryRes != null){
+                    List<ConceptionEntity> resultConceptionEntityList = (List<ConceptionEntity>)queryRes;
+                    commonConceptionEntitiesRetrieveResultImpl.addConceptionEntities(resultConceptionEntityList);
+                    commonConceptionEntitiesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultConceptionEntityList.size());
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            commonConceptionEntitiesRetrieveResultImpl.finishEntitiesRetrieving();
+            return commonConceptionEntitiesRetrieveResultImpl;
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
         return null;
+    }
+
+    private String addGeospatialScaleGradeTravelLogic(GeospatialScaleLevel geospatialScaleLevel, String eventEntitiesQueryCql){
+        String relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..3";
+        switch (geospatialScaleLevel){
+            case CHILD: relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1";
+                break;
+            case OFFSPRING:
+                switch(this.geospatialScaleGrade){
+                    case CONTINENT:
+                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..6";
+                        break;
+                    case COUNTRY_REGION:
+                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..5";
+                        break;
+                    case PROVINCE:
+                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..4";
+                        break;
+                    case PREFECTURE:
+                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..3";
+                        break;
+                    case COUNTY:
+                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..2";
+                        break;
+                    case TOWNSHIP:
+                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1";
+                        break;
+                    case VILLAGE:
+                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1";
+                        break;
+                }
+        }
+
+        String queryCql = "MATCH(currentEntity:DOCG_GeospatialScaleEntity)-["+relationTravelLogic+"]->(childEntities:`DOCG_GeospatialScaleEntity`) WHERE id(currentEntity) = "+this.geospatialScaleEntityUID+" \n" +
+                eventEntitiesQueryCql;
+        switch (geospatialScaleLevel){
+            case SELF:
+                queryCql = "MATCH(childEntities:DOCG_GeospatialScaleEntity) WHERE id(childEntities) = "+this.geospatialScaleEntityUID+" \n" +
+                        eventEntitiesQueryCql;
+        }
+        return queryCql;
     }
 
     private List<GeospatialScaleEntity> getListGeospatialScaleEntity(String queryCql){
@@ -280,43 +428,6 @@ public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntit
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
         return null;
-    }
-
-    private String addGeospatialScaleLevelTravelLogic(GeospatialScaleLevel geospatialScaleLevel, String eventEntitiesQueryCql){
-        String relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..3";
-        switch (geospatialScaleLevel){
-            case SELF: relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`";
-                break;
-            case CHILD: relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1";
-                break;
-            case OFFSPRING:
-                switch(this.geospatialScaleGrade){
-                    case CONTINENT:
-                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..6";
-                        break;
-                    case COUNTRY_REGION:
-                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..5";
-                        break;
-                    case PROVINCE:
-                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..4";
-                        break;
-                    case PREFECTURE:
-                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..3";
-                        break;
-                    case COUNTY:
-                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1..2";
-                        break;
-                    case TOWNSHIP:
-                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1";
-                        break;
-                    case VILLAGE:
-                        relationTravelLogic = "relationResult:`DOCG_GS_SpatialContains`*1";
-                        break;
-                }
-        }
-        String queryCql = "MATCH(currentEntity:DOCG_GeospatialScaleEntity)-["+relationTravelLogic+"]->(childEntities:`DOCG_GeospatialScaleEntity`) WHERE id(currentEntity) = "+this.geospatialScaleEntityUID+" \n" +
-                eventEntitiesQueryCql;
-        return queryCql;
     }
 
     public String getGeospatialScaleEntityUID() {
