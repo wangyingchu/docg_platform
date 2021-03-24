@@ -2824,7 +2824,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @param attributesParameters AttributesParameters 时间刻度事件查询条件
      * @param isDistinctMode boolean 是否剔除重复返回值
-     * @param timeScaleLevel TimeScaleLevel 目标时间刻度等级，如 SELF只返回自身关联事件，如CHILD返回包含下一级时间刻度实体关联的事件，如OFFSPRING返回包含所有后代时间刻度实体关联的事件
+     * @param timeScaleLevel TimeScaleLevel 目标时间刻度等级，如 SELF只返回自身关联事件，CHILD返回包含下一级时间刻度实体关联的事件，OFFSPRING返回包含所有后代时间刻度实体关联的事件
      *
      * @return 时间刻度事件数量
      */
@@ -2834,7 +2834,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * 获取当前时间刻度实体对象上附着的时间刻度事件
      *
      * @param queryParameters QueryParameters 时间刻度事件查询条件
-     * @param timeScaleLevel TimeScaleLevel 目标时间刻度等级，如 SELF只返回自身关联事件，如CHILD返回包含下一级时间刻度实体关联的事件，如OFFSPRING返回包含所有后代时间刻度实体关联的事件
+     * @param timeScaleLevel TimeScaleLevel 目标时间刻度等级，如 SELF只返回自身关联事件，CHILD返回包含下一级时间刻度实体关联的事件，OFFSPRING返回包含所有后代时间刻度实体关联的事件
      *
      * @return 时间刻度事件返回结果集
      */
@@ -2843,7 +2843,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     /**
      * 获取当前时间刻度实体对象上附着的常规概念实体的数量
      *
-     * @param timeScaleLevel TimeScaleLevel 目标时间刻度等级，如 SELF只返回自身关联事件，如CHILD返回包含下一级时间刻度实体关联的事件，如OFFSPRING返回包含所有后代时间刻度实体关联的事件
+     * @param timeScaleLevel TimeScaleLevel 目标时间刻度等级，如 SELF只返回自身关联事件，CHILD返回包含下一级时间刻度实体关联的事件，OFFSPRING返回包含所有后代时间刻度实体关联的事件
      *
      * @return 常规概念实体的数量
      */
@@ -2855,7 +2855,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @param conceptionKindName String 目标概念类型名称
      * @param attributesParameters AttributesParameters 概念实体查询条件
      * @param isDistinctMode boolean 是否剔除重复返回值
-     * @param timeScaleLevel TimeScaleLevel 目标时间刻度等级，如 SELF只返回自身关联事件，如CHILD返回包含下一级时间刻度实体关联的事件，如OFFSPRING返回包含所有后代时间刻度实体关联的事件
+     * @param timeScaleLevel TimeScaleLevel 目标时间刻度等级，如 SELF只返回自身关联事件，CHILD返回包含下一级时间刻度实体关联的事件，OFFSPRING返回包含所有后代时间刻度实体关联的事件
      *
      * @return 常规概念实体的数量
      */
@@ -2866,7 +2866,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @param conceptionKindName String 目标概念类型名称
      * @param queryParameters QueryParameters 概念实体查询条件
-     * @param timeScaleLevel TimeScaleLevel 目标时间刻度等级，如 SELF只返回自身关联事件，如CHILD返回包含下一级时间刻度实体关联的事件，如OFFSPRING返回包含所有后代时间刻度实体关联的事件
+     * @param timeScaleLevel TimeScaleLevel 目标时间刻度等级，如 SELF只返回自身关联事件，CHILD返回包含下一级时间刻度实体关联的事件，OFFSPRING返回包含所有后代时间刻度实体关联的事件
      *
      * @return 概念实体返回结果集
      */
