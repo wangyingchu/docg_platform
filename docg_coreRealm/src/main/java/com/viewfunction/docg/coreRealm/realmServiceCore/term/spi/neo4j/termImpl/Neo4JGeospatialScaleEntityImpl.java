@@ -4,6 +4,7 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
@@ -304,7 +305,64 @@ public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntit
 
     @Override
     public Long countAttachedConceptionEntities(String conceptionKindName, AttributesParameters attributesParameters, boolean isDistinctMode, GeospatialScaleLevel geospatialScaleLevel) {
-        return null;
+        if(attributesParameters != null){
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setDistinctMode(isDistinctMode);
+            queryParameters.setResultNumber(100000000);
+            queryParameters.setDefaultFilteringItem(attributesParameters.getDefaultFilteringItem());
+            if (attributesParameters.getAndFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getAndFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.AND);
+                }
+            }
+            if (attributesParameters.getOrFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getOrFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.OR);
+                }
+            }
+            try {
+                CommonConceptionEntitiesRetrieveResultImpl commonConceptionEntitiesRetrieveResultImpl = new CommonConceptionEntitiesRetrieveResultImpl();
+                commonConceptionEntitiesRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+                String eventEntitiesQueryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleEntityClass,queryParameters,CypherBuilder.CypherFunctionType.COUNT);
+
+                if(conceptionKindName != null){
+                    eventEntitiesQueryCql = eventEntitiesQueryCql.replace("(operationResult:`DOCG_GeospatialScaleEntity`)","(childEntities)-[:`DOCG_GS_GeospatialReferTo`]->(geospatialScaleEvents:`DOCG_GeospatialScaleEvent`)<-[:`DOCG_AttachToGeospatialScale`]-(operationResult:`"+conceptionKindName+"`)");
+                }else{
+                    eventEntitiesQueryCql = eventEntitiesQueryCql.replace("(operationResult:`DOCG_GeospatialScaleEntity`)","(childEntities)-[:`DOCG_GS_GeospatialReferTo`]->(geospatialScaleEvents:`DOCG_GeospatialScaleEvent`)<-[:`DOCG_AttachToGeospatialScale`]-(operationResult)");
+                }
+
+                String queryCql = addGeospatialScaleGradeTravelLogic(geospatialScaleLevel,eventEntitiesQueryCql);
+                logger.debug("Generated Cypher Statement: {}", queryCql);
+
+                DataTransformer<Long> _DataTransformer = new DataTransformer<Long>() {
+                    @Override
+                    public Long transformResult(Result result) {
+                        if (result.hasNext()) {
+                            Record record = result.next();
+                            if (record.containsKey("count("+CypherBuilder.operationResultName+")")) {
+                                return record.get("count("+CypherBuilder.operationResultName+")").asLong();
+                            }
+                            return null;
+                        }
+                        return null;
+                    }
+                };
+                Long resultNumber = 0l;
+                GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+                try{
+                    Object countRes = workingGraphOperationExecutor.executeRead(_DataTransformer,queryCql);
+                    resultNumber = countRes != null ? (Long) countRes: 0l;
+                    return resultNumber;
+                }finally {
+                    this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+                }
+            } catch (CoreRealmServiceEntityExploreException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }else{
+            return countAttachedConceptionEntities(geospatialScaleLevel);
+        }
     }
 
     @Override
