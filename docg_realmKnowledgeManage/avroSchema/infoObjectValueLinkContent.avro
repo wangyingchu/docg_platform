@@ -1,0 +1,11 @@
+{
+  "namespace": "com.glodon.pcop",
+  "name": "InfoObjectValueLinkContent",
+  "type": "record",
+  "fields": [
+   {"name": "infoObjectSpaceName", "type": "string"},
+   {"name": "infoObjectTypeName", "type": "string"},
+   {"name": "tenantId", "type": "string"},
+   {"name": "objectInstanceRIDs","type": {"type": "array", "items": "string"}}
+ ]
+}

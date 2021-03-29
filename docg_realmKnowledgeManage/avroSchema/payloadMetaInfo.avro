@@ -1,0 +1,17 @@
+{
+  "namespace": "com.glodon.pcop",
+  "name": "PayloadMetaInfo",
+  "type": "record",
+  "fields": [
+    {"name": "senderId", "type": "string"},
+    {"name": "senderGroup", "type": "string"},
+    {"name": "senderCategory", "type": ["null", "string"]},
+    {"name": "senderIP", "type": ["null", "string"]},
+    {"name": "sendTime", "type": "long"},
+
+    {"name": "payloadClassification", "type":["null", "string"]},
+    {"name": "payloadType", "type": "string"},
+    {"name": "payloadTypeDesc", "type":["null", "string"]},
+    {"name": "payloadProcessor", "type": ["null", "string"]}
+  ]
+}

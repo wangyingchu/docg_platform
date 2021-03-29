@@ -1,0 +1,18 @@
+{
+  "namespace": "com.glodon.pcop",
+  "name": "InfoObjectValueOperationContent",
+  "type": "record",
+  "fields": [
+   {"name": "senderIP", "type": ["null", "string"]},
+   {"name": "senderId", "type": ["null", "string"]},
+   {"name": "sendTime", "type":  ["null", "long"]},
+   {"name": "infoObjectSpaceName", "type": ["null", "string"]},
+   {"name": "infoObjectTypeName", "type":  ["null", "string"]},
+   {"name": "tenantId", "type": ["null", "string"]},
+   {"name": "objectInstanceRID", "type": ["null", "string"]},
+   {"name": "addPerDefinedRelation", "type": ["null", "boolean"]},
+   {"name": "operationType", "type":  ["null", "string"]},
+   {"name": "baseDatasetPropertiesValue", "type":["null", "string"]},
+   {"name": "generalDatasetsPropertiesValue", "type":["null", "string"]}
+ ]
+}

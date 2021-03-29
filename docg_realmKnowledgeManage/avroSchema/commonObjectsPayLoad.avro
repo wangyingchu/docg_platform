@@ -1,0 +1,9 @@
+{
+  "namespace": "com.glodon.pcop",
+  "name": "InfoObjectsPayLoad",
+  "type": "record",
+  "fields": [
+    {"name": "metaInfo", "type": com.glodon.pcop.PayloadMetaInfo},
+    {"name": "payloadContent", "type": com.glodon.pcop.PayloadContent}
+  ]
+}

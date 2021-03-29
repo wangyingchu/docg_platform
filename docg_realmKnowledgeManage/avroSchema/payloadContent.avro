@@ -1,0 +1,15 @@
+{
+  "namespace": "com.glodon.pcop",
+  "name": "PayloadContent",
+  "type": "record",
+  "fields": [
+    {"name": "textContentEncoded", "type": ["null", "boolean"]},
+    {"name": "textContentEncodeAlgorithm", "type": ["null", "string"]},
+    {
+        "name": "includingContent",
+        "type":com.glodon.pcop.PayloadContentType
+    },
+    {"name": "binaryContent", "type":["null", "bytes"]},
+    {"name": "textContent", "type":["null", "string"]}
+ ]
+}
