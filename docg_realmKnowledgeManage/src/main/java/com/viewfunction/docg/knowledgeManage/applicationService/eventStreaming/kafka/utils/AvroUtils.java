@@ -81,7 +81,6 @@ public class AvroUtils {
             return;
         }
         try {
-            parseSchema(FileUtils.getInputStream("avroSchema/payloadContentType.avro"));
             parseSchema(FileUtils.getInputStream("avroSchema/payloadMetaInfo.avro"));
             parseSchema(FileUtils.getInputStream("avroSchema/payloadContent.avro"));
             parseSchema(FileUtils.getInputStream("avroSchema/commonObjectsPayLoad.avro"));
@@ -95,6 +94,4 @@ public class AvroUtils {
             throw sfee;
         }
     }
-
-
 }

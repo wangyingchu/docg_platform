@@ -1,6 +1,0 @@
-{
-    "namespace": "com.glodon.pcop",
-    "name": "PayloadContentType",
-    "type":"enum",
-    "symbols" : ["TEXT", "BINARY", "ALL"]
-}
