@@ -1,9 +1,9 @@
 {
-  "namespace": "com.glodon.pcop",
+  "namespace": "com.viewfunction.docg",
   "name": "InfoObjectsPayLoad",
   "type": "record",
   "fields": [
-    {"name": "metaInfo", "type": com.glodon.pcop.PayloadMetaInfo},
-    {"name": "payloadContent", "type": com.glodon.pcop.PayloadContent}
+    {"name": "metaInfo", "type": com.viewfunction.docg.PayloadMetaInfo},
+    {"name": "payloadContent", "type": com.viewfunction.docg.PayloadContent}
   ]
 }

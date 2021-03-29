@@ -14,11 +14,11 @@ public class AvroUtils {
 
     private static Map<String, Schema> schemas = new HashMap<String, Schema>();
 
-    public final static String InfoObjectsPayloadMetaInfoSchemaName ="com.glodon.pcop.PayloadMetaInfo";
-    public final static String InfoObjectsPayLoadContentSchemaName ="com.glodon.pcop.PayloadContent";
-    public final static String InfoObjectsPayLoadSchemaName ="com.glodon.pcop.InfoObjectsPayLoad";
-    public final static String InfoObjectValueOperationContentSchemaName ="com.glodon.pcop.InfoObjectValueOperationContent";
-    public final static String InfoObjectValueLinkContentSchemaName ="com.glodon.pcop.InfoObjectValueLinkContent";
+    public final static String InfoObjectsPayloadMetaInfoSchemaName ="com.viewfunction.docg.PayloadMetaInfo";
+    public final static String InfoObjectsPayLoadContentSchemaName ="com.viewfunction.docg.PayloadContent";
+    public final static String InfoObjectsPayLoadSchemaName ="com.viewfunction.docg.InfoObjectsPayLoad";
+    public final static String InfoObjectValueOperationContentSchemaName ="com.viewfunction.docg.InfoObjectValueOperationContent";
+    public final static String InfoObjectValueLinkContentSchemaName ="com.viewfunction.docg.InfoObjectValueLinkContent";
 
     private AvroUtils(){}
 

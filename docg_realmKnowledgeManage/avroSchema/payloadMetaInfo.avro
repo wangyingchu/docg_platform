@@ -1,5 +1,5 @@
 {
-  "namespace": "com.glodon.pcop",
+  "namespace": "com.viewfunction.docg",
   "name": "PayloadMetaInfo",
   "type": "record",
   "fields": [
