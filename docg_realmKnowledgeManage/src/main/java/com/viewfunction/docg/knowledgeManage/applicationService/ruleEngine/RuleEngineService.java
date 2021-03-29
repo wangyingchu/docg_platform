@@ -21,7 +21,7 @@ public class RuleEngineService {
         if(_RuleFactsGeneratorsProperties == null){
             _RuleFactsGeneratorsProperties = new Properties();
             try {
-                _RuleFactsGeneratorsProperties.load(new FileInputStream("RuleFactsGenerators.properties"));
+                _RuleFactsGeneratorsProperties.load(new FileInputStream("RuleEngineServiceCfg.properties"));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {

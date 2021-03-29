@@ -2,6 +2,7 @@ package com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.
 
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.exception.ConfigurationErrorException;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +36,8 @@ public class KafkaDataIntegrationPropertyHandler {
     	if(_properties == null){
 			_properties=new Properties();
 			try {
-				InputStream inputStream = FileUtils.getInputStream("config/confluent/DataExchangeCfg_confluent.properties");
+				InputStream inputStream = //FileUtils.getInputStream("config/confluent/EventStreamingServiceCfg.properties");
+				new FileInputStream("EventStreamingServiceCfg.properties");
 				_properties.load(inputStream);
 				inputStream.close();
 			} catch (FileNotFoundException e) {
