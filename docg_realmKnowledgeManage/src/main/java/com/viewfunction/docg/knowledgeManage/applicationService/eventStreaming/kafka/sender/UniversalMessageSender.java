@@ -2,7 +2,7 @@ package com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.
 
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.exception.ConfigurationErrorException;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.exception.MessageHandleErrorException;
-import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.utils.KafkaDataIntegrationPropertyHandler;
+import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.utils.EventStreamingServicePropertiesHandler;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -73,18 +73,18 @@ public class UniversalMessageSender {
     private void initProducerConfig() throws ConfigurationErrorException {
         if(configProps==null){
             configProps = new Properties();
-            configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaDataIntegrationPropertyHandler.getPerportyValue(KafkaDataIntegrationPropertyHandler.PRODUCER_BOOTSTRAP_SERVERS));
-            configProps.put(KafkaDataIntegrationPropertyHandler.SCHEMA_REGISTRY_URL, KafkaDataIntegrationPropertyHandler.getPerportyValue(KafkaDataIntegrationPropertyHandler.PRODUCER_SCHEMA_REGISTRY));
-            configProps.put(ProducerConfig.ACKS_CONFIG, KafkaDataIntegrationPropertyHandler.getPerportyValue(KafkaDataIntegrationPropertyHandler.PRODUCER_ACKS));
-            int retries=Integer.parseInt(KafkaDataIntegrationPropertyHandler.getPerportyValue(KafkaDataIntegrationPropertyHandler.PRODUCER_RETRIES));
+            configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, EventStreamingServicePropertiesHandler.getPerportyValue(EventStreamingServicePropertiesHandler.PRODUCER_BOOTSTRAP_SERVERS));
+            configProps.put(EventStreamingServicePropertiesHandler.SCHEMA_REGISTRY_URL, EventStreamingServicePropertiesHandler.getPerportyValue(EventStreamingServicePropertiesHandler.PRODUCER_SCHEMA_REGISTRY));
+            configProps.put(ProducerConfig.ACKS_CONFIG, EventStreamingServicePropertiesHandler.getPerportyValue(EventStreamingServicePropertiesHandler.PRODUCER_ACKS));
+            int retries=Integer.parseInt(EventStreamingServicePropertiesHandler.getPerportyValue(EventStreamingServicePropertiesHandler.PRODUCER_RETRIES));
             configProps.put(ProducerConfig.RETRIES_CONFIG,retries);
-            int batchSize=Integer.parseInt(KafkaDataIntegrationPropertyHandler.getPerportyValue(KafkaDataIntegrationPropertyHandler.PRODUCER_BATCH_SIZE));
+            int batchSize=Integer.parseInt(EventStreamingServicePropertiesHandler.getPerportyValue(EventStreamingServicePropertiesHandler.PRODUCER_BATCH_SIZE));
             configProps.put(ProducerConfig.BATCH_SIZE_CONFIG,batchSize);
-            int lingerMs=Integer.parseInt(KafkaDataIntegrationPropertyHandler.getPerportyValue(KafkaDataIntegrationPropertyHandler.PRODUCER_LINGER_MS));
+            int lingerMs=Integer.parseInt(EventStreamingServicePropertiesHandler.getPerportyValue(EventStreamingServicePropertiesHandler.PRODUCER_LINGER_MS));
             configProps.put(ProducerConfig.LINGER_MS_CONFIG,lingerMs);
-            int bufferMemory=Integer.parseInt(KafkaDataIntegrationPropertyHandler.getPerportyValue(KafkaDataIntegrationPropertyHandler.PRODUCER_BUFFER_MEMORY));
+            int bufferMemory=Integer.parseInt(EventStreamingServicePropertiesHandler.getPerportyValue(EventStreamingServicePropertiesHandler.PRODUCER_BUFFER_MEMORY));
             configProps.put(ProducerConfig.BUFFER_MEMORY_CONFIG,bufferMemory);
-            int maxRequestSize=Integer.parseInt(KafkaDataIntegrationPropertyHandler.getPerportyValue(KafkaDataIntegrationPropertyHandler.PRODUCER_MAX_REQUEST_SIZE));
+            int maxRequestSize=Integer.parseInt(EventStreamingServicePropertiesHandler.getPerportyValue(EventStreamingServicePropertiesHandler.PRODUCER_MAX_REQUEST_SIZE));
             configProps.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG,maxRequestSize);
         }
     }
@@ -93,6 +93,5 @@ public class UniversalMessageSender {
         if(this.configProps!=null){
             this.configProps.put(configKey,configItem);
         }
-
     }
 }

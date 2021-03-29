@@ -10,7 +10,7 @@ public class FileUtils {
         try {
             return new FileInputStream(path);
         } catch (FileNotFoundException e) {
-            //非文件系统 可能在jar包内
+            e.printStackTrace();
         }
         return FileUtils.class.getClassLoader().getResourceAsStream(path);
     }
