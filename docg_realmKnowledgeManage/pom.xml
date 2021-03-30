@@ -26,6 +26,14 @@
             <version>1.78</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.15</version>
+        </dependency>
+
+        <!-- For Jboss drools -->
         <dependency>
             <groupId>org.drools</groupId>
             <artifactId>drools-bom</artifactId>

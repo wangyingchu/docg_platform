@@ -18,7 +18,8 @@ public class AvroUtils {
     public final static String PayLoadContentSchemaName ="com.viewfunction.docg.PayloadContent";
     public final static String PayLoadSchemaName ="com.viewfunction.docg.InfoObjectsPayLoad";
 
-    public final static String InfoObjectValueOperationContentSchemaName ="com.viewfunction.docg.InfoObjectValueOperationContent";
+    public final static String ConceptionEntityValueOperationContentSchemaName ="com.viewfunction.docg.InfoObjectValueOperationContent";
+
     public final static String InfoObjectValueLinkContentSchemaName ="com.viewfunction.docg.InfoObjectValueLinkContent";
 
     private AvroUtils(){}

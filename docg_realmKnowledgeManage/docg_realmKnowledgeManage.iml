@@ -64,6 +64,7 @@
     <orderEntry type="library" name="Maven: org.eclipse.emf:org.eclipse.emf.ecore:2.15.0" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.15.0" level="project" />
     <orderEntry type="library" name="Maven: com.beust:jcommander:1.78" level="project" />
+    <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.15" level="project" />
     <orderEntry type="library" name="Maven: org.kie:kie-api:7.45.0.Final" level="project" />
     <orderEntry type="library" name="Maven: org.kie.soup:kie-soup-maven-support:7.45.0.Final" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.drools:drools-compiler:7.45.0.Final" level="project" />
@@ -71,7 +72,6 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.drools:drools-core:7.45.0.Final" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.kie.soup:kie-soup-xstream:7.45.0.Final" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.drools:drools-core-dynamic:7.45.0.Final" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: commons-codec:commons-codec:1.11" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.kie:kie-internal:7.45.0.Final" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.kie.soup:kie-soup-commons:7.45.0.Final" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.antlr:antlr-runtime:3.5.2" level="project" />
