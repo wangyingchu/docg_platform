@@ -17,8 +17,7 @@ public class AvroUtils {
     public final static String PayloadMetaInfoSchemaName ="com.viewfunction.docg.PayloadMetaInfo";
     public final static String PayLoadContentSchemaName ="com.viewfunction.docg.PayloadContent";
     public final static String PayLoadSchemaName ="com.viewfunction.docg.InfoObjectsPayLoad";
-
-    public final static String ConceptionEntityValueOperationContentSchemaName ="com.viewfunction.docg.InfoObjectValueOperationContent";
+    public final static String ConceptionEntityValueOperationContentSchemaName ="com.viewfunction.docg.ConceptionEntityValueOperationContent";
 
     public final static String InfoObjectValueLinkContentSchemaName ="com.viewfunction.docg.InfoObjectValueLinkContent";
 
@@ -86,7 +85,7 @@ public class AvroUtils {
             parseSchema(FileUtils.getInputStream("avroSchema/payloadMetaInfo.avro"));
             parseSchema(FileUtils.getInputStream("avroSchema/payloadContent.avro"));
             parseSchema(FileUtils.getInputStream("avroSchema/commonObjectsPayLoad.avro"));
-            parseSchema(FileUtils.getInputStream("avroSchema/infoObjectValueOperationContent.avro"));
+            parseSchema(FileUtils.getInputStream("avroSchema/conceptionEntityValueOperationContent.avro"));
             parseSchema(FileUtils.getInputStream("avroSchema/infoObjectValueLinkContent.avro"));
         } catch (IOException e) {
             e.printStackTrace();
