@@ -78,7 +78,6 @@ public class CommonObjectsMessageReceiverTest {
         });
 
         //Thread.sleep(5000);
-        //plainTextMessageReceiver.stopMessageReceive();
         //executor.shutdown();
     }
 

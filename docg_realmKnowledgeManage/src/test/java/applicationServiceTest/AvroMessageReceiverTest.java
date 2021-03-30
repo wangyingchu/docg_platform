@@ -37,7 +37,6 @@ public class AvroMessageReceiverTest {
         });
 
         //Thread.sleep(5000);
-        //plainTextMessageReceiver.stopMessageReceive();
         //executor.shutdown();
     }
 }
