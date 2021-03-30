@@ -44,18 +44,19 @@ public class CommonObjectsMessageSenderTest {
         byte[] encodedBytes = Base64.encodeBase64(node.toString().getBytes());
         infoObjectsPayloadContent.setTextContentEncodeAlgorithm("BASE64");
         infoObjectsPayloadContent.setTextContent(new String(encodedBytes));
-        byte[] fileBteArray=getBytes("EventStreamingServiceCfg.properties");
+
+        byte[] fileBteArray=getBytes("testresource/testPic.jpg");
         ByteBuffer buffer= ByteBuffer.wrap(fileBteArray);
         infoObjectsPayloadContent.setBinaryContent(buffer);
 
         InfoObjectsMessageTargetInfo infoObjectsMessageTargetInfo =new InfoObjectsMessageTargetInfo();
-        infoObjectsMessageTargetInfo.setDestinationTopic("InfoObjectsTopic");
+        infoObjectsMessageTargetInfo.setDestinationTopic("InfoObjectsTopic002");
         infoObjectsMessageTargetInfo.setPayloadKey("payloadKey001");
 
         CommonObjectsMessageSender commonObjectsMessageSender =new CommonObjectsMessageSender(new MessageSentEventHandler(){
             @Override
             public void operateMetaData(long offset, long timestamp, String topic, int partition) {
-                System.out.println(offset+" - "+timestamp+" - "+topic);
+                System.out.println(offset+" - "+timestamp+" - "+topic+" - "+partition);
             }
         });
 

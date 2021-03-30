@@ -5,7 +5,7 @@ import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.k
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.CommonObjectsPayloadMetaInfo;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.CommonObjectsReceivedMessage;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.utils.AvroUtils;
-import org.apache.avro.generic.GenericData;
+
 import org.apache.avro.generic.GenericRecord;
 import org.apache.avro.util.Utf8;
 
@@ -18,7 +18,7 @@ public abstract class CommonObjectsMessageHandler extends AvroMessageHandler {
 
     @Override
     protected void operateRecord(Object recordKey, GenericRecord messageRecord, long recordOffset) {
-        String messageSchemaFullName=messageRecord.getSchema().getFullName();
+        String messageSchemaFullName = messageRecord.getSchema().getFullName();
         if(messageSchemaFullName.equals(AvroUtils.InfoObjectsPayLoadSchemaName)){
             CommonObjectsReceivedMessage neuronGridReceivedMessage=new CommonObjectsReceivedMessage();
             neuronGridReceivedMessage.setMessageReceivedTime(new Date().getTime());
@@ -32,12 +32,7 @@ public abstract class CommonObjectsMessageHandler extends AvroMessageHandler {
                 return;
             }
             GenericRecord payloadContentRecord=(GenericRecord)messageRecord.get("payloadContent");
-            Object includingContent=payloadContentRecord.get("includingContent");
-            if(includingContent==null){
-                return;
-            }
             neuronGridReceivedMessage.setMessageSendTime((Long)sendTime);
-
             CommonObjectsPayloadMetaInfo messageCommonObjectsPayloadMetaInfo =new CommonObjectsPayloadMetaInfo();
             neuronGridReceivedMessage.setMessageCommonObjectsPayloadMetaInfo(messageCommonObjectsPayloadMetaInfo);
             messageCommonObjectsPayloadMetaInfo.setSenderId(((Utf8)senderId).toString());
@@ -61,7 +56,8 @@ public abstract class CommonObjectsMessageHandler extends AvroMessageHandler {
 
             CommonObjectsPayloadContent infoObjectsPayloadContent =new CommonObjectsPayloadContent();
             neuronGridReceivedMessage.setInfoObjectsPayloadContent(infoObjectsPayloadContent);
-            String includingContentValue=((GenericData.EnumSymbol)includingContent).toString();
+
+            String includingContentValue=((Utf8)payloadContentRecord.get("includingContent")).toString();
             if(includingContentValue.equals("TEXT")){
                 infoObjectsPayloadContent.setIncludingContent(CommonObjectsPayloadContentType.TEXT);
                 setNeuronGridPayloadContentForTextCase(infoObjectsPayloadContent,payloadContentRecord);

@@ -57,7 +57,7 @@ public class CommonObjectsMessageReceiverTest {
                 }
                 ByteBuffer ByteBuffer= infoObjectsPayloadContent.getBinaryContent();
                 System.out.println("BinaryContent: "+ByteBuffer);
-                //getFile(ByteBuffer.array(),"/media/wangychu/Data/Dev_Temp/","RECEIVED-"+new Date().getTime()+".jpg");
+                getFile(ByteBuffer.array(),"testresult/","RECEIVED-"+new Date().getTime()+".jpg");
                 System.out.println("============================================");
             }
         };
@@ -68,7 +68,7 @@ public class CommonObjectsMessageReceiverTest {
         executor.submit(new Runnable() {
             public void run() {
                 try {
-                    commonObjectsMessageReceiver.startMessageReceive(new String[]{"InfoObjectsTopic"});
+                    commonObjectsMessageReceiver.startMessageReceive(new String[]{"InfoObjectsTopic002"});
                 } catch (ConfigurationErrorException e) {
                     e.printStackTrace();
                 } catch (MessageHandleErrorException e) {
