@@ -23,14 +23,14 @@ public class CommonObjectsMessageReceiverTest {
     public static void main(String[] args) throws ConfigurationErrorException {
         CommonObjectsMessageHandler commonObjectsMessageHandler = new CommonObjectsMessageHandler() {
             @Override
-            protected void operateRecord(Object recordKey, CommonObjectsReceivedMessage neuronGridReceivedMessage, long recordOffset) {
-                System.out.println(neuronGridReceivedMessage);
-                CommonObjectsPayloadMetaInfo commonObjectsPayloadMetaInfo =neuronGridReceivedMessage.getMessageCommonObjectsPayloadMetaInfo();
-                CommonObjectsPayloadContent infoObjectsPayloadContent =neuronGridReceivedMessage.getInfoObjectsPayloadContent();
+            protected void operateRecord(Object recordKey, CommonObjectsReceivedMessage receivedMessage, long recordOffset) {
+                System.out.println(receivedMessage);
+                CommonObjectsPayloadMetaInfo commonObjectsPayloadMetaInfo = receivedMessage.getMessageCommonObjectsPayloadMetaInfo();
+                CommonObjectsPayloadContent infoObjectsPayloadContent = receivedMessage.getInfoObjectsPayloadContent();
 
                 System.out.println("============================================");
-                System.out.println("SendTime: "+new Date(neuronGridReceivedMessage.getMessageSendTime()));
-                System.out.println("ReceivedTime: "+new Date(neuronGridReceivedMessage.getMessageReceivedTime()));
+                System.out.println("SendTime: "+new Date(receivedMessage.getMessageSendTime()));
+                System.out.println("ReceivedTime: "+new Date(receivedMessage.getMessageReceivedTime()));
                 System.out.println("----------");
                 System.out.println("SenderIP： "+ commonObjectsPayloadMetaInfo.getSenderIP());
                 System.out.println("SenderId： "+ commonObjectsPayloadMetaInfo.getSenderId());
@@ -68,7 +68,7 @@ public class CommonObjectsMessageReceiverTest {
         executor.submit(new Runnable() {
             public void run() {
                 try {
-                    commonObjectsMessageReceiver.startMessageReceive(new String[]{"InfoObjectsTopic002"});
+                    commonObjectsMessageReceiver.startMessageReceive(new String[]{"CommonObjectsTopic"});
                 } catch (ConfigurationErrorException e) {
                     e.printStackTrace();
                 } catch (MessageHandleErrorException e) {

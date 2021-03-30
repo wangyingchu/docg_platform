@@ -50,7 +50,7 @@ public class CommonObjectsMessageSenderTest {
         infoObjectsPayloadContent.setBinaryContent(buffer);
 
         CommonObjectsMessageTargetInfo commonObjectsMessageTargetInfo =new CommonObjectsMessageTargetInfo();
-        commonObjectsMessageTargetInfo.setDestinationTopic("InfoObjectsTopic002");
+        commonObjectsMessageTargetInfo.setDestinationTopic("CommonObjectsTopic");
         commonObjectsMessageTargetInfo.setPayloadKey("payloadKey001");
 
         CommonObjectsMessageSender commonObjectsMessageSender =new CommonObjectsMessageSender(new MessageSentEventHandler(){

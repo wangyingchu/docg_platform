@@ -14,9 +14,10 @@ public class AvroUtils {
 
     private static Map<String, Schema> schemas = new HashMap<String, Schema>();
 
-    public final static String InfoObjectsPayloadMetaInfoSchemaName ="com.viewfunction.docg.PayloadMetaInfo";
-    public final static String InfoObjectsPayLoadContentSchemaName ="com.viewfunction.docg.PayloadContent";
-    public final static String InfoObjectsPayLoadSchemaName ="com.viewfunction.docg.InfoObjectsPayLoad";
+    public final static String PayloadMetaInfoSchemaName ="com.viewfunction.docg.PayloadMetaInfo";
+    public final static String PayLoadContentSchemaName ="com.viewfunction.docg.PayloadContent";
+    public final static String PayLoadSchemaName ="com.viewfunction.docg.InfoObjectsPayLoad";
+
     public final static String InfoObjectValueOperationContentSchemaName ="com.viewfunction.docg.InfoObjectValueOperationContent";
     public final static String InfoObjectValueLinkContentSchemaName ="com.viewfunction.docg.InfoObjectValueLinkContent";
 
@@ -77,7 +78,7 @@ public class AvroUtils {
     }
 
     public static void initPayloadSchemas() throws SchemaFormatErrorException {
-        if(getSchema(InfoObjectsPayLoadSchemaName)!=null){
+        if(getSchema(PayLoadSchemaName) != null){
             return;
         }
         try {

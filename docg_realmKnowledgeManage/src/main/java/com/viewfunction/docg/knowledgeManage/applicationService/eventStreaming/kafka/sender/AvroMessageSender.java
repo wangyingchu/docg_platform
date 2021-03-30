@@ -46,7 +46,6 @@ public class AvroMessageSender extends UniversalMessageSender{
     private Schema getSchema(PayloadMetaInfo payloadMetaInfo) throws MessageFormatErrorException, SchemaFormatErrorException {
         String schemaName = payloadMetaInfo.getPayloadSchema();
         Schema payloadSchema = null;
-        GenericRecord acroRecord = null;
         if(schemaName!=null){
             payloadSchema= AvroUtils.getSchema(schemaName);
         }

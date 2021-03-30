@@ -26,30 +26,30 @@ public class CommonObjectsMessageSender extends AvroMessageSender{
         super(messageSentEventHandler);
     }
 
-    public void sendInfoObjectsMessage(CommonObjectsPayloadMetaInfo commonObjectsPayloadMetaInfo, CommonObjectsPayloadContent infoObjectsPayloadContent, CommonObjectsMessageTargetInfo commonObjectsMessageTargetInfo) throws SchemaFormatErrorException, MessageFormatErrorException, MessageHandleErrorException {
+    public void sendInfoObjectsMessage(CommonObjectsPayloadMetaInfo commonObjectsPayloadMetaInfo, CommonObjectsPayloadContent commonObjectsPayloadContent, CommonObjectsMessageTargetInfo commonObjectsMessageTargetInfo) throws SchemaFormatErrorException, MessageFormatErrorException, MessageHandleErrorException {
         AvroUtils.initPayloadSchemas();
-        Schema payloadMetaInfoSchema= AvroUtils.getSchema(AvroUtils.InfoObjectsPayloadMetaInfoSchemaName);
+        Schema payloadMetaInfoSchema= AvroUtils.getSchema(AvroUtils.PayloadMetaInfoSchemaName);
         GenericRecord payloadMetaInfoRecord = new GenericData.Record(payloadMetaInfoSchema);
-        Schema payloadContentSchema=AvroUtils.getSchema(AvroUtils.InfoObjectsPayLoadContentSchemaName);
+        Schema payloadContentSchema=AvroUtils.getSchema(AvroUtils.PayLoadContentSchemaName);
         GenericRecord payloadContentRecord = new GenericData.Record(payloadContentSchema);
-        Schema neuronGridPayloadSchema=AvroUtils.getSchema(AvroUtils.InfoObjectsPayLoadSchemaName);
-        GenericRecord neuronGridPayloadRecord = new GenericData.Record(neuronGridPayloadSchema);
-        neuronGridPayloadRecord.put(metaInfoProperty,payloadMetaInfoRecord);
-        neuronGridPayloadRecord.put(payloadContentProperty,payloadContentRecord);
+        Schema neuronGridPayloadSchema=AvroUtils.getSchema(AvroUtils.PayLoadSchemaName);
+        GenericRecord payloadRecord = new GenericData.Record(neuronGridPayloadSchema);
+        payloadRecord.put(metaInfoProperty,payloadMetaInfoRecord);
+        payloadRecord.put(payloadContentProperty,payloadContentRecord);
         //set payload content data
-        CommonObjectsPayloadContentType includingContent= infoObjectsPayloadContent.getIncludingContent();
+        CommonObjectsPayloadContentType includingContent= commonObjectsPayloadContent.getIncludingContent();
         switch(includingContent){
             case TEXT:
                 payloadContentRecord.put("includingContent","TEXT");
-                setPayloadContentForTextCase(payloadContentRecord, infoObjectsPayloadContent);
+                setPayloadContentForTextCase(payloadContentRecord, commonObjectsPayloadContent);
                 break;
             case BINARY:
                 payloadContentRecord.put("includingContent","BINARY");
-                setPayloadContentForBinaryCase(payloadContentRecord, infoObjectsPayloadContent);
+                setPayloadContentForBinaryCase(payloadContentRecord, commonObjectsPayloadContent);
                 break;
             case ALL:
                 payloadContentRecord.put("includingContent","ALL");
-                setPayloadContentForAllCase(payloadContentRecord, infoObjectsPayloadContent);
+                setPayloadContentForAllCase(payloadContentRecord, commonObjectsPayloadContent);
                 break;
         }
         //set payload meta info data
@@ -90,33 +90,33 @@ public class CommonObjectsMessageSender extends AvroMessageSender{
         }
 
         PayloadMetaInfo pmi=new PayloadMetaInfo();
-        pmi.setPayloadSchema(AvroUtils.InfoObjectsPayLoadSchemaName);
+        pmi.setPayloadSchema(AvroUtils.PayLoadSchemaName);
         pmi.setDestinationTopic(commonObjectsMessageTargetInfo.getDestinationTopic());
         pmi.setPayloadKey(commonObjectsMessageTargetInfo.getPayloadKey());
 
-        this.sendAvroMessage(pmi,neuronGridPayloadRecord);
+        this.sendAvroMessage(pmi,payloadRecord);
     }
 
-    private static void setPayloadContentForTextCase(GenericRecord payloadContentRecord, CommonObjectsPayloadContent infoObjectsPayloadContent){
-        String textContent= infoObjectsPayloadContent.getTextContent();
+    private static void setPayloadContentForTextCase(GenericRecord payloadContentRecord, CommonObjectsPayloadContent commonObjectsPayloadContent){
+        String textContent= commonObjectsPayloadContent.getTextContent();
         payloadContentRecord.put("textContent",textContent);
-        boolean textContentEncoded= infoObjectsPayloadContent.getTextContentEncoded();
+        boolean textContentEncoded= commonObjectsPayloadContent.getTextContentEncoded();
         if(textContentEncoded){
             payloadContentRecord.put("textContentEncoded",true);
-            String textContentEncodeAlgorithm= infoObjectsPayloadContent.getTextContentEncodeAlgorithm();
+            String textContentEncodeAlgorithm= commonObjectsPayloadContent.getTextContentEncodeAlgorithm();
             payloadContentRecord.put("textContentEncodeAlgorithm",textContentEncodeAlgorithm);
         }else{
             payloadContentRecord.put("textContentEncoded",false);
         }
     }
 
-    private static void setPayloadContentForBinaryCase(GenericRecord payloadContentRecord, CommonObjectsPayloadContent infoObjectsPayloadContent){
-        ByteBuffer binaryContent= infoObjectsPayloadContent.getBinaryContent();
+    private static void setPayloadContentForBinaryCase(GenericRecord payloadContentRecord, CommonObjectsPayloadContent commonObjectsPayloadContent){
+        ByteBuffer binaryContent= commonObjectsPayloadContent.getBinaryContent();
         payloadContentRecord.put("binaryContent",binaryContent);
     }
 
-    private static void setPayloadContentForAllCase(GenericRecord payloadContentRecord, CommonObjectsPayloadContent infoObjectsPayloadContent){
-        setPayloadContentForTextCase(payloadContentRecord, infoObjectsPayloadContent);
-        setPayloadContentForBinaryCase(payloadContentRecord, infoObjectsPayloadContent);
+    private static void setPayloadContentForAllCase(GenericRecord payloadContentRecord, CommonObjectsPayloadContent commonObjectsPayloadContent){
+        setPayloadContentForTextCase(payloadContentRecord, commonObjectsPayloadContent);
+        setPayloadContentForBinaryCase(payloadContentRecord, commonObjectsPayloadContent);
     }
 }
