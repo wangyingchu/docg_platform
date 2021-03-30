@@ -26,7 +26,7 @@ public class CommonObjectsMessageReceiverTest {
             protected void operateRecord(Object recordKey, CommonObjectsReceivedMessage receivedMessage, long recordOffset) {
                 System.out.println(receivedMessage);
                 CommonObjectsPayloadMetaInfo commonObjectsPayloadMetaInfo = receivedMessage.getMessageCommonObjectsPayloadMetaInfo();
-                CommonObjectsPayloadContent infoObjectsPayloadContent = receivedMessage.getInfoObjectsPayloadContent();
+                CommonObjectsPayloadContent commonObjectsPayloadContent = receivedMessage.getCommonObjectsPayloadContent();
 
                 System.out.println("============================================");
                 System.out.println("SendTime: "+new Date(receivedMessage.getMessageSendTime()));
@@ -42,20 +42,20 @@ public class CommonObjectsMessageReceiverTest {
                 System.out.println("PayloadTypeDesc： "+ commonObjectsPayloadMetaInfo.getPayloadTypeDesc());
                 System.out.println("----------");
 
-                System.out.println("IncludingContent: "+ infoObjectsPayloadContent.getIncludingContent());
-                System.out.println("TextContentEncoded: "+ infoObjectsPayloadContent.getTextContentEncoded());
-                System.out.println("TextContentEncodeAlgorithm: "+ infoObjectsPayloadContent.getTextContentEncodeAlgorithm());
-                if(infoObjectsPayloadContent.getTextContentEncoded()){
-                    if(infoObjectsPayloadContent.getTextContentEncodeAlgorithm().equals("BASE64")){
-                        byte[] decodedBytes = Base64.decodeBase64(infoObjectsPayloadContent.getTextContent().getBytes());
+                System.out.println("IncludingContent: "+ commonObjectsPayloadContent.getIncludingContent());
+                System.out.println("TextContentEncoded: "+ commonObjectsPayloadContent.getTextContentEncoded());
+                System.out.println("TextContentEncodeAlgorithm: "+ commonObjectsPayloadContent.getTextContentEncodeAlgorithm());
+                if(commonObjectsPayloadContent.getTextContentEncoded()){
+                    if(commonObjectsPayloadContent.getTextContentEncodeAlgorithm().equals("BASE64")){
+                        byte[] decodedBytes = Base64.decodeBase64(commonObjectsPayloadContent.getTextContent().getBytes());
                         System.out.println("TextContent: "+new String(decodedBytes));
                     }else{
-                        System.out.println("TextContent: "+ infoObjectsPayloadContent.getTextContent());
+                        System.out.println("TextContent: "+ commonObjectsPayloadContent.getTextContent());
                     }
                 }else{
-                    System.out.println("TextContent: "+ infoObjectsPayloadContent.getTextContent());
+                    System.out.println("TextContent: "+ commonObjectsPayloadContent.getTextContent());
                 }
-                ByteBuffer ByteBuffer= infoObjectsPayloadContent.getBinaryContent();
+                ByteBuffer ByteBuffer= commonObjectsPayloadContent.getBinaryContent();
                 System.out.println("BinaryContent: "+ByteBuffer);
                 getFile(ByteBuffer.array(),"testresult/","RECEIVED-"+new Date().getTime()+".jpg");
                 System.out.println("============================================");

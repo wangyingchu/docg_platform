@@ -25,7 +25,6 @@ public class AvroMessageSenderTest {
 
         PayloadMetaInfo pmi=new PayloadMetaInfo();
         pmi.setDestinationTopic("AvroTopic");
-        //pmi.setPayloadSchema("com.navteq.avro.FacebookUser");
         pmi.setSchemaDefinitionLocation("testresource/facebookUser.avro");
         pmi.setDestinationTopic("AvroTopic");
         pmi.setPayloadKey("TESTKey");

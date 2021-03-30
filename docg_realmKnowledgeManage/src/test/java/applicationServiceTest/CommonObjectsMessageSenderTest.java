@@ -32,9 +32,9 @@ public class CommonObjectsMessageSenderTest {
         commonObjectsPayloadMetaInfo.setPayloadProcessor("PayloadProcessor001ß");
         commonObjectsPayloadMetaInfo.setPayloadClassification("PayloadClassification001ß");
 
-        CommonObjectsPayloadContent infoObjectsPayloadContent =new CommonObjectsPayloadContent();
-        infoObjectsPayloadContent.setIncludingContent(CommonObjectsPayloadContentType.ALL);
-        infoObjectsPayloadContent.setTextContentEncoded(true);
+        CommonObjectsPayloadContent commonObjectsPayloadContent =new CommonObjectsPayloadContent();
+        commonObjectsPayloadContent.setIncludingContent(CommonObjectsPayloadContentType.ALL);
+        commonObjectsPayloadContent.setTextContentEncoded(true);
 
         String textContent="Message 0123456789023456789中文Ωß∂ç√∂©©ƒƒß≈√ƒ";
         ObjectNode node = JsonNodeFactory.instance.objectNode();
@@ -42,12 +42,12 @@ public class CommonObjectsMessageSenderTest {
         node.put("field002",new Date().getTime());
         node.put("field003",textContent);
         byte[] encodedBytes = Base64.encodeBase64(node.toString().getBytes());
-        infoObjectsPayloadContent.setTextContentEncodeAlgorithm("BASE64");
-        infoObjectsPayloadContent.setTextContent(new String(encodedBytes));
+        commonObjectsPayloadContent.setTextContentEncodeAlgorithm("BASE64");
+        commonObjectsPayloadContent.setTextContent(new String(encodedBytes));
 
         byte[] fileBteArray=getBytes("testresource/testPic.jpg");
         ByteBuffer buffer= ByteBuffer.wrap(fileBteArray);
-        infoObjectsPayloadContent.setBinaryContent(buffer);
+        commonObjectsPayloadContent.setBinaryContent(buffer);
 
         CommonObjectsMessageTargetInfo commonObjectsMessageTargetInfo =new CommonObjectsMessageTargetInfo();
         commonObjectsMessageTargetInfo.setDestinationTopic("CommonObjectsTopic");
@@ -62,7 +62,7 @@ public class CommonObjectsMessageSenderTest {
 
         commonObjectsMessageSender.beginMessageSendBatch();
         for(int i=0;i<10;i++) {
-            commonObjectsMessageSender.sendInfoObjectsMessage(commonObjectsPayloadMetaInfo, infoObjectsPayloadContent, commonObjectsMessageTargetInfo);
+            commonObjectsMessageSender.sendInfoObjectsMessage(commonObjectsPayloadMetaInfo, commonObjectsPayloadContent, commonObjectsMessageTargetInfo);
         }
         commonObjectsMessageSender.finishMessageSendBatch();
     }

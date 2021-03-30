@@ -55,7 +55,7 @@ public abstract class CommonObjectsMessageHandler extends AvroMessageHandler {
             }
 
             CommonObjectsPayloadContent infoObjectsPayloadContent = new CommonObjectsPayloadContent();
-            commonObjectReceivedMessage.setInfoObjectsPayloadContent(infoObjectsPayloadContent);
+            commonObjectReceivedMessage.setCommonObjectsPayloadContent(infoObjectsPayloadContent);
 
             String includingContentValue = ((Utf8)payloadContentRecord.get("includingContent")).toString();
             if(includingContentValue.equals("TEXT")){

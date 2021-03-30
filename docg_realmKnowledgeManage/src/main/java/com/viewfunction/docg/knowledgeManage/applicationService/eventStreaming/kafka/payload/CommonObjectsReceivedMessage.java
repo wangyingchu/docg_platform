@@ -2,7 +2,7 @@ package com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.
 
 public class CommonObjectsReceivedMessage {
     private CommonObjectsPayloadMetaInfo messageCommonObjectsPayloadMetaInfo;
-    private CommonObjectsPayloadContent infoObjectsPayloadContent;
+    private CommonObjectsPayloadContent commonObjectsPayloadContent;
     private long messageSendTime;
     private long messageReceivedTime;
 
@@ -14,12 +14,12 @@ public class CommonObjectsReceivedMessage {
         this.messageCommonObjectsPayloadMetaInfo = messageCommonObjectsPayloadMetaInfo;
     }
 
-    public CommonObjectsPayloadContent getInfoObjectsPayloadContent() {
-        return infoObjectsPayloadContent;
+    public CommonObjectsPayloadContent getCommonObjectsPayloadContent() {
+        return commonObjectsPayloadContent;
     }
 
-    public void setInfoObjectsPayloadContent(CommonObjectsPayloadContent infoObjectsPayloadContent) {
-        this.infoObjectsPayloadContent = infoObjectsPayloadContent;
+    public void setCommonObjectsPayloadContent(CommonObjectsPayloadContent commonObjectsPayloadContent) {
+        this.commonObjectsPayloadContent = commonObjectsPayloadContent;
     }
 
     public long getMessageSendTime() {
