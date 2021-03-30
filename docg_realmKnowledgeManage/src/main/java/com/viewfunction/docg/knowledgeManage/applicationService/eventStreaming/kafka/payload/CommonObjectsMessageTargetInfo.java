@@ -1,6 +1,6 @@
 package com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload;
 
-public class InfoObjectsMessageTargetInfo {
+public class CommonObjectsMessageTargetInfo {
 
     private String destinationTopic;
     private String payloadKey;

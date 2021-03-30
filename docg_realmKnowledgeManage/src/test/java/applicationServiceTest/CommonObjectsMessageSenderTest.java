@@ -9,7 +9,7 @@ import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.k
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.CommonObjectsPayloadContent;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.CommonObjectsPayloadContentType;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.CommonObjectsPayloadMetaInfo;
-import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.InfoObjectsMessageTargetInfo;
+import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.CommonObjectsMessageTargetInfo;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.sender.CommonObjectsMessageSender;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.sender.MessageSentEventHandler;
 import org.apache.commons.codec.binary.Base64;
@@ -49,9 +49,9 @@ public class CommonObjectsMessageSenderTest {
         ByteBuffer buffer= ByteBuffer.wrap(fileBteArray);
         infoObjectsPayloadContent.setBinaryContent(buffer);
 
-        InfoObjectsMessageTargetInfo infoObjectsMessageTargetInfo =new InfoObjectsMessageTargetInfo();
-        infoObjectsMessageTargetInfo.setDestinationTopic("InfoObjectsTopic002");
-        infoObjectsMessageTargetInfo.setPayloadKey("payloadKey001");
+        CommonObjectsMessageTargetInfo commonObjectsMessageTargetInfo =new CommonObjectsMessageTargetInfo();
+        commonObjectsMessageTargetInfo.setDestinationTopic("InfoObjectsTopic002");
+        commonObjectsMessageTargetInfo.setPayloadKey("payloadKey001");
 
         CommonObjectsMessageSender commonObjectsMessageSender =new CommonObjectsMessageSender(new MessageSentEventHandler(){
             @Override
@@ -62,7 +62,7 @@ public class CommonObjectsMessageSenderTest {
 
         commonObjectsMessageSender.beginMessageSendBatch();
         for(int i=0;i<10;i++) {
-            commonObjectsMessageSender.sendInfoObjectsMessage(commonObjectsPayloadMetaInfo, infoObjectsPayloadContent, infoObjectsMessageTargetInfo);
+            commonObjectsMessageSender.sendInfoObjectsMessage(commonObjectsPayloadMetaInfo, infoObjectsPayloadContent, commonObjectsMessageTargetInfo);
         }
         commonObjectsMessageSender.finishMessageSendBatch();
     }

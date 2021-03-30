@@ -7,7 +7,7 @@ import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.k
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.CommonObjectsPayloadContent;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.CommonObjectsPayloadContentType;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.CommonObjectsPayloadMetaInfo;
-import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.InfoObjectsMessageTargetInfo;
+import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.CommonObjectsMessageTargetInfo;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.utils.AvroUtils;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.utils.PayloadMetaInfo;
 import org.apache.avro.Schema;
@@ -26,7 +26,7 @@ public class CommonObjectsMessageSender extends AvroMessageSender{
         super(messageSentEventHandler);
     }
 
-    public void sendInfoObjectsMessage(CommonObjectsPayloadMetaInfo commonObjectsPayloadMetaInfo, CommonObjectsPayloadContent infoObjectsPayloadContent, InfoObjectsMessageTargetInfo infoObjectsMessageTargetInfo) throws SchemaFormatErrorException, MessageFormatErrorException, MessageHandleErrorException {
+    public void sendInfoObjectsMessage(CommonObjectsPayloadMetaInfo commonObjectsPayloadMetaInfo, CommonObjectsPayloadContent infoObjectsPayloadContent, CommonObjectsMessageTargetInfo commonObjectsMessageTargetInfo) throws SchemaFormatErrorException, MessageFormatErrorException, MessageHandleErrorException {
         AvroUtils.initPayloadSchemas();
         Schema payloadMetaInfoSchema= AvroUtils.getSchema(AvroUtils.InfoObjectsPayloadMetaInfoSchemaName);
         GenericRecord payloadMetaInfoRecord = new GenericData.Record(payloadMetaInfoSchema);
@@ -91,8 +91,8 @@ public class CommonObjectsMessageSender extends AvroMessageSender{
 
         PayloadMetaInfo pmi=new PayloadMetaInfo();
         pmi.setPayloadSchema(AvroUtils.InfoObjectsPayLoadSchemaName);
-        pmi.setDestinationTopic(infoObjectsMessageTargetInfo.getDestinationTopic());
-        pmi.setPayloadKey(infoObjectsMessageTargetInfo.getPayloadKey());
+        pmi.setDestinationTopic(commonObjectsMessageTargetInfo.getDestinationTopic());
+        pmi.setPayloadKey(commonObjectsMessageTargetInfo.getPayloadKey());
 
         this.sendAvroMessage(pmi,neuronGridPayloadRecord);
     }
