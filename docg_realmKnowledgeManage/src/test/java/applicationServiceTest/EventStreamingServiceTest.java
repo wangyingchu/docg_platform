@@ -48,5 +48,10 @@ public class EventStreamingServiceTest {
         }
         EventStreamingService.updateConceptionEntities(coreRealmName,conceptionKindName,conceptionEntityValueList,messageSentEventHandler);
 
+        List<String> conceptionEntityUIDList = new ArrayList<>();
+        for(int i=0;i<10;i++){
+            conceptionEntityUIDList.add(""+new Date().getTime());
+        }
+        EventStreamingService.deleteConceptionEntities(coreRealmName,conceptionKindName,conceptionEntityUIDList,messageSentEventHandler);
     }
 }

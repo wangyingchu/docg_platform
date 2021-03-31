@@ -76,7 +76,30 @@ public class EventStreamingService {
         }
     }
 
-    public static void  deleteConceptionEntities(String coreRealmName,String conceptionKindName, List<String> conceptionEntityUIDList){}
+    public static void  deleteConceptionEntities(String coreRealmName,String conceptionKindName, List<String> conceptionEntityUIDList,MessageSentEventHandler messageSentEventHandler){
+        ConceptionEntityValueOperationsMessageSender conceptionEntityValueOperationsMessageSender;
+        try {
+            conceptionEntityValueOperationsMessageSender = new ConceptionEntityValueOperationsMessageSender(messageSentEventHandler);
+            conceptionEntityValueOperationsMessageSender.beginMessageSendBatch();
+            for(String currentConceptionEntityUID:conceptionEntityUIDList){
+                ConceptionEntityValueOperationContent conceptionEntityValueOperationContent = generateOperationContent(coreRealmName,conceptionKindName);
+                conceptionEntityValueOperationContent.setOperationType(ConceptionEntityValueOperationType.DELETE);
+                conceptionEntityValueOperationContent.setConceptionEntityUID(currentConceptionEntityUID);
+                ConceptionEntityValue currentConceptionEntityValue = new ConceptionEntityValue();
+                currentConceptionEntityValue.setConceptionEntityUID(currentConceptionEntityUID);
+                conceptionEntityValueOperationsMessageSender.sendConceptionEntityValueOperationMessage(conceptionEntityValueOperationContent,currentConceptionEntityValue);
+            }
+            conceptionEntityValueOperationsMessageSender.finishMessageSendBatch();
+        } catch (ConfigurationErrorException e) {
+            e.printStackTrace();
+        } catch (MessageFormatErrorException e) {
+            e.printStackTrace();
+        } catch (MessageHandleErrorException e) {
+            e.printStackTrace();
+        } catch (SchemaFormatErrorException e) {
+            e.printStackTrace();
+        }
+    }
 
     private static ConceptionEntityValueOperationContent generateOperationContent(String coreRealmName,String conceptionKindName){
         ConceptionEntityValueOperationContent conceptionEntityValueOperationContent =new ConceptionEntityValueOperationContent();
