@@ -1,22 +1,25 @@
 package com.viewfunction.docg.knowledgeManage.applicationCapacity.entityExtraction;
 
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.knowledgeManage.applicationCapacity.entityExtraction.commandProcessor.EntityExtractionCommandProcessorFactory;
+import com.viewfunction.docg.knowledgeManage.applicationCapacity.entityExtraction.conceptionEntitiesExtract.GeneralConceptionEntityValueOperationsMessageHandler;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.exception.ConfigurationErrorException;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.exception.MessageHandleErrorException;
-import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.ConceptionEntityValueOperationContent;
-import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.ConceptionEntityValueOperationPayload;
-import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.receiver.ConceptionEntityValueOperationsMessageHandler;
+
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.receiver.ConceptionEntityValueOperationsMessageReceiver;
 import com.viewfunction.docg.knowledgeManage.consoleApplication.feature.BaseApplication;
 import com.viewfunction.docg.knowledgeManage.consoleApplication.feature.BaseCommandProcessor;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class EntityExtractionApplication implements BaseApplication {
 
     private ConceptionEntityValueOperationsMessageReceiver conceptionEntityValueOperationsMessageReceiver;
+    private ExecutorService executorService;
+    private Map<Object,Object> commandContextDataMap;
 
     @Override
     public boolean isDaemonApplication() {
@@ -25,51 +28,30 @@ public class EntityExtractionApplication implements BaseApplication {
 
     @Override
     public void executeDaemonLogic() {
-
-
-
-
-        ConceptionEntityValueOperationsMessageHandler conceptionEntityValueOperationsMessageHandler = new ConceptionEntityValueOperationsMessageHandler() {
-            long totalHandledNum = 0;
-            @Override
-            public void handleConceptionEntityOperationContents(List<? extends ConceptionEntityValueOperationPayload> infoObjectValueOperationPayloads) {
-                for(ConceptionEntityValueOperationPayload currentConceptionEntityValueOperationPayload:infoObjectValueOperationPayloads){
-
-                    ConceptionEntityValueOperationContent conceptionEntityValueOperationContent = currentConceptionEntityValueOperationPayload.getConceptionEntityValueOperationContent();
-                    ConceptionEntityValue conceptionEntityValue = currentConceptionEntityValueOperationPayload.getConceptionEntityValue();
-
-                    System.out.println(currentConceptionEntityValueOperationPayload.getPayloadOffset());
-                    System.out.println(currentConceptionEntityValueOperationPayload.getPayloadKey());
-                    System.out.println(conceptionEntityValue.getEntityAttributesValue());
-                    System.out.println(conceptionEntityValue.getConceptionEntityUID());
-
-                    System.out.println(conceptionEntityValueOperationContent.getConceptionEntityUID());
-                    System.out.println(conceptionEntityValueOperationContent.getEntityAttributesValue());
-                    System.out.println(conceptionEntityValueOperationContent.getOperationType());
-                    System.out.println(conceptionEntityValueOperationContent.getConceptionKindName());
-                    System.out.println(conceptionEntityValueOperationContent.getCoreRealmName());
-                    System.out.println(conceptionEntityValueOperationContent.getSenderId());
-                    System.out.println(conceptionEntityValueOperationContent.getSenderIP());
-                    System.out.println(conceptionEntityValueOperationContent.getSendTime());
-                    System.out.println(conceptionEntityValueOperationContent.isAddPerDefinedRelation());
-
-                    System.out.println("=----------------------------------=");
-                    totalHandledNum++;
-                }
-                System.out.println("totalHandledNum = "+totalHandledNum);
-            }
-        };
-
+        GeneralConceptionEntityValueOperationsMessageHandler generalConceptionEntityValueOperationsMessageHandler = new GeneralConceptionEntityValueOperationsMessageHandler();
         try {
-            conceptionEntityValueOperationsMessageReceiver = new ConceptionEntityValueOperationsMessageReceiver(conceptionEntityValueOperationsMessageHandler);
-            conceptionEntityValueOperationsMessageReceiver.startMessageReceive(new String[]{"DefaultCoreRealm"});
-        } catch (ConfigurationErrorException | MessageHandleErrorException e) {
+            conceptionEntityValueOperationsMessageReceiver = new ConceptionEntityValueOperationsMessageReceiver(generalConceptionEntityValueOperationsMessageHandler);
+
+        } catch (ConfigurationErrorException e) {
             e.printStackTrace();
         }
+        executorService = Executors.newFixedThreadPool(1);
+        executorService.submit(new Runnable() {
+            public void run() {
+                try {
+                    conceptionEntityValueOperationsMessageReceiver.startMessageReceive(new String[]{"DefaultCoreRealm"});
+                } catch (ConfigurationErrorException e) {
+                    e.printStackTrace();
+                } catch (MessageHandleErrorException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override
     public boolean initApplication() {
+        this.commandContextDataMap = new ConcurrentHashMap<>();
         return true;
     }
 
@@ -77,6 +59,9 @@ public class EntityExtractionApplication implements BaseApplication {
     public boolean shutdownApplication() {
         if(conceptionEntityValueOperationsMessageReceiver != null){
             conceptionEntityValueOperationsMessageReceiver.stopMessageReceive();
+        }
+        if(executorService != null){
+            executorService.shutdown();
         }
         return true;
     }
@@ -91,7 +76,7 @@ public class EntityExtractionApplication implements BaseApplication {
                     System.out.println("Please input valid command and options");
                 }else{
                     String[] options = Arrays.copyOfRange(commandOptions,1,commandOptions.length);
-                    BaseCommandProcessor commandProcessor = EntityExtractionCommandProcessorFactory.getCommandProcessor(command,null,null,null);
+                    BaseCommandProcessor commandProcessor = EntityExtractionCommandProcessorFactory.getCommandProcessor(command,this.commandContextDataMap);
                     if(commandProcessor!=null){
                         commandProcessor.processCommand(command,options);
                     }
