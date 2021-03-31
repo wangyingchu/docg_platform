@@ -1,6 +1,7 @@
 package com.viewfunction.docg.knowledgeManage.applicationCapacity.entityExtraction;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.knowledgeManage.applicationCapacity.entityExtraction.commandProcessor.EntityExtractionCommandProcessorFactory;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.exception.ConfigurationErrorException;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.exception.MessageHandleErrorException;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.ConceptionEntityValueOperationContent;
@@ -8,7 +9,9 @@ import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.k
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.receiver.ConceptionEntityValueOperationsMessageHandler;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.receiver.ConceptionEntityValueOperationsMessageReceiver;
 import com.viewfunction.docg.knowledgeManage.consoleApplication.feature.BaseApplication;
+import com.viewfunction.docg.knowledgeManage.consoleApplication.feature.BaseCommandProcessor;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class EntityExtractionApplication implements BaseApplication {
@@ -80,6 +83,20 @@ public class EntityExtractionApplication implements BaseApplication {
 
     @Override
     public void executeConsoleCommand(String consoleCommand) {
-
+        if(consoleCommand != null){
+            String[] commandOptions = consoleCommand.split(" ");
+            if(commandOptions.length>0){
+                String command = commandOptions[0];
+                if(command.startsWith("-")||command.startsWith("--")){
+                    System.out.println("Please input valid command and options");
+                }else{
+                    String[] options = Arrays.copyOfRange(commandOptions,1,commandOptions.length);
+                    BaseCommandProcessor commandProcessor = EntityExtractionCommandProcessorFactory.getCommandProcessor(command,null,null,null);
+                    if(commandProcessor!=null){
+                        commandProcessor.processCommand(command,options);
+                    }
+                }
+            }
+        }
     }
 }

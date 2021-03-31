@@ -2,7 +2,7 @@ package com.viewfunction.docg.knowledgeManage.applicationCapacity.relationExtrac
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
-import com.viewfunction.docg.knowledgeManage.applicationCapacity.relationExtraction.commandProcessor.CommandProcessorFactory;
+import com.viewfunction.docg.knowledgeManage.applicationCapacity.relationExtraction.commandProcessor.RelationExtractionCommandProcessorFactory;
 import com.viewfunction.docg.knowledgeManage.consoleApplication.feature.BaseApplication;
 import com.viewfunction.docg.knowledgeManage.consoleApplication.feature.BaseCommandProcessor;
 import com.viewfunction.docg.knowledgeManage.consoleApplication.util.ApplicationLauncherUtil;
@@ -67,7 +67,7 @@ public class RelationExtractionApplication implements BaseApplication {
                     System.out.println("Please input valid command and options");
                 }else{
                     String[] options = Arrays.copyOfRange(commandOptions,1,commandOptions.length);
-                    BaseCommandProcessor commandProcessor = CommandProcessorFactory.getCommandProcessor(command,this.coreRealm,this.executor,this.commandContextDataMap);
+                    BaseCommandProcessor commandProcessor = RelationExtractionCommandProcessorFactory.getCommandProcessor(command,this.coreRealm,this.executor,this.commandContextDataMap);
                     if(commandProcessor!=null){
                         commandProcessor.processCommand(command,options);
                     }
