@@ -25,7 +25,7 @@ public class RelationExtractionApplication implements BaseApplication {
         this.coreRealm.openGlobalSession();
         String maxThreadNum = ApplicationLauncherUtil.getApplicationInfoPropertyValue("RelationExtraction.Executors.MaxThreadNum");
         int maxThreadNumber = 5;
-        if(maxThreadNum!=null){
+        if(maxThreadNum != null){
             maxThreadNumber = Integer.parseInt(maxThreadNum.trim());
         }
         this.executor = Executors.newFixedThreadPool(maxThreadNumber);
