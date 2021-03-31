@@ -7,8 +7,9 @@ import java.util.Map;
 public class EntityExtractionCommandProcessorFactory {
 
     public static BaseCommandProcessor getCommandProcessor(String command, Map<Object,Object> commandContextDataMap){
-        if(command.equalsIgnoreCase("re")){
-
+        if(command.equalsIgnoreCase("help")){
+            HelpCommandProcessor helpCommandProcessor = new HelpCommandProcessor();
+            return helpCommandProcessor;
         }
         return null;
     }
