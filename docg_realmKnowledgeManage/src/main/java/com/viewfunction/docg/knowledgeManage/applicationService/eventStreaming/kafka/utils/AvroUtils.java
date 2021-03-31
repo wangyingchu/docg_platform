@@ -86,7 +86,6 @@ public class AvroUtils {
             parseSchema(FileUtils.getInputStream("avroSchema/payloadContent.avro"));
             parseSchema(FileUtils.getInputStream("avroSchema/commonObjectsPayLoad.avro"));
             parseSchema(FileUtils.getInputStream("avroSchema/conceptionEntityValueOperationContent.avro"));
-            parseSchema(FileUtils.getInputStream("avroSchema/infoObjectValueLinkContent.avro"));
         } catch (IOException e) {
             e.printStackTrace();
             e.printStackTrace();
