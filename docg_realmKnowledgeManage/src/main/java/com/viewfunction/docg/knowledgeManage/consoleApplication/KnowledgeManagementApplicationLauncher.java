@@ -69,9 +69,8 @@ public class KnowledgeManagementApplicationLauncher {
             boolean initApplicationResult = consoleApplication.initApplication();
             if (initApplicationResult) {
                 ApplicationLauncherUtil.printApplicationConsoleBanner();
-                if(applicationFeatureName.contains("Service")){
-                    consoleApplication.executeConsoleCommand(null);
-                    return;
+                if(consoleApplication.isDaemonApplication()){
+                    consoleApplication.executeDaemonLogic();
                 }
                 while (applicationRunningFlag) {
                     handleConsoleInputCommands();

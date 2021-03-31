@@ -20,6 +20,16 @@ public class RelationExtractionApplication implements BaseApplication {
     private Map<Object,Object> commandContextDataMap;
 
     @Override
+    public boolean isDaemonApplication() {
+        return false;
+    }
+
+    @Override
+    public void executeDaemonLogic() {
+
+    }
+
+    @Override
     public boolean initApplication() {
         this.coreRealm = RealmTermFactory.getDefaultCoreRealm();
         this.coreRealm.openGlobalSession();

@@ -3,6 +3,17 @@ package com.viewfunction.docg.knowledgeManage.applicationCapacity.entityDisambig
 import com.viewfunction.docg.knowledgeManage.consoleApplication.feature.BaseApplication;
 
 public class EntityDisambiguationApplication implements BaseApplication {
+
+    @Override
+    public boolean isDaemonApplication() {
+        return false;
+    }
+
+    @Override
+    public void executeDaemonLogic() {
+
+    }
+
     @Override
     public boolean initApplication() {
         return false;

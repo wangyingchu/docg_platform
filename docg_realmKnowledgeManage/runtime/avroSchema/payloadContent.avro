@@ -1,0 +1,12 @@
+{
+  "namespace": "com.viewfunction.docg",
+  "name": "PayloadContent",
+  "type": "record",
+  "fields": [
+    {"name": "textContentEncoded", "type": ["null", "boolean"]},
+    {"name": "textContentEncodeAlgorithm", "type": ["null", "string"]},
+    {"name": "includingContent", "type": ["null", "string"]},
+    {"name": "binaryContent", "type":["null", "bytes"]},
+    {"name": "textContent", "type":["null", "string"]}
+ ]
+}
