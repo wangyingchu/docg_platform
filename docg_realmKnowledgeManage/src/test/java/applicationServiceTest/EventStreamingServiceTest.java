@@ -25,7 +25,6 @@ public class EventStreamingServiceTest {
 
         for(int i=0;i<10;i++){
             ConceptionEntityValue conceptionEntityValue =new ConceptionEntityValue();
-            conceptionEntityValue.setConceptionEntityUID(""+new Date().getTime());
             Map<String,Object> entityPropertyMap = new HashMap<>();
             entityPropertyMap.put("baseprop1","hello world");
             entityPropertyMap.put("baseprop2",100);

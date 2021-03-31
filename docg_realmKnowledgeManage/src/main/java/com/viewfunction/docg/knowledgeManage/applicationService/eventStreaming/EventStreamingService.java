@@ -61,6 +61,7 @@ public class EventStreamingService {
             for(ConceptionEntityValue currentConceptionEntityValue:conceptionEntityValueList){
                 ConceptionEntityValueOperationContent conceptionEntityValueOperationContent = generateOperationContent(coreRealmName,conceptionKindName);
                 conceptionEntityValueOperationContent.setOperationType(ConceptionEntityValueOperationType.UPDATE);
+                conceptionEntityValueOperationContent.setConceptionEntityUID(currentConceptionEntityValue.getConceptionEntityUID());
                 conceptionEntityValueOperationsMessageSender.sendConceptionEntityValueOperationMessage(conceptionEntityValueOperationContent,currentConceptionEntityValue);
             }
             conceptionEntityValueOperationsMessageSender.finishMessageSendBatch();
