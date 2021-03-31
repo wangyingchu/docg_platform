@@ -8,6 +8,7 @@ import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.k
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.receiver.ConceptionEntityValueOperationsMessageReceiver;
 import com.viewfunction.docg.knowledgeManage.consoleApplication.feature.BaseApplication;
 import com.viewfunction.docg.knowledgeManage.consoleApplication.feature.BaseCommandProcessor;
+import com.viewfunction.docg.knowledgeManage.consoleApplication.util.ApplicationLauncherUtil;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -31,7 +32,6 @@ public class EntityExtractionApplication implements BaseApplication {
         GeneralConceptionEntityValueOperationsMessageHandler generalConceptionEntityValueOperationsMessageHandler = new GeneralConceptionEntityValueOperationsMessageHandler();
         try {
             conceptionEntityValueOperationsMessageReceiver = new ConceptionEntityValueOperationsMessageReceiver(generalConceptionEntityValueOperationsMessageHandler);
-
         } catch (ConfigurationErrorException e) {
             e.printStackTrace();
         }
@@ -39,7 +39,8 @@ public class EntityExtractionApplication implements BaseApplication {
         executorService.submit(new Runnable() {
             public void run() {
                 try {
-                    conceptionEntityValueOperationsMessageReceiver.startMessageReceive(new String[]{"DefaultCoreRealm"});
+                    String defaultMessageReceiverTopicName = ApplicationLauncherUtil.getApplicationInfoPropertyValue("EntityExtraction.MessageReceiver.defaultTopicName");
+                    conceptionEntityValueOperationsMessageReceiver.startMessageReceive(new String[]{defaultMessageReceiverTopicName});
                 } catch (ConfigurationErrorException e) {
                     e.printStackTrace();
                 } catch (MessageHandleErrorException e) {
@@ -76,7 +77,7 @@ public class EntityExtractionApplication implements BaseApplication {
                     System.out.println("Please input valid command and options");
                 }else{
                     String[] options = Arrays.copyOfRange(commandOptions,1,commandOptions.length);
-                    BaseCommandProcessor commandProcessor = EntityExtractionCommandProcessorFactory.getCommandProcessor(command,this.commandContextDataMap);
+                    BaseCommandProcessor commandProcessor = EntityExtractionCommandProcessorFactory.getCommandProcessor(command,conceptionEntityValueOperationsMessageReceiver,this.commandContextDataMap);
                     if(commandProcessor!=null){
                         commandProcessor.processCommand(command,options);
                     }

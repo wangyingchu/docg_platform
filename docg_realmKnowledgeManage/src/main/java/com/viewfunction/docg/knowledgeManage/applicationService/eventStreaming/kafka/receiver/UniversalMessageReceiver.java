@@ -127,8 +127,12 @@ public class UniversalMessageReceiver {
     }
 
     public void setAdditionalConfigItem(String configKey,Object configItem){
-        if(this.configProps!=null){
+        if(this.configProps != null){
             this.configProps.put(configKey,configItem);
         }
+    }
+
+    public Properties getReceiverConfig(){
+        return this.configProps;
     }
 }
