@@ -1,19 +1,33 @@
 package com.viewfunction.docg.knowledgeManage.applicationCapacity.entityExtraction.conceptionEntitiesExtract;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 import com.viewfunction.docg.knowledgeManage.applicationCapacity.entityExtraction.EntityExtractionApplication;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.ConceptionEntityValueOperationContent;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.ConceptionEntityValueOperationPayload;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.ConceptionEntityValueOperationType;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.receiver.ConceptionEntityValueOperationsMessageHandler;
+import com.viewfunction.docg.knowledgeManage.consoleApplication.util.ApplicationLauncherUtil;
 
 import java.util.*;
 
 public class GeneralConceptionEntityValueOperationsMessageHandler extends ConceptionEntityValueOperationsMessageHandler {
 
     private Map<Object,Object> commandContextDataMap;
+    private int degreeOfParallelism = 1;
+    private boolean autoCreateConceptionKind = false;
+    private List<String> existConceptionKindList;
+
     public GeneralConceptionEntityValueOperationsMessageHandler(Map<Object,Object> commandContextDataMap){
         this.commandContextDataMap = commandContextDataMap;
+        String degreeOfParallelismStr = ApplicationLauncherUtil.getApplicationInfoPropertyValue("EntityExtraction.MessageHandle.degreeOfParallelism");
+        this.degreeOfParallelism = Integer.valueOf(degreeOfParallelismStr);
+        String autoCreateConceptionKindStr = ApplicationLauncherUtil.getApplicationInfoPropertyValue("EntityExtraction.MessageHandle.autoCreateConceptionKind");
+        this.autoCreateConceptionKind = Boolean.valueOf(autoCreateConceptionKindStr);
+        this.existConceptionKindList = new ArrayList<>();
     }
 
     @Override
@@ -91,6 +105,31 @@ public class GeneralConceptionEntityValueOperationsMessageHandler extends Concep
         currentReceiveHistoryStringBuffer.append("\n\r");
         currentReceiveHistoryStringBuffer.append("OffsetRage:                    "+ fromOffset + " to " + toOffset);
         messageReceiveHistoryList.add(currentReceiveHistoryStringBuffer.toString());
+
+        Set<String> conceptionKindNameSet = conceptionEntitiesKindGroupMap_INSERT.keySet();
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+
+        for(String currentConceptionKindName:conceptionKindNameSet){
+            List<ConceptionEntityValue> targetConceptionEntityValueList = conceptionEntitiesKindGroupMap_INSERT.get(currentConceptionKindName);
+            if(existConceptionKindList.contains(currentConceptionKindName)){
+                BatchDataOperationUtil.batchAddNewEntities(currentConceptionKindName,targetConceptionEntityValueList,this.degreeOfParallelism);
+            }else{
+                if(coreRealm.getConceptionKind(currentConceptionKindName) == null){
+                    if(this.autoCreateConceptionKind){
+                        ConceptionKind newCreatedConceptionKind = coreRealm.createConceptionKind(currentConceptionKindName,"AutoCreatedByEntityExtractionOperation");
+                        if(newCreatedConceptionKind != null){
+                            existConceptionKindList.add(currentConceptionKindName);
+                            BatchDataOperationUtil.batchAddNewEntities(currentConceptionKindName,targetConceptionEntityValueList,this.degreeOfParallelism);
+                        }
+                    }else{
+                        break;
+                    }
+                }else{
+                    existConceptionKindList.add(currentConceptionKindName);
+                    BatchDataOperationUtil.batchAddNewEntities(currentConceptionKindName,targetConceptionEntityValueList,this.degreeOfParallelism);
+                }
+            }
+        }
     }
 
     private void prepareConceptionKindDataForModifyOperation(Map<String,List<ConceptionEntityValue>> conceptionEntitiesKindGroupMap,
