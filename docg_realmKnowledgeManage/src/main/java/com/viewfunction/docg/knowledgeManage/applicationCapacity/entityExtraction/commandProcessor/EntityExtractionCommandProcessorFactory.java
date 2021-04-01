@@ -18,6 +18,10 @@ public class EntityExtractionCommandProcessorFactory {
             ClearCommandProcessor clearCommandProcessor = new ClearCommandProcessor();
             return clearCommandProcessor;
         }
+        if(command.equalsIgnoreCase("ophistory")){
+            OpHistoryCommandProcessor opHistoryCommandProcessor = new OpHistoryCommandProcessor(conceptionEntityValueOperationsMessageReceiver,commandContextDataMap);
+            return opHistoryCommandProcessor;
+        }
         return null;
     }
 }

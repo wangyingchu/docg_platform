@@ -10,6 +10,7 @@ import com.viewfunction.docg.knowledgeManage.consoleApplication.feature.BaseAppl
 import com.viewfunction.docg.knowledgeManage.consoleApplication.feature.BaseCommandProcessor;
 import com.viewfunction.docg.knowledgeManage.consoleApplication.util.ApplicationLauncherUtil;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
@@ -20,6 +21,8 @@ import java.util.concurrent.Executors;
 public class EntityExtractionApplication implements BaseApplication {
 
     public static final String APPLICATION_START_TIME = "APPLICATION_START_TIME";
+    public static final String MESSAGE_RECEIVE_HISTORY = "MESSAGE_RECEIVE_HISTORY";
+
     private ConceptionEntityValueOperationsMessageReceiver conceptionEntityValueOperationsMessageReceiver;
     private ExecutorService executorService;
     private Map<Object,Object> commandContextDataMap;
@@ -31,7 +34,7 @@ public class EntityExtractionApplication implements BaseApplication {
 
     @Override
     public void executeDaemonLogic() {
-        GeneralConceptionEntityValueOperationsMessageHandler generalConceptionEntityValueOperationsMessageHandler = new GeneralConceptionEntityValueOperationsMessageHandler();
+        GeneralConceptionEntityValueOperationsMessageHandler generalConceptionEntityValueOperationsMessageHandler = new GeneralConceptionEntityValueOperationsMessageHandler(this.commandContextDataMap);
         try {
             conceptionEntityValueOperationsMessageReceiver = new ConceptionEntityValueOperationsMessageReceiver(generalConceptionEntityValueOperationsMessageHandler);
         } catch (ConfigurationErrorException e) {
@@ -63,6 +66,7 @@ public class EntityExtractionApplication implements BaseApplication {
     public boolean initApplication() {
         this.commandContextDataMap = new ConcurrentHashMap<>();
         this.commandContextDataMap.put(APPLICATION_START_TIME,new Date());
+        this.commandContextDataMap.put(MESSAGE_RECEIVE_HISTORY,new ArrayList<String>());
         return true;
     }
 

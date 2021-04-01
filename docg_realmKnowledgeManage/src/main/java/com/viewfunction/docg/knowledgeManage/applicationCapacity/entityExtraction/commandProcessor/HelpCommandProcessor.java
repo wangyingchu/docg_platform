@@ -15,9 +15,10 @@ public class HelpCommandProcessor implements BaseCommandProcessor {
 
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("appinf:       " +"Show basic information of current running entity extraction application.");
-        /*
+
         appInfoStringBuffer.append("\n\r");
-        appInfoStringBuffer.append("unitmetr:     " +"Show real time metrics of current running data compute unit.");
+        appInfoStringBuffer.append("ophistory:    " +"List operation history.");
+         /*
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("unitds:       " +"Show all data slices contains in current data compute unit.");
         appInfoStringBuffer.append("\n\r");
