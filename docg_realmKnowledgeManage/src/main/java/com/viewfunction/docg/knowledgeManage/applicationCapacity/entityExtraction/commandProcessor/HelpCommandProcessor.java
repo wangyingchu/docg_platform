@@ -30,9 +30,9 @@ public class HelpCommandProcessor implements BaseCommandProcessor {
         appInfoStringBuffer.append("actvgrid:     " +"Active global data compute grid after all data compute cubes startup.");
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("dactgrid:     " +"Deactivate global data compute grid.");
+        */
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("clear:        " +"Clear console message.");
-        */
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("help:         " +"Show available commands.");
         appInfoStringBuffer.append("\n\r");

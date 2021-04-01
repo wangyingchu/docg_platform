@@ -11,6 +11,7 @@ import com.viewfunction.docg.knowledgeManage.consoleApplication.feature.BaseComm
 import com.viewfunction.docg.knowledgeManage.consoleApplication.util.ApplicationLauncherUtil;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -18,6 +19,7 @@ import java.util.concurrent.Executors;
 
 public class EntityExtractionApplication implements BaseApplication {
 
+    public static final String APPLICATION_START_TIME = "APPLICATION_START_TIME";
     private ConceptionEntityValueOperationsMessageReceiver conceptionEntityValueOperationsMessageReceiver;
     private ExecutorService executorService;
     private Map<Object,Object> commandContextDataMap;
@@ -48,11 +50,19 @@ public class EntityExtractionApplication implements BaseApplication {
                 }
             }
         });
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        ApplicationLauncherUtil.printApplicationConsoleBanner();
     }
 
     @Override
     public boolean initApplication() {
         this.commandContextDataMap = new ConcurrentHashMap<>();
+        this.commandContextDataMap.put(APPLICATION_START_TIME,new Date());
         return true;
     }
 

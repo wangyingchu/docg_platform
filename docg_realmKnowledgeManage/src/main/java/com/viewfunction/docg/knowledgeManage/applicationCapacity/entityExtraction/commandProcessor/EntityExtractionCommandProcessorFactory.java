@@ -14,6 +14,9 @@ public class EntityExtractionCommandProcessorFactory {
         }if(command.equalsIgnoreCase("appinf")){
             AppInfCommandProcessor appInfCommandProcessor = new AppInfCommandProcessor(conceptionEntityValueOperationsMessageReceiver,commandContextDataMap);
             return appInfCommandProcessor;
+        }if(command.equalsIgnoreCase("clear")){
+            ClearCommandProcessor clearCommandProcessor = new ClearCommandProcessor();
+            return clearCommandProcessor;
         }
         return null;
     }
