@@ -14,14 +14,12 @@
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="docg_coreRealm" />
-    <orderEntry type="library" name="Maven: org.neo4j.driver:neo4j-java-driver:4.2.4" level="project" />
+    <orderEntry type="library" name="Maven: com.viewfunction:docg_coreRealm:0.5" level="project" />
+    <orderEntry type="library" name="Maven: org.neo4j.driver:neo4j-java-driver:4.1.1" level="project" />
     <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams:1.0.3" level="project" />
     <orderEntry type="library" name="Maven: org.neo4j:neo4j-cypher-dsl:2020.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.apiguardian:apiguardian-api:1.1.0" level="project" />
@@ -179,8 +177,6 @@
     <orderEntry type="library" name="Maven: org.neo4j:neo4j-import-tool:4.2.4" level="project" />
     <orderEntry type="library" name="Maven: org.neo4j:neo4j-batch-insert:4.2.4" level="project" />
     <orderEntry type="library" name="Maven: org.neo4j.app:neo4j-server:4.2.4" level="project" />
-    <orderEntry type="library" name="Maven: org.neo4j:server-api:4.2.4" level="project" />
-    <orderEntry type="library" name="Maven: javax.ws.rs:javax.ws.rs-api:2.1.1" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-server:9.4.38.v20210224" level="project" />
     <orderEntry type="library" name="Maven: javax.servlet:javax.servlet-api:3.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-http:9.4.38.v20210224" level="project" />
@@ -220,5 +216,7 @@
     <orderEntry type="library" name="Maven: org.bouncycastle:bcprov-jdk15on:1.68" level="project" />
     <orderEntry type="library" name="Maven: javax.activation:activation:1.1.1" level="project" />
     <orderEntry type="library" name="Maven: javax.xml.bind:jaxb-api:2.3.0" level="project" />
+    <orderEntry type="library" name="Maven: org.neo4j:server-api:4.2.4" level="project" />
+    <orderEntry type="library" name="Maven: javax.ws.rs:javax.ws.rs-api:2.1.1" level="project" />
   </component>
 </module>
