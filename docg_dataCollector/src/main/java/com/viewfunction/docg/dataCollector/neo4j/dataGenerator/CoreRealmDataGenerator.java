@@ -1,5 +1,6 @@
 package com.viewfunction.docg.dataCollector.neo4j.dataGenerator;
 
+import com.viewfunction.docg.dataCollector.payload.RelationEntityMetaInfo;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.event.LabelEntry;
@@ -29,6 +30,8 @@ public class CoreRealmDataGenerator {
         Map<String,Map<String,Object>> ASSIGNED_RELATION_PROPERTIES_MAP = new HashMap<>();
         Map<String,Map<String,Object>> UPDATED_RELATION_PROPERTIES_MAP = new HashMap<>();
         Map<String,Map<String,Object>> REMOVED_RELATION_PROPERTIES_MAP = new HashMap<>();
+
+        Map<String, RelationEntityMetaInfo> ASSIGNED_RELATION_METAINFO_MAP =  new HashMap<>();
 
         Iterable<Node> deletedNodesIter = data.deletedNodes();
         if(deletedNodesIter != null){
@@ -85,10 +88,11 @@ public class CoreRealmDataGenerator {
         if(createdRelations != null){
             for(Relationship currentCreatedRelationship : createdRelations){
                 CREATE_RELATION_ID_List.add(""+currentCreatedRelationship.getId());
-
-                messageLog.info(currentCreatedRelationship.getType().name());
-                messageLog.info(""+currentCreatedRelationship.getStartNodeId());
-                messageLog.info(""+currentCreatedRelationship.getEndNodeId());
+                RelationEntityMetaInfo relationEntityMetaInfo = new RelationEntityMetaInfo(
+                        currentCreatedRelationship.getType().name(),""+currentCreatedRelationship.getId(),
+                        ""+currentCreatedRelationship.getStartNodeId(),""+currentCreatedRelationship.getEndNodeId()
+                );
+                ASSIGNED_RELATION_METAINFO_MAP.put(""+currentCreatedRelationship.getId(),relationEntityMetaInfo);
             }
         }
 
@@ -99,12 +103,10 @@ public class CoreRealmDataGenerator {
                     String propertyNodeID = ""+currentAssignedNodeProperties.entity().getId();
                     if(CREATE_NODE_ID_List.contains(propertyNodeID)){
                         //new created node's property
-                        //messageLog.info("New NODE PROPERTY:"+currentAssignedNodeProperties.entity().getId()+" - "+currentAssignedNodeProperties.key()+" - " + currentAssignedNodeProperties.value());
                         setupTransactionDataProperty(ASSIGNED_NODE_PROPERTIES_MAP,""+currentAssignedNodeProperties.entity().getId(),
                                 currentAssignedNodeProperties.key(),currentAssignedNodeProperties.value());
                     }else{
                         //update exist node's property
-                        //messageLog.info("EXIST NODE PROPERTY:"+currentAssignedNodeProperties.entity().getId()+" - "+currentAssignedNodeProperties.key()+" - " + currentAssignedNodeProperties.value());
                         setupTransactionDataProperty(UPDATED_NODE_PROPERTIES_MAP,""+currentAssignedNodeProperties.entity().getId(),
                                 currentAssignedNodeProperties.key(),currentAssignedNodeProperties.value());
                     }
@@ -119,12 +121,10 @@ public class CoreRealmDataGenerator {
                     String propertyRelationID = ""+currentAssignedRelationProperties.entity().getId();
                     if(CREATE_RELATION_ID_List.contains(propertyRelationID)){
                         //new created relation's property
-                        //messageLog.info("NEW RELATIONSHIP PROPERTY:"+currentAssignedRelationProperties.entity().getId()+"/n/r"+currentAssignedRelationProperties.key()+" - "+currentAssignedRelationProperties.value());
                         setupTransactionDataProperty(ASSIGNED_RELATION_PROPERTIES_MAP,""+currentAssignedRelationProperties.entity().getId(),
                                 currentAssignedRelationProperties.key(),currentAssignedRelationProperties.value());
                     }else{
                         //update exist relation's property
-                        //messageLog.info("EXIST RELATIONSHIP PROPERTY:"+currentAssignedRelationProperties.entity().getId()+"/n/r"+currentAssignedRelationProperties.key()+" - "+currentAssignedRelationProperties.value());
                         setupTransactionDataProperty(UPDATED_RELATION_PROPERTIES_MAP,""+currentAssignedRelationProperties.entity().getId(),
                                 currentAssignedRelationProperties.key(),currentAssignedRelationProperties.value());
                     }
@@ -141,7 +141,6 @@ public class CoreRealmDataGenerator {
                         //already removed node's property
                     }else{
                         //update exist node's property
-                        //messageLog.info("EXIST NODE PROPERTY:"+currentRemovedNodeProperties.entity().getId()+" "+currentRemovedNodeProperties.key()+" - "+currentRemovedNodeProperties.value());
                         setupTransactionDataProperty(REMOVED_NODE_PROPERTIES_MAP,""+currentRemovedNodeProperties.entity().getId(),
                                 currentRemovedNodeProperties.key(),currentRemovedNodeProperties.value());
                     }
@@ -158,7 +157,6 @@ public class CoreRealmDataGenerator {
                         //already removed relation's property
                     }else{
                         //update exist relation's property
-                        messageLog.info("EXIST RELATIONSHIP PROPERTY:"+currentRemovedRelationProperties.entity().getId()+" "+currentRemovedRelationProperties.key()+" - "+currentRemovedRelationProperties.value());
                         setupTransactionDataProperty(REMOVED_RELATION_PROPERTIES_MAP,""+currentRemovedRelationProperties.entity().getId(),
                                 currentRemovedRelationProperties.key(),currentRemovedRelationProperties.value());
                     }
@@ -178,6 +176,7 @@ public class CoreRealmDataGenerator {
         messageLog.info(ASSIGNED_RELATION_PROPERTIES_MAP.toString());
         messageLog.info(UPDATED_RELATION_PROPERTIES_MAP.toString());
         messageLog.info(REMOVED_RELATION_PROPERTIES_MAP.toString());
+        messageLog.info(ASSIGNED_RELATION_METAINFO_MAP.toString());
 
         DELETE_NODE_ID_List.clear();
         DELETE_NODE_ID_List = null;
@@ -203,6 +202,8 @@ public class CoreRealmDataGenerator {
         UPDATED_RELATION_PROPERTIES_MAP = null;
         REMOVED_RELATION_PROPERTIES_MAP.clear();
         REMOVED_RELATION_PROPERTIES_MAP = null;
+        ASSIGNED_RELATION_METAINFO_MAP.clear();
+        ASSIGNED_RELATION_METAINFO_MAP = null;
     }
 
     private static void setupTransactionDataProperty(Map<String,Map<String,Object>> dataMap,String entityId,String propertyName,Object propertyValue){
