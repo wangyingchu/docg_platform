@@ -19,8 +19,6 @@ public class AvroUtils {
     public final static String PayLoadSchemaName ="com.viewfunction.docg.InfoObjectsPayLoad";
     public final static String ConceptionEntityValueOperationContentSchemaName ="com.viewfunction.docg.ConceptionEntityValueOperationContent";
 
-    public final static String InfoObjectValueLinkContentSchemaName ="com.viewfunction.docg.InfoObjectValueLinkContent";
-
     private AvroUtils(){}
 
     public static void addSchema(String name, Schema schema){

@@ -1,0 +1,9 @@
+{
+  "namespace": "com.viewfunction.docg",
+  "name": "InfoObjectsPayLoad",
+  "type": "record",
+  "fields": [
+    {"name": "metaInfo", "type": com.viewfunction.docg.PayloadMetaInfo},
+    {"name": "payloadContent", "type": com.viewfunction.docg.PayloadContent}
+  ]
+}

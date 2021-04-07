@@ -1,0 +1,16 @@
+{
+  "namespace": "com.viewfunction.docg",
+  "name": "ConceptionEntityValueOperationContent",
+  "type": "record",
+  "fields": [
+   {"name": "senderIP", "type": ["null", "string"]},
+   {"name": "senderId", "type": ["null", "string"]},
+   {"name": "sendTime", "type":  ["null", "long"]},
+   {"name": "coreRealmName", "type": ["null", "string"]},
+   {"name": "conceptionKindName", "type":  ["null", "string"]},
+   {"name": "conceptionEntityUID", "type": ["null", "string"]},
+   {"name": "addPerDefinedRelation", "type": ["null", "boolean"]},
+   {"name": "operationType", "type":  ["null", "string"]},
+   {"name": "entityAttributesValue", "type":["null", "string"]}
+ ]
+}

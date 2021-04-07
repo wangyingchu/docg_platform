@@ -16,12 +16,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.viewfunction</groupId>
-            <artifactId>docg_coreRealm</artifactId>
-            <version>0.5</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j</artifactId>
             <version>${neo4j.version}</version>
@@ -31,5 +25,29 @@
             <artifactId>server-api</artifactId>
             <version>${neo4j.version}</version>
         </dependency>
+        <!-- For confluent 6.1.1 and kafka -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka_2.13</artifactId>
+            <version>6.1.1-ccs</version>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-avro-serializer</artifactId>
+            <version>6.1.1</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.15</version>
+        </dependency>
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>confluent</id>
+            <url>https://packages.confluent.io/maven/</url>
+        </repository>
+    </repositories>
 </project>
