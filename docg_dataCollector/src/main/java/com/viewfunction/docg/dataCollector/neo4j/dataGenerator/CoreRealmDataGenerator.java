@@ -22,6 +22,8 @@ import org.neo4j.graphdb.event.PropertyEntry;
 import org.neo4j.graphdb.event.TransactionData;
 import org.neo4j.logging.Log;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.*;
 
@@ -233,7 +235,7 @@ public class CoreRealmDataGenerator {
             commonObjectsMessageSender = new CommonObjectsMessageSender(new MessageSentEventHandler(){
                 @Override
                 public void operateMetaData(long offset, long timestamp, String topic, int partition) {
-                    messageLog.info(offset+" - "+timestamp+" - "+topic+" - "+partition);
+                    //messageLog.info(offset+" - "+timestamp+" - "+topic+" - "+partition);
                 }
             });
 
@@ -350,24 +352,32 @@ public class CoreRealmDataGenerator {
 
             commonObjectsMessageSender.finishMessageSendBatch();
         } catch (ConfigurationErrorException | SchemaFormatErrorException | MessageFormatErrorException | MessageHandleErrorException e) {
-            //e.printStackTrace();
             messageLog.info(e.getMessage());
         }
 
-        messageLog.info("=================================");
-        messageLog.info(DELETE_NODE_ID_List.toString());
-        messageLog.info(DELETE_RELATION_ID_List.toString());
-        messageLog.info(CREATE_NODE_ID_List.toString());
-        messageLog.info(CREATE_RELATION_ID_List.toString());
-        messageLog.info(ASSIGNED_NODE_LABELS_MAP.toString());
-        messageLog.info(REMOVED_NODE_LABELS_MAP.toString());
-        messageLog.info(ASSIGNED_NODE_PROPERTIES_MAP.toString());
-        messageLog.info(UPDATED_NODE_PROPERTIES_MAP.toString());
-        messageLog.info(REMOVED_NODE_PROPERTIES_MAP.toString());
-        messageLog.info(ASSIGNED_RELATION_PROPERTIES_MAP.toString());
-        messageLog.info(UPDATED_RELATION_PROPERTIES_MAP.toString());
-        messageLog.info(REMOVED_RELATION_PROPERTIES_MAP.toString());
-        messageLog.info(ASSIGNED_RELATION_METAINFO_MAP.toString());
+        boolean displayMessageInNeo4jLog = false;
+        try {
+            displayMessageInNeo4jLog = Boolean.parseBoolean(EventStreamingServicePropertiesHandler.getPropertyValue(EventStreamingServicePropertiesHandler.ShowOperationMessage));
+        } catch (ConfigurationErrorException e) {
+            e.printStackTrace();
+        }
+
+        if(displayMessageInNeo4jLog){
+            messageLog.info("==== Executes CoreRealm Data Collector Listener:");
+            messageLog.info("  DELETE_NODE_IDS: "+DELETE_NODE_ID_List.toString());
+            messageLog.info("  DELETE_RELATION_IDS: "+DELETE_RELATION_ID_List.toString());
+            messageLog.info("  CREATE_NODE_IDS: "+CREATE_NODE_ID_List.toString());
+            messageLog.info("  CREATE_RELATION_IDS: "+CREATE_RELATION_ID_List.toString());
+            messageLog.info("  ASSIGNED_NODE_LABELS: "+ASSIGNED_NODE_LABELS_MAP.toString());
+            messageLog.info("  REMOVED_NODE_LABELS: "+REMOVED_NODE_LABELS_MAP.toString());
+            messageLog.info("  ASSIGNED_NODE_PROPERTIES: "+ASSIGNED_NODE_PROPERTIES_MAP.toString());
+            messageLog.info("  UPDATED_NODE_PROPERTIES: "+UPDATED_NODE_PROPERTIES_MAP.toString());
+            messageLog.info("  REMOVED_NODE_PROPERTIES: "+REMOVED_NODE_PROPERTIES_MAP.toString());
+            messageLog.info("  ASSIGNED_RELATION_PROPERTIES: "+ASSIGNED_RELATION_PROPERTIES_MAP.toString());
+            messageLog.info("  UPDATED_RELATION_PROPERTIES: "+UPDATED_RELATION_PROPERTIES_MAP.toString());
+            messageLog.info("  REMOVED_RELATION_PROPERTIES: "+REMOVED_RELATION_PROPERTIES_MAP.toString());
+            messageLog.info("  ASSIGNED_RELATION_NUMBER: "+ASSIGNED_RELATION_METAINFO_MAP.size());
+        }
 
         DELETE_NODE_ID_List.clear();
         DELETE_NODE_ID_List = null;
@@ -419,6 +429,28 @@ public class CoreRealmDataGenerator {
     }
 
     private static void setNodeProperty(ObjectNode node,String propertyName,Object propertyOrgValue){
-        node.put(propertyName,propertyOrgValue.toString());
+        if(propertyOrgValue instanceof String){
+            node.put(propertyName,(String)propertyOrgValue);
+        }else if(propertyOrgValue instanceof Integer){
+            node.put(propertyName,(Integer)propertyOrgValue);
+        }else if(propertyOrgValue instanceof Long){
+            node.put(propertyName,(Long)propertyOrgValue);
+        }else if(propertyOrgValue instanceof Float){
+            node.put(propertyName,(Float)propertyOrgValue);
+        }else if(propertyOrgValue instanceof Double){
+            node.put(propertyName,(Double)propertyOrgValue);
+        }else if(propertyOrgValue instanceof Boolean){
+            node.put(propertyName,(Boolean)propertyOrgValue);
+        }else if(propertyOrgValue instanceof Short){
+            node.put(propertyName,(Short)propertyOrgValue);
+        }else if(propertyOrgValue instanceof BigDecimal){
+            node.put(propertyName,(BigDecimal)propertyOrgValue);
+        }else if(propertyOrgValue instanceof BigInteger){
+            node.put(propertyName,(BigInteger)propertyOrgValue);
+        }else if(propertyOrgValue instanceof byte[]){
+            node.put(propertyName,(byte[])propertyOrgValue);
+        }else{
+            node.put(propertyName,propertyOrgValue.toString());
+        }
     }
 }

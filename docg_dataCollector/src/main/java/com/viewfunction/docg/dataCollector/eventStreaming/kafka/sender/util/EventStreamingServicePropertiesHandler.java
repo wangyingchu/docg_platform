@@ -29,6 +29,7 @@ public class EventStreamingServicePropertiesHandler {
 	public static String PayloadTypeDesc="PayloadTypeDesc";
 	public static String PayloadProcessor="PayloadProcessor";
 	public static String PayloadClassification="PayloadClassification";
+	public static String ShowOperationMessage="ShowOperationMessage";
 
     public static String getPropertyValue(String resourceFileName) throws ConfigurationErrorException {
     	if(_properties == null){
