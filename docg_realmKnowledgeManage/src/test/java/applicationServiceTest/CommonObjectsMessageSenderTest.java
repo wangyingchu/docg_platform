@@ -62,7 +62,7 @@ public class CommonObjectsMessageSenderTest {
 
         commonObjectsMessageSender.beginMessageSendBatch();
         for(int i=0;i<10;i++) {
-            commonObjectsMessageSender.sendInfoObjectsMessage(commonObjectsPayloadMetaInfo, commonObjectsPayloadContent, commonObjectsMessageTargetInfo);
+            commonObjectsMessageSender.sendCommonObjectsMessage(commonObjectsPayloadMetaInfo, commonObjectsPayloadContent, commonObjectsMessageTargetInfo);
         }
         commonObjectsMessageSender.finishMessageSendBatch();
     }

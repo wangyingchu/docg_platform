@@ -12,6 +12,7 @@ import com.viewfunction.docg.dataCollector.eventStreaming.kafka.sender.payload.C
 import com.viewfunction.docg.dataCollector.eventStreaming.kafka.sender.payload.CommonObjectsPayloadContent;
 import com.viewfunction.docg.dataCollector.eventStreaming.kafka.sender.payload.CommonObjectsPayloadContentType;
 import com.viewfunction.docg.dataCollector.eventStreaming.kafka.sender.payload.CommonObjectsPayloadMetaInfo;
+import com.viewfunction.docg.dataCollector.eventStreaming.kafka.sender.util.EventStreamingServicePropertiesHandler;
 import com.viewfunction.docg.dataCollector.payload.RelationEntityMetaInfo;
 import org.apache.commons.codec.binary.Base64;
 import org.neo4j.graphdb.Node;
@@ -28,6 +29,22 @@ public class CoreRealmDataGenerator {
 
     private static String senderId =null;
     private static String senderIP =null;
+    private static final String textContentEncodeAlgorithm = "BASE64";
+
+    private static final String EntityUIDProperty = "EntityUID";
+    private static final String EntityKindProperty = "EntityKind";
+    private static final String RelationSourceEntityUIDProperty = "RelationSourceEntityUIDProperty";
+    private static final String RelationTargetEntityUIDProperty = "RelationTargetEntityUIDProperty";
+    private static final String OperationTypeProperty = "OperationType";
+    private static final String OperationTimeProperty = "OperationTime";
+    private static final String OperationType_Delete_ConceptionEntity ="Delete_ConceptionEntity";
+    private static final String OperationType_Delete_RelationEntity ="Delete_RelationEntity";
+    private static final String OperationType_Create_ConceptionEntity ="Create_ConceptionEntity";
+    private static final String OperationType_Create_RelationEntity ="Create_RelationEntity";
+    private static final String OperationType_Update_ConceptionEntityProperty ="Update_ConceptionEntityProperty";
+    private static final String OperationType_Update_RelationEntityProperty ="Update_RelationEntityProperty";
+    private static final String OperationType_Remove_ConceptionEntityProperty ="Remove_ConceptionEntityProperty";
+    private static final String OperationType_Remove_RelationEntityProperty ="Remove_RelationEntityProperty";
 
     static{
         InetAddress ia=null;
@@ -192,21 +209,24 @@ public class CoreRealmDataGenerator {
         CommonObjectsPayloadMetaInfo commonObjectsPayloadMetaInfo =new CommonObjectsPayloadMetaInfo();
         commonObjectsPayloadMetaInfo.setSenderId(senderId);
         commonObjectsPayloadMetaInfo.setSenderIP(senderIP);
-
-        commonObjectsPayloadMetaInfo.setSenderGroup("senderGroup001");
-        commonObjectsPayloadMetaInfo.setPayloadType("NEO4J_TransactionData");
-
-
-        commonObjectsPayloadMetaInfo.setSenderCategory("DOCG_CoreRealmDataStorage");
-        commonObjectsPayloadMetaInfo.setPayloadTypeDesc("NEO4J_EntitiesUpdatePayload");
-        commonObjectsPayloadMetaInfo.setPayloadProcessor("DOCG_EntitiesUpdatePayloadProcessor");
-        commonObjectsPayloadMetaInfo.setPayloadClassification("DOCG_DATA_SYNC");
-
-
+        try {
+            commonObjectsPayloadMetaInfo.setSenderGroup(EventStreamingServicePropertiesHandler.getPropertyValue(EventStreamingServicePropertiesHandler.SenderGroup));
+            commonObjectsPayloadMetaInfo.setSenderCategory(EventStreamingServicePropertiesHandler.getPropertyValue(EventStreamingServicePropertiesHandler.SenderCategory));
+            commonObjectsPayloadMetaInfo.setPayloadType(EventStreamingServicePropertiesHandler.getPropertyValue(EventStreamingServicePropertiesHandler.PayloadType));
+            commonObjectsPayloadMetaInfo.setPayloadTypeDesc(EventStreamingServicePropertiesHandler.getPropertyValue(EventStreamingServicePropertiesHandler.PayloadTypeDesc));
+            commonObjectsPayloadMetaInfo.setPayloadProcessor(EventStreamingServicePropertiesHandler.getPropertyValue(EventStreamingServicePropertiesHandler.PayloadProcessor));
+            commonObjectsPayloadMetaInfo.setPayloadClassification(EventStreamingServicePropertiesHandler.getPropertyValue(EventStreamingServicePropertiesHandler.PayloadClassification));
+        } catch (ConfigurationErrorException e) {
+            e.printStackTrace();
+        }
 
         CommonObjectsMessageTargetInfo commonObjectsMessageTargetInfo =new CommonObjectsMessageTargetInfo();
-        commonObjectsMessageTargetInfo.setDestinationTopic("CommonObjectsTopic");
-        commonObjectsMessageTargetInfo.setPayloadKey("payloadKey001");
+        try {
+            commonObjectsMessageTargetInfo.setDestinationTopic(EventStreamingServicePropertiesHandler.getPropertyValue(EventStreamingServicePropertiesHandler.DestinationTopic));
+            commonObjectsMessageTargetInfo.setPayloadKey(EventStreamingServicePropertiesHandler.getPropertyValue(EventStreamingServicePropertiesHandler.PayloadKey));
+        } catch (ConfigurationErrorException e) {
+            e.printStackTrace();
+        }
 
         CommonObjectsMessageSender commonObjectsMessageSender = null;
         try {
@@ -218,44 +238,121 @@ public class CoreRealmDataGenerator {
             });
 
             commonObjectsMessageSender.beginMessageSendBatch();
-            for(int i=0;i<10;i++) {
 
-                CommonObjectsPayloadContent commonObjectsPayloadContent =new CommonObjectsPayloadContent();
-                commonObjectsPayloadContent.setIncludingContent(CommonObjectsPayloadContentType.TEXT);
-                commonObjectsPayloadContent.setTextContentEncoded(true);
-
-                String textContent="Message 0123456789023456789中文Ωß∂ç√∂©©ƒƒß≈√ƒ";
+            //Send Delete ConceptionEntity message
+            for(String currentEntityUID:DELETE_NODE_ID_List){
                 ObjectNode node = JsonNodeFactory.instance.objectNode();
-                node.put("field001",1);
-                node.put("field002",new Date().getTime());
-                node.put("field003",textContent);
-                byte[] encodedBytes = Base64.encodeBase64(node.toString().getBytes());
-                commonObjectsPayloadContent.setTextContentEncodeAlgorithm("BASE64");
-                commonObjectsPayloadContent.setTextContent(new String(encodedBytes));
-
-
-
-
-                commonObjectsMessageSender.sendInfoObjectsMessage(commonObjectsPayloadMetaInfo, commonObjectsPayloadContent, commonObjectsMessageTargetInfo);
+                node.put(OperationTypeProperty,OperationType_Delete_ConceptionEntity);
+                node.put(OperationTimeProperty,data.getCommitTime());
+                node.put(EntityUIDProperty,currentEntityUID);
+                if(REMOVED_NODE_LABELS_MAP.containsKey(currentEntityUID) && REMOVED_NODE_LABELS_MAP.get(currentEntityUID).size() > 0){
+                    node.put(EntityKindProperty,REMOVED_NODE_LABELS_MAP.get(currentEntityUID).get(0));
+                }
+                sendMessage(commonObjectsMessageSender,commonObjectsPayloadMetaInfo, node, commonObjectsMessageTargetInfo);
             }
+            //Send Delete RelationEntity message
+            for(String currentEntityUID:DELETE_RELATION_ID_List){
+                ObjectNode node = JsonNodeFactory.instance.objectNode();
+                node.put(OperationTypeProperty,OperationType_Delete_RelationEntity);
+                node.put(OperationTimeProperty,data.getCommitTime());
+                node.put(EntityUIDProperty,currentEntityUID);
+                sendMessage(commonObjectsMessageSender,commonObjectsPayloadMetaInfo, node, commonObjectsMessageTargetInfo);
+            }
+            //Send Create ConceptionEntity message
+            for(String currentEntityUID:CREATE_NODE_ID_List){
+                ObjectNode node = JsonNodeFactory.instance.objectNode();
+                node.put(OperationTypeProperty,OperationType_Create_ConceptionEntity);
+                node.put(OperationTimeProperty,data.getCommitTime());
+                node.put(EntityUIDProperty,currentEntityUID);
+                if(ASSIGNED_NODE_LABELS_MAP.containsKey(currentEntityUID) && ASSIGNED_NODE_LABELS_MAP.get(currentEntityUID).size() > 0){
+                    node.put(EntityKindProperty,ASSIGNED_NODE_LABELS_MAP.get(currentEntityUID).toString());
+                }
+                if(ASSIGNED_NODE_PROPERTIES_MAP.containsKey(currentEntityUID)){
+                    Map<String,Object> nodePropertiesMap = ASSIGNED_NODE_PROPERTIES_MAP.get(currentEntityUID);
+                    for (Map.Entry<String, Object> entry : nodePropertiesMap.entrySet()) {
+                        setNodeProperty(node,entry.getKey(),entry.getValue());
+                    }
+                }
+                sendMessage(commonObjectsMessageSender,commonObjectsPayloadMetaInfo, node, commonObjectsMessageTargetInfo);
+            }
+            //Send Create RelationEntity message
+            for(String currentEntityUID:CREATE_RELATION_ID_List){
+                ObjectNode node = JsonNodeFactory.instance.objectNode();
+                node.put(OperationTypeProperty,OperationType_Create_RelationEntity);
+                node.put(OperationTimeProperty,data.getCommitTime());
+                node.put(EntityUIDProperty,currentEntityUID);
+                if(ASSIGNED_RELATION_METAINFO_MAP.containsKey(currentEntityUID)){
+                    RelationEntityMetaInfo relationEntityMetaInfo = ASSIGNED_RELATION_METAINFO_MAP.get(currentEntityUID);
+                    node.put(EntityKindProperty,relationEntityMetaInfo.getRelationKind());
+                    node.put(RelationSourceEntityUIDProperty,relationEntityMetaInfo.getSourceEntityUID());
+                    node.put(RelationTargetEntityUIDProperty,relationEntityMetaInfo.getTargetEntityUID());
+                }
+                if(ASSIGNED_RELATION_PROPERTIES_MAP.containsKey(currentEntityUID)){
+                    Map<String,Object> relationPropertiesMap = ASSIGNED_RELATION_PROPERTIES_MAP.get(currentEntityUID);
+                    for (Map.Entry<String, Object> entry : relationPropertiesMap.entrySet()) {
+                        setNodeProperty(node,entry.getKey(),entry.getValue());
+                    }
+                }
+                sendMessage(commonObjectsMessageSender,commonObjectsPayloadMetaInfo, node, commonObjectsMessageTargetInfo);
+            }
+            //Send update ConceptionEntity Property message
+            for (Map.Entry<String, Map<String,Object>> entry : UPDATED_NODE_PROPERTIES_MAP.entrySet()) {
+                String currentEntityUID = entry.getKey();
+                ObjectNode node = JsonNodeFactory.instance.objectNode();
+                node.put(OperationTypeProperty,OperationType_Update_ConceptionEntityProperty);
+                node.put(OperationTimeProperty,data.getCommitTime());
+                node.put(EntityUIDProperty,currentEntityUID);
+                Map<String,Object> currentEntityUpdatedProperties = entry.getValue();
+                for (Map.Entry<String, Object> propertiesEntry : currentEntityUpdatedProperties.entrySet()){
+                    setNodeProperty(node,propertiesEntry.getKey(),propertiesEntry.getValue());
+                }
+                sendMessage(commonObjectsMessageSender,commonObjectsPayloadMetaInfo, node, commonObjectsMessageTargetInfo);
+            }
+            //Send update RelationEntity Property message
+            for (Map.Entry<String, Map<String,Object>> entry : UPDATED_RELATION_PROPERTIES_MAP.entrySet()) {
+                String currentEntityUID = entry.getKey();
+                ObjectNode node = JsonNodeFactory.instance.objectNode();
+                node.put(OperationTypeProperty,OperationType_Update_RelationEntityProperty);
+                node.put(OperationTimeProperty,data.getCommitTime());
+                node.put(EntityUIDProperty,currentEntityUID);
+                Map<String,Object> currentEntityUpdatedProperties = entry.getValue();
+                for (Map.Entry<String, Object> propertiesEntry : currentEntityUpdatedProperties.entrySet()){
+                    setNodeProperty(node,propertiesEntry.getKey(),propertiesEntry.getValue());
+                }
+                sendMessage(commonObjectsMessageSender,commonObjectsPayloadMetaInfo, node, commonObjectsMessageTargetInfo);
+            }
+            //Send delete ConceptionEntity Property message
+            for (Map.Entry<String, Map<String,Object>> entry : REMOVED_NODE_PROPERTIES_MAP.entrySet()) {
+                String currentEntityUID = entry.getKey();
+                ObjectNode node = JsonNodeFactory.instance.objectNode();
+                node.put(OperationTypeProperty,OperationType_Remove_ConceptionEntityProperty);
+                node.put(OperationTimeProperty,data.getCommitTime());
+                node.put(EntityUIDProperty,currentEntityUID);
+                Map<String,Object> currentEntityUpdatedProperties = entry.getValue();
+                for (Map.Entry<String, Object> propertiesEntry : currentEntityUpdatedProperties.entrySet()){
+                    setNodeProperty(node,propertiesEntry.getKey(),propertiesEntry.getValue());
+                }
+                sendMessage(commonObjectsMessageSender,commonObjectsPayloadMetaInfo, node, commonObjectsMessageTargetInfo);
+            }
+            //Send delete RelationEntity Property message
+            for (Map.Entry<String, Map<String,Object>> entry : REMOVED_RELATION_PROPERTIES_MAP.entrySet()) {
+                String currentEntityUID = entry.getKey();
+                ObjectNode node = JsonNodeFactory.instance.objectNode();
+                node.put(OperationTypeProperty,OperationType_Remove_RelationEntityProperty);
+                node.put(OperationTimeProperty,data.getCommitTime());
+                node.put(EntityUIDProperty,currentEntityUID);
+                Map<String,Object> currentEntityUpdatedProperties = entry.getValue();
+                for (Map.Entry<String, Object> propertiesEntry : currentEntityUpdatedProperties.entrySet()){
+                    setNodeProperty(node,propertiesEntry.getKey(),propertiesEntry.getValue());
+                }
+                sendMessage(commonObjectsMessageSender,commonObjectsPayloadMetaInfo, node, commonObjectsMessageTargetInfo);
+            }
+
             commonObjectsMessageSender.finishMessageSendBatch();
         } catch (ConfigurationErrorException | SchemaFormatErrorException | MessageFormatErrorException | MessageHandleErrorException e) {
             //e.printStackTrace();
             messageLog.info(e.getMessage());
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         messageLog.info("=================================");
         messageLog.info(DELETE_NODE_ID_List.toString());
@@ -308,5 +405,20 @@ public class CoreRealmDataGenerator {
             propertyMap.put(propertyName,propertyValue);
             dataMap.put(entityId,propertyMap);
         }
+    }
+
+    private static void sendMessage(CommonObjectsMessageSender commonObjectsMessageSender,CommonObjectsPayloadMetaInfo commonObjectsPayloadMetaInfo,
+                                    ObjectNode node,CommonObjectsMessageTargetInfo commonObjectsMessageTargetInfo) throws SchemaFormatErrorException, MessageHandleErrorException, MessageFormatErrorException {
+        CommonObjectsPayloadContent commonObjectsPayloadContent =new CommonObjectsPayloadContent();
+        commonObjectsPayloadContent.setIncludingContent(CommonObjectsPayloadContentType.TEXT);
+        commonObjectsPayloadContent.setTextContentEncoded(true);
+        commonObjectsPayloadContent.setTextContentEncodeAlgorithm(textContentEncodeAlgorithm);
+        byte[] encodedBytes = Base64.encodeBase64(node.toString().getBytes());
+        commonObjectsPayloadContent.setTextContent(new String(encodedBytes));
+        commonObjectsMessageSender.sendCommonObjectsMessage(commonObjectsPayloadMetaInfo, commonObjectsPayloadContent, commonObjectsMessageTargetInfo);
+    }
+
+    private static void setNodeProperty(ObjectNode node,String propertyName,Object propertyOrgValue){
+        node.put(propertyName,propertyOrgValue.toString());
     }
 }

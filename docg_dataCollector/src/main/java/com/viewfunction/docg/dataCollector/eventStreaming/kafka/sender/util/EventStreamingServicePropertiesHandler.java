@@ -19,17 +19,16 @@ public class EventStreamingServicePropertiesHandler {
 	public static String PRODUCER_LINGER_MS="PRODUCER_LINGER_MS";
 	public static String PRODUCER_BUFFER_MEMORY="PRODUCER_BUFFER_MEMORY";
 	public static String PRODUCER_MAX_REQUEST_SIZE="PRODUCER_MAX_REQUEST_SIZE";
+	public static String SCHEMA_REGISTRY_URL="schema.registry.url";
 
-    public static String CONSUMER_BOOTSTRAP_SERVERS="CONSUMER_BOOTSTRAP_SERVERS";
-    public static String CONSUMER_SCHEMA_REGISTRY="CONSUMER_SCHEMA_REGISTRY";
-    public static String CONSUMER_GROUP_ID="CONSUMER_GROUP_ID";
-    public static String CONSUMER_ENABLE_AUTO_COMMIT="CONSUMER_ENABLE_AUTO_COMMIT";
-    public static String CONSUMER_AUTO_COMMIT_INTERVAL_MS="CONSUMER_AUTO_COMMIT_INTERVAL_MS";
-    public static String CONSUMER_SESSION_TIMEOUT_MS="CONSUMER_SESSION_TIMEOUT_MS";
-    public static String CONSUMER_MAX_PARTITION_FETCH_BYTES="CONSUMER_MAX_PARTITION_FETCH_BYTES";
-    public static String CONSUMER_POLL_MS="CONSUMER_POLL_MS";
-
-    public static String SCHEMA_REGISTRY_URL="schema.registry.url";
+	public static String DestinationTopic="DestinationTopic";
+	public static String PayloadKey="PayloadKey";
+	public static String SenderGroup="SenderGroup";
+	public static String SenderCategory="SenderCategory";
+	public static String PayloadType="PayloadType";
+	public static String PayloadTypeDesc="PayloadTypeDesc";
+	public static String PayloadProcessor="PayloadProcessor";
+	public static String PayloadClassification="PayloadClassification";
 
     public static String getPropertyValue(String resourceFileName) throws ConfigurationErrorException {
     	if(_properties == null){

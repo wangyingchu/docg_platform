@@ -26,7 +26,7 @@ public class CommonObjectsMessageSender extends AvroMessageSender{
         super(messageSentEventHandler);
     }
 
-    public void sendInfoObjectsMessage(CommonObjectsPayloadMetaInfo commonObjectsPayloadMetaInfo, CommonObjectsPayloadContent commonObjectsPayloadContent, CommonObjectsMessageTargetInfo commonObjectsMessageTargetInfo) throws SchemaFormatErrorException, MessageFormatErrorException, MessageHandleErrorException {
+    public void sendCommonObjectsMessage(CommonObjectsPayloadMetaInfo commonObjectsPayloadMetaInfo, CommonObjectsPayloadContent commonObjectsPayloadContent, CommonObjectsMessageTargetInfo commonObjectsMessageTargetInfo) throws SchemaFormatErrorException, MessageFormatErrorException, MessageHandleErrorException {
         AvroUtils.initPayloadSchemas();
         Schema payloadMetaInfoSchema= AvroUtils.getSchema(AvroUtils.PayloadMetaInfoSchemaName);
         GenericRecord payloadMetaInfoRecord = new GenericData.Record(payloadMetaInfoSchema);
