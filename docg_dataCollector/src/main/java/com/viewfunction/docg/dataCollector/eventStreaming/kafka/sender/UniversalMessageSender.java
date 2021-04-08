@@ -73,18 +73,18 @@ public class UniversalMessageSender {
     private void initProducerConfig() throws ConfigurationErrorException {
         if(configProps==null){
             configProps = new Properties();
-            configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, EventStreamingServicePropertiesHandler.getPerportyValue(EventStreamingServicePropertiesHandler.PRODUCER_BOOTSTRAP_SERVERS));
-            configProps.put(EventStreamingServicePropertiesHandler.SCHEMA_REGISTRY_URL, EventStreamingServicePropertiesHandler.getPerportyValue(EventStreamingServicePropertiesHandler.PRODUCER_SCHEMA_REGISTRY));
-            configProps.put(ProducerConfig.ACKS_CONFIG, EventStreamingServicePropertiesHandler.getPerportyValue(EventStreamingServicePropertiesHandler.PRODUCER_ACKS));
-            int retries=Integer.parseInt(EventStreamingServicePropertiesHandler.getPerportyValue(EventStreamingServicePropertiesHandler.PRODUCER_RETRIES));
+            configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, EventStreamingServicePropertiesHandler.getPropertyValue(EventStreamingServicePropertiesHandler.PRODUCER_BOOTSTRAP_SERVERS));
+            configProps.put(EventStreamingServicePropertiesHandler.SCHEMA_REGISTRY_URL, EventStreamingServicePropertiesHandler.getPropertyValue(EventStreamingServicePropertiesHandler.PRODUCER_SCHEMA_REGISTRY));
+            configProps.put(ProducerConfig.ACKS_CONFIG, EventStreamingServicePropertiesHandler.getPropertyValue(EventStreamingServicePropertiesHandler.PRODUCER_ACKS));
+            int retries=Integer.parseInt(EventStreamingServicePropertiesHandler.getPropertyValue(EventStreamingServicePropertiesHandler.PRODUCER_RETRIES));
             configProps.put(ProducerConfig.RETRIES_CONFIG,retries);
-            int batchSize=Integer.parseInt(EventStreamingServicePropertiesHandler.getPerportyValue(EventStreamingServicePropertiesHandler.PRODUCER_BATCH_SIZE));
+            int batchSize=Integer.parseInt(EventStreamingServicePropertiesHandler.getPropertyValue(EventStreamingServicePropertiesHandler.PRODUCER_BATCH_SIZE));
             configProps.put(ProducerConfig.BATCH_SIZE_CONFIG,batchSize);
-            int lingerMs=Integer.parseInt(EventStreamingServicePropertiesHandler.getPerportyValue(EventStreamingServicePropertiesHandler.PRODUCER_LINGER_MS));
+            int lingerMs=Integer.parseInt(EventStreamingServicePropertiesHandler.getPropertyValue(EventStreamingServicePropertiesHandler.PRODUCER_LINGER_MS));
             configProps.put(ProducerConfig.LINGER_MS_CONFIG,lingerMs);
-            int bufferMemory=Integer.parseInt(EventStreamingServicePropertiesHandler.getPerportyValue(EventStreamingServicePropertiesHandler.PRODUCER_BUFFER_MEMORY));
+            int bufferMemory=Integer.parseInt(EventStreamingServicePropertiesHandler.getPropertyValue(EventStreamingServicePropertiesHandler.PRODUCER_BUFFER_MEMORY));
             configProps.put(ProducerConfig.BUFFER_MEMORY_CONFIG,bufferMemory);
-            int maxRequestSize=Integer.parseInt(EventStreamingServicePropertiesHandler.getPerportyValue(EventStreamingServicePropertiesHandler.PRODUCER_MAX_REQUEST_SIZE));
+            int maxRequestSize=Integer.parseInt(EventStreamingServicePropertiesHandler.getPropertyValue(EventStreamingServicePropertiesHandler.PRODUCER_MAX_REQUEST_SIZE));
             configProps.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG,maxRequestSize);
         }
     }

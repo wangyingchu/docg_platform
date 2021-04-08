@@ -31,7 +31,7 @@ public class EventStreamingServicePropertiesHandler {
 
     public static String SCHEMA_REGISTRY_URL="schema.registry.url";
 
-    public static String getPerportyValue(String resourceFileName) throws ConfigurationErrorException {
+    public static String getPropertyValue(String resourceFileName) throws ConfigurationErrorException {
     	if(_properties == null){
 			_properties=new Properties();
 			try {

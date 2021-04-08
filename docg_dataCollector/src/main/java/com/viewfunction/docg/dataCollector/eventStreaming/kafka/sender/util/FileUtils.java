@@ -7,8 +7,9 @@ import java.io.InputStream;
 public class FileUtils {
 
     public static InputStream getInputStream(String path) {
+        String filePathLocation = FileUtils.class.getClassLoader().getResource("").getPath();
         try {
-            return new FileInputStream(path);
+            return new FileInputStream(filePathLocation+"/"+path);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
