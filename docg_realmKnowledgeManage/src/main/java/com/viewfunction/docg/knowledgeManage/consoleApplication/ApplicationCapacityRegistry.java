@@ -1,5 +1,6 @@
 package com.viewfunction.docg.knowledgeManage.consoleApplication;
 
+import com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization.DataSlicesSynchronizationApplication;
 import com.viewfunction.docg.knowledgeManage.applicationCapacity.entityDisambiguation.EntityDisambiguationApplication;
 import com.viewfunction.docg.knowledgeManage.applicationCapacity.entityExtraction.EntityExtractionApplication;
 import com.viewfunction.docg.knowledgeManage.applicationCapacity.entityFusion.EntityFusionApplication;
@@ -19,6 +20,9 @@ public class ApplicationCapacityRegistry {
         }
         if(applicationFunctionName.equals("entityDisambiguation")){
             return new EntityDisambiguationApplication();
+        }
+        if(applicationFunctionName.equals("dataSlicesSynchronization")){
+            return new DataSlicesSynchronizationApplication();
         }
         return null;
     }
