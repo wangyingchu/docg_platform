@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class DataSlicesSynchronizationApplication  implements BaseApplication {
+public class DataSlicesSynchronizationApplication implements BaseApplication {
 
     public static final String APPLICATION_START_TIME = "APPLICATION_START_TIME";
     public static final String SYNC_LISTENING_START_TIME = "SYNC_LISTENING_START_TIME";
@@ -33,7 +33,7 @@ public class DataSlicesSynchronizationApplication  implements BaseApplication {
     @Override
     public void executeDaemonLogic() {
         //Batch load data into data slices by per defined rules
-
+        this.commandContextDataMap.put(SYNC_LISTENING_START_TIME,new Date());
         //
         GeneralDataSliceEntityValueOperationsMessageHandler generalDataSliceEntityValueOperationsMessageHandler = new GeneralDataSliceEntityValueOperationsMessageHandler(this.commandContextDataMap);
         try {
