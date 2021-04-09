@@ -76,6 +76,7 @@ public class CoreRealmDataGenerator {
         Map<String,Map<String,Object>> REMOVED_RELATION_PROPERTIES_MAP = new HashMap<>();
 
         Map<String, RelationEntityMetaInfo> ASSIGNED_RELATION_METAINFO_MAP =  new HashMap<>();
+        Map<String, RelationEntityMetaInfo> REMOVED_RELATION_METAINFO_MAP =  new HashMap<>();
 
         Iterable<Node> deletedNodesIter = data.deletedNodes();
         if(deletedNodesIter != null){
@@ -88,6 +89,11 @@ public class CoreRealmDataGenerator {
         if(deletedRelations != null){
             for(Relationship currentDeleteRelationship : deletedRelations){
                 DELETE_RELATION_ID_List.add(""+currentDeleteRelationship.getId());
+                RelationEntityMetaInfo relationEntityMetaInfo = new RelationEntityMetaInfo(
+                        currentDeleteRelationship.getType().name(),""+currentDeleteRelationship.getId(),
+                        ""+currentDeleteRelationship.getStartNodeId(),""+currentDeleteRelationship.getEndNodeId()
+                );
+                REMOVED_RELATION_METAINFO_MAP.put(""+currentDeleteRelationship.getId(),relationEntityMetaInfo);
             }
         }
 
@@ -258,6 +264,12 @@ public class CoreRealmDataGenerator {
                 node.put(OperationTypeProperty,OperationType_Delete_RelationEntity);
                 node.put(OperationTimeProperty,data.getCommitTime());
                 node.put(EntityUIDProperty,currentEntityUID);
+                if(REMOVED_RELATION_METAINFO_MAP.containsKey(currentEntityUID)){
+                    RelationEntityMetaInfo relationEntityMetaInfo = REMOVED_RELATION_METAINFO_MAP.get(currentEntityUID);
+                    node.put(EntityKindProperty,relationEntityMetaInfo.getRelationKind());
+                    node.put(RelationSourceEntityUIDProperty,relationEntityMetaInfo.getSourceEntityUID());
+                    node.put(RelationTargetEntityUIDProperty,relationEntityMetaInfo.getTargetEntityUID());
+                }
                 sendMessage(commonObjectsMessageSender,commonObjectsPayloadMetaInfo, node, commonObjectsMessageTargetInfo);
             }
             //Send Create ConceptionEntity message
@@ -405,6 +417,8 @@ public class CoreRealmDataGenerator {
         REMOVED_RELATION_PROPERTIES_MAP = null;
         ASSIGNED_RELATION_METAINFO_MAP.clear();
         ASSIGNED_RELATION_METAINFO_MAP = null;
+        REMOVED_RELATION_METAINFO_MAP.clear();
+        REMOVED_RELATION_METAINFO_MAP = null;
     }
 
     private static void setupTransactionDataProperty(Map<String,Map<String,Object>> dataMap,String entityId,String propertyName,Object propertyValue){
