@@ -1,5 +1,6 @@
 package com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization.dataSlicesSync;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization.DataSlicesSynchronizationApplication;
@@ -123,26 +124,71 @@ public class GeneralDataSliceEntityValueOperationsMessageHandler extends CommonO
         }
     }
 
-    private Map<String,Object> generateEntityProperties(ObjectNode node){
+    private Map<String,Object> generateEntityProperties(ObjectNode node) throws IOException {
         Map<String,Object> targetPropertiesMap = new HashMap<>();
-
         Iterator<String> fieldNames = node.fieldNames();
         System.out.println("-----------------------------");
         while(fieldNames.hasNext()){
             String currentField = fieldNames.next();
-            System.out.println(currentField+" : "+node.get(currentField).textValue());
+            if(!currentField.equals(EntityUIDProperty) && !currentField.equals(EntityKindProperty) &&
+                    !currentField.equals(RelationSourceEntityUIDProperty) && !currentField.equals(RelationTargetEntityUIDProperty) &&
+                    !currentField.equals(OperationTypeProperty) && !currentField.equals(OperationTimeProperty)){
+                JsonNode propertyValueNode = node.get(currentField);
+                if(propertyValueNode.isBigDecimal()){
+                    targetPropertiesMap.put(currentField,node.decimalValue());
+                }else if(propertyValueNode.isBigInteger()){
+                    targetPropertiesMap.put(currentField,node.bigIntegerValue());
+                }else if(propertyValueNode.isBinary()){
+                    targetPropertiesMap.put(currentField,node.binaryValue());
+                }else if(propertyValueNode.isBoolean()){
+                    targetPropertiesMap.put(currentField,node.booleanValue());
+                }else if(propertyValueNode.isDouble()){
+                    targetPropertiesMap.put(currentField,node.doubleValue());
+                }else if(propertyValueNode.isFloat()){
+                    targetPropertiesMap.put(currentField,node.floatValue());
+                }else if(propertyValueNode.isInt()){
+                    targetPropertiesMap.put(currentField,node.intValue());
+                }else if(propertyValueNode.isLong()){
+                    targetPropertiesMap.put(currentField,node.longValue());
+                }else if(propertyValueNode.isShort()){
+                    targetPropertiesMap.put(currentField,node.shortValue());
+                }else if(propertyValueNode.isTextual()){
+                    targetPropertiesMap.put(currentField,node.textValue());
+                }
+            }
         }
-
         return targetPropertiesMap;
     }
 
-    private void doDeleteConceptionEntity(String targetEntityKind,String targetEntityUID){}
-    private void doDeleteRelationEntity(String targetEntityKind,String targetEntityUID){}
-    private void doCreateConceptionEntity(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){}
-    private void doCreateRelationEntity(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){}
-    private void doUpdateConceptionEntityProperty(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){}
-    private void doUpdateRelationEntityProperty(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){}
-    private void doRemoveConceptionEntityProperty(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){}
-    private void doRemoveRelationEntityProperty(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){}
+    private void doDeleteConceptionEntity(String targetEntityKind,String targetEntityUID){
+        System.out.println("doDeleteConceptionEntity");
+    }
 
+    private void doDeleteRelationEntity(String targetEntityKind,String targetEntityUID){
+        System.out.println("doDeleteRelationEntity");
+    }
+
+    private void doCreateConceptionEntity(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){
+        System.out.println("doCreateConceptionEntity");
+    }
+
+    private void doCreateRelationEntity(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){
+        System.out.println("doCreateRelationEntity");
+    }
+
+    private void doUpdateConceptionEntityProperty(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){
+        System.out.println("doUpdateConceptionEntityProperty");
+    }
+
+    private void doUpdateRelationEntityProperty(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){
+        System.out.println("doUpdateRelationEntityProperty");
+    }
+
+    private void doRemoveConceptionEntityProperty(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){
+        System.out.println("doRemoveConceptionEntityProperty");
+    }
+
+    private void doRemoveRelationEntityProperty(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){
+        System.out.println("doRemoveRelationEntityProperty");
+    }
 }
