@@ -5,60 +5,171 @@ import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCom
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlicePropertyType;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.ComputeGridNotActiveException;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSliceExistException;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSlicePropertiesStructureException;
+import com.viewfunction.docg.knowledgeManage.consoleApplication.util.ApplicationLauncherUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
 
 public class DataSliceSyncUtil {
 
-    private static final String RoadWeatherInformationStationsRecordsConceptionType = "RoadWeatherRecords";
-    private static final String StationName = "stationName";
-    private static final String StationLocation = "stationLocation";
-    private static final String RecordDateTime = "dateTime";
-    private static final String RecordId = "recordId";
-    private static final String RoadSurfaceTemperature = "roadSurfaceTemperature";
-    private static final String AirTemperature = "airTemperature";
+    public static void batchSyncPerDefinedDataSlices(DataServiceInvoker dataServiceInvoker) {
+        String syncGeospatialRegionDataFlag = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.syncGeospatialRegionData");
+        String dataSliceGroupName = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.dataSliceGroup");
+        String dataSyncPerLoadResultNumber = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.dataSyncPerLoadResultNumber");
+        String degreeOfParallelismNumber = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.degreeOfParallelism");
+        int dataSyncPerLoadResultNum = dataSyncPerLoadResultNumber != null ? Integer.parseInt(dataSyncPerLoadResultNumber) : 100000000;
+        int degreeOfParallelismNum = degreeOfParallelismNumber != null ? Integer.parseInt(degreeOfParallelismNumber) : 5;
 
-    public static void batchSyncPerDefinedDataSlices() {
-        try (DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()) {
-            DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(RoadWeatherInformationStationsRecordsConceptionType);
+        Map<String,List<DataPropertyInfo>> conceptionKindDataPropertiesMap = new HashMap<>();
+        Map<String,List<DataPropertyInfo>> relationKindDataPropertiesMap = new HashMap<>();
+        String lastConceptionKindName = null;
+        String lastRelationKindName = null;
+        String currentHandleType = "ConceptionKind";
 
-            if (targetDataSlice == null) {
-                Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
-                dataSlicePropertyMap.put(StationName, DataSlicePropertyType.STRING);
-                dataSlicePropertyMap.put(StationLocation, DataSlicePropertyType.STRING);
-                dataSlicePropertyMap.put(RecordDateTime, DataSlicePropertyType.DATE);
-                dataSlicePropertyMap.put(RecordId, DataSlicePropertyType.STRING);
-                dataSlicePropertyMap.put(RoadSurfaceTemperature, DataSlicePropertyType.DOUBLE);
-                dataSlicePropertyMap.put(AirTemperature, DataSlicePropertyType.DOUBLE);
-                dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID, DataSlicePropertyType.STRING);
-
-                List<String> pkList = new ArrayList<>();
-                pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
-
-                dataServiceInvoker.createGridDataSlice(RoadWeatherInformationStationsRecordsConceptionType, "defaultSliceGroup", dataSlicePropertyMap, pkList);
+        if(Boolean.parseBoolean(syncGeospatialRegionDataFlag)){
+            File file = new File("DataSlicesSyncKindList");
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new FileReader(file));
+                String tempStr;
+                while ((tempStr = reader.readLine()) != null) {
+                    String currentLine = tempStr.trim();
+                    if(currentLine.startsWith("ConceptionKind.")){
+                        //handle ConceptionKind define
+                        currentHandleType = "ConceptionKind";
+                        String currentConceptionKindName = currentLine.replace("ConceptionKind.","");
+                        lastConceptionKindName = currentConceptionKindName;
+                    }else if(currentLine.startsWith("RelationKind.")){
+                        //handle ConceptionKind define
+                        currentHandleType = "RelationKind";
+                        String currentRelationKindName = currentLine.replace("RelationKind.","");
+                        lastRelationKindName = currentRelationKindName;
+                    }else{
+                        String[] propertyDefineArray = currentLine.split("    ");
+                        String propertyName = propertyDefineArray[0];
+                        String propertyType = propertyDefineArray[1];
+                        if(currentHandleType.equals("ConceptionKind")){
+                            initKindPropertyDefine(conceptionKindDataPropertiesMap,lastConceptionKindName,propertyName,propertyType);
+                        }
+                        if(currentHandleType.equals("RelationKind")){
+                            initKindPropertyDefine(relationKindDataPropertiesMap,lastRelationKindName,propertyName,propertyType);
+                        }
+                    }
+                }
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }
             }
-        } catch (ComputeGridNotActiveException e) {
+        }
+        //handle conceptionKinds data
+        Set<String> conceptionKindsSet = conceptionKindDataPropertiesMap.keySet();
+        try {
+            for(String currentConceptionKind : conceptionKindsSet){
+                DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(currentConceptionKind);
+                if (targetDataSlice == null) {
+                    List<DataPropertyInfo> kindDataPropertyInfoList = conceptionKindDataPropertiesMap.get(currentConceptionKind);
+                    Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+                    if(kindDataPropertyInfoList != null) {
+                        for (DataPropertyInfo currentDataPropertyInfo : kindDataPropertyInfoList) {
+                            dataSlicePropertyMap.put(currentDataPropertyInfo.getPropertyName(), currentDataPropertyInfo.getPropertyType());
+                        }
+                    }
+                    dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID, DataSlicePropertyType.STRING);
+                    List<String> pkList = new ArrayList<>();
+                    pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
+                    dataServiceInvoker.createGridDataSlice(currentConceptionKind, dataSliceGroupName, dataSlicePropertyMap, pkList);
+                }
+            }
+
+            for(String currentConceptionKind : conceptionKindsSet){
+                List<DataPropertyInfo> kindDataPropertyInfoList = conceptionKindDataPropertiesMap.get(currentConceptionKind);
+                List<String> conceptionKindPropertiesList = new ArrayList<>();
+                if(kindDataPropertyInfoList != null){
+                    for(DataPropertyInfo currentDataPropertyInfo : kindDataPropertyInfoList){
+                        conceptionKindPropertiesList.add(currentDataPropertyInfo.getPropertyName());
+                    }
+                }
+                QueryParameters queryParameters = new QueryParameters();
+                queryParameters.setResultNumber(dataSyncPerLoadResultNum);
+                CoreRealmOperationUtil.loadConceptionKindEntitiesToDataSlice(dataServiceInvoker,currentConceptionKind, conceptionKindPropertiesList,
+                        queryParameters, currentConceptionKind, true, degreeOfParallelismNum);
+            }
+        } catch (DataSliceExistException e) {
             e.printStackTrace();
-        } catch (Exception e) {
+        } catch (DataSlicePropertiesStructureException e) {
             e.printStackTrace();
         }
+        //handle relationKinds data
 
-        List<String> conceptionKindPropertiesList = new ArrayList<>();
-        conceptionKindPropertiesList.add(StationName);
-        conceptionKindPropertiesList.add(StationLocation);
-        conceptionKindPropertiesList.add(RecordDateTime);
-        conceptionKindPropertiesList.add(RecordId);
-        conceptionKindPropertiesList.add(RoadSurfaceTemperature);
-        conceptionKindPropertiesList.add(AirTemperature);
 
-        QueryParameters queryParameters = new QueryParameters();
-        queryParameters.setResultNumber(100000000);
 
-        CoreRealmOperationUtil.loadConceptionKindEntitiesToDataSlice(RoadWeatherInformationStationsRecordsConceptionType, conceptionKindPropertiesList, queryParameters, RoadWeatherInformationStationsRecordsConceptionType, true, 10);
 
+    }
+
+    private static void initKindPropertyDefine(Map<String,List<DataPropertyInfo>> kindDataPropertiesMap,String KindName,String propertyName,String propertyType){
+        if(propertyName.startsWith("Attribute.")){
+            String propertyRealName = propertyName.replace("Attribute.","");
+            DataPropertyInfo currentDataPropertyInfo = null;
+            switch(propertyType){
+                case "BOOLEAN" :
+                    currentDataPropertyInfo = new DataPropertyInfo(propertyRealName,DataSlicePropertyType.BOOLEAN);
+                    break;
+                case "INT" :
+                    currentDataPropertyInfo = new DataPropertyInfo(propertyRealName,DataSlicePropertyType.INT);
+                    break;
+                case "SHORT" :
+                    currentDataPropertyInfo = new DataPropertyInfo(propertyRealName,DataSlicePropertyType.SHORT);
+                    break;
+                case "LONG" :
+                    currentDataPropertyInfo = new DataPropertyInfo(propertyRealName,DataSlicePropertyType.LONG);
+                    break;
+                case "FLOAT" :
+                    currentDataPropertyInfo = new DataPropertyInfo(propertyRealName,DataSlicePropertyType.FLOAT);
+                    break;
+                case "DOUBLE" :
+                    currentDataPropertyInfo = new DataPropertyInfo(propertyRealName,DataSlicePropertyType.DOUBLE);
+                    break;
+                case "DATE" :
+                    currentDataPropertyInfo = new DataPropertyInfo(propertyRealName,DataSlicePropertyType.DATE);
+                    break;
+                case "STRING" :
+                    currentDataPropertyInfo = new DataPropertyInfo(propertyRealName,DataSlicePropertyType.STRING);
+                    break;
+                case "BYTE" :
+                    currentDataPropertyInfo = new DataPropertyInfo(propertyRealName,DataSlicePropertyType.BYTE);
+                    break;
+                case "DECIMAL" :
+                    currentDataPropertyInfo = new DataPropertyInfo(propertyRealName,DataSlicePropertyType.DECIMAL);
+                    break;
+                case "BINARY" :
+                    currentDataPropertyInfo = new DataPropertyInfo(propertyRealName,DataSlicePropertyType.BINARY);
+                    break;
+                case "GEOMETRY" :
+                    currentDataPropertyInfo = new DataPropertyInfo(propertyRealName,DataSlicePropertyType.GEOMETRY);
+                    break;
+                case "UUID" :
+                    currentDataPropertyInfo = new DataPropertyInfo(propertyRealName,DataSlicePropertyType.UUID);
+                    break;
+            }
+            if(currentDataPropertyInfo != null){
+                if(!kindDataPropertiesMap.containsKey(KindName)){
+                    kindDataPropertiesMap.put(KindName,new ArrayList<>());
+                }
+                kindDataPropertiesMap.get(KindName).add(currentDataPropertyInfo);
+            }
+        }
     }
 }

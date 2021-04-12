@@ -1,0 +1,7 @@
+ConceptionKind.RoadWeatherRecords
+    Attribute.stationName    STRING
+    Attribute.stationLocation    STRING
+    Attribute.dateTime    DATE
+    Attribute.RecordId    STRING
+    Attribute.RoadSurfaceTemperature    DOUBLE
+    Attribute.AirTemperature    DOUBLE

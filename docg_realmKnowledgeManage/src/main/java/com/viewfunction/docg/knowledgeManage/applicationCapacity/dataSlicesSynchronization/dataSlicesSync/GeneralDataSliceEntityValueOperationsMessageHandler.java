@@ -43,10 +43,10 @@ public class GeneralDataSliceEntityValueOperationsMessageHandler extends CommonO
     public GeneralDataSliceEntityValueOperationsMessageHandler(Map<Object,Object> commandContextDataMap){
         this.commandContextDataMap = commandContextDataMap;
         this.objectMapper = new ObjectMapper();
-        this.targetPayloadClassification = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.PayloadClassification") != null ?
-                ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.PayloadClassification").trim() : null;
-        this.targetPayloadType = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.PayloadType") != null ?
-                ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.PayloadType").trim() : null;
+        this.targetPayloadClassification = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.payloadClassification") != null ?
+                ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.payloadClassification").trim() : null;
+        this.targetPayloadType = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.payloadType") != null ?
+                ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.payloadType").trim() : null;
         this.SYNC_LISTENING_START_TIME_LONG_VALUE = ((Date)this.commandContextDataMap.get(DataSlicesSynchronizationApplication.SYNC_LISTENING_START_TIME)).getTime();
     }
 

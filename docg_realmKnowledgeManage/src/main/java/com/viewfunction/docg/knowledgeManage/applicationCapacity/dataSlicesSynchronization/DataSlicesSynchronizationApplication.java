@@ -1,5 +1,7 @@
 package com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization;
 
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.ComputeGridNotActiveException;
 import com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization.commandProcessor.DataSlicesSyncCommandProcessorFactory;
 import com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization.dataSlicesSync.DataSliceSyncUtil;
 import com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization.dataSlicesSync.GeneralDataSliceEntityValueOperationsMessageHandler;
@@ -25,6 +27,7 @@ public class DataSlicesSynchronizationApplication implements BaseApplication {
     private ExecutorService executorService;
     private Map<Object,Object> commandContextDataMap;
     private CommonObjectsMessageReceiver commonObjectsMessageReceiver;
+    private DataServiceInvoker dataServiceInvoker;
 
     @Override
     public boolean isDaemonApplication() {
@@ -33,9 +36,12 @@ public class DataSlicesSynchronizationApplication implements BaseApplication {
 
     @Override
     public void executeDaemonLogic() {
-        //Batch load data into data slices by per defined rules
-        DataSliceSyncUtil.batchSyncPerDefinedDataSlices();
         this.commandContextDataMap.put(SYNC_LISTENING_START_TIME,new Date());
+        String launchSyncAtStartupFlag = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.launchSyncAtStartup");
+        if(Boolean.parseBoolean(launchSyncAtStartupFlag)){
+            //Batch load data into data slices by per defined rules
+            DataSliceSyncUtil.batchSyncPerDefinedDataSlices(dataServiceInvoker);
+        }
         //Start real time data sync process
         GeneralDataSliceEntityValueOperationsMessageHandler generalDataSliceEntityValueOperationsMessageHandler = new GeneralDataSliceEntityValueOperationsMessageHandler(this.commandContextDataMap);
         try {
@@ -70,13 +76,30 @@ public class DataSlicesSynchronizationApplication implements BaseApplication {
     public boolean initApplication() {
         this.commandContextDataMap = new ConcurrentHashMap<>();
         this.commandContextDataMap.put(APPLICATION_START_TIME,new Date());
+        try {
+            this.dataServiceInvoker = DataServiceInvoker.getInvokerInstance();
+        } catch (ComputeGridNotActiveException e) {
+            e.printStackTrace();
+            return false;
+        }
         return true;
     }
 
     @Override
     public boolean shutdownApplication() {
+        if(commonObjectsMessageReceiver != null){
+            commonObjectsMessageReceiver.stopMessageReceive();
+        }
         if(executorService != null){
             executorService.shutdown();
+        }
+        if(dataServiceInvoker != null){
+            try {
+                dataServiceInvoker.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
         }
         return true;
     }
