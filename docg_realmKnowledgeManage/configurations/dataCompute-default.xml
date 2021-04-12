@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Ignite configuration with all defaults and enabled p2p deployment and enabled events.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util.xsd">
+    <bean abstract="true" id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration">
+        <!-- Set to true to enable distributed class loading for examples, default is false. -->
+        <property name="peerClassLoadingEnabled" value="false"/>
+        <property name="igniteInstanceName" value="docg-dataComputeUnit"/>
+
+        <!-- CIM Edge Compute node customer attributes. -->
+        <property name="userAttributes">
+            <map>
+                <entry key="UNIT_SCOPE" value="DOCG_DATA_COMPUTE_UNIT"/>
+                <entry key="UNIT_ROLE" value="SERVICE_UNIT"/>
+            </map>
+        </property>
+        <!-- Enable task execution events. -->
+        <!--
+        <property name="includeEventTypes">
+            <list>
+                <util:constant static-field="org.apache.ignite.events.EventType.EVT_TASK_STARTED"/>
+                <util:constant static-field="org.apache.ignite.events.EventType.EVT_TASK_FINISHED"/>
+                <util:constant static-field="org.apache.ignite.events.EventType.EVT_TASK_FAILED"/>
+                <util:constant static-field="org.apache.ignite.events.EventType.EVT_TASK_TIMEDOUT"/>
+                <util:constant static-field="org.apache.ignite.events.EventType.EVT_TASK_SESSION_ATTR_SET"/>
+                <util:constant static-field="org.apache.ignite.events.EventType.EVT_TASK_REDUCED"/>
+                <util:constant static-field="org.apache.ignite.events.EventType.EVT_CACHE_OBJECT_PUT"/>
+                <util:constant static-field="org.apache.ignite.events.EventType.EVT_CACHE_OBJECT_READ"/>
+                <util:constant static-field="org.apache.ignite.events.EventType.EVT_CACHE_OBJECT_REMOVED"/>
+            </list>
+        </property>
+        -->
+        <!-- Explicitly configure TCP discovery SPI to provide list of initial nodes. -->
+        <!-- For auto discover distributed nodes without configuration,below section should be deleted-->
+        <property name="discoverySpi">
+            <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
+                <property name="ipFinder">
+                    <!--
+                        Ignite provides several options for automatic discovery that can be used
+                        instead os static IP based discovery. For information on all options refer
+                        to our documentation: http://apacheignite.readme.io/docs/cluster-config
+                    -->
+                    <!-- Uncomment static IP finder to enable static-based discovery of initial nodes. -->
+                    <!--<bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder">-->
+                    <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.multicast.TcpDiscoveryMulticastIpFinder">
+                        <property name="addresses">
+                            <list>
+                                <!-- In distributed environment, replace with actual host IP address. -->
+                                <value>127.0.0.1:47500..47509</value>
+                            </list>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+
+        <property name="communicationSpi">
+            <bean class="org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi">
+                <property name="messageQueueLimit" value="1024"/>
+                <!--Managing slow clients-->
+                <property name="slowClientQueueLimit" value="2000"/>
+            </bean>
+        </property>
+
+        <!--By default, Ignite nodes consume up to 20% of the RAM available locally, and in most cases this is the only
+        parameter you might need to change. To do this, change the size of the default memory region-->
+        <property name="dataStorageConfiguration">
+            <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
+                <!-- Redefining the default region's settings -->
+                <property name="defaultDataRegionConfiguration">
+                    <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
+                        <property name="name" value="Default_DataStore_Region"/>
+                        <!-- Setting the size of the default region to 5GB. -->
+                        <property name="maxSize" value="#{10L * 1024 * 1024 * 1024}"/>
+                        <!-- When persistence is enabled, data and indexes are stored both in memory and on disk across all the cluster nodes. -->
+                        <property name="persistenceEnabled" value="false"/>
+                    </bean>
+                </property>
+                <!-- When persistence is enabled,use below configuration to set the data store location. -->
+                <!--
+                <property name="storagePath" value="/home/wangychu/Desktop/runtime/dataStoreData/db"/>
+                <property name="walPath" value="/home/wangychu/Desktop/runtime/dataStoreData/db/wal"/>
+                <property name="walArchivePath" value="/home/wangychu/Desktop/runtime/dataStoreData/db/wal/archive"/>
+                -->
+            </bean>
+        </property>
+    </bean>
+</beans>
