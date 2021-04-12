@@ -1,6 +1,7 @@
 package com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization.dataSlicesSync;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlicePropertyType;
@@ -17,7 +18,17 @@ import java.util.*;
 
 public class DataSliceSyncUtil {
 
-    public static void syncGeospatialRegionData(DataServiceInvoker dataServiceInvoker){}
+    public static void syncGeospatialRegionData(DataServiceInvoker dataServiceInvoker){
+        //DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleContinentEntityClass);
+        DataSlice targetContinentDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleContinentEntityClass);
+        DataSlice targetCountryRegionDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleCountryRegionEntityClass);
+        DataSlice targetProvinceDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleProvinceEntityClass);
+        DataSlice targetPrefectureDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScalePrefectureEntityClass);
+        DataSlice targetCountyDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleCountyEntityClass);
+        DataSlice targetTownshipDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleTownshipEntityClass);
+        DataSlice targetVillageDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleVillageEntityClass);
+
+    }
 
     public static void batchSyncPerDefinedDataSlices(DataServiceInvoker dataServiceInvoker) {
         String dataSliceGroupName = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.dataSliceGroup");
