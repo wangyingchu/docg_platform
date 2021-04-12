@@ -37,6 +37,11 @@ public class DataSlicesSynchronizationApplication implements BaseApplication {
     @Override
     public void executeDaemonLogic() {
         this.commandContextDataMap.put(SYNC_LISTENING_START_TIME,new Date());
+        String syncGeospatialRegionDataFlag = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.syncGeospatialRegionData");
+        if(Boolean.parseBoolean(syncGeospatialRegionDataFlag)){
+            DataSliceSyncUtil.syncGeospatialRegionData(dataServiceInvoker);
+        }
+
         String launchSyncAtStartupFlag = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.launchSyncAtStartup");
         if(Boolean.parseBoolean(launchSyncAtStartupFlag)){
             //Batch load data into data slices by per defined rules

@@ -17,8 +17,9 @@ import java.util.*;
 
 public class DataSliceSyncUtil {
 
+    public static void syncGeospatialRegionData(DataServiceInvoker dataServiceInvoker){}
+
     public static void batchSyncPerDefinedDataSlices(DataServiceInvoker dataServiceInvoker) {
-        String syncGeospatialRegionDataFlag = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.syncGeospatialRegionData");
         String dataSliceGroupName = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.dataSliceGroup");
         String dataSyncPerLoadResultNumber = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.dataSyncPerLoadResultNumber");
         String degreeOfParallelismNumber = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.degreeOfParallelism");
@@ -31,49 +32,48 @@ public class DataSliceSyncUtil {
         String lastRelationKindName = null;
         String currentHandleType = "ConceptionKind";
 
-        if(Boolean.parseBoolean(syncGeospatialRegionDataFlag)){
-            File file = new File("DataSlicesSyncKindList");
-            BufferedReader reader = null;
-            try {
-                reader = new BufferedReader(new FileReader(file));
-                String tempStr;
-                while ((tempStr = reader.readLine()) != null) {
-                    String currentLine = tempStr.trim();
-                    if(currentLine.startsWith("ConceptionKind.")){
-                        //handle ConceptionKind define
-                        currentHandleType = "ConceptionKind";
-                        String currentConceptionKindName = currentLine.replace("ConceptionKind.","");
-                        lastConceptionKindName = currentConceptionKindName;
-                    }else if(currentLine.startsWith("RelationKind.")){
-                        //handle ConceptionKind define
-                        currentHandleType = "RelationKind";
-                        String currentRelationKindName = currentLine.replace("RelationKind.","");
-                        lastRelationKindName = currentRelationKindName;
-                    }else{
-                        String[] propertyDefineArray = currentLine.split("    ");
-                        String propertyName = propertyDefineArray[0];
-                        String propertyType = propertyDefineArray[1];
-                        if(currentHandleType.equals("ConceptionKind")){
-                            initKindPropertyDefine(conceptionKindDataPropertiesMap,lastConceptionKindName,propertyName,propertyType);
-                        }
-                        if(currentHandleType.equals("RelationKind")){
-                            initKindPropertyDefine(relationKindDataPropertiesMap,lastRelationKindName,propertyName,propertyType);
-                        }
+        File file = new File("DataSlicesSyncKindList");
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String tempStr;
+            while ((tempStr = reader.readLine()) != null) {
+                String currentLine = tempStr.trim();
+                if(currentLine.startsWith("ConceptionKind.")){
+                    //handle ConceptionKind define
+                    currentHandleType = "ConceptionKind";
+                    String currentConceptionKindName = currentLine.replace("ConceptionKind.","");
+                    lastConceptionKindName = currentConceptionKindName;
+                }else if(currentLine.startsWith("RelationKind.")){
+                    //handle ConceptionKind define
+                    currentHandleType = "RelationKind";
+                    String currentRelationKindName = currentLine.replace("RelationKind.","");
+                    lastRelationKindName = currentRelationKindName;
+                }else{
+                    String[] propertyDefineArray = currentLine.split("    ");
+                    String propertyName = propertyDefineArray[0];
+                    String propertyType = propertyDefineArray[1];
+                    if(currentHandleType.equals("ConceptionKind")){
+                        initKindPropertyDefine(conceptionKindDataPropertiesMap,lastConceptionKindName,propertyName,propertyType);
                     }
-                }
-                reader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
+                    if(currentHandleType.equals("RelationKind")){
+                        initKindPropertyDefine(relationKindDataPropertiesMap,lastRelationKindName,propertyName,propertyType);
                     }
                 }
             }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
         }
+
         //handle conceptionKinds data
         Set<String> conceptionKindsSet = conceptionKindDataPropertiesMap.keySet();
         try {
@@ -113,10 +113,6 @@ public class DataSliceSyncUtil {
             e.printStackTrace();
         }
         //handle relationKinds data
-
-
-
-
     }
 
     private static void initKindPropertyDefine(Map<String,List<DataPropertyInfo>> kindDataPropertiesMap,String KindName,String propertyName,String propertyType){
