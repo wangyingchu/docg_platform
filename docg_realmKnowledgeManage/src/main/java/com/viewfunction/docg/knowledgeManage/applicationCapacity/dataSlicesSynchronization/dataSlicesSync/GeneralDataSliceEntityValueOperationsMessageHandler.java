@@ -104,16 +104,7 @@ public class GeneralDataSliceEntityValueOperationsMessageHandler extends CommonO
                                     doRemoveRelationEntityProperty(targetEntityKind,targetEntityUID,generateEntityProperties(node));
                                     break;
                             }
-
-
-
-
-
-
                         }
-
-
-
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -127,7 +118,7 @@ public class GeneralDataSliceEntityValueOperationsMessageHandler extends CommonO
     private Map<String,Object> generateEntityProperties(ObjectNode node) throws IOException {
         Map<String,Object> targetPropertiesMap = new HashMap<>();
         Iterator<String> fieldNames = node.fieldNames();
-        System.out.println("-----------------------------");
+        //System.out.println("-----------------------------");
         while(fieldNames.hasNext()){
             String currentField = fieldNames.next();
             if(!currentField.equals(EntityUIDProperty) && !currentField.equals(EntityKindProperty) &&

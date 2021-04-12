@@ -1,6 +1,7 @@
 package com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization;
 
 import com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization.commandProcessor.DataSlicesSyncCommandProcessorFactory;
+import com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization.dataSlicesSync.DataSliceSyncUtil;
 import com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization.dataSlicesSync.GeneralDataSliceEntityValueOperationsMessageHandler;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.exception.ConfigurationErrorException;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.exception.MessageHandleErrorException;
@@ -33,8 +34,9 @@ public class DataSlicesSynchronizationApplication implements BaseApplication {
     @Override
     public void executeDaemonLogic() {
         //Batch load data into data slices by per defined rules
+        DataSliceSyncUtil.batchSyncPerDefinedDataSlices();
         this.commandContextDataMap.put(SYNC_LISTENING_START_TIME,new Date());
-        //
+        //Start real time data sync process
         GeneralDataSliceEntityValueOperationsMessageHandler generalDataSliceEntityValueOperationsMessageHandler = new GeneralDataSliceEntityValueOperationsMessageHandler(this.commandContextDataMap);
         try {
             commonObjectsMessageReceiver = new CommonObjectsMessageReceiver(generalDataSliceEntityValueOperationsMessageHandler);
