@@ -1,6 +1,9 @@
 package com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization.dataSlicesSync;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeKind;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JAttributeKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
@@ -19,15 +22,127 @@ import java.util.*;
 public class DataSliceSyncUtil {
 
     public static void syncGeospatialRegionData(DataServiceInvoker dataServiceInvoker){
-        //DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleContinentEntityClass);
-        DataSlice targetContinentDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleContinentEntityClass);
-        DataSlice targetCountryRegionDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleCountryRegionEntityClass);
-        DataSlice targetProvinceDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleProvinceEntityClass);
-        DataSlice targetPrefectureDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScalePrefectureEntityClass);
-        DataSlice targetCountyDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleCountyEntityClass);
-        DataSlice targetTownshipDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleTownshipEntityClass);
-        DataSlice targetVillageDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleVillageEntityClass);
+        String dataSliceGroupName = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.dataSliceGroup");
+        String dataSyncPerLoadResultNumber = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.dataSyncPerLoadResultNumber");
+        String degreeOfParallelismNumber = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.degreeOfParallelism");
+        int dataSyncPerLoadResultNum = dataSyncPerLoadResultNumber != null ? Integer.parseInt(dataSyncPerLoadResultNumber) : 100000000;
+        int degreeOfParallelismNum = degreeOfParallelismNumber != null ? Integer.parseInt(degreeOfParallelismNumber) : 5;
+        List<String> pkList = new ArrayList<>();
+        pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
+        try {
+            DataSlice targetCountryRegionDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleCountryRegionEntityClass);
+            Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+            dataSlicePropertyMap.put("Alpha_2Code",DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put("Alpha_3Code",DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put("NumericCode",DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put("ISO3166_2Code",DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant.GeospatialEnglishNameProperty,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant.GeospatialChineseNameProperty,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put("belongedContinent",DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put("capitalChineseName",DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put("capitalEnglishName",DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant.GeospatialCodeProperty,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant.GeospatialRegionProperty,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant.GeospatialScaleGradeProperty, DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialGeometryType, DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialGlobalCRSAID, DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryContent, DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID, DataSlicePropertyType.STRING);
+            if (targetCountryRegionDataSlice == null) {
+                dataServiceInvoker.createGridDataSlice(RealmConstant.GeospatialScaleCountryRegionEntityClass, dataSliceGroupName, dataSlicePropertyMap, pkList);
+            }
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setResultNumber(dataSyncPerLoadResultNum);
+            List<AttributeKind> containsAttributesKinds = buildAttributeKindList(dataSlicePropertyMap);
+            CoreRealmOperationUtil.loadInnerDataKindEntitiesToDataSlice(dataServiceInvoker,RealmConstant.GeospatialScaleCountryRegionEntityClass,containsAttributesKinds,
+                    queryParameters,RealmConstant.GeospatialScaleCountryRegionEntityClass,true,degreeOfParallelismNum);
 
+            DataSlice targetProvinceDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleProvinceEntityClass);
+            dataSlicePropertyMap = new HashMap<>();
+            dataSlicePropertyMap.put("ISO3166_1Alpha_2Code",DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put("ISO3166_2SubDivisionCode",DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put("ISO3166_2SubdivisionName",DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put("ISO3166_2SubdivisionCategory",DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant.GeospatialCodeProperty,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant.GeospatialRegionProperty,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant.GeospatialScaleGradeProperty, DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put("DivisionCategory_EN",DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put("DivisionCategory_CH",DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant.GeospatialEnglishNameProperty,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant.GeospatialChineseNameProperty,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryPOI,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialGlobalCRSAID,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialGeometryType,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryContent,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put("ChinaDivisionCode",DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialCLGeometryPOI,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialCountryCRSAID,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialCLGeometryContent,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID, DataSlicePropertyType.STRING);
+            if (targetProvinceDataSlice == null) {
+                dataServiceInvoker.createGridDataSlice(RealmConstant.GeospatialScaleProvinceEntityClass, dataSliceGroupName, dataSlicePropertyMap, pkList);
+            }
+            containsAttributesKinds = buildAttributeKindList(dataSlicePropertyMap);
+            CoreRealmOperationUtil.loadInnerDataKindEntitiesToDataSlice(dataServiceInvoker,RealmConstant.GeospatialScaleProvinceEntityClass,containsAttributesKinds,
+                    queryParameters,RealmConstant.GeospatialScaleProvinceEntityClass,true,degreeOfParallelismNum);
+
+            DataSlice targetPrefectureDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScalePrefectureEntityClass);
+            dataSlicePropertyMap = new HashMap<>();
+            dataSlicePropertyMap.put("ChinaParentDivisionCode",DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put("ChinaDivisionCode",DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put("ChinaProvinceName",DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant.GeospatialCodeProperty,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant.GeospatialRegionProperty,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialGeometryType,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialGlobalCRSAID,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryContent,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialCountryCRSAID,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialCLGeometryContent,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryPOI,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialCLGeometryPOI,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryBorder,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialCLGeometryBorder,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant.GeospatialScaleGradeProperty,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant.GeospatialChineseNameProperty,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID, DataSlicePropertyType.STRING);
+            if (targetPrefectureDataSlice == null) {
+                dataServiceInvoker.createGridDataSlice(RealmConstant.GeospatialScalePrefectureEntityClass, dataSliceGroupName, dataSlicePropertyMap, pkList);
+            }
+            containsAttributesKinds = buildAttributeKindList(dataSlicePropertyMap);
+            CoreRealmOperationUtil.loadInnerDataKindEntitiesToDataSlice(dataServiceInvoker,RealmConstant.GeospatialScalePrefectureEntityClass,containsAttributesKinds,
+                    queryParameters,RealmConstant.GeospatialScalePrefectureEntityClass,true,degreeOfParallelismNum);
+
+            DataSlice targetCountyDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleCountyEntityClass);
+            dataSlicePropertyMap.put("ChinaPrefectureName",DataSlicePropertyType.STRING);
+            if (targetCountyDataSlice == null) {
+                dataServiceInvoker.createGridDataSlice(RealmConstant.GeospatialScaleCountyEntityClass, dataSliceGroupName, dataSlicePropertyMap, pkList);
+            }
+            containsAttributesKinds = buildAttributeKindList(dataSlicePropertyMap);
+            CoreRealmOperationUtil.loadInnerDataKindEntitiesToDataSlice(dataServiceInvoker,RealmConstant.GeospatialScaleCountyEntityClass,containsAttributesKinds,
+                    queryParameters,RealmConstant.GeospatialScaleCountyEntityClass,true,degreeOfParallelismNum);
+
+            DataSlice targetTownshipDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleTownshipEntityClass);
+            dataSlicePropertyMap.put("ChinaCountyName",DataSlicePropertyType.STRING);
+            if (targetTownshipDataSlice == null) {
+                dataServiceInvoker.createGridDataSlice(RealmConstant.GeospatialScaleTownshipEntityClass, dataSliceGroupName, dataSlicePropertyMap, pkList);
+            }
+            containsAttributesKinds = buildAttributeKindList(dataSlicePropertyMap);
+            CoreRealmOperationUtil.loadInnerDataKindEntitiesToDataSlice(dataServiceInvoker,RealmConstant.GeospatialScaleTownshipEntityClass,containsAttributesKinds,
+                    queryParameters,RealmConstant.GeospatialScaleTownshipEntityClass,true,degreeOfParallelismNum);
+
+            DataSlice targetVillageDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleVillageEntityClass);
+            dataSlicePropertyMap.put("ChinaTownshipName",DataSlicePropertyType.STRING);
+            if (targetVillageDataSlice == null) {
+                dataServiceInvoker.createGridDataSlice(RealmConstant.GeospatialScaleVillageEntityClass, dataSliceGroupName, dataSlicePropertyMap, pkList);
+            }
+            containsAttributesKinds = buildAttributeKindList(dataSlicePropertyMap);
+            CoreRealmOperationUtil.loadInnerDataKindEntitiesToDataSlice(dataServiceInvoker,RealmConstant.GeospatialScaleVillageEntityClass,containsAttributesKinds,
+                    queryParameters,RealmConstant.GeospatialScaleVillageEntityClass,true,degreeOfParallelismNum);
+        } catch (DataSliceExistException e) {
+            e.printStackTrace();
+        } catch (DataSlicePropertiesStructureException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void batchSyncPerDefinedDataSlices(DataServiceInvoker dataServiceInvoker) {
@@ -178,5 +293,60 @@ public class DataSliceSyncUtil {
                 kindDataPropertiesMap.get(KindName).add(currentDataPropertyInfo);
             }
         }
+    }
+
+    private static List<AttributeKind> buildAttributeKindList(Map<String, DataSlicePropertyType> dataSlicePropertyMap){
+        List<AttributeKind> attributeKindList = new ArrayList<>();
+        for (Map.Entry<String, DataSlicePropertyType> entry : dataSlicePropertyMap.entrySet()) {
+            String attributeKindName = entry.getKey();
+            if(!attributeKindName.equals(CoreRealmOperationUtil.RealmGlobalUID)){
+                DataSlicePropertyType mapValue = entry.getValue();
+                AttributeDataType attributeDataType = null;
+                switch(mapValue){
+                    case BOOLEAN:
+                        attributeDataType = AttributeDataType.BOOLEAN;
+                        break;
+                    case INT:
+                        attributeDataType = AttributeDataType.INT;
+                        break;
+                    case SHORT:
+                        attributeDataType = AttributeDataType.SHORT;
+                        break;
+                    case LONG:
+                        attributeDataType = AttributeDataType.LONG;
+                        break;
+                    case FLOAT:
+                        attributeDataType = AttributeDataType.FLOAT;
+                        break;
+                    case DOUBLE:
+                        attributeDataType = AttributeDataType.DOUBLE;
+                        break;
+                    case DATE:
+                        attributeDataType = AttributeDataType.DATE;
+                        break;
+                    case STRING:
+                        attributeDataType = AttributeDataType.STRING;
+                        break;
+                    case BYTE:
+                        attributeDataType = AttributeDataType.BYTE;
+                        break;
+                    case DECIMAL:
+                        attributeDataType = AttributeDataType.DECIMAL;
+                        break;
+                    case BINARY:
+                        attributeDataType = AttributeDataType.BINARY;
+                        break;
+                    case GEOMETRY:
+                        attributeDataType = AttributeDataType.STRING;
+                        break;
+                    case UUID:
+                        attributeDataType = AttributeDataType.STRING;
+                        break;
+                }
+                AttributeKind currentAttributeKind = new Neo4JAttributeKindImpl(null,attributeKindName,"",attributeDataType,null);
+                attributeKindList.add(currentAttributeKind);
+            }
+        }
+        return attributeKindList;
     }
 }

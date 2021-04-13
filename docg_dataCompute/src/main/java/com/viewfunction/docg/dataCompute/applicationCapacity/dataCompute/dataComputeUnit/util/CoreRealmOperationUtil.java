@@ -3,8 +3,12 @@ package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCo
 import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityValueTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonConceptionEntitiesAttributesRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
@@ -208,6 +212,67 @@ public class CoreRealmOperationUtil {
 
         try {
             ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributeResult =  targetConceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeNamesList,queryParameters);
+            List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
+            totalResultConceptionEntitiesCount = conceptionEntityValueList.size();
+
+            int singlePartitionSize = (conceptionEntityValueList.size()/degreeOfParallelism)+1;
+            List<List<ConceptionEntityValue>> rsList = Lists.partition(conceptionEntityValueList, singlePartitionSize);
+
+            if(useConceptionEntityUIDAsPK){
+                attributeNamesList.add(RealmGlobalUID);
+            }
+
+            ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+            for(int i = 0;i < rsList.size(); i++){
+                List<ConceptionEntityValue> currentConceptionEntityValueList = rsList.get(i);
+                DataSliceInsertDataThread dataSliceInsertDataThread = new DataSliceInsertDataThread(i,dataSliceName,attributeNamesList,currentConceptionEntityValueList,useConceptionEntityUIDAsPK);
+                executor.execute(dataSliceInsertDataThread);
+            }
+            executor.shutdown();
+            executor.awaitTermination(Long.MAX_VALUE,TimeUnit.NANOSECONDS);
+        } catch (CoreRealmServiceEntityExploreException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+        DataSliceMetaInfo dataSliceMetaInfo = targetDataSlice.getDataSliceMetaInfo();
+        int successDataCount = dataSliceMetaInfo.getPrimaryDataCount() + dataSliceMetaInfo.getBackupDataCount();
+        dataSliceOperationResult.setSuccessItemsCount(successDataCount);
+        dataSliceOperationResult.setFailItemsCount(totalResultConceptionEntitiesCount-successDataCount);
+
+        dataSliceOperationResult.finishOperation();
+        dataSliceOperationResult.setOperationSummary("Load ConceptionKind Entities To DataSlice Operation");
+        return dataSliceOperationResult;
+    }
+
+    public static DataSliceOperationResult loadInnerDataKindEntitiesToDataSlice(DataServiceInvoker dataServiceInvoker,String innerDataKindName, List<AttributeKind> containsAttributesKinds,QueryParameters queryParameters, String dataSliceName,boolean useConceptionEntityUIDAsPK,int degreeOfParallelism) {
+        DataSliceOperationResult dataSliceOperationResult = new DataSliceOperationResult();
+        int totalResultConceptionEntitiesCount = 0;
+        try {
+            List<String> attributeNamesList = new ArrayList<>();
+            for(AttributeKind currentAttributeKind : containsAttributesKinds){
+                attributeNamesList.add(currentAttributeKind.getAttributeKindName());
+            }
+
+            CommonConceptionEntitiesAttributesRetrieveResultImpl commonConceptionEntitiesAttributesRetrieveResultImpl
+                    = new CommonConceptionEntitiesAttributesRetrieveResultImpl();
+            commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+            GraphOperationExecutor workingGraphOperationExecutor = new GraphOperationExecutor();
+            try {
+                String queryCql = CypherBuilder.matchAttributesWithQueryParameters(innerDataKindName,queryParameters,attributeNamesList);
+                GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer =
+                        new GetListConceptionEntityValueTransformer(attributeNamesList,containsAttributesKinds);
+                Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
+                if(resEntityRes != null){
+                    List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
+                    commonConceptionEntitiesAttributesRetrieveResultImpl.addConceptionEntitiesAttributes(resultEntitiesValues);
+                    commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultEntitiesValues.size());
+                }
+            }finally {
+                workingGraphOperationExecutor.close();
+            }
+            commonConceptionEntitiesAttributesRetrieveResultImpl.finishEntitiesRetrieving();
+            ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributeResult = commonConceptionEntitiesAttributesRetrieveResultImpl;
             List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
             totalResultConceptionEntitiesCount = conceptionEntityValueList.size();
 
