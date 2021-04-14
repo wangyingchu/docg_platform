@@ -216,7 +216,7 @@ public class DataSliceSyncUtil {
                     dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID, DataSlicePropertyType.STRING);
                     List<String> pkList = new ArrayList<>();
                     pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
-                    dataServiceInvoker.createGridDataSlice(currentConceptionKind, dataSliceGroupName, dataSlicePropertyMap, pkList);
+                    dataServiceInvoker.createGridDataSlice(currentConceptionKind, dataSliceGroupName+"_CONCEPTION", dataSlicePropertyMap, pkList);
                 }
             }
 
@@ -239,6 +239,47 @@ public class DataSliceSyncUtil {
             e.printStackTrace();
         }
         //handle relationKinds data
+        Set<String> relationKindsSet = relationKindDataPropertiesMap.keySet();
+        try {
+            for(String currentRelationKind : relationKindsSet){
+                DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(currentRelationKind);
+                if (targetDataSlice == null) {
+                    List<DataPropertyInfo> kindDataPropertyInfoList = relationKindDataPropertiesMap.get(currentRelationKind);
+                    Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+                    if(kindDataPropertyInfoList != null) {
+                        for (DataPropertyInfo currentDataPropertyInfo : kindDataPropertyInfoList) {
+                            dataSlicePropertyMap.put(currentDataPropertyInfo.getPropertyName(), currentDataPropertyInfo.getPropertyType());
+                        }
+                    }
+                    dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID, DataSlicePropertyType.STRING);
+                    dataSlicePropertyMap.put(CoreRealmOperationUtil.RelationFromEntityUID, DataSlicePropertyType.STRING);
+                    dataSlicePropertyMap.put(CoreRealmOperationUtil.RelationFromEntityType, DataSlicePropertyType.STRING);
+                    dataSlicePropertyMap.put(CoreRealmOperationUtil.RelationToEntityUID, DataSlicePropertyType.STRING);
+                    dataSlicePropertyMap.put(CoreRealmOperationUtil.RelationToEntityType, DataSlicePropertyType.STRING);
+                    List<String> pkList = new ArrayList<>();
+                    pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
+                    dataServiceInvoker.createGridDataSlice(currentRelationKind, dataSliceGroupName+"_RELATION", dataSlicePropertyMap, pkList);
+                }
+            }
+
+            for(String currentRelationKind : relationKindsSet){
+                List<DataPropertyInfo> kindDataPropertyInfoList = relationKindDataPropertiesMap.get(currentRelationKind);
+                List<String> relationKindPropertiesList = new ArrayList<>();
+                if(kindDataPropertyInfoList != null){
+                    for(DataPropertyInfo currentDataPropertyInfo : kindDataPropertyInfoList){
+                        relationKindPropertiesList.add(currentDataPropertyInfo.getPropertyName());
+                    }
+                }
+                QueryParameters queryParameters = new QueryParameters();
+                queryParameters.setResultNumber(dataSyncPerLoadResultNum);
+                CoreRealmOperationUtil.loadRelationKindEntitiesToDataSlice(dataServiceInvoker,currentRelationKind, relationKindPropertiesList,
+                        queryParameters, currentRelationKind, true, degreeOfParallelismNum);
+            }
+        } catch (DataSliceExistException e) {
+            e.printStackTrace();
+        } catch (DataSlicePropertiesStructureException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void initKindPropertyDefine(Map<String,List<DataPropertyInfo>> kindDataPropertiesMap,String KindName,String propertyName,String propertyType){

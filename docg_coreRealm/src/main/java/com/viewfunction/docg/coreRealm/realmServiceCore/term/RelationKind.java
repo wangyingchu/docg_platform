@@ -9,6 +9,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationAt
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaAttributeFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaConfigItemFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntitiesRetrieveResult;
 
@@ -89,4 +90,15 @@ public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttr
      * @return 实体对象操作返回结果
      */
     public EntitiesOperationResult purgeAllRelationEntities() throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 查询符合过滤条件的当前概念类型的关系实体对象,并根据输入的属性类型返回相应的属性值
+     *
+     * @param attributeNames List<String> 属性类型列表
+     * @param exploreParameters QueryParameters 查询过滤条件
+     *
+     * @return 关系实体属性查询结果集
+     */
+    public RelationEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNames(List<String> attributeNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException;
+
 }

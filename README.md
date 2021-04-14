@@ -793,7 +793,18 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @return 实体对象操作返回结果
      */
-    public EntitiesOperationResult purgeAllRelationEntities() throws CoreRealmServiceRuntimeException;   
+    public EntitiesOperationResult purgeAllRelationEntities() throws CoreRealmServiceRuntimeException;  
+
+    /**
+     * 查询符合过滤条件的当前关系类型的关系实体对象,并根据输入的属性类型返回相应的属性值
+     *
+     * @param attributeNames List<String> 属性类型列表
+     * @param exploreParameters QueryParameters 查询过滤条件
+     *
+     * @return 关系实体属性查询结果集
+     */
+    public RelationEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNames(List<String> attributeNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException;
+
 ```
 ###### ↳ AttributesViewKind
 ---
