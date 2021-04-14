@@ -803,7 +803,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @return 关系实体属性查询结果集
      */
-    public RelationEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNames(List<String> attributeNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException;
+    public RelationEntitiesAttributesRetrieveResult getEntityAttributesByAttributeNames(List<String> attributeNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException;
 
 ```
 ###### ↳ AttributesViewKind

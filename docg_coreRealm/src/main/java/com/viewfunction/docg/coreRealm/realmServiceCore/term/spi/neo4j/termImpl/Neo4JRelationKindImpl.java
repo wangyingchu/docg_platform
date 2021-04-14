@@ -9,14 +9,14 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListRelationEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListRelationEntityValueTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetLongFormatAggregatedReturnValueTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntitiesAttributesRetrieveResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonRelationEntitiesAttributesRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonRelationEntitiesRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntitiesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JRelationKind;
@@ -193,26 +193,35 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
     }
 
     @Override
-    public RelationEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNames(List<String> attributeNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException {
+    public RelationEntitiesAttributesRetrieveResult getEntityAttributesByAttributeNames(List<String> attributeNames, QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException {
+        if(attributeNames != null && attributeNames.size()>0){
+            CommonRelationEntitiesAttributesRetrieveResultImpl commonRelationEntitiesAttributesRetrieveResultImpl =
+                    new CommonRelationEntitiesAttributesRetrieveResultImpl();
+            commonRelationEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+            if(queryParameters == null){
+                queryParameters = new QueryParameters();
+            }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                queryParameters.setEntityKind(this.relationKindName);
+                queryParameters.setDistinctMode(true);
+                String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,
+                        null,null,true,queryParameters,null);
+                GetListRelationEntityValueTransformer getListRelationEntityValueTransformer =
+                        new GetListRelationEntityValueTransformer(this.relationKindName,attributeNames);
+                Object queryRes = workingGraphOperationExecutor.executeRead(getListRelationEntityValueTransformer,queryCql);
+                if(queryRes != null){
+                    List<RelationEntityValue> resultEntitiesValues = (List<RelationEntityValue>)queryRes;
+                    commonRelationEntitiesAttributesRetrieveResultImpl.addRelationEntitiesAttributes(resultEntitiesValues);
+                    commonRelationEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultEntitiesValues.size());
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            commonRelationEntitiesAttributesRetrieveResultImpl.finishEntitiesRetrieving();
+            return commonRelationEntitiesAttributesRetrieveResultImpl;
+        }
         return null;
     }
 

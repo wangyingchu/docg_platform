@@ -253,9 +253,7 @@ public class DataSliceSyncUtil {
                     }
                     dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID, DataSlicePropertyType.STRING);
                     dataSlicePropertyMap.put(CoreRealmOperationUtil.RelationFromEntityUID, DataSlicePropertyType.STRING);
-                    dataSlicePropertyMap.put(CoreRealmOperationUtil.RelationFromEntityType, DataSlicePropertyType.STRING);
                     dataSlicePropertyMap.put(CoreRealmOperationUtil.RelationToEntityUID, DataSlicePropertyType.STRING);
-                    dataSlicePropertyMap.put(CoreRealmOperationUtil.RelationToEntityType, DataSlicePropertyType.STRING);
                     List<String> pkList = new ArrayList<>();
                     pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
                     dataServiceInvoker.createGridDataSlice(currentRelationKind, dataSliceGroupName+"_RELATION", dataSlicePropertyMap, pkList);

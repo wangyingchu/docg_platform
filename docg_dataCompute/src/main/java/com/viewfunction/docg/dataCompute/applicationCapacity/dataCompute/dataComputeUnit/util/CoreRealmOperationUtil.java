@@ -30,9 +30,7 @@ public class CoreRealmOperationUtil {
 
     public final static String RealmGlobalUID = "RealmGlobalUID";
     public final static String RelationFromEntityUID = "RelationFromEntityUID";
-    public final static String RelationFromEntityType = "RelationFromEntityType";
     public final static String RelationToEntityUID = "RelationToEntityUID";
-    public final static String RelationToEntityType = "RelationToEntityType";
     public final static String defaultSliceGroup = "DefaultSliceGroup";
     private final static int defaultResultNumber = 100000000;
 

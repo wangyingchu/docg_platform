@@ -99,6 +99,6 @@ public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttr
      *
      * @return 关系实体属性查询结果集
      */
-    public RelationEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNames(List<String> attributeNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException;
+    public RelationEntitiesAttributesRetrieveResult getEntityAttributesByAttributeNames(List<String> attributeNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException;
 
 }
