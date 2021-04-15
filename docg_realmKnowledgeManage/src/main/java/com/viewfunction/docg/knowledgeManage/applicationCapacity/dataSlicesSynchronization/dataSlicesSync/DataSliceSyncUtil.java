@@ -280,7 +280,7 @@ public class DataSliceSyncUtil {
         }
     }
 
-    private static void initKindPropertyDefine(Map<String,List<DataPropertyInfo>> kindDataPropertiesMap,String KindName,String propertyName,String propertyType){
+    public static void initKindPropertyDefine(Map<String,List<DataPropertyInfo>> kindDataPropertiesMap,String KindName,String propertyName,String propertyType){
         if(propertyName.startsWith("Attribute.")){
             String propertyRealName = propertyName.replace("Attribute.","");
             DataPropertyInfo currentDataPropertyInfo = null;
@@ -332,6 +332,12 @@ public class DataSliceSyncUtil {
                 kindDataPropertiesMap.get(KindName).add(currentDataPropertyInfo);
             }
         }
+    }
+
+    public static void deleteDataFromSlice(DataServiceInvoker dataServiceInvoker,String dataSliceName,String dataPK){
+
+
+
     }
 
     private static List<AttributeKind> buildAttributeKindList(Map<String, DataSlicePropertyType> dataSlicePropertyMap){

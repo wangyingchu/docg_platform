@@ -48,7 +48,7 @@ public class DataSlicesSynchronizationApplication implements BaseApplication {
             DataSliceSyncUtil.batchSyncPerDefinedDataSlices(dataServiceInvoker);
         }
         //Start real time data sync process
-        GeneralDataSliceEntityValueOperationsMessageHandler generalDataSliceEntityValueOperationsMessageHandler = new GeneralDataSliceEntityValueOperationsMessageHandler(this.commandContextDataMap);
+        GeneralDataSliceEntityValueOperationsMessageHandler generalDataSliceEntityValueOperationsMessageHandler = new GeneralDataSliceEntityValueOperationsMessageHandler(this.commandContextDataMap,this.dataServiceInvoker);
         try {
             commonObjectsMessageReceiver = new CommonObjectsMessageReceiver(generalDataSliceEntityValueOperationsMessageHandler);
         } catch (ConfigurationErrorException e) {

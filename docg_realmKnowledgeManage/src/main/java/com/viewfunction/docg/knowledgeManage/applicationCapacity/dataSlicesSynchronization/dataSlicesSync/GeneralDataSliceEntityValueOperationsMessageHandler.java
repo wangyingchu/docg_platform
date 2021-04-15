@@ -3,6 +3,7 @@ package com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSync
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
 import com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization.DataSlicesSynchronizationApplication;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.CommonObjectsPayloadContent;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.CommonObjectsPayloadMetaInfo;
@@ -11,11 +12,11 @@ import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.k
 import com.viewfunction.docg.knowledgeManage.consoleApplication.util.ApplicationLauncherUtil;
 import org.apache.commons.codec.binary.Base64;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public class GeneralDataSliceEntityValueOperationsMessageHandler extends CommonObjectsMessageHandler {
 
@@ -39,8 +40,11 @@ public class GeneralDataSliceEntityValueOperationsMessageHandler extends CommonO
     private String targetPayloadClassification;
     private String targetPayloadType;
     private long SYNC_LISTENING_START_TIME_LONG_VALUE;
+    private Map<String, List<DataPropertyInfo>> conceptionKindDataPropertiesMap;
+    private Map<String,List<DataPropertyInfo>> relationKindDataPropertiesMap;
+    private DataServiceInvoker dataServiceInvoker;
 
-    public GeneralDataSliceEntityValueOperationsMessageHandler(Map<Object,Object> commandContextDataMap){
+    public GeneralDataSliceEntityValueOperationsMessageHandler(Map<Object,Object> commandContextDataMap,DataServiceInvoker dataServiceInvoker){
         this.commandContextDataMap = commandContextDataMap;
         this.objectMapper = new ObjectMapper();
         this.targetPayloadClassification = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.payloadClassification") != null ?
@@ -48,6 +52,8 @@ public class GeneralDataSliceEntityValueOperationsMessageHandler extends CommonO
         this.targetPayloadType = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.payloadType") != null ?
                 ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.payloadType").trim() : null;
         this.SYNC_LISTENING_START_TIME_LONG_VALUE = ((Date)this.commandContextDataMap.get(DataSlicesSynchronizationApplication.SYNC_LISTENING_START_TIME)).getTime();
+        this.dataServiceInvoker = dataServiceInvoker;
+        setUpEntityKindsMetaInfo();
     }
 
     @Override
@@ -152,11 +158,15 @@ public class GeneralDataSliceEntityValueOperationsMessageHandler extends CommonO
     }
 
     private void doDeleteConceptionEntity(String targetEntityKind,String targetEntityUID){
-        System.out.println("doDeleteConceptionEntity");
+        if(conceptionKindDataPropertiesMap.containsKey(targetEntityKind)){
+            DataSliceSyncUtil.deleteDataFromSlice(this.dataServiceInvoker,targetEntityKind,targetEntityUID);
+        }
     }
 
     private void doDeleteRelationEntity(String targetEntityKind,String targetEntityUID){
-        System.out.println("doDeleteRelationEntity");
+        if(relationKindDataPropertiesMap.containsKey(targetEntityKind)){
+            DataSliceSyncUtil.deleteDataFromSlice(this.dataServiceInvoker,targetEntityKind,targetEntityUID);
+        }
     }
 
     private void doCreateConceptionEntity(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){
@@ -181,5 +191,55 @@ public class GeneralDataSliceEntityValueOperationsMessageHandler extends CommonO
 
     private void doRemoveRelationEntityProperty(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){
         System.out.println("doRemoveRelationEntityProperty");
+    }
+
+    private void setUpEntityKindsMetaInfo(){
+        conceptionKindDataPropertiesMap = new HashMap<>();
+        relationKindDataPropertiesMap = new HashMap<>();
+        String lastConceptionKindName = null;
+        String lastRelationKindName = null;
+        String currentHandleType = "ConceptionKind";
+
+        File file = new File("DataSlicesSyncKindList");
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String tempStr;
+            while ((tempStr = reader.readLine()) != null) {
+                String currentLine = tempStr.trim();
+                if(currentLine.startsWith("ConceptionKind.")){
+                    //handle ConceptionKind define
+                    currentHandleType = "ConceptionKind";
+                    String currentConceptionKindName = currentLine.replace("ConceptionKind.","");
+                    lastConceptionKindName = currentConceptionKindName;
+                }else if(currentLine.startsWith("RelationKind.")){
+                    //handle ConceptionKind define
+                    currentHandleType = "RelationKind";
+                    String currentRelationKindName = currentLine.replace("RelationKind.","");
+                    lastRelationKindName = currentRelationKindName;
+                }else{
+                    String[] propertyDefineArray = currentLine.split("    ");
+                    String propertyName = propertyDefineArray[0];
+                    String propertyType = propertyDefineArray[1];
+                    if(currentHandleType.equals("ConceptionKind")){
+                        DataSliceSyncUtil.initKindPropertyDefine(conceptionKindDataPropertiesMap,lastConceptionKindName,propertyName,propertyType);
+                    }
+                    if(currentHandleType.equals("RelationKind")){
+                        DataSliceSyncUtil.initKindPropertyDefine(relationKindDataPropertiesMap,lastRelationKindName,propertyName,propertyType);
+                    }
+                }
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
     }
 }
