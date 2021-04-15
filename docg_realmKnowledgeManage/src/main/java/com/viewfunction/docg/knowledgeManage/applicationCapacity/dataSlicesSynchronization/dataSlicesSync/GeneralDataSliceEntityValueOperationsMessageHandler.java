@@ -170,27 +170,35 @@ public class GeneralDataSliceEntityValueOperationsMessageHandler extends CommonO
     }
 
     private void doCreateConceptionEntity(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){
-        System.out.println("doCreateConceptionEntity");
+        if(conceptionKindDataPropertiesMap.containsKey(targetEntityKind)){
+            DataSliceSyncUtil.createDataInSlice(this.dataServiceInvoker,targetEntityKind,targetEntityUID,entityProperties,conceptionKindDataPropertiesMap,"_CONCEPTION");
+        }
     }
 
     private void doCreateRelationEntity(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){
-        System.out.println("doCreateRelationEntity");
+        if(relationKindDataPropertiesMap.containsKey(targetEntityKind)){
+            DataSliceSyncUtil.createDataInSlice(this.dataServiceInvoker,targetEntityKind,targetEntityUID,entityProperties,relationKindDataPropertiesMap,"_RELATION");
+        }
     }
 
     private void doUpdateConceptionEntityProperty(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){
-        System.out.println("doUpdateConceptionEntityProperty");
+        if(conceptionKindDataPropertiesMap.containsKey(targetEntityKind)){
+            DataSliceSyncUtil.updateDataInSlice(this.dataServiceInvoker,targetEntityKind,targetEntityUID,entityProperties);
+        }
     }
 
     private void doUpdateRelationEntityProperty(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){
-        System.out.println("doUpdateRelationEntityProperty");
+        if(relationKindDataPropertiesMap.containsKey(targetEntityKind)){
+            DataSliceSyncUtil.updateDataInSlice(this.dataServiceInvoker,targetEntityKind,targetEntityUID,entityProperties);
+        }
     }
 
     private void doRemoveConceptionEntityProperty(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){
-        System.out.println("doRemoveConceptionEntityProperty");
+        //Not Support Yet
     }
 
     private void doRemoveRelationEntityProperty(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){
-        System.out.println("doRemoveRelationEntityProperty");
+        //Not Support Yet
     }
 
     private void setUpEntityKindsMetaInfo(){
@@ -201,43 +209,45 @@ public class GeneralDataSliceEntityValueOperationsMessageHandler extends CommonO
         String currentHandleType = "ConceptionKind";
 
         File file = new File("DataSlicesSyncKindList");
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(file));
-            String tempStr;
-            while ((tempStr = reader.readLine()) != null) {
-                String currentLine = tempStr.trim();
-                if(currentLine.startsWith("ConceptionKind.")){
-                    //handle ConceptionKind define
-                    currentHandleType = "ConceptionKind";
-                    String currentConceptionKindName = currentLine.replace("ConceptionKind.","");
-                    lastConceptionKindName = currentConceptionKindName;
-                }else if(currentLine.startsWith("RelationKind.")){
-                    //handle ConceptionKind define
-                    currentHandleType = "RelationKind";
-                    String currentRelationKindName = currentLine.replace("RelationKind.","");
-                    lastRelationKindName = currentRelationKindName;
-                }else{
-                    String[] propertyDefineArray = currentLine.split("    ");
-                    String propertyName = propertyDefineArray[0];
-                    String propertyType = propertyDefineArray[1];
-                    if(currentHandleType.equals("ConceptionKind")){
-                        DataSliceSyncUtil.initKindPropertyDefine(conceptionKindDataPropertiesMap,lastConceptionKindName,propertyName,propertyType);
-                    }
-                    if(currentHandleType.equals("RelationKind")){
-                        DataSliceSyncUtil.initKindPropertyDefine(relationKindDataPropertiesMap,lastRelationKindName,propertyName,propertyType);
+        if(file.exists() && file.isFile()){
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new FileReader(file));
+                String tempStr;
+                while ((tempStr = reader.readLine()) != null) {
+                    String currentLine = tempStr.trim();
+                    if(currentLine.startsWith("ConceptionKind.")){
+                        //handle ConceptionKind define
+                        currentHandleType = "ConceptionKind";
+                        String currentConceptionKindName = currentLine.replace("ConceptionKind.","");
+                        lastConceptionKindName = currentConceptionKindName;
+                    }else if(currentLine.startsWith("RelationKind.")){
+                        //handle ConceptionKind define
+                        currentHandleType = "RelationKind";
+                        String currentRelationKindName = currentLine.replace("RelationKind.","");
+                        lastRelationKindName = currentRelationKindName;
+                    }else{
+                        String[] propertyDefineArray = currentLine.split("    ");
+                        String propertyName = propertyDefineArray[0];
+                        String propertyType = propertyDefineArray[1];
+                        if(currentHandleType.equals("ConceptionKind")){
+                            DataSliceSyncUtil.initKindPropertyDefine(conceptionKindDataPropertiesMap,lastConceptionKindName,propertyName,propertyType);
+                        }
+                        if(currentHandleType.equals("RelationKind")){
+                            DataSliceSyncUtil.initKindPropertyDefine(relationKindDataPropertiesMap,lastRelationKindName,propertyName,propertyType);
+                        }
                     }
                 }
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
                 }
             }
         }

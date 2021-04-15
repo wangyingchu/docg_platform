@@ -9,6 +9,7 @@ import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCom
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlicePropertyType;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSliceDataException;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSliceExistException;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSlicePropertiesStructureException;
 import com.viewfunction.docg.knowledgeManage.consoleApplication.util.ApplicationLauncherUtil;
@@ -159,43 +160,45 @@ public class DataSliceSyncUtil {
         String currentHandleType = "ConceptionKind";
 
         File file = new File("DataSlicesSyncKindList");
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(file));
-            String tempStr;
-            while ((tempStr = reader.readLine()) != null) {
-                String currentLine = tempStr.trim();
-                if(currentLine.startsWith("ConceptionKind.")){
-                    //handle ConceptionKind define
-                    currentHandleType = "ConceptionKind";
-                    String currentConceptionKindName = currentLine.replace("ConceptionKind.","");
-                    lastConceptionKindName = currentConceptionKindName;
-                }else if(currentLine.startsWith("RelationKind.")){
-                    //handle ConceptionKind define
-                    currentHandleType = "RelationKind";
-                    String currentRelationKindName = currentLine.replace("RelationKind.","");
-                    lastRelationKindName = currentRelationKindName;
-                }else{
-                    String[] propertyDefineArray = currentLine.split("    ");
-                    String propertyName = propertyDefineArray[0];
-                    String propertyType = propertyDefineArray[1];
-                    if(currentHandleType.equals("ConceptionKind")){
-                        initKindPropertyDefine(conceptionKindDataPropertiesMap,lastConceptionKindName,propertyName,propertyType);
-                    }
-                    if(currentHandleType.equals("RelationKind")){
-                        initKindPropertyDefine(relationKindDataPropertiesMap,lastRelationKindName,propertyName,propertyType);
+        if(file.exists() && file.isFile()){
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new FileReader(file));
+                String tempStr;
+                while ((tempStr = reader.readLine()) != null) {
+                    String currentLine = tempStr.trim();
+                    if(currentLine.startsWith("ConceptionKind.")){
+                        //handle ConceptionKind define
+                        currentHandleType = "ConceptionKind";
+                        String currentConceptionKindName = currentLine.replace("ConceptionKind.","");
+                        lastConceptionKindName = currentConceptionKindName;
+                    }else if(currentLine.startsWith("RelationKind.")){
+                        //handle ConceptionKind define
+                        currentHandleType = "RelationKind";
+                        String currentRelationKindName = currentLine.replace("RelationKind.","");
+                        lastRelationKindName = currentRelationKindName;
+                    }else{
+                        String[] propertyDefineArray = currentLine.split("    ");
+                        String propertyName = propertyDefineArray[0];
+                        String propertyType = propertyDefineArray[1];
+                        if(currentHandleType.equals("ConceptionKind")){
+                            initKindPropertyDefine(conceptionKindDataPropertiesMap,lastConceptionKindName,propertyName,propertyType);
+                        }
+                        if(currentHandleType.equals("RelationKind")){
+                            initKindPropertyDefine(relationKindDataPropertiesMap,lastRelationKindName,propertyName,propertyType);
+                        }
                     }
                 }
-            }
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException e1) {
-                    e1.printStackTrace();
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
                 }
             }
         }
@@ -335,9 +338,61 @@ public class DataSliceSyncUtil {
     }
 
     public static void deleteDataFromSlice(DataServiceInvoker dataServiceInvoker,String dataSliceName,String dataPK){
+        DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+        if(targetDataSlice != null){
+            try {
+                Map<String,Object> dataPKPropertiesValue = new HashMap<>();
+                dataPKPropertiesValue.put(CoreRealmOperationUtil.RealmGlobalUID,dataPK);
+                targetDataSlice.deleteDataRecord(dataPKPropertiesValue);
+            } catch (DataSlicePropertiesStructureException e) {
+                e.printStackTrace();
+            } catch (DataSliceDataException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
+    public static void updateDataInSlice(DataServiceInvoker dataServiceInvoker,String dataSliceName,String dataPK,Map<String,Object> entityProperties){
+        DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+        if(targetDataSlice != null && entityProperties!= null){
+            try {
+                entityProperties.put(CoreRealmOperationUtil.RealmGlobalUID,dataPK);
+                targetDataSlice.updateDataRecord(entityProperties);
+            } catch (DataSlicePropertiesStructureException e) {
+                e.printStackTrace();
+            } catch (DataSliceDataException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-
+    public static void createDataInSlice(DataServiceInvoker dataServiceInvoker,String dataSliceName,String dataPK,
+                                         Map<String,Object> entityProperties,Map<String, List<DataPropertyInfo>> kindDataPropertiesMap,String dataSliceType){
+        DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+        try {
+            if(targetDataSlice == null){
+                String dataSliceGroupName = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.dataSliceGroup");
+                List<DataPropertyInfo> kindDataPropertyInfoList = kindDataPropertiesMap.get(dataSliceName);
+                Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+                if(kindDataPropertyInfoList != null) {
+                    for (DataPropertyInfo currentDataPropertyInfo : kindDataPropertyInfoList) {
+                        dataSlicePropertyMap.put(currentDataPropertyInfo.getPropertyName(), currentDataPropertyInfo.getPropertyType());
+                    }
+                }
+                dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID, DataSlicePropertyType.STRING);
+                List<String> pkList = new ArrayList<>();
+                pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
+                dataServiceInvoker.createGridDataSlice(dataSliceName, dataSliceGroupName+dataSliceType, dataSlicePropertyMap, pkList);
+            }
+            if(entityProperties!= null){
+                entityProperties.put(CoreRealmOperationUtil.RealmGlobalUID,dataPK);
+                targetDataSlice.addDataRecord(entityProperties);
+            }
+        } catch (DataSlicePropertiesStructureException e) {
+            e.printStackTrace();
+        } catch (DataSliceDataException | DataSliceExistException e) {
+            e.printStackTrace();
+        }
     }
 
     private static List<AttributeKind> buildAttributeKindList(Map<String, DataSlicePropertyType> dataSlicePropertyMap){
