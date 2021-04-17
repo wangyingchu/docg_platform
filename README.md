@@ -3405,7 +3405,7 @@ com.viewfunction.docg.realmExample.generator.RoadWeatherInformationStationsRecor
 
 ###### ↳ Island Geospatial Data Realm
 
-小型领域模型,描述一个岛屿上个各类带有GIS空间信息的事物。包含概念实体 ***IndividualTree***（数量 28321个），***Frutex***（数量 2698个），***FunctionalZone***（数量 27个），***ZoneSection***（数量 42个），***SectionBlock***（数量 2404个），***Road***（数量 402个），***Building***（数量 142个），***ConstructionLand***（数量 48个）。
+小型领域模型,描述一个岛屿上个各类带有GIS空间信息的事物。包含概念实体 ***IndividualTree***（单木，数量 28321个），***Frutex***（灌木，数量 2698个），***FunctionalZone***（功能区，数量 27个），***ZoneSection***（分区板块，数量 42个），***SectionBlock***（分区子板块，数量 2404个），***Road***（道路，数量 402个），***Building***（建筑，数量 142个），***ConstructionLand***（建设用地，数量 48个）。
 
 岛屿空间地理信息数据示例：（空间坐标系：EPSG:4545 -  CGCS2000 / 3-degree Gauss-Kruger CM 108E - Projected）![image](documentPic/graph_Island_GeoDataRealm.png)
 
