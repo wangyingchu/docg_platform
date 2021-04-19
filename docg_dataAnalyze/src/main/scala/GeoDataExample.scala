@@ -1,3 +1,4 @@
+import com.viewfunction.docg.dataAnalyze.util.dataSlice.DataSliceOperationUtil
 import org.apache.ignite.Ignition
 import org.apache.ignite.spark.IgniteDataFrameSettings.{FORMAT_IGNITE, OPTION_CONFIG_FILE, OPTION_TABLE}
 import org.apache.log4j.{Level, Logger}
@@ -9,12 +10,15 @@ import org.apache.spark.sql.ignite.IgniteSparkSession
 object GeoDataExample extends App{
 
   private val CONFIG = "configurations/dataCompute-ignite.xml"
+
+  DataSliceOperationUtil.turnOffSparkLog()
+  DataSliceOperationUtil.turnOffDataSliceLog()
   loadIndividualTreeGeoData
   //loadRoadWeatherRecordsGeoData
 
   def loadIndividualTreeGeoData():Unit={
     Ignition.setClientMode(true)
-    val ignite = Ignition.start(CONFIG)
+   // val ignite = Ignition.start(CONFIG)
     //Creating Ignite-specific implementation of Spark session.
     val igniteSession = IgniteSparkSession.builder()
       .appName("Spark Ignite catalog example")
@@ -27,8 +31,8 @@ object GeoDataExample extends App{
 
     SedonaSQLRegistrator.registerAll(igniteSession)
 
-    Logger.getRootLogger.setLevel(Level.ERROR)
-    Logger.getLogger("org.apache.ignite").setLevel(Level.INFO)
+    //Logger.getRootLogger.setLevel(Level.ERROR)
+    //Logger.getLogger("org.apache.ignite").setLevel(Level.INFO)
 
     val igniteDF = igniteSession.read
       .format(FORMAT_IGNITE) //Data source type.
@@ -59,12 +63,13 @@ object GeoDataExample extends App{
     spatialDf.show()
 
     igniteSession.catalog.listColumns("IndividualTree").show()
-    ignite.close()
+    //ignite.close()
+    igniteSession.close()
   }
 
   def loadRoadWeatherRecordsGeoData():Unit={
     Ignition.setClientMode(true)
-    val ignite = Ignition.start(CONFIG)
+    //val ignite = Ignition.start(CONFIG)
     //Creating Ignite-specific implementation of Spark session.
     val igniteSession = IgniteSparkSession.builder()
       .appName("Spark Ignite catalog example")
@@ -77,8 +82,8 @@ object GeoDataExample extends App{
     //Register Sedona SQL functions
     SedonaSQLRegistrator.registerAll(igniteSession)
 
-    Logger.getRootLogger.setLevel(Level.ERROR)
-    Logger.getLogger("org.apache.ignite").setLevel(Level.INFO)
+    //Logger.getRootLogger.setLevel(Level.ERROR)
+    //Logger.getLogger("org.apache.ignite").setLevel(Level.INFO)
 
     val igniteDF = igniteSession.read
       .format(FORMAT_IGNITE) //Data source type.
@@ -100,7 +105,8 @@ object GeoDataExample extends App{
     spatialDf.printSchema()
     spatialDf.show()
     igniteSession.catalog.listColumns("RoadWeatherRecords").show()
-    ignite.close()
+    //ignite.close()
+    igniteSession.close()
   }
 
 }
