@@ -1,13 +1,13 @@
 <component name="libraryTable">
-  <library name="Maven: org.scala-lang.modules:scala-java8-compat_2.13:0.9.1">
+  <library name="Maven: org.apache.sedona:sedona-python-adapter-2.4_2.11:1.0.0-incubating">
     <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/org/scala-lang/modules/scala-java8-compat_2.13/0.9.1/scala-java8-compat_2.13-0.9.1.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/sedona/sedona-python-adapter-2.4_2.11/1.0.0-incubating/sedona-python-adapter-2.4_2.11-1.0.0-incubating.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$MAVEN_REPOSITORY$/org/scala-lang/modules/scala-java8-compat_2.13/0.9.1/scala-java8-compat_2.13-0.9.1-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/sedona/sedona-python-adapter-2.4_2.11/1.0.0-incubating/sedona-python-adapter-2.4_2.11-1.0.0-incubating-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$MAVEN_REPOSITORY$/org/scala-lang/modules/scala-java8-compat_2.13/0.9.1/scala-java8-compat_2.13-0.9.1-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/sedona/sedona-python-adapter-2.4_2.11/1.0.0-incubating/sedona-python-adapter-2.4_2.11-1.0.0-incubating-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
