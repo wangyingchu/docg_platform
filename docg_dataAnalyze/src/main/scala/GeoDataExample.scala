@@ -18,7 +18,6 @@ object GeoDataExample extends App{
 
   def loadIndividualTreeGeoData():Unit={
     Ignition.setClientMode(true)
-   // val ignite = Ignition.start(CONFIG)
     //Creating Ignite-specific implementation of Spark session.
     val igniteSession = IgniteSparkSession.builder()
       .appName("Spark Ignite catalog example")
@@ -63,13 +62,11 @@ object GeoDataExample extends App{
     spatialDf.show()
 
     igniteSession.catalog.listColumns("IndividualTree").show()
-    //ignite.close()
     igniteSession.close()
   }
 
   def loadRoadWeatherRecordsGeoData():Unit={
     Ignition.setClientMode(true)
-    //val ignite = Ignition.start(CONFIG)
     //Creating Ignite-specific implementation of Spark session.
     val igniteSession = IgniteSparkSession.builder()
       .appName("Spark Ignite catalog example")
@@ -105,7 +102,6 @@ object GeoDataExample extends App{
     spatialDf.printSchema()
     spatialDf.show()
     igniteSession.catalog.listColumns("RoadWeatherRecords").show()
-    //ignite.close()
     igniteSession.close()
   }
 
