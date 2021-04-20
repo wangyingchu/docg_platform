@@ -87,7 +87,7 @@ public interface GeospatialScaleFeatureSupportable {
     public boolean addOrUpdateLocalCRSAID(String crsAID);
 
     /**
-     * 获取当前对象的(WKT格式)全球尺度地理空间数据内容 GlobalLevel
+     * 获取当前对象的(WKT格式)全球尺度地理空间数据内容 Global Level
      *
      * @return (WKT格式)地理空间数据内容
      */

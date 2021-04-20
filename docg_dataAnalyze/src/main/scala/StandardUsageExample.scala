@@ -1,18 +1,18 @@
 import com.viewfunction.docg.dataAnalyze.util.dataSlice.DataSliceOperationUtil
-import com.viewfunction.docg.dataAnalyze.util.spark.DataSliceSparkSession
+import com.viewfunction.docg.dataAnalyze.util.spark.DataSliceSparkAccessor
 
 object StandardUsageExample extends App{
 
   DataSliceOperationUtil.turnOffSparkLog()
   DataSliceOperationUtil.turnOffDataSliceLog()
 
-  val dataSliceSparkSession = new DataSliceSparkSession("StandardUsageExample","local","10")
+  val dataSliceSparkAccessor = new DataSliceSparkAccessor("StandardUsageExample","local","10")
   try{
-    val individualTreeDF = dataSliceSparkSession.getDataFrameFromDataSlice("IndividualTree")
+    val individualTreeDF = dataSliceSparkAccessor.getDataFrameFromDataSlice("IndividualTree")
     //individualTreeDF.show(100)
     individualTreeDF.printSchema()
 
-    val customDf = dataSliceSparkSession.getSparkSession().sql("SELECT * FROM IndividualTree WHERE SZ = '蓝花楹'")
+    val customDf = dataSliceSparkAccessor.getSparkSession().sql("SELECT * FROM IndividualTree WHERE SZ = '蓝花楹'")
     customDf.createOrReplaceTempView("IndividualTree_FilterA")
     customDf.printSchema()
     //customDf.show(10)
@@ -27,7 +27,7 @@ object StandardUsageExample extends App{
     spatialIndividualTreeDf.printSchema()
     */
     // DBU = diameter ot breast height(胸径)
-    val spatialIndividualTreeDf = dataSliceSparkSession.getDataFrameFromSQL("spatialIndividualTreeDf",
+    val spatialIndividualTreeDf = dataSliceSparkAccessor.getDataFrameFromSQL("spatialIndividualTreeDf",
       """
         |SELECT ST_GeomFromWKT(DOCG_GS_LLGeometryContent)  AS treeLocation ,SZ as treeType ,XJ as treeDBH, DMID as treeID
         |FROM IndividualTree_FilterA
@@ -35,17 +35,17 @@ object StandardUsageExample extends App{
     )
     spatialIndividualTreeDf.printSchema()
 
-    val sectionBlockDF = dataSliceSparkSession.getDataFrameFromDataSlice("SectionBlock")
+    val sectionBlockDF = dataSliceSparkAccessor.getDataFrameFromDataSlice("SectionBlock")
     sectionBlockDF.printSchema()
 
-    val spatialSectionBlockDf = dataSliceSparkSession.getDataFrameFromSQL("spatialSectionBlockDf","SELECT ST_GeomFromWKT(DOCG_GS_LLGeometryContent) AS blockLocation , BKMC AS blockName FROM SectionBlock")
+    val spatialSectionBlockDf = dataSliceSparkAccessor.getDataFrameFromSQL("spatialSectionBlockDf","SELECT ST_GeomFromWKT(DOCG_GS_LLGeometryContent) AS blockLocation , BKMC AS blockName , RealmGlobalUID AS blockUID FROM SectionBlock")
     spatialSectionBlockDf.printSchema()
 
     val spatialFunctionComputeDfQueryString = "SELECT * FROM spatialSectionBlockDf, spatialIndividualTreeDf WHERE ST_Contains(spatialSectionBlockDf.blockLocation,spatialIndividualTreeDf.treeLocation)";
-    val spatialFunctionComputeDf = dataSliceSparkSession.getSparkSession().sql(spatialFunctionComputeDfQueryString.stripMargin)
+    val spatialFunctionComputeDf = dataSliceSparkAccessor.getDataFrameFromSQL(null,spatialFunctionComputeDfQueryString.stripMargin)
     spatialFunctionComputeDf.show(1000)
 
-  }finally dataSliceSparkSession.close()
+  }finally dataSliceSparkAccessor.close()
 }
 /* DataSlicesSyncKindList example config
 ConceptionKind.RoadWeatherRecords
