@@ -25,13 +25,19 @@ class DataSliceSparkSession(private val sessionName:String,private val masterLoc
   //Register Sedona SQL functions
   SedonaSQLRegistrator.registerAll(igniteSession)
 
-  def getDataFrameFromDataSlice(dataSliceName:String):DataFrame= {
+  def getDataFrameFromDataSlice(dataSliceName:String):DataFrame = {
     val igniteDF = igniteSession.read
       .format(FORMAT_IGNITE) //Data source type.
       .option(OPTION_TABLE, dataSliceName) //Ignite table to read.
       .option(OPTION_CONFIG_FILE, CONFIG) //Ignite config.
       .load()
     igniteDF
+  }
+
+  def getDataFrameFromSQL(dataFrameName:String,dataFrameSQL:String):DataFrame = {
+    val targetDF = igniteSession.sql(dataFrameSQL.stripMargin)
+    targetDF.createOrReplaceTempView(dataFrameName)
+    targetDF
   }
 
   def getSparkSession():SparkSession = {
