@@ -33,7 +33,7 @@ class CoreRealmDataAccessor {
     resultList.toList
   }
 
-  def getConceptionEntityRowsWithAttributes(conceptionKindName: String, attributeList : List[String], queryParameters: QueryParameters): List[ConceptionEntityValue] = {
+  def getConceptionEntityRowsWithAttributes(conceptionKindName: String, attributeList: List[String], queryParameters: QueryParameters): List[ConceptionEntityValue] = {
     val coreRealm :CoreRealm = RealmTermFactory.getDefaultCoreRealm()
     try {
       coreRealm.openGlobalSession()
@@ -46,6 +46,14 @@ class CoreRealmDataAccessor {
       if (coreRealm != null) {
         coreRealm.closeGlobalSession()
       }
+    }
+  }
+
+  def getConceptionEntityByUid(conceptionKindName: String,entityUID:String):ConceptionEntity = {
+    val coreRealm :CoreRealm = RealmTermFactory.getDefaultCoreRealm()
+    val conceptionKind :ConceptionKind = coreRealm.getConceptionKind(conceptionKindName)
+    if(conceptionKind != null) {
+      conceptionKind.getEntityByUID(entityUID)
     }
   }
 
@@ -85,6 +93,14 @@ class CoreRealmDataAccessor {
       if (coreRealm != null) {
         coreRealm.closeGlobalSession()
       }
+    }
+  }
+
+  def getRelationEntityByUid(relationKindName: String,entityUID:String):ConceptionEntity = {
+    val coreRealm :CoreRealm = RealmTermFactory.getDefaultCoreRealm()
+    val relationKind :RelationKind = coreRealm.getRelationKind(relationKindName)
+    if(relationKind != null) {
+      relationKind.getEntityByUID(entityUID)
     }
   }
 

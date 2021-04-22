@@ -805,6 +805,14 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      */
     public RelationEntitiesAttributesRetrieveResult getEntityAttributesByAttributeNames(List<String> attributeNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException;
 
+    /**
+     * 根据唯一ID获取当前关系类型的关系实体对象
+     *
+     * @param relationEntityUID String 需要获取的关系实体唯一ID
+     *
+     * @return 关系实体对象
+     */
+    public RelationEntity getEntityByUID(String relationEntityUID);
 ```
 ###### ↳ AttributesViewKind
 ---
