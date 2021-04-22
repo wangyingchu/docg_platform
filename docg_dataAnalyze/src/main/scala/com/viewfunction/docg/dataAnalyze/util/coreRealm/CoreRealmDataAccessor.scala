@@ -32,7 +32,7 @@ class CoreRealmDataAccessor {
     }
     resultList.toList
   }
-
+/*
   def getConceptionEntityRowsWithAttributes(conceptionKindName: String, attributeList: List[String], queryParameters: QueryParameters): List[ConceptionEntityValue] = {
     val coreRealm :CoreRealm = RealmTermFactory.getDefaultCoreRealm()
     try {
@@ -48,13 +48,13 @@ class CoreRealmDataAccessor {
       }
     }
   }
+*/
 
-  def getConceptionEntityByUid(conceptionKindName: String,entityUID:String):ConceptionEntity = {
+  def getConceptionEntityByUID(conceptionKindName: String,entityUID:String):Option[ConceptionEntity] = {
     val coreRealm :CoreRealm = RealmTermFactory.getDefaultCoreRealm()
     val conceptionKind :ConceptionKind = coreRealm.getConceptionKind(conceptionKindName)
-    if(conceptionKind != null) {
-      conceptionKind.getEntityByUID(entityUID)
-    }
+    if(conceptionKind == null) Option(null)
+    else Option(conceptionKind.getEntityByUID(entityUID))
   }
 
   def getRelationEntities(relationKindName: String, queryParameters: QueryParameters, relationEntityHandler: RelationEntityHandler): List[Any] = {
@@ -79,7 +79,7 @@ class CoreRealmDataAccessor {
     }
     resultList.toList
   }
-
+/*
   def getRelationEntityRowsWithAttributes(relationKindName: String, attributeList : List[String], queryParameters: QueryParameters): List[RelationEntityValue] = {
     val coreRealm :CoreRealm = RealmTermFactory.getDefaultCoreRealm()
     try {
@@ -95,13 +95,14 @@ class CoreRealmDataAccessor {
       }
     }
   }
+*/
 
-  def getRelationEntityByUid(relationKindName: String,entityUID:String):ConceptionEntity = {
+  def getRelationEntityByUID(relationKindName: String,entityUID:String): Option[RelationEntity] = {
+    // Wrap the Java result in an Option (this will become a Some or a None)
     val coreRealm :CoreRealm = RealmTermFactory.getDefaultCoreRealm()
     val relationKind :RelationKind = coreRealm.getRelationKind(relationKindName)
-    if(relationKind != null) {
-      relationKind.getEntityByUID(entityUID)
-    }
+    if(relationKind == null) Option(null)
+    else Option(relationKind.getEntityByUID(entityUID))
   }
 
 }
