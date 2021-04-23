@@ -6,7 +6,6 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.{ConceptionEntity, 
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory
 
 import collection.JavaConverters._
-import collection.mutable.ArrayBuffer
 import scala.collection.mutable
 
 class CoreRealmDataAccessor {
