@@ -6,14 +6,14 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.{ConceptionEntity, 
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory
 
 import collection.JavaConverters._
-import collection.mutable.{ArrayBuffer, MutableList}
+import collection.mutable.ArrayBuffer
 import scala.collection.mutable
 
 class CoreRealmDataAccessor {
 
-  def getConceptionEntities(conceptionKindName: String, queryParameters: QueryParameters, conceptionEntityHandler: ConceptionEntityHandler): List[Any] = {
-    val resultList = MutableList[Any]()
-    val coreRealm :CoreRealm = RealmTermFactory.getDefaultCoreRealm()
+  def getConceptionEntities(conceptionKindName: String, queryParameters: QueryParameters, conceptionEntityHandler: ConceptionEntityHandler): mutable.Buffer[Any] = {
+    val resultBuffer =  mutable.Buffer[Any]()
+    val coreRealm:CoreRealm = RealmTermFactory.getDefaultCoreRealm()
     try {
       coreRealm.openGlobalSession()
       val conceptionKind :ConceptionKind = coreRealm.getConceptionKind(conceptionKindName)
@@ -23,7 +23,7 @@ class CoreRealmDataAccessor {
         val entitiesRetrieveStatistics:EntitiesRetrieveStatistics = resultConceptionEntities.getOperationStatistics
         conceptionEntityList.foreach(item => {
           val currentResult = conceptionEntityHandler.handleConceptionEntity(item,entitiesRetrieveStatistics)
-          resultList += currentResult
+          resultBuffer+=currentResult
         })
       }
     } finally {
@@ -31,7 +31,7 @@ class CoreRealmDataAccessor {
         coreRealm.closeGlobalSession()
       }
     }
-    resultList.toList
+    resultBuffer
   }
 
   def getConceptionEntityRowsWithAttributes(conceptionKindName: String, attributeList: mutable.Buffer[String], queryParameters: QueryParameters): mutable.Buffer[ConceptionEntityValue] = {
@@ -44,11 +44,11 @@ class CoreRealmDataAccessor {
         if(resultEntitiesWithAttributes != null){
           resultEntitiesWithAttributes.getConceptionEntityValues.asScala
         }else{
-          val resultBuffer = ArrayBuffer[ConceptionEntityValue]()
+          val resultBuffer = mutable.Buffer[ConceptionEntityValue]()
           resultBuffer
         }
       }else{
-        val resultBuffer = ArrayBuffer[ConceptionEntityValue]()
+        val resultBuffer = mutable.Buffer[ConceptionEntityValue]()
         resultBuffer
       }
     } finally {
@@ -65,8 +65,8 @@ class CoreRealmDataAccessor {
     else Option(conceptionKind.getEntityByUID(entityUID))
   }
 
-  def getRelationEntities(relationKindName: String, queryParameters: QueryParameters, relationEntityHandler: RelationEntityHandler): List[Any] = {
-    val resultList = MutableList[Any]()
+  def getRelationEntities(relationKindName: String, queryParameters: QueryParameters, relationEntityHandler: RelationEntityHandler): mutable.Buffer[Any] = {
+    val resultBuffer =  mutable.Buffer[Any]()
     val coreRealm :CoreRealm = RealmTermFactory.getDefaultCoreRealm()
     try {
       coreRealm.openGlobalSession()
@@ -77,7 +77,7 @@ class CoreRealmDataAccessor {
         val entitiesRetrieveStatistics:EntitiesRetrieveStatistics = resultRelationEntities.getOperationStatistics
         relationEntityList.foreach(item => {
           val currentResult = relationEntityHandler.handleRelationEntity(item,entitiesRetrieveStatistics)
-          resultList += currentResult
+          resultBuffer += currentResult
         })
       }
     } finally {
@@ -85,7 +85,7 @@ class CoreRealmDataAccessor {
         coreRealm.closeGlobalSession()
       }
     }
-    resultList.toList
+    resultBuffer
   }
 
   def getRelationEntityRowsWithAttributes(relationKindName: String, attributeList : mutable.Buffer[String], queryParameters: QueryParameters): mutable.Buffer[RelationEntityValue] = {
@@ -98,11 +98,11 @@ class CoreRealmDataAccessor {
         if(relationEntitiesAttributesRetrieveResult != null){
           relationEntitiesAttributesRetrieveResult.getRelationEntityValues.asScala
         }else{
-          val resultBuffer = ArrayBuffer[RelationEntityValue]()
+          val resultBuffer = mutable.Buffer[RelationEntityValue]()
           resultBuffer
         }
       }else{
-        val resultBuffer = ArrayBuffer[RelationEntityValue]()
+        val resultBuffer = mutable.Buffer[RelationEntityValue]()
         resultBuffer
       }
     } finally {

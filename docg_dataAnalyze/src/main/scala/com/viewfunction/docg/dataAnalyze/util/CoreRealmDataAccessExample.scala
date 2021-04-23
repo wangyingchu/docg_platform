@@ -6,7 +6,6 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.{ConceptionEntity, 
 import com.viewfunction.docg.dataAnalyze.util.coreRealm.{ConceptionEntityHandler, CoreRealmDataAccessor, RelationEntityHandler}
 
 import scala.collection.mutable
-import scala.collection.mutable.ArrayBuffer
 
 object CoreRealmDataAccessExample {
 
@@ -28,9 +27,9 @@ object CoreRealmDataAccessExample {
         EntityInfo(conceptionEntity.getConceptionEntityUID,conceptionEntity.getConceptionKindName)
       }
     }
-    val conceptionEntityInfoList: List[EntityInfo] = coreRealmDataAccessor.
-      getConceptionEntities("Ingredient",queryParameters,conceptionEntityHandler).asInstanceOf[List[EntityInfo]]
-    conceptionEntityInfoList.foreach(item=>{
+    val conceptionEntityInfoBuffer: mutable.Buffer[EntityInfo] = coreRealmDataAccessor.
+      getConceptionEntities("Ingredient",queryParameters,conceptionEntityHandler).asInstanceOf[mutable.Buffer[EntityInfo]]
+    conceptionEntityInfoBuffer.foreach(item =>{
       println(item.entityKind + " - " + item.entityUID)
     })
 
@@ -39,27 +38,25 @@ object CoreRealmDataAccessExample {
         EntityInfo(relationEntity.getRelationEntityUID,relationEntity.getRelationKindName)
       }
     }
-    val relationEntityInfoList : List[EntityInfo] = coreRealmDataAccessor.
-      getRelationEntities("belongsToCategory",queryParameters,relationEntityHandler).asInstanceOf[List[EntityInfo]]
-      relationEntityInfoList.foreach(item=>{
+    val relationEntityInfoBuffer : mutable.Buffer[EntityInfo] = coreRealmDataAccessor.
+      getRelationEntities("belongsToCategory",queryParameters,relationEntityHandler).asInstanceOf[mutable.Buffer[EntityInfo]]
+    relationEntityInfoBuffer.foreach(item=>{
         println(item.entityKind + " - " + item.entityUID)
       })
 
-    val attributesNameList = ArrayBuffer[String]("category","name")
+    val attributesNameList = mutable.Buffer[String]("category","name")
     val conceptionEntityValueBuffer:mutable.Buffer[ConceptionEntityValue] = coreRealmDataAccessor.getConceptionEntityRowsWithAttributes("Ingredient",attributesNameList,queryParameters)
     conceptionEntityValueBuffer.foreach(item => {
       println(item.getEntityAttributesValue)
       println(item.getConceptionEntityUID)
     })
 
-    val attributesNameList2 = ArrayBuffer[String]("createDate","dataOrigin")
+    val attributesNameList2 = mutable.Buffer[String]("createDate","dataOrigin")
     val relationEntityValueBuffer:mutable.Buffer[RelationEntityValue] = coreRealmDataAccessor.getRelationEntityRowsWithAttributes("isUsedIn",attributesNameList2,queryParameters)
     relationEntityValueBuffer.foreach(item => {
       println(item.getEntityAttributesValue)
       println(item.getRelationEntityUID)
     })
-
-
 
   }
 
