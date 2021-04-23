@@ -6,7 +6,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.{ConceptionEntity, 
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory
 
 import collection.JavaConverters._
-import collection.mutable.MutableList
+import collection.mutable.{ArrayBuffer, MutableList}
+import scala.collection.mutable
 
 class CoreRealmDataAccessor {
 
@@ -32,15 +33,23 @@ class CoreRealmDataAccessor {
     }
     resultList.toList
   }
-/*
-  def getConceptionEntityRowsWithAttributes(conceptionKindName: String, attributeList: List[String], queryParameters: QueryParameters): List[ConceptionEntityValue] = {
+
+  def getConceptionEntityRowsWithAttributes(conceptionKindName: String, attributeList: mutable.Buffer[String], queryParameters: QueryParameters): mutable.Buffer[ConceptionEntityValue] = {
     val coreRealm :CoreRealm = RealmTermFactory.getDefaultCoreRealm()
     try {
       coreRealm.openGlobalSession()
       val conceptionKind :ConceptionKind = coreRealm.getConceptionKind(conceptionKindName)
       if(conceptionKind != null) {
         val resultEntitiesWithAttributes : ConceptionEntitiesAttributesRetrieveResult = conceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeList.asJava,queryParameters)
-        resultEntitiesWithAttributes.getConceptionEntityValues
+        if(resultEntitiesWithAttributes != null){
+          resultEntitiesWithAttributes.getConceptionEntityValues.asScala
+        }else{
+          val resultBuffer = ArrayBuffer[ConceptionEntityValue]()
+          resultBuffer
+        }
+      }else{
+        val resultBuffer = ArrayBuffer[ConceptionEntityValue]()
+        resultBuffer
       }
     } finally {
       if (coreRealm != null) {
@@ -48,7 +57,6 @@ class CoreRealmDataAccessor {
       }
     }
   }
-*/
 
   def getConceptionEntityByUID(conceptionKindName: String,entityUID:String):Option[ConceptionEntity] = {
     val coreRealm :CoreRealm = RealmTermFactory.getDefaultCoreRealm()
@@ -79,15 +87,23 @@ class CoreRealmDataAccessor {
     }
     resultList.toList
   }
-/*
-  def getRelationEntityRowsWithAttributes(relationKindName: String, attributeList : List[String], queryParameters: QueryParameters): List[RelationEntityValue] = {
+
+  def getRelationEntityRowsWithAttributes(relationKindName: String, attributeList : mutable.Buffer[String], queryParameters: QueryParameters): mutable.Buffer[RelationEntityValue] = {
     val coreRealm :CoreRealm = RealmTermFactory.getDefaultCoreRealm()
     try {
       coreRealm.openGlobalSession()
       val relationKind : RelationKind = coreRealm.getRelationKind(relationKindName)
       if(relationKind != null) {
         val relationEntitiesAttributesRetrieveResult : RelationEntitiesAttributesRetrieveResult = relationKind.getEntityAttributesByAttributeNames(attributeList.asJava,queryParameters)
-        relationEntitiesAttributesRetrieveResult.getRelationEntityValues
+        if(relationEntitiesAttributesRetrieveResult != null){
+          relationEntitiesAttributesRetrieveResult.getRelationEntityValues.asScala
+        }else{
+          val resultBuffer = ArrayBuffer[RelationEntityValue]()
+          resultBuffer
+        }
+      }else{
+        val resultBuffer = ArrayBuffer[RelationEntityValue]()
+        resultBuffer
       }
     } finally {
       if (coreRealm != null) {
@@ -95,7 +111,6 @@ class CoreRealmDataAccessor {
       }
     }
   }
-*/
 
   def getRelationEntityByUID(relationKindName: String,entityUID:String): Option[RelationEntity] = {
     // Wrap the Java result in an Option (this will become a Some or a None)
