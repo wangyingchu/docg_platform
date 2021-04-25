@@ -1,11 +1,15 @@
 package com.viewfunction.docg.realmExample.internalTest;
 
 import com.google.common.collect.Lists;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 
 import java.io.BufferedReader;
@@ -14,6 +18,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,19 +39,42 @@ public class MassConceptionIntegratedTest {
     private static final String Lng_wgs = "lng_wgs";
 
     public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        //generateData();
+        linkTimeData(91,100);
 
+    }
+
+    public static void linkTimeData(int fromPage,int toPage) throws CoreRealmServiceEntityExploreException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
-/*
+        ConceptionKind _ChinaFirmConceptionKind = coreRealm.getConceptionKind(ChinaFirmConceptionType);
+        if(_ChinaFirmConceptionKind != null){
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.addSortingAttribute("lastModifyDate", QueryParameters.SortingLogic.ASC);
+            queryParameters.setStartPage(fromPage);
+            queryParameters.setEndPage(toPage);
+            queryParameters.setPageSize(10000);
+            List<String> attributeNamesList = new ArrayList<>();
+            attributeNamesList.add(ApprovedTime);
+            ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributeResult = _ChinaFirmConceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeNamesList,queryParameters);
+
+            List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
+            BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,ApprovedTime,"approvedAt",null, TimeFlow.TimeScaleGrade.DAY,10);
+        }
+    }
+
+    public static void generateData() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+
         //Part 1
         ConceptionKind _ChinaFirmConceptionKind = coreRealm.getConceptionKind(ChinaFirmConceptionType);
         if(_ChinaFirmConceptionKind != null){
-            //coreRealm.removeConceptionKind(ChinaFirmConceptionType,true);
+            coreRealm.removeConceptionKind(ChinaFirmConceptionType,true);
         }
         _ChinaFirmConceptionKind = coreRealm.getConceptionKind(ChinaFirmConceptionType);
         if(_ChinaFirmConceptionKind == null){
-            //_ChinaFirmConceptionKind = coreRealm.createConceptionKind(ChinaFirmConceptionType,"中国公司");
+            _ChinaFirmConceptionKind = coreRealm.createConceptionKind(ChinaFirmConceptionType,"中国公司");
         }
-*/
+
         List<ConceptionEntityValue> _ChinaFirmConceptionKindEntityValueList = Lists.newArrayList();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
