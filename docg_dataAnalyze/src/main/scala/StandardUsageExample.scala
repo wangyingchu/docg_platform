@@ -9,23 +9,14 @@ object StandardUsageExample extends App{
   val dataSliceSparkAccessor = new DataSliceSparkAccessor("StandardUsageExample","local","10")
   try{
     val individualTreeDF = dataSliceSparkAccessor.getDataFrameFromDataSlice("IndividualTree")
-    //individualTreeDF.show(100)
+    individualTreeDF.show(10)
     individualTreeDF.printSchema()
 
     val customDf = dataSliceSparkAccessor.getSparkSession().sql("SELECT * FROM IndividualTree WHERE SZ = '蓝花楹'")
     customDf.createOrReplaceTempView("IndividualTree_FilterA")
     customDf.printSchema()
-    //customDf.show(10)
+    customDf.show(10)
 
-    /*
-    val spatialIndividualTreeDf = dataSliceSparkSession.getSparkSession().sql(
-      """
-        |SELECT ST_GeomFromWKT(DOCG_GS_LLGeometryContent)  AS treeLocation ,SZ as treeType ,XJ as treeDBH, DMID as treeID
-        |FROM IndividualTree_FilterA
-      """.stripMargin)
-    spatialIndividualTreeDf.createOrReplaceTempView("spatialIndividualTreeDf")
-    spatialIndividualTreeDf.printSchema()
-    */
     // DBU = diameter ot breast height(胸径)
     val spatialIndividualTreeDf = dataSliceSparkAccessor.getDataFrameFromSQL("spatialIndividualTreeDf",
       """
@@ -43,7 +34,7 @@ object StandardUsageExample extends App{
 
     val spatialFunctionComputeDfQueryString = "SELECT * FROM spatialSectionBlockDf, spatialIndividualTreeDf WHERE ST_Contains(spatialSectionBlockDf.blockLocation,spatialIndividualTreeDf.treeLocation)";
     val spatialFunctionComputeDf = dataSliceSparkAccessor.getDataFrameFromSQL(null,spatialFunctionComputeDfQueryString.stripMargin)
-    spatialFunctionComputeDf.show(1000)
+    spatialFunctionComputeDf.show(10)
 
   }finally dataSliceSparkAccessor.close()
 }
