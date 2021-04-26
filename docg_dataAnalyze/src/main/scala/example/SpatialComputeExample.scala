@@ -14,15 +14,15 @@ object SpatialComputeExample extends App{
 
   val dataSliceSparkAccessor = new DataSliceSparkAccessor("StandardUsageExample","local","10")
   try{
-    val sectionBlockDF = dataSliceSparkAccessor.getDataFrameWithSpatialSupportFromDataSlice("SectionBlock",GeospatialScaleLevel.LocalLevel,"sectionBlockSTDF")
+    val sectionBlockDF = dataSliceSparkAccessor.getDataFrameWithSpatialSupportFromDataSlice("SectionBlock",GeospatialScaleLevel.LocalLevel,"sectionBlockSTDF",null)
     sectionBlockDF.show(10)
     sectionBlockDF.printSchema()
 
-    val individualTreeDF = dataSliceSparkAccessor.getDataFrameWithSpatialSupportFromDataSlice("IndividualTree",GeospatialScaleLevel.LocalLevel,"individualTreeSTDF")
+    val individualTreeDF = dataSliceSparkAccessor.getDataFrameWithSpatialSupportFromDataSlice("IndividualTree",GeospatialScaleLevel.LocalLevel,"individualTreeSTDF","treeLocation")
     individualTreeDF.show(10)
     individualTreeDF.printSchema()
 
-    val spatialFunctionComputeDfQueryString = "SELECT * FROM sectionBlockSTDF, individualTreeSTDF WHERE ST_Contains(sectionBlockSTDF.LL_Geometry,individualTreeSTDF.LL_Geometry)";
+    val spatialFunctionComputeDfQueryString = "SELECT * FROM sectionBlockSTDF, individualTreeSTDF WHERE ST_Contains(sectionBlockSTDF.LL_Geometry,individualTreeSTDF.treeLocation)";
     val spatialFunctionComputeDf = dataSliceSparkAccessor.getDataFrameFromSQL(null,spatialFunctionComputeDfQueryString.stripMargin)
     spatialFunctionComputeDf.show(10)
 
@@ -30,7 +30,7 @@ object SpatialComputeExample extends App{
 
     val spatialQueryOperator = new SpatialQueryOperator()
     val spatialQueryParamC = SpatialQueryParam("sectionBlockSTDF","LL_Geometry",mutable.Buffer[String]("BH"))
-    val spatialQueryParamD = SpatialQueryParam("individualTreeSTDF","LL_Geometry",mutable.Buffer[String]("DMID"))
+    val spatialQueryParamD = SpatialQueryParam("individualTreeSTDF","treeLocation",mutable.Buffer[String]("DMID"))
 
     val spatialFunctionComputeDf5 = spatialQueryOperator.spatialJoinQuery(dataSliceSparkAccessor,spatialQueryParamD,SpatialPredicateType.Within,spatialQueryParamC,null)
     spatialFunctionComputeDf5.show(6)

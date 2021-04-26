@@ -16,14 +16,10 @@ class SpatialQueryOperator {
     val operationSourceDataFrameASpatialAttributeName = operationSourceDataFrameA.spatialAttributeName
     val operationSourceDataFrameBName = operationSourceDataFrameB.spatialDataFrameName;
     val operationSourceDataFrameBSpatialAttributeName = operationSourceDataFrameB.spatialAttributeName
-
     val calculateAttributeA = operationSourceDataFrameAName+"."+operationSourceDataFrameASpatialAttributeName
     val calculateAttributeB = operationSourceDataFrameBName+"."+operationSourceDataFrameBSpatialAttributeName
-
     val operationSourceDataFrameAResultAttributes = operationSourceDataFrameA.resultAttributes
     val operationSourceDataFrameBResultAttributes = operationSourceDataFrameB.resultAttributes
-
-
     var resultAttributes = ""
 
     if(operationSourceDataFrameAResultAttributes != null){
@@ -42,7 +38,6 @@ class SpatialQueryOperator {
 
     var resultAttributesStr = "*"
     if(!resultAttributes.equals("")) resultAttributesStr = resultAttributes
-
     if(resultAttributesStr.endsWith(", ")) resultAttributesStr = resultAttributesStr.reverse.replaceFirst(", ","").reverse
 
     var spatialFunctionComputeDfQueryString = ""
