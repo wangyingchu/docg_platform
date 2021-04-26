@@ -6,6 +6,6 @@ object GeospatialScaleLevel extends Enumeration{
   val CountryLevel = Value("CountryLevel")
   val LocalLevel = Value("LocalLevel")
 
-  def checkExists(day:String) = this.values.exists(_.toString==day)
+  def checkExists(item:String) = this.values.exists(_.toString == item)
   def showAll = this.values.foreach(println)
 }

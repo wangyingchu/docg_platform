@@ -3,6 +3,9 @@ package example
 import com.viewfunction.docg.dataAnalyze.util.coreRealm.GeospatialScaleLevel
 import com.viewfunction.docg.dataAnalyze.util.dataSlice.DataSliceOperationUtil
 import com.viewfunction.docg.dataAnalyze.util.spark.DataSliceSparkAccessor
+import com.viewfunction.docg.dataAnalyze.util.spark.spatial.{SpatialPredicateType, SpatialQueryOperator, SpatialQueryParam}
+
+import scala.collection.mutable
 
 object SpatialComputeExample extends App{
 
@@ -24,6 +27,14 @@ object SpatialComputeExample extends App{
     spatialFunctionComputeDf.show(10)
 
     println(spatialFunctionComputeDf.count())
+
+    val spatialQueryOperator = new SpatialQueryOperator()
+    val spatialQueryParamC = SpatialQueryParam("sectionBlockSTDF","LL_Geometry",mutable.Buffer[String]("BH"))
+    val spatialQueryParamD = SpatialQueryParam("individualTreeSTDF","LL_Geometry",mutable.Buffer[String]("DMID"))
+
+    val spatialFunctionComputeDf5 = spatialQueryOperator.spatialJoinQuery(dataSliceSparkAccessor,spatialQueryParamD,SpatialPredicateType.Within,spatialQueryParamC,null)
+    spatialFunctionComputeDf5.show(6)
+    println(spatialFunctionComputeDf5.count())
 
   }finally dataSliceSparkAccessor.close()
 }

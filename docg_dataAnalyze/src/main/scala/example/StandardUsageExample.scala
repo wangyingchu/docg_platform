@@ -2,6 +2,9 @@ package example
 
 import com.viewfunction.docg.dataAnalyze.util.dataSlice.DataSliceOperationUtil
 import com.viewfunction.docg.dataAnalyze.util.spark.DataSliceSparkAccessor
+import com.viewfunction.docg.dataAnalyze.util.spark.spatial.{SpatialPredicateType, SpatialQueryOperator, SpatialQueryParam}
+
+import scala.collection.mutable
 
 object StandardUsageExample extends App{
 
@@ -34,9 +37,27 @@ object StandardUsageExample extends App{
     val spatialSectionBlockDf = dataSliceSparkAccessor.getDataFrameFromSQL("spatialSectionBlockDf","SELECT ST_GeomFromWKT(DOCG_GS_LLGeometryContent) AS blockLocation , BKMC AS blockName , RealmGlobalUID AS blockUID FROM SectionBlock")
     spatialSectionBlockDf.printSchema()
 
-    val spatialFunctionComputeDfQueryString = "SELECT * FROM spatialSectionBlockDf, spatialIndividualTreeDf WHERE ST_Contains(spatialSectionBlockDf.blockLocation,spatialIndividualTreeDf.treeLocation)";
+    val spatialFunctionComputeDfQueryString = "SELECT *,spatialIndividualTreeDf.treeDBH AS renamedDBH FROM spatialSectionBlockDf, spatialIndividualTreeDf WHERE ST_Contains(spatialSectionBlockDf.blockLocation,spatialIndividualTreeDf.treeLocation)";
     val spatialFunctionComputeDf = dataSliceSparkAccessor.getDataFrameFromSQL(null,spatialFunctionComputeDfQueryString.stripMargin)
     spatialFunctionComputeDf.show(10)
+    println(spatialFunctionComputeDf.count())
+
+    val spatialQueryOperator = new SpatialQueryOperator()
+
+    val spatialQueryParamA = SpatialQueryParam("spatialSectionBlockDf","blockLocation",null)
+    val spatialQueryParamB = SpatialQueryParam("spatialIndividualTreeDf","treeLocation",null)
+
+    val spatialFunctionComputeDf2 = spatialQueryOperator.spatialJoinQuery(dataSliceSparkAccessor,spatialQueryParamB,SpatialPredicateType.Contains,spatialQueryParamA,null)
+    spatialFunctionComputeDf2.show(10)
+    println(spatialFunctionComputeDf2.count())
+
+    val spatialFunctionComputeDf3 = spatialQueryOperator.spatialJoinQuery(dataSliceSparkAccessor,spatialQueryParamB,SpatialPredicateType.Overlaps,spatialQueryParamA,null)
+    spatialFunctionComputeDf3.show(10)
+    println(spatialFunctionComputeDf3.count())
+
+    val spatialFunctionComputeDf4 = spatialQueryOperator.spatialJoinQuery(dataSliceSparkAccessor,spatialQueryParamB,SpatialPredicateType.Touches,spatialQueryParamA,null)
+    spatialFunctionComputeDf4.show(10)
+    println(spatialFunctionComputeDf4.count())
 
   }finally dataSliceSparkAccessor.close()
 }
