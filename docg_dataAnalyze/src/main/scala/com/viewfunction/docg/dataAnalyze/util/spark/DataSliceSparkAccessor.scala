@@ -36,7 +36,7 @@ class DataSliceSparkAccessor(private val sessionName:String, private val masterL
     igniteDF
   }
 
-  def getDataFrameWithSpatialSupportFromDataSlice(dataSliceName:String,geospatialLevel:GeospatialScaleLevel,dataFrameName:String):DataFrame = {
+  def getDataFrameWithSpatialSupportFromDataSlice(dataSliceName:String,geospatialLevel:GeospatialScaleLevel,dataFrameName:String,spatialAttributeName:String):DataFrame = {
     igniteSession.read
       .format(FORMAT_IGNITE) //Data source type.
       .option(OPTION_TABLE, dataSliceName) //Ignite table to read.
@@ -46,11 +46,23 @@ class DataSliceSparkAccessor(private val sessionName:String, private val masterL
     var spatialConvertSQL = ""
     geospatialLevel match {
       case GeospatialScaleLevel.GlobalLevel =>
-        spatialConvertSQL = "SELECT * , ST_GeomFromWKT(DOCG_GS_GLGeometryContent) AS GL_Geometry FROM "+dataSliceName
+        if(spatialAttributeName == null){
+          spatialConvertSQL = "SELECT * , ST_GeomFromWKT(DOCG_GS_GLGeometryContent) AS GL_Geometry FROM "+dataSliceName
+        }else{
+          spatialConvertSQL = "SELECT * , ST_GeomFromWKT(DOCG_GS_GLGeometryContent) AS "+spatialAttributeName+" FROM "+dataSliceName
+        }
       case GeospatialScaleLevel.CountryLevel =>
-        spatialConvertSQL = "SELECT * , ST_GeomFromWKT(DOCG_GS_CLGeometryContent) AS CL_Geometry FROM "+dataSliceName
+        if(spatialAttributeName == null){
+          spatialConvertSQL = "SELECT * , ST_GeomFromWKT(DOCG_GS_CLGeometryContent) AS CL_Geometry FROM "+dataSliceName
+        }else{
+          spatialConvertSQL = "SELECT * , ST_GeomFromWKT(DOCG_GS_CLGeometryContent) AS "+spatialAttributeName+" FROM "+dataSliceName
+        }
       case GeospatialScaleLevel.LocalLevel =>
-        spatialConvertSQL = "SELECT * , ST_GeomFromWKT(DOCG_GS_LLGeometryContent) AS LL_Geometry FROM "+dataSliceName
+        if(spatialAttributeName == null){
+          spatialConvertSQL = "SELECT * , ST_GeomFromWKT(DOCG_GS_LLGeometryContent) AS LL_Geometry FROM "+dataSliceName
+        }else{
+          spatialConvertSQL = "SELECT * , ST_GeomFromWKT(DOCG_GS_LLGeometryContent) AS "+spatialAttributeName+" FROM "+dataSliceName
+        }
     }
     val targetDF = igniteSession.sql(spatialConvertSQL.stripMargin)
     if(null != dataFrameName){
