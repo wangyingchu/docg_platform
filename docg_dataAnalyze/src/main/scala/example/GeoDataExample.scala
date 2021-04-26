@@ -1,7 +1,8 @@
+package example
+
 import com.viewfunction.docg.dataAnalyze.util.dataSlice.DataSliceOperationUtil
 import org.apache.ignite.Ignition
 import org.apache.ignite.spark.IgniteDataFrameSettings.{FORMAT_IGNITE, OPTION_CONFIG_FILE, OPTION_TABLE}
-import org.apache.log4j.{Level, Logger}
 import org.apache.sedona.sql.utils.SedonaSQLRegistrator
 import org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
 import org.apache.spark.serializer.KryoSerializer

@@ -1,4 +1,4 @@
-package com.viewfunction.docg.dataAnalyze.util
+package example
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.{ConceptionEntityValue, EntitiesRetrieveStatistics, RelationEntityValue}
