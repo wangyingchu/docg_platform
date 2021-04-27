@@ -41,7 +41,7 @@ public class MassConceptionIntegratedTest {
     public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         //generateData();
         //linkApprovedAtTimeData(701,800);
-        linkStartedDateAtTimeData(1,100);
+        linkStartedDateAtTimeData(701,800);
 
     }
 
