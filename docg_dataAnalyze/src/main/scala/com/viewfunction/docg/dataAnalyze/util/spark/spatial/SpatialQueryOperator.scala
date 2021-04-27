@@ -223,6 +223,52 @@ class SpatialQueryOperator {
     spatialFunctionComputeDf
   }
 
-  def distanceJoinQuery(dataSliceSparkAccessor:DataSliceSparkAccessor):Unit={}
+  def spatialWithinDistanceJoinQuery(dataSliceSparkAccessor:DataSliceSparkAccessor,operationSourceDataFrameA:SpatialQueryParam,operationSourceDataFrameB:SpatialQueryParam,
+                                     distanceValue:Double,resultDataFrameName:String):DataFrame={
+    val operationSourceDataFrameAName = operationSourceDataFrameA.spatialDataFrameName
+    val operationSourceDataFrameASpatialAttributeName = operationSourceDataFrameA.spatialAttributeName
+    val operationSourceDataFrameBName = operationSourceDataFrameB.spatialDataFrameName;
+    val operationSourceDataFrameBSpatialAttributeName = operationSourceDataFrameB.spatialAttributeName
+    val calculateAttributeA = operationSourceDataFrameAName+"."+operationSourceDataFrameASpatialAttributeName
+    val calculateAttributeB = operationSourceDataFrameBName+"."+operationSourceDataFrameBSpatialAttributeName
+    val operationSourceDataFrameAResultAttributes = operationSourceDataFrameA.resultAttributes
+    val operationSourceDataFrameBResultAttributes = operationSourceDataFrameB.resultAttributes
+    var resultAttributes = ""
 
+    if(operationSourceDataFrameAResultAttributes != null){
+      operationSourceDataFrameAResultAttributes.foreach(attributeName =>{
+        resultAttributes = resultAttributes + operationSourceDataFrameAName+"."+attributeName
+        resultAttributes = resultAttributes+" , "
+      })
+    }
+
+    if(operationSourceDataFrameBResultAttributes != null){
+      operationSourceDataFrameBResultAttributes.foreach(attributeName =>{
+        resultAttributes = resultAttributes + operationSourceDataFrameBName+"."+attributeName
+        resultAttributes = resultAttributes+" , "
+      })
+    }
+
+    var resultAttributesStr = "*"
+    if(!resultAttributes.equals("")) resultAttributesStr = resultAttributes
+    if(resultAttributesStr.endsWith(", ")) resultAttributesStr = resultAttributesStr.reverse.replaceFirst(", ","").reverse
+
+    //val spatialFunctionComputeDfQueryString = "SELECT superhero.name FROM city, superhero WHERE ST_Distance(city.geom, superhero.geom) <= "+distanceValue
+    val spatialFunctionComputeDfQueryString = "SELECT "+resultAttributesStr+" FROM "++operationSourceDataFrameAName+", "+operationSourceDataFrameBName+" WHERE ST_Distance("+calculateAttributeA+", "+calculateAttributeB+") <= "+distanceValue
+    val spatialFunctionComputeDf = dataSliceSparkAccessor.getDataFrameFromSQL(resultDataFrameName,spatialFunctionComputeDfQueryString.stripMargin)
+    spatialFunctionComputeDf
+  }
+
+  def spatialOutOfDistanceJoinQuery(dataSliceSparkAccessor:DataSliceSparkAccessor,operationSourceDataFrameA:SpatialQueryParam,operationSourceDataFrameB:SpatialQueryParam,
+                                    distanceValue:Double,resultDataFrameName:String):Unit={
+
+    val spatialFunctionComputeDfQueryString = "SELECT superhero.name FROM city, superhero WHERE ST_Distance(city.geom, superhero.geom) >= "+distanceValue
+  }
+
+  def spatialBetweenDistanceJoinQuery(dataSliceSparkAccessor:DataSliceSparkAccessor,operationSourceDataFrameA:SpatialQueryParam,operationSourceDataFrameB:SpatialQueryParam,
+                                      minDistanceValue:Double,maxDistanceValue:Double,resultDataFrameName:String):Unit={
+
+    val spatialFunctionComputeDfQueryString = "SELECT superhero.name FROM city, superhero WHERE ST_Distance(city.geom, superhero.geom) >= "+minDistanceValue + " AND "+
+    "ST_Distance(city.geom, superhero.geom) <= "+maxDistanceValue
+  }
 }
