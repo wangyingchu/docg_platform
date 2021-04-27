@@ -40,11 +40,12 @@ public class MassConceptionIntegratedTest {
 
     public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         //generateData();
-        linkTimeData(91,100);
+        //linkApprovedAtTimeData(701,800);
+        linkStartedDateAtTimeData(1,100);
 
     }
 
-    public static void linkTimeData(int fromPage,int toPage) throws CoreRealmServiceEntityExploreException {
+    public static void linkApprovedAtTimeData(int fromPage,int toPage) throws CoreRealmServiceEntityExploreException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         ConceptionKind _ChinaFirmConceptionKind = coreRealm.getConceptionKind(ChinaFirmConceptionType);
         if(_ChinaFirmConceptionKind != null){
@@ -59,6 +60,24 @@ public class MassConceptionIntegratedTest {
 
             List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
             BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,ApprovedTime,"approvedAt",null, TimeFlow.TimeScaleGrade.DAY,10);
+        }
+    }
+
+    public static void linkStartedDateAtTimeData(int fromPage,int toPage) throws CoreRealmServiceEntityExploreException {
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        ConceptionKind _ChinaFirmConceptionKind = coreRealm.getConceptionKind(ChinaFirmConceptionType);
+        if(_ChinaFirmConceptionKind != null){
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.addSortingAttribute("lastModifyDate", QueryParameters.SortingLogic.ASC);
+            queryParameters.setStartPage(fromPage);
+            queryParameters.setEndPage(toPage);
+            queryParameters.setPageSize(10000);
+            List<String> attributeNamesList = new ArrayList<>();
+            attributeNamesList.add(StartDate);
+            ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributeResult = _ChinaFirmConceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeNamesList,queryParameters);
+
+            List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
+            BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,StartDate,"startedAt",null, TimeFlow.TimeScaleGrade.DAY,10);
         }
     }
 
