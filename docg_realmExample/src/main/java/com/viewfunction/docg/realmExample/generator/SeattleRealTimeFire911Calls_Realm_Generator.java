@@ -9,10 +9,12 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntiti
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -98,6 +100,10 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
                     newEntityValueMap.put(Location,reportLocation);
                     newEntityValueMap.put(IncidentNumber,incidentNumber);
 
+                    newEntityValueMap.put("DOCG_GS_GLGeometryContent",reportLocation);
+                    newEntityValueMap.put("DOCG_GS_GeometryType","POINT");
+                    newEntityValueMap.put("DOCG_GS_GlobalCRSAID","EPSG:4326");
+
                     ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValueMap);
                     _Fire911CallEntityValueList.add(conceptionEntityValue);
                 }
@@ -127,6 +133,6 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
         conceptionEntitiesAttributeResult.getConceptionEntityValues();
 
         List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
-        BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,Datetime,"occurredAt",null, TimeFlow.TimeScaleGrade.MINUTE,10);
+        //BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,Datetime,"occurredAt",null, TimeFlow.TimeScaleGrade.MINUTE,10);
     }
 }

@@ -9,7 +9,6 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntiti
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 
 import java.io.BufferedReader;
@@ -78,6 +77,10 @@ public class RoadWeatherInformationStationsRecords_Realm_Generator {
                     newEntityValueMap.put(RoadSurfaceTemperature,Double.valueOf(roadSurfaceTemperature));
                     newEntityValueMap.put(AirTemperature,Double.valueOf(airTemperature));
 
+                    newEntityValueMap.put("DOCG_GS_GLGeometryContent",stationLocation);
+                    newEntityValueMap.put("DOCG_GS_GeometryType","POINT");
+                    newEntityValueMap.put("DOCG_GS_GlobalCRSAID","EPSG:4326");
+
                     ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValueMap);
                     _WeatherInformationStationsRecordEntityValueList.add(conceptionEntityValue);
                 }
@@ -105,7 +108,7 @@ public class RoadWeatherInformationStationsRecords_Realm_Generator {
         ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributeResult =  conceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeNamesList,queryParameters);
 
         List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
-        BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,RecordDateTime,"recordedAt",null, TimeFlow.TimeScaleGrade.MINUTE,10);
+        //BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,RecordDateTime,"recordedAt",null, TimeFlow.TimeScaleGrade.MINUTE,5);
 
     }
 }
