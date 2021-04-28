@@ -3,7 +3,7 @@ package example
 import com.viewfunction.docg.dataAnalyze.util.coreRealm.GeospatialScaleLevel
 import com.viewfunction.docg.dataAnalyze.util.dataSlice.DataSliceOperationUtil
 import com.viewfunction.docg.dataAnalyze.util.spark.DataSliceSparkAccessor
-import com.viewfunction.docg.dataAnalyze.util.spark.spatial.{SpatialOrderType, SpatialPredicateType, SpatialQueryOperator}
+import com.viewfunction.docg.dataAnalyze.util.spark.spatial.{SpatialOrderType, SpatialPredicateType, SpatialQueryOperator, SpatialQueryParam}
 
 import java.util.Date
 
@@ -46,6 +46,25 @@ object SpatialQueryOperatorExample {
       val individualTreeBetweenDistanceDF =
         spatialQueryOperator.spatialBetweenDistanceQuery(dataSliceSparkAccessor,"POINT (374534.4689999996 3271806.7980000004)",50,1250,1255,SpatialOrderType.ASC,"individualTreesDF","treeLocation",null,"distanceInMeter",null)
       individualTreeBetweenDistanceDF.show(10)
+
+      val spatialQueryParamA = SpatialQueryParam("individualTreesDF","treeLocation",null)
+      val spatialQueryParamB = SpatialQueryParam("frutexTreesDF","frutexLocation",null)
+
+      val frutexTreeDF = dataSliceSparkAccessor.getDataFrameWithSpatialSupportFromDataSlice("Frutex",GeospatialScaleLevel.LocalLevel,"frutexTreesDF","frutexLocation")
+      val individualTree_FrutexDistanceJoinDF1 =
+        spatialQueryOperator.spatialWithinDistanceJoinQuery(dataSliceSparkAccessor,spatialQueryParamA,spatialQueryParamB,50,"treeDistanceInMeter",null)
+      individualTree_FrutexDistanceJoinDF1.show(20)
+      //println(individualTree_FrutexDistanceJoinDF1.count())
+
+      val individualTree_FrutexDistanceJoinDF2 =
+        spatialQueryOperator.spatialOutOfDistanceJoinQuery(dataSliceSparkAccessor,spatialQueryParamA,spatialQueryParamB,2500,"treeDistanceInMeter",null)
+      individualTree_FrutexDistanceJoinDF2.show(20)
+      //println(individualTree_FrutexDistanceJoinDF2.count())
+
+      val individualTree_FrutexDistanceJoinDF3 =
+        spatialQueryOperator.spatialBetweenDistanceJoinQuery(dataSliceSparkAccessor,spatialQueryParamA,spatialQueryParamB,150,200,"treeDistanceInMeter",null)
+      individualTree_FrutexDistanceJoinDF3.show(20)
+      //println(individualTree_FrutexDistanceJoinDF3.count())
 
     }finally dataSliceSparkAccessor.close()
   }
