@@ -9,7 +9,21 @@ import scala.collection.mutable
 
 class SpatialQueryOperator {
 
-  def spatialAttributeQuery(dataSliceSparkAccessor:DataSliceSparkAccessor):Unit={}
+  def spatialAttributesQuery(dataSliceSparkAccessor:DataSliceSparkAccessor,operationSourceDataFrame:String,spatialAttributeName:String,uidAttributeName:String,resultDataFrameName:String):DataFrame={
+    val spatialFunctionComputeDfQueryString =
+      "SELECT ST_ConvexHull("+spatialAttributeName+") AS ConvexHull" +
+        ", ST_Envelope("+spatialAttributeName+") AS Envelope" +
+        ", ST_Length("+spatialAttributeName+") AS Length" +
+        ", ST_Area("+spatialAttributeName+") AS Area" +
+        ", ST_Centroid("+spatialAttributeName+") AS Centroid" +
+        ", ST_Boundary("+spatialAttributeName+") AS Boundary" +
+        //", ST_MinimumBoundingRadius("+spatialAttributeName+") AS InteriorRingN" + //supported at sedona 1.0.1
+        //", ST_MinimumBoundingCircle("+spatialAttributeName+") AS InteriorRingN" + //supported at sedona 1.0.1
+        "," + uidAttributeName +" AS UID" +
+        " FROM "+operationSourceDataFrame
+    val spatialFunctionComputeDf = dataSliceSparkAccessor.getDataFrameFromSQL(resultDataFrameName,spatialFunctionComputeDfQueryString.stripMargin)
+    spatialFunctionComputeDf
+  }
 
   def spatialKNNQuery(dataSliceSparkAccessor:DataSliceSparkAccessor,queryPointWKT:String,kValue:Int,spatialOrderType:SpatialOrderType,
                       operationSourceDataFrame:String,spatialAttributeName:String,resultDFAttributes:mutable.Buffer[String],distanceAttributeName:String,resultDataFrameName:String):DataFrame={

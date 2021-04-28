@@ -5,8 +5,6 @@ import com.viewfunction.docg.dataAnalyze.util.dataSlice.DataSliceOperationUtil
 import com.viewfunction.docg.dataAnalyze.util.spark.DataSliceSparkAccessor
 import com.viewfunction.docg.dataAnalyze.util.spark.spatial.{SpatialOrderType, SpatialPredicateType, SpatialQueryOperator, SpatialQueryParam}
 
-import java.util.Date
-
 object SpatialQueryOperatorExample {
 
   def main(args:Array[String]):Unit = {
@@ -65,6 +63,11 @@ object SpatialQueryOperatorExample {
         spatialQueryOperator.spatialBetweenDistanceJoinQuery(dataSliceSparkAccessor,spatialQueryParamA,spatialQueryParamB,150,200,"treeDistanceInMeter",null)
       individualTree_FrutexDistanceJoinDF3.show(20)
       //println(individualTree_FrutexDistanceJoinDF3.count())
+
+      val functionalZoneSpatialAttributesDF =
+        spatialQueryOperator.spatialAttributesQuery(dataSliceSparkAccessor,"functionalZonesDF","LL_Geometry","REALMGLOBALUID",null)
+      functionalZoneSpatialAttributesDF.show(20)
+      functionalZoneSpatialAttributesDF.printSchema()
 
     }finally dataSliceSparkAccessor.close()
   }
