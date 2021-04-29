@@ -9,6 +9,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntiti
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 
 import java.io.BufferedReader;
@@ -30,6 +31,11 @@ public class RoadWeatherInformationStationsRecords_Realm_Generator {
     private static final String AirTemperature = "airTemperature";
 
     public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        //createData();
+        linkData();
+    }
+
+    private static void createData() throws CoreRealmServiceRuntimeException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
 
         //Part 1
@@ -98,7 +104,10 @@ public class RoadWeatherInformationStationsRecords_Realm_Generator {
             }
         }
         BatchDataOperationUtil.batchAddNewEntities(RoadWeatherInformationStationsRecordsConceptionType,_WeatherInformationStationsRecordEntityValueList,10);
+    }
 
+    private static void linkData() throws CoreRealmServiceEntityExploreException {
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         //Part 2 link to time
         ConceptionKind conceptionKind = coreRealm.getConceptionKind(RoadWeatherInformationStationsRecordsConceptionType);
         QueryParameters queryParameters = new QueryParameters();
@@ -108,7 +117,6 @@ public class RoadWeatherInformationStationsRecords_Realm_Generator {
         ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributeResult =  conceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeNamesList,queryParameters);
 
         List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
-        //BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,RecordDateTime,"recordedAt",null, TimeFlow.TimeScaleGrade.MINUTE,5);
-
+        BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,RecordDateTime,"recordedAt",null, TimeFlow.TimeScaleGrade.MINUTE,10);
     }
 }
