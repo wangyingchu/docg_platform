@@ -1,6 +1,7 @@
 package com.viewfunction.docg.dataAnalyze.util.spark.spatial
 
 import com.viewfunction.docg.dataAnalyze.util.spark.DataSliceSparkAccessor
+import com.viewfunction.docg.dataAnalyze.util.spark.spatial.SpatialDirectionType.SpatialDirectionType
 import com.viewfunction.docg.dataAnalyze.util.spark.spatial.SpatialOrderType.SpatialOrderType
 import com.viewfunction.docg.dataAnalyze.util.spark.spatial.SpatialPredicateType.SpatialPredicateType
 import org.apache.spark.sql.DataFrame
@@ -180,7 +181,6 @@ class SpatialQueryOperator {
       case SpatialPredicateType.Overlaps =>
         spatialFunctionComputeDfQueryString = "SELECT "+resultAttributesStr+" FROM "+operationSourceDataFrame+" WHERE ST_Overlaps(ST_GeomFromWKT(\""+queryRangeWKT+"\"),"+dataFrameSpatialAttributeName+")"
     }
-    //println(spatialFunctionComputeDfQueryString)
     val spatialFunctionComputeDf = dataSliceSparkAccessor.getDataFrameFromSQL(resultDataFrameName,spatialFunctionComputeDfQueryString.stripMargin)
     spatialFunctionComputeDf
   }
@@ -232,7 +232,6 @@ class SpatialQueryOperator {
       case SpatialPredicateType.Overlaps =>
         spatialFunctionComputeDfQueryString = "SELECT "+resultAttributesStr+" FROM "+operationSourceDataFrameAName+", "+operationSourceDataFrameBName+" WHERE ST_Overlaps("+calculateAttributeA+","+calculateAttributeB+")"
     }
-    //println(spatialFunctionComputeDfQueryString)
     val spatialFunctionComputeDf = dataSliceSparkAccessor.getDataFrameFromSQL(resultDataFrameName,spatialFunctionComputeDfQueryString.stripMargin)
     spatialFunctionComputeDf
   }
@@ -357,4 +356,12 @@ class SpatialQueryOperator {
     val spatialFunctionComputeDf = dataSliceSparkAccessor.getDataFrameFromSQL(resultDataFrameName,spatialFunctionComputeDfQueryString.stripMargin)
     spatialFunctionComputeDf
   }
+
+  def spatialDirectionalQuery(dataSliceSparkAccessor:DataSliceSparkAccessor,queryPointWKT:String,spatialDirectionType:SpatialDirectionType,
+                                      operationSourceDataFrame:String,spatialAttributeName:String,resultDFAttributes:mutable.Buffer[String],resultDataFrameName:String):Unit={
+
+  }
+
+  def spatialTopologicalQuery(dataSliceSparkAccessor:DataSliceSparkAccessor,queryPointWKT:String):Unit={}
+
 }
