@@ -3,7 +3,8 @@ package example
 import com.viewfunction.docg.dataAnalyze.util.coreRealm.GeospatialScaleLevel
 import com.viewfunction.docg.dataAnalyze.util.dataSlice.DataSliceOperationUtil
 import com.viewfunction.docg.dataAnalyze.util.spark.DataSliceSparkAccessor
-import com.viewfunction.docg.dataAnalyze.util.spark.spatial.{SpatialOrderType, SpatialPredicateType, SpatialQueryOperator, SpatialQueryParam}
+import com.viewfunction.docg.dataAnalyze.util.spark.spatial.SpatialDirectionType.SpatialDirectionType
+import com.viewfunction.docg.dataAnalyze.util.spark.spatial.{SpatialDirectionType, SpatialOrderType, SpatialPredicateType, SpatialQueryOperator, SpatialQueryParam}
 
 object SpatialQueryOperatorExample {
 
@@ -68,6 +69,11 @@ object SpatialQueryOperatorExample {
         spatialQueryOperator.spatialAttributesQuery(dataSliceSparkAccessor,"functionalZonesDF","LL_Geometry","REALMGLOBALUID",null)
       functionalZoneSpatialAttributesDF.show(20)
       functionalZoneSpatialAttributesDF.printSchema()
+
+      val individualTree_FrutexDirectionQueryDF =
+        spatialQueryOperator.spatialDirectionalQuery(dataSliceSparkAccessor,"POINT (374534.4689999996 3271806.7980000004)",SpatialDirectionType.RightOf,"individualTreesDF","treeLocation",null,null)
+      individualTree_FrutexDirectionQueryDF.show(20)
+      println(individualTree_FrutexDirectionQueryDF.count())
 
     }finally dataSliceSparkAccessor.close()
   }

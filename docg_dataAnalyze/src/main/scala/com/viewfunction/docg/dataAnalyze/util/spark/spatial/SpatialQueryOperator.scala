@@ -358,10 +358,15 @@ class SpatialQueryOperator {
   }
 
   def spatialDirectionalQuery(dataSliceSparkAccessor:DataSliceSparkAccessor,queryPointWKT:String,spatialDirectionType:SpatialDirectionType,
-                                      operationSourceDataFrame:String,spatialAttributeName:String,resultDFAttributes:mutable.Buffer[String],resultDataFrameName:String):Unit={
-
+                                      operationSourceDataFrame:String,spatialAttributeName:String,resultDFAttributes:mutable.Buffer[String],resultDataFrameName:String):DataFrame={
+    // <, > 等运算符的含义？？
+    val spatialFunctionComputeDfQueryString = "SELECT * FROM "+ operationSourceDataFrame + " WHERE " + spatialAttributeName + " <= " + "ST_GeomFromWKT(\""+queryPointWKT+"\")"
+    val spatialFunctionComputeDf = dataSliceSparkAccessor.getDataFrameFromSQL(resultDataFrameName,spatialFunctionComputeDfQueryString.stripMargin)
+    spatialFunctionComputeDf
   }
 
   def spatialTopologicalQuery(dataSliceSparkAccessor:DataSliceSparkAccessor,queryPointWKT:String):Unit={}
+
+  def spatialBufferQuery(dataSliceSparkAccessor:DataSliceSparkAccessor,queryPointWKT:String):Unit={}
 
 }
