@@ -9,6 +9,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntiti
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 
 import java.io.BufferedReader;
@@ -31,6 +32,11 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
     private static final String IncidentNumber = "incidentNumber";
 
     public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        //createData();
+        linkData();
+    }
+
+    public static void createData() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
 
         //Part 1
@@ -122,7 +128,10 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
         }
 
         BatchDataOperationUtil.batchAddNewEntities(Fire911CallConceptionType,_Fire911CallEntityValueList,10);
+    }
 
+    public static void linkData() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException{
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         //Part 2 link to time
         ConceptionKind conceptionKind = coreRealm.getConceptionKind(Fire911CallConceptionType);
         QueryParameters queryParameters = new QueryParameters();
@@ -133,6 +142,6 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
         conceptionEntitiesAttributeResult.getConceptionEntityValues();
 
         List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
-        //BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,Datetime,"occurredAt",null, TimeFlow.TimeScaleGrade.MINUTE,10);
+        BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,Datetime,"occurredAt",null, TimeFlow.TimeScaleGrade.MINUTE,10);
     }
 }
