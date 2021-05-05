@@ -17,6 +17,11 @@
       <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="osgeo-snapshot" />
+      <option name="name" value="OSGeo Snapshot Repository" />
+      <option name="url" value="https://repo.osgeo.org/repository/snapshot/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="osgeo" />
       <option name="name" value="OSGeo Release Repository" />
       <option name="url" value="https://repo.osgeo.org/repository/release/" />
