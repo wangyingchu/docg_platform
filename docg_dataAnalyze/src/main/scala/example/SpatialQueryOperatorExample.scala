@@ -6,6 +6,8 @@ import com.viewfunction.docg.dataAnalyze.util.spark.DataSliceSparkAccessor
 import com.viewfunction.docg.dataAnalyze.util.spark.spatial.SpatialDirectionType.SpatialDirectionType
 import com.viewfunction.docg.dataAnalyze.util.spark.spatial.{SpatialDirectionType, SpatialOrderType, SpatialPredicateType, SpatialQueryOperator, SpatialQueryParam}
 
+import scala.collection.mutable
+
 object SpatialQueryOperatorExample {
 
   def main(args:Array[String]):Unit = {
@@ -74,6 +76,11 @@ object SpatialQueryOperatorExample {
         spatialQueryOperator.spatialDirectionalQuery(dataSliceSparkAccessor,"POINT (374534.4689999996 3271806.7980000004)",SpatialDirectionType.RightOf,"individualTreesDF","treeLocation",null,null)
       individualTree_FrutexDirectionQueryDF.show(20)
       println(individualTree_FrutexDirectionQueryDF.count())
+
+      val bufferQueryDF =
+        spatialQueryOperator.spatialBufferQuery(dataSliceSparkAccessor,"POINT (374534.4689999996 3271806.7980000004)",100,"individualTreesDF","treeLocation",mutable.Buffer[String]("DMID","SZ"),null)
+      bufferQueryDF.show(20)
+      println(bufferQueryDF.count())
 
     }finally dataSliceSparkAccessor.close()
   }

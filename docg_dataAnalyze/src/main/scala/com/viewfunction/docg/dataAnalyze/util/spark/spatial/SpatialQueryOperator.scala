@@ -367,6 +367,31 @@ class SpatialQueryOperator {
 
   def spatialTopologicalQuery(dataSliceSparkAccessor:DataSliceSparkAccessor,queryPointWKT:String):Unit={}
 
-  def spatialBufferQuery(dataSliceSparkAccessor:DataSliceSparkAccessor,queryPointWKT:String):Unit={}
+  def spatialBufferQuery(dataSliceSparkAccessor:DataSliceSparkAccessor,queryWKT:String,bufferDistanceValue:Double,
+                         operationSourceDataFrame:String,spatialAttributeName:String,resultDFAttributes:mutable.Buffer[String],resultDataFrameName:String):DataFrame={
+    var resultAttributes = ""
+    if(resultDFAttributes != null){
+      resultDFAttributes.foreach(attributeName =>{
+        resultAttributes = resultAttributes + operationSourceDataFrame+"."+attributeName
+        resultAttributes = resultAttributes+" , "
+      })
+    }
+    var resultAttributesStr = "*"
+    if(!resultAttributes.equals("")) resultAttributesStr = resultAttributes
+    if(resultAttributesStr.endsWith(", ")) resultAttributesStr = resultAttributesStr.reverse.replaceFirst(", ","").reverse
+
+    val targetWKTBufferQueryString = "SELECT ST_Buffer(ST_GeomFromWKT(\""+queryWKT+"\"),"+bufferDistanceValue+")"
+    val targetWKTBufferDF = dataSliceSparkAccessor.getDataFrameFromSQL(null,targetWKTBufferQueryString.stripMargin)
+    var targetWKT = ""
+    val resultBufferedWKT = targetWKTBufferDF.take(1)
+    resultBufferedWKT
+      .foreach(item=>{
+        targetWKT = item.get(0).toString
+        println( item.get(0))
+    })
+    val spatialFunctionComputeDfQueryString = "SELECT "+resultAttributesStr+" FROM "+operationSourceDataFrame+" WHERE ST_Contains(ST_GeomFromWKT(\""+targetWKT+"\"),"+spatialAttributeName+")"
+    val spatialFunctionComputeDf = dataSliceSparkAccessor.getDataFrameFromSQL(resultDataFrameName,spatialFunctionComputeDfQueryString.stripMargin)
+    spatialFunctionComputeDf
+  }
 
 }
