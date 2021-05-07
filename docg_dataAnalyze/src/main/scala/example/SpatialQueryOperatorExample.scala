@@ -26,7 +26,7 @@ object SpatialQueryOperatorExample {
 
       val individualTreeDF = dataSliceSparkAccessor.getDataFrameWithSpatialSupportFromDataSlice("IndividualTree",GeospatialScaleLevel.LocalLevel,"individualTreesDF","treeLocation")
       //individualTreeDF.show(10)
-      //individualTreeDF.printSchema()
+      individualTreeDF.printSchema()
 
       //println("Start At    " + new Date().toString)
       val spatialQueryOperator = new SpatialQueryOperator
@@ -81,6 +81,9 @@ object SpatialQueryOperatorExample {
         spatialQueryOperator.spatialBufferQuery(dataSliceSparkAccessor,"POINT (374534.4689999996 3271806.7980000004)",100,"individualTreesDF","treeLocation",mutable.Buffer[String]("DMID","SZ"),null)
       bufferQueryDF.show(20)
       println(bufferQueryDF.count())
+
+      val orgIndividualTreeDF = dataSliceSparkAccessor.getDataFrameFromDataSlice("DOCG_GS_CountryRegion")
+      orgIndividualTreeDF.write.csv("/home/wangychu/Desktop/output/01")
 
     }finally dataSliceSparkAccessor.close()
   }

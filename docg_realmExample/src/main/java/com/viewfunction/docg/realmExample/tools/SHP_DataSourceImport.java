@@ -21,20 +21,118 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SHP_DataSourceImport {
 
     public static void main0(String[] args){
-        SHP_DataStructureParse("/home/wangychu/Desktop/SEATTLE_GIS_DATA/Boundaries/City_Property_-_Property_Management_Areas/City_Property_-_Property_Management_Areas.shp");
+        SHP_DataStructureParse("/home/wangychu/Desktop/SEATTLE-GIS/Historic_Landslide_Locations_ECA/Historic_Landslide_Locations_ECA.shp");
     }
 
+
+
     public static void main(String[] args) throws IOException, FactoryException {
+        //String pathName = "/home/wangychu/Desktop/SEATTLE-GIS/Historic_Landslide_Locations_ECA/Historic_Landslide_Locations_ECA.shp";
+        String pathName = "/home/wangychu/Desktop/CQ-GS/GYD-GIS_WGS84/gyd-functionalZone.shp";
+        File file = new File(pathName);
+        detectDataStructure(file);
+
+    }
+
+    private static void detectDataStructure(File shpFile) throws IOException {
+        // 读取到数据存储中
+        FileDataStore dataStore = FileDataStoreFinder.getDataStore(shpFile);
+        // 获取特征资源
+        SimpleFeatureSource simpleFeatureSource = dataStore.getFeatureSource();
+
+        System.out.println(simpleFeatureSource.getName().toString());
+
+        SimpleFeatureType simpleFeatureType = dataStore.getSchema();
+
+        System.out.println(simpleFeatureType.getCoordinateReferenceSystem().getName());
+//GCS_WGS_1984
+
+
+
+        // 要素集合
+        SimpleFeatureCollection simpleFeatureCollection = simpleFeatureSource.getFeatures();
+
+        // 要素数量
+        int featureSize = simpleFeatureCollection.size();
+        // 获取要素迭代器
+        SimpleFeatureIterator featureIterator = simpleFeatureCollection.features();
+
+        if(featureIterator.hasNext()){
+            // 要素对象
+            SimpleFeature feature = featureIterator.next();
+            // 要素属性信息，名称，值，类型
+            List<Property> propertyList = (List<Property>) feature.getValue();
+
+
+            Map<String,Class> shpDataStructureMap = new HashMap<>();
+
+            for(Property property : propertyList){
+
+                shpDataStructureMap.put(property.getName().toString(), property.getType().getBinding());
+
+
+                //System.out.println("属性名称：" + property.getName());
+                //System.out.println("属性值：" + property.getValue());
+                //System.out.println("属性类型：" + property.getType().getBinding());
+                //System.out.println();
+            }
+
+            //the_geom=class org.locationtech.jts.geom.Point
+            System.out.println(shpDataStructureMap);
+
+
+            /*
+            // 要素属性信息
+            List<Object> featureAttributes = feature.getAttributes();
+
+            // 要素geometry的类型和坐标，如点，线，面及其组成的坐标
+            Object geometryText = feature.getDefaultGeometry();
+
+            // geometry属性
+            GeometryAttribute geometryAttribute = feature.getDefaultGeometryProperty();
+            // 获取坐标参考系信息
+            CoordinateReferenceSystem coordinateReferenceSystem = geometryAttribute.getDescriptor().getCoordinateReferenceSystem();
+
+            // geometry类型
+            GeometryType geometryType = geometryAttribute.getType();
+            // geometry类型名称
+            Name name = geometryType.getName();
+
+            System.out.println("要素数量："+ featureSize);
+            System.out.println("要素属性：" + featureAttributes);
+            System.out.println("要素geometry位置信息：" + geometryText);
+            System.out.println("要素geometry类型名称：" + name);
+            System.out.println("shp文件使用的坐标参考系：\n" + coordinateReferenceSystem);
+
+            */
+
+
+        }
+
+
+    }
+
+
+
+
+    public static void main1(String[] args) throws IOException, FactoryException {
 
         System.out.println(CRS.decode("epsg:4326").getCoordinateSystem().getName());
 
+        //java.lang.Integer
+        //java.lang.Double
+        //java.util.Date
+        //java.lang.String
+        //org.locationtech.jts.geom.Point
 
-        String pathName = "/home/wangychu/Desktop/SEATTLE_GIS_DATA/Boundaries/City_Property_-_Property_Management_Areas/City_Property_-_Property_Management_Areas.shp";
+        String pathName = "/home/wangychu/Desktop/SEATTLE-GIS/Historic_Landslide_Locations_ECA/Historic_Landslide_Locations_ECA.shp";
         File file = new File(pathName);
 
         // 读取到数据存储中
@@ -56,7 +154,7 @@ public class SHP_DataSourceImport {
             for(Property property : propertyList){
                 System.out.println("属性名称：" + property.getName());
                 System.out.println("属性值：" + property.getValue());
-                System.out.println("属性类型：" + property.getType());
+                System.out.println("属性类型：" + property.getType().getBinding());
                 System.out.println();
             }
 
