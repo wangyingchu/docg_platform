@@ -1,264 +1,142 @@
 package com.viewfunction.docg.realmExample.tools;
 
+import com.google.common.collect.Lists;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.shapefile.ShapefileDataStore;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
-import org.geotools.feature.FeatureCollection;
 import org.geotools.referencing.CRS;
-import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.GeometryAttribute;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeType;
-import org.opengis.feature.type.GeometryType;
-import org.opengis.feature.type.Name;
 import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class SHP_DataSourceImport {
 
-    public static void main0(String[] args){
-        SHP_DataStructureParse("/home/wangychu/Desktop/SEATTLE-GIS/Historic_Landslide_Locations_ECA/Historic_Landslide_Locations_ECA.shp");
-    }
-
-
-
-    public static void main(String[] args) throws IOException, FactoryException {
+    public static void main(String[] args) throws IOException, FactoryException, CoreRealmServiceRuntimeException {
         //String pathName = "/home/wangychu/Desktop/SEATTLE-GIS/Historic_Landslide_Locations_ECA/Historic_Landslide_Locations_ECA.shp";
-        String pathName = "/home/wangychu/Desktop/CQ-GS/GYD-GIS_WGS84/gyd-functionalZone.shp";
+        //String pathName = "/home/wangychu/Desktop/SEATTLE-GIS/Citywide_Green_Storm_Infrastructure/Citywide_Green_Storm_Infrastructure.shp";
+        String pathName = "/home/wangychu/Desktop/SEATTLE-GIS/Cadastral_Control_Lines/Cadastral_Control_Lines.shp";
+        //String pathName = "/media/wangychu/Data/Nutstore/区划/县.shp";
+        //String pathName = "/home/wangychu/Desktop/CQ-GS/GYD-GIS_WGS84/gyd-roadAndBuilding.shp";
         File file = new File(pathName);
-        detectDataStructure(file);
-
+        //importSHPDataToConceptionKind("HistoricLandslideLocations",true,file,null);
+        //importSHPDataToConceptionKind("CitywideGreenStormInfrastructure",true,file,null);
+        importSHPDataToConceptionKind("CadastralControlLines",true,file,null);
     }
 
-    private static void detectDataStructure(File shpFile) throws IOException {
+    private static void importSHPDataToConceptionKind(String conceptionKindName,boolean removeExistData,File shpFile,String fileEncode) throws IOException, FactoryException, CoreRealmServiceRuntimeException {
+        String charsetEncode = fileEncode != null ?  fileEncode : "UTF-8";
         // 读取到数据存储中
         FileDataStore dataStore = FileDataStoreFinder.getDataStore(shpFile);
+        ((ShapefileDataStore) dataStore).setCharset(Charset.forName(charsetEncode));
         // 获取特征资源
         SimpleFeatureSource simpleFeatureSource = dataStore.getFeatureSource();
-
-        System.out.println(simpleFeatureSource.getName().toString());
-
+        String conceptionKindNameValue = conceptionKindName != null ? conceptionKindName : simpleFeatureSource.getName().toString();
         SimpleFeatureType simpleFeatureType = dataStore.getSchema();
+        String _CRSName = simpleFeatureType.getCoordinateReferenceSystem().getName().getCode();
 
-        System.out.println(simpleFeatureType.getCoordinateReferenceSystem().getName());
-//GCS_WGS_1984
-
-
-
-        // 要素集合
-        SimpleFeatureCollection simpleFeatureCollection = simpleFeatureSource.getFeatures();
-
-        // 要素数量
-        int featureSize = simpleFeatureCollection.size();
-        // 获取要素迭代器
-        SimpleFeatureIterator featureIterator = simpleFeatureCollection.features();
-
-        if(featureIterator.hasNext()){
-            // 要素对象
-            SimpleFeature feature = featureIterator.next();
-            // 要素属性信息，名称，值，类型
-            List<Property> propertyList = (List<Property>) feature.getValue();
-
-
-            Map<String,Class> shpDataStructureMap = new HashMap<>();
-
-            for(Property property : propertyList){
-
-                shpDataStructureMap.put(property.getName().toString(), property.getType().getBinding());
-
-
-                //System.out.println("属性名称：" + property.getName());
-                //System.out.println("属性值：" + property.getValue());
-                //System.out.println("属性类型：" + property.getType().getBinding());
-                //System.out.println();
+        String entityCRSAID = null;
+        String _CRS_Range = null;
+        if("GCS_WGS_1984".equals(_CRSName)){
+            entityCRSAID= "EPSG:4326";
+            _CRS_Range = "GlobalLevel";
+        }else if("CGCS_2000".equals(_CRSName)){
+            entityCRSAID= "EPSG:4545";
+            _CRS_Range = "CountryLevel";
+        }else{
+            _CRS_Range = "LocalLevel";
+            Integer _EpsgCodeValue = CRS.lookupEpsgCode(simpleFeatureType.getCoordinateReferenceSystem(),true);
+            if(_EpsgCodeValue != null){
+                entityCRSAID= "EPSG:"+_EpsgCodeValue.intValue();
             }
-
-            //the_geom=class org.locationtech.jts.geom.Point
-            System.out.println(shpDataStructureMap);
-
-
-            /*
-            // 要素属性信息
-            List<Object> featureAttributes = feature.getAttributes();
-
-            // 要素geometry的类型和坐标，如点，线，面及其组成的坐标
-            Object geometryText = feature.getDefaultGeometry();
-
-            // geometry属性
-            GeometryAttribute geometryAttribute = feature.getDefaultGeometryProperty();
-            // 获取坐标参考系信息
-            CoordinateReferenceSystem coordinateReferenceSystem = geometryAttribute.getDescriptor().getCoordinateReferenceSystem();
-
-            // geometry类型
-            GeometryType geometryType = geometryAttribute.getType();
-            // geometry类型名称
-            Name name = geometryType.getName();
-
-            System.out.println("要素数量："+ featureSize);
-            System.out.println("要素属性：" + featureAttributes);
-            System.out.println("要素geometry位置信息：" + geometryText);
-            System.out.println("要素geometry类型名称：" + name);
-            System.out.println("shp文件使用的坐标参考系：\n" + coordinateReferenceSystem);
-
-            */
-
-
         }
-
-
-    }
-
-
-
-
-    public static void main1(String[] args) throws IOException, FactoryException {
-
-        System.out.println(CRS.decode("epsg:4326").getCoordinateSystem().getName());
-
-        //java.lang.Integer
-        //java.lang.Double
-        //java.util.Date
-        //java.lang.String
-        //org.locationtech.jts.geom.Point
-
-        String pathName = "/home/wangychu/Desktop/SEATTLE-GIS/Historic_Landslide_Locations_ECA/Historic_Landslide_Locations_ECA.shp";
-        File file = new File(pathName);
-
-        // 读取到数据存储中
-        FileDataStore dataStore = FileDataStoreFinder.getDataStore(file);
-        // 获取特征资源
-        SimpleFeatureSource simpleFeatureSource = dataStore.getFeatureSource();
         // 要素集合
         SimpleFeatureCollection simpleFeatureCollection = simpleFeatureSource.getFeatures();
-
-        // 要素数量
-        int featureSize = simpleFeatureCollection.size();
+        List<ConceptionEntityValue> _targetConceptionEntityValueList = Lists.newArrayList();
         // 获取要素迭代器
         SimpleFeatureIterator featureIterator = simpleFeatureCollection.features();
-        if(featureIterator.hasNext()){
+        while(featureIterator.hasNext()){
+            Map<String,Object> newEntityValueMap = new HashMap<>();
             // 要素对象
             SimpleFeature feature = featureIterator.next();
             // 要素属性信息，名称，值，类型
             List<Property> propertyList = (List<Property>) feature.getValue();
             for(Property property : propertyList){
-                System.out.println("属性名称：" + property.getName());
-                System.out.println("属性值：" + property.getValue());
-                System.out.println("属性类型：" + property.getType().getBinding());
-                System.out.println();
+                String propertyName = property.getName().toString();
+                Object propertyValue = property.getValue();
+                if(propertyValue != null){
+                    newEntityValueMap.put(propertyName,propertyValue);
+                }
             }
 
-            // 要素属性信息
-            List<Object> featureAttributes = feature.getAttributes();
-
-            // 要素geometry的类型和坐标，如点，线，面及其组成的坐标
-            Object geometryText = feature.getDefaultGeometry();
-
-            // geometry属性
+            String geometryContent = feature.getDefaultGeometry().toString();
             GeometryAttribute geometryAttribute = feature.getDefaultGeometryProperty();
-            // 获取坐标参考系信息
-            CoordinateReferenceSystem coordinateReferenceSystem = geometryAttribute.getDescriptor().getCoordinateReferenceSystem();
-
-            // geometry类型
-            GeometryType geometryType = geometryAttribute.getType();
-            // geometry类型名称
-            Name name = geometryType.getName();
-
-            System.out.println("要素数量："+ featureSize);
-            System.out.println("要素属性：" + featureAttributes);
-            System.out.println("要素geometry位置信息：" + geometryText);
-            System.out.println("要素geometry类型名称：" + name);
-            System.out.println("shp文件使用的坐标参考系：\n" + coordinateReferenceSystem);
-
-        }
-
-    }
-
-    public static void SHP_DataStructureParse(String shpFileLocation){
-
-
-        try {
-            ShapefileDataStore shapefileDataStore = new ShapefileDataStore(new File(shpFileLocation).toURI().toURL());
-
-
-            SimpleFeatureType simpleFeatureType = shapefileDataStore.getSchema();
-
-            System.out.println(simpleFeatureType.getCoordinateReferenceSystem().getName());
-            System.out.println(simpleFeatureType.getCoordinateReferenceSystem().getCoordinateSystem().getRemarks());
-
-            System.out.println(simpleFeatureType.getCoordinateReferenceSystem().getCoordinateSystem().getAlias());
-            System.out.println(simpleFeatureType.getCoordinateReferenceSystem().getIdentifiers());
-
-            //System.out.println("--------------------------");
-            //System.out.println(CRS.decode("EPSG:4326 - WGS 84 - Geographic").getName());
-            System.out.println(CRS.lookupEpsgCode(simpleFeatureType.getCoordinateReferenceSystem(),true));
-
-
-
-            System.out.println("--------------------------");
-            List<AttributeType> attributeTypeList = simpleFeatureType.getTypes();
-            for(AttributeType currentAttributeType:attributeTypeList){
-                System.out.println(currentAttributeType.getName());
-
-
-
+            String geometryType = geometryAttribute.getType().getName().toString();
+            String geometryTypeValue = "GEOMETRYCOLLECTION";
+            if("Point".equals(geometryType)){
+                geometryTypeValue ="POINT";
+            }
+            if("MultiPoint".equals(geometryType)){
+                geometryTypeValue ="MULTIPOINT";
+            }
+            if("LineString".equals(geometryType)){
+                geometryTypeValue ="LINESTRING";
+            }
+            if("MultiLineString".equals(geometryType)){
+                geometryTypeValue ="MULTILINESTRING";
+            }
+            if("Polygon".equals(geometryType)){
+                geometryTypeValue ="POLYGON";
+            }
+            if("MultiPolygon".equals(geometryType)){
+                geometryTypeValue ="MULTIPOLYGON";
             }
 
-
-
-
-
-
-
-
-
-
-
-
-            System.out.println(shapefileDataStore.getSchema());
-            System.out.println(shapefileDataStore.getCharset());
-                    System.out.println(shapefileDataStore.getInfo());
-
-
-
-            FeatureCollection featureCollection = shapefileDataStore.getFeatureSource().getFeatures();
-
-            SimpleFeatureIterator features = (SimpleFeatureIterator) featureCollection.features();
-            while (features.hasNext()) {
-                SimpleFeature next = features.next();
-
-
-                //next.getFeatureType().getCoordinateReferenceSystem()
-
-                //System.out.println(next.getProperties());
-                //System.out.println(next.getAttributes());
-
-
-
-                //坐标系转换
-                Geometry geometry = (Geometry) next.getDefaultGeometry();
-                // Point MultiPoint Polygon MutiPolygon LineString  MultiLineString
-                //return geometry.getGeometryType();
-                //System.out.println(geometry.getGeometryType());
+            newEntityValueMap.put("DOCG_GS_GeometryType",geometryTypeValue);
+            if(_CRS_Range.equals("GlobalLevel")){
+                newEntityValueMap.put("DOCG_GS_GLGeometryContent",geometryContent);
+                newEntityValueMap.put("DOCG_GS_GlobalCRSAID",entityCRSAID);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            if(_CRS_Range.equals("CountryLevel")){
+                newEntityValueMap.put("DOCG_GS_CLGeometryContent",geometryContent);
+                newEntityValueMap.put("DOCG_GS_CountryCRSAID",entityCRSAID);
+            }
+            if(_CRS_Range.equals("LocalLevel")){
+                newEntityValueMap.put("DOCG_GS_LLGeometryContent",geometryContent);
+                if(entityCRSAID != null){
+                    newEntityValueMap.put("DOCG_GS_LocalCRSAID",entityCRSAID);
+                }
+            }
+            ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValueMap);
+            _targetConceptionEntityValueList.add(conceptionEntityValue);
         }
-
-
-
-
-
-
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        ConceptionKind targetConceptionType = coreRealm.getConceptionKind(conceptionKindNameValue);
+        if(targetConceptionType != null){
+            if(removeExistData){
+                targetConceptionType.purgeAllEntities();
+            }
+        }else{
+            coreRealm.createConceptionKind(conceptionKindNameValue,"-");
+        }
+        BatchDataOperationUtil.batchAddNewEntities(conceptionKindNameValue,_targetConceptionEntityValueList,10);
+        //featureIterator.close();
     }
 }
