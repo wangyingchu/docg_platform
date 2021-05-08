@@ -54,10 +54,6 @@ public class SHP_DataSourceImport {
         SimpleFeatureType simpleFeatureType = dataStore.getSchema();
         String _CRSName = simpleFeatureType.getCoordinateReferenceSystem().getName().getCode();
 
-        System.out.println(_CRSName);
-        System.out.println(_CRSName);
-        System.out.println(_CRSName);
-
         String entityCRSAID = null;
         String _CRS_Range = null;
         if("GCS_WGS_1984".equals(_CRSName)||_CRSName.contains("WGS84")){
