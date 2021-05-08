@@ -157,6 +157,33 @@ public class CoreRealmOperationUtil {
         }
     }
 
+    public static DataSliceOperationResult refreshDataSliceAndLoadDataFromConceptionKind(String dataSliceGroupName,String dataSliceName,Map<String, DataSlicePropertyType> dataSlicePropertyMap,String conceptionKindName,QueryParameters queryParameters,int degreeOfParallelism){
+        if(dataSlicePropertyMap == null ||dataSlicePropertyMap.size() == 0){
+            return null;
+        }
+        Set<String> propertyNameSet = dataSlicePropertyMap.keySet();
+        List<String> conceptionKindPropertiesList = new ArrayList<>();
+        conceptionKindPropertiesList.addAll(propertyNameSet);
+
+        try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
+            DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+            if(targetDataSlice != null){
+                dataServiceInvoker.eraseDataSlice(dataSliceName);
+            }
+            dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID,DataSlicePropertyType.STRING);
+            if(targetDataSlice == null){
+                List<String> pkList = new ArrayList<>();
+                pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
+                dataServiceInvoker.createGridDataSlice(dataSliceName,dataSliceGroupName+"_CONCEPTION",dataSlicePropertyMap,pkList);
+            }
+        } catch (ComputeGridNotActiveException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return loadConceptionKindEntitiesToDataSlice(conceptionKindName,conceptionKindPropertiesList,queryParameters,dataSliceName,true,degreeOfParallelism);
+    }
+
     public static DataSliceOperationResult loadConceptionKindEntitiesToDataSlice(String conceptionKindName, List<String> attributeNamesList,QueryParameters queryParameters, String dataSliceName,boolean useConceptionEntityUIDAsPK,int degreeOfParallelism) {
         DataSliceOperationResult dataSliceOperationResult = new DataSliceOperationResult();
 

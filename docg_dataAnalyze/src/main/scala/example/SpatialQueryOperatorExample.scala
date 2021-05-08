@@ -82,8 +82,17 @@ object SpatialQueryOperatorExample {
       bufferQueryDF.show(20)
       println(bufferQueryDF.count())
 
-      val orgIndividualTreeDF = dataSliceSparkAccessor.getDataFrameFromDataSlice("DOCG_GS_CountryRegion")
-      orgIndividualTreeDF.write.csv("/home/wangychu/Desktop/output/01")
+      //val orgIndividualTreeDF = dataSliceSparkAccessor.getDataFrameFromDataSlice("DOCG_GS_CountryRegion")
+      //orgIndividualTreeDF.write.csv("/home/wangychu/Desktop/output/01")
+
+      val orgCadastralControlLinesDF = dataSliceSparkAccessor.getDataFrameFromDataSlice("CadastralControlLines")
+      orgCadastralControlLinesDF.write.csv("/home/wangychu/Desktop/output/CadastralControlLines")
+
+      val orgCitywideGreenStormInfrastructureDF = dataSliceSparkAccessor.getDataFrameFromDataSlice("CitywideGreenStormInfrastructure")
+      orgCitywideGreenStormInfrastructureDF.write.csv("/home/wangychu/Desktop/output/CitywideGreenStormInfrastructure")
+
+      val orgSeattleParksAndRecreationDF = dataSliceSparkAccessor.getDataFrameFromDataSlice("SeattleParksAndRecreation")
+      orgSeattleParksAndRecreationDF.write.csv("/home/wangychu/Desktop/output/SeattleParksAndRecreation")
 
     }finally dataSliceSparkAccessor.close()
   }
