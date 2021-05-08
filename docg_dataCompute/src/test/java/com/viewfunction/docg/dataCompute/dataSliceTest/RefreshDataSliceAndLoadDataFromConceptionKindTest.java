@@ -49,7 +49,7 @@ public class RefreshDataSliceAndLoadDataFromConceptionKindTest {
 
     public static void refreshDataSliceAndLoadSeattleParksAndRecreationTest(){
         Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
-        dataSlicePropertyMap.put("DOCG_GS_LLGeometryContent",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("DOCG_GS_GLGeometryContent",DataSlicePropertyType.STRING);
         dataSlicePropertyMap.put("pma",DataSlicePropertyType.DOUBLE);
         dataSlicePropertyMap.put("parksbnd_a",DataSlicePropertyType.DOUBLE);
         dataSlicePropertyMap.put("name",DataSlicePropertyType.STRING);

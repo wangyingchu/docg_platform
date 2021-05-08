@@ -54,12 +54,16 @@ public class SHP_DataSourceImport {
         SimpleFeatureType simpleFeatureType = dataStore.getSchema();
         String _CRSName = simpleFeatureType.getCoordinateReferenceSystem().getName().getCode();
 
+        System.out.println(_CRSName);
+        System.out.println(_CRSName);
+        System.out.println(_CRSName);
+
         String entityCRSAID = null;
         String _CRS_Range = null;
-        if("GCS_WGS_1984".equals(_CRSName)){
+        if("GCS_WGS_1984".equals(_CRSName)||_CRSName.contains("WGS84")){
             entityCRSAID= "EPSG:4326";
             _CRS_Range = "GlobalLevel";
-        }else if("CGCS_2000".equals(_CRSName)){
+        }else if("CGCS_2000".equals(_CRSName)||_CRSName.contains("CGCS2000")){
             entityCRSAID= "EPSG:4545";
             _CRS_Range = "CountryLevel";
         }else{
