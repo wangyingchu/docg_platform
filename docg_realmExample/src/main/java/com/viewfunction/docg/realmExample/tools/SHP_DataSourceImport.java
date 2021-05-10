@@ -29,21 +29,7 @@ import java.util.Map;
 
 public class SHP_DataSourceImport {
 
-    public static void main(String[] args) throws IOException, FactoryException, CoreRealmServiceRuntimeException {
-        //String pathName = "/home/wangychu/Desktop/SEATTLE-GIS/Historic_Landslide_Locations_ECA/Historic_Landslide_Locations_ECA.shp";
-        //String pathName = "/home/wangychu/Desktop/SEATTLE-GIS/Citywide_Green_Storm_Infrastructure/Citywide_Green_Storm_Infrastructure.shp";
-        //String pathName = "/home/wangychu/Desktop/SEATTLE-GIS/Cadastral_Control_Lines/Cadastral_Control_Lines.shp";
-        String pathName = "/home/wangychu/Desktop/SEATTLE-GIS/Seattle_Parks_and_Recreation_GIS_Map_Layer_Shapefile_Park_Boundary/geo_export_082187a2-56b7-4e45-a11c-58198c390817.shp";
-        //String pathName = "/media/wangychu/Data/Nutstore/区划/县.shp";
-        //String pathName = "/home/wangychu/Desktop/CQ-GS/GYD-GIS_WGS84/gyd-roadAndBuilding.shp";
-        File file = new File(pathName);
-        //importSHPDataToConceptionKind("HistoricLandslideLocations",true,file,null);
-        //importSHPDataToConceptionKind("CitywideGreenStormInfrastructure",true,file,null);
-        //importSHPDataToConceptionKind("CadastralControlLines",true,file,null);
-        importSHPDataToConceptionKind("SeattleParksAndRecreation",true,file,null);
-    }
-
-    private static void importSHPDataToConceptionKind(String conceptionKindName,boolean removeExistData,File shpFile,String fileEncode) throws IOException, FactoryException, CoreRealmServiceRuntimeException {
+    public static void importSHPDataToConceptionKind(String conceptionKindName, boolean removeExistData, File shpFile, String fileEncode) throws IOException, FactoryException, CoreRealmServiceRuntimeException {
         String charsetEncode = fileEncode != null ?  fileEncode : "UTF-8";
         // 读取到数据存储中
         FileDataStore dataStore = FileDataStoreFinder.getDataStore(shpFile);
