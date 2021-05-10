@@ -17,6 +17,12 @@ public class IslandDataSliceSyncTest {
         //refreshDataSliceAndLoadGYD_LandMarkTest();
         //refreshDataSliceAndLoadGYD_PhysicEquipmentTest();
         //refreshDataSliceAndLoadGYD_RegionNameTest();
+        //refreshDataSliceAndLoadGYD_RoadTest();
+        //refreshDataSliceAndLoadGYD_ScopeTest();
+        //refreshDataSliceAndLoadGYD_SectionBlockTest();
+        //refreshDataSliceAndLoadGYD_ViewpointTest();
+        //refreshDataSliceAndLoadGYD_WaterTest();
+        refreshDataSliceAndLoadGYD_ZoneSectionTest();
     }
 
     public static void refreshDataSliceAndLoadGYD_BuildingTest(){
@@ -45,6 +51,7 @@ public class IslandDataSliceSyncTest {
         CoreRealmOperationUtil.refreshDataSliceAndLoadDataFromConceptionKind("defaultSliceGroup",
                 "GYD_BusStop",dataSlicePropertyMap,"GYD_BusStop",queryParameters,10);
     }
+
     public static void refreshDataSliceAndLoadGYD_FrutexTest(){
         Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
         dataSlicePropertyMap.put("DOCG_GS_GLGeometryContent",DataSlicePropertyType.STRING);
@@ -161,6 +168,103 @@ public class IslandDataSliceSyncTest {
 
         CoreRealmOperationUtil.refreshDataSliceAndLoadDataFromConceptionKind("defaultSliceGroup",
                 "GYD_RegionName",dataSlicePropertyMap,"GYD_RegionName",queryParameters,10);
+    }
+
+    public static void refreshDataSliceAndLoadGYD_RoadTest(){
+        Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+        dataSlicePropertyMap.put("DOCG_GS_GLGeometryContent",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("OBJECTID_1",DataSlicePropertyType.INT);
+        dataSlicePropertyMap.put("Shape_Leng",DataSlicePropertyType.DOUBLE);
+        dataSlicePropertyMap.put("grade",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("Shape_Area",DataSlicePropertyType.DOUBLE);
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(100000000);
+
+        CoreRealmOperationUtil.refreshDataSliceAndLoadDataFromConceptionKind("defaultSliceGroup",
+                "GYD_Road",dataSlicePropertyMap,"GYD_Road",queryParameters,10);
+    }
+
+    public static void refreshDataSliceAndLoadGYD_ScopeTest(){
+        Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+        dataSlicePropertyMap.put("DOCG_GS_GLGeometryContent",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("Shape_Leng",DataSlicePropertyType.DOUBLE);
+        dataSlicePropertyMap.put("Shape_Area",DataSlicePropertyType.DOUBLE);
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(100000000);
+
+        CoreRealmOperationUtil.refreshDataSliceAndLoadDataFromConceptionKind("defaultSliceGroup",
+                "GYD_Scope",dataSlicePropertyMap,"GYD_Scope",queryParameters,10);
+    }
+
+    public static void refreshDataSliceAndLoadGYD_SectionBlockTest(){
+        Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+        dataSlicePropertyMap.put("DOCG_GS_GLGeometryContent",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("BKMC",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("GNQHID",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("BH",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("BKBH",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("OBJECTID",DataSlicePropertyType.INT);
+        dataSlicePropertyMap.put("XBLX",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("XBMC",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("Ymax",DataSlicePropertyType.DOUBLE);
+        dataSlicePropertyMap.put("Xmin",DataSlicePropertyType.DOUBLE);
+        dataSlicePropertyMap.put("Shape_Leng",DataSlicePropertyType.DOUBLE);
+        dataSlicePropertyMap.put("Shape_Area",DataSlicePropertyType.DOUBLE);
+        dataSlicePropertyMap.put("XBMJ",DataSlicePropertyType.DOUBLE);
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(100000000);
+
+        CoreRealmOperationUtil.refreshDataSliceAndLoadDataFromConceptionKind("defaultSliceGroup",
+                "GYD_SectionBlock",dataSlicePropertyMap,"GYD_SectionBlock",queryParameters,10);
+    }
+
+    public static void refreshDataSliceAndLoadGYD_ViewpointTest(){
+        Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+        dataSlicePropertyMap.put("DOCG_GS_GLGeometryContent",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("name",DataSlicePropertyType.DOUBLE);
+        dataSlicePropertyMap.put("OBJECTID",DataSlicePropertyType.INT);
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(100000000);
+
+        CoreRealmOperationUtil.refreshDataSliceAndLoadDataFromConceptionKind("defaultSliceGroup",
+                "GYD_Viewpoint",dataSlicePropertyMap,"GYD_Viewpoint",queryParameters,10);
+    }
+
+    public static void refreshDataSliceAndLoadGYD_WaterTest(){
+        Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+        dataSlicePropertyMap.put("DOCG_GS_GLGeometryContent",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("name",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("OBJECTID",DataSlicePropertyType.INT);
+        dataSlicePropertyMap.put("Shape_Leng",DataSlicePropertyType.DOUBLE);
+        dataSlicePropertyMap.put("Shape_Area",DataSlicePropertyType.DOUBLE);
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(100000000);
+
+        CoreRealmOperationUtil.refreshDataSliceAndLoadDataFromConceptionKind("defaultSliceGroup",
+                "GYD_Water",dataSlicePropertyMap,"GYD_Water",queryParameters,10);
+    }
+
+    public static void refreshDataSliceAndLoadGYD_ZoneSectionTest(){
+        Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+        dataSlicePropertyMap.put("DOCG_GS_GLGeometryContent",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("BKMC",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("GNQHID",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("GNQBH",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("BKMJ",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("OBJECTID",DataSlicePropertyType.INT);
+        dataSlicePropertyMap.put("Shape_Leng",DataSlicePropertyType.DOUBLE);
+        dataSlicePropertyMap.put("Shape_Area",DataSlicePropertyType.DOUBLE);
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(100000000);
+
+        CoreRealmOperationUtil.refreshDataSliceAndLoadDataFromConceptionKind("defaultSliceGroup",
+                "GYD_ZoneSection",dataSlicePropertyMap,"GYD_ZoneSection",queryParameters,10);
     }
 
 
