@@ -68,52 +68,56 @@ public class SHP_DataSourceImport {
             List<Property> propertyList = (List<Property>) feature.getValue();
             for(Property property : propertyList){
                 String propertyName = property.getName().toString();
+                //handle invalid chars
+                propertyName = propertyName.replaceAll("△","Delta_");
                 Object propertyValue = property.getValue();
                 if(propertyValue != null){
                     newEntityValueMap.put(propertyName,propertyValue);
                 }
             }
 
-            String geometryContent = feature.getDefaultGeometry().toString();
-            GeometryAttribute geometryAttribute = feature.getDefaultGeometryProperty();
-            String geometryType = geometryAttribute.getType().getName().toString();
-            String geometryTypeValue = "GEOMETRYCOLLECTION";
-            if("Point".equals(geometryType)){
-                geometryTypeValue ="POINT";
-            }
-            if("MultiPoint".equals(geometryType)){
-                geometryTypeValue ="MULTIPOINT";
-            }
-            if("LineString".equals(geometryType)){
-                geometryTypeValue ="LINESTRING";
-            }
-            if("MultiLineString".equals(geometryType)){
-                geometryTypeValue ="MULTILINESTRING";
-            }
-            if("Polygon".equals(geometryType)){
-                geometryTypeValue ="POLYGON";
-            }
-            if("MultiPolygon".equals(geometryType)){
-                geometryTypeValue ="MULTIPOLYGON";
-            }
-
-            newEntityValueMap.put("DOCG_GS_GeometryType",geometryTypeValue);
-            if(_CRS_Range.equals("GlobalLevel")){
-                newEntityValueMap.put("DOCG_GS_GLGeometryContent",geometryContent);
-                newEntityValueMap.put("DOCG_GS_GlobalCRSAID",entityCRSAID);
-            }
-            if(_CRS_Range.equals("CountryLevel")){
-                newEntityValueMap.put("DOCG_GS_CLGeometryContent",geometryContent);
-                newEntityValueMap.put("DOCG_GS_CountryCRSAID",entityCRSAID);
-            }
-            if(_CRS_Range.equals("LocalLevel")){
-                newEntityValueMap.put("DOCG_GS_LLGeometryContent",geometryContent);
-                if(entityCRSAID != null){
-                    newEntityValueMap.put("DOCG_GS_LocalCRSAID",entityCRSAID);
+            if(feature.getDefaultGeometry() != null) {
+                String geometryContent = feature.getDefaultGeometry().toString();
+                GeometryAttribute geometryAttribute = feature.getDefaultGeometryProperty();
+                String geometryType = geometryAttribute.getType().getName().toString();
+                String geometryTypeValue = "GEOMETRYCOLLECTION";
+                if ("Point".equals(geometryType)) {
+                    geometryTypeValue = "POINT";
                 }
+                if ("MultiPoint".equals(geometryType)) {
+                    geometryTypeValue = "MULTIPOINT";
+                }
+                if ("LineString".equals(geometryType)) {
+                    geometryTypeValue = "LINESTRING";
+                }
+                if ("MultiLineString".equals(geometryType)) {
+                    geometryTypeValue = "MULTILINESTRING";
+                }
+                if ("Polygon".equals(geometryType)) {
+                    geometryTypeValue = "POLYGON";
+                }
+                if ("MultiPolygon".equals(geometryType)) {
+                    geometryTypeValue = "MULTIPOLYGON";
+                }
+
+                newEntityValueMap.put("DOCG_GS_GeometryType", geometryTypeValue);
+                if (_CRS_Range.equals("GlobalLevel")) {
+                    newEntityValueMap.put("DOCG_GS_GLGeometryContent", geometryContent);
+                    newEntityValueMap.put("DOCG_GS_GlobalCRSAID", entityCRSAID);
+                }
+                if (_CRS_Range.equals("CountryLevel")) {
+                    newEntityValueMap.put("DOCG_GS_CLGeometryContent", geometryContent);
+                    newEntityValueMap.put("DOCG_GS_CountryCRSAID", entityCRSAID);
+                }
+                if (_CRS_Range.equals("LocalLevel")) {
+                    newEntityValueMap.put("DOCG_GS_LLGeometryContent", geometryContent);
+                    if (entityCRSAID != null) {
+                        newEntityValueMap.put("DOCG_GS_LocalCRSAID", entityCRSAID);
+                    }
+                }
+                ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValueMap);
+                _targetConceptionEntityValueList.add(conceptionEntityValue);
             }
-            ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValueMap);
-            _targetConceptionEntityValueList.add(conceptionEntityValue);
         }
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         ConceptionKind targetConceptionType = coreRealm.getConceptionKind(conceptionKindNameValue);
