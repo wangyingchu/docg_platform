@@ -20,7 +20,8 @@ class SpatialQueryOperator {
         ", ST_Boundary("+spatialAttributeName+") AS Boundary" +
         //", ST_MinimumBoundingRadius("+spatialAttributeName+") AS InteriorRingN" + //supported at sedona 1.0.1
         //", ST_MinimumBoundingCircle("+spatialAttributeName+") AS InteriorRingN" + //supported at sedona 1.0.1
-        "," + uidAttributeName +" AS UID" +
+        //"," + uidAttributeName +" AS UID" +
+        "," + uidAttributeName +
         " FROM "+operationSourceDataFrame
     val spatialFunctionComputeDf = dataSliceSparkAccessor.getDataFrameFromSQL(resultDataFrameName,spatialFunctionComputeDfQueryString.stripMargin)
     spatialFunctionComputeDf
