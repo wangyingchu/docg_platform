@@ -22,7 +22,17 @@ public class IslandDataSliceSyncTest {
         //refreshDataSliceAndLoadGYD_SectionBlockTest();
         //refreshDataSliceAndLoadGYD_ViewpointTest();
         //refreshDataSliceAndLoadGYD_WaterTest();
-        refreshDataSliceAndLoadGYD_ZoneSectionTest();
+        //refreshDataSliceAndLoadGYD_ZoneSectionTest();
+        //refreshDataSliceAndLoadGYW_BusStationField_PlanTest();
+        //refreshDataSliceAndLoadGYW_BusStation_PlanTest();
+        //refreshDataSliceAndLoadGYW_CentralCoolingAndHeatingDistrict_PlanTest();
+        //refreshDataSliceAndLoadGYW_ControlStipulateTest();
+        //refreshDataSliceAndLoadGYW_FerryTerminal_PlanTest();
+        //refreshDataSliceAndLoadGYW_PedestrianRoadTest();
+        //refreshDataSliceAndLoadGYW_PipeGalleryTest();
+        //refreshDataSliceAndLoadGYW_PlanningScopeTest();
+        //refreshDataSliceAndLoadGYW_RailNetwork_PlanTest();
+        //refreshDataSliceAndLoadGYW_RoadCenterLine_PlanTest();
     }
 
     public static void refreshDataSliceAndLoadGYD_BuildingTest(){
@@ -224,7 +234,7 @@ public class IslandDataSliceSyncTest {
     public static void refreshDataSliceAndLoadGYD_ViewpointTest(){
         Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
         dataSlicePropertyMap.put("DOCG_GS_GLGeometryContent",DataSlicePropertyType.STRING);
-        dataSlicePropertyMap.put("name",DataSlicePropertyType.DOUBLE);
+        dataSlicePropertyMap.put("name",DataSlicePropertyType.STRING);
         dataSlicePropertyMap.put("OBJECTID",DataSlicePropertyType.INT);
 
         QueryParameters queryParameters = new QueryParameters();
@@ -267,6 +277,134 @@ public class IslandDataSliceSyncTest {
                 "GYD_ZoneSection",dataSlicePropertyMap,"GYD_ZoneSection",queryParameters,10);
     }
 
+    public static void refreshDataSliceAndLoadGYW_BusStationField_PlanTest(){
+        Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+        dataSlicePropertyMap.put("DOCG_GS_GLGeometryContent",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("classify",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("Shape_Leng",DataSlicePropertyType.DOUBLE);
+        dataSlicePropertyMap.put("Shape_Area",DataSlicePropertyType.DOUBLE);
+        dataSlicePropertyMap.put("name",DataSlicePropertyType.STRING);
 
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(100000000);
+
+        CoreRealmOperationUtil.refreshDataSliceAndLoadDataFromConceptionKind("defaultSliceGroup",
+                "GYW_BusStationField_Plan",dataSlicePropertyMap,"GYW_BusStationField_Plan",queryParameters,10);
+    }
+
+    public static void refreshDataSliceAndLoadGYW_BusStation_PlanTest(){
+        Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+        dataSlicePropertyMap.put("DOCG_GS_GLGeometryContent",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("classify",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("name",DataSlicePropertyType.STRING);
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(100000000);
+
+        CoreRealmOperationUtil.refreshDataSliceAndLoadDataFromConceptionKind("defaultSliceGroup",
+                "GYW_BusStation_Plan",dataSlicePropertyMap,"GYW_BusStation_Plan",queryParameters,10);
+    }
+
+    public static void refreshDataSliceAndLoadGYW_CentralCoolingAndHeatingDistrict_PlanTest(){
+        Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+        dataSlicePropertyMap.put("DOCG_GS_GLGeometryContent",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("Area",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("name",DataSlicePropertyType.STRING);
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(100000000);
+
+        CoreRealmOperationUtil.refreshDataSliceAndLoadDataFromConceptionKind("defaultSliceGroup",
+                "GYW_CentralCoolingAndHeatingDistrict_Plan",dataSlicePropertyMap,"GYW_CentralCoolingAndHeatingDistrict_Plan",queryParameters,10);
+    }
+
+    public static void refreshDataSliceAndLoadGYW_ControlStipulateTest(){
+        Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+        dataSlicePropertyMap.put("DOCG_GS_GLGeometryContent",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("LBBM",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("YDLB",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("Layer",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("DKBM",DataSlicePropertyType.STRING);
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(100000000);
+
+        CoreRealmOperationUtil.refreshDataSliceAndLoadDataFromConceptionKind("defaultSliceGroup",
+                "GYW_ControlStipulate",dataSlicePropertyMap,"GYW_ControlStipulate",queryParameters,10);
+    }
+
+    public static void refreshDataSliceAndLoadGYW_FerryTerminal_PlanTest(){
+        Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+        dataSlicePropertyMap.put("DOCG_GS_GLGeometryContent",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("name",DataSlicePropertyType.STRING);
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(100000000);
+
+        CoreRealmOperationUtil.refreshDataSliceAndLoadDataFromConceptionKind("defaultSliceGroup",
+                "GYW_FerryTerminal_Plan",dataSlicePropertyMap,"GYW_FerryTerminal_Plan",queryParameters,10);
+    }
+
+    public static void refreshDataSliceAndLoadGYW_PedestrianRoadTest(){
+        Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+        dataSlicePropertyMap.put("DOCG_GS_GLGeometryContent",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("Shape_Leng",DataSlicePropertyType.DOUBLE);
+        dataSlicePropertyMap.put("name",DataSlicePropertyType.STRING);
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(100000000);
+
+        CoreRealmOperationUtil.refreshDataSliceAndLoadDataFromConceptionKind("defaultSliceGroup",
+                "GYW_PedestrianRoad",dataSlicePropertyMap,"GYW_PedestrianRoad",queryParameters,10);
+    }
+
+    public static void refreshDataSliceAndLoadGYW_PipeGalleryTest(){
+        Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+        dataSlicePropertyMap.put("DOCG_GS_GLGeometryContent",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("Layer",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("name",DataSlicePropertyType.STRING);
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(100000000);
+
+        CoreRealmOperationUtil.refreshDataSliceAndLoadDataFromConceptionKind("defaultSliceGroup",
+                "GYW_PipeGallery",dataSlicePropertyMap,"GYW_PipeGallery",queryParameters,10);
+    }
+
+    public static void refreshDataSliceAndLoadGYW_PlanningScopeTest(){
+        Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+        dataSlicePropertyMap.put("DOCG_GS_GLGeometryContent",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("Layer",DataSlicePropertyType.STRING);
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(100000000);
+
+        CoreRealmOperationUtil.refreshDataSliceAndLoadDataFromConceptionKind("defaultSliceGroup",
+                "GYW_PlanningScope",dataSlicePropertyMap,"GYW_PlanningScope",queryParameters,10);
+    }
+
+    public static void refreshDataSliceAndLoadGYW_RailNetwork_PlanTest(){
+        Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+        dataSlicePropertyMap.put("DOCG_GS_GLGeometryContent",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("name",DataSlicePropertyType.STRING);
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(100000000);
+
+        CoreRealmOperationUtil.refreshDataSliceAndLoadDataFromConceptionKind("defaultSliceGroup",
+                "GYW_RailNetwork_Plan",dataSlicePropertyMap,"GYW_RailNetwork_Plan",queryParameters,10);
+    }
+
+    public static void refreshDataSliceAndLoadGYW_RoadCenterLine_PlanTest(){
+        Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+        dataSlicePropertyMap.put("DOCG_GS_GLGeometryContent",DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put("name",DataSlicePropertyType.STRING);
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(100000000);
+
+        CoreRealmOperationUtil.refreshDataSliceAndLoadDataFromConceptionKind("defaultSliceGroup",
+                "GYW_RoadCenterLine_Plan",dataSlicePropertyMap,"GYW_RoadCenterLine_Plan",queryParameters,10);
+    }
 
 }
