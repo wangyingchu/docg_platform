@@ -16,6 +16,14 @@ class SpatialQueryOperator {
         ", ST_Envelope("+spatialAttributeName+") AS Envelope" +
         ", ST_Length("+spatialAttributeName+") AS Length" +
         ", ST_Area("+spatialAttributeName+") AS Area" +
+    // ", ST_Area("+ "ST_Transform("+    spatialAttributeName  +",'epsg:4326','epsg:4326',false)"        +") AS Area" +  需要转换到米制单位下才能获得正确的计算结果
+    /*
+    * To convert Coordinate Reference System of an SpatialRDD, use the following code:
+    * val sourceCrsCode = "epsg:4326" // WGS84, the most common degree-based CRS
+    * val targetCrsCode = "epsg:3857" // The most common meter-based CRS
+    * objectRDD.CRSTransform(sourceCrsCode, targetCrsCode, false)
+    *
+    * */
         ", ST_Centroid("+spatialAttributeName+") AS Centroid" +
         ", ST_Boundary("+spatialAttributeName+") AS Boundary" +
         //", ST_MinimumBoundingRadius("+spatialAttributeName+") AS InteriorRingN" + //supported at sedona 1.0.1
