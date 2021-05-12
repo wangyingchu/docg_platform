@@ -4,9 +4,10 @@ import com.viewfunction.docg.dataAnalyze.util.coreRealm.GeospatialScaleLevel
 import com.viewfunction.docg.dataAnalyze.util.dataSlice.DataSliceOperationUtil
 import com.viewfunction.docg.dataAnalyze.util.spark.DataSliceSparkAccessor
 import com.viewfunction.docg.dataAnalyze.util.spark.spatial.{SpatialPredicateType, SpatialQueryOperator, SpatialQueryParam}
-import org.apache.spark.sql.SaveMode
+import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.{Row, SaveMode}
 import org.apache.spark.sql.functions.{avg, stddev, sum}
-import org.apache.spark.sql.types.{IntegerType, StringType, StructField, StructType}
+import org.apache.spark.sql.types.{DoubleType, IntegerType, StringType, StructField, StructType}
 
 import scala.collection.mutable
 
@@ -55,7 +56,7 @@ object IslandGeoDataAnalyzeTest {
 
     val mappedResult = res.rdd.map(row =>{
       val divValue = row.get(1).asInstanceOf[Double]/row.get(6).asInstanceOf[Double]
-      Person(row.get(0).asInstanceOf[String],
+      Row(row.get(0).asInstanceOf[String],
         row.get(1).asInstanceOf[Double],
         row.get(2).asInstanceOf[String],
         row.get(3).asInstanceOf[String],
@@ -68,8 +69,9 @@ object IslandGeoDataAnalyzeTest {
     })
 
     import dataSliceSparkAccessor.igniteSession.implicits._
-    val resultDF = mappedResult.toDF()
+  //  val resultDF = mappedResult.toDF()
 
+    /*
     resultDF.coalesce(1).write
       .mode(SaveMode.Overwrite)
       .option("delimiter", ",")
@@ -80,6 +82,41 @@ object IslandGeoDataAnalyzeTest {
       .option("nullValue", null)
       .format("csv")
       .save("/home/wangychu/Desktop/output/testOutput/csv/")
-  }
+    */
+
+//_ID:String,_SUM:Double,_BKMC:String,_GNQHID:String,_GLGEOMETRYCONTENT:String,_BH:String,_Area:Double,_Ratio:Double,_AVG:Double
+
+
+    val schema = StructType(
+      Seq(
+        StructField("_ID",StringType,true),
+        StructField("_SUM",DoubleType,true),
+        StructField("_BKMC",StringType,true),
+        StructField("_GNQHID",StringType,true),
+        StructField("_GLGEOMETRYCONTENT",StringType,true),
+        StructField("_BH",StringType,true),
+        StructField("_Area",DoubleType,true),
+        StructField("_Ratio",DoubleType,true),
+        StructField("_AVG",DoubleType,true)
+      )
+    )
+
+
+    val sssDF = dataSliceSparkAccessor.getSparkSession().createDataFrame(mappedResult.asInstanceOf[RDD[Row]],schema)
+    sssDF.printSchema()
+    sssDF.show(20)
+
+    sssDF.coalesce(1).write
+      .mode(SaveMode.Overwrite)
+      .option("delimiter", ",")
+      // .option("quote", "")
+      .option("header",true)
+      .option("ignoreLeadingWhiteSpace", false)
+      .option("ignoreTrailingWhiteSpace", false)
+      .option("nullValue", null)
+      .format("csv")
+      .save("/home/wangychu/Desktop/output/testOutput/csv1/")
+
+}
 
 }
