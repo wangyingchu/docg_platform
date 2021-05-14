@@ -98,13 +98,18 @@ object IslandGeoDataAnalyzeTest {
      // .groupBy("REALMGLOBALUID").agg(count("SZ"),sum("SGMJ"))
     resultDF.show(10)
     resultDF.foreach(row=>{
-
       val meter = (row.get(6).asInstanceOf[Double])/360*2*(2 * Math.PI * 6371004)
       println(meter)
     })
-
-
     println(resultDF.count())
+
+
+    //val sql = "SELECT ST_Transform(individualTreeDF.geoLocation, 'epsg:4326','epsg:32649',false) FROM individualTreeDF"
+    val sql = "SELECT ST_Transform(individualTreeDF.geoLocation, 'epsg:4490','epsg:4479',false) FROM individualTreeDF"
+
+    val converted = dataSliceSparkAccessor.getDataFrameFromSQL(null,sql.stripMargin)
+    converted.printSchema()
+    converted.show(10)
   }
 
 }
