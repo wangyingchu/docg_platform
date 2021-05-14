@@ -6,7 +6,7 @@ import com.viewfunction.docg.dataAnalyze.util.spark.DataSliceSparkAccessor
 import com.viewfunction.docg.dataAnalyze.util.spark.spatial.{SpatialPredicateType, SpatialQueryOperator, SpatialQueryParam}
 import com.viewfunction.docg.dataAnalyze.util.spark.util.DataOutputUtil
 import org.apache.spark.sql.{Row, SaveMode}
-import org.apache.spark.sql.functions.{avg, stddev, sum}
+import org.apache.spark.sql.functions.{avg, stddev, sum,count}
 import org.apache.spark.sql.types.{DoubleType, IntegerType, StringType, StructField, StructType}
 
 import scala.collection.mutable
@@ -18,12 +18,13 @@ object IslandGeoDataAnalyzeTest {
     DataSliceOperationUtil.turnOffDataSliceLog()
     val dataSliceSparkAccessor = new DataSliceSparkAccessor("SpatialQueryOperatorExample","local","20")
     try{
-      analyzeTreesInSection(dataSliceSparkAccessor)
+      //analyzeTreesCrownAreaInSection(dataSliceSparkAccessor)
+      analyzeTreesMaintainNozzlesEffect(dataSliceSparkAccessor)
     }finally dataSliceSparkAccessor.close()
   }
 
-  def analyzeTreesInSection(dataSliceSparkAccessor:DataSliceSparkAccessor):Unit = {
-    println("Start analyzeTreesInSection")
+  def analyzeTreesCrownAreaInSection(dataSliceSparkAccessor:DataSliceSparkAccessor):Unit = {
+    println("Start analyzeTreesCrownAreaInSection")
     val individualTreeDF = dataSliceSparkAccessor.getDataFrameWithSpatialSupportFromDataSlice("GYD_IndividualTree",GeospatialScaleLevel.GlobalLevel,"individualTreeDF","geoLocation")
     //val frutexDF = dataSliceSparkAccessor.getDataFrameWithSpatialSupportFromDataSlice("GYD_Frutex",GeospatialScaleLevel.GlobalLevel,"frutexDF","geoLocation")
     val sectionBlockDF = dataSliceSparkAccessor.getDataFrameWithSpatialSupportFromDataSlice("GYD_SectionBlock",GeospatialScaleLevel.GlobalLevel,"sectionBlockDF","geoArea")
@@ -73,6 +74,37 @@ object IslandGeoDataAnalyzeTest {
     //finalResultDF.show(20)
 
     DataOutputUtil.writeToCSV(finalResultDF,"/home/wangychu/Desktop/output/treeStatic/")
+    println("Finish analyzeTreesCrownAreaInSection")
+  }
+
+  def analyzeTreesMaintainNozzlesEffect(dataSliceSparkAccessor:DataSliceSparkAccessor):Unit = {
+    println("Start analyzeTreesMaintainNozzlesEffect")
+    val individualTreeDF = dataSliceSparkAccessor.getDataFrameWithSpatialSupportFromDataSlice("GYD_IndividualTree",GeospatialScaleLevel.GlobalLevel,"individualTreeDF","geoLocation")
+    //individualTreeDF.show(10)
+    val mockTreesMaintainNozzleDF = individualTreeDF.sample(0.01).select("REALMGLOBALUID","DMID","DOCG_GS_GLGEOMETRYCONTENT","OBJECTID_1","geoLocation")
+    mockTreesMaintainNozzleDF.persist()
+    mockTreesMaintainNozzleDF.show(10)
+    println(mockTreesMaintainNozzleDF.count())
+    mockTreesMaintainNozzleDF.createOrReplaceTempView("treesMaintainNozzleDF")
+
+    val spatialQueryOperator = new SpatialQueryOperator
+
+    val sectionBlock_spatialQueryParam = SpatialQueryParam("treesMaintainNozzleDF","geoLocation",mutable.Buffer[String]("DMID","OBJECTID_1","REALMGLOBALUID"))
+    val individualTree_spatialQueryParam = SpatialQueryParam("individualTreeDF","geoLocation",mutable.Buffer[String]("SZ","BH1","SGMJ"))
+
+    val degreeValue = 0.2 / (2 * Math.PI * 6371004) * 360
+    val resultDF = spatialQueryOperator.spatialWithinDistanceJoinQuery(dataSliceSparkAccessor,sectionBlock_spatialQueryParam,individualTree_spatialQueryParam,degreeValue,"distanceValue",null)
+
+     // .groupBy("REALMGLOBALUID").agg(count("SZ"),sum("SGMJ"))
+    resultDF.show(10)
+    resultDF.foreach(row=>{
+
+      val meter = (row.get(6).asInstanceOf[Double])/360*2*(2 * Math.PI * 6371004)
+      println(meter)
+    })
+
+
+    println(resultDF.count())
   }
 
 }
