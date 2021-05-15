@@ -11,6 +11,10 @@ public class MassDataSliceConceptionKindLoadTest {
 
     public static void main(String[] args){
         //refreshDataSliceAndLoadChinaFirmTest();
+        //refreshDataSliceAndLoadDOCG_GS_CountryRegionTest();
+        //refreshDataSliceAndLoadDOCG_GS_ProvinceTest();
+        //refreshDataSliceAndLoadDOCG_GS_PrefectureTest();
+        //refreshDataSliceAndLoadDOCG_GS_CountyTest();
     }
 
     public static void refreshDataSliceAndLoadChinaFirmTest(){

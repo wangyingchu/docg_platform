@@ -51,6 +51,14 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         if(conceptionKindName == null){
             return null;
         }
+
+        if(conceptionKindName.startsWith("DOCG_")){
+            Neo4JConceptionKindImpl neo4JConceptionKindImpl =
+                    new Neo4JConceptionKindImpl(coreRealmName,conceptionKindName,null,"0");
+            neo4JConceptionKindImpl.setGlobalGraphOperationExecutor(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            return neo4JConceptionKindImpl;
+        }
+
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
             String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.ConceptionKindClass,RealmConstant._NameProperty,conceptionKindName,1);
@@ -377,6 +385,14 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         if(relationKindName == null){
             return null;
         }
+
+        if(relationKindName.startsWith("DOCG_")){
+            Neo4JRelationKindImpl neo4JRelationKindImpl =
+                    new Neo4JRelationKindImpl(coreRealmName,relationKindName,null,"0");
+            neo4JRelationKindImpl.setGlobalGraphOperationExecutor(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            return neo4JRelationKindImpl;
+        }
+
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
             String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.RelationKindClass,RealmConstant._NameProperty,relationKindName,1);
