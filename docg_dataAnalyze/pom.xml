@@ -103,36 +103,28 @@
             <version>${geotools.version}</version>
         </dependency>
 
-
-        <!-- https://mvnrepository.com/artifact/org.geotools/gt-referencing -->
+   <!--
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-referencing</artifactId>
-            <version>24.2</version>
+            <version>25.0</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.geotools/gt-epsg-hsql -->
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-epsg-hsql</artifactId>
-            <version>24.2</version>
-
+            <version>25.0</version>
         </dependency>
-
-
-
-
-        <!-- https://mvnrepository.com/artifact/org.geotools/gt-epsg-extension -->
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-opengis</artifactId>
+            <version>25.0</version>
+        </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-epsg-extension</artifactId>
-            <version>24.2</version>
-
+            <version>25.0</version>
         </dependency>
-
-
-
-
+        -->
         <!-- https://mvnrepository.com/artifact/org.apache.ignite/ignite-log4j2 -->
         <dependency>
             <groupId>org.apache.ignite</groupId>
@@ -182,8 +174,6 @@
         </dependency>
     </dependencies>
 
-
-
     <repositories>
         <repository>
             <id>osgeo</id>
@@ -200,6 +190,4 @@
             <releases><enabled>false</enabled></releases>
         </repository>
     </repositories>
-
-
 </project>

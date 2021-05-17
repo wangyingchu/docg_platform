@@ -103,10 +103,11 @@ object IslandGeoDataAnalyzeTest {
     })
     println(resultDF.count())
 
-
     //val sql = "SELECT ST_Transform(individualTreeDF.geoLocation, 'epsg:4326','epsg:32649',false) FROM individualTreeDF"
-    val sql = "SELECT ST_Transform(individualTreeDF.geoLocation, 'epsg:4490','epsg:4479',false) FROM individualTreeDF"
-
+    //val sql = "SELECT ST_Transform(individualTreeDF.geoLocation, 'epsg:4490','epsg:4479',false) FROM individualTreeDF"
+    //val sql = "SELECT ST_Transform(individualTreeDF.geoLocation, 'epsg:4326','epsg:3857',true) FROM individualTreeDF"
+    val sql = "SELECT ST_Transform(individualTreeDF.geoLocation, 'epsg:4326','epsg:2326',true) FROM individualTreeDF"
+    //https://epsg.io/
     val converted = dataSliceSparkAccessor.getDataFrameFromSQL(null,sql.stripMargin)
     converted.printSchema()
     converted.show(10)
