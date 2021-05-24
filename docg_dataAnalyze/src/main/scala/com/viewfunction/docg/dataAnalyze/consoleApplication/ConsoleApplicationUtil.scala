@@ -5,6 +5,8 @@ import java.util.{Date, Properties}
 
 object ConsoleApplicationUtil {
 
+  val properties = new Properties()
+
   def printApplicationConsoleBanner(): Unit = {
     val bannerStringBuffer = new StringBuffer
     val echo0 = "====================================================================="
@@ -39,12 +41,13 @@ object ConsoleApplicationUtil {
   }
 
   def getApplicationInfoPropertyValue(propertyNameName: String): String = {
-    val properties = new Properties()
-    var propertiesFile = new File("ApplicationLaunchCfg.properties")
-    if(!propertiesFile.exists()){
-      propertiesFile = new File(this.getClass.getClassLoader.getResource("").getPath+"/"+"ApplicationLaunchCfg.properties")
+    if(properties.isEmpty){
+      var propertiesFile = new File("ApplicationLaunchCfg.properties")
+      if(!propertiesFile.exists()){
+        propertiesFile = new File(this.getClass.getClassLoader.getResource("").getPath+"/"+"ApplicationLaunchCfg.properties")
+      }
+      properties.load(new FileInputStream(propertiesFile))
     }
-    properties.load(new FileInputStream(propertiesFile))
     properties.get(propertyNameName).toString
   }
 }
