@@ -30,9 +30,13 @@ object TransformationAKKASystemTestApp extends App{
 
   val localActor = system.actorOf(Props[TransformationAKKASystemTestActor], name = "LocalActor")
 
-  for( a <- 1 to 1000000){
-    localActor ! SendNoReturn
-  }
+  //for( a <- 1 to 1000000){
+  //  localActor ! SendNoReturn
+  //}
 
   localActor ! AnalyzeTreesCrownAreaInSection(100,"tree1")
+
+  Thread.sleep(10000)
+
+  system.terminate()
 }
