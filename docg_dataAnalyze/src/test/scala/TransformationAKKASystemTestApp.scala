@@ -1,5 +1,6 @@
 import akka.actor.{ActorSystem, Props}
 import com.typesafe.config.ConfigFactory
+import com.viewfunction.docg.dataAnalyze.feature.transformation.messagePayload.AnalyzeTreesCrownAreaInSection
 
 object TransformationAKKASystemTestApp extends App{
   val config = ConfigFactory.parseString("""
@@ -32,4 +33,6 @@ object TransformationAKKASystemTestApp extends App{
   for( a <- 1 to 1000000){
     localActor ! SendNoReturn
   }
+
+  localActor ! AnalyzeTreesCrownAreaInSection(100,"tree1")
 }

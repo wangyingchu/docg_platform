@@ -1,6 +1,7 @@
 package com.viewfunction.docg.dataAnalyze.feature.transformation
 
 import akka.actor.ActorRef
+import com.viewfunction.docg.dataAnalyze.feature.transformation.messagePayload.AnalyzeTreesCrownAreaInSection
 import com.viewfunction.docg.dataAnalyze.util.transformation.TransformationMessageHandler
 
 class DefaultTransformationMessageHandler extends TransformationMessageHandler{
@@ -10,9 +11,10 @@ class DefaultTransformationMessageHandler extends TransformationMessageHandler{
       case transformationMessage: String =>
         println(s"DefaultTransformationMessageHandler received message '$transformationMessage'")
         println(senderActor)
-        //sender ! "Hello2 from the RemoteActor"
-        //implicit val timeout = Timeout(10.seconds)
         senderActor.tell("this is return from RemoteActor", transformationRouterActor)
+      case transformationMessage: AnalyzeTreesCrownAreaInSection =>
+        println(transformationMessage.treeType+" "+transformationMessage.crownSize)
+        senderActor.tell("AnalyzeTreesCrownAreaInSection Executed", transformationRouterActor)
     }
   }
 }

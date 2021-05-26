@@ -1,5 +1,7 @@
 import akka.actor.Actor
 import akka.util.Timeout
+import com.viewfunction.docg.dataAnalyze.feature.transformation.messagePayload.AnalyzeTreesCrownAreaInSection
+
 import scala.concurrent.duration.DurationInt
 
 case object SendNoReturn
@@ -12,6 +14,7 @@ class TransformationAKKASystemTestActor extends Actor{
 
   def receive: Receive = {
     case SendNoReturn => remoteActor ! "hello remote actor"
+    case msg: AnalyzeTreesCrownAreaInSection => remoteActor ! msg
     case msg: String =>
       println(s"LocalActor received message '$msg'")
       println(sender)
