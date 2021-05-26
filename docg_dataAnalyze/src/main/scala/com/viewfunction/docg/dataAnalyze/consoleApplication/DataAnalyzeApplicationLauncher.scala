@@ -49,30 +49,35 @@ object DataAnalyzeApplicationLauncher {
     val sparkExecutorInstanceNumber = ConsoleApplicationUtil.getApplicationInfoPropertyValue("sparkExecutorInstanceNumber")
     dataSliceSparkAccessor = new DataSliceSparkAccessor(sparkApplicationName,sparkMasterLocation,sparkExecutorInstanceNumber)
 
-    val config = ConfigFactory.parseString("""
-      akka {
-        actor {
-          provider = "akka.remote.RemoteActorRefProvider"
-        }
-        serializers {
-          kryo = "com.twitter.chill.akka.AkkaSerializer"
-        }
-        serialization-bindings {
-          "java.io.Serializable" = none
-          "scala.Product" = kryo
-        }
+    val transformationAKKAHostname = ConsoleApplicationUtil.getApplicationInfoPropertyValue("transformationAKKAHostname")
+    val transformationAKKAPort = ConsoleApplicationUtil.getApplicationInfoPropertyValue("transformationAKKAPort")
 
-        remote {
-          enabled-transports = ["akka.remote.netty.tcp"]
-          netty.tcp {
-            hostname = 127.0.0.1
-            port = 8084
-          }
-          log-sent-messages = on
-          log-received-messages = on
-        }
-      }
-     """)
+    val configStr =
+      s"""
+         akka {
+         |        actor {
+         |          provider = "akka.remote.RemoteActorRefProvider"
+         |        }
+         |        serializers {
+         |          kryo = "com.twitter.chill.akka.AkkaSerializer"
+         |        }
+         |        serialization-bindings {
+         |          "java.io.Serializable" = none
+         |          "scala.Product" = kryo
+         |        }
+         |
+         |        remote {
+         |          enabled-transports = ["akka.remote.netty.tcp"]
+         |          netty.tcp {
+         |            hostname = "$transformationAKKAHostname"
+         |            port = "$transformationAKKAPort"
+         |          }
+         |          log-sent-messages = on
+         |          log-received-messages = on
+         |        }
+         |      }
+       """.stripMargin
+    val config = ConfigFactory.parseString(configStr)
     transformationAKKASystem = ActorSystem("DataAnalyzeTransformationRouterSystem",config)
     val remoteActor = transformationAKKASystem.actorOf(Props[TransformationRouterActor], name = "TransformationRouter")
     true
