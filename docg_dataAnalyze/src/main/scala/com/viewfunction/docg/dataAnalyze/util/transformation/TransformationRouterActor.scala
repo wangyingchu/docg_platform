@@ -1,11 +1,8 @@
-package sample.remote.transformation
+package com.viewfunction.docg.dataAnalyze.util.transformation
 
 import akka.actor.Actor
-import akka.util.Timeout
 
-import scala.concurrent.duration.DurationInt
-
-class RemoteActor extends Actor {
+class TransformationRouterActor extends Actor {
   def receive = {
     case msg: String =>
       println(s"RemoteActor received message '$msg'")
@@ -15,3 +12,4 @@ class RemoteActor extends Actor {
       sender.tell("this is return from RemoteActor",self)
   }
 }
+
