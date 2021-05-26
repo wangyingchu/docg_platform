@@ -1,4 +1,4 @@
-package com.viewfunction.docg.dataAnalyze.util.communication
+package sample.jvm.transformation
 
 import akka.actor.Actor
 import akka.event.Logging

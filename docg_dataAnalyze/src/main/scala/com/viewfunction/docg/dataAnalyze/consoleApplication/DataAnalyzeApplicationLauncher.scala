@@ -3,6 +3,7 @@ package com.viewfunction.docg.dataAnalyze.consoleApplication
 import akka.actor.{ActorSystem, Props}
 import com.typesafe.config.ConfigFactory
 import com.viewfunction.docg.dataAnalyze.consoleApplication.exception.ApplicationInitException
+import com.viewfunction.docg.dataAnalyze.feature.transformation.DefaultTransformationMessageHandler
 import com.viewfunction.docg.dataAnalyze.util.spark.DataSliceSparkAccessor
 import com.viewfunction.docg.dataAnalyze.util.transformation.TransformationRouterActor
 
@@ -79,7 +80,8 @@ object DataAnalyzeApplicationLauncher {
        """.stripMargin
     val config = ConfigFactory.parseString(configStr)
     transformationAKKASystem = ActorSystem("DataAnalyzeTransformationRouterSystem",config)
-    val remoteActor = transformationAKKASystem.actorOf(Props[TransformationRouterActor], name = "TransformationRouter")
+    val defaultTransformationMessageHandler = new DefaultTransformationMessageHandler
+    val remoteActor = transformationAKKASystem.actorOf(Props(new TransformationRouterActor(defaultTransformationMessageHandler)), name = "TransformationRouter")
     true
   }
 
