@@ -2,9 +2,13 @@ package com.viewfunction.docg.dataAnalyze.feature.transformation
 
 import akka.actor.ActorRef
 import com.viewfunction.docg.dataAnalyze.feature.transformation.messagePayload.AnalyzeTreesCrownAreaInSection
+import com.viewfunction.docg.dataAnalyze.util.spark.DataSliceSparkAccessor
 import com.viewfunction.docg.dataAnalyze.util.transformation.TransformationMessageHandler
+import example.IslandGeoDataAnalyzeTest
 
-class DefaultTransformationMessageHandler extends TransformationMessageHandler{
+import java.util.Date
+
+class DefaultTransformationMessageHandler(dataSliceSparkAccessor :DataSliceSparkAccessor) extends TransformationMessageHandler{
   override def handleTransformationMessage(transformationMessage: Any, transformationRouterActor: ActorRef,senderActor:ActorRef): Unit = {
 
     transformationMessage match {
@@ -15,6 +19,9 @@ class DefaultTransformationMessageHandler extends TransformationMessageHandler{
       case transformationMessage: AnalyzeTreesCrownAreaInSection =>
         println(transformationMessage.treeType+" "+transformationMessage.crownSize)
         senderActor.tell("AnalyzeTreesCrownAreaInSection Executed", transformationRouterActor)
+        println(new Date().toString)
+        IslandGeoDataAnalyzeTest.analyzeTreesCrownAreaInSection(dataSliceSparkAccessor)
+        println(new Date().toString)
     }
   }
 }

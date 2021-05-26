@@ -80,7 +80,7 @@ object DataAnalyzeApplicationLauncher {
        """.stripMargin
     val config = ConfigFactory.parseString(configStr)
     transformationAKKASystem = ActorSystem("DataAnalyzeTransformationRouterSystem",config)
-    val defaultTransformationMessageHandler = new DefaultTransformationMessageHandler
+    val defaultTransformationMessageHandler = new DefaultTransformationMessageHandler(dataSliceSparkAccessor)
     val remoteActor = transformationAKKASystem.actorOf(Props(new TransformationRouterActor(defaultTransformationMessageHandler)), name = "TransformationRouter")
     true
   }
