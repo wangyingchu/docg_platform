@@ -15,7 +15,7 @@
         <property name="peerClassLoadingEnabled" value="false"/>
         <property name="igniteInstanceName" value="docg-dataComputeUnit"/>
 
-        <!-- CIM Edge Compute node customer attributes. -->
+        <!-- DOCG Data compute unit node customer attributes. -->
         <property name="userAttributes">
             <map>
                 <entry key="UNIT_SCOPE" value="DOCG_DATA_COMPUTE_UNIT"/>
