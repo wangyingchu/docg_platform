@@ -17,7 +17,7 @@
         <ignite.geospatial.version>2.7.2</ignite.geospatial.version>
         <spark.version>2.4.8</spark.version>
         <geotools.version>geotools-24.0</geotools.version>
-        <sedona.version>1.0.0-incubating</sedona.version>
+        <sedona.version>1.0.1-incubating</sedona.version>
         <akka.version>2.5.32</akka.version>
     </properties>
 

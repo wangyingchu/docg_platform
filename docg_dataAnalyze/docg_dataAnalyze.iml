@@ -216,9 +216,9 @@
     <orderEntry type="library" name="Maven: org.typelevel:machinist_2.11:0.6.1" level="project" />
     <orderEntry type="library" name="Maven: com.chuusai:shapeless_2.11:2.3.2" level="project" />
     <orderEntry type="library" name="Maven: org.typelevel:macro-compat_2.11:1.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.sedona:sedona-core-2.4_2.11:1.0.0-incubating" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.sedona:sedona-sql-2.4_2.11:1.0.0-incubating" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.sedona:sedona-viz-2.4_2.11:1.0.0-incubating" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.sedona:sedona-core-2.4_2.11:1.0.1-incubating" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.sedona:sedona-sql-2.4_2.11:1.0.1-incubating" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.sedona:sedona-viz-2.4_2.11:1.0.1-incubating" level="project" />
     <orderEntry type="library" name="Maven: org.beryx:awt-color-factory:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.locationtech.jts:jts-core:1.18.0" level="project" />
     <orderEntry type="library" name="Maven: org.wololo:jts2geojson:0.14.3" level="project" />

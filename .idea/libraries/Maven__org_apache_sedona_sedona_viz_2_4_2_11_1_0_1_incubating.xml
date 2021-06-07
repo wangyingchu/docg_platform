@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.apache.sedona:sedona-viz-2.4_2.11:1.0.1-incubating">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/sedona/sedona-viz-2.4_2.11/1.0.1-incubating/sedona-viz-2.4_2.11-1.0.1-incubating.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/sedona/sedona-viz-2.4_2.11/1.0.1-incubating/sedona-viz-2.4_2.11-1.0.1-incubating-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/sedona/sedona-viz-2.4_2.11/1.0.1-incubating/sedona-viz-2.4_2.11-1.0.1-incubating-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
