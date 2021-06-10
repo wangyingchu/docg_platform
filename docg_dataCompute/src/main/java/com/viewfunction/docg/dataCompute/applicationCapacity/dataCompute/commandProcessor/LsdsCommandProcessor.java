@@ -59,6 +59,6 @@ public class LsdsCommandProcessor  implements BaseCommandProcessor {
         lsDataStoreMessageStringBuffer.append("-------------------------------------------------------------");
         lsDataStoreMessageStringBuffer.append("\n\r");
         lsDataStoreMessageStringBuffer.append("================================================================");
-        System.out.println(lsDataStoreMessageStringBuffer.toString());
+        System.out.println(lsDataStoreMessageStringBuffer);
     }
 }
