@@ -1,5 +1,6 @@
 package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.commandProcessor;
 
+import com.beust.jcommander.JCommander;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.UnitIgniteOperationUtil;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.UnitOperationResult;
 import com.viewfunction.docg.dataCompute.consoleApplication.feature.BaseCommandProcessor;
@@ -28,6 +29,10 @@ public class LsdsCommandProcessor  implements BaseCommandProcessor {
             return;
         }
 
+        UnitdsCommandOptions unitdsCommandOptions = new UnitdsCommandOptions();
+        JCommander.newBuilder().addObject(unitdsCommandOptions).build().parse(commandOptions);
+        String startSliceNameFilter = unitdsCommandOptions.getStartSliceName();
+
         Collection<String> cacheNameCollection=this.nodeIgnite.cacheNames();
 
         StringBuffer lsDataStoreMessageStringBuffer=new StringBuffer();
@@ -41,19 +46,28 @@ public class LsdsCommandProcessor  implements BaseCommandProcessor {
         int currentItem = 1;
         while(cacheNameIterator.hasNext()){
             String currentCacheName=cacheNameIterator.next();
-            IgniteCache currentCache=this.nodeIgnite.cache(currentCacheName);
-            CacheMetrics currentCacheMetrics=currentCache.metrics();
-            CacheConfiguration currentCacheConfig=(CacheConfiguration)currentCache.getConfiguration(CacheConfiguration.class);
+            boolean showCurrentSlice = false;
+            if(startSliceNameFilter == null){
+                showCurrentSlice = true;
+            }else if(startSliceNameFilter != null && currentCacheName.toUpperCase().startsWith(startSliceNameFilter.toUpperCase())){
+                showCurrentSlice = true;
+            }
 
-            lsDataStoreMessageStringBuffer.append("-------------------------------------------------------------");
-            lsDataStoreMessageStringBuffer.append("\n\r");
-            lsDataStoreMessageStringBuffer.append(" "+currentItem+". " + currentCacheMetrics.name()+" - "+currentCacheConfig.getSqlSchema());
-            lsDataStoreMessageStringBuffer.append("\n\r");
-            lsDataStoreMessageStringBuffer.append(" Local Data:  " + currentCache.localSize(CachePeekMode.PRIMARY)+"(P) | "+currentCache.localSize(CachePeekMode.BACKUP)+"(B) | "+currentCache.localSize(CachePeekMode.ALL)+"(T)");
-            lsDataStoreMessageStringBuffer.append("\n\r");
-            lsDataStoreMessageStringBuffer.append(" Slice Data:  " + currentCache.size(CachePeekMode.PRIMARY)+"(P) | "+currentCache.size(CachePeekMode.BACKUP)+"(B) | "+currentCache.size(CachePeekMode.ALL)+"(T)");
-            lsDataStoreMessageStringBuffer.append("\n\r");
-            currentItem ++;
+            if(showCurrentSlice){
+                IgniteCache currentCache=this.nodeIgnite.cache(currentCacheName);
+                CacheMetrics currentCacheMetrics=currentCache.metrics();
+                CacheConfiguration currentCacheConfig=(CacheConfiguration)currentCache.getConfiguration(CacheConfiguration.class);
+
+                lsDataStoreMessageStringBuffer.append("-------------------------------------------------------------");
+                lsDataStoreMessageStringBuffer.append("\n\r");
+                lsDataStoreMessageStringBuffer.append(" "+currentItem+". " + currentCacheMetrics.name()+" - "+currentCacheConfig.getSqlSchema());
+                lsDataStoreMessageStringBuffer.append("\n\r");
+                lsDataStoreMessageStringBuffer.append(" Local Data:  " + currentCache.localSize(CachePeekMode.PRIMARY)+"(P) | "+currentCache.localSize(CachePeekMode.BACKUP)+"(B) | "+currentCache.localSize(CachePeekMode.ALL)+"(T)");
+                lsDataStoreMessageStringBuffer.append("\n\r");
+                lsDataStoreMessageStringBuffer.append(" Slice Data:  " + currentCache.size(CachePeekMode.PRIMARY)+"(P) | "+currentCache.size(CachePeekMode.BACKUP)+"(B) | "+currentCache.size(CachePeekMode.ALL)+"(T)");
+                lsDataStoreMessageStringBuffer.append("\n\r");
+                currentItem ++;
+            }
         }
 
         lsDataStoreMessageStringBuffer.append("-------------------------------------------------------------");

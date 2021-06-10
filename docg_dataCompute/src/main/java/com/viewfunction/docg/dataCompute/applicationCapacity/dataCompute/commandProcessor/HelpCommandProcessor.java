@@ -31,7 +31,7 @@ public class HelpCommandProcessor implements BaseCommandProcessor {
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("lssvc:        " +"List all compute services running in global data compute grid.");
         appInfoStringBuffer.append("\n\r");
-        appInfoStringBuffer.append("lsds:         " +"List statistic of all data slices contains in global data compute grid.");
+        appInfoStringBuffer.append("lsds:         " +"List statistic of all data slices contains in global data compute grid. use -fn to filter slice with start name");
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("gridmetr:     " +"Show whole data compute grid real time metrics.");
         appInfoStringBuffer.append("\n\r");

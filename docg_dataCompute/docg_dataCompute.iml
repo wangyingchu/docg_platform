@@ -245,5 +245,6 @@
     <orderEntry type="library" name="Maven: javax.xml.bind:jaxb-api:2.3.1" level="project" />
     <orderEntry type="library" name="Maven: javax.activation:javax.activation-api:1.2.0" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.6.7.1" level="project" />
+    <orderEntry type="library" name="Maven: com.beust:jcommander:1.78" level="project" />
   </component>
 </module>
