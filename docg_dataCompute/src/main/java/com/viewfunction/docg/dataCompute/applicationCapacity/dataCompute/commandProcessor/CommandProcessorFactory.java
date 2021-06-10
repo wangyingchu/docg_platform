@@ -81,6 +81,13 @@ public class CommandProcessorFactory {
                 commandProcessorMap.put("dactgrid",dactgridCommandProcessor);
             }
             dactgridCommandProcessor.processCommand(commandContent,commandOptions);
+        }else if(commandContent.equals("lsds")){
+            BaseCommandProcessor lsdsCommandProcessor=commandProcessorMap.get("lsds");
+            if(lsdsCommandProcessor==null){
+                lsdsCommandProcessor=new LsdsCommandProcessor(nodeIgnite);
+                commandProcessorMap.put("lsds",lsdsCommandProcessor);
+            }
+            lsdsCommandProcessor.processCommand(commandContent,commandOptions);
         }
         else{
             System.out.println("Command [ "+commandContent+" ] not supported");
