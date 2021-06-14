@@ -4,7 +4,6 @@ package com.viewfunction.docg.analysisMotor.feature.ignite.memoryTable.util;
 import com.viewfunction.docg.analysisMotor.feature.ignite.memoryTable.exception.MemoryTableQueryStructureException;
 import com.viewfunction.docg.analysisMotor.feature.ignite.memoryTable.query.QueryParameters;
 import com.viewfunction.docg.analysisMotor.feature.ignite.memoryTable.query.SortingItem;
-import com.glodon.cim.analysisEngine.feature.ignite.memoryTable.query.filteringItem.*;
 import com.viewfunction.docg.analysisMotor.feature.ignite.memoryTable.query.filteringItem.*;
 import org.jooq.*;
 import org.jooq.conf.ParamType;
