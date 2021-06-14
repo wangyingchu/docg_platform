@@ -5,3 +5,64 @@ ConceptionKind.RoadWeatherRecords
     Attribute.RecordId    STRING
     Attribute.RoadSurfaceTemperature    DOUBLE
     Attribute.AirTemperature    DOUBLE
+ConceptionKind.RoadWeatherRecords
+    Attribute.stationName    STRING
+    Attribute.stationLocation    STRING
+    Attribute.dateTime    DATE
+    Attribute.RecordId    STRING
+    Attribute.RoadSurfaceTemperature    DOUBLE
+    Attribute.AirTemperature    DOUBLE
+ConceptionKind.Ingredient
+    Attribute.category    STRING
+    Attribute.name    STRING
+    Attribute.id    STRING
+ConceptionKind.Compound
+    Attribute.CASNumber    STRING
+    Attribute.name    STRING
+    Attribute.id    STRING
+RelationKind.belongsToCategory
+    Attribute.dataOrigin    STRING
+RelationKind.isUsedIn
+    Attribute.createDate    STRING
+ConceptionKind.IndividualTree
+    Attribute.DOCG_GS_LLGeometryContent    STRING
+    Attribute.GNQHID    STRING
+    Attribute.DMID    STRING
+    Attribute.SZ    STRING
+    Attribute.XJ    STRING
+ConceptionKind.Frutex
+    Attribute.DOCG_GS_LLGeometryContent    STRING
+ConceptionKind.FunctionalZone
+    Attribute.DOCG_GS_LLGeometryContent    STRING
+    Attribute.GNQHID    STRING
+    Attribute.GNQMC    STRING
+ConceptionKind.ZoneSection
+    Attribute.DOCG_GS_LLGeometryContent    STRING
+    Attribute.GNQHID    STRING
+    Attribute.BKMC    STRING
+    Attribute.GNQBH    STRING
+ConceptionKind.SectionBlock
+    Attribute.DOCG_GS_LLGeometryContent    STRING
+    Attribute.BKMC    STRING
+    Attribute.GNQHID    STRING
+    Attribute.Ymax    STRING
+    Attribute.BH    STRING
+    Attribute.BKBH    STRING
+    Attribute.XFLX    STRING
+    Attribute.XBLX    STRING
+    Attribute.XBMC    STRING
+ConceptionKind.Road
+    Attribute.DOCG_GS_LLGeometryContent    STRING
+    Attribute.Attribute.XBLX    STRING
+    Attribute.GNQ    STRING
+    Attribute.BK    STRING
+ConceptionKind.Building
+    Attribute.DOCG_GS_LLGeometryContent    STRING
+    Attribute.Attribute.XBLX    STRING
+    Attribute.GNQ    STRING
+    Attribute.BK    STRING
+ConceptionKind.ConstructionLand
+    Attribute.DOCG_GS_LLGeometryContent    STRING
+    Attribute.Attribute.XBLX    STRING
+    Attribute.GNQ    STRING
+    Attribute.BK    STRING
