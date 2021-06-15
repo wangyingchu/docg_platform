@@ -4,6 +4,7 @@ import com.viewfunction.docg.analysisProvider.feature.ignite.memoryTable.query.Q
 import com.viewfunction.docg.analysisProvider.feature.ignite.memoryTable.result.MemoryTableQueryResult
 import com.viewfunction.docg.analysisProvider.feature.ignite.memoryTable.{MemoryTable, MemoryTableServiceInvoker}
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
+import com.viewfunction.docg.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlice}
 import org.apache.ignite.{Ignite, Ignition}
 import org.apache.sedona.sql.utils.SedonaSQLRegistrator
 import org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
@@ -19,6 +20,8 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
   Ignition.setClientMode(isClientIgniteNode)
   val igniteNode = Ignition.start("configurations/dataAnalysis-ignite.xml")
   val memoryTableServiceInvoker = MemoryTableServiceInvoker.getInvokerInstance(igniteNode)
+
+  val dataServiceInvoker = DataServiceInvoker.getInvokerInstance(igniteNode)
 
   val sparkSession : SparkSession = SparkSession.builder.appName(sessionName).master(masterLocation)
     .config("spark.executor.instances", executorInstanceNumber)
@@ -47,12 +50,16 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
     _getMemoryTableServiceInvoker().getMemoryTable(tableName)
   }
 
+  def getDataSlice(dataSliceName:String): DataSlice = {
+    _getDataServiceInvoker().getDataSlice(dataSliceName)
+  }
+
   def close():Unit={
     sparkSession.close()
     igniteNode.close()
   }
 
-  def _getSparkSession():SparkSession = {
+  def _getSparkSession(): SparkSession = {
     sparkSession
   }
 
@@ -62,6 +69,10 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
 
   def _getMemoryTableServiceInvoker():MemoryTableServiceInvoker = {
     memoryTableServiceInvoker
+  }
+
+  def _getDataServiceInvoker():DataServiceInvoker = {
+    dataServiceInvoker
   }
 
   def _getDataFrameFromSparkSQL(dataFrameName:String, dataFrameSQL:String):DataFrame = {
