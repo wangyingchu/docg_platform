@@ -1,15 +1,13 @@
 package com.viewfunction.docg.analysisProvider.feature.common
 
-import com.viewfunction.docg.analysisProvider.feature.ignite.memoryTable.query.QueryParameters
-import com.viewfunction.docg.analysisProvider.feature.ignite.memoryTable.result.MemoryTableQueryResult
-import com.viewfunction.docg.analysisProvider.feature.ignite.memoryTable.{MemoryTable, MemoryTableServiceInvoker}
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlice}
 import org.apache.ignite.{Ignite, Ignition}
+
 import org.apache.sedona.sql.utils.SedonaSQLRegistrator
 import org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
+
 import org.apache.spark.serializer.KryoSerializer
-import org.apache.spark.sql.types.{StringType, StructField, StructType}
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
 import java.lang.Boolean
@@ -19,8 +17,6 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
   val isClientIgniteNode = Boolean.parseBoolean(AnalysisProviderApplicationUtil.getApplicationProperty("isClientIgniteNode"))
   Ignition.setClientMode(isClientIgniteNode)
   val igniteNode = Ignition.start("configurations/dataAnalysis-ignite.xml")
-  val memoryTableServiceInvoker = MemoryTableServiceInvoker.getInvokerInstance(igniteNode)
-
   val dataServiceInvoker = DataServiceInvoker.getInvokerInstance(igniteNode)
 
   val sparkSession : SparkSession = SparkSession.builder.appName(sessionName).master(masterLocation)
@@ -31,23 +27,19 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
   //Register Sedona SQL functions
   SedonaSQLRegistrator.registerAll(sparkSession)
 
-  def getDataFrameFromMemoryTable(memoryTableName: String, memoryTableGroup: String):DataFrame={
-    val jdbcURL: String = if (memoryTableGroup != null) {
-      "jdbc:ignite:thin://127.0.0.1/"+memoryTableGroup+"?partitionAwareness=true"
+  def getDataFrameFromDataSlice(sliceName: String, sliceGroup: String):DataFrame={
+    val jdbcURL: String = if (sliceGroup != null) {
+      "jdbc:ignite:thin://127.0.0.1/"+sliceGroup+"?partitionAwareness=true"
     }else {
       "jdbc:ignite:thin://127.0.0.1/?partitionAwareness=true"
     }
      val df = _getSparkSession().sqlContext.read.format("jdbc")
       .option("url", jdbcURL)
       .option("driver", "org.apache.ignite.IgniteJdbcThinDriver")
-      .option("dbtable", memoryTableName)
+      .option("dbtable", sliceName)
       .option("fetchSize",10000)
       .load()
     df
-  }
-
-  def getMemoryTable(tableName:String):MemoryTable={
-    _getMemoryTableServiceInvoker().getMemoryTable(tableName)
   }
 
   def getDataSlice(dataSliceName:String): DataSlice = {
@@ -65,10 +57,6 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
 
   def _getIgniteNode(): Ignite = {
     igniteNode
-  }
-
-  def _getMemoryTableServiceInvoker():MemoryTableServiceInvoker = {
-    memoryTableServiceInvoker
   }
 
   def _getDataServiceInvoker():DataServiceInvoker = {

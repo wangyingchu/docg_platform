@@ -1,6 +1,5 @@
 package com.viewfunction.docg.dataCompute.dataComputeUnit.util;
 
-
 import com.viewfunction.docg.dataCompute.exception.ComputeGridNotActiveException;
 import org.apache.ignite.Ignite;
 

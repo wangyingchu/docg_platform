@@ -150,7 +150,7 @@ seattleGISDataSHPInfoMapping.put("Stairway","")
 seattleGISDataSHPInfoMapping.forEach((objectType,shpLocation)=>{
 val shpFile = new File(shpLocation)
 val shpParseResult = spatialDataMaintainUtil.parseSHPData(shpFile,null)
-spatialDataMaintainUtil.duplicateSpatialDataInfoToMemoryTable(globalDataAccessor,shpParseResult,objectType,"defaultGroup",true,null)
+spatialDataMaintainUtil.duplicateSpatialDataInfoToDataSlice(globalDataAccessor,shpParseResult,objectType,"defaultGroup",true,null)
 })
 
 Thread.sleep(5000)

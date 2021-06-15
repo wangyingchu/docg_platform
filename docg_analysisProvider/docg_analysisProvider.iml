@@ -296,5 +296,6 @@
     <orderEntry type="library" name="Maven: net.sf.geographiclib:GeographicLib-Java:1.49" level="project" />
     <orderEntry type="library" name="Maven: org.hsqldb:hsqldb:2.4.1" level="project" />
     <orderEntry type="library" name="Maven: org.geotools:gt-epsg-extension:24.0" level="project" />
+    <orderEntry type="library" name="scala-sdk-2.12.8" level="application" />
   </component>
 </module>

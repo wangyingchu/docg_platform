@@ -7,7 +7,7 @@ import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
 import com.viewfunction.docg.analysisProvider.feature.communicationRouter.messagePayload.AnalyzeTreesCrownAreaInSection
 import com.viewfunction.docg.analysisProvider.feature.functionalFeatures.EcologicalEnvironmentAnalysis
 
-class CIMAnalysisEngineCommunicationMessageHandler (globalDataAccessor :GlobalDataAccessor) extends CommunicationMessageHandler{
+class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalDataAccessor) extends CommunicationMessageHandler{
   override def handleMessage(communicationMessage: Any, communicationActor: ActorRef, senderActor: ActorRef): Unit = {
     communicationMessage match {
       case communicationMessage: String =>

@@ -10,10 +10,10 @@ object GlobalDataAccessorTestCase01 extends App{
   val sparkExecutorInstanceNumber = AnalysisProviderApplicationUtil.getApplicationProperty("sparkExecutorInstanceNumber")
   val globalDataAccessor = new GlobalDataAccessor(sparkApplicationName,sparkMasterLocation,sparkExecutorInstanceNumber)
 
-  val wetLandMemoryTable = globalDataAccessor.getMemoryTable("Wetland")
-  println(wetLandMemoryTable.getMemoryTableMetaInfo.getTotalDataCount)
+  val wetLandDataSlice = globalDataAccessor.getDataSlice("Streets")
+  println(wetLandDataSlice.getDataSliceMetaInfo.getTotalDataCount)
 
-  val targetDF = globalDataAccessor.getDataFrameFromMemoryTable("Wetland","defaultGroup")
+  val targetDF = globalDataAccessor.getDataFrameFromDataSlice("Streets","defaultGroup")
   targetDF.printSchema()
   targetDF.take(50).foreach(println(_))
   targetDF.persist()

@@ -5,7 +5,7 @@ import com.typesafe.config.ConfigFactory
 import com.viewfunction.docg.analysisProvider.providerApplication.communication.CommunicationActor
 import com.viewfunction.docg.analysisProvider.providerApplication.exception.ApplicationInitException
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
-import com.viewfunction.docg.analysisProvider.feature.communicationRouter.CIMAnalysisEngineCommunicationMessageHandler
+import com.viewfunction.docg.analysisProvider.feature.communicationRouter.AnalysisProviderCommunicationMessageHandler
 
 import scala.io.StdIn
 
@@ -81,7 +81,7 @@ object AnalysisProviderApplicationLauncher {
        """.stripMargin
     val config = ConfigFactory.parseString(configStr)
     engineCommunicationAKKASystem = ActorSystem("DOCGAnalysisProviderCommunicationSystem",config)
-    val _CIMAnalysisEngineCommunicationMessageHandler = new CIMAnalysisEngineCommunicationMessageHandler(globalDataAccessor)
+    val _CIMAnalysisEngineCommunicationMessageHandler = new AnalysisProviderCommunicationMessageHandler(globalDataAccessor)
     val communicationActor = engineCommunicationAKKASystem.actorOf(Props(new CommunicationActor(_CIMAnalysisEngineCommunicationMessageHandler)), name = "communicationRouter")
     //communicationActor ! "DOCG Analysis Provider communication router Started."
     true

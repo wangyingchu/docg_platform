@@ -1,7 +1,6 @@
 package memoryTableTest
 
-
-import com.viewfunction.docg.analysisProvider.feature.ignite.memoryTable.{MemoryTablePropertyType, MemoryTableServiceInvoker}
+import com.viewfunction.docg.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlicePropertyType}
 
 import java.util
 import java.util.Date
@@ -12,37 +11,37 @@ import scala.collection.mutable.ArrayBuffer
 object MemoryTableTestCase01{
 
   def main(args:Array[String]):Unit ={
-    val memoryTableServiceInvoker:MemoryTableServiceInvoker =  MemoryTableServiceInvoker.getInvokerInstance
+    val memoryTableServiceInvoker:DataServiceInvoker =  DataServiceInvoker.getInvokerInstance
     val newMemoryTableName = "TestMemoryTable01"+ new Date().getTime
     memoryTableCreate(memoryTableServiceInvoker,newMemoryTableName)
     memoryTableCRUD(memoryTableServiceInvoker,newMemoryTableName)
     memoryTableServiceInvoker.close()
   }
 
-  def memoryTableCreate(memoryTableServiceInvoker:MemoryTableServiceInvoker,memoryTableName:String):Unit={
+  def memoryTableCreate(memoryTableServiceInvoker:DataServiceInvoker,memoryTableName:String):Unit={
     println("======== memoryTableCreate Start ===")
-    val tablePropertiesDefineMap: java.util.Map[String, MemoryTablePropertyType] = mutable.HashMap(
-      "property1" -> MemoryTablePropertyType.STRING,
-      "property2" -> MemoryTablePropertyType.INT,
-      "property3" -> MemoryTablePropertyType.DOUBLE,
-      "property4" -> MemoryTablePropertyType.STRING
+    val tablePropertiesDefineMap: java.util.Map[String, DataSlicePropertyType] = mutable.HashMap(
+      "property1" -> DataSlicePropertyType.STRING,
+      "property2" -> DataSlicePropertyType.INT,
+      "property3" -> DataSlicePropertyType.DOUBLE,
+      "property4" -> DataSlicePropertyType.STRING
     ).asJava
 
     val pkList: java.util.List[String] = ArrayBuffer("property2").asJava
-    val memoryTable = memoryTableServiceInvoker.createGlobalMemoryTable(memoryTableName,"MemoryTableGroup01",tablePropertiesDefineMap,pkList)
-    println(memoryTable.getMemoryTableMetaInfo.getMemoryTableName)
-    println(memoryTable.getMemoryTableMetaInfo.getBackupDataCount)
-    println(memoryTable.getMemoryTableMetaInfo.getTotalDataCount)
-    println(memoryTable.getMemoryTableMetaInfo.getStoreBackupNumber)
-    println(memoryTable.getMemoryTableMetaInfo.getMemoryTableMode)
-    println(memoryTable.getMemoryTableMetaInfo.getMemoryTableGroupName)
+    val memoryTable = memoryTableServiceInvoker.createGridDataSlice(memoryTableName,"MemoryTableGroup01",tablePropertiesDefineMap,pkList)
+    println(memoryTable.getDataSliceMetaInfo.getDataSliceName)
+    println(memoryTable.getDataSliceMetaInfo.getBackupDataCount)
+    println(memoryTable.getDataSliceMetaInfo.getTotalDataCount)
+    println(memoryTable.getDataSliceMetaInfo.getStoreBackupNumber)
+    println(memoryTable.getDataSliceMetaInfo.getAtomicityMode)
+    println(memoryTable.getDataSliceMetaInfo.getSliceGroupName)
     println("======== memoryTableCreate Finish ===")
   }
 
-  def memoryTableCRUD(memoryTableServiceInvoker:MemoryTableServiceInvoker,memoryTableName:String):Unit={
+  def memoryTableCRUD(memoryTableServiceInvoker:DataServiceInvoker,memoryTableName:String):Unit={
     println("======== memoryTableCRUD Start ===")
-    val memoryTable = memoryTableServiceInvoker.getMemoryTable(memoryTableName)
-    memoryTable.emptyMemoryTable()
+    val memoryTable = memoryTableServiceInvoker.getDataSlice(memoryTableName)
+    memoryTable.emptyDataSlice()
     //C
     val dataRecordsList = new util.ArrayList[util.Map[String, AnyRef]]
     for(i <- 1 to 100000){

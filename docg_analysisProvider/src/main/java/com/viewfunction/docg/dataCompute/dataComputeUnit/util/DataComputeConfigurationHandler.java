@@ -14,7 +14,7 @@ public class DataComputeConfigurationHandler {
     private static Properties globalConfigurationProperties;
 
     public static String getDataComputeIgniteConfigurationFilePath(){
-        return "configurations/com.viewfunction.docg.dataCompute-ignite.xml";
+        return "configurations/dataAnalysis-ignite.xml";
     }
 
     public static IgniteConfiguration getDataComputeIgniteConfiguration(){
