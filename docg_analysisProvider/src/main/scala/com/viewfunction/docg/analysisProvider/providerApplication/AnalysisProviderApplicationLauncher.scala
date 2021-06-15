@@ -52,8 +52,8 @@ object AnalysisProviderApplicationLauncher {
     val sparkExecutorInstanceNumber = AnalysisProviderApplicationUtil.getApplicationProperty("sparkExecutorInstanceNumber")
     globalDataAccessor = new GlobalDataAccessor(sparkApplicationName,sparkMasterLocation,sparkExecutorInstanceNumber)
 
-    val engineCommunicationHostName = AnalysisProviderApplicationUtil.getApplicationProperty("providerCommunicationHostName")
-    val engineCommunicationPort = AnalysisProviderApplicationUtil.getApplicationProperty("providerCommunicationPort")
+    val providerCommunicationHostName = AnalysisProviderApplicationUtil.getApplicationProperty("providerCommunicationHostName")
+    val providerCommunicationPort = AnalysisProviderApplicationUtil.getApplicationProperty("providerCommunicationPort")
 
     val configStr =
       s"""
@@ -73,8 +73,8 @@ object AnalysisProviderApplicationLauncher {
          |  remote {
          |    artery {
          |      transport = tcp # See Selecting a transport below
-         |      canonical.hostname = ""$engineCommunicationHostName""
-         |      canonical.port = "$engineCommunicationPort"
+         |      canonical.hostname = ""$providerCommunicationHostName""
+         |      canonical.port = "$providerCommunicationPort"
          |    }
          |  }
          |}

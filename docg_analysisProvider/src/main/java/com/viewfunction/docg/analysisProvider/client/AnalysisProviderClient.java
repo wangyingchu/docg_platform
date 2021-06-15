@@ -64,9 +64,9 @@ public class AnalysisProviderClient {
         actorSystem = ActorSystem.create("EngineCommunicationTestSystem", config);
         localCommunicationActor = actorSystem.actorOf(Props.create(CommunicationActor.class), "localCommunicationActor");
 
-        String engineCommunicationHostName= PropertyHandler.getConfigPropertyValue("providerCommunicationHostName");
-        String engineCommunicationPort= PropertyHandler.getConfigPropertyValue("providerCommunicationPort");
-        String path = "akka://DOCGAnalysisProviderCommunicationSystem@"+engineCommunicationHostName+":"+engineCommunicationPort+"/user/communicationRouter";
+        String providerCommunicationHostName= PropertyHandler.getConfigPropertyValue("providerCommunicationHostName");
+        String providerCommunicationPort= PropertyHandler.getConfigPropertyValue("providerCommunicationPort");
+        String path = "akka://DOCGAnalysisProviderCommunicationSystem@"+providerCommunicationHostName+":"+providerCommunicationPort+"/user/communicationRouter";
         remoteCommunicationActor = actorSystem.actorSelection(path);
     }
 
