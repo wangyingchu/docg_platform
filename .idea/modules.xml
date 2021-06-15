@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/docg_analysisMotor/docg_analysisMotor.iml" filepath="$PROJECT_DIR$/docg_analysisMotor/docg_analysisMotor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/docg_analysisProvider/docg_analysisProvider.iml" filepath="$PROJECT_DIR$/docg_analysisProvider/docg_analysisProvider.iml" />
       <module fileurl="file://$PROJECT_DIR$/docg_coreRealm/docg_coreRealm.iml" filepath="$PROJECT_DIR$/docg_coreRealm/docg_coreRealm.iml" />
       <module fileurl="file://$PROJECT_DIR$/docg_dataAnalyze/docg_dataAnalyze.iml" filepath="$PROJECT_DIR$/docg_dataAnalyze/docg_dataAnalyze.iml" />
       <module fileurl="file://$PROJECT_DIR$/docg_dataCollector/docg_dataCollector.iml" filepath="$PROJECT_DIR$/docg_dataCollector/docg_dataCollector.iml" />

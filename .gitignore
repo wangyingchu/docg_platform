@@ -11,4 +11,5 @@
 /docg_realmKnowledgeManage/testresult/
 /docg_dataCollector/target/
 /docg_realmKnowledgeManage/ignite/
-/docg_analysisMotor/target/
+/docg_analysisProvider/target/
+/docg_analysisProvider/ignite/
