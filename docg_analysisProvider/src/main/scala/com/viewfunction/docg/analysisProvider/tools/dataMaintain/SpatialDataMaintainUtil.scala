@@ -163,9 +163,4 @@ class SpatialDataMaintainUtil {
     })
     targetDataSlice
   }
-
-  def duplicateSpatialDataInfoToCoreRealm(globalDataAccessor:GlobalDataAccessor, spatialDataInfo: SpatialDataInfo,
-                                          conceptionKindName:String, removeExistingData:Boolean):Unit={
-
-  }
 }
