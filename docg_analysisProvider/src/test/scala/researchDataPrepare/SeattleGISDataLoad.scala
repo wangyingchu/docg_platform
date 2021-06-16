@@ -129,30 +129,13 @@ object SeattleGISDataLoad extends App{
   seattleGISDataSHPInfoMapping.put("SewerClassificationArea","/home/wangychu/Desktop/SEATTLE_GIS_DATA/Utilities/Sewer_Classification_Areas/Sewer_Classification_Areas.shp")
   seattleGISDataSHPInfoMapping.put("SideAndLateralSewer","/home/wangychu/Desktop/SEATTLE_GIS_DATA/Utilities/Side_Sewers_and_Laterals/Side_Sewers_and_Laterals.shp")
   seattleGISDataSHPInfoMapping.put("SPU_RetailWaterServiceArea","/home/wangychu/Desktop/SEATTLE_GIS_DATA/Utilities/SPU_Retail_Water_Service_Area-shp/SPU_Retail_Water_Service_Area.shp")
-
   */
+  seattleGISDataSHPInfoMapping.forEach((objectType,shpLocation)=>{
+  val shpFile = new File(shpLocation)
+  val shpParseResult = spatialDataMaintainUtil.parseSHPData(shpFile,null)
+  spatialDataMaintainUtil.duplicateSpatialDataInfoToDataSlice(globalDataAccessor,shpParseResult,objectType,"defaultGroup",true,null)
+  })
 
-
-
-
-/*
-
-
-
-seattleGISDataSHPInfoMapping.put("Stairway","")
-seattleGISDataSHPInfoMapping.put("Stairway","")
-seattleGISDataSHPInfoMapping.put("Stairway","")
-*/
-
-
-
-
-seattleGISDataSHPInfoMapping.forEach((objectType,shpLocation)=>{
-val shpFile = new File(shpLocation)
-val shpParseResult = spatialDataMaintainUtil.parseSHPData(shpFile,null)
-spatialDataMaintainUtil.duplicateSpatialDataInfoToDataSlice(globalDataAccessor,shpParseResult,objectType,"defaultGroup",true,null)
-})
-
-Thread.sleep(5000)
-globalDataAccessor.close()
+  Thread.sleep(5000)
+  globalDataAccessor.close()
 }
