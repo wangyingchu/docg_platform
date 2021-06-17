@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class DataServiceInvoker implements AutoCloseable{
+public class DataSliceServiceInvoker implements AutoCloseable{
 
     private Ignite invokerIgnite;
     private final String TEMPLATE_OPERATION_CACHE = "TEMPLATE_OPERATION_CACHE";
@@ -98,8 +98,8 @@ public class DataServiceInvoker implements AutoCloseable{
         return dataSliceNameList;
     }
 
-    public static DataServiceInvoker getInvokerInstance() throws ComputeGridNotActiveException {
-        DataServiceInvoker invokerInstance=new DataServiceInvoker();
+    public static DataSliceServiceInvoker getInvokerInstance() throws ComputeGridNotActiveException {
+        DataSliceServiceInvoker invokerInstance=new DataSliceServiceInvoker();
         try{
             invokerInstance.openServiceSession();
         }catch (ComputeGridNotActiveException e){
@@ -113,8 +113,8 @@ public class DataServiceInvoker implements AutoCloseable{
         this.invokerIgnite=invokerIgnite;
     }
 
-    public static DataServiceInvoker getInvokerInstance(Ignite invokerIgnite) throws ComputeGridNotActiveException {
-        DataServiceInvoker invokerInstance=new DataServiceInvoker();
+    public static DataSliceServiceInvoker getInvokerInstance(Ignite invokerIgnite) throws ComputeGridNotActiveException {
+        DataSliceServiceInvoker invokerInstance=new DataSliceServiceInvoker();
         invokerInstance.setServiceSession(invokerIgnite);
         return invokerInstance;
     }

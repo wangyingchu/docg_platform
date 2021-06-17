@@ -1,7 +1,7 @@
 package com.viewfunction.docg.analysisProvider.feature.common
 
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
-import com.viewfunction.docg.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlice}
+import com.viewfunction.docg.dataCompute.dataComputeUnit.dataService.{DataSliceServiceInvoker, DataSlice}
 import org.apache.ignite.{Ignite, Ignition}
 
 import org.apache.sedona.sql.utils.SedonaSQLRegistrator
@@ -17,7 +17,7 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
   val isClientIgniteNode = Boolean.parseBoolean(AnalysisProviderApplicationUtil.getApplicationProperty("isClientIgniteNode"))
   Ignition.setClientMode(isClientIgniteNode)
   val igniteNode = Ignition.start("configurations/dataAnalysis-ignite.xml")
-  val dataServiceInvoker = DataServiceInvoker.getInvokerInstance(igniteNode)
+  val dataServiceInvoker = DataSliceServiceInvoker.getInvokerInstance(igniteNode)
 
   val sparkSession : SparkSession = SparkSession.builder.appName(sessionName).master(masterLocation)
     .config("spark.executor.instances", executorInstanceNumber)
@@ -43,7 +43,7 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
   }
 
   def getDataSlice(dataSliceName:String): DataSlice = {
-    _getDataServiceInvoker().getDataSlice(dataSliceName)
+    _getDataSliceServiceInvoker().getDataSlice(dataSliceName)
   }
 
   def close():Unit={
@@ -59,7 +59,7 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
     igniteNode
   }
 
-  def _getDataServiceInvoker():DataServiceInvoker = {
+  def _getDataSliceServiceInvoker():DataSliceServiceInvoker = {
     dataServiceInvoker
   }
 
