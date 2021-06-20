@@ -10,6 +10,7 @@
       <module fileurl="file://$PROJECT_DIR$/docg_platform.iml" filepath="$PROJECT_DIR$/docg_platform.iml" />
       <module fileurl="file://$PROJECT_DIR$/docg_realmExample/docg_realmExample.iml" filepath="$PROJECT_DIR$/docg_realmExample/docg_realmExample.iml" />
       <module fileurl="file://$PROJECT_DIR$/docg_realmKnowledgeManage/docg_realmKnowledgeManage.iml" filepath="$PROJECT_DIR$/docg_realmKnowledgeManage/docg_realmKnowledgeManage.iml" />
+      <module fileurl="file://$PROJECT_DIR$/docg_sysAdmin/docg_sysAdmin.iml" filepath="$PROJECT_DIR$/docg_sysAdmin/docg_sysAdmin.iml" />
     </modules>
   </component>
 </project>

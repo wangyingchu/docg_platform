@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="docg_realmKnowledgeManage" />
+        <module name="docg_sysAdmin" />
         <module name="docg_coreRealm" />
         <module name="docg_dataCompute" />
         <module name="docg_dataCollector" />
@@ -25,6 +26,7 @@
       <module name="docg_platform" target="11" />
       <module name="docg_realmExample" target="11" />
       <module name="docg_realmKnowledgeManage" target="11" />
+      <module name="docg_sysAdmin" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
