@@ -20,8 +20,24 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
   val dataServiceInvoker = DataSliceServiceInvoker.getInvokerInstance(igniteNode)
 
   val sparkSession : SparkSession = SparkSession.builder.appName(sessionName).master(masterLocation)
-    .config("spark.executor.instances", executorInstanceNumber)
-    .config("spark.executor.cores",5)
+    //.config("spark.executor.instances", executorInstanceNumber)
+    //.config("spark.executor.instances", "executorInstanceNumber")
+
+    .config("spark.cores.max","40")
+    .config("spark.default.parallelism","200")
+
+
+
+    .config("spark.executor.cores","20")
+    .config("spark.executor.memory","5G")
+
+
+    .config("spark.memory.offHeap.enabled",true)
+    .config("spark.memory.offHeap.size","22G")
+
+
+
+
     .config("spark.serializer", classOf[KryoSerializer].getName) // org.apache.spark.serializer.KryoSerializer
     .config("spark.kryo.registrator", classOf[SedonaVizKryoRegistrator].getName) // org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
     .getOrCreate()

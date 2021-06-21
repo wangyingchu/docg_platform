@@ -63,5 +63,5 @@ object RegionalGreeningRateCalculationExample extends App{
   finalResultDF.show(60)
 
   //Thread.sleep(5000)
-  globalDataAccessor.close()
+  //globalDataAccessor.close()
 }
