@@ -10,6 +10,13 @@ object GlobalDataAccessorTestCase01 extends App{
   val sparkExecutorInstanceNumber = AnalysisProviderApplicationUtil.getApplicationProperty("sparkExecutorInstanceNumber")
   val globalDataAccessor = new GlobalDataAccessor(sparkApplicationName,sparkMasterLocation,sparkExecutorInstanceNumber)
 
+
+  val dataSliceServiceInvoker = globalDataAccessor._getDataSliceServiceInvoker()
+
+  dataSliceServiceInvoker.listDataSlices().forEach(println(_))
+
+
+  /*
   val wetLandDataSlice = globalDataAccessor.getDataSlice("Streets")
   println(wetLandDataSlice.getDataSliceMetaInfo.getTotalDataCount)
 
@@ -17,6 +24,8 @@ object GlobalDataAccessorTestCase01 extends App{
   targetDF.printSchema()
   targetDF.take(50).foreach(println(_))
   targetDF.persist()
+  */
+
 
   Thread.sleep(5000)
   globalDataAccessor.close()

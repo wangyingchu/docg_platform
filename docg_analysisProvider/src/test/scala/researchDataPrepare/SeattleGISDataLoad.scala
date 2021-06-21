@@ -72,7 +72,7 @@ object SeattleGISDataLoad extends App{
 
   //Environment Data
   /*
-  seattleGISDataSHPInfoMapping.put("Tree","/home/wangychu/Desktop/SEATTLE_GIS_DATA/Environment/Trees/Trees.shp")
+  seattleGISDataSHPInfoMapping.put("StreetTree","/home/wangychu/Desktop/SEATTLE_GIS_DATA/Environment/Trees/Trees.shp")
   seattleGISDataSHPInfoMapping.put("DirectDischargeArea","/home/wangychu/Desktop/SEATTLE_GIS_DATA/Environment/Direct_Discharge_Areas/Direct_Discharge_Areas.shp")
   seattleGISDataSHPInfoMapping.put("DrainageBasin","/home/wangychu/Desktop/SEATTLE_GIS_DATA/Environment/Drainage_Basins/Drainage_Basins.shp")
   seattleGISDataSHPInfoMapping.put("Ditch_Culvert","/home/wangychu/Desktop/SEATTLE_GIS_DATA/Environment/DWW_Ditches_and_Culverts/DWW_Ditches_and_Culverts.shp")
