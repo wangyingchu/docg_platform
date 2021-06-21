@@ -1,12 +1,12 @@
 package com.viewfunction.docg.analysisProvider.feature.common
 
+import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.GeospatialScaleLevel
+import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.GeospatialScaleLevel.GeospatialScaleLevel
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
-import com.viewfunction.docg.dataCompute.dataComputeUnit.dataService.{DataSliceServiceInvoker, DataSlice}
+import com.viewfunction.docg.dataCompute.dataComputeUnit.dataService.{DataSlice, DataSliceServiceInvoker}
 import org.apache.ignite.{Ignite, Ignition}
-
 import org.apache.sedona.sql.utils.SedonaSQLRegistrator
 import org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
-
 import org.apache.spark.serializer.KryoSerializer
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
@@ -21,6 +21,7 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
 
   val sparkSession : SparkSession = SparkSession.builder.appName(sessionName).master(masterLocation)
     .config("spark.executor.instances", executorInstanceNumber)
+    .config("spark.executor.cores",5)
     .config("spark.serializer", classOf[KryoSerializer].getName) // org.apache.spark.serializer.KryoSerializer
     .config("spark.kryo.registrator", classOf[SedonaVizKryoRegistrator].getName) // org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
     .getOrCreate()
@@ -33,7 +34,7 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
     }else {
       "jdbc:ignite:thin://127.0.0.1/?partitionAwareness=true"
     }
-     val df = _getSparkSession().sqlContext.read.format("jdbc")
+     val df = getSparkSession().sqlContext.read.format("jdbc")
       .option("url", jdbcURL)
       .option("driver", "org.apache.ignite.IgniteJdbcThinDriver")
       .option("dbtable", sliceName)
@@ -41,6 +42,51 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
       .load()
     df
   }
+
+  def getDataFrameWithSpatialSupportFromDataSlice(dataSliceName:String,sliceGroup: String,spatialValueName:String,dataFrameName:String,spatialAttributeName:String):DataFrame = {
+    val orgDataFrame = getDataFrameFromDataSlice(dataSliceName,sliceGroup)
+    orgDataFrame.createOrReplaceTempView(dataSliceName)
+
+    val spatialConvertSQL = "SELECT * , ST_GeomFromWKT("+spatialValueName+") AS "+spatialAttributeName+" FROM "+dataSliceName
+    val targetDF = getSparkSession().sql(spatialConvertSQL.stripMargin)
+    if(null != dataFrameName){
+      targetDF.createOrReplaceTempView(dataFrameName)
+    }
+    targetDF
+  }
+
+
+/*
+  def getDataFrameWithSpatialSupportFromDataSlice(dataSliceName:String,sliceGroup: String,geospatialLevel:GeospatialScaleLevel,dataFrameName:String,spatialAttributeName:String):DataFrame = {
+    val orginalDataFrame = getDataFrameFromDataSlice(dataSliceName,sliceGroup)
+    var spatialConvertSQL = ""
+    geospatialLevel match {
+      case GeospatialScaleLevel.GlobalLevel =>
+        if(spatialAttributeName == null){
+          spatialConvertSQL = "SELECT * , ST_GeomFromWKT(DOCG_GS_GLGeometryContent) AS GL_Geometry FROM "+dataSliceName
+        }else{
+          spatialConvertSQL = "SELECT * , ST_GeomFromWKT(DOCG_GS_GLGeometryContent) AS "+spatialAttributeName+" FROM "+dataSliceName
+        }
+      case GeospatialScaleLevel.CountryLevel =>
+        if(spatialAttributeName == null){
+          spatialConvertSQL = "SELECT * , ST_GeomFromWKT(DOCG_GS_CLGeometryContent) AS CL_Geometry FROM "+dataSliceName
+        }else{
+          spatialConvertSQL = "SELECT * , ST_GeomFromWKT(DOCG_GS_CLGeometryContent) AS "+spatialAttributeName+" FROM "+dataSliceName
+        }
+      case GeospatialScaleLevel.LocalLevel =>
+        if(spatialAttributeName == null){
+          spatialConvertSQL = "SELECT * , ST_GeomFromWKT(DOCG_GS_LLGeometryContent) AS LL_Geometry FROM "+dataSliceName
+        }else{
+          spatialConvertSQL = "SELECT * , ST_GeomFromWKT(DOCG_GS_LLGeometryContent) AS "+spatialAttributeName+" FROM "+dataSliceName
+        }
+    }
+    val targetDF = _getSparkSession().sql(spatialConvertSQL.stripMargin)
+    if(null != dataFrameName){
+      targetDF.createOrReplaceTempView(dataFrameName)
+    }
+    targetDF
+  }
+*/
 
   def getDataSlice(dataSliceName:String): DataSlice = {
     _getDataSliceServiceInvoker().getDataSlice(dataSliceName)
@@ -51,7 +97,7 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
     igniteNode.close()
   }
 
-  def _getSparkSession(): SparkSession = {
+  def getSparkSession(): SparkSession = {
     sparkSession
   }
 
