@@ -13,8 +13,7 @@ object RegionalGreeningRateCalculationExample extends App{
 
   val sparkApplicationName = AnalysisProviderApplicationUtil.getApplicationProperty("sparkApplicationName")
   val sparkMasterLocation = AnalysisProviderApplicationUtil.getApplicationProperty("sparkMasterLocation")
-  val sparkExecutorInstanceNumber = AnalysisProviderApplicationUtil.getApplicationProperty("sparkExecutorInstanceNumber")
-  val globalDataAccessor = new GlobalDataAccessor(sparkApplicationName,sparkMasterLocation,sparkExecutorInstanceNumber)
+  val globalDataAccessor = new GlobalDataAccessor(sparkApplicationName,sparkMasterLocation)
 
   val spatialQueryMetaFunction = new SpatialQueryMetaFunction
   //获取树冠地理信息 dataframe
@@ -55,7 +54,7 @@ object RegionalGreeningRateCalculationExample extends App{
       StructField("GEN_ALIAS",StringType,true),
       StructField("NEIGHDIST",StringType,true),
       StructField("DETL_NAMES",StringType,true),
-      StructField("Ratio",DoubleType,true)
+      StructField("GreeningRate",DoubleType,true)
     )
   )
   val finalResultDF = globalDataAccessor.getSparkSession().createDataFrame(mappedResult,schema)

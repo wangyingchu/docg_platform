@@ -49,8 +49,7 @@ object AnalysisProviderApplicationLauncher {
   def initApplication():Boolean ={
     val sparkApplicationName = AnalysisProviderApplicationUtil.getApplicationProperty("sparkApplicationName")
     val sparkMasterLocation = AnalysisProviderApplicationUtil.getApplicationProperty("sparkMasterLocation")
-    val sparkExecutorInstanceNumber = AnalysisProviderApplicationUtil.getApplicationProperty("sparkExecutorInstanceNumber")
-    globalDataAccessor = new GlobalDataAccessor(sparkApplicationName,sparkMasterLocation,sparkExecutorInstanceNumber)
+    globalDataAccessor = new GlobalDataAccessor(sparkApplicationName,sparkMasterLocation)
 
     val providerCommunicationHostName = AnalysisProviderApplicationUtil.getApplicationProperty("providerCommunicationHostName")
     val providerCommunicationPort = AnalysisProviderApplicationUtil.getApplicationProperty("providerCommunicationPort")

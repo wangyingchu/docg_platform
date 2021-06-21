@@ -7,8 +7,7 @@ object GlobalDataAccessorTestCase01 extends App{
 
   val sparkApplicationName = AnalysisProviderApplicationUtil.getApplicationProperty("sparkApplicationName")
   val sparkMasterLocation = AnalysisProviderApplicationUtil.getApplicationProperty("sparkMasterLocation")
-  val sparkExecutorInstanceNumber = AnalysisProviderApplicationUtil.getApplicationProperty("sparkExecutorInstanceNumber")
-  val globalDataAccessor = new GlobalDataAccessor(sparkApplicationName,sparkMasterLocation,sparkExecutorInstanceNumber)
+  val globalDataAccessor = new GlobalDataAccessor(sparkApplicationName,sparkMasterLocation)
 
 
   val dataSliceServiceInvoker = globalDataAccessor._getDataSliceServiceInvoker()

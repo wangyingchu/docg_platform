@@ -16,8 +16,7 @@ object SpatialDataMaintainUtilTestCase01 {
 
     val sparkApplicationName = AnalysisProviderApplicationUtil.getApplicationProperty("sparkApplicationName")
     val sparkMasterLocation = AnalysisProviderApplicationUtil.getApplicationProperty("sparkMasterLocation")
-    val sparkExecutorInstanceNumber = AnalysisProviderApplicationUtil.getApplicationProperty("sparkExecutorInstanceNumber")
-    val globalDataAccessor = new GlobalDataAccessor(sparkApplicationName,sparkMasterLocation,sparkExecutorInstanceNumber)
+    val globalDataAccessor = new GlobalDataAccessor(sparkApplicationName,sparkMasterLocation)
 
 
     val targetMemoryTable = spatialDataMaintainUtil.duplicateSpatialDataInfoToDataSlice(globalDataAccessor,shpParseResult,"Streets","defaultGroup",true,null)

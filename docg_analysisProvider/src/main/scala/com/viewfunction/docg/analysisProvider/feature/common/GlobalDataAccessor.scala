@@ -1,7 +1,5 @@
 package com.viewfunction.docg.analysisProvider.feature.common
 
-import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.GeospatialScaleLevel
-import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.GeospatialScaleLevel.GeospatialScaleLevel
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.dataCompute.dataComputeUnit.dataService.{DataSlice, DataSliceServiceInvoker}
 import org.apache.ignite.{Ignite, Ignition}
@@ -12,31 +10,27 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 
 import java.lang.Boolean
 
-class GlobalDataAccessor (private val sessionName:String, private val masterLocation:String, private val executorInstanceNumber:String){
+class GlobalDataAccessor (private val sessionName:String, private val masterLocation:String){
 
   val isClientIgniteNode = Boolean.parseBoolean(AnalysisProviderApplicationUtil.getApplicationProperty("isClientIgniteNode"))
   Ignition.setClientMode(isClientIgniteNode)
   val igniteNode = Ignition.start("configurations/dataAnalysis-ignite.xml")
   val dataServiceInvoker = DataSliceServiceInvoker.getInvokerInstance(igniteNode)
 
+  val sparkCoresMax = AnalysisProviderApplicationUtil.getApplicationProperty("sparkCoresMax")
+  val sparkExecutorCores = AnalysisProviderApplicationUtil.getApplicationProperty("sparkExecutorCores")
+  val sparkExecutorMemory = AnalysisProviderApplicationUtil.getApplicationProperty("sparkExecutorMemory")
+  val sparkMemoryOffHeapEnabled = Boolean.parseBoolean(AnalysisProviderApplicationUtil.getApplicationProperty("sparkMemoryOffHeapEnabled"))
+  val sparkMemoryOffHeapSize = AnalysisProviderApplicationUtil.getApplicationProperty("sparkMemoryOffHeapSize")
+
   val sparkSession : SparkSession = SparkSession.builder.appName(sessionName).master(masterLocation)
-    //.config("spark.executor.instances", executorInstanceNumber)
-    //.config("spark.executor.instances", "executorInstanceNumber")
+    //.config("spark.default.parallelism","200")
 
-    .config("spark.cores.max","40")
-    .config("spark.default.parallelism","200")
-
-
-
-    .config("spark.executor.cores","20")
-    .config("spark.executor.memory","5G")
-
-
-    .config("spark.memory.offHeap.enabled",true)
-    .config("spark.memory.offHeap.size","22G")
-
-
-
+    .config("spark.cores.max",sparkCoresMax)
+    .config("spark.executor.cores",sparkExecutorCores)
+    .config("spark.executor.memory",sparkExecutorMemory)
+    .config("spark.memory.offHeap.enabled",sparkMemoryOffHeapEnabled)
+    .config("spark.memory.offHeap.size",sparkMemoryOffHeapSize)
 
     .config("spark.serializer", classOf[KryoSerializer].getName) // org.apache.spark.serializer.KryoSerializer
     .config("spark.kryo.registrator", classOf[SedonaVizKryoRegistrator].getName) // org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
