@@ -32,6 +32,15 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
     .config("spark.memory.offHeap.enabled",sparkMemoryOffHeapEnabled)
     .config("spark.memory.offHeap.size",sparkMemoryOffHeapSize)
 
+
+
+    //set up for sedona :http://sedona.apache.org/download/cluster/
+    .config("spark.driver.memory","10G")
+    .config("spark.network.timeout","1000S")
+    .config("spark.driver.maxResultSize","5G")
+
+
+
     .config("spark.serializer", classOf[KryoSerializer].getName) // org.apache.spark.serializer.KryoSerializer
     .config("spark.kryo.registrator", classOf[SedonaVizKryoRegistrator].getName) // org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
     .getOrCreate()
