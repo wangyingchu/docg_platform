@@ -24,7 +24,7 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
   val sparkMemoryOffHeapSize = AnalysisProviderApplicationUtil.getApplicationProperty("sparkMemoryOffHeapSize")
 
   val sparkSession : SparkSession = SparkSession.builder.appName(sessionName).master(masterLocation)
-    //.config("spark.default.parallelism","200")
+    .config("spark.default.parallelism","200")
 
     .config("spark.cores.max",sparkCoresMax)
     .config("spark.executor.cores",sparkExecutorCores)
