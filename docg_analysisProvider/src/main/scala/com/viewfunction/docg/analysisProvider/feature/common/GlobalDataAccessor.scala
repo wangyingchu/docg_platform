@@ -27,17 +27,17 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
   val sparkConfig = new SparkConf
   sparkConfig.setMaster(masterLocation)
   sparkConfig.setAppName(sessionName)
-  sparkConfig.setJars(Array[String]{"/media/wangychu/Application/Local_Applications/Apache/Spark/spark-3.1.2-bin-hadoop3.2/jars/docg_analysisProvider-1.0.0.jar"})
+  //sparkConfig.setJars(Array[String]{"/media/wangychu/Application/Local_Applications/Apache/Spark/spark-3.1.2-bin-hadoop3.2/jars/docg_analysisProvider-1.0.0.jar"})
   sparkConfig.set("spark.default.parallelism","200")
   sparkConfig.set("spark.cores.max",sparkCoresMax)
-  sparkConfig .set("spark.executor.cores",sparkExecutorCores)
-  sparkConfig .set("spark.executor.memory",sparkExecutorMemory)
-  sparkConfig .set("spark.memory.offHeap.enabled","false")
-  sparkConfig .set("spark.memory.offHeap.size",sparkMemoryOffHeapSize)
+  sparkConfig.set("spark.executor.cores",sparkExecutorCores)
+  sparkConfig.set("spark.executor.memory",sparkExecutorMemory)
+  sparkConfig.set("spark.memory.offHeap.enabled","false")
+  sparkConfig.set("spark.memory.offHeap.size",sparkMemoryOffHeapSize)
   //set up for sedona :http://sedona.apache.org/download/cluster/
-  sparkConfig .set("spark.driver.memory","10G")
-  sparkConfig .set("spark.network.timeout","1000S")
-  sparkConfig .set("spark.driver.maxResultSize","5G")
+  sparkConfig.set("spark.driver.memory","10G")
+  sparkConfig.set("spark.network.timeout","1000S")
+  sparkConfig.set("spark.driver.maxResultSize","5G")
   sparkConfig.set("spark.serializer", classOf[KryoSerializer].getName) // org.apache.spark.serializer.KryoSerializer
   sparkConfig.set("spark.kryo.registrator", classOf[SedonaVizKryoRegistrator].getName) // org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
   val sc = new SparkContext(sparkConfig)
