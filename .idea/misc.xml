@@ -12,7 +12,7 @@
         <option value="$PROJECT_DIR$/docg_dataAnalyze/pom.xml" />
         <option value="$PROJECT_DIR$/docg_dataCollector/pom.xml" />
         <option value="$PROJECT_DIR$/docg_analysisProvider/pom.xml" />
-        <option value="$PROJECT_DIR$/docg_sysAdmin/pom.xml" />
+        <option value="$PROJECT_DIR$/docg_platformAdmin/pom.xml" />
       </list>
     </option>
   </component>
