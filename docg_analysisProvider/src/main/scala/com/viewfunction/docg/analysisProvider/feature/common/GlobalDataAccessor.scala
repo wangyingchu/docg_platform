@@ -21,18 +21,23 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
   val sparkCoresMax = AnalysisProviderApplicationUtil.getApplicationProperty("sparkCoresMax")
   val sparkExecutorCores = AnalysisProviderApplicationUtil.getApplicationProperty("sparkExecutorCores")
   val sparkExecutorMemory = AnalysisProviderApplicationUtil.getApplicationProperty("sparkExecutorMemory")
-  val sparkMemoryOffHeapEnabled = Boolean.parseBoolean(AnalysisProviderApplicationUtil.getApplicationProperty("sparkMemoryOffHeapEnabled"))
+  val sparkMemoryOffHeapEnabled = AnalysisProviderApplicationUtil.getApplicationProperty("sparkMemoryOffHeapEnabled")
   val sparkMemoryOffHeapSize = AnalysisProviderApplicationUtil.getApplicationProperty("sparkMemoryOffHeapSize")
+  val analysisProviderSparkRuntimeJarLocation = AnalysisProviderApplicationUtil.getApplicationProperty("analysisProviderSparkRuntimeJarLocation")
 
   val sparkConfig = new SparkConf
   sparkConfig.setMaster(masterLocation)
   sparkConfig.setAppName(sessionName)
-  //sparkConfig.setJars(Array[String]{"/media/wangychu/Application/Local_Applications/Apache/Spark/spark-3.1.2-bin-hadoop3.2/jars/docg_analysisProvider-1.0.0.jar"})
-  sparkConfig.set("spark.default.parallelism","200")
+
+  if(masterLocation.startsWith("spark://")){
+    //use spark cluster,need set analysis Provider runtime jar location
+    sparkConfig.setJars(Array[String]{analysisProviderSparkRuntimeJarLocation})
+  }
+  //sparkConfig.set("spark.default.parallelism","200")
   sparkConfig.set("spark.cores.max",sparkCoresMax)
   sparkConfig.set("spark.executor.cores",sparkExecutorCores)
   sparkConfig.set("spark.executor.memory",sparkExecutorMemory)
-  sparkConfig.set("spark.memory.offHeap.enabled","false")
+  sparkConfig.set("spark.memory.offHeap.enabled",sparkMemoryOffHeapEnabled)
   sparkConfig.set("spark.memory.offHeap.size",sparkMemoryOffHeapSize)
   //set up for sedona :http://sedona.apache.org/download/cluster/
   sparkConfig.set("spark.driver.memory","10G")
@@ -45,8 +50,7 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
 
   /*
   val sparkSession : SparkSession = SparkSession.builder.appName(sessionName).master(masterLocation)
-    .config("spark.default.parallelism","200")
-
+    //.config("spark.default.parallelism","200")
     .config("spark.cores.max",sparkCoresMax)
     .config("spark.executor.cores",sparkExecutorCores)
     .config("spark.executor.memory",sparkExecutorMemory)
@@ -59,7 +63,8 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
     .config("spark.serializer", classOf[KryoSerializer].getName) // org.apache.spark.serializer.KryoSerializer
     .config("spark.kryo.registrator", classOf[SedonaVizKryoRegistrator].getName) // org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
     .getOrCreate()
-    */
+  */
+
   //Register Sedona SQL functions
   SedonaSQLRegistrator.registerAll(sparkSession)
 

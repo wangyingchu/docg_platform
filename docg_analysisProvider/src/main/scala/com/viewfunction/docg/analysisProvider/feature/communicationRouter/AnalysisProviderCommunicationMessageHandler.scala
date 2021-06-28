@@ -26,6 +26,7 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
         senderActor.tell(analyseResponse,communicationActor)
         //senderActor.tell("Reply for AnalyzeTreesCrownAreaInSection Executed "+communicationMessage.getRequestUUID , communicationActor)
         println(communicationMessage.getTreeCrownType+" "+communicationMessage.getRequestUUID+" "+communicationMessage.getRequestDateTime)
+        EcologicalEnvironmentAnalysis.executeSparkTreesCrownAreaCal(globalDataAccessor,"TreeCanopy","CommunityReportingArea")
     }
   }
 }
