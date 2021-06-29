@@ -11,21 +11,6 @@ import scala.io.StdIn
 
 object AnalysisProviderApplicationLauncher {
 
-  /*
-    To manually start Spark Master, run below command from %SPARK_HOME%\bin
-    spark-class org.apache.spark.deploy.master.Master
-    Above command will also print master URL like spark://ip:port
-    Master UI can be accessed at localhost:8080
-
-    To start Spark Worker, run
-
-    spark-class org.apache.spark.deploy.worker.Worker spark://ip:port
-    Now if you refresh Master UI, you can see the new worker listed under Workers section.
-    Repeat the command to add multiple workers to the same master.
-  */
-
-  //https://blog.csdn.net/u013597009/article/details/54972269?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~aggregatepage~first_rank_v2~rank_aggregation-1-54972269.pc_agg_rank_aggregation&utm_term=%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%BF%90%E8%A1%8Cscala+%E6%96%87%E4%BB%B6&spm=1000.2123.3001.4430
-
   var applicationRunningFlag = true
   val applicationExitCommand = AnalysisProviderApplicationUtil.getApplicationProperty("applicationExitCommand")
   var globalDataAccessor : GlobalDataAccessor = null

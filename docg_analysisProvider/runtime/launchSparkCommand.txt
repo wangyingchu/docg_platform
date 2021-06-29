@@ -1,0 +1,12 @@
+  /*
+    To manually start Spark Master, run below command from %SPARK_HOME%\bin
+    spark-class org.apache.spark.deploy.master.Master
+    Above command will also print master URL like spark://ip:port
+    Master UI can be accessed at localhost:8080
+
+    To start Spark Worker, run
+
+    spark-class org.apache.spark.deploy.worker.Worker spark://ip:port
+    Now if you refresh Master UI, you can see the new worker listed under Workers section.
+    Repeat the command to add multiple workers to the same master.
+  */
