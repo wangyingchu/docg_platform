@@ -8,7 +8,6 @@
       <module fileurl="file://$PROJECT_DIR$/docg_dataCollector/docg_dataCollector.iml" filepath="$PROJECT_DIR$/docg_dataCollector/docg_dataCollector.iml" />
       <module fileurl="file://$PROJECT_DIR$/docg_dataCompute/docg_dataCompute.iml" filepath="$PROJECT_DIR$/docg_dataCompute/docg_dataCompute.iml" />
       <module fileurl="file://$PROJECT_DIR$/docg_platform.iml" filepath="$PROJECT_DIR$/docg_platform.iml" />
-      <module fileurl="file://$PROJECT_DIR$/docg_platformAdmin/docg_platformAdmin.iml" filepath="$PROJECT_DIR$/docg_platformAdmin/docg_platformAdmin.iml" />
       <module fileurl="file://$PROJECT_DIR$/docg_realmExample/docg_realmExample.iml" filepath="$PROJECT_DIR$/docg_realmExample/docg_realmExample.iml" />
       <module fileurl="file://$PROJECT_DIR$/docg_realmKnowledgeManage/docg_realmKnowledgeManage.iml" filepath="$PROJECT_DIR$/docg_realmKnowledgeManage/docg_realmKnowledgeManage.iml" />
     </modules>
