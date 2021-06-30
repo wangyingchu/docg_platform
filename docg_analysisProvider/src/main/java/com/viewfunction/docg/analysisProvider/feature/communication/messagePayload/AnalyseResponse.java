@@ -9,6 +9,7 @@ public class AnalyseResponse implements Serializable {
     private String requestUUID;
     private String responseUUID;
     private long responseDateTime;
+    private Object responseData;
 
     public AnalyseResponse(String requestUUID){
         this.requestUUID = requestUUID;
@@ -24,6 +25,14 @@ public class AnalyseResponse implements Serializable {
 
     public long getResponseDateTime(){
         return responseDateTime;
+    }
+
+    public Object getResponseData() {
+        return responseData;
+    }
+
+    public void setResponseData(Object responseData) {
+        this.responseData = responseData;
     }
 
     public boolean generateMetaInfo(){
