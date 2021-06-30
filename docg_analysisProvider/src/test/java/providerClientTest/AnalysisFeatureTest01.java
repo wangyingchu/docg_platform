@@ -25,6 +25,12 @@ public class AnalysisFeatureTest01 {
                 public void onResponseReceived(Object analyseResponseObject) {
                     System.out.println(analyseResponseObject);
                     System.out.println(new Date());
+
+                    try {
+                        analysisProviderClient.closeSession();
+                    } catch (ProviderClientInitException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 @Override
@@ -47,12 +53,22 @@ public class AnalysisFeatureTest01 {
                         //System.out.println(currentRow.json());
                     }
                     System.out.println(new Date());
+                    try {
+                        analysisProviderClient.closeSession();
+                    } catch (ProviderClientInitException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 @Override
                 public void onFailureResponseReceived(Throwable throwable) {
                     System.out.println(throwable);
                     System.out.println(new Date());
+                    try {
+                        analysisProviderClient.closeSession();
+                    } catch (ProviderClientInitException e) {
+                        e.printStackTrace();
+                    }
                 }
             };
 
