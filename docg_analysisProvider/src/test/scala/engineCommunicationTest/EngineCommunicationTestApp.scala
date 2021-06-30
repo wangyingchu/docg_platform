@@ -2,7 +2,6 @@ package engineCommunicationTest
 
 import akka.actor.{ActorSystem, Props}
 import com.typesafe.config.ConfigFactory
-import com.viewfunction.docg.analysisProvider.feature.communicationRouter.messagePayload.AnalyzeTreesCrownAreaInSection
 
 object EngineCommunicationTestApp extends App{
   val config = ConfigFactory.parseString("""
@@ -31,7 +30,7 @@ object EngineCommunicationTestApp extends App{
   implicit val system = ActorSystem("LocalTestSystem",config)
 
   val localActor = system.actorOf(Props[EngineCommunicationTestActor], name = "LocalActor")
-  localActor ! AnalyzeTreesCrownAreaInSection("AAXXX",200)
+  localActor ! "This is string message"
   Thread.sleep(10000)
   system.terminate()
 }

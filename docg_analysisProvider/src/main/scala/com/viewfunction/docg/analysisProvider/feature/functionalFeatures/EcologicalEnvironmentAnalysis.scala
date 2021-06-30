@@ -1,7 +1,6 @@
 package com.viewfunction.docg.analysisProvider.feature.functionalFeatures
 
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
-import com.viewfunction.docg.analysisProvider.feature.communicationRouter.messagePayload.AnalyzeTreesCrownAreaInSection
 import com.viewfunction.docg.analysisProvider.feature.spark.spatial.{SpatialPredicateType, SpatialQueryMetaFunction, SpatialQueryParam}
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.functions.{avg, stddev, sum}
@@ -108,12 +107,4 @@ object EcologicalEnvironmentAnalysis {
     //finalResultDF.show(60)
     finalResultDF.collect()
   }
-
-  def analyzeTreesCrownAreaInSection(globalDataAccessor:GlobalDataAccessor,requestData:AnalyzeTreesCrownAreaInSection):Unit = {
-    println("=========================")
-    println(globalDataAccessor)
-    println(requestData)
-    println("=========================")
-  }
-
 }

@@ -61,7 +61,7 @@ public class AnalysisProviderClient {
                 "loglevel=ERROR" +
                 "}";
         Config config = ConfigFactory.parseString(configStr);
-        actorSystem = ActorSystem.create("EngineCommunicationTestSystem", config);
+        actorSystem = ActorSystem.create("AnalysisClientCommunicationSystem", config);
         localCommunicationActor = actorSystem.actorOf(Props.create(CommunicationActor.class), "localCommunicationActor");
 
         String providerCommunicationHostName= PropertyHandler.getConfigPropertyValue("providerCommunicationHostName");
