@@ -1,13 +1,14 @@
 package com.viewfunction.docg.analysisProvider.feature.communicationRouter
 
 import akka.actor.ActorRef
-import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseResponse
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.{AnalyseResponse, SpatialPropertiesAggregateStatisticRequest}
 import com.viewfunction.docg.analysisProvider.providerApplication.communication.CommunicationMessageHandler
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
-import com.viewfunction.docg.analysisProvider.feature.functionalFeatures.EcologicalEnvironmentAnalysis
+import com.viewfunction.docg.analysisProvider.feature.functionalFeatures.{EcologicalEnvironmentAnalysis, SpatialPropertiesStatisticAndAnalysis}
 
 class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalDataAccessor) extends CommunicationMessageHandler{
   override def handleMessage(communicationMessage: Any, communicationActor: ActorRef, senderActor: ActorRef): Unit = {
+
     communicationMessage match {
       case communicationMessage: String =>
         println(s" $communicationMessage")
@@ -16,6 +17,13 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
         println(communicationMessage.getTreeCrownType+" "+communicationMessage.getRequestUUID+" "+communicationMessage.getRequestDateTime)
         val result = EcologicalEnvironmentAnalysis.executeSparkTreesCrownAreaCal2(globalDataAccessor,"TreeCanopy","CommunityReportingArea")
         val analyseResponse = new AnalyseResponse(communicationMessage.getRequestUUID)
+        analyseResponse.generateMetaInfo()
+        analyseResponse.setResponseData(result)
+        senderActor.tell(analyseResponse,communicationActor)
+
+      case communicationMessage: com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest =>
+        val result = SpatialPropertiesStatisticAndAnalysis.executeSpatialPropertiesAggregateStatistic(globalDataAccessor,communicationMessage.asInstanceOf[SpatialPropertiesAggregateStatisticRequest])
+        val analyseResponse = new AnalyseResponse(communicationMessage.asInstanceOf[SpatialPropertiesAggregateStatisticRequest].getRequestUUID)
         analyseResponse.generateMetaInfo()
         analyseResponse.setResponseData(result)
         senderActor.tell(analyseResponse,communicationActor)
