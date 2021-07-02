@@ -5,11 +5,13 @@ import com.viewfunction.docg.analysisProvider.client.exception.AnalysisEngineRun
 import com.viewfunction.docg.analysisProvider.client.exception.ProviderClientInitException;
 import com.viewfunction.docg.analysisProvider.feature.communication.AnalyseResponseCallback;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseResponse;
-import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyzeTreesCrownAreaInSection;
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest;
-import org.apache.spark.sql.Row;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SpatialPropertiesStatisticTest01 {
 
@@ -25,7 +27,7 @@ public class SpatialPropertiesStatisticTest01 {
         spatialPropertiesAggregateStatisticRequest.setSubjectIdentityProperty("OBJECTID");
         spatialPropertiesAggregateStatisticRequest.setSubjectCalculationProperty("SHAPE_AREA");
         spatialPropertiesAggregateStatisticRequest.setObjectCalculationProperty("SHAPE_AREA");
-        spatialPropertiesAggregateStatisticRequest.setObjectAggregationType(SpatialPropertiesAggregateStatisticRequest.ObjectAggregationType.MAX);
+        spatialPropertiesAggregateStatisticRequest.setObjectAggregationType(SpatialPropertiesAggregateStatisticRequest.ObjectAggregationType.SUM);
 
         spatialPropertiesAggregateStatisticRequest.setSubjectReturnProperties(new String[]{"GEN_ALIAS","NEIGHDIST","DETL_NAMES"});
         spatialPropertiesAggregateStatisticRequest.setCalculationOperator(SpatialPropertiesAggregateStatisticRequest.CalculationOperator.Divide);
@@ -54,19 +56,17 @@ public class SpatialPropertiesStatisticTest01 {
                     System.out.println(analyseResponse.getRequestUUID());
                     System.out.println(analyseResponse.getResponseData());
 
-                    Row[] resultRow = (Row[])analyseResponse.getResponseData();
-                    String[] fieldNames = resultRow[0].schema().fieldNames();
-                    System.out.println(resultRow.length);
 
-                    for(Row currentRow:resultRow){
-                        for(String currentField:fieldNames){
-                            //System.out.print(currentField+" - "+currentRow.get(currentRow.fieldIndex(currentField)).getClass()+" ");
-                            System.out.print(currentField+" - "+currentRow.get(currentRow.fieldIndex(currentField))+" ");
-                        }
-                        System.out.println("");
-                        //System.out.println(currentRow.json());
+                    ResponseDataset responseDataset = (ResponseDataset)analyseResponse.getResponseData();
+                    Map<String,String> propertiesInfoMap =  responseDataset.getPropertiesInfo();
+                    ArrayList<HashMap<String,Object>> datalist = responseDataset.getDataList();
+
+                    for(HashMap<String,Object> currentDataRow : datalist){
+                        System.out.println(currentDataRow);
                     }
-                    System.out.println(new Date());
+                    System.out.println();
+                    System.out.println(propertiesInfoMap);
+
                     try {
                         analysisProviderClient.closeSession();
                     } catch (ProviderClientInitException e) {

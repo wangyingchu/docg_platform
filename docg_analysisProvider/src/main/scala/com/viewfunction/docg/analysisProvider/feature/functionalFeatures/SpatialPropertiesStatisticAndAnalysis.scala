@@ -5,9 +5,9 @@ import com.viewfunction.docg.analysisProvider.feature.communication.messagePaylo
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.{CalculationOperator, ObjectAggregationType, PredicateType}
 import com.viewfunction.docg.analysisProvider.feature.spark.spatial.SpatialPredicateType.SpatialPredicateType
 import com.viewfunction.docg.analysisProvider.feature.spark.spatial.{SpatialPredicateType, SpatialQueryMetaFunction, SpatialQueryParam}
-import org.apache.spark.sql.{Column, DataFrame, Row}
-import org.apache.spark.sql.functions.{avg, count, max, mean, min, stddev, sum, variance}
-import org.apache.spark.sql.types.{DoubleType, IntegerType, StringType, StructField, StructType}
+import org.apache.spark.sql.{DataFrame, Row}
+import org.apache.spark.sql.functions.{avg, count, max, min, stddev, sum, variance}
+import org.apache.spark.sql.types.{DoubleType, StructField, StructType}
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -17,8 +17,8 @@ object SpatialPropertiesStatisticAndAnalysis {
   val sliceGroupName = "defaultGroup"
   val spatialValuePropertyName = "CIM_GLGEOMETRYCONTENT"
 
-  //def executeSpatialPropertiesAggregateStatistic(globalDataAccessor:GlobalDataAccessor,data1:String,data2:String):Array[Row] = {
-  def executeSpatialPropertiesAggregateStatistic(globalDataAccessor:GlobalDataAccessor,statisticRequest:SpatialPropertiesAggregateStatisticRequest):Array[Row] = {
+  def executeSpatialPropertiesAggregateStatistic(globalDataAccessor:GlobalDataAccessor,statisticRequest:SpatialPropertiesAggregateStatisticRequest):
+  com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
     val objectConception = statisticRequest.getObjectConception
     val subjectConception = statisticRequest.getSubjectConception
     val predicateType:PredicateType = statisticRequest.getPredicateType
@@ -140,9 +140,29 @@ object SpatialPropertiesStatisticAndAnalysis {
       )
       val calculationResultDF = globalDataAccessor.getSparkSession().createDataFrame(calculationResultRDD,schema)
       val finalCalculatedDF = filterResDF.join(calculationResultDF,subjectIdentityProperty)
-      finalCalculatedDF.collect()
+
+      generateResultDataSet(finalCalculatedDF.schema,finalCalculatedDF.collect())
     }else{
-      filterResDF.collect()
+      generateResultDataSet(filterResDF.schema,filterResDF.collect())
     }
+  }
+
+  def generateResultDataSet(dataStructure:StructType,dataRowArray:Array[Row]): com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
+    val structureFields = dataStructure.fields
+    val propertiesInfo = new java.util.HashMap[String,String]
+    structureFields.foreach(item =>{
+      propertiesInfo.put(item.name,item.dataType.typeName)
+    })
+
+    val dataList = new java.util.ArrayList[java.util.HashMap[String,Object]]
+    dataRowArray.foreach(row=>{
+      val currentMap = new java.util.HashMap[String,Object]
+      dataList.add(currentMap)
+      structureFields.foreach(fieldStructure=>{
+        currentMap.put(fieldStructure.name,row.get(row.fieldIndex(fieldStructure.name)).asInstanceOf[AnyRef])
+      })
+    })
+
+    new com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset(propertiesInfo,dataList)
   }
 }
