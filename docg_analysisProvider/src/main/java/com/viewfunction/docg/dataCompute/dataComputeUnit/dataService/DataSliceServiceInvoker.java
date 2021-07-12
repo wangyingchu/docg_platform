@@ -147,7 +147,7 @@ public class DataSliceServiceInvoker implements AutoCloseable{
         cacheCfg.setCacheMode(cacheMode);
         String dataStoreRegionNameStr= DataComputeConfigurationHandler.getConfigPropertyValue("dataStoreRegionName");
         cacheCfg.setDataRegionName(dataStoreRegionNameStr);
-        //If the data store partitions number is to height, it will leading use lot's of resource even on small
+        //If the data store partitions number is to height, it will leading use lots of resource even on small
         // workload(such as in spark use much tasks for small work load),Ignite use 1024 by default.
         // Use dataStorePartitionsNumber to control this attribute
         //int defaultDataStorePartitionsNumber=1024;
