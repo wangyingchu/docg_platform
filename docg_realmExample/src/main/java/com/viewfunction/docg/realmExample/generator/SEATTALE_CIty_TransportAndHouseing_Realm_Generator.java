@@ -17,7 +17,7 @@ public class SEATTALE_CIty_TransportAndHouseing_Realm_Generator {
         //doSHPImport(baseLocation+"Common_Place_Names_(CPN)/Common_Place_Names_(CPN).shp", "CPN");
         //doSHPImport(baseLocation+"Community_Reporting_Areas/Community_Reporting_Areas.shp", "CommunityReportingArea");
         //doSHPImport(baseLocation+"Crash_Cushions/Crash_Cushions.shp", "CrashCushion");
-        //Part Wrong doSHPImport(baseLocation+"Curb_Ramps/Curb_Ramps.shp", "CurbRamp");
+        doSHPImport(baseLocation+"Curb_Ramps/Curb_Ramps.shp", "CurbRamp");
         //doSHPImport(baseLocation+"Dynamic_Message_Signs/Dynamic_Message_Signs.shp", "DynamicMessageSign");
         //doSHPImport(baseLocation+"Existing_Bike_Facilities/Existing_Bike_Facilities.shp", "BikeFacility");
         //doSHPImport(baseLocation+"Freight_Network/Freight_Network.shp", "FreightNetwork");

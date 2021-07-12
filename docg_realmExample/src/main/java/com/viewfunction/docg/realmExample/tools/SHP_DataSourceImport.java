@@ -6,6 +6,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.Batc
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
@@ -23,6 +24,7 @@ import org.opengis.referencing.FactoryException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +32,7 @@ import java.util.Map;
 public class SHP_DataSourceImport {
 
     public static void importSHPDataToConceptionKind(String conceptionKindName, boolean removeExistData, File shpFile, String fileEncode) throws IOException, FactoryException, CoreRealmServiceRuntimeException {
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         String charsetEncode = fileEncode != null ?  fileEncode : "UTF-8";
         // 读取到数据存储中
         FileDataStore dataStore = FileDataStoreFinder.getDataStore(shpFile);
@@ -71,7 +74,8 @@ public class SHP_DataSourceImport {
                 //handle invalid chars
                 propertyName = propertyName.replaceAll("△","Delta_");
                 Object propertyValue = property.getValue();
-                if(propertyValue != null){
+
+                if(propertyValue != null && validatePropertyValue(coreRealm,propertyValue)){
                     newEntityValueMap.put(propertyName,propertyValue);
                 }
             }
@@ -119,7 +123,7 @@ public class SHP_DataSourceImport {
                 _targetConceptionEntityValueList.add(conceptionEntityValue);
             }
         }
-        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+
         ConceptionKind targetConceptionType = coreRealm.getConceptionKind(conceptionKindNameValue);
         if(targetConceptionType != null){
             if(removeExistData){
@@ -130,5 +134,17 @@ public class SHP_DataSourceImport {
         }
         BatchDataOperationUtil.batchAddNewEntities(conceptionKindNameValue,_targetConceptionEntityValueList,10);
         //featureIterator.close();
+    }
+
+    private static boolean validatePropertyValue(CoreRealm coreRealm,Object propertyValue){
+        if(coreRealm.getStorageImplTech().equals(CoreRealmStorageImplTech.NEO4J)){
+            if(propertyValue instanceof Date){
+                if(((Date) propertyValue).getYear() <= 1900){
+                    //Neo4j can not store date which's Year small than 1900
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
