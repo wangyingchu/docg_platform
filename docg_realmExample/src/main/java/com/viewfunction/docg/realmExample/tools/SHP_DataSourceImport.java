@@ -119,9 +119,9 @@ public class SHP_DataSourceImport {
                         newEntityValueMap.put("DOCG_GS_LocalCRSAID", entityCRSAID);
                     }
                 }
-                ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValueMap);
-                _targetConceptionEntityValueList.add(conceptionEntityValue);
             }
+            ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValueMap);
+            _targetConceptionEntityValueList.add(conceptionEntityValue);
         }
 
         ConceptionKind targetConceptionType = coreRealm.getConceptionKind(conceptionKindNameValue);
