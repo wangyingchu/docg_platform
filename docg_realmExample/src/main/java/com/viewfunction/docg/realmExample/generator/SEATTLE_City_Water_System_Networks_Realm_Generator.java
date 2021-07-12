@@ -11,15 +11,18 @@ public class SEATTLE_City_Water_System_Networks_Realm_Generator {
 
     public static void main(String[] args) throws CoreRealmServiceRuntimeException, FactoryException, IOException {
         String baseLocation="/home/wangychu/Desktop/SEATTLE_City_Water_System_Networks/";
-        //doSHPImport(baseLocation+"Adopt_a_Drain_-_Adopted_Drains/Adopt_a_Drain_-_Adopted_Drains.shp","AdoptedDrain");
-        //doSHPImport(baseLocation+"Adopt_a_Drain_-_Available_Drains/Adopt_a_Drain_-_Available_Drains.shp","AvailableDrain");
-        //doSHPImport(baseLocation+"Adopt_a_Drain_-_Crowd_Adopted/Adopt_a_Drain_-_Crowd_Adopted.shp","AdoptedCrowdDrain");
-        //doSHPImport(baseLocation+"Catch_Basin,_Junction_Box,_Sand_Box/Catch_Basin%2C_Junction_Box%2C_Sand_Box.shp","CatchBasin_JunctionBox_SandBox");
-        //doSHPImport(baseLocation+"Drainage_and_Wastewater_Private_Mainlines/Drainage_and_Wastewater_Private_Mainlines.shp","PrivateDrainageAndWastewaterMainline");
+        /*
+        doSHPImport(baseLocation+"Adopt_a_Drain_-_Adopted_Drains/Adopt_a_Drain_-_Adopted_Drains.shp","AdoptedDrain");
+        doSHPImport(baseLocation+"Adopt_a_Drain_-_Available_Drains/Adopt_a_Drain_-_Available_Drains.shp","AvailableDrain");
+        doSHPImport(baseLocation+"Adopt_a_Drain_-_Crowd_Adopted/Adopt_a_Drain_-_Crowd_Adopted.shp","AdoptedCrowdDrain");
+        doSHPImport(baseLocation+"Catch_Basin,_Junction_Box,_Sand_Box/Catch_Basin%2C_Junction_Box%2C_Sand_Box.shp","CatchBasin_JunctionBox_SandBox");
+        doSHPImport(baseLocation+"Drainage_and_Wastewater_Private_Mainlines/Drainage_and_Wastewater_Private_Mainlines.shp","PrivateDrainageAndWastewaterMainline");
+        */
         //doSHPImport(baseLocation+"Drainage_Basins/Drainage_Basins.shp","DrainageBasin");
         //doSHPImport(baseLocation+"DWW_Ditches_and_Culverts/DWW_Ditches_and_Culverts.shp","Ditch_Culvert");
         //doSHPImport(baseLocation+"DWW_Inlets/DWW_Inlets.shp","Inlet");
-        //doSHPImport(baseLocation+"DWW_Mainline_Connection_Points_(Wyes)/DWW_Mainline_Connection_Points_(Wyes).shp","MainlineConnectionPoint");//doSHPImport("/home/wangychu/Desktop/SEATTLE_City_Water_System_Networks/DWW_Mainline_End_Points/DWW_Mainline_End_Points.shp","MainlineEndPoint");
+        //doSHPImport(baseLocation+"DWW_Mainline_Connection_Points_(Wyes)/DWW_Mainline_Connection_Points_(Wyes).shp","MainlineConnectionPoint");
+        // doSHPImport("/home/wangychu/Desktop/SEATTLE_City_Water_System_Networks/DWW_Mainline_End_Points/DWW_Mainline_End_Points.shp","MainlineEndPoint");
         //doSHPImport(baseLocation+"DWW_Mainlines_(Permitted_Use)/DWW_Mainlines_(Permitted_Use).shp","PermittedUseMainline");
         //doSHPImport(baseLocation+"DWW_Mainlines_(Probable_Flow)/DWW_Mainlines_(Probable_Flow).shp","MainlineProbableFlow");
         //doSHPImport(baseLocation+"DWW_Pipe_Repairs/DWW_Pipe_Repairs.shp","PipeRepair");
