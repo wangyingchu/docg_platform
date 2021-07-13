@@ -414,8 +414,7 @@ public class CoreRealmOperationUtil {
             Ignite invokerIgnite =Ignition.start(igniteConfiguration);
 
             try(DataSliceServiceInvoker dataSliceServiceInvoker = DataSliceServiceInvoker.getInvokerInstance(invokerIgnite)){
-                /*
-                DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(this.dataSliceName);
+                DataSlice targetDataSlice = dataSliceServiceInvoker.getDataSlice(this.dataSliceName);
                 DataSliceOperationResult dataSliceOperationResult = targetDataSlice.addDataRecords(this.sliceDataProperties,sliceDataRowsDataList);
                 System.out.println("--------------------------------------");
                 System.out.println("Execution result of : "+"DataSliceInsertDataThread_"+threadId);
@@ -425,7 +424,6 @@ public class CoreRealmOperationUtil {
                 System.out.println(dataSliceOperationResult.getSuccessItemsCount());
                 System.out.println(dataSliceOperationResult.getFailItemsCount());
                 System.out.println("--------------------------------------");
-                */
             } catch (ComputeGridNotActiveException e) {
                 e.printStackTrace();
             } catch (Exception e) {
@@ -465,11 +463,10 @@ public class CoreRealmOperationUtil {
             IgniteConfiguration igniteConfiguration= new IgniteConfiguration();
             igniteConfiguration.setClientMode(true);
             igniteConfiguration.setIgniteInstanceName("DataSliceInsertRelationThread_"+threadId);
-            Ignite invokerIgnite =Ignition.start(igniteConfiguration);
+            Ignite invokerIgnite = Ignition.start(igniteConfiguration);
 
             try(DataSliceServiceInvoker dataSliceServiceInvoker = DataSliceServiceInvoker.getInvokerInstance(invokerIgnite)){
-                /*
-                DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(this.dataSliceName);
+                DataSlice targetDataSlice = dataSliceServiceInvoker.getDataSlice(this.dataSliceName);
                 DataSliceOperationResult dataSliceOperationResult = targetDataSlice.addDataRecords(this.sliceDataProperties,sliceDataRowsDataList);
                 System.out.println("--------------------------------------");
                 System.out.println("Execution result of : "+"DataSliceInsertRelationThread_"+threadId);
@@ -479,7 +476,6 @@ public class CoreRealmOperationUtil {
                 System.out.println(dataSliceOperationResult.getSuccessItemsCount());
                 System.out.println(dataSliceOperationResult.getFailItemsCount());
                 System.out.println("--------------------------------------");
-                */
             } catch (ComputeGridNotActiveException e) {
                 e.printStackTrace();
             } catch (Exception e) {
