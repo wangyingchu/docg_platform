@@ -15,11 +15,13 @@
     </properties>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.neo4j/neo4j -->
         <dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j</artifactId>
             <version>${neo4j.version}</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.neo4j/server-api -->
         <dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>server-api</artifactId>

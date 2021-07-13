@@ -11,11 +11,11 @@ object SpatialRelationExtractionExample extends App {
   loadMainlineConnectionPointDS
   loadMainlineEndPointDS
   loadPermittedUseMainlineDS
+
   //val sparkApplicationName = AnalysisProviderApplicationUtil.getApplicationProperty("sparkApplicationName")
   //val sparkMasterLocation = AnalysisProviderApplicationUtil.getApplicationProperty("sparkMasterLocation")
   //val globalDataAccessor = new GlobalDataAccessor(sparkApplicationName,sparkMasterLocation)
   //globalDataAccessor.close()
-
 
   def loadMainlineConnectionPointDS():Unit = {
     val dataSlicePropertyMap: util.HashMap[String, DataSlicePropertyType] = new util.HashMap[String, DataSlicePropertyType]()
