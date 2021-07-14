@@ -12,6 +12,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntities
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonConceptionEntitiesAttributesRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 
 import com.viewfunction.docg.dataCompute.dataComputeUnit.dataService.DataSliceServiceInvoker;
@@ -37,7 +38,9 @@ public class CoreRealmOperationUtil {
     public final static String defaultSliceGroup = "DefaultSliceGroup";
     private final static int defaultResultNumber = 100000000;
 
-    public static DataSliceOperationResult syncConceptionKindToDataSlice(String conceptionKindName, String dataSliceName, String dataSliceGroup){
+    public enum GeospatialScaleLevel {GlobalLevel,CountryLevel,LocalLevel}
+
+    public static DataSliceOperationResult syncConceptionKindToDataSlice(String conceptionKindName, String dataSliceName, String dataSliceGroup, GeospatialScaleLevel geospatialScaleLevel){
 
         String dataSliceRealName = dataSliceName != null ? dataSliceName : conceptionKindName;
         String dataSliceRealGroup = dataSliceGroup != null ? dataSliceGroup : defaultSliceGroup;
@@ -95,6 +98,30 @@ public class CoreRealmOperationUtil {
             }
         }
 
+        if(geospatialScaleLevel != null){
+            dataSlicePropertyMap.put(RealmConstant._GeospatialGeometryType,DataSlicePropertyType.STRING);
+            conceptionKindPropertiesList.add(RealmConstant._GeospatialGeometryType);
+            switch(geospatialScaleLevel){
+                case LocalLevel:
+                    dataSlicePropertyMap.put(RealmConstant._GeospatialLLGeometryContent,DataSlicePropertyType.STRING);
+                    dataSlicePropertyMap.put(RealmConstant._GeospatialLocalCRSAID,DataSlicePropertyType.STRING);
+                    conceptionKindPropertiesList.add(RealmConstant._GeospatialLLGeometryContent);
+                    conceptionKindPropertiesList.add(RealmConstant._GeospatialLocalCRSAID);
+                    break;
+                case CountryLevel:
+                    dataSlicePropertyMap.put(RealmConstant._GeospatialCLGeometryContent,DataSlicePropertyType.STRING);
+                    dataSlicePropertyMap.put(RealmConstant._GeospatialCountryCRSAID,DataSlicePropertyType.STRING);
+                    conceptionKindPropertiesList.add(RealmConstant._GeospatialCLGeometryContent);
+                    conceptionKindPropertiesList.add(RealmConstant._GeospatialCountryCRSAID);
+                    break;
+                case GlobalLevel:
+                    dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryContent,DataSlicePropertyType.STRING);
+                    dataSlicePropertyMap.put(RealmConstant._GeospatialGlobalCRSAID,DataSlicePropertyType.STRING);
+                    conceptionKindPropertiesList.add(RealmConstant._GeospatialGLGeometryContent);
+                    conceptionKindPropertiesList.add(RealmConstant._GeospatialGlobalCRSAID);
+            }
+        }
+
         try(DataSliceServiceInvoker dataSliceServiceInvoker = DataSliceServiceInvoker.getInvokerInstance()){
             DataSlice targetDataSlice = dataSliceServiceInvoker.getDataSlice(dataSliceRealName);
             if(targetDataSlice == null){
@@ -119,7 +146,7 @@ public class CoreRealmOperationUtil {
         }
     }
 
-    public static DataSliceOperationResult syncConceptionKindToDataSlice(String conceptionKindName,String dataSliceName,String dataSliceGroup,Map<String, DataSlicePropertyType> dataSlicePropertyMap){
+    public static DataSliceOperationResult syncConceptionKindToDataSlice(String conceptionKindName,String dataSliceName,String dataSliceGroup,Map<String, DataSlicePropertyType> dataSlicePropertyMap, GeospatialScaleLevel geospatialScaleLevel){
 
         String dataSliceRealName = dataSliceName != null ? dataSliceName : conceptionKindName;
         String dataSliceRealGroup = dataSliceGroup != null ? dataSliceGroup : defaultSliceGroup;
@@ -130,6 +157,30 @@ public class CoreRealmOperationUtil {
             Set<String> propertiesNameSet = dataSlicePropertyMap.keySet();
             conceptionKindPropertiesList.addAll(propertiesNameSet);
             dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID,DataSlicePropertyType.STRING);
+
+            if(geospatialScaleLevel != null){
+                dataSlicePropertyMap.put(RealmConstant._GeospatialGeometryType,DataSlicePropertyType.STRING);
+                conceptionKindPropertiesList.add(RealmConstant._GeospatialGeometryType);
+                switch(geospatialScaleLevel){
+                    case LocalLevel:
+                        dataSlicePropertyMap.put(RealmConstant._GeospatialLLGeometryContent,DataSlicePropertyType.STRING);
+                        dataSlicePropertyMap.put(RealmConstant._GeospatialLocalCRSAID,DataSlicePropertyType.STRING);
+                        conceptionKindPropertiesList.add(RealmConstant._GeospatialLLGeometryContent);
+                        conceptionKindPropertiesList.add(RealmConstant._GeospatialLocalCRSAID);
+                        break;
+                    case CountryLevel:
+                        dataSlicePropertyMap.put(RealmConstant._GeospatialCLGeometryContent,DataSlicePropertyType.STRING);
+                        dataSlicePropertyMap.put(RealmConstant._GeospatialCountryCRSAID,DataSlicePropertyType.STRING);
+                        conceptionKindPropertiesList.add(RealmConstant._GeospatialCLGeometryContent);
+                        conceptionKindPropertiesList.add(RealmConstant._GeospatialCountryCRSAID);
+                        break;
+                    case GlobalLevel:
+                        dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryContent,DataSlicePropertyType.STRING);
+                        dataSlicePropertyMap.put(RealmConstant._GeospatialGlobalCRSAID,DataSlicePropertyType.STRING);
+                        conceptionKindPropertiesList.add(RealmConstant._GeospatialGLGeometryContent);
+                        conceptionKindPropertiesList.add(RealmConstant._GeospatialGlobalCRSAID);
+                }
+            }
 
             try(DataSliceServiceInvoker dataSliceServiceInvoker = DataSliceServiceInvoker.getInvokerInstance()){
                 DataSlice targetDataSlice = dataSliceServiceInvoker.getDataSlice(dataSliceRealName);

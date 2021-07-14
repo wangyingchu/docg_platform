@@ -8,9 +8,11 @@ import java.util
 
 object SpatialRelationExtractionExample extends App {
 
+  /*
   loadMainlineConnectionPointDS
   loadMainlineEndPointDS
   loadPermittedUseMainlineDS
+  */
 
   //val sparkApplicationName = AnalysisProviderApplicationUtil.getApplicationProperty("sparkApplicationName")
   //val sparkMasterLocation = AnalysisProviderApplicationUtil.getApplicationProperty("sparkMasterLocation")
@@ -24,7 +26,7 @@ object SpatialRelationExtractionExample extends App {
     dataSlicePropertyMap.put("MNLCP_ROTA",DataSlicePropertyType.INT)
     dataSlicePropertyMap.put("MNLCP_CV_2",DataSlicePropertyType.DOUBLE)
     val mainlineConnectionPointDataSlice: DataSliceOperationResult =
-      CoreRealmOperationUtil.syncConceptionKindToDataSlice("MainlineConnectionPoint", "MainlineConnectionPoint", CoreRealmOperationUtil.defaultSliceGroup,dataSlicePropertyMap)
+      CoreRealmOperationUtil.syncConceptionKindToDataSlice("MainlineConnectionPoint", "MainlineConnectionPoint", CoreRealmOperationUtil.defaultSliceGroup,dataSlicePropertyMap,CoreRealmOperationUtil.GeospatialScaleLevel.GlobalLevel)
     println(mainlineConnectionPointDataSlice.getSuccessItemsCount)
   }
 
@@ -36,7 +38,7 @@ object SpatialRelationExtractionExample extends App {
     dataSlicePropertyMap.put("MNLEP_Y_CO",DataSlicePropertyType.DOUBLE)
     dataSlicePropertyMap.put("MNLEP_ELEV",DataSlicePropertyType.DOUBLE)
     val mainlineEndPointDataSlice: DataSliceOperationResult =
-      CoreRealmOperationUtil.syncConceptionKindToDataSlice("MainlineEndPoint", "MainlineEndPoint", CoreRealmOperationUtil.defaultSliceGroup,dataSlicePropertyMap)
+      CoreRealmOperationUtil.syncConceptionKindToDataSlice("MainlineEndPoint", "MainlineEndPoint", CoreRealmOperationUtil.defaultSliceGroup,dataSlicePropertyMap,CoreRealmOperationUtil.GeospatialScaleLevel.GlobalLevel)
     println(mainlineEndPointDataSlice.getSuccessItemsCount)
   }
 
@@ -48,7 +50,7 @@ object SpatialRelationExtractionExample extends App {
     dataSlicePropertyMap.put("MNL_PIPE_1",DataSlicePropertyType.STRING)
     dataSlicePropertyMap.put("MNL_LIFE_1",DataSlicePropertyType.STRING)
     val mainlineEndPointDataSlice: DataSliceOperationResult =
-      CoreRealmOperationUtil.syncConceptionKindToDataSlice("PermittedUseMainline", "PermittedUseMainline", CoreRealmOperationUtil.defaultSliceGroup,dataSlicePropertyMap)
+      CoreRealmOperationUtil.syncConceptionKindToDataSlice("PermittedUseMainline", "PermittedUseMainline", CoreRealmOperationUtil.defaultSliceGroup,dataSlicePropertyMap,CoreRealmOperationUtil.GeospatialScaleLevel.GlobalLevel)
     println(mainlineEndPointDataSlice.getSuccessItemsCount)
   }
 
