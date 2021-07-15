@@ -49,6 +49,7 @@ object SpatialRelationExtractionExample extends App {
     //println(mainlineEndPoint_permittedUseMainlineJoinDF.count)
 
     val mainlineConnectionPoint_spatialQueryParam = SpatialQueryParam("mainlineConnectionPointSpDF","geo_ConnectionPointLocation",mutable.Buffer[String]("REALMGLOBALUID"))
+    //val mainlineConnectionPoint_permittedUseMainlineJoinDF = spatialQueryMetaFunction.spatialJoinQuery_RDD(globalDataAccessor,mainlineConnectionPoint_spatialQueryParam,SpatialPredicateType.Overlaps,permittedUseMainline_spatialQueryParam,"mainlineEndPoint_permittedUseMainlineJoinDF")
     val mainlineConnectionPoint_permittedUseMainlineJoinDF = spatialQueryMetaFunction.spatialJoinQuery(globalDataAccessor,mainlineConnectionPoint_spatialQueryParam,SpatialPredicateType.Overlaps,permittedUseMainline_spatialQueryParam,"mainlineEndPoint_permittedUseMainlineJoinDF")
     //mainlineConnectionPoint_permittedUseMainlineJoinDF.show(100)
 
@@ -56,7 +57,8 @@ object SpatialRelationExtractionExample extends App {
     val dfRenamed = mainlineEndPoint_permittedUseMainlineJoinDF.toDF(schemas: _*)
 
     println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date))
-    dfRenamed.write.csv("/home/wangychu/Desktop/csvoutput/01")
+    //dfRenamed.write.csv("/home/wangychu/Desktop/csvoutput/01")
+    println(dfRenamed.count())
     println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date))
 
     globalDataAccessor.close()

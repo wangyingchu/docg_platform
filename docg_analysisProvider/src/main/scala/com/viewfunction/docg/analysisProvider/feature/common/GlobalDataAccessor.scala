@@ -24,6 +24,7 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
   val sparkMemoryOffHeapEnabled = AnalysisProviderApplicationUtil.getApplicationProperty("sparkMemoryOffHeapEnabled")
   val sparkMemoryOffHeapSize = AnalysisProviderApplicationUtil.getApplicationProperty("sparkMemoryOffHeapSize")
   val analysisProviderSparkRuntimeJarLocation = AnalysisProviderApplicationUtil.getApplicationProperty("analysisProviderSparkRuntimeJarLocation")
+  val sedonaJoinNumPartition = AnalysisProviderApplicationUtil.getApplicationProperty("sedonaJoinNumPartition")
 
   val sparkConfig = new SparkConf
   sparkConfig.setMaster(masterLocation)
@@ -43,6 +44,8 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
   sparkConfig.set("spark.driver.memory","10G")
   sparkConfig.set("spark.network.timeout","1000S")
   sparkConfig.set("spark.driver.maxResultSize","5G")
+  //set up for sedona :http://sedona.apache.org/api/sql/Parameter/#usage
+  sparkConfig.set("sedona.join.numpartition",sedonaJoinNumPartition) //use this configuration to improve Spatial Join query performance enormously
   sparkConfig.set("spark.serializer", classOf[KryoSerializer].getName) // org.apache.spark.serializer.KryoSerializer
   sparkConfig.set("spark.kryo.registrator", classOf[SedonaVizKryoRegistrator].getName) // org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
   val sc = new SparkContext(sparkConfig)
