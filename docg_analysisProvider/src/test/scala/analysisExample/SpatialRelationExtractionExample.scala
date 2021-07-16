@@ -42,23 +42,26 @@ object SpatialRelationExtractionExample extends App {
 
     val spatialQueryMetaFunction = new SpatialQueryMetaFunction
 
-    val mainlineEndPoint_spatialQueryParam = SpatialQueryParam("mainlineEndPointSpDF","geo_EndPointLocation",mutable.Buffer[String]("REALMGLOBALUID"))
-    val permittedUseMainline_spatialQueryParam = SpatialQueryParam("permittedUseMainlineSpDF","geo_LineLocation",mutable.Buffer[String]("REALMGLOBALUID"))
+    val mainlineEndPoint_spatialQueryParam = SpatialQueryParam("mainlineEndPointSpDF","geo_EndPointLocation",mutable.Buffer[String]("REALMGLOBALUID","MNLEP_FE_1"))
+    val permittedUseMainline_spatialQueryParam = SpatialQueryParam("permittedUseMainlineSpDF","geo_LineLocation",mutable.Buffer[String]("REALMGLOBALUID","MNL_LIFE_1"))
     val mainlineEndPoint_permittedUseMainlineJoinDF = spatialQueryMetaFunction.spatialJoinQuery(globalDataAccessor,mainlineEndPoint_spatialQueryParam,SpatialPredicateType.Touches,permittedUseMainline_spatialQueryParam,"mainlineEndPoint_permittedUseMainlineJoinDF")
     //mainlineEndPoint_permittedUseMainlineJoinDF.show(100)
     //println(mainlineEndPoint_permittedUseMainlineJoinDF.count)
 
-    val mainlineConnectionPoint_spatialQueryParam = SpatialQueryParam("mainlineConnectionPointSpDF","geo_ConnectionPointLocation",mutable.Buffer[String]("REALMGLOBALUID"))
+    val mainlineConnectionPoint_spatialQueryParam = SpatialQueryParam("mainlineConnectionPointSpDF","geo_ConnectionPointLocation",mutable.Buffer[String]("REALMGLOBALUID","MNLCP_DEPT"))
     //val mainlineConnectionPoint_permittedUseMainlineJoinDF = spatialQueryMetaFunction.spatialJoinQuery_RDD(globalDataAccessor,mainlineConnectionPoint_spatialQueryParam,SpatialPredicateType.Overlaps,permittedUseMainline_spatialQueryParam,"mainlineEndPoint_permittedUseMainlineJoinDF")
-    val mainlineConnectionPoint_permittedUseMainlineJoinDF = spatialQueryMetaFunction.spatialJoinQuery(globalDataAccessor,mainlineConnectionPoint_spatialQueryParam,SpatialPredicateType.Overlaps,permittedUseMainline_spatialQueryParam,"mainlineEndPoint_permittedUseMainlineJoinDF")
+    val mainlineConnectionPoint_permittedUseMainlineJoinDF = spatialQueryMetaFunction.spatialWithinDistanceJoinQuery(globalDataAccessor,mainlineConnectionPoint_spatialQueryParam, permittedUseMainline_spatialQueryParam,spatialQueryMetaFunction.transferMeterValueToDegree(0.01),"distanceValue","mainlineEndPoint_permittedUseMainlineJoinDF")
     //mainlineConnectionPoint_permittedUseMainlineJoinDF.show(100)
+    //println(mainlineConnectionPoint_permittedUseMainlineJoinDF.count)
 
-    val schemas= Seq("uid0", "uid1")
-    val dfRenamed = mainlineEndPoint_permittedUseMainlineJoinDF.toDF(schemas: _*)
+    //mainlineConnectionPoint_permittedUseMainlineJoinDF.show(10000)
+    val schemas= Seq("uid0","MNLCP_DEPT", "uid1","MNL_LIFE_1","distanceValue")
+    val dfRenamed = mainlineConnectionPoint_permittedUseMainlineJoinDF.toDF(schemas: _*)
 
+    //mainlineConnectionPoint_permittedUseMainlineJoinDF.show(1)
     println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date))
     //dfRenamed.write.csv("/home/wangychu/Desktop/csvoutput/01")
-    println(dfRenamed.count())
+    println(mainlineConnectionPoint_permittedUseMainlineJoinDF.count())
     println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date))
 
     globalDataAccessor.close()

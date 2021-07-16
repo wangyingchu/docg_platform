@@ -12,6 +12,14 @@ import scala.collection.mutable
 
 class SpatialQueryMetaFunction {
 
+  def transferMeterValueToDegree(meterValue:Double):Double = {
+    meterValue/(2 * Math.PI * 6371004) * 360
+  }
+
+  def transferDegreeValueToMeter(degreeValue:Double):Double = {
+    degreeValue/360*2*(2 * Math.PI * 6371004)
+  }
+
   def spatialAttributesQuery(globalDataAccessor:GlobalDataAccessor,operationSourceDataFrame:String,spatialAttributeName:String,uidAttributeName:String,resultDataFrameName:String):DataFrame={
     val spatialFunctionComputeDfQueryString =
       "SELECT ST_ConvexHull("+spatialAttributeName+") AS ConvexHull" +
