@@ -41,8 +41,12 @@ public interface RealmConstant {
     public final String GeospatialScaleCountyEntityClass="DOCG_GS_County";
     public final String GeospatialScaleTownshipEntityClass="DOCG_GS_Township";
     public final String GeospatialScaleVillageEntityClass="DOCG_GS_Village";
-    public final String GeospatialScale_SpatialContainsRelationClass="DOCG_GS_SpatialContains";
-    public final String GeospatialScale_SpatialIdenticalRelationClass="DOCG_GS_SpatialIdentical";
+
+    public final String GeospatialScale_SpatialContainsRelationClass="DOCG_GS_SpatialContains"; //空间包含
+    public final String GeospatialScale_SpatialIdenticalRelationClass="DOCG_GS_SpatialIdentical";//空间相同
+    public final String GeospatialScale_SpatialApproachRelationClass="DOCG_GS_SpatialApproach";//空间相邻
+    public final String GeospatialScale_SpatialConnectRelationClass="DOCG_GS_SpatialConnect";//空间相连
+
     public final String GeospatialScaleEventClass="DOCG_GeospatialScaleEvent";
     public final String GeospatialScale_GeospatialReferToRelationClass="DOCG_GS_GeospatialReferTo";
     public final String GeospatialScale_AttachToRelationClass="DOCG_AttachToGeospatialScale";
@@ -97,4 +101,6 @@ public interface RealmConstant {
     public final String _GeospatialGLGeometryBorder="DOCG_GS_GLGeometryBorder";
     public final String _GeospatialCLGeometryBorder="DOCG_GS_CLGeometryBorder";
     public final String _GeospatialLLGeometryBorder="DOCG_GS_LLGeometryBorder";
+
+
 }
