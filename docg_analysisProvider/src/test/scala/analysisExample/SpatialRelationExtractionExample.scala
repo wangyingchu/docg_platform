@@ -64,6 +64,8 @@ object SpatialRelationExtractionExample extends App {
     println(mainlineConnectionPoint_permittedUseMainlineJoinDF.count())
     println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date))
 
+    generateSpatialRelation()
+
     globalDataAccessor.close()
   }
 
@@ -102,4 +104,8 @@ object SpatialRelationExtractionExample extends App {
     println(mainlineEndPointDataSlice.getSuccessItemsCount)
   }
 
+  def generateSpatialRelation():Unit = {
+
+
+  }
 }
