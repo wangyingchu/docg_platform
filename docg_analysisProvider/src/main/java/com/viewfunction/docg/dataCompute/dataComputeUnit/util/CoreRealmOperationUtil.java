@@ -389,7 +389,7 @@ public class CoreRealmOperationUtil {
         return dataSliceOperationResult;
     }
 
-    public static DataSliceOperationResult loadRelationKindEntitiesToDataSlice(DataSliceServiceInvoker dataSliceServiceInvoker, String relationKindName, List<String> attributeNamesList, QueryParameters queryParameters, String dataSliceName, boolean useConceptionEntityUIDAsPK, int degreeOfParallelism) {
+    public static DataSliceOperationResult loadRelationKindEntitiesToDataSlice(DataSliceServiceInvoker dataSliceServiceInvoker, String relationKindName, List<String> attributeNamesList, QueryParameters queryParameters, String dataSliceName, boolean useRelationEntityUIDAsPK, int degreeOfParallelism) {
         DataSliceOperationResult dataSliceOperationResult = new DataSliceOperationResult();
 
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
@@ -406,14 +406,14 @@ public class CoreRealmOperationUtil {
             int singlePartitionSize = (conceptionEntityValueList.size()/degreeOfParallelism)+1;
             List<List<RelationEntityValue>> rsList = Lists.partition(conceptionEntityValueList, singlePartitionSize);
 
-            if(useConceptionEntityUIDAsPK){
+            if(useRelationEntityUIDAsPK){
                 attributeNamesList.add(RealmGlobalUID);
             }
 
             ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
             for(int i = 0;i < rsList.size(); i++){
                 List<RelationEntityValue> currentConceptionEntityValueList = rsList.get(i);
-                DataSliceInsertRelationThread dataSliceInsertRelationThread = new DataSliceInsertRelationThread(i,dataSliceName,attributeNamesList,currentConceptionEntityValueList,useConceptionEntityUIDAsPK);
+                DataSliceInsertRelationThread dataSliceInsertRelationThread = new DataSliceInsertRelationThread(i,dataSliceName,attributeNamesList,currentConceptionEntityValueList,useRelationEntityUIDAsPK);
                 executor.execute(dataSliceInsertRelationThread);
             }
             executor.shutdown();
