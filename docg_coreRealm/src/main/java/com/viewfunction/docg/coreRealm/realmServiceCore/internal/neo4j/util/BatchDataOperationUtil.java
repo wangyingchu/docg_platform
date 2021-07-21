@@ -8,8 +8,10 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleRelationEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleTimeScaleEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeScaleEntityImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 import org.slf4j.Logger;
@@ -192,5 +194,47 @@ public class BatchDataOperationUtil {
             }
         }
         return null;
+    }
+
+    public static void batchAttachNewRelations(List<RelationEntityValue> relationEntityValueList, String relationKindName, int degreeOfParallelism){
+        int singlePartitionSize = (relationEntityValueList.size()/degreeOfParallelism)+1;
+        List<List<RelationEntityValue>> rsList = Lists.partition(relationEntityValueList, singlePartitionSize);
+
+        ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+        for(List<RelationEntityValue> currentRelationEntityValueList:rsList){
+            AttachRelationThread attachRelationThread = new AttachRelationThread(currentRelationEntityValueList,relationKindName);
+            executor.execute(attachRelationThread);
+        }
+        executor.shutdown();
+    }
+
+    private static class AttachRelationThread implements Runnable{
+        private List<RelationEntityValue> relationEntityValueList;
+        private String relationKindName;
+
+        public AttachRelationThread(List<RelationEntityValue> relationEntityValueList,String relationKindName){
+            this.relationEntityValueList = relationEntityValueList;
+            this.relationKindName = relationKindName;
+        }
+
+        @Override
+        public void run(){
+            if(this.relationEntityValueList != null && this.relationEntityValueList.size() >0){
+                CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+                if(coreRealm.getStorageImplTech().equals(CoreRealmStorageImplTech.NEO4J)){
+                    GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
+                    GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
+                            (this.relationKindName,graphOperationExecutor);
+                    for(RelationEntityValue currentRelationEntityValue:this.relationEntityValueList){
+                        String sourceEntityUID = currentRelationEntityValue.getFromConceptionEntityUID();
+                        String targetEntityUID = currentRelationEntityValue.getToConceptionEntityUID();
+                        Map<String, Object> relationPropertiesValue = currentRelationEntityValue.getEntityAttributesValue();
+                        String attachRelationCQL = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(sourceEntityUID),Long.parseLong(targetEntityUID),this.relationKindName,relationPropertiesValue);
+                        graphOperationExecutor.executeWrite(getSingleRelationEntityTransformer,attachRelationCQL);
+                    }
+                    graphOperationExecutor.close();
+                }
+            }
+        }
     }
 }
