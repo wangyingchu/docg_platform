@@ -23,7 +23,9 @@ object SpatialRelationExtractionExample extends App {
   loadPermittedUseMainlineDS
   */
 
-  spatialRelationExtract
+  //spatialRelationExtract
+
+  loadSpatialConnectionRelationDS
 
   def spatialRelationExtract():Unit = {
     val sparkApplicationName = AnalysisProviderApplicationUtil.getApplicationProperty("sparkApplicationName")
@@ -107,6 +109,12 @@ object SpatialRelationExtractionExample extends App {
       relationEntityValueList.add(currentRelationEntityValue)
     })
     BatchDataOperationUtil.batchAttachNewRelations(relationEntityValueList,RealmConstant.GeospatialScale_SpatialConnectRelationClass,16)
+  }
+
+  def loadSpatialConnectionRelationDS:Unit = {
+    val _GS_SpatialConnectDataSlice: DataSliceOperationResult =
+      CoreRealmOperationUtil.syncRelationKindToDataSlice("DOCG_GS_SpatialConnect","GS_SpatialConnect",CoreRealmOperationUtil.defaultSliceGroup,null)
+    println(_GS_SpatialConnectDataSlice.getSuccessItemsCount)
   }
 
 }
