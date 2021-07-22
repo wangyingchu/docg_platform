@@ -4,6 +4,7 @@ import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.GeospatialS
 import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.JDBCResultSetConvertor
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.dataCompute.dataComputeUnit.dataService.{DataSlice, DataSliceServiceInvoker}
+import com.viewfunction.docg.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
 import org.apache.ignite.{Ignite, Ignition}
 import org.apache.sedona.sql.utils.SedonaSQLRegistrator
 import org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
@@ -158,8 +159,17 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
    null
   }
 
-  def getEdgeRDD[EV](dataSliceName:String,sliceGroup: String,valueClass:Class[EV]):RDD[Edge[EV]]={
-   null
+  def getEdgeRDD(dataSliceName:String,sliceGroup: String):RDD[Edge[(Long,String)]]={
+    val jdbcResultSetConvertImpl = new JDBCResultSetConvertor {
+      override def convertFunction(resultSet: ResultSet): Any = {
+        Edge(resultSet.getLong(CoreRealmOperationUtil.RelationFromEntityUID),
+          resultSet.getLong(CoreRealmOperationUtil.RelationToEntityUID),
+          (resultSet.getLong(CoreRealmOperationUtil.RealmGlobalUID),dataSliceName)
+        )
+      }
+    }
+    val jdbcRDD = _getJdbcRDD(dataSliceName,sliceGroup,jdbcResultSetConvertImpl)
+    jdbcRDD.asInstanceOf[RDD[Edge[(Long,String)]]]
   }
 
   def getDataSlice(dataSliceName:String): DataSlice = {

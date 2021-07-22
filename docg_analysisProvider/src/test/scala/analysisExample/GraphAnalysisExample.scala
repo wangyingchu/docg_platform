@@ -25,7 +25,6 @@ object GraphAnalysisExample {
     //println(mainlineDF.count())
     //println(middlePointDF.count())
 
-
     val jdbcResultSetConvertImpl = new JDBCResultSetConvertor {
       override def convertFunction(resultSet: ResultSet): Any = {
         (resultSet.getString(1),resultSet.getString(2))
@@ -34,6 +33,14 @@ object GraphAnalysisExample {
 
     val result = (globalDataAccessor._getJdbcRDD("GS_SpatialConnect",CoreRealmOperationUtil.defaultSliceGroup,jdbcResultSetConvertImpl)).asInstanceOf[RDD[(String,String)]]
     println(result.count())
+
+    result.take(100).foreach(data=>{
+      println(data._1+" -> "+data._2)
+    })
+
+    val edgeRDD = globalDataAccessor.getEdgeRDD("GS_SpatialConnect",CoreRealmOperationUtil.defaultSliceGroup)
+
+    edgeRDD.take(10).foreach(println(_))
 
     globalDataAccessor.close()
   }
