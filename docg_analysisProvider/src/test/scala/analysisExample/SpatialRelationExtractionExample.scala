@@ -2,6 +2,7 @@ package analysisExample
 
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
 import com.viewfunction.docg.analysisProvider.feature.spark.spatial.{SpatialPredicateType, SpatialQueryMetaFunction, SpatialQueryParam}
+import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.GeospatialScaleLevel
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue
@@ -12,7 +13,6 @@ import com.viewfunction.docg.dataCompute.dataComputeUnit.util.CoreRealmOperation
 import org.apache.spark.sql.Row
 
 import java.util
-
 import scala.collection.mutable
 
 object SpatialRelationExtractionExample extends App {
@@ -24,8 +24,19 @@ object SpatialRelationExtractionExample extends App {
   */
 
   //spatialRelationExtract
+  //loadSpatialConnectionRelationDS
+  testSpatialSupportDataSliceConvert
 
-  loadSpatialConnectionRelationDS
+  def testSpatialSupportDataSliceConvert():Unit = {
+    val sparkApplicationName = AnalysisProviderApplicationUtil.getApplicationProperty("sparkApplicationName")
+    val sparkMasterLocation = AnalysisProviderApplicationUtil.getApplicationProperty("sparkMasterLocation")
+    val globalDataAccessor = new GlobalDataAccessor(sparkApplicationName,sparkMasterLocation)
+    val mainlineConnectionPointSpDF = globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice("MainlineConnectionPoint",
+      CoreRealmOperationUtil.defaultSliceGroup, GeospatialScaleLevel.GlobalLevel,"mainlineConnectionPointSpDF","geo_ConnectionPointLocation")
+    mainlineConnectionPointSpDF.printSchema()
+    mainlineConnectionPointSpDF.show(10)
+    globalDataAccessor.close()
+  }
 
   def spatialRelationExtract():Unit = {
     val sparkApplicationName = AnalysisProviderApplicationUtil.getApplicationProperty("sparkApplicationName")
