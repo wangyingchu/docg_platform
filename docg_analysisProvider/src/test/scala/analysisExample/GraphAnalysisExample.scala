@@ -4,6 +4,9 @@ import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
 import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.JDBCResultSetConvertor
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
+import org.apache.spark.rdd.RDD
+
+import java.sql.ResultSet
 
 object GraphAnalysisExample {
 
@@ -23,16 +26,14 @@ object GraphAnalysisExample {
     //println(middlePointDF.count())
 
 
-    val result = globalDataAccessor._getJDBCRDD("GS_SpatialConnect",CoreRealmOperationUtil.defaultSliceGroup,new JDBCResultSetConvertor)
+    val jdbcResultSetConvertImpl = new JDBCResultSetConvertor {
+      override def convertFunction(resultSet: ResultSet): Any = {
+        (resultSet.getString(1),resultSet.getString(2))
+      }
+    }
 
-
-
+    val result = (globalDataAccessor._getJdbcRDD("GS_SpatialConnect",CoreRealmOperationUtil.defaultSliceGroup,jdbcResultSetConvertImpl)).asInstanceOf[RDD[(String,String)]]
     println(result.count())
-
-
-
-
-
 
     globalDataAccessor.close()
   }

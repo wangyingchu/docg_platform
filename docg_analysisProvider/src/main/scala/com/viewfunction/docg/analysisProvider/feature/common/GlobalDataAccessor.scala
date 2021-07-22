@@ -135,25 +135,7 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
     targetDF
   }
 
-
-
-
-
-
-
-
-
-
-  def jdbcResultSetFilter(resultSet:ResultSet):Any = {
-
-    null
-  }
-
-  def convertFunction(resultSet:ResultSet):String = {
-    resultSet.getString(1)
-  }
-
-  def _getJDBCRDD(dataSliceName:String,sliceGroup: String,convertFunction:JDBCResultSetConvertor):RDD[String]={
+  def _getJdbcRDD(dataSliceName:String,sliceGroup: String,convertFunction:JDBCResultSetConvertor):RDD[Any]={
     val jdbcURL: String = if (sliceGroup != null) {
       "jdbc:ignite:thin://127.0.0.1/"+sliceGroup+"?partitionAwareness=true"
     }else {
@@ -169,52 +151,8 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
       1, 100000, 1,
       convertFunction.convertFunction
     )
-
-
-    //println(rdd.count())
-
     rdd
-
-
-
-
-/*
-
-
-
-
-    val rdd = new JdbcRDD(
-      sc,() => {
-        Class.forName("org.apache.ignite.IgniteJdbcThinDriver").newInstance()
-        DriverManager.getConnection(jdbcURL)
-      },
-      "SELECT * FROM "+sliceGroup+"."+dataSliceName,
-      r => (r.getString(1),r.getString(2),r.getString(5)))
-*/
-
-
-
-
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   def getVertexRDD[VV](dataSliceName:String,sliceGroup: String,valueClass:Class[VV]):VertexRDD[VV]={
    null
