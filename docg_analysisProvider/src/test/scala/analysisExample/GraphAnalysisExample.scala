@@ -1,6 +1,7 @@
 package analysisExample
 
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
+import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.JDBCResultSetConvertor
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
 
@@ -16,17 +17,17 @@ object GraphAnalysisExample {
     val mainlineDF = globalDataAccessor.getDataFrameFromDataSlice("PermittedUseMainline",CoreRealmOperationUtil.defaultSliceGroup)
     val middlePointDF = globalDataAccessor.getDataFrameFromDataSlice("MainlineConnectionPoint",CoreRealmOperationUtil.defaultSliceGroup)
 
-    println(connectionEdgeDF.count())
-    println(endPointDF.count())
-    println(mainlineDF.count())
-    println(middlePointDF.count())
+    //println(connectionEdgeDF.count())
+    //println(endPointDF.count())
+    //println(mainlineDF.count())
+    //println(middlePointDF.count())
+
+
+    val result = globalDataAccessor._getJDBCRDD("GS_SpatialConnect",CoreRealmOperationUtil.defaultSliceGroup,new JDBCResultSetConvertor)
 
 
 
-
-    
-
-
+    println(result.count())
 
 
 

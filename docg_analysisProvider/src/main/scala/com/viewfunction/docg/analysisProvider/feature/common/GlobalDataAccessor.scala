@@ -1,16 +1,20 @@
 package com.viewfunction.docg.analysisProvider.feature.common
 
 import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.GeospatialScaleLevel.{CountryLevel, GeospatialScaleLevel, GlobalLevel, LocalLevel}
+import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.JDBCResultSetConvertor
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.dataCompute.dataComputeUnit.dataService.{DataSlice, DataSliceServiceInvoker}
 import org.apache.ignite.{Ignite, Ignition}
 import org.apache.sedona.sql.utils.SedonaSQLRegistrator
 import org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
+import org.apache.spark.graphx.{Edge, VertexId, VertexRDD}
+import org.apache.spark.rdd.{JdbcRDD, RDD}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.serializer.KryoSerializer
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
 import java.lang.Boolean
+import java.sql.{DriverManager, ResultSet}
 
 class GlobalDataAccessor (private val sessionName:String, private val masterLocation:String){
 
@@ -78,7 +82,7 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
     }else {
       "jdbc:ignite:thin://127.0.0.1/?partitionAwareness=true"
     }
-     val df = getSparkSession().sqlContext.read.format("jdbc")
+    val df = getSparkSession().sqlContext.read.format("jdbc")
       .option("url", jdbcURL)
       .option("driver", "org.apache.ignite.IgniteJdbcThinDriver")
       .option("dbtable", sliceName)
@@ -129,6 +133,95 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
       targetDF.createOrReplaceTempView(dataFrameName)
     }
     targetDF
+  }
+
+
+
+
+
+
+
+
+
+
+  def jdbcResultSetFilter(resultSet:ResultSet):Any = {
+
+    null
+  }
+
+  def convertFunction(resultSet:ResultSet):String = {
+    resultSet.getString(1)
+  }
+
+  def _getJDBCRDD(dataSliceName:String,sliceGroup: String,convertFunction:JDBCResultSetConvertor):RDD[String]={
+    val jdbcURL: String = if (sliceGroup != null) {
+      "jdbc:ignite:thin://127.0.0.1/"+sliceGroup+"?partitionAwareness=true"
+    }else {
+      "jdbc:ignite:thin://127.0.0.1/?partitionAwareness=true"
+    }
+    val rdd = new JdbcRDD(
+      sc,
+      () => {
+        Class.forName("org.apache.ignite.IgniteJdbcThinDriver").newInstance()
+        DriverManager.getConnection(jdbcURL)
+      },
+      "SELECT * FROM "+sliceGroup+"."+dataSliceName,
+      1, 100000, 1,
+      convertFunction.convertFunction
+    )
+
+
+    //println(rdd.count())
+
+    rdd
+
+
+
+
+/*
+
+
+
+
+    val rdd = new JdbcRDD(
+      sc,() => {
+        Class.forName("org.apache.ignite.IgniteJdbcThinDriver").newInstance()
+        DriverManager.getConnection(jdbcURL)
+      },
+      "SELECT * FROM "+sliceGroup+"."+dataSliceName,
+      r => (r.getString(1),r.getString(2),r.getString(5)))
+*/
+
+
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  def getVertexRDD[VV](dataSliceName:String,sliceGroup: String,valueClass:Class[VV]):VertexRDD[VV]={
+   null
+  }
+
+  def getEdgeRDD[EV](dataSliceName:String,sliceGroup: String,valueClass:Class[EV]):RDD[Edge[EV]]={
+   null
   }
 
   def getDataSlice(dataSliceName:String): DataSlice = {
