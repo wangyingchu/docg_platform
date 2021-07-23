@@ -1,7 +1,7 @@
 package com.viewfunction.docg.analysisProvider.feature.common
 
 import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.GeospatialScaleLevel.{CountryLevel, GeospatialScaleLevel, GlobalLevel, LocalLevel}
-import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.JDBCResultSetConvertor
+import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.ResultSetConvertor
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.dataCompute.dataComputeUnit.dataService.{DataSlice, DataSliceServiceInvoker}
 import com.viewfunction.docg.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
@@ -136,7 +136,7 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
     targetDF
   }
 
-  def _getJdbcRDD(dataSliceName:String,sliceGroup: String,convertFunction:JDBCResultSetConvertor):RDD[Any]={
+  def _getJdbcRDD(dataSliceName:String,sliceGroup: String,resultSetConvertor:ResultSetConvertor):RDD[Any]={
     val jdbcURL: String = if (sliceGroup != null) {
       "jdbc:ignite:thin://127.0.0.1/"+sliceGroup+"?partitionAwareness=true"
     }else {
@@ -150,32 +150,42 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
       },
       "SELECT * FROM "+sliceGroup+"."+dataSliceName,
       1, 100000, 1,
-      convertFunction.convertFunction
+      resultSetConvertor.convertFunction
     )
     rdd
   }
 
-  def getVertexRDD(dataSliceName:String,sliceGroup: String):RDD[(VertexId, (String, String))] = {
-    val jdbcResultSetConvertImpl = new JDBCResultSetConvertor {
+  def getVertexRDD(dataSliceName:String,sliceGroup: String,resultSetConvertor:ResultSetConvertor):RDD[(VertexId, Any)] = {
+    val jdbcResultSetConvertImpl = new ResultSetConvertor {
       override def convertFunction(resultSet: ResultSet): Any = {
-        (resultSet.getLong(CoreRealmOperationUtil.RealmGlobalUID),("A","B"))
+        (resultSet.getLong(CoreRealmOperationUtil.RealmGlobalUID),resultSetConvertor.convertFunction(resultSet))
+      }
+    }
+    val jdbcRDD = _getJdbcRDD(dataSliceName,sliceGroup,jdbcResultSetConvertImpl)
+    jdbcRDD.asInstanceOf[RDD[(VertexId, Any)]]
+  }
+
+  def getVertexRDD(dataSliceName:String,sliceGroup: String):RDD[(VertexId, (String, String))] = {
+    val jdbcResultSetConvertImpl = new ResultSetConvertor {
+      override def convertFunction(resultSet: ResultSet): Any = {
+        (resultSet.getLong(CoreRealmOperationUtil.RealmGlobalUID),(dataSliceName,sliceGroup))
       }
     }
     val jdbcRDD = _getJdbcRDD(dataSliceName,sliceGroup,jdbcResultSetConvertImpl)
     jdbcRDD.asInstanceOf[RDD[(VertexId, (String, String))]]
   }
 
-  def getEdgeRDD(dataSliceName:String,sliceGroup: String):RDD[Edge[(Long,String)]] = {
-    val jdbcResultSetConvertImpl = new JDBCResultSetConvertor {
+  def getEdgeRDD(dataSliceName:String,sliceGroup: String):RDD[Edge[(Long,String,String)]] = {
+    val jdbcResultSetConvertImpl = new ResultSetConvertor {
       override def convertFunction(resultSet: ResultSet): Any = {
         Edge(resultSet.getLong(CoreRealmOperationUtil.RelationFromEntityUID),
           resultSet.getLong(CoreRealmOperationUtil.RelationToEntityUID),
-          (resultSet.getLong(CoreRealmOperationUtil.RealmGlobalUID),dataSliceName)
+          (resultSet.getLong(CoreRealmOperationUtil.RealmGlobalUID),dataSliceName,sliceGroup)
         )
       }
     }
     val jdbcRDD = _getJdbcRDD(dataSliceName,sliceGroup,jdbcResultSetConvertImpl)
-    jdbcRDD.asInstanceOf[RDD[Edge[(Long,String)]]]
+    jdbcRDD.asInstanceOf[RDD[Edge[(Long,String,String)]]]
   }
 
   def getDataSlice(dataSliceName:String): DataSlice = {

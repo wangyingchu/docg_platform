@@ -1,7 +1,7 @@
 package analysisExample
 
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
-import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.JDBCResultSetConvertor
+import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.ResultSetConvertor
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
 import org.apache.spark.graphx.{Edge, Graph, PartitionStrategy, VertexId}
@@ -26,7 +26,7 @@ object GraphAnalysisExample {
     //println(mainlineDF.count())
     //println(middlePointDF.count())
 
-    val jdbcResultSetConvertImpl = new JDBCResultSetConvertor {
+    val jdbcResultSetConvertImpl = new ResultSetConvertor {
       override def convertFunction(resultSet: ResultSet): Any = {
         (resultSet.getString(1),resultSet.getString(2))
       }
@@ -41,9 +41,9 @@ object GraphAnalysisExample {
     })
     */
 
-    val edgeRDD:RDD[Edge[(Long,String)]] = globalDataAccessor.getEdgeRDD("GS_SpatialConnect",CoreRealmOperationUtil.defaultSliceGroup)
+    val edgeRDD:RDD[Edge[(Long,String,String)]] = globalDataAccessor.getEdgeRDD("GS_SpatialConnect",CoreRealmOperationUtil.defaultSliceGroup)
 
-    //edgeRDD.take(10).foreach(println(_))
+    edgeRDD.take(10).foreach(println(_))
 
 
 
@@ -54,7 +54,7 @@ object GraphAnalysisExample {
 
     val wholeDataVertexRDD = vertexRDD1.union(vertexRDD2).union(vertexRDD3)
 
-    //vertexRDD1.take(10).foreach(println(_))
+    vertexRDD1.take(10).foreach(println(_))
     //println(wholeDataVertexRDD.count())
 
 
@@ -65,7 +65,24 @@ object GraphAnalysisExample {
     //println(networkGraph.numEdges)
     //println(networkGraph.numVertices)
     println(networkGraph.connectedComponents(20))
-    //globalDataAccessor.close()
+
+
+
+
+
+    val jdbcResultSetConvertImpl2 = new ResultSetConvertor {
+      override def convertFunction(resultSet: ResultSet): Any = {
+        (resultSet.getDouble(1),resultSet.getString(2))
+      }
+    }
+
+    val vertexRDD4 = globalDataAccessor.getVertexRDD("PermittedUseMainline",CoreRealmOperationUtil.defaultSliceGroup,jdbcResultSetConvertImpl2)
+
+    val xxx = vertexRDD4.asInstanceOf[RDD[(VertexId, (Double, String))]]
+
+    xxx.take(100).foreach(println(_))
+
+    globalDataAccessor.close()
   }
 
 }
