@@ -188,6 +188,19 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
     jdbcRDD.asInstanceOf[RDD[Edge[(Long,String,String)]]]
   }
 
+  def getEdgeRDD(dataSliceName:String,sliceGroup: String,resultSetConvertor:ResultSetConvertor):RDD[Edge[(Long,Any)]] = {
+    val jdbcResultSetConvertImpl = new ResultSetConvertor {
+      override def convertFunction(resultSet: ResultSet): Any = {
+        Edge(resultSet.getLong(CoreRealmOperationUtil.RelationFromEntityUID),
+          resultSet.getLong(CoreRealmOperationUtil.RelationToEntityUID),
+          (resultSet.getLong(CoreRealmOperationUtil.RealmGlobalUID),resultSetConvertor.convertFunction(resultSet))
+        )
+      }
+    }
+    val jdbcRDD = _getJdbcRDD(dataSliceName,sliceGroup,jdbcResultSetConvertImpl)
+    jdbcRDD.asInstanceOf[RDD[Edge[(Long,Any)]]]
+  }
+
   def getDataSlice(dataSliceName:String): DataSlice = {
     _getDataSliceServiceInvoker().getDataSlice(dataSliceName)
   }
