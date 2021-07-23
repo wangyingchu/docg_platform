@@ -155,11 +155,17 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
     rdd
   }
 
-  def getVertexRDD[VV](dataSliceName:String,sliceGroup: String,valueClass:Class[VV]):VertexRDD[VV]={
-   null
+  def getVertexRDD(dataSliceName:String,sliceGroup: String):RDD[(VertexId, (String, String))] = {
+    val jdbcResultSetConvertImpl = new JDBCResultSetConvertor {
+      override def convertFunction(resultSet: ResultSet): Any = {
+        (resultSet.getLong(CoreRealmOperationUtil.RealmGlobalUID),("A","B"))
+      }
+    }
+    val jdbcRDD = _getJdbcRDD(dataSliceName,sliceGroup,jdbcResultSetConvertImpl)
+    jdbcRDD.asInstanceOf[RDD[(VertexId, (String, String))]]
   }
 
-  def getEdgeRDD(dataSliceName:String,sliceGroup: String):RDD[Edge[(Long,String)]]={
+  def getEdgeRDD(dataSliceName:String,sliceGroup: String):RDD[Edge[(Long,String)]] = {
     val jdbcResultSetConvertImpl = new JDBCResultSetConvertor {
       override def convertFunction(resultSet: ResultSet): Any = {
         Edge(resultSet.getLong(CoreRealmOperationUtil.RelationFromEntityUID),

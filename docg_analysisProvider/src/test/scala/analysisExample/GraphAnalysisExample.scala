@@ -4,6 +4,7 @@ import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
 import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.JDBCResultSetConvertor
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
+import org.apache.spark.graphx.{Edge, Graph, PartitionStrategy, VertexId}
 import org.apache.spark.rdd.RDD
 
 import java.sql.ResultSet
@@ -32,17 +33,39 @@ object GraphAnalysisExample {
     }
 
     val result = (globalDataAccessor._getJdbcRDD("GS_SpatialConnect",CoreRealmOperationUtil.defaultSliceGroup,jdbcResultSetConvertImpl)).asInstanceOf[RDD[(String,String)]]
-    println(result.count())
+   // println(result.count())
 
+    /*
     result.take(100).foreach(data=>{
       println(data._1+" -> "+data._2)
     })
+    */
 
-    val edgeRDD = globalDataAccessor.getEdgeRDD("GS_SpatialConnect",CoreRealmOperationUtil.defaultSliceGroup)
+    val edgeRDD:RDD[Edge[(Long,String)]] = globalDataAccessor.getEdgeRDD("GS_SpatialConnect",CoreRealmOperationUtil.defaultSliceGroup)
 
-    edgeRDD.take(10).foreach(println(_))
+    //edgeRDD.take(10).foreach(println(_))
 
-    globalDataAccessor.close()
+
+
+    val vertexRDD1:RDD[(VertexId, (String, String))] = globalDataAccessor.getVertexRDD("PermittedUseMainline",CoreRealmOperationUtil.defaultSliceGroup)
+
+    val vertexRDD2:RDD[(VertexId, (String, String))] = globalDataAccessor.getVertexRDD("MainlineEndPoint",CoreRealmOperationUtil.defaultSliceGroup)
+    val vertexRDD3:RDD[(VertexId, (String, String))] = globalDataAccessor.getVertexRDD("MainlineConnectionPoint",CoreRealmOperationUtil.defaultSliceGroup)
+
+    val wholeDataVertexRDD = vertexRDD1.union(vertexRDD2).union(vertexRDD3)
+
+    //vertexRDD1.take(10).foreach(println(_))
+    //println(wholeDataVertexRDD.count())
+
+
+    val networkGraph = Graph(wholeDataVertexRDD,edgeRDD)
+    //networkGraph.partitionBy(PartitionStrategy.RandomVertexCut,20)
+
+
+    //println(networkGraph.numEdges)
+    //println(networkGraph.numVertices)
+    println(networkGraph.connectedComponents(20))
+    //globalDataAccessor.close()
   }
 
 }
