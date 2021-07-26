@@ -50,6 +50,9 @@ object GraphAnalysisExample {
     //println(networkGraph.numVertices)
     println(networkGraph.connectedComponents(20))
 
+    println(networkGraph.edges.getClass)
+    println(networkGraph.vertices.getClass)
+
     globalDataAccessor.close()
   }
 }
