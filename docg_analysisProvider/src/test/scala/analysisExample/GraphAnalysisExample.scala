@@ -52,6 +52,7 @@ object GraphAnalysisExample {
 
     println(networkGraph.edges.getClass)
     println(networkGraph.vertices.getClass)
+    println(networkGraph.triangleCount().numVertices)
 
     globalDataAccessor.close()
   }
