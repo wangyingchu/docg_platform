@@ -198,6 +198,31 @@
             <artifactId>gt-epsg-extension</artifactId>
             <version>24.0</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/ml.sparkling/sparkling-graph-api -->
+        <dependency>
+            <groupId>ml.sparkling</groupId>
+            <artifactId>sparkling-graph-api_2.11</artifactId>
+            <version>0.0.7</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/ml.sparkling/sparkling-graph-operators -->
+        <dependency>
+            <groupId>ml.sparkling</groupId>
+            <artifactId>sparkling-graph-operators_2.11</artifactId>
+            <version>0.0.7</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/ml.sparkling/sparkling-graph -->
+        <dependency>
+            <groupId>ml.sparkling</groupId>
+            <artifactId>sparkling-graph_2.11</artifactId>
+            <version>0.0.7</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/ml.sparkling/sparkling-graph-utils -->
+        <dependency>
+            <groupId>ml.sparkling</groupId>
+            <artifactId>sparkling-graph-utils_2.11</artifactId>
+            <version>0.0.7</version>
+        </dependency>
     </dependencies>
 
     <repositories>
