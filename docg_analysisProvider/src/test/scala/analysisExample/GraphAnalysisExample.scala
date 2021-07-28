@@ -9,6 +9,7 @@ import ml.sparkling.graph.api.operators.measures.VertexMeasureConfiguration
 import org.apache.spark.graphx.{Edge, Graph, PartitionStrategy, VertexId}
 import org.apache.spark.rdd.RDD
 import ml.sparkling.graph.operators.OperatorsDSL._
+import spire.compat.numeric
 
 import java.sql.ResultSet
 import java.util.Date
@@ -61,6 +62,16 @@ object GraphAnalysisExample {
     println(adamicAdarResult.vertices.take(20).foreach(item=>{
       println(item._2)
     }))
+
+    val networkGraph2 = Graph(wholeDataVertexRDD,edgeRDD)
+
+    def xxx():Numeric[(Long,String,String)] ={
+      null
+    }
+    val sss = networkGraph2.vertexEmbeddedness()(xxx)
+
+    println(sss.vertices.take(100).foreach(println(_)))
+
     globalDataAccessor.close()
   }
 }

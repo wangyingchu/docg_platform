@@ -17,6 +17,10 @@
         <geotools.version>geotools-24.0</geotools.version>
         <sedona.version>1.0.1-incubating</sedona.version>
         <akka.version>2.6.14</akka.version>
+
+        <!--
+        <scala.version>2.11.12</scala.version>
+        -->
     </properties>
 
     <dependencies>
@@ -223,6 +227,15 @@
             <artifactId>sparkling-graph-utils_2.11</artifactId>
             <version>0.0.7</version>
         </dependency>
+
+        <!--
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala.version}</version>
+        </dependency>
+        -->
+
     </dependencies>
 
     <repositories>
