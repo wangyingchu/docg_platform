@@ -75,7 +75,7 @@ object GraphAnalysisExample {
     val eee = networkGraph2.PSCAN()
     eee.vertices.take(20).foreach(println(_))
     val fff = networkGraph2.commonNeighbours()
-    fff.vertices.take(20).foreach(println(_))
+    fff.edges.take(20).foreach(println(_))
     globalDataAccessor.close()
   }
 }
