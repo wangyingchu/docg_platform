@@ -197,8 +197,9 @@
             <artifactId>gt-epsg-extension</artifactId>
             <version>24.0</version>
         </dependency>
-        <!--使用 SparklingGraph v0.0.7 技术执行部分图分析计算，mvn repository 只包含 scala 2.11的实现，与spark v3的要求冲突，
-            故使用源代码的形式支持相关功能(代码支持 scala 2.11与 2.12)，以下mvn 导入只用来获取相关类库 -->
+        <!--使用 SparklingGraph v0.0.7 http://sparkling-graph.github.io/ 技术执行部分图分析计算，mvn repository 只包含
+        scala 2.11的实现，与spark v3的要求冲突，故使用源代码的形式支持相关功能(代码支持 scala 2.11与 2.12)，
+        以下mvn 导入只用来获取相关类库 -->
         <!-- https://mvnrepository.com/artifact/ml.sparkling/sparkling-graph-operators -->
         <dependency>
             <groupId>ml.sparkling</groupId>
