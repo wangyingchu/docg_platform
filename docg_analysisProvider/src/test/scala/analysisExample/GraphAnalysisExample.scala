@@ -9,7 +9,6 @@ import ml.sparkling.graph.api.operators.measures.VertexMeasureConfiguration
 import org.apache.spark.graphx.{Edge, Graph, PartitionStrategy, VertexId}
 import org.apache.spark.rdd.RDD
 import ml.sparkling.graph.operators.OperatorsDSL._
-import spire.compat.numeric
 
 import java.sql.ResultSet
 import java.util.Date
@@ -59,9 +58,9 @@ object GraphAnalysisExample {
     println(networkGraph.triangleCount().numVertices)
 
     val adamicAdarResult = networkGraph.adamicAdar()
-    println(adamicAdarResult.vertices.take(20).foreach(item=>{
+    adamicAdarResult.vertices.take(20).foreach(item=>{
       println(item._2)
-    }))
+    })
 
     val networkGraph2 = Graph(wholeDataVertexRDD,edgeRDD)
 
@@ -69,9 +68,14 @@ object GraphAnalysisExample {
       null
     }
     val sss = networkGraph2.vertexEmbeddedness()(xxx)
-
-    println(sss.vertices.take(100).foreach(println(_)))
-
+    sss.vertices.take(100).foreach(println(_))
+    val ddd = networkGraph2.degreeCentrality()(xxx)
+    //println(ddd.vertices.count())
+    ddd.vertices.take(100).foreach(println(_))
+    val eee = networkGraph2.PSCAN()
+    eee.vertices.take(20).foreach(println(_))
+    val fff = networkGraph2.commonNeighbours()
+    fff.vertices.take(20).foreach(println(_))
     globalDataAccessor.close()
   }
 }

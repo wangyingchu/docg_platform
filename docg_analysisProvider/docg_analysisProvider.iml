@@ -297,15 +297,13 @@
     <orderEntry type="library" name="Maven: net.sf.geographiclib:GeographicLib-Java:1.49" level="project" />
     <orderEntry type="library" name="Maven: org.hsqldb:hsqldb:2.4.1" level="project" />
     <orderEntry type="library" name="Maven: org.geotools:gt-epsg-extension:24.0" level="project" />
-    <orderEntry type="library" name="Maven: ml.sparkling:sparkling-graph-api_2.11:0.0.7" level="project" />
     <orderEntry type="library" name="Maven: ml.sparkling:sparkling-graph-operators_2.11:0.0.7" level="project" />
+    <orderEntry type="library" name="Maven: ml.sparkling:sparkling-graph-api_2.11:0.0.7" level="project" />
     <orderEntry type="library" name="Maven: ml.sparkling:sparkling-graph-loaders_2.11:0.0.7" level="project" />
     <orderEntry type="library" name="Maven: com.databricks:spark-xml_2.11:0.4.0" level="project" />
     <orderEntry type="library" name="Maven: ml.sparkling:sparkling-graph-generators_2.11:0.0.7" level="project" />
     <orderEntry type="library" name="Maven: com.databricks:spark-csv_2.11:1.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-csv:1.1" level="project" />
     <orderEntry type="library" name="Maven: it.unimi.dsi:fastutil:7.0.8" level="project" />
-    <orderEntry type="library" name="Maven: ml.sparkling:sparkling-graph_2.11:0.0.7" level="project" />
-    <orderEntry type="library" name="Maven: ml.sparkling:sparkling-graph-utils_2.11:0.0.7" level="project" />
   </component>
 </module>
