@@ -10,7 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Neo4JConceptionEntityImpl extends Neo4JAttributesMeasurableImpl implements Neo4JConceptionEntity, Neo4JEntityRelationable,
-        Neo4JClassificationAttachable, Neo4JMultiConceptionKindsSupportable, Neo4JTimeScaleFeatureSupportable, Neo4JGeospatialScaleFeatureSupportable {
+        Neo4JClassificationAttachable, Neo4JMultiConceptionKindsSupportable, Neo4JTimeScaleFeatureSupportable, Neo4JGeospatialScaleFeatureSupportable,
+        Neo4JPathTravelable{
 
     private String conceptionEntityUID;
     private String conceptionKindName;
