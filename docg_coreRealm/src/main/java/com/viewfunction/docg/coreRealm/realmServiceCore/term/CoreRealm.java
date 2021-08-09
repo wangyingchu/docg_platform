@@ -4,6 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunct
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntityStatisticsInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 
 import java.util.List;
@@ -404,6 +405,20 @@ public interface CoreRealm {
      * @return 地理空间区域对象列表
      */
     public List<GeospatialRegion> getGeospatialRegions();
+
+    /**
+     * 获取领域中所有 ConceptionKind 的实体统计信息
+     *
+     * @return ConceptionKind的实体统计信息列表
+     */
+    public List<EntityStatisticsInfo> getConceptionEntitiesStatisticsInfo();
+
+    /**
+     * 获取领域中所有 RelationKind 的实体统计信息
+     *
+     * @return RelationKind的实体统计信息列表
+     */
+    public List<EntityStatisticsInfo> getRelationEntitiesStatisticsInfo();
 
     /**
      * 开启全局会话，此操作会创建一个持久化的后端数据库连接，执行该操作后由当前 CoreRealm 所创建的所有对象（以及这些对象创建的后续对象）将继承性的共享该持久化后端数据库连接。

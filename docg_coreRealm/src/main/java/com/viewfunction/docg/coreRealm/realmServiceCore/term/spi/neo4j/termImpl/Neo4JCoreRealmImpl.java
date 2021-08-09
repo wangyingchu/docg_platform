@@ -12,6 +12,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.Comm
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntityStatisticsInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachLinkLogic;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
@@ -1044,6 +1045,16 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         } catch (CoreRealmServiceEntityExploreException e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    @Override
+    public List<EntityStatisticsInfo> getConceptionEntitiesStatisticsInfo() {
+        return null;
+    }
+
+    @Override
+    public List<EntityStatisticsInfo> getRelationEntitiesStatisticsInfo() {
         return null;
     }
 
