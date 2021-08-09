@@ -1050,11 +1050,52 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
     @Override
     public List<EntityStatisticsInfo> getConceptionEntitiesStatisticsInfo() {
-        return null;
+        List<EntityStatisticsInfo> entityStatisticsInfoList = new ArrayList<>();
+        String cypherProcedureString = "CALL db.labels()\n" +
+            "YIELD label\n" +
+            "CALL apoc.cypher.run(\"MATCH (:`\"+label+\"`) RETURN count(*) as count\", null)\n" +
+            "YIELD value\n" +
+            "RETURN label, value.count as count\n" +
+            "ORDER BY label";
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            DataTransformer queryResultDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+
+                    while(result.hasNext()){
+                        Record currentRecord = result.next();
+                        String entityKind = currentRecord.get("label").asString();
+                        long entityCount = currentRecord.get("count").asLong();
+                        EntityStatisticsInfo currentEntityStatisticsInfo;
+                        if(entityKind.startsWith("DOCG_")){
+                            currentEntityStatisticsInfo = new EntityStatisticsInfo(
+                                    entityKind.replace("DOCG_", ""), EntityStatisticsInfo.kindType.ConceptionKind, true, entityCount);
+                        }else{
+                            currentEntityStatisticsInfo = new EntityStatisticsInfo(
+                                    entityKind, EntityStatisticsInfo.kindType.ConceptionKind, false, entityCount);
+                        }
+                        entityStatisticsInfoList.add(currentEntityStatisticsInfo);
+                    }
+                    return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(queryResultDataTransformer,cypherProcedureString);
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return entityStatisticsInfoList;
     }
 
     @Override
     public List<EntityStatisticsInfo> getRelationEntitiesStatisticsInfo() {
+        String cypherProcedureString = "CALL db.relationshipTypes()\n" +
+                "YIELD relationshipType\n" +
+                "CALL apoc.cypher.run(\"MATCH ()-[:\" + `relationshipType` + \"]->()\n" +
+                "RETURN count(*) as count\", null)\n" +
+                "YIELD value\n" +
+                "RETURN relationshipType, value.count AS count\n" +
+                "ORDER BY relationshipType";
         return null;
     }
 

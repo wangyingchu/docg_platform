@@ -2,6 +2,7 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntityStatisticsInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeFlowImpl;
@@ -379,5 +380,10 @@ public class CoreRealmTest {
         }
         Assert.assertTrue(hasDefaultTimeFlow);
         Assert.assertTrue(hasCustomTimeFlow);
+
+        List<EntityStatisticsInfo> statisticsInfosList = coreRealm.getConceptionEntitiesStatisticsInfo();
+        Assert.assertNotNull(statisticsInfosList);
+        Assert.assertTrue(statisticsInfosList.size()>1);
+
     }
 }
