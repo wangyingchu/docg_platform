@@ -3,6 +3,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionKindCorrelationInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntityStatisticsInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
@@ -419,6 +420,13 @@ public interface CoreRealm {
      * @return RelationKind的实体统计信息列表
      */
     public List<EntityStatisticsInfo> getRelationEntitiesStatisticsInfo();
+
+    /**
+     * 获取领域中所有 ConceptionKind 的实体之间的相关关系信息
+     *
+     * @return 各个关联的概念类型结对与相关的关系类型信息的列表
+     */
+    public List<ConceptionKindCorrelationInfo> getConceptionKindsCorrelation();
 
     /**
      * 开启全局会话，此操作会创建一个持久化的后端数据库连接，执行该操作后由当前 CoreRealm 所创建的所有对象（以及这些对象创建的后续对象）将继承性的共享该持久化后端数据库连接。
