@@ -1070,7 +1070,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                         EntityStatisticsInfo currentEntityStatisticsInfo;
                         if(entityKind.startsWith("DOCG_")){
                             currentEntityStatisticsInfo = new EntityStatisticsInfo(
-                                    entityKind.replace("DOCG_", ""), EntityStatisticsInfo.kindType.ConceptionKind, true, entityCount);
+                                    entityKind, EntityStatisticsInfo.kindType.ConceptionKind, true, entityCount);
                         }else{
                             currentEntityStatisticsInfo = new EntityStatisticsInfo(
                                     entityKind, EntityStatisticsInfo.kindType.ConceptionKind, false, entityCount);
@@ -1089,6 +1089,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
     @Override
     public List<EntityStatisticsInfo> getRelationEntitiesStatisticsInfo() {
+        List<EntityStatisticsInfo> entityStatisticsInfoList = new ArrayList<>();
         String cypherProcedureString = "CALL db.relationshipTypes()\n" +
                 "YIELD relationshipType\n" +
                 "CALL apoc.cypher.run(\"MATCH ()-[:\" + `relationshipType` + \"]->()\n" +
@@ -1096,7 +1097,34 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 "YIELD value\n" +
                 "RETURN relationshipType, value.count AS count\n" +
                 "ORDER BY relationshipType";
-        return null;
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            DataTransformer queryResultDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+
+                    while(result.hasNext()){
+                        Record currentRecord = result.next();
+                        String entityKind = currentRecord.get("relationshipType").asString();
+                        long entityCount = currentRecord.get("count").asLong();
+                        EntityStatisticsInfo currentEntityStatisticsInfo;
+                        if(entityKind.startsWith("DOCG_")){
+                            currentEntityStatisticsInfo = new EntityStatisticsInfo(
+                                    entityKind, EntityStatisticsInfo.kindType.RelationKind, true, entityCount);
+                        }else{
+                            currentEntityStatisticsInfo = new EntityStatisticsInfo(
+                                    entityKind, EntityStatisticsInfo.kindType.RelationKind, false, entityCount);
+                        }
+                        entityStatisticsInfoList.add(currentEntityStatisticsInfo);
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeRead(queryResultDataTransformer,cypherProcedureString);
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return entityStatisticsInfoList;
     }
 
     @Override

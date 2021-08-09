@@ -385,5 +385,7 @@ public class CoreRealmTest {
         Assert.assertNotNull(statisticsInfosList);
         Assert.assertTrue(statisticsInfosList.size()>1);
 
+        statisticsInfosList = coreRealm.getRelationEntitiesStatisticsInfo();
+        Assert.assertNotNull(statisticsInfosList);
     }
 }
