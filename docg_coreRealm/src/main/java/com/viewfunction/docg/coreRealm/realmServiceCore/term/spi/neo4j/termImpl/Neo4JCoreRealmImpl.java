@@ -1047,7 +1047,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
-    public List<EntityStatisticsInfo> getConceptionEntitiesStatisticsInfo() {
+    public List<EntityStatisticsInfo> getConceptionEntitiesStatistics() {
         List<EntityStatisticsInfo> entityStatisticsInfoList = new ArrayList<>();
         String cypherProcedureString = "CALL db.labels()\n" +
             "YIELD label\n" +
@@ -1086,7 +1086,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
-    public List<EntityStatisticsInfo> getRelationEntitiesStatisticsInfo() {
+    public List<EntityStatisticsInfo> getRelationEntitiesStatistics() {
         List<EntityStatisticsInfo> entityStatisticsInfoList = new ArrayList<>();
         String cypherProcedureString = "CALL db.relationshipTypes()\n" +
                 "YIELD relationshipType\n" +

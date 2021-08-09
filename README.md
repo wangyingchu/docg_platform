@@ -477,14 +477,14 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @return ConceptionKind的实体统计信息列表
      */
-    public List<EntityStatisticsInfo> getConceptionEntitiesStatisticsInfo();
+    public List<EntityStatisticsInfo> getConceptionEntitiesStatistics();
 
     /**
      * 获取领域中所有 RelationKind 的实体统计信息
      *
      * @return RelationKind的实体统计信息列表
      */
-    public List<EntityStatisticsInfo> getRelationEntitiesStatisticsInfo();
+    public List<EntityStatisticsInfo> getRelationEntitiesStatistics();
 
 	/**
      * 获取领域中所有 ConceptionKind 的实体之间的相关关系信息

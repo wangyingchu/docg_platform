@@ -219,12 +219,12 @@ public class OrientDBCoreRealmImpl implements CoreRealm {
     }
 
     @Override
-    public List<EntityStatisticsInfo> getConceptionEntitiesStatisticsInfo() {
+    public List<EntityStatisticsInfo> getConceptionEntitiesStatistics() {
         return null;
     }
 
     @Override
-    public List<EntityStatisticsInfo> getRelationEntitiesStatisticsInfo() {
+    public List<EntityStatisticsInfo> getRelationEntitiesStatistics() {
         return null;
     }
 

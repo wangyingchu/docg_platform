@@ -382,11 +382,11 @@ public class CoreRealmTest {
         Assert.assertTrue(hasDefaultTimeFlow);
         Assert.assertTrue(hasCustomTimeFlow);
 
-        List<EntityStatisticsInfo> statisticsInfosList = coreRealm.getConceptionEntitiesStatisticsInfo();
+        List<EntityStatisticsInfo> statisticsInfosList = coreRealm.getConceptionEntitiesStatistics();
         Assert.assertNotNull(statisticsInfosList);
         Assert.assertTrue(statisticsInfosList.size()>1);
 
-        statisticsInfosList = coreRealm.getRelationEntitiesStatisticsInfo();
+        statisticsInfosList = coreRealm.getRelationEntitiesStatistics();
         Assert.assertNotNull(statisticsInfosList);
 
         List<ConceptionKindCorrelationInfo> correlationInfo = coreRealm.getConceptionKindsCorrelation();
