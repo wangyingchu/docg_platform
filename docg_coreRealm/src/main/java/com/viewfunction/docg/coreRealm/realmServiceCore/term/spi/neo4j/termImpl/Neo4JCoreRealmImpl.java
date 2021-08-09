@@ -19,6 +19,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
+import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1126,16 +1127,43 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
     @Override
     public List<ConceptionKindCorrelationInfo> getConceptionKindsCorrelation() {
+        List<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoList = new ArrayList<>();
+        String cypherProcedureString = "CALL db.schema.visualization";
 
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            DataTransformer queryResultDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
 
+                    if(result.hasNext()){
+                        Record currentRecord = result.next();
+                        List nodesList = currentRecord.get("nodes").asList();
 
-
-
-
-
-
-
-        return null;
+                        Map<String,String> conceptionKindMetaInfoMap = new HashMap<>();
+                        for(Object currentNode:nodesList){
+                            Node currentNeo4JNode = (Node)currentNode;
+                            conceptionKindMetaInfoMap.put(""+currentNeo4JNode.id(),currentNeo4JNode.get("name").asString());
+                        }
+                        List relationList =  currentRecord.get("relationships").asList();
+                        for(Object currenRelation:relationList){
+                            Relationship currentNeo4JRelation = (Relationship)currenRelation;
+                            String relationKindName = currentNeo4JRelation.type();
+                            String startConceptionKindName = conceptionKindMetaInfoMap.get(""+currentNeo4JRelation.startNodeId());
+                            String targetConceptionKindName = conceptionKindMetaInfoMap.get(""+currentNeo4JRelation.endNodeId());
+                            conceptionKindCorrelationInfoList.add(new ConceptionKindCorrelationInfo(startConceptionKindName,
+                                    targetConceptionKindName,relationKindName)
+                            );
+                        }
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeRead(queryResultDataTransformer,cypherProcedureString);
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return conceptionKindCorrelationInfoList;
     }
 
     @Override

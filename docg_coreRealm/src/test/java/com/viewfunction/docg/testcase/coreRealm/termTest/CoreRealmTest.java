@@ -2,6 +2,7 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionKindCorrelationInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntityStatisticsInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionKindImpl;
@@ -387,5 +388,8 @@ public class CoreRealmTest {
 
         statisticsInfosList = coreRealm.getRelationEntitiesStatisticsInfo();
         Assert.assertNotNull(statisticsInfosList);
+
+        List<ConceptionKindCorrelationInfo> correlationInfo = coreRealm.getConceptionKindsCorrelation();
+        Assert.assertNotNull(correlationInfo);
     }
 }
