@@ -5,7 +5,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationK
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.PathTravelable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.structure.Path;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesPath;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
@@ -19,8 +19,8 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
 
     Logger logger = LoggerFactory.getLogger(Neo4JPathTravelable.class);
 
-    default public List<Path> expandPath(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,
-                                         List<ConceptionKindMatchLogic> conceptionKindMatchLogics,int minJump, int maxJump){
+    default public List<ConceptionEntitiesPath> expandPath(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,
+                                                           List<ConceptionKindMatchLogic> conceptionKindMatchLogics, int minJump, int maxJump){
         /*
         Example:
         https://neo4j.com/labs/apoc/4.1/graph-querying/expand-paths/#path-expander-paths-procedure-overview
