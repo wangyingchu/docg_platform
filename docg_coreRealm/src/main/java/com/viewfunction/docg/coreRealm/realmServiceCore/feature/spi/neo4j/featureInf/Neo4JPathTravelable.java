@@ -5,7 +5,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationK
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.PathTravelable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntitiesPathTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesPath;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesPath;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 
 import org.slf4j.Logger;
@@ -18,8 +18,8 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
 
     Logger logger = LoggerFactory.getLogger(Neo4JPathTravelable.class);
 
-    default public List<ConceptionEntitiesPath> expandPath(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,
-                                                           List<ConceptionKindMatchLogic> conceptionKindMatchLogics, int minJump, int maxJump){
+    default public List<EntitiesPath> expandPath(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,
+                                                 List<ConceptionKindMatchLogic> conceptionKindMatchLogics, int minJump, int maxJump){
         /*
         Example:
         https://neo4j.com/labs/apoc/4.1/graph-querying/expand-paths/#path-expander-paths-procedure-overview
@@ -115,7 +115,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
             GetListConceptionEntitiesPathTransformer getListConceptionEntitiesPathTransformer = new GetListConceptionEntitiesPathTransformer(workingGraphOperationExecutor);
             try {
                 Object queryResponse = workingGraphOperationExecutor.executeRead(getListConceptionEntitiesPathTransformer,cypherProcedureString);
-                return queryResponse != null? (List<ConceptionEntitiesPath>)queryResponse : null;
+                return queryResponse != null? (List<EntitiesPath>)queryResponse : null;
             }finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }

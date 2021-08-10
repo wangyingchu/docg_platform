@@ -3,7 +3,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTran
 import com.google.common.collect.Lists;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesPath;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesPath;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
@@ -19,7 +19,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class GetListConceptionEntitiesPathTransformer implements DataTransformer<List<ConceptionEntitiesPath>>{
+public class GetListConceptionEntitiesPathTransformer implements DataTransformer<List<EntitiesPath>>{
 
     private GraphOperationExecutor workingGraphOperationExecutor;
 
@@ -28,8 +28,8 @@ public class GetListConceptionEntitiesPathTransformer implements DataTransformer
     }
 
     @Override
-    public List<ConceptionEntitiesPath> transformResult(Result result) {
-        List<ConceptionEntitiesPath> conceptionEntitiesPathList = new ArrayList<>();
+    public List<EntitiesPath> transformResult(Result result) {
+        List<EntitiesPath> entitiesPathList = new ArrayList<>();
         while(result.hasNext()){
             Record currentRecord = result.next();
             org.neo4j.driver.types.Path currentPath = currentRecord.get("path").asPath();
@@ -41,9 +41,9 @@ public class GetListConceptionEntitiesPathTransformer implements DataTransformer
             LinkedList<ConceptionEntity> pathConceptionEntities = new LinkedList<>();
             LinkedList<RelationEntity> pathRelationEntities = new LinkedList<>();
 
-            ConceptionEntitiesPath currentConceptionEntitiesPath = new ConceptionEntitiesPath(startEntityType,startEntityUID,
+            EntitiesPath currentEntitiesPath = new EntitiesPath(startEntityType,startEntityUID,
                     endEntityType,endEntityUID,pathJumps,pathConceptionEntities,pathRelationEntities);
-            conceptionEntitiesPathList.add(currentConceptionEntitiesPath);
+            entitiesPathList.add(currentEntitiesPath);
 
             Iterator<Node> nodeIterator = currentPath.nodes().iterator();
             while(nodeIterator.hasNext()){
@@ -72,6 +72,6 @@ public class GetListConceptionEntitiesPathTransformer implements DataTransformer
                 pathRelationEntities.add(neo4jRelationEntityImpl);
             }
         }
-        return conceptionEntitiesPathList;
+        return entitiesPathList;
     }
 }
