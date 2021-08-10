@@ -122,4 +122,19 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         }
         return null;
     }
+
+    default public void expandSubGraph(){
+        /*
+        Example:
+        https://neo4j.com/labs/apoc/4.1/graph-querying/expand-subgraph/
+        MATCH (p:Person {name: "Praveena"})
+        CALL apoc.path.subgraphAll(p, {
+            relationshipFilter: "",
+            minLevel: 0,
+            maxLevel: 5
+        })
+        YIELD nodes, relationships
+        RETURN nodes, relationships;
+         */
+    }
 }

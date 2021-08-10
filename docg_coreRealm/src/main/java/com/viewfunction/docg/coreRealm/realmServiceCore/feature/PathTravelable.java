@@ -11,4 +11,6 @@ public interface PathTravelable {
 
     public List<ConceptionEntitiesPath> expandPath(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,
                                                    List<ConceptionKindMatchLogic> conceptionKindMatchLogics, int minJump, int maxJump);
+
+    public void expandSubGraph();
 }
