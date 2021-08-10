@@ -4,11 +4,10 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.Conceptio
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationKindMatchLogic;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.PathTravelable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntitiesPathTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesPath;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
-import org.neo4j.driver.Record;
-import org.neo4j.driver.Result;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,31 +112,10 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
 
         if(this.getEntityUID() != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            GetListConceptionEntitiesPathTransformer getListConceptionEntitiesPathTransformer = new GetListConceptionEntitiesPathTransformer(workingGraphOperationExecutor);
             try {
-                DataTransformer queryResultDataTransformer = new DataTransformer() {
-                    @Override
-                    public Object transformResult(Result result) {
-                        while(result.hasNext()){
-                            Record currentRecord = result.next();
-                            //System.out.println(currentRecord.get("hops").asInt());
-                            //System.out.println(currentRecord.get("path").asPath());
-                            int currentPathHops = currentRecord.get("hops").asInt();
-                            org.neo4j.driver.types.Path currentPath = currentRecord.get("path").asPath();
-
-                            System.out.println(currentPath.start());
-                            System.out.println(currentPath.end());
-                            System.out.println(currentPath.length());
-
-                            System.out.println(currentPath.nodes());
-                            System.out.println(currentPath.relationships());
-
-
-                            System.out.println(currentRecord);
-                        }
-                        return null;
-                    }
-                };
-                workingGraphOperationExecutor.executeRead(queryResultDataTransformer,cypherProcedureString);
+                Object queryResponse = workingGraphOperationExecutor.executeRead(getListConceptionEntitiesPathTransformer,cypherProcedureString);
+                return queryResponse != null? (List<ConceptionEntitiesPath>)queryResponse : null;
             }finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }
