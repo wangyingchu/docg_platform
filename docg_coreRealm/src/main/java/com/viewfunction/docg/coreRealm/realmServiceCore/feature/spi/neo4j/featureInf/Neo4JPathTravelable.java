@@ -76,11 +76,11 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                 if(conceptionKindName != null){
                     String currentConceptionMatchLogicString = null;
                     switch(currentConceptionKindMatchLogic.getConceptionKindExistenceRule()){
-                        case EXCLUDE: currentConceptionMatchLogicString = "-"+conceptionKindName;
+                        case NOT_HAVE: currentConceptionMatchLogicString = "-"+conceptionKindName;
                             break;
                         case END_WITH: currentConceptionMatchLogicString = ">"+conceptionKindName;
                             break;
-                        case MUST_HAVE: currentConceptionMatchLogicString = "+"+conceptionKindName;
+                        case ALL_HAVE: currentConceptionMatchLogicString = "+"+conceptionKindName;
                             break;
                         case TERMINATE_AT: currentConceptionMatchLogicString = "/"+conceptionKindName;
                             break;
@@ -89,7 +89,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                         conceptionMatchLogicFullString = currentConceptionMatchLogicString;
                         isFirstMatchLogic = false;
                     }else{
-                        conceptionMatchLogicFullString = conceptionMatchLogicFullString + "|"+conceptionMatchLogicFullString;
+                        conceptionMatchLogicFullString = conceptionMatchLogicFullString + "|"+currentConceptionMatchLogicString;
                     }
                 }
             }
