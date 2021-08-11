@@ -45,6 +45,7 @@ public class GetSingleEntitiesGraphTransformer implements DataTransformer<Entiti
                     neo4jConceptionEntityImpl.setAllConceptionKindNames(allConceptionKindNames);
                     neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
                     graphConceptionEntities.add(neo4jConceptionEntityImpl);
+                    entitiesGraph.countConceptionKindsData(allConceptionKindNames.get(0));
                 }
             }
             if(relationObjectList != null){
@@ -59,6 +60,7 @@ public class GetSingleEntitiesGraphTransformer implements DataTransformer<Entiti
                             new Neo4JRelationEntityImpl(relationType,relationEntityUID,fromEntityUID,toEntityUID);
                     neo4jRelationEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
                     graphRelationEntities.add(neo4jRelationEntityImpl);
+                    entitiesGraph.countRelationKindsData(relationType);
                 }
             }
             return entitiesGraph;
