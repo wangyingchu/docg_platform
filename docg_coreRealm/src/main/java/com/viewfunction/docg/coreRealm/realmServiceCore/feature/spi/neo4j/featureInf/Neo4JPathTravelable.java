@@ -5,6 +5,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationK
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.PathTravelable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntitiesPathTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesGraph;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesPath;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 
@@ -29,6 +30,50 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         RETURN path, length(path) AS hops
         ORDER BY hops;
         */
+        String relationMatchLogicFullString = generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
+        String conceptionMatchLogicFullString = generateConceptionKindMatchLogicsQuery(conceptionKindMatchLogics);
+        int minHopNumber =  minJump > 0 ? minJump:1;
+        int maxHopNumber = maxJump >= minHopNumber ? maxJump : minHopNumber;
+
+        String cypherProcedureString="MATCH (n) WHERE id(n)= "+this.getEntityUID()+"\n" +
+                "CALL apoc.path.expand(n, \""+relationMatchLogicFullString+"\", \""+conceptionMatchLogicFullString+"\", "+minHopNumber+", "+maxHopNumber+")\n" +
+                "YIELD path\n" +
+                "RETURN path, length(path) AS hops\n" +
+                "ORDER BY hops;";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        if(this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            GetListConceptionEntitiesPathTransformer getListConceptionEntitiesPathTransformer = new GetListConceptionEntitiesPathTransformer(workingGraphOperationExecutor);
+            try {
+                Object queryResponse = workingGraphOperationExecutor.executeRead(getListConceptionEntitiesPathTransformer,cypherProcedureString);
+                return queryResponse != null? (List<EntitiesPath>)queryResponse : null;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
+    }
+
+    default public EntitiesGraph expandSubGraph(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,
+                                                List<ConceptionKindMatchLogic> conceptionKindMatchLogics){
+        /*
+        Example:
+        https://neo4j.com/labs/apoc/4.1/graph-querying/expand-subgraph/
+        MATCH (p:Person {name: "Praveena"})
+        CALL apoc.path.subgraphAll(p, {
+            relationshipFilter: "",
+            minLevel: 0,
+            maxLevel: 5
+        })
+        YIELD nodes, relationships
+        RETURN nodes, relationships;
+         */
+
+        return null;
+    }
+
+    private String generateRelationKindMatchLogicsQuery(List<RelationKindMatchLogic> relationKindMatchLogics,RelationDirection defaultDirectionForNoneRelationKindMatch){
         String relationMatchLogicFullString = null;
         if(relationKindMatchLogics != null && relationKindMatchLogics.size()>0){
             boolean isFirstMatchLogic = true;
@@ -67,7 +112,10 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                 relationMatchLogicFullString = "";
             }
         }
+        return relationMatchLogicFullString;
+    }
 
+    private String generateConceptionKindMatchLogicsQuery(List<ConceptionKindMatchLogic> conceptionKindMatchLogics){
         String conceptionMatchLogicFullString = null;
         if(conceptionKindMatchLogics != null && conceptionKindMatchLogics.size()>0){
             boolean isFirstMatchLogic = true;
@@ -99,42 +147,6 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         }else{
             conceptionMatchLogicFullString = "";
         }
-
-        int minHopNumber =  minJump > 0 ? minJump:1;
-        int maxHopNumber = maxJump >= minHopNumber ? maxJump : minHopNumber;
-
-        String cypherProcedureString="MATCH (n) WHERE id(n)= "+this.getEntityUID()+"\n" +
-                "CALL apoc.path.expand(n, \""+relationMatchLogicFullString+"\", \""+conceptionMatchLogicFullString+"\", "+minHopNumber+", "+maxHopNumber+")\n" +
-                "YIELD path\n" +
-                "RETURN path, length(path) AS hops\n" +
-                "ORDER BY hops;";
-        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
-
-        if(this.getEntityUID() != null) {
-            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
-            GetListConceptionEntitiesPathTransformer getListConceptionEntitiesPathTransformer = new GetListConceptionEntitiesPathTransformer(workingGraphOperationExecutor);
-            try {
-                Object queryResponse = workingGraphOperationExecutor.executeRead(getListConceptionEntitiesPathTransformer,cypherProcedureString);
-                return queryResponse != null? (List<EntitiesPath>)queryResponse : null;
-            }finally {
-                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
-            }
-        }
-        return null;
-    }
-
-    default public void expandSubGraph(){
-        /*
-        Example:
-        https://neo4j.com/labs/apoc/4.1/graph-querying/expand-subgraph/
-        MATCH (p:Person {name: "Praveena"})
-        CALL apoc.path.subgraphAll(p, {
-            relationshipFilter: "",
-            minLevel: 0,
-            maxLevel: 5
-        })
-        YIELD nodes, relationships
-        RETURN nodes, relationships;
-         */
+        return conceptionMatchLogicFullString;
     }
 }
