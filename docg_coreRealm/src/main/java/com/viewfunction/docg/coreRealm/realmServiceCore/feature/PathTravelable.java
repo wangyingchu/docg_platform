@@ -14,5 +14,5 @@ public interface PathTravelable {
                                          List<ConceptionKindMatchLogic> conceptionKindMatchLogics, int minJump, int maxJump);
 
     public EntitiesGraph expandSubGraph(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,
-                                        List<ConceptionKindMatchLogic> conceptionKindMatchLogics);
+                                        List<ConceptionKindMatchLogic> conceptionKindMatchLogics,boolean containsSelf,int maxJump);
 }

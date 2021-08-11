@@ -19,11 +19,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-public class GetListConceptionEntitiesPathTransformer implements DataTransformer<List<EntitiesPath>>{
+public class GetListEntitiesPathTransformer implements DataTransformer<List<EntitiesPath>>{
 
     private GraphOperationExecutor workingGraphOperationExecutor;
 
-    public GetListConceptionEntitiesPathTransformer(GraphOperationExecutor workingGraphOperationExecutor){
+    public GetListEntitiesPathTransformer(GraphOperationExecutor workingGraphOperationExecutor){
         this.workingGraphOperationExecutor =  workingGraphOperationExecutor;
     }
 

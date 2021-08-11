@@ -4,7 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.Conceptio
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationKindMatchLogic;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.PathTravelable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntitiesPathTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListEntitiesPathTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesGraph;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesPath;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
@@ -35,7 +35,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         int minHopNumber =  minJump > 0 ? minJump:1;
         int maxHopNumber = maxJump >= minHopNumber ? maxJump : minHopNumber;
 
-        String cypherProcedureString="MATCH (n) WHERE id(n)= "+this.getEntityUID()+"\n" +
+        String cypherProcedureString = "MATCH (n) WHERE id(n)= "+this.getEntityUID()+"\n" +
                 "CALL apoc.path.expand(n, \""+relationMatchLogicFullString+"\", \""+conceptionMatchLogicFullString+"\", "+minHopNumber+", "+maxHopNumber+")\n" +
                 "YIELD path\n" +
                 "RETURN path, length(path) AS hops\n" +
@@ -44,9 +44,9 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
 
         if(this.getEntityUID() != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
-            GetListConceptionEntitiesPathTransformer getListConceptionEntitiesPathTransformer = new GetListConceptionEntitiesPathTransformer(workingGraphOperationExecutor);
+            GetListEntitiesPathTransformer getListEntitiesPathTransformer = new GetListEntitiesPathTransformer(workingGraphOperationExecutor);
             try {
-                Object queryResponse = workingGraphOperationExecutor.executeRead(getListConceptionEntitiesPathTransformer,cypherProcedureString);
+                Object queryResponse = workingGraphOperationExecutor.executeRead(getListEntitiesPathTransformer,cypherProcedureString);
                 return queryResponse != null? (List<EntitiesPath>)queryResponse : null;
             }finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
@@ -56,19 +56,39 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
     }
 
     default public EntitiesGraph expandSubGraph(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,
-                                                List<ConceptionKindMatchLogic> conceptionKindMatchLogics){
+                                                List<ConceptionKindMatchLogic> conceptionKindMatchLogics,boolean containsSelf,int maxJump){
         /*
         Example:
         https://neo4j.com/labs/apoc/4.1/graph-querying/expand-subgraph/
-        MATCH (p:Person {name: "Praveena"})
-        CALL apoc.path.subgraphAll(p, {
+        MATCH (n) WHERE id(n)= 2
+        CALL apoc.path.subgraphAll(n, {
             relationshipFilter: "",
+            labelFilter: ">Engineering",
             minLevel: 0,
             maxLevel: 5
         })
         YIELD nodes, relationships
         RETURN nodes, relationships;
          */
+
+        String relationMatchLogicFullString = generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
+        String conceptionMatchLogicFullString = generateConceptionKindMatchLogicsQuery(conceptionKindMatchLogics);
+        int minLevelNumber =  containsSelf ? 0:1;
+        int maxLevelNumber = maxJump >= 1 ? maxJump : -1;
+
+        String cypherProcedureString = "MATCH (n) WHERE id(n)= "+this.getEntityUID()+"\n" +
+                "CALL apoc.path.subgraphAll(n, {\n" +
+                "relationshipFilter: \""+relationMatchLogicFullString+"\",\n" +
+                "labelFilter: \""+conceptionMatchLogicFullString+"\",\n" +
+                "minLevel: "+minLevelNumber+",\n" +
+                "maxLevel: "+maxLevelNumber+"\n" +
+                "})\n" +
+                "YIELD nodes, relationships\n" +
+                "RETURN nodes, relationships;";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+
+
 
         return null;
     }
