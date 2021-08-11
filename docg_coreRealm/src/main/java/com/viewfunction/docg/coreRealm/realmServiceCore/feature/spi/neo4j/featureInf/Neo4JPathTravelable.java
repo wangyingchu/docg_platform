@@ -6,8 +6,10 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.PathTravelable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListEntitiesPathTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleEntitiesGraphTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleEntitiesSpanningTreeTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesGraph;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesPath;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesSpanningTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 
 import org.slf4j.Logger;
@@ -93,6 +95,49 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
             try {
                 Object queryResponse = workingGraphOperationExecutor.executeRead(getSingleEntitiesGraphTransformer,cypherProcedureString);
                 return queryResponse != null ? (EntitiesGraph)queryResponse : null;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
+    }
+
+    default public EntitiesSpanningTree expandSpanningTree(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,
+                                                           List<ConceptionKindMatchLogic> conceptionKindMatchLogics,int maxJump){
+        /*
+        Example:
+        https://neo4j.com/labs/apoc/4.1/graph-querying/expand-spanning-tree/
+        MATCH (n) WHERE id(n)= 2
+        CALL apoc.path.spanningTree(n, {
+            relationshipFilter: "KNOWS",
+            minLevel: 1,
+            maxLevel: 2
+        })
+        YIELD path
+        RETURN path;
+        */
+        String relationMatchLogicFullString = generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
+        String conceptionMatchLogicFullString = generateConceptionKindMatchLogicsQuery(conceptionKindMatchLogics);
+        int minLevelNumber =  0;
+        int maxLevelNumber = maxJump >= 1 ? maxJump : -1;
+
+        String cypherProcedureString = "MATCH (n) WHERE id(n)= "+this.getEntityUID()+"\n" +
+                "CALL apoc.path.spanningTree(n, {\n" +
+                "relationshipFilter: \""+relationMatchLogicFullString+"\",\n" +
+                "labelFilter: \""+conceptionMatchLogicFullString+"\",\n" +
+                "minLevel: "+minLevelNumber+",\n" +
+                "maxLevel: "+maxLevelNumber+"\n" +
+                "})\n" +
+                "YIELD path\n" +
+                "RETURN path;";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        if(this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            GetSingleEntitiesSpanningTreeTransformer getSingleEntitiesSpanningTreeTransformer = new GetSingleEntitiesSpanningTreeTransformer(this.getEntityUID(),workingGraphOperationExecutor);
+            try {
+                Object queryResponse = workingGraphOperationExecutor.executeRead(getSingleEntitiesSpanningTreeTransformer,cypherProcedureString);
+                return queryResponse != null ? (EntitiesSpanningTree)queryResponse : null;
             }finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }
