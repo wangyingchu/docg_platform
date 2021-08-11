@@ -2,6 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featu
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.ConceptionKindMatchLogic;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationKindMatchLogic;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.TravelParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.PathTravelable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListEntitiesPathTransformer;
@@ -144,6 +145,12 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         }
         return null;
     }
+
+    default public List<EntitiesPath> advancedExpandPath(TravelParameters travelParameters){return null;}
+
+    default public EntitiesGraph advancedExpandGraph(TravelParameters travelParameters){return null;}
+
+    default public EntitiesSpanningTree advancedExpandSpanningTree(TravelParameters travelParameters){return null;}
 
     private String generateRelationKindMatchLogicsQuery(List<RelationKindMatchLogic> relationKindMatchLogics,RelationDirection defaultDirectionForNoneRelationKindMatch){
         String relationMatchLogicFullString = null;

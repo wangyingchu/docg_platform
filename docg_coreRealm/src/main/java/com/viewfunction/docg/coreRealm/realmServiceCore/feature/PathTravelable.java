@@ -2,6 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.feature;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.ConceptionKindMatchLogic;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationKindMatchLogic;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.TravelParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesGraph;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesPath;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesSpanningTree;
@@ -19,4 +20,10 @@ public interface PathTravelable {
 
     public EntitiesSpanningTree expandSpanningTree(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,
                                                    List<ConceptionKindMatchLogic> conceptionKindMatchLogics, int maxJump);
+
+    public List<EntitiesPath> advancedExpandPath(TravelParameters travelParameters);
+
+    public EntitiesGraph advancedExpandGraph(TravelParameters travelParameters);
+
+    public EntitiesSpanningTree advancedExpandSpanningTree(TravelParameters travelParameters);
 }
