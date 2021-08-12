@@ -203,11 +203,11 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                 if(conceptionKindName != null){
                     String currentConceptionMatchLogicString = null;
                     switch(currentConceptionKindMatchLogic.getConceptionKindExistenceRule()){
-                        case NOT_HAVE: currentConceptionMatchLogicString = "-"+conceptionKindName;
+                        case NOT_ALLOW: currentConceptionMatchLogicString = "-"+conceptionKindName;
                             break;
                         case END_WITH: currentConceptionMatchLogicString = ">"+conceptionKindName;
                             break;
-                        case ALL_HAVE: currentConceptionMatchLogicString = "+"+conceptionKindName;
+                        case MUST_HAVE: currentConceptionMatchLogicString = "+"+conceptionKindName;
                             break;
                         case TERMINATE_AT: currentConceptionMatchLogicString = "/"+conceptionKindName;
                             break;

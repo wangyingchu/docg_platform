@@ -2,7 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 
-public class RelationKindMatchLogic {
+public class RelationKindMatchLogic implements EntityKindMatchLogic{
 
     private String relationKindName;
     private RelationDirection relationDirection;
