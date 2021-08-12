@@ -1,6 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.ConceptionKindMatchLogic;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.EntityKindMatchLogic;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationKindMatchLogic;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.TravelParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.PathTravelable;
@@ -16,6 +17,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRetrievable {
@@ -146,7 +148,157 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         return null;
     }
 
-    default public List<EntitiesPath> advancedExpandPath(TravelParameters travelParameters){return null;}
+    default public List<EntitiesPath> advancedExpandPath(TravelParameters travelParameters){
+        /*
+        Example:
+        https://neo4j.com/labs/apoc/4.1/graph-querying/expand-paths-config/
+        MATCH (n) WHERE id(n)= 2
+        CALL apoc.path.expandConfig(n, {
+           minLevel: 1,
+           maxLevel: 3,
+           relationshipFilter: "",
+           labelFilter:"",
+           sequence:"",
+           beginSequenceAtStart:true,
+           bfs:true,
+           filterStartNode:true,
+           limit:1,
+           endNodes:null,
+           terminatorNodes:null,
+           whitelistNodes:null,
+           blacklistNodes:null
+           })
+        YIELD path
+        RETURN path, length(path) AS hops
+        ORDER BY hops;
+
+
+
+
+
+        MATCH (b) WHERE id(b) in [50003,330535]
+        MATCH (n) WHERE id(n)= 457049
+
+        MATCH (whitelist)
+        WHERE id(whitelist) IN [330535]
+
+        CALL apoc.path.expandConfig(n, {
+           minLevel: 1,
+           maxLevel: 5,
+           relationshipFilter: "",
+           labelFilter:"",
+           sequence:"",
+           beginSequenceAtStart:false,
+           bfs:true,
+           filterStartNode:false,
+           limit:1,
+           endNodes:null,
+           terminatorNodes:null,
+           whitelistNodes:null,
+           blacklistNodes:null
+           })
+        YIELD path
+        RETURN path, length(path) AS hops
+        ORDER BY hops;
+
+
+
+
+
+        */
+        String cypherProcedureString = null;
+        if(travelParameters != null){
+            int minJumpNumber = travelParameters.getMinJump() >= 0 ? travelParameters.getMinJump() : 0;
+            int maxJumpNumber;
+            if(travelParameters.getMaxJump() <= -1){
+                maxJumpNumber = -1;
+            }else{
+                maxJumpNumber = travelParameters.getMaxJump() >= minJumpNumber ? travelParameters.getMaxJump() : minJumpNumber;
+            }
+            int resultNumber;
+            if(travelParameters.getResultNumber() <=-1){
+                resultNumber = -1;
+            }else{
+                resultNumber = travelParameters.getResultNumber() > 0 ? travelParameters.getResultNumber() : 1;
+            }
+
+            String usingBFS = "true";
+            TravelParameters.TraversalMethod traversalMethod = travelParameters.getTraversalMethod();
+            switch(traversalMethod){
+                case BFS: usingBFS = "true"; break;
+                case DFS: usingBFS = "false";
+            }
+
+
+
+            LinkedList<List<EntityKindMatchLogic>>  entityPathFlowMatchLogics = travelParameters.getEntityPathFlowMatchLogics();
+
+
+
+
+            cypherProcedureString = "MATCH (n) WHERE id(n)= "+this.getEntityUID()+"\n" +
+                    "CALL apoc.path.expandConfig(n, {\n" +
+                    "   minLevel: "+minJumpNumber+",\n" +
+                    "   maxLevel: "+maxJumpNumber+",\n" +
+                    "   relationshipFilter: \"\",\n" +
+                    "   labelFilter:\"\",\n" +
+                    "   sequence:\"\",\n" +
+                    "   beginSequenceAtStart: "+travelParameters.isMatchStartEntityForPathFlow()+",\n" +
+                    "   bfs: "+usingBFS+",\n" +
+                    "   filterStartNode: "+travelParameters.isMatchStartConceptionEntity()+",\n" +
+                    "   limit: "+resultNumber+",\n" +
+                    "   endNodes:null,\n" +
+                    "   terminatorNodes:null,\n" +
+                    "   whitelistNodes:null,\n" +
+                    "   blacklistNodes:null\n" +
+                    "   })\n" +
+                    "YIELD path\n" +
+                    "RETURN path, length(path) AS hops\n" +
+                    "ORDER BY hops;";
+            if(entityPathFlowMatchLogics.size()>0){
+                //use sequence, ignore labelFilter and relationshipFilter
+            }else{
+
+
+
+
+
+            }
+        }else{
+            cypherProcedureString = "MATCH (n) WHERE id(n)= "+this.getEntityUID()+"\n" +
+                    "CALL apoc.path.expandConfig(n, {\n" +
+                    "   minLevel: 0,\n" +
+                    "   maxLevel: 3,\n" +
+                    "   relationshipFilter: \"\",\n" +
+                    "   labelFilter:\"\",\n" +
+                    "   sequence:\"\",\n" +
+                    "   beginSequenceAtStart:true,\n" +
+                    "   bfs:true,\n" +
+                    "   filterStartNode:false,\n" +
+                    "   limit:-1,\n" +
+                    "   endNodes:null,\n" +
+                    "   terminatorNodes:null,\n" +
+                    "   whitelistNodes:null,\n" +
+                    "   blacklistNodes:null\n" +
+                    "   })\n" +
+                    "YIELD path\n" +
+                    "RETURN path, length(path) AS hops\n" +
+                    "ORDER BY hops;";
+        }
+
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+        if(this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            GetListEntitiesPathTransformer getListEntitiesPathTransformer = new GetListEntitiesPathTransformer(workingGraphOperationExecutor);
+            try {
+                Object queryResponse = workingGraphOperationExecutor.executeRead(getListEntitiesPathTransformer,cypherProcedureString);
+                return queryResponse != null? (List<EntitiesPath>)queryResponse : null;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
+    }
 
     default public EntitiesGraph advancedExpandGraph(TravelParameters travelParameters){return null;}
 
