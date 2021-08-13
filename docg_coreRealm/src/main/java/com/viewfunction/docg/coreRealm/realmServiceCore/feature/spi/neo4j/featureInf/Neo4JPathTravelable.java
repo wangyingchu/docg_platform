@@ -210,7 +210,11 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                 relationshipFilter = relationKindFlowMatchLogicsQuery;
             }
 
-
+            LinkedList<List<ConceptionKindMatchLogic>> conceptionKindFlowMatchLogicList = travelParameters.getConceptionKindFlowMatchLogics();
+            String conceptionKindFlowMatchLogicsQuery = generateConceptionKindFlowMatchLogicsQuery(conceptionKindFlowMatchLogicList);
+            if(conceptionKindFlowMatchLogicsQuery != null){
+                labelFilterQueryString = conceptionKindFlowMatchLogicsQuery;
+            }
 
             LinkedList<List<EntityKindMatchLogic>> entityPathFlowMatchLogics = travelParameters.getEntityPathFlowMatchLogics();
             if(entityPathFlowMatchLogics.size()>0){
@@ -399,7 +403,33 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                 String currentQueryString = generateRelationKindMatchLogicsQuery(currentMatchLogicList,null);
                 if(isFirstMatchLogic){
                     resultFullQueryString = currentQueryString;
-                    isFirstMatchLogic = false;
+                    if(!resultFullQueryString.equals("")){
+                        isFirstMatchLogic = false;
+                    }
+                }else{
+                    if(!currentQueryString.equals("")){
+                        resultFullQueryString = resultFullQueryString + ","+currentQueryString;
+                    }
+                }
+            }
+            if(!resultFullQueryString.equals("")){
+                return resultFullQueryString;
+            }
+        }
+        return null;
+    }
+
+    private String generateConceptionKindFlowMatchLogicsQuery(LinkedList<List<ConceptionKindMatchLogic>> conceptionKindFlowMatchLogicList){
+        if(conceptionKindFlowMatchLogicList != null && conceptionKindFlowMatchLogicList.size() > 0){
+            String resultFullQueryString = "";
+            boolean isFirstMatchLogic = true;
+            for(List<ConceptionKindMatchLogic> currentMatchLogicList : conceptionKindFlowMatchLogicList){
+                String currentQueryString = generateConceptionKindMatchLogicsQuery(currentMatchLogicList);
+                if(isFirstMatchLogic){
+                    resultFullQueryString = currentQueryString;
+                    if(!resultFullQueryString.equals("")){
+                        isFirstMatchLogic = false;
+                    }
                 }else{
                     if(!currentQueryString.equals("")){
                         resultFullQueryString = resultFullQueryString + ","+currentQueryString;
