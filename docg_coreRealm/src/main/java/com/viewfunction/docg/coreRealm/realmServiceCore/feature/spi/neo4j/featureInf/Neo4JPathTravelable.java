@@ -152,36 +152,8 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         /*
         Example:
         https://neo4j.com/labs/apoc/4.1/graph-querying/expand-paths-config/
-        MATCH (n) WHERE id(n)= 2
-        CALL apoc.path.expandConfig(n, {
-           minLevel: 1,
-           maxLevel: 3,
-           relationshipFilter: "",
-           labelFilter:"",
-           sequence:"",
-           beginSequenceAtStart:true,
-           bfs:true,
-           filterStartNode:true,
-           limit:1,
-           endNodes:null,
-           terminatorNodes:null,
-           whitelistNodes:null,
-           blacklistNodes:null
-           })
-        YIELD path
-        RETURN path, length(path) AS hops
-        ORDER BY hops;
-
-
-
-
-
-        MATCH (b) WHERE id(b) in [50003,330535]
         MATCH (n) WHERE id(n)= 457049
-
-        MATCH (whitelist)
-        WHERE id(whitelist) IN [330535]
-
+        MATCH (whitelist) WHERE id(whitelist) IN [330535,330535]
         CALL apoc.path.expandConfig(n, {
            minLevel: 1,
            maxLevel: 5,
@@ -194,19 +166,15 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
            limit:1,
            endNodes:null,
            terminatorNodes:null,
-           whitelistNodes:null,
+           whitelistNodes:[whitelist],
            blacklistNodes:null
            })
         YIELD path
         RETURN path, length(path) AS hops
         ORDER BY hops;
-
-
-
-
-
         */
-        String cypherProcedureString = null;
+
+        String cypherProcedureString;
         if(travelParameters != null){
             int minJumpNumber = travelParameters.getMinJump() >= 0 ? travelParameters.getMinJump() : 0;
             int maxJumpNumber;
@@ -229,7 +197,15 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                 case DFS: usingBFS = "false";
             }
 
-            LinkedList<List<EntityKindMatchLogic>>  entityPathFlowMatchLogics = travelParameters.getEntityPathFlowMatchLogics();
+            List<ConceptionKindMatchLogic> conceptionKindMatchLogicList = travelParameters.getConceptionKindMatchLogics();
+            String labelFilterQueryString = generateConceptionKindMatchLogicsQuery(conceptionKindMatchLogicList);
+
+            List<RelationKindMatchLogic> relationKindMatchLogicList = travelParameters.getRelationKindMatchLogics();
+            RelationDirection relationDirection = travelParameters.getDefaultDirectionForNoneRelationKindMatch();
+            String relationshipFilter = generateRelationKindMatchLogicsQuery(relationKindMatchLogicList,relationDirection);
+
+
+            LinkedList<List<EntityKindMatchLogic>> entityPathFlowMatchLogics = travelParameters.getEntityPathFlowMatchLogics();
             if(entityPathFlowMatchLogics.size()>0){
                 //use sequence, ignore labelFilter and relationshipFilter
             }else{
@@ -276,8 +252,8 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                     "CALL apoc.path.expandConfig(n, {\n" +
                     "   minLevel: "+minJumpNumber+",\n" +
                     "   maxLevel: "+maxJumpNumber+",\n" +
-                    "   relationshipFilter: \"\",\n" +
-                    "   labelFilter:\"\",\n" +
+                    "   relationshipFilter: \""+relationshipFilter+"\",\n" +
+                    "   labelFilter:\""+labelFilterQueryString+"\",\n" +
                     "   sequence:\"\",\n" +
                     "   beginSequenceAtStart: "+travelParameters.isMatchStartEntityForPathFlow()+",\n" +
                     "   bfs: "+usingBFS+",\n" +
