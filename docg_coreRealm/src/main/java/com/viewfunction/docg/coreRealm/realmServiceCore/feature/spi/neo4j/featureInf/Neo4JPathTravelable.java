@@ -229,14 +229,50 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                 case DFS: usingBFS = "false";
             }
 
-
-
             LinkedList<List<EntityKindMatchLogic>>  entityPathFlowMatchLogics = travelParameters.getEntityPathFlowMatchLogics();
+            if(entityPathFlowMatchLogics.size()>0){
+                //use sequence, ignore labelFilter and relationshipFilter
+            }else{
+            }
 
+            String endNodesQueryString = "";
+            String terminatorNodesQueryString = "";
+            String whitelistNodesQueryString = "";
+            String blacklistNodesQueryString = "";
 
+            String endNodesString = "null";
+            String terminatorNodesString = "null";
+            String whitelistNodesString = "null";
+            String blacklistNodesString = "null";
 
+            List<String> endNodesUIDList = travelParameters.getEndWithConceptionEntityUIDs();
+            List<String> terminatorNodesUIDList = travelParameters.getTerminateAtConceptionEntityUIDs();
+            List<String> whitelistNodesUIDList = travelParameters.getMustHaveConceptionEntityUIDs();
+            List<String> blacklistNodesUIDList = travelParameters.getNotAllowConceptionEntityUIDs();
+
+            if(endNodesUIDList != null && endNodesUIDList.size()>0){
+                endNodesQueryString = "MATCH (endlistNodes) WHERE id(endlistNodes) IN "+endNodesUIDList.toString()+"\n";
+                endNodesString = "[endlistNodes]";
+            }
+            if(terminatorNodesUIDList != null && terminatorNodesUIDList.size()>0){
+                terminatorNodesQueryString = "MATCH (terminatorlistNodes) WHERE id(terminatorlistNodes) IN "+terminatorNodesUIDList.toString()+"\n";
+                terminatorNodesString = "[terminatorlistNodes]";
+            }
+            if(whitelistNodesUIDList != null && whitelistNodesUIDList.size()>0){
+                whitelistNodesQueryString = "MATCH (whitelistNodes) WHERE id(whitelistNodes) IN "+whitelistNodesUIDList.toString()+"\n";
+                whitelistNodesString = "[whitelistNodes]";
+            }
+            if(blacklistNodesUIDList != null && blacklistNodesUIDList.size()>0){
+                blacklistNodesQueryString = "MATCH (blacklistNodes) WHERE id(blacklistNodes) IN "+blacklistNodesUIDList.toString()+"\n";
+                blacklistNodesString = "[blacklistNodes]";
+            }
+            String orderByLogicString = resultNumber > 0 ? "ORDER BY hops LIMIT "+resultNumber+";" :"ORDER BY hops;";
 
             cypherProcedureString = "MATCH (n) WHERE id(n)= "+this.getEntityUID()+"\n" +
+                    endNodesQueryString +
+                    terminatorNodesQueryString +
+                    whitelistNodesQueryString +
+                    blacklistNodesQueryString +
                     "CALL apoc.path.expandConfig(n, {\n" +
                     "   minLevel: "+minJumpNumber+",\n" +
                     "   maxLevel: "+maxJumpNumber+",\n" +
@@ -247,28 +283,19 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                     "   bfs: "+usingBFS+",\n" +
                     "   filterStartNode: "+travelParameters.isMatchStartConceptionEntity()+",\n" +
                     "   limit: "+resultNumber+",\n" +
-                    "   endNodes:null,\n" +
-                    "   terminatorNodes:null,\n" +
-                    "   whitelistNodes:null,\n" +
-                    "   blacklistNodes:null\n" +
+                    "   endNodes:"+endNodesString+",\n" +
+                    "   terminatorNodes:"+terminatorNodesString+",\n" +
+                    "   whitelistNodes:"+whitelistNodesString+",\n" +
+                    "   blacklistNodes:"+blacklistNodesString+"\n" +
                     "   })\n" +
                     "YIELD path\n" +
-                    "RETURN path, length(path) AS hops\n" +
-                    "ORDER BY hops;";
-            if(entityPathFlowMatchLogics.size()>0){
-                //use sequence, ignore labelFilter and relationshipFilter
-            }else{
-
-
-
-
-
-            }
+                    "RETURN DISTINCT path, length(path) AS hops\n" +
+                    orderByLogicString;
         }else{
             cypherProcedureString = "MATCH (n) WHERE id(n)= "+this.getEntityUID()+"\n" +
                     "CALL apoc.path.expandConfig(n, {\n" +
                     "   minLevel: 0,\n" +
-                    "   maxLevel: 3,\n" +
+                    "   maxLevel: 1,\n" +
                     "   relationshipFilter: \"\",\n" +
                     "   labelFilter:\"\",\n" +
                     "   sequence:\"\",\n" +
