@@ -204,6 +204,13 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
             RelationDirection relationDirection = travelParameters.getDefaultDirectionForNoneRelationKindMatch();
             String relationshipFilter = generateRelationKindMatchLogicsQuery(relationKindMatchLogicList,relationDirection);
 
+            LinkedList<List<RelationKindMatchLogic>> relationKindFlowMatchLogicsLink = travelParameters.getRelationKindFlowMatchLogics();
+            String relationKindFlowMatchLogicsQuery = generateRelationKindFlowMatchLogicsQuery(relationKindFlowMatchLogicsLink);
+            if(relationKindFlowMatchLogicsQuery != null){
+                relationshipFilter = relationKindFlowMatchLogicsQuery;
+            }
+
+
 
             LinkedList<List<EntityKindMatchLogic>> entityPathFlowMatchLogics = travelParameters.getEntityPathFlowMatchLogics();
             if(entityPathFlowMatchLogics.size()>0){
@@ -382,5 +389,27 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
             conceptionMatchLogicFullString = "";
         }
         return conceptionMatchLogicFullString;
+    }
+
+    private String generateRelationKindFlowMatchLogicsQuery(LinkedList<List<RelationKindMatchLogic>> relationKindFlowMatchLogicsLink){
+        if(relationKindFlowMatchLogicsLink != null && relationKindFlowMatchLogicsLink.size() > 0){
+            String resultFullQueryString = "";
+            boolean isFirstMatchLogic = true;
+            for(List<RelationKindMatchLogic> currentMatchLogicList : relationKindFlowMatchLogicsLink){
+                String currentQueryString = generateRelationKindMatchLogicsQuery(currentMatchLogicList,null);
+                if(isFirstMatchLogic){
+                    resultFullQueryString = currentQueryString;
+                    isFirstMatchLogic = false;
+                }else{
+                    if(!currentQueryString.equals("")){
+                        resultFullQueryString = resultFullQueryString + ","+currentQueryString;
+                    }
+                }
+            }
+            if(!resultFullQueryString.equals("")){
+                return resultFullQueryString;
+            }
+        }
+        return null;
     }
 }
