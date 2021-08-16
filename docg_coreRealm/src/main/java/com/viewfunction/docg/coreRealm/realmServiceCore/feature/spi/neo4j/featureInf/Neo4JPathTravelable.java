@@ -445,6 +445,9 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
     }
 
     private String generateEntityPathFlowMatchLogicsQuery(LinkedList<List<? extends EntityKindMatchLogic>> entityPathFlowMatchLogics){
+        if(entityPathFlowMatchLogics != null & entityPathFlowMatchLogics.size() < 2){
+            return null;
+        }
         if(entityPathFlowMatchLogics != null && entityPathFlowMatchLogics.size() > 0){
             String resultFullQueryString = "";
             boolean isFirstMatchLogic = true;
