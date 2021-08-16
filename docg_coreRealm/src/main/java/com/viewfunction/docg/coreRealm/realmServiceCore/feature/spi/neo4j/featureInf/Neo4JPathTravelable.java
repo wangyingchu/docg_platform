@@ -159,7 +159,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
            maxLevel: 5,
            relationshipFilter: "",
            labelFilter:"",
-           sequence:"",
+           sequence:null,
            beginSequenceAtStart:false,
            bfs:true,
            filterStartNode:false,
@@ -216,11 +216,11 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                 labelFilterQueryString = conceptionKindFlowMatchLogicsQuery;
             }
 
-            String sequenceQueryString = "";
+            String sequenceQueryString = "null";
             LinkedList<List<? extends EntityKindMatchLogic>> entityPathFlowMatchLogics = travelParameters.getEntityPathFlowMatchLogics();
             String entityPathFlowMatchLogicsQuery = generateEntityPathFlowMatchLogicsQuery(entityPathFlowMatchLogics);
             if(entityPathFlowMatchLogicsQuery != null){
-                sequenceQueryString = entityPathFlowMatchLogicsQuery;
+                sequenceQueryString =  "\"" + entityPathFlowMatchLogicsQuery + "\"";
             }
 
             String endNodesQueryString = "";
@@ -266,7 +266,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                     "   maxLevel: "+maxJumpNumber+",\n" +
                     "   relationshipFilter: \""+relationshipFilter+"\",\n" +
                     "   labelFilter:\""+labelFilterQueryString+"\",\n" +
-                    "   sequence:\""+sequenceQueryString+"\",\n" +
+                    "   sequence:"+sequenceQueryString+",\n" +
                     "   beginSequenceAtStart: "+travelParameters.isMatchStartEntityForPathFlow()+",\n" +
                     "   bfs: "+usingBFS+",\n" +
                     "   filterStartNode: "+travelParameters.isMatchStartConceptionEntity()+",\n" +
