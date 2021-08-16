@@ -216,10 +216,11 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                 labelFilterQueryString = conceptionKindFlowMatchLogicsQuery;
             }
 
-            LinkedList<List<EntityKindMatchLogic>> entityPathFlowMatchLogics = travelParameters.getEntityPathFlowMatchLogics();
-            if(entityPathFlowMatchLogics.size()>0){
-                //use sequence, ignore labelFilter and relationshipFilter
-            }else{
+            String sequenceQueryString = "";
+            LinkedList<List<? extends EntityKindMatchLogic>> entityPathFlowMatchLogics = travelParameters.getEntityPathFlowMatchLogics();
+            String entityPathFlowMatchLogicsQuery = generateEntityPathFlowMatchLogicsQuery(entityPathFlowMatchLogics);
+            if(entityPathFlowMatchLogicsQuery != null){
+                sequenceQueryString = entityPathFlowMatchLogicsQuery;
             }
 
             String endNodesQueryString = "";
@@ -265,7 +266,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                     "   maxLevel: "+maxJumpNumber+",\n" +
                     "   relationshipFilter: \""+relationshipFilter+"\",\n" +
                     "   labelFilter:\""+labelFilterQueryString+"\",\n" +
-                    "   sequence:\"\",\n" +
+                    "   sequence:\""+sequenceQueryString+"\",\n" +
                     "   beginSequenceAtStart: "+travelParameters.isMatchStartEntityForPathFlow()+",\n" +
                     "   bfs: "+usingBFS+",\n" +
                     "   filterStartNode: "+travelParameters.isMatchStartConceptionEntity()+",\n" +
@@ -433,6 +434,40 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                 }else{
                     if(!currentQueryString.equals("")){
                         resultFullQueryString = resultFullQueryString + ","+currentQueryString;
+                    }
+                }
+            }
+            if(!resultFullQueryString.equals("")){
+                return resultFullQueryString;
+            }
+        }
+        return null;
+    }
+
+    private String generateEntityPathFlowMatchLogicsQuery(LinkedList<List<? extends EntityKindMatchLogic>> entityPathFlowMatchLogics){
+        if(entityPathFlowMatchLogics != null && entityPathFlowMatchLogics.size() > 0){
+            String resultFullQueryString = "";
+            boolean isFirstMatchLogic = true;
+            for(List<? extends EntityKindMatchLogic> currentEntityKindMatchLogicsList : entityPathFlowMatchLogics){
+                if(currentEntityKindMatchLogicsList.size()>0){
+                    String currentQueryString = "";
+                    if(currentEntityKindMatchLogicsList.get(0) instanceof ConceptionKindMatchLogic){
+                        List<ConceptionKindMatchLogic> currentConceptionEntityKindMatchLogics = (List<ConceptionKindMatchLogic>)currentEntityKindMatchLogicsList;
+                        currentQueryString = generateConceptionKindMatchLogicsQuery(currentConceptionEntityKindMatchLogics);
+                    }
+                    if(currentEntityKindMatchLogicsList.get(0) instanceof RelationKindMatchLogic){
+                        List<RelationKindMatchLogic> currentRelationEntityKindMatchLogics = (List<RelationKindMatchLogic>)currentEntityKindMatchLogicsList;
+                        currentQueryString = generateRelationKindMatchLogicsQuery(currentRelationEntityKindMatchLogics,null);
+                    }
+                    if(isFirstMatchLogic){
+                        resultFullQueryString = currentQueryString;
+                        if(!resultFullQueryString.equals("")){
+                            isFirstMatchLogic = false;
+                        }
+                    }else{
+                        if(!currentQueryString.equals("")){
+                            resultFullQueryString = resultFullQueryString + ","+currentQueryString;
+                        }
                     }
                 }
             }
