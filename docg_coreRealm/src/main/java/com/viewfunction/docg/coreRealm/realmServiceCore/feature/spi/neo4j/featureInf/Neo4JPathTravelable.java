@@ -1,9 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf;
 
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.ConceptionKindMatchLogic;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.EntityKindMatchLogic;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationKindMatchLogic;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.TravelParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.PathTravelable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListEntitiesPathTransformer;
@@ -393,15 +390,19 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                 String conceptionKindName = currentConceptionKindMatchLogic.getConceptionKindName();
                 if(conceptionKindName != null){
                     String currentConceptionMatchLogicString = null;
-                    switch(currentConceptionKindMatchLogic.getConceptionKindExistenceRule()){
-                        case NOT_ALLOW: currentConceptionMatchLogicString = "-"+conceptionKindName;
-                            break;
-                        case END_WITH: currentConceptionMatchLogicString = ">"+conceptionKindName;
-                            break;
-                        case MUST_HAVE: currentConceptionMatchLogicString = "+"+conceptionKindName;
-                            break;
-                        case TERMINATE_AT: currentConceptionMatchLogicString = "/"+conceptionKindName;
-                            break;
+                    if(currentConceptionKindMatchLogic instanceof MatchAllConceptionKindLogic){
+                        currentConceptionMatchLogicString = "*";
+                    }else{
+                        switch(currentConceptionKindMatchLogic.getConceptionKindExistenceRule()){
+                            case NOT_ALLOW: currentConceptionMatchLogicString = "-"+conceptionKindName;
+                                break;
+                            case END_WITH: currentConceptionMatchLogicString = ">"+conceptionKindName;
+                                break;
+                            case MUST_HAVE: currentConceptionMatchLogicString = "+"+conceptionKindName;
+                                break;
+                            case TERMINATE_AT: currentConceptionMatchLogicString = "/"+conceptionKindName;
+                                break;
+                        }
                     }
                     if(isFirstMatchLogic){
                         conceptionMatchLogicFullString = currentConceptionMatchLogicString;
