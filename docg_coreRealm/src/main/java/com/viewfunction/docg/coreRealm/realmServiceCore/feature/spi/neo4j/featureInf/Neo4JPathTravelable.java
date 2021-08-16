@@ -291,7 +291,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                     "   relationshipFilter: \""+relationshipFilter+"\",\n" +
                     "   labelFilter:\""+labelFilterQueryString+"\",\n" +
                     "   sequence:"+sequenceQueryString+",\n" +
-                    "   beginSequenceAtStart: "+travelParameters.isMatchStartRelationEntity()+",\n" +
+                    "   beginSequenceAtStart: "+travelParameters.isMatchStartEntityForFlow()+",\n" +
                     "   bfs: "+usingBFS+",\n" +
                     "   filterStartNode: "+travelParameters.isMatchStartConceptionEntity()+",\n" +
                     "   limit: "+resultNumber+",\n" +
