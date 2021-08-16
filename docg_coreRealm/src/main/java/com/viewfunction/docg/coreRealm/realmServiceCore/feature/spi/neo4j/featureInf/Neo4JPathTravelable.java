@@ -239,20 +239,44 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
             List<String> blacklistNodesUIDList = travelParameters.getNotAllowConceptionEntityUIDs();
 
             if(endNodesUIDList != null && endNodesUIDList.size()>0){
-                endNodesQueryString = "MATCH (endlistNodes) WHERE id(endlistNodes) IN "+endNodesUIDList.toString()+"\n";
-                endNodesString = "[endlistNodes]";
+                if(endNodesUIDList.size() == 1){
+                    endNodesQueryString = "MATCH (endlistNodes) WHERE id(endlistNodes) IN "+endNodesUIDList.toString()+"\n";
+                    endNodesString = "[endlistNodes]";
+                }else{
+                    endNodesQueryString = "MATCH (endlist) WHERE id(endlist) IN "+endNodesUIDList.toString()+"\n"+
+                                        "WITH n, collect(endlist) AS endlistNodes"+"\n";
+                    endNodesString = "endlistNodes";
+                }
             }
             if(terminatorNodesUIDList != null && terminatorNodesUIDList.size()>0){
-                terminatorNodesQueryString = "MATCH (terminatorlistNodes) WHERE id(terminatorlistNodes) IN "+terminatorNodesUIDList.toString()+"\n";
-                terminatorNodesString = "[terminatorlistNodes]";
+                if(terminatorNodesUIDList.size() == 1){
+                    terminatorNodesQueryString = "MATCH (terminatorlistNodes) WHERE id(terminatorlistNodes) IN "+terminatorNodesUIDList.toString()+"\n";
+                    terminatorNodesString = "[terminatorlistNodes]";
+                }else{
+                    terminatorNodesQueryString = "MATCH (terminatorlist) WHERE id(terminatorlist) IN "+terminatorNodesUIDList.toString()+"\n"+
+                                                "WITH n, collect(terminatorlist) AS terminatorlistNodes"+"\n";
+                    terminatorNodesString = "terminatorlistNodes";
+                }
             }
             if(whitelistNodesUIDList != null && whitelistNodesUIDList.size()>0){
-                whitelistNodesQueryString = "MATCH (whitelistNodes) WHERE id(whitelistNodes) IN "+whitelistNodesUIDList.toString()+"\n";
-                whitelistNodesString = "[whitelistNodes]";
+                if(whitelistNodesUIDList.size() == 1){
+                    whitelistNodesQueryString = "MATCH (whitelistNodes) WHERE id(whitelistNodes) IN "+whitelistNodesUIDList.toString()+"\n";
+                    whitelistNodesString = "[whitelistNodes]";
+                }else{
+                    whitelistNodesQueryString = "MATCH (whitelist) WHERE id(whitelist) IN "+whitelistNodesUIDList.toString()+"\n"+
+                                                "WITH n, collect(whitelist) AS whitelistNodes"+"\n";
+                    whitelistNodesString = "whitelistNodes";
+                }
             }
             if(blacklistNodesUIDList != null && blacklistNodesUIDList.size()>0){
-                blacklistNodesQueryString = "MATCH (blacklistNodes) WHERE id(blacklistNodes) IN "+blacklistNodesUIDList.toString()+"\n";
-                blacklistNodesString = "[blacklistNodes]";
+                if(blacklistNodesUIDList.size() ==1){
+                    blacklistNodesQueryString = "MATCH (blacklistNodes) WHERE id(blacklistNodes) IN "+blacklistNodesUIDList.toString()+"\n";
+                    blacklistNodesString = "[blacklistNodes]";
+                }else{
+                    blacklistNodesQueryString = "MATCH (blacklist) WHERE id(blacklist) IN "+blacklistNodesUIDList.toString()+"\n"+
+                                                "WITH n, collect(blacklist) AS blacklistNodes"+"\n";
+                    blacklistNodesString = "blacklistNodes";
+                }
             }
             String orderByLogicString = resultNumber > 0 ? "ORDER BY hops LIMIT "+resultNumber+";" :"ORDER BY hops;";
 
