@@ -505,4 +505,160 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         }
         return null;
     }
+
+    private String getAdvancedExpandQuery(TravelParameters travelParameters){
+        String cypherProcedureString;
+        if(travelParameters != null){
+            int minJumpNumber = travelParameters.getMinJump() >= 0 ? travelParameters.getMinJump() : 0;
+            int maxJumpNumber;
+            if(travelParameters.getMaxJump() <= -1){
+                maxJumpNumber = -1;
+            }else{
+                maxJumpNumber = travelParameters.getMaxJump() >= minJumpNumber ? travelParameters.getMaxJump() : minJumpNumber;
+            }
+            int resultNumber;
+            if(travelParameters.getResultNumber() <=-1){
+                resultNumber = -1;
+            }else{
+                resultNumber = travelParameters.getResultNumber() > 0 ? travelParameters.getResultNumber() : 1;
+            }
+
+            String usingBFS = "true";
+            TravelParameters.TraversalMethod traversalMethod = travelParameters.getTraversalMethod();
+            switch(traversalMethod){
+                case BFS: usingBFS = "true"; break;
+                case DFS: usingBFS = "false";
+            }
+
+            List<ConceptionKindMatchLogic> conceptionKindMatchLogicList = travelParameters.getConceptionKindMatchLogics();
+            String labelFilterQueryString = generateConceptionKindMatchLogicsQuery(conceptionKindMatchLogicList);
+
+            List<RelationKindMatchLogic> relationKindMatchLogicList = travelParameters.getRelationKindMatchLogics();
+            RelationDirection relationDirection = travelParameters.getDefaultDirectionForNoneRelationKindMatch();
+            String relationshipFilter = generateRelationKindMatchLogicsQuery(relationKindMatchLogicList,relationDirection);
+
+            LinkedList<List<RelationKindMatchLogic>> relationKindFlowMatchLogicsLink = travelParameters.getRelationKindFlowMatchLogics();
+            String relationKindFlowMatchLogicsQuery = generateRelationKindFlowMatchLogicsQuery(relationKindFlowMatchLogicsLink);
+            if(relationKindFlowMatchLogicsQuery != null){
+                relationshipFilter = relationKindFlowMatchLogicsQuery;
+            }
+
+            LinkedList<List<ConceptionKindMatchLogic>> conceptionKindFlowMatchLogicList = travelParameters.getConceptionKindFlowMatchLogics();
+            String conceptionKindFlowMatchLogicsQuery = generateConceptionKindFlowMatchLogicsQuery(conceptionKindFlowMatchLogicList);
+            if(conceptionKindFlowMatchLogicsQuery != null){
+                labelFilterQueryString = conceptionKindFlowMatchLogicsQuery;
+            }
+
+            String sequenceQueryString = "null";
+            LinkedList<List<? extends EntityKindMatchLogic>> entityPathFlowMatchLogics = travelParameters.getEntityPathFlowMatchLogics();
+            String entityPathFlowMatchLogicsQuery = generateEntityPathFlowMatchLogicsQuery(entityPathFlowMatchLogics);
+            if(entityPathFlowMatchLogicsQuery != null){
+                sequenceQueryString =  "\"" + entityPathFlowMatchLogicsQuery + "\"";
+            }
+
+            String endNodesQueryString = "";
+            String terminatorNodesQueryString = "";
+            String whitelistNodesQueryString = "";
+            String blacklistNodesQueryString = "";
+
+            String endNodesString = "null";
+            String terminatorNodesString = "null";
+            String whitelistNodesString = "null";
+            String blacklistNodesString = "null";
+
+            List<String> endNodesUIDList = travelParameters.getEndWithConceptionEntityUIDs();
+            List<String> terminatorNodesUIDList = travelParameters.getTerminateAtConceptionEntityUIDs();
+            List<String> whitelistNodesUIDList = travelParameters.getMustHaveConceptionEntityUIDs();
+            List<String> blacklistNodesUIDList = travelParameters.getNotAllowConceptionEntityUIDs();
+
+            if(endNodesUIDList != null && endNodesUIDList.size()>0){
+                if(endNodesUIDList.size() == 1){
+                    endNodesQueryString = "MATCH (endlistNodes) WHERE id(endlistNodes) IN "+endNodesUIDList.toString()+"\n";
+                    endNodesString = "[endlistNodes]";
+                }else{
+                    endNodesQueryString = "MATCH (endlist) WHERE id(endlist) IN "+endNodesUIDList.toString()+"\n"+
+                            "WITH n, collect(endlist) AS endlistNodes"+"\n";
+                    endNodesString = "endlistNodes";
+                }
+            }
+            if(terminatorNodesUIDList != null && terminatorNodesUIDList.size()>0){
+                if(terminatorNodesUIDList.size() == 1){
+                    terminatorNodesQueryString = "MATCH (terminatorlistNodes) WHERE id(terminatorlistNodes) IN "+terminatorNodesUIDList.toString()+"\n";
+                    terminatorNodesString = "[terminatorlistNodes]";
+                }else{
+                    terminatorNodesQueryString = "MATCH (terminatorlist) WHERE id(terminatorlist) IN "+terminatorNodesUIDList.toString()+"\n"+
+                            "WITH n, collect(terminatorlist) AS terminatorlistNodes"+"\n";
+                    terminatorNodesString = "terminatorlistNodes";
+                }
+            }
+            if(whitelistNodesUIDList != null && whitelistNodesUIDList.size()>0){
+                if(whitelistNodesUIDList.size() == 1){
+                    whitelistNodesQueryString = "MATCH (whitelistNodes) WHERE id(whitelistNodes) IN "+whitelistNodesUIDList.toString()+"\n";
+                    whitelistNodesString = "[whitelistNodes]";
+                }else{
+                    whitelistNodesQueryString = "MATCH (whitelist) WHERE id(whitelist) IN "+whitelistNodesUIDList.toString()+"\n"+
+                            "WITH n, collect(whitelist) AS whitelistNodes"+"\n";
+                    whitelistNodesString = "whitelistNodes";
+                }
+            }
+            if(blacklistNodesUIDList != null && blacklistNodesUIDList.size()>0){
+                if(blacklistNodesUIDList.size() ==1){
+                    blacklistNodesQueryString = "MATCH (blacklistNodes) WHERE id(blacklistNodes) IN "+blacklistNodesUIDList.toString()+"\n";
+                    blacklistNodesString = "[blacklistNodes]";
+                }else{
+                    blacklistNodesQueryString = "MATCH (blacklist) WHERE id(blacklist) IN "+blacklistNodesUIDList.toString()+"\n"+
+                            "WITH n, collect(blacklist) AS blacklistNodes"+"\n";
+                    blacklistNodesString = "blacklistNodes";
+                }
+            }
+            String orderByLogicString = resultNumber > 0 ? "ORDER BY hops LIMIT "+resultNumber+";" :"ORDER BY hops;";
+
+            cypherProcedureString = "MATCH (n) WHERE id(n)= "+this.getEntityUID()+"\n" +
+                    endNodesQueryString +
+                    terminatorNodesQueryString +
+                    whitelistNodesQueryString +
+                    blacklistNodesQueryString +
+                    "CALL apoc.path.expandConfig(n, {\n" +
+                    "   minLevel: "+minJumpNumber+",\n" +
+                    "   maxLevel: "+maxJumpNumber+",\n" +
+                    "   relationshipFilter: \""+relationshipFilter+"\",\n" +
+                    "   labelFilter:\""+labelFilterQueryString+"\",\n" +
+                    "   sequence:"+sequenceQueryString+",\n" +
+                    "   beginSequenceAtStart: "+travelParameters.isMatchStartEntityForFlow()+",\n" +
+                    "   bfs: "+usingBFS+",\n" +
+                    "   filterStartNode: "+travelParameters.isMatchStartConceptionEntity()+",\n" +
+                    "   limit: "+resultNumber+",\n" +
+                    "   endNodes:"+endNodesString+",\n" +
+                    "   terminatorNodes:"+terminatorNodesString+",\n" +
+                    "   whitelistNodes:"+whitelistNodesString+",\n" +
+                    "   blacklistNodes:"+blacklistNodesString+"\n" +
+                    "   })\n" +
+                    "YIELD path\n" +
+                    "RETURN DISTINCT path, length(path) AS hops\n" +
+                    orderByLogicString;
+        }else{
+            cypherProcedureString = "MATCH (n) WHERE id(n)= "+this.getEntityUID()+"\n" +
+                    "CALL apoc.path.expandConfig(n, {\n" +
+                    "   minLevel: 0,\n" +
+                    "   maxLevel: 1,\n" +
+                    "   relationshipFilter: \"\",\n" +
+                    "   labelFilter:\"\",\n" +
+                    "   sequence:\"\",\n" +
+                    "   beginSequenceAtStart:true,\n" +
+                    "   bfs:true,\n" +
+                    "   filterStartNode:false,\n" +
+                    "   limit:-1,\n" +
+                    "   endNodes:null,\n" +
+                    "   terminatorNodes:null,\n" +
+                    "   whitelistNodes:null,\n" +
+                    "   blacklistNodes:null\n" +
+                    "   })\n" +
+                    "YIELD path\n" +
+                    "RETURN path, length(path) AS hops\n" +
+                    "ORDER BY hops;";
+        }
+
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+        return cypherProcedureString;
+    }
 }
