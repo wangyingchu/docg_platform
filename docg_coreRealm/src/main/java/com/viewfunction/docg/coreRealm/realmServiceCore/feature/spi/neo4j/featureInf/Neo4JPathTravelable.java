@@ -402,7 +402,14 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
 
         String cypherProcedureString = null;
         if(travelParameters != null){
-            int minJumpNumber = travelParameters.getMinJump() >= 0 ? travelParameters.getMinJump() : 0;
+            int minJumpNumber = -1;
+            switch (advancedExpandType){
+                case Path: minJumpNumber = travelParameters.getMinJump() >= 0 ? travelParameters.getMinJump() : 0;
+                    break;
+                case Graph: minJumpNumber = travelParameters.getMinJump() == 0 ? 0 : 1;
+                    break;
+                case SpanningTree: minJumpNumber = travelParameters.getMinJump() == 0 ? 0 : 1;
+            }
             int maxJumpNumber;
             if(travelParameters.getMaxJump() <= -1){
                 maxJumpNumber = -1;
