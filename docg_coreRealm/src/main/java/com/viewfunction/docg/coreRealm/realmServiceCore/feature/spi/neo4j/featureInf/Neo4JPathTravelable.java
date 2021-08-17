@@ -189,7 +189,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
     default public EntitiesGraph advancedExpandGraph(TravelParameters travelParameters){
         /*
         Example:
-        https://neo4j.com/labs/apoc/4.1/graph-querying/expand-paths-config/
+        https://neo4j.com/labs/apoc/4.1/overview/apoc.path/apoc.path.subgraphAll/
         */
         String cypherProcedureString = getAdvancedExpandQuery(AdvancedExpandType.Graph,travelParameters);
         if(this.getEntityUID() != null) {
@@ -205,7 +205,24 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
        return null;
     }
 
-    default public EntitiesSpanningTree advancedExpandSpanningTree(TravelParameters travelParameters){return null;}
+    default public EntitiesSpanningTree advancedExpandSpanningTree(TravelParameters travelParameters){
+        /*
+        Example:
+        https://neo4j.com/labs/apoc/4.1/graph-querying/expand-spanning-tree/
+        */
+        String cypherProcedureString = getAdvancedExpandQuery(AdvancedExpandType.SpanningTree,travelParameters);
+        if(this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            GetSingleEntitiesSpanningTreeTransformer getSingleEntitiesSpanningTreeTransformer = new GetSingleEntitiesSpanningTreeTransformer(this.getEntityUID(),workingGraphOperationExecutor);
+            try {
+                Object queryResponse = workingGraphOperationExecutor.executeRead(getSingleEntitiesSpanningTreeTransformer,cypherProcedureString);
+                return queryResponse != null ? (EntitiesSpanningTree)queryResponse : null;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
+    }
 
     private String generateRelationKindMatchLogicsQuery(List<RelationKindMatchLogic> relationKindMatchLogics,RelationDirection defaultDirectionForNoneRelationKindMatch){
         String relationMatchLogicFullString = null;
@@ -537,7 +554,28 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                             "YIELD nodes, relationships\n" +
                             "RETURN nodes, relationships;";
                     break;
-                case SpanningTree: cypherProcedureString = null;
+                case SpanningTree:
+                    cypherProcedureString = "MATCH (n) WHERE id(n)= "+this.getEntityUID()+"\n" +
+                            endNodesQueryString +
+                            terminatorNodesQueryString +
+                            whitelistNodesQueryString +
+                            blacklistNodesQueryString +
+                            "CALL "+apocProcedure+"(n, {\n" +
+                            "   minLevel: "+minJumpNumber+",\n" +
+                            "   maxLevel: "+maxJumpNumber+",\n" +
+                            "   relationshipFilter: \""+relationshipFilter+"\",\n" +
+                            "   labelFilter:\""+labelFilterQueryString+"\",\n" +
+                            "   beginSequenceAtStart: "+travelParameters.isMatchStartEntityForFlow()+",\n" +
+                            "   bfs: "+usingBFS+",\n" +
+                            "   filterStartNode: "+travelParameters.isMatchStartConceptionEntity()+",\n" +
+                            "   limit: "+resultNumber+",\n" +
+                            "   endNodes:"+endNodesString+",\n" +
+                            "   terminatorNodes:"+terminatorNodesString+",\n" +
+                            "   whitelistNodes:"+whitelistNodesString+",\n" +
+                            "   blacklistNodes:"+blacklistNodesString+"\n" +
+                            "   })\n" +
+                            "YIELD path\n" +
+                            "RETURN path;";
             }
         }else{
             switch (advancedExpandType){
@@ -581,7 +619,24 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                             "YIELD nodes, relationships\n" +
                             "RETURN nodes, relationships;";
                     break;
-                case SpanningTree: cypherProcedureString = null;
+                case SpanningTree:
+                    cypherProcedureString = "MATCH (n) WHERE id(n)= "+this.getEntityUID()+"\n" +
+                            "CALL "+apocProcedure+"(n, {\n" +
+                            "   minLevel: 0,\n" +
+                            "   maxLevel: 1,\n" +
+                            "   relationshipFilter: \"\",\n" +
+                            "   labelFilter:\"\",\n" +
+                            "   beginSequenceAtStart:true,\n" +
+                            "   bfs:true,\n" +
+                            "   filterStartNode:false,\n" +
+                            "   limit:-1,\n" +
+                            "   endNodes:null,\n" +
+                            "   terminatorNodes:null,\n" +
+                            "   whitelistNodes:null,\n" +
+                            "   blacklistNodes:null\n" +
+                            "   })\n" +
+                            "YIELD path\n" +
+                            "RETURN path;";
             }
         }
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
