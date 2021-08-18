@@ -412,6 +412,18 @@ public class EntityRelationableTest {
 
         resultListConceptionEntityList2 = _ConceptionEntityA.getRelatedConceptionEntities(null,"testRelationTypeType1",RelationDirection.TWO_WAY,2,relationAttributesParameters,conceptionAttributesParameters,resultEntitiesParameters);
         Assert.assertEquals(resultListConceptionEntityList2.size(),2);
+
+        List<String> attributesList2 = new ArrayList<>();
+        attributesList2.add("dataOrigin");
+        attributesList2.add("createDate");
+        ConceptionEntitiesAttributesRetrieveResult resultConceptionEntitiesAttributesRetrieveResult2 = _ConceptionEntityA.getAttributesOfRelatedConceptionEntities(null,attributesList2,"testRelationTypeType1",RelationDirection.TWO_WAY,2,relationAttributesParameters,conceptionAttributesParameters,resultEntitiesParameters);
+        List<ConceptionEntityValue> conceptionEntityValueList2 = resultConceptionEntitiesAttributesRetrieveResult2.getConceptionEntityValues();
+        for(ConceptionEntityValue currentConceptionEntityValue:conceptionEntityValueList2){
+            Assert.assertNotNull(currentConceptionEntityValue.getConceptionEntityUID());
+            Assert.assertEquals(currentConceptionEntityValue.getEntityAttributesValue().size(),2);
+        }
+        Assert.assertEquals(resultConceptionEntitiesAttributesRetrieveResult2.getConceptionEntityValues().size(),2);
+
         relationAttributesParameters.setDefaultFilteringItem(new EqualFilteringItem("dataOrigin","dataOrigin001"+"bad"));
         resultListConceptionEntityList2 = _ConceptionEntityA.getRelatedConceptionEntities(null,"testRelationTypeType1",RelationDirection.TWO_WAY,2,relationAttributesParameters,conceptionAttributesParameters,resultEntitiesParameters);
         Assert.assertEquals(resultListConceptionEntityList2.size(),0);

@@ -476,6 +476,33 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
         return null;
     }
 
+    default public ConceptionEntitiesAttributesRetrieveResult getAttributesOfRelatedConceptionEntities(String targetConceptionKind, List<String> attributeNames,
+                                                                                String relationKind,RelationDirection relationDirection, int maxJump,
+                                                                                AttributesParameters relationAttributesParameters, AttributesParameters conceptionAttributesParameters,
+                                                                                                       ResultEntitiesParameters resultEntitiesParameters) throws CoreRealmServiceEntityExploreException{
+        if(attributeNames != null && attributeNames.size()>0 && this.getEntityUID() != null){
+            CommonConceptionEntitiesAttributesRetrieveResultImpl commonConceptionEntitiesAttributesRetrieveResultImpl
+                    = new CommonConceptionEntitiesAttributesRetrieveResultImpl();
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                String queryCql = CypherBuilder.matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID, Long.parseLong(getEntityUID()),
+                        targetConceptionKind,relationKind, relationDirection,1,maxJump, relationAttributesParameters,conceptionAttributesParameters,resultEntitiesParameters,CypherBuilder.ReturnRelationableDataType.NODE);
+                GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer = new GetListConceptionEntityValueTransformer(attributeNames);
+                Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
+                if(resEntityRes != null){
+                    List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
+                    commonConceptionEntitiesAttributesRetrieveResultImpl.addConceptionEntitiesAttributes(resultEntitiesValues);
+                    commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultEntitiesValues.size());
+                }
+                commonConceptionEntitiesAttributesRetrieveResultImpl.finishEntitiesRetrieving();
+                return commonConceptionEntitiesAttributesRetrieveResultImpl;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
+    }
+
     private void checkEntityExistence(GraphOperationExecutor workingGraphOperationExecutor,String entityUID) throws CoreRealmServiceRuntimeException{
         String checkCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(entityUID), null, null);
         Object targetEntityExistenceRes = workingGraphOperationExecutor.executeRead(new CheckResultExistenceTransformer(),checkCql);
@@ -573,11 +600,4 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
         }
         return null;
     }
-
-
-
-
-
-
-
 }
