@@ -26,4 +26,6 @@ public interface PathTravelable {
     public EntitiesGraph advancedExpandGraph(TravelParameters travelParameters);
 
     public EntitiesSpanningTree advancedExpandSpanningTree(TravelParameters travelParameters);
+
+    public List<EntitiesPath> getAllPathBetweenEntity(String targetEntityUID,List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,int maxJump);
 }
