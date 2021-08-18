@@ -10,6 +10,9 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBui
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonConceptionEntitiesAttributesRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
@@ -409,6 +412,30 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
         return null;
     }
 
+    default public ConceptionEntitiesAttributesRetrieveResult getAttributesOfRelatedConceptionEntities(String targetConceptionKind, List<String> attributeNames, String relationKind, RelationDirection relationDirection, int maxJump){
+        if(attributeNames != null && attributeNames.size()>0 && this.getEntityUID() != null){
+            CommonConceptionEntitiesAttributesRetrieveResultImpl commonConceptionEntitiesAttributesRetrieveResultImpl
+                    = new CommonConceptionEntitiesAttributesRetrieveResultImpl();
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                String queryCql = CypherBuilder.matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID, Long.parseLong(getEntityUID()),
+                        targetConceptionKind,relationKind, relationDirection,1,maxJump, CypherBuilder.ReturnRelationableDataType.NODE);
+                GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer = new GetListConceptionEntityValueTransformer(attributeNames);
+                Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
+                if(resEntityRes != null){
+                    List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
+                    commonConceptionEntitiesAttributesRetrieveResultImpl.addConceptionEntitiesAttributes(resultEntitiesValues);
+                    commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultEntitiesValues.size());
+                }
+                commonConceptionEntitiesAttributesRetrieveResultImpl.finishEntitiesRetrieving();
+                return commonConceptionEntitiesAttributesRetrieveResultImpl;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
+    }
+
     default Long countRelatedConceptionEntities(String targetConceptionKind, String relationKind, RelationDirection relationDirection, int maxJump,
                                                AttributesParameters relationAttributesParameters, AttributesParameters conceptionAttributesParameters,boolean isDistinctMode) throws CoreRealmServiceEntityExploreException {
         if (this.getEntityUID() != null) {
@@ -546,4 +573,11 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
         }
         return null;
     }
+
+
+
+
+
+
+
 }

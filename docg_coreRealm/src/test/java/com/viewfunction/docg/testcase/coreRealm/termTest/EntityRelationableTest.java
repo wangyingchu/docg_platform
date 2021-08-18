@@ -10,6 +10,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filtering
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JCoreRealmImpl;
@@ -19,6 +20,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -364,6 +366,18 @@ public class EntityRelationableTest {
 
         Long countRelatedNodesNumber = _ConceptionEntityA.countRelatedConceptionEntities(null,"testRelationTypeType1",RelationDirection.TWO_WAY,2);
         Assert.assertEquals(countRelatedNodesNumber,new Long("4"));
+
+        List<String> attributesList = new ArrayList<>();
+        attributesList.add("kindName");
+        attributesList.add("dataOrigin");
+        attributesList.add("createDate");
+        ConceptionEntitiesAttributesRetrieveResult resultConceptionEntitiesAttributesRetrieveResult = _ConceptionEntityA.getAttributesOfRelatedConceptionEntities(null,attributesList,"testRelationTypeType1",RelationDirection.TWO_WAY,2);
+        List<ConceptionEntityValue> conceptionEntityValueList = resultConceptionEntitiesAttributesRetrieveResult.getConceptionEntityValues();
+        for(ConceptionEntityValue currentConceptionEntityValue:conceptionEntityValueList){
+            Assert.assertNotNull(currentConceptionEntityValue.getConceptionEntityUID());
+            Assert.assertEquals(currentConceptionEntityValue.getEntityAttributesValue().size(),3);
+        }
+        Assert.assertEquals(resultConceptionEntitiesAttributesRetrieveResult.getConceptionEntityValues().size(),4);
 
         AttributesParameters conceptionAttributesParameters =new AttributesParameters();
         conceptionAttributesParameters.setDefaultFilteringItem(new EqualFilteringItem("kindName","ConceptionKind0C"));

@@ -7,6 +7,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeKind;
 
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
+import org.neo4j.driver.types.Node;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -17,6 +18,19 @@ public class GetListConceptionEntityValueTransformer implements DataTransformer<
     private List<AttributeKind> containsAttributeKindList;
     private List<String> returnedAttributeList;
     private Map<String,AttributeDataType> attributeDataTypeMap;
+    boolean useIDMatchLogic = true;
+
+    public GetListConceptionEntityValueTransformer(List<String> returnedAttributeList){
+        this.containsAttributeKindList = new ArrayList<>();
+        this.returnedAttributeList = returnedAttributeList;
+        this.useIDMatchLogic = false;
+        this.attributeDataTypeMap = new HashMap<>();
+        for(AttributeKind currentAttributeKind:this.containsAttributeKindList){
+            String attributeName = currentAttributeKind.getAttributeKindName();
+            AttributeDataType attributeDataType = currentAttributeKind.getAttributeDataType();
+            this.attributeDataTypeMap.put(attributeName,attributeDataType);
+        }
+    }
 
     public GetListConceptionEntityValueTransformer(List<String> returnedAttributeList,List<AttributeKind> containsAttributeKindList){
         this.containsAttributeKindList = containsAttributeKindList;
@@ -35,24 +49,39 @@ public class GetListConceptionEntityValueTransformer implements DataTransformer<
         List<ConceptionEntityValue> conceptionEntityValueList = new ArrayList<>();
         while(result.hasNext()){
             Record nodeRecord = result.next();
-            Map<String,Object> valueMap = nodeRecord.asMap();
-
-            String idKey = "id("+CypherBuilder.operationResultName+")";
-            Long uidValue = (Long)valueMap.get(idKey);
-            String conceptionEntityUID = ""+uidValue.longValue();
+            String conceptionEntityUID;
+            Map<String,Object> valueMap;
+            if(this.useIDMatchLogic){
+                valueMap = nodeRecord.asMap();
+                String idKey = "id("+CypherBuilder.operationResultName+")";
+                Long uidValue = (Long)valueMap.get(idKey);
+                conceptionEntityUID = ""+uidValue.longValue();
+            }else{
+                Node resultNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
+                long nodeUID = resultNode.id();
+                conceptionEntityUID = ""+nodeUID;
+                valueMap = resultNode.asMap();
+            }
 
             Map<String,Object> entityAttributesValue = new HashMap<>();
-
             ConceptionEntityValue currentConceptionEntityValue = new ConceptionEntityValue(conceptionEntityUID,entityAttributesValue);
             conceptionEntityValueList.add(currentConceptionEntityValue);
-
-            for(String currentAttributeName:returnedAttributeList){
-                String entityAttributeName = CypherBuilder.operationResultName+"."+currentAttributeName;
-                Object objectValue = valueMap.get(entityAttributeName);
-                Object resultAttributeValue = getFormattedValue(currentAttributeName,objectValue);
-
-                if(resultAttributeValue != null){
-                    entityAttributesValue.put(currentAttributeName,resultAttributeValue);
+            if(this.useIDMatchLogic){
+                for(String currentAttributeName:returnedAttributeList){
+                    String entityAttributeName = CypherBuilder.operationResultName+"."+currentAttributeName;
+                    Object objectValue = valueMap.get(entityAttributeName);
+                    Object resultAttributeValue = getFormattedValue(currentAttributeName,objectValue);
+                    if(resultAttributeValue != null){
+                        entityAttributesValue.put(currentAttributeName,resultAttributeValue);
+                    }
+                }
+            }else{
+                for(String currentAttributeName:returnedAttributeList){
+                    Object objectValue = valueMap.get(currentAttributeName);
+                    Object resultAttributeValue = getFormattedValue(currentAttributeName,objectValue);
+                    if(resultAttributeValue != null){
+                        entityAttributesValue.put(currentAttributeName,resultAttributeValue);
+                    }
                 }
             }
         }

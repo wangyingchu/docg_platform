@@ -2076,6 +2076,20 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 符合条件的概念实体对象列表
      */
     public List<ConceptionEntity> getRelatedConceptionEntities(String targetConceptionKind, String relationKind, RelationDirection relationDirection, int maxJump);
+
+    /**
+     * 获取与当前实体关联的概念实体,并根据输入的属性类型返回相应的属性值
+     *
+     * @param targetConceptionKind String 目标概念类型名称
+     * @param attributeNames List<String> 属性类型列表
+     * @param relationKind String 目标关系类型名称
+     * @param relationDirection RelationDirection 关系关联方向
+     * @param maxJump int 关联传播的最大跳数
+     *
+     * @return 概念实体属性查询结果集
+     */
+    public ConceptionEntitiesAttributesRetrieveResult getAttributesOfRelatedConceptionEntities(String targetConceptionKind, List<String> attributeNames,String relationKind, RelationDirection relationDirection, int maxJump);
+
     
     /**
      * 计算与当前实体关联的概念实体数量
