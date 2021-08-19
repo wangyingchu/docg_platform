@@ -271,10 +271,32 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         RETURN p as path,length(p) AS hops
         */
 
-        int maxLevelNumber = maxJump >= 2 ? maxJump : 2;
+        int maxLevelNumber = maxJump >= 2 ? maxJump : -1;
+        String relationTypeFilter = "";
+        if(relationKindsOnPath == null || relationKindsOnPath.size() == 0){
+            if(maxLevelNumber == -1){
+                relationTypeFilter = "*";
+            }else{
+                relationTypeFilter = "*.."+maxLevelNumber;
+            }
+        }else{
+           String relationsFilterStr = ":";
+            for(int i=0;i<relationKindsOnPath.size();i++){
+                String currentRelationKind = relationKindsOnPath.get(i);
+                relationsFilterStr = relationsFilterStr+currentRelationKind;
+                if(i<relationKindsOnPath.size()){
+                    relationsFilterStr = relationsFilterStr+"|";
+                }
+            }
+            if(maxLevelNumber == -1){
+                relationTypeFilter = relationsFilterStr+"*";
+            }else{
+                relationTypeFilter = relationsFilterStr+"*.."+maxLevelNumber;
+            }
+        }
 
         String cypherProcedureString = "MATCH (startNode),(endNode),"+"\n" +
-                "p = shortestPath((startNode)-[*.."+maxLevelNumber+"]-(endNode))" +"\n" +
+                "p = shortestPath((startNode)-["+relationTypeFilter+"]-(endNode))" +"\n" +
                 "WHERE id(startNode) = "+this.getEntityUID()+" AND id(endNode) = "+targetEntityUID +"\n" +
                 "RETURN p as path,length(p) AS hops";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
