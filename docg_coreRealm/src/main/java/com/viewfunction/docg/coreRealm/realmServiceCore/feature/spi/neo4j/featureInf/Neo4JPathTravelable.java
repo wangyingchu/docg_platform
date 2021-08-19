@@ -254,6 +254,23 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         return null;
     }
 
+    default public EntitiesPath getShortestPathBetweenEntity(String targetEntityUID, List<String> relationKindsOnPath, int maxJump,
+                                                     AttributesParameters relationAttributesFilterParameters, AttributesParameters conceptionAttributesFilterParameters){
+        /*
+        Example:
+        https://neo4j.com/docs/cypher-manual/current/clauses/match/
+        https://neo4j.com/blog/query-cypher-data-relationships/
+        https://graphaware.com/graphaware/2015/05/19/neo4j-cypher-variable-length-relationships-by-example.html
+        https://stackoverflow.com/questions/38454046/cypher-shortestpath-query-with-filter
+        https://stackoverflow.com/questions/47426924/neo4j-find-the-shortest-path-with-a-filter-on-every-node
+        */
+
+
+
+
+        return null;
+    }
+
     private String generateRelationKindMatchLogicsQuery(List<RelationKindMatchLogic> relationKindMatchLogics,RelationDirection defaultDirectionForNoneRelationKindMatch){
         String relationMatchLogicFullString = null;
         if(relationKindMatchLogics != null && relationKindMatchLogics.size()>0){
