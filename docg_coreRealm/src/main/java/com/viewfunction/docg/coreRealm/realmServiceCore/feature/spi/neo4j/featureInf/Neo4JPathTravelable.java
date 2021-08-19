@@ -264,8 +264,20 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         https://stackoverflow.com/questions/38454046/cypher-shortestpath-query-with-filter
         https://stackoverflow.com/questions/47426924/neo4j-find-the-shortest-path-with-a-filter-on-every-node
         */
+        /*
+        MATCH (startNode),(endNode),
+        p = shortestPath((startNode)-[*..10]-(endNode))   //OR p = shortestPath((startNode)-[*]-(endNode))  // OR p = allshortestPaths((startNode)-[:DOCG_GS_SpatialConnect1|DOCG_GS_SpatialConnect*..20]-(endNode))
+        WHERE id(startNode) = 457380 AND id(endNode) = 457171
+        RETURN p as path,length(p) AS hops
+        */
 
+        int maxLevelNumber = maxJump >= 2 ? maxJump : 2;
 
+        String cypherProcedureString = "MATCH (startNode),(endNode),"+"\n" +
+                "p = shortestPath((startNode)-[*.."+maxLevelNumber+"]-(endNode))" +"\n" +
+                "WHERE id(startNode) = "+this.getEntityUID()+" AND id(endNode) = "+targetEntityUID +"\n" +
+                "RETURN p as path,length(p) AS hops";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
 
         return null;
