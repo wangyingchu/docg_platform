@@ -1,9 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.feature;
 
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.ConceptionKindMatchLogic;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationKindMatchLogic;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.TravelParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesGraph;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesPath;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesSpanningTree;
@@ -31,7 +28,7 @@ public interface PathTravelable {
     public List<EntitiesPath> getAllPathBetweenEntity(String targetEntityUID,List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,int maxJump);
 
     public EntitiesPath getShortestPathBetweenEntity(String targetEntityUID, List<String> pathAllowedRelationKinds, int maxJump,
-                                                     AttributesParameters relationAttributesFilterParameters, AttributesParameters conceptionAttributesFilterParameters);
+                                                     PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters);
 
 
     /*

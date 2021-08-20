@@ -256,7 +256,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
     }
 
     default public EntitiesPath getShortestPathBetweenEntity(String targetEntityUID, List<String> pathAllowedRelationKinds, int maxJump,
-                                                     AttributesParameters relationAttributesFilterParameters, AttributesParameters conceptionAttributesFilterParameters){
+                                                             PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters){
         /*
         Example:
         https://neo4j.com/docs/cypher-manual/current/clauses/match/
@@ -296,9 +296,15 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
             }
         }
 
+        String conceptionEntityFilterLogic = "";
+        String relationEntityFilterLogic = "";
+
+        conceptionEntityFilterLogic = "AND ANY(x in nodes(p) WHERE x.name = 'neo4j') "+"\n";
+
         String cypherProcedureString = "MATCH (startNode),(endNode),"+"\n" +
                 "p = shortestPath((startNode)-["+relationTypeFilter+"]-(endNode))" +"\n" +
                 "WHERE id(startNode) = "+this.getEntityUID()+" AND id(endNode) = "+targetEntityUID +"\n" +
+                conceptionEntityFilterLogic + relationEntityFilterLogic+
                 "RETURN p as path,length(p) AS hops";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
