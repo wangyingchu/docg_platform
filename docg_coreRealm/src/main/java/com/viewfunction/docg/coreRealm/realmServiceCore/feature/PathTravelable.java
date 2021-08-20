@@ -25,7 +25,9 @@ public interface PathTravelable {
 
     public EntitiesSpanningTree advancedExpandSpanningTree(TravelParameters travelParameters);
 
-    public List<EntitiesPath> getAllPathBetweenEntity(String targetEntityUID,List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,int maxJump);
+    public List<EntitiesPath> getAllPathBetweenEntity(String targetEntityUID,List<RelationKindMatchLogic> relationKindMatchLogics,
+                                                      RelationDirection defaultDirectionForNoneRelationKindMatch,int maxJump,
+                                                      PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters);
 
     public EntitiesPath getShortestPathBetweenEntity(String targetEntityUID, List<String> pathAllowedRelationKinds, int maxJump,
                                                      PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters);
@@ -33,10 +35,6 @@ public interface PathTravelable {
     public List<EntitiesPath> getAllShortestPathsBetweenEntity(String targetEntityUID, List<String> pathAllowedRelationKinds, int maxJump,
                                                      PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters);
     /*
-    public EntitiesPath getShortestPathBetweenEntity(String targetEntityUID, String relationKindName);
-
-    public List<EntitiesPath> getAllShortestPathBetweenEntity(String targetEntityUID,String relationKindName);
-
     public EntitiesPath getShortestPathWithWeightBetweenEntity(String targetEntityUID,List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch);
     */
 }

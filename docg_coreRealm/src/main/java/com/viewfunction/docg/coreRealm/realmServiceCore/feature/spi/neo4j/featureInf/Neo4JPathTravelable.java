@@ -233,7 +233,9 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         return null;
     }
 
-    default List<EntitiesPath> getAllPathBetweenEntity(String targetEntityUID,List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,int maxJump){
+    default List<EntitiesPath> getAllPathBetweenEntity(String targetEntityUID,List<RelationKindMatchLogic> relationKindMatchLogics,
+                                                       RelationDirection defaultDirectionForNoneRelationKindMatch,int maxJump,
+                                                       PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters){
         /*
         Example:
         https://neo4j.com/labs/apoc/4.1/overview/apoc.algo/apoc.algo.allSimplePaths/
@@ -242,10 +244,16 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         String relationMatchLogicFullString = generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
         int maxLevelNumber = maxJump >= 1 ? maxJump : 1;
 
+        String relationPathEntityFilter = generatePathEntityFilterQuery(relationPathEntityFilterParameters,"path",PathEntityType.RelationEntity,"WHERE");
+        String relationEntityFilterLogic = relationPathEntityFilter.equals("")?"":relationPathEntityFilter+"\n";
+        String conceptionPathEntityFilter = generatePathEntityFilterQuery(conceptionPathEntityFilterParameters,"path",PathEntityType.ConceptionEntity,"WHERE");
+        String conceptionEntityFilterLogic = conceptionPathEntityFilter.equals("")?"":conceptionPathEntityFilter+"\n";
+
         String cypherProcedureString = "MATCH (startNode) WHERE id(startNode)= "+this.getEntityUID()+"\n" +
                 "MATCH (endNode) WHERE id(endNode)= "+targetEntityUID+"\n" +
                 "CALL apoc.algo.allSimplePaths(startNode,endNode, \""+relationMatchLogicFullString+"\", "+maxLevelNumber+")\n" +
                 "YIELD path\n" +
+                relationEntityFilterLogic + conceptionEntityFilterLogic+
                 "RETURN path, length(path) AS hops\n" +
                 "ORDER BY hops;";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
@@ -338,10 +346,10 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
             }
         }
 
-        String relationEntityFilterLogic = generatePathEntityFilterQuery(relationPathEntityFilterParameters,"p",PathEntityType.RelationEntity).equals("")?
-                "":generatePathEntityFilterQuery(relationPathEntityFilterParameters,"p",PathEntityType.RelationEntity)+"\n";
-        String conceptionEntityFilterLogic = generatePathEntityFilterQuery(conceptionPathEntityFilterParameters,"p",PathEntityType.ConceptionEntity).equals("")?
-                "":generatePathEntityFilterQuery(conceptionPathEntityFilterParameters,"p",PathEntityType.ConceptionEntity)+"\n";
+        String relationPathEntityFilter = generatePathEntityFilterQuery(relationPathEntityFilterParameters,"p",PathEntityType.RelationEntity,"AND");
+        String relationEntityFilterLogic = relationPathEntityFilter.equals("")?"":relationPathEntityFilter+"\n";
+        String conceptionPathEntityFilter = generatePathEntityFilterQuery(conceptionPathEntityFilterParameters,"p",PathEntityType.ConceptionEntity,"AND");
+        String conceptionEntityFilterLogic = conceptionPathEntityFilter.equals("")?"":conceptionPathEntityFilter+"\n";
 
         String cypherProcedureString = "MATCH (startNode),(endNode),"+"\n" +
                 "p = "+pathFindingFunction+"((startNode)-["+relationTypeFilter+"]-(endNode))" +"\n" +
@@ -353,7 +361,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         return cypherProcedureString;
     }
 
-    private String generatePathEntityFilterQuery(PathEntityFilterParameters pathEntityFilterParameters,String pathElementName,PathEntityType pathEntityType){
+    private String generatePathEntityFilterQuery(PathEntityFilterParameters pathEntityFilterParameters,String pathElementName,PathEntityType pathEntityType,String conjunctionKey){
         if(pathEntityFilterParameters != null && pathEntityFilterParameters.getEntityAttributesFilterParameters() != null){
             String entityCollectFunction = "";
             String entityNodeName ="anyEntity";
@@ -380,7 +388,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
             AttributesParameters attributesParameters = pathEntityFilterParameters.getEntityAttributesFilterParameters();
             String wherePartQuery = generatePathEntityFilterParametersQuery(attributesParameters,pathEntityType,entityNodeName);
             if(!wherePartQuery.equals("")){
-                String filterPartQueryString = "AND "+pathEntityFilterScopeFunction+"("+entityNodeName+" in "+entityCollectFunction+" "+wherePartQuery+") ";
+                String filterPartQueryString = conjunctionKey+" "+pathEntityFilterScopeFunction+"("+entityNodeName+" in "+entityCollectFunction+" "+wherePartQuery+") ";
                 return filterPartQueryString;
             }
         }
