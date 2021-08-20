@@ -5,6 +5,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.PathTravelable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListEntitiesPathTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleEntitiesGraphTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleEntitiesPathTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleEntitiesSpanningTreeTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesGraph;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesPath;
@@ -254,7 +255,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         return null;
     }
 
-    default public EntitiesPath getShortestPathBetweenEntity(String targetEntityUID, List<String> relationKindsOnPath, int maxJump,
+    default public EntitiesPath getShortestPathBetweenEntity(String targetEntityUID, List<String> pathAllowedRelationKinds, int maxJump,
                                                      AttributesParameters relationAttributesFilterParameters, AttributesParameters conceptionAttributesFilterParameters){
         /*
         Example:
@@ -273,7 +274,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
 
         int maxLevelNumber = maxJump >= 2 ? maxJump : -1;
         String relationTypeFilter = "";
-        if(relationKindsOnPath == null || relationKindsOnPath.size() == 0){
+        if(pathAllowedRelationKinds == null || pathAllowedRelationKinds.size() == 0){
             if(maxLevelNumber == -1){
                 relationTypeFilter = "*";
             }else{
@@ -281,10 +282,10 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
             }
         }else{
            String relationsFilterStr = ":";
-            for(int i=0;i<relationKindsOnPath.size();i++){
-                String currentRelationKind = relationKindsOnPath.get(i);
+            for(int i=0;i<pathAllowedRelationKinds.size();i++){
+                String currentRelationKind = pathAllowedRelationKinds.get(i);
                 relationsFilterStr = relationsFilterStr+currentRelationKind;
-                if(i<relationKindsOnPath.size()){
+                if(i<pathAllowedRelationKinds.size()-1){
                     relationsFilterStr = relationsFilterStr+"|";
                 }
             }
@@ -301,7 +302,16 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                 "RETURN p as path,length(p) AS hops";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
-
+        if(this.getEntityUID() != null && targetEntityUID != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            GetSingleEntitiesPathTransformer getSingleEntitiesPathTransformer = new GetSingleEntitiesPathTransformer(workingGraphOperationExecutor);
+            try {
+                Object queryResponse = workingGraphOperationExecutor.executeRead(getSingleEntitiesPathTransformer,cypherProcedureString);
+                return queryResponse != null? (EntitiesPath)queryResponse : null;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
 

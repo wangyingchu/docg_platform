@@ -30,7 +30,7 @@ public interface PathTravelable {
 
     public List<EntitiesPath> getAllPathBetweenEntity(String targetEntityUID,List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,int maxJump);
 
-    public EntitiesPath getShortestPathBetweenEntity(String targetEntityUID, List<String> relationKindsOnPath, int maxJump,
+    public EntitiesPath getShortestPathBetweenEntity(String targetEntityUID, List<String> pathAllowedRelationKinds, int maxJump,
                                                      AttributesParameters relationAttributesFilterParameters, AttributesParameters conceptionAttributesFilterParameters);
 
 
