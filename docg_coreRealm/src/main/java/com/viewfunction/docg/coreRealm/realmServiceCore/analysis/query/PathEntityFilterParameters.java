@@ -2,7 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query;
 
 public class PathEntityFilterParameters {
 
-    public enum PathFilterScope {AllEntity,NoneEntity,AnyEntity}
+    public enum PathFilterScope {AllEntity,AnyEntity} //NoneEntity
 
     private AttributesParameters entityAttributesFilterParameters;
     private PathFilterScope pathFilterScope;

@@ -265,6 +265,40 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
 
     default public EntitiesPath getShortestPathBetweenEntity(String targetEntityUID, List<String> pathAllowedRelationKinds, int maxJump,
                                                              PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters){
+        String cypherProcedureString = generateShortPathsQuery("shortestPath",targetEntityUID,pathAllowedRelationKinds,maxJump,relationPathEntityFilterParameters,conceptionPathEntityFilterParameters);
+
+        if(this.getEntityUID() != null && targetEntityUID != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            GetSingleEntitiesPathTransformer getSingleEntitiesPathTransformer = new GetSingleEntitiesPathTransformer(workingGraphOperationExecutor);
+            try {
+                Object queryResponse = workingGraphOperationExecutor.executeRead(getSingleEntitiesPathTransformer,cypherProcedureString);
+                return queryResponse != null? (EntitiesPath)queryResponse : null;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
+    }
+
+    default public List<EntitiesPath> getAllShortestPathsBetweenEntity(String targetEntityUID, List<String> pathAllowedRelationKinds, int maxJump,
+                                                             PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters){
+        String cypherProcedureString = generateShortPathsQuery("allshortestPaths",targetEntityUID,pathAllowedRelationKinds,maxJump,relationPathEntityFilterParameters,conceptionPathEntityFilterParameters);
+
+        if(this.getEntityUID() != null && targetEntityUID != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            GetListEntitiesPathTransformer getListEntitiesPathTransformer = new GetListEntitiesPathTransformer(workingGraphOperationExecutor);
+            try {
+                Object queryResponse = workingGraphOperationExecutor.executeRead(getListEntitiesPathTransformer,cypherProcedureString);
+                return queryResponse != null? (List<EntitiesPath>)queryResponse : null;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
+    }
+
+    private String generateShortPathsQuery(String pathFindingFunction,String targetEntityUID, List<String> pathAllowedRelationKinds, int maxJump,
+                                           PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters){
         /*
         Example:
         https://neo4j.com/docs/cypher-manual/current/clauses/match/
@@ -289,7 +323,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                 relationTypeFilter = "*.."+maxLevelNumber;
             }
         }else{
-           String relationsFilterStr = ":";
+            String relationsFilterStr = ":";
             for(int i=0;i<pathAllowedRelationKinds.size();i++){
                 String currentRelationKind = pathAllowedRelationKinds.get(i);
                 relationsFilterStr = relationsFilterStr+currentRelationKind;
@@ -305,28 +339,18 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         }
 
         String relationEntityFilterLogic = generatePathEntityFilterQuery(relationPathEntityFilterParameters,"p",PathEntityType.RelationEntity).equals("")?
-                                            "":generatePathEntityFilterQuery(relationPathEntityFilterParameters,"p",PathEntityType.RelationEntity)+"\n";
+                "":generatePathEntityFilterQuery(relationPathEntityFilterParameters,"p",PathEntityType.RelationEntity)+"\n";
         String conceptionEntityFilterLogic = generatePathEntityFilterQuery(conceptionPathEntityFilterParameters,"p",PathEntityType.ConceptionEntity).equals("")?
                 "":generatePathEntityFilterQuery(conceptionPathEntityFilterParameters,"p",PathEntityType.ConceptionEntity)+"\n";
 
         String cypherProcedureString = "MATCH (startNode),(endNode),"+"\n" +
-                "p = shortestPath((startNode)-["+relationTypeFilter+"]-(endNode))" +"\n" +
+                "p = "+pathFindingFunction+"((startNode)-["+relationTypeFilter+"]-(endNode))" +"\n" +
                 "WHERE id(startNode) = "+this.getEntityUID()+" AND id(endNode) = "+targetEntityUID +"\n" +
                 conceptionEntityFilterLogic + relationEntityFilterLogic+
                 "RETURN p as path,length(p) AS hops";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
-        if(this.getEntityUID() != null && targetEntityUID != null) {
-            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
-            GetSingleEntitiesPathTransformer getSingleEntitiesPathTransformer = new GetSingleEntitiesPathTransformer(workingGraphOperationExecutor);
-            try {
-                Object queryResponse = workingGraphOperationExecutor.executeRead(getSingleEntitiesPathTransformer,cypherProcedureString);
-                return queryResponse != null? (EntitiesPath)queryResponse : null;
-            }finally {
-                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
-            }
-        }
-        return null;
+        return cypherProcedureString;
     }
 
     private String generatePathEntityFilterQuery(PathEntityFilterParameters pathEntityFilterParameters,String pathElementName,PathEntityType pathEntityType){
@@ -350,7 +374,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                     break;
                 case AnyEntity: pathEntityFilterScopeFunction = "ANY";
                     break;
-                case NoneEntity: pathEntityFilterScopeFunction = "NONE";
+                //case NoneEntity: pathEntityFilterScopeFunction = "NONE";
             }
 
             AttributesParameters attributesParameters = pathEntityFilterParameters.getEntityAttributesFilterParameters();
