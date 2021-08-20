@@ -1,17 +1,24 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.PathTravelable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListEntitiesPathTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleEntitiesGraphTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleEntitiesPathTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleEntitiesSpanningTreeTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesGraph;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesPath;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesSpanningTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 
+import org.neo4j.cypherdsl.core.Cypher;
+import org.neo4j.cypherdsl.core.Node;
+import org.neo4j.cypherdsl.core.StatementBuilder;
+import org.neo4j.cypherdsl.core.renderer.Renderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +30,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
     Logger logger = LoggerFactory.getLogger(Neo4JPathTravelable.class);
 
     enum AdvancedExpandType {Path , Graph , SpanningTree}
+    enum PathEntityType {ConceptionEntity , RelationEntity}
 
     default public List<EntitiesPath> expandPath(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,
                                                  List<ConceptionKindMatchLogic> conceptionKindMatchLogics, int minJump, int maxJump){
@@ -296,10 +304,10 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
             }
         }
 
-        String conceptionEntityFilterLogic = "";
-        String relationEntityFilterLogic = "";
-
-        conceptionEntityFilterLogic = "AND ANY(x in nodes(p) WHERE x.name = 'neo4j') "+"\n";
+        String relationEntityFilterLogic = generatePathEntityFilterQuery(relationPathEntityFilterParameters,"p",PathEntityType.RelationEntity).equals("")?
+                                            "":generatePathEntityFilterQuery(relationPathEntityFilterParameters,"p",PathEntityType.RelationEntity)+"\n";
+        String conceptionEntityFilterLogic = generatePathEntityFilterQuery(conceptionPathEntityFilterParameters,"p",PathEntityType.ConceptionEntity).equals("")?
+                "":generatePathEntityFilterQuery(conceptionPathEntityFilterParameters,"p",PathEntityType.ConceptionEntity)+"\n";
 
         String cypherProcedureString = "MATCH (startNode),(endNode),"+"\n" +
                 "p = shortestPath((startNode)-["+relationTypeFilter+"]-(endNode))" +"\n" +
@@ -319,6 +327,80 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
             }
         }
         return null;
+    }
+
+    private String generatePathEntityFilterQuery(PathEntityFilterParameters pathEntityFilterParameters,String pathElementName,PathEntityType pathEntityType){
+        if(pathEntityFilterParameters != null && pathEntityFilterParameters.getEntityAttributesFilterParameters() != null){
+            String entityCollectFunction = "";
+            String entityNodeName ="anyEntity";
+            switch(pathEntityType){
+                case RelationEntity:
+                    entityCollectFunction = "relationships("+pathElementName+")";
+                    entityNodeName = "relationEntity";
+                    break;
+                case ConceptionEntity:
+                    entityCollectFunction = "nodes("+pathElementName+")";
+                    entityNodeName = "conceptionEntity";
+            }
+            PathEntityFilterParameters.PathFilterScope entityPathFilterScope = pathEntityFilterParameters.getPathFilterScope() != null ?
+                    pathEntityFilterParameters.getPathFilterScope() : PathEntityFilterParameters.PathFilterScope.AnyEntity;
+            String pathEntityFilterScopeFunction = "ANY";
+            switch (entityPathFilterScope){
+                case AllEntity: pathEntityFilterScopeFunction = "ALL";
+                    break;
+                case AnyEntity: pathEntityFilterScopeFunction = "ANY";
+                    break;
+                case NoneEntity: pathEntityFilterScopeFunction = "NONE";
+            }
+
+            AttributesParameters attributesParameters = pathEntityFilterParameters.getEntityAttributesFilterParameters();
+            String wherePartQuery = generatePathEntityFilterParametersQuery(attributesParameters,pathEntityType,entityNodeName);
+            if(!wherePartQuery.equals("")){
+                String filterPartQueryString = "AND "+pathEntityFilterScopeFunction+"("+entityNodeName+" in "+entityCollectFunction+" "+wherePartQuery+") ";
+                return filterPartQueryString;
+            }
+        }
+        return "";
+    }
+
+    private String generatePathEntityFilterParametersQuery(AttributesParameters attributesParameters,PathEntityType pathEntityType,String entityNodeName){
+        String tempMatchStringForReplace = "MATCH ("+entityNodeName+") ";
+        String tempReturnStringForReplace = " RETURN TEMP_RESULT";
+        if(attributesParameters != null){
+            Node unwindRelationAlias = Cypher.anyNode().named(entityNodeName);
+            StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(unwindRelationAlias);
+            StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
+            FilteringItem defaultRelationFilteringItem = attributesParameters.getDefaultFilteringItem();
+            List<FilteringItem> andRelationFilteringItemList = attributesParameters.getAndFilteringItemsList();
+            List<FilteringItem> orRelationFilteringItemList = attributesParameters.getOrFilteringItemsList();
+            if (defaultRelationFilteringItem == null) {
+                if ((andRelationFilteringItemList != null && andRelationFilteringItemList.size() > 0) ||
+                        (orRelationFilteringItemList != null && orRelationFilteringItemList.size() > 0)) {
+                    logger.error("Default Filtering Item is required");
+                    CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+                    e.setCauseMessage("Default Filtering Item is required");
+                    //throw e; ? 需要统一考虑此类API是否要抛出异常
+                }
+            } else {
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(CommonOperationUtil.getQueryCondition(unwindRelationAlias, defaultRelationFilteringItem));
+                if (andRelationFilteringItemList != null && andRelationFilteringItemList.size() > 0) {
+                    for (FilteringItem currentFilteringItem : andRelationFilteringItemList) {
+                        ongoingReadingWithWhere = ongoingReadingWithWhere.and(CommonOperationUtil.getQueryCondition(unwindRelationAlias, currentFilteringItem));
+                    }
+                }
+                if (orRelationFilteringItemList != null && orRelationFilteringItemList.size() > 0) {
+                    for (FilteringItem currentFilteringItem : orRelationFilteringItemList) {
+                        ongoingReadingWithWhere = ongoingReadingWithWhere.or(CommonOperationUtil.getQueryCondition(unwindRelationAlias, currentFilteringItem));
+                    }
+                }
+            }
+
+            Renderer cypherRenderer = Renderer.getDefaultRenderer();
+            String fullCql = cypherRenderer.render(ongoingReadingWithWhere.returning("TEMP_RESULT").build());
+            String whereLogic = fullCql.replace(tempMatchStringForReplace,"").replace(tempReturnStringForReplace,"");
+            return whereLogic;
+        }
+        return "";
     }
 
     private String generateRelationKindMatchLogicsQuery(List<RelationKindMatchLogic> relationKindMatchLogics,RelationDirection defaultDirectionForNoneRelationKindMatch){

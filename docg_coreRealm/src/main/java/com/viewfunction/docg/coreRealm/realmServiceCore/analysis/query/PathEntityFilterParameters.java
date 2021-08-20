@@ -8,7 +8,23 @@ public class PathEntityFilterParameters {
     private PathFilterScope pathFilterScope;
 
     public PathEntityFilterParameters(PathFilterScope pathFilterScope,AttributesParameters entityAttributesFilterParameters){
-        this.pathFilterScope = pathFilterScope;
+        this.setPathFilterScope(pathFilterScope);
+        this.setEntityAttributesFilterParameters(entityAttributesFilterParameters);
+    }
+
+    public AttributesParameters getEntityAttributesFilterParameters() {
+        return entityAttributesFilterParameters;
+    }
+
+    private void setEntityAttributesFilterParameters(AttributesParameters entityAttributesFilterParameters) {
         this.entityAttributesFilterParameters = entityAttributesFilterParameters;
+    }
+
+    public PathFilterScope getPathFilterScope() {
+        return pathFilterScope;
+    }
+
+    private void setPathFilterScope(PathFilterScope pathFilterScope) {
+        this.pathFilterScope = pathFilterScope;
     }
 }
