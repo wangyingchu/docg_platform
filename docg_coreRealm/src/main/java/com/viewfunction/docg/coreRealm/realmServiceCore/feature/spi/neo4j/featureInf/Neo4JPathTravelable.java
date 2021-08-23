@@ -231,7 +231,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         return null;
     }
 
-    default public List<ConceptionEntity> getEndConceptionEntitiesOfPathPattern(TravelParameters travelParameters){
+    default public List<ConceptionEntity> getEndConceptionEntitiesByPathPattern(TravelParameters travelParameters){
         String cypherProcedureString = getAdvancedExpandQuery(AdvancedExpandType.EndConceptionEntity,travelParameters);
         if(this.getEntityUID() != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
