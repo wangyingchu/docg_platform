@@ -305,6 +305,45 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         return null;
     }
 
+    default List<EntitiesPath> getLongestPathsBetweenEntity(String targetEntityUID,List<RelationKindMatchLogic> relationKindMatchLogics,
+                                                       RelationDirection defaultDirectionForNoneRelationKindMatch,int maxJump,int maxPath,
+                                                       PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters){
+        /*
+        Example:
+        https://neo4j.com/labs/apoc/4.1/overview/apoc.algo/apoc.algo.allSimplePaths/
+        */
+
+        String relationMatchLogicFullString = generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
+        int maxLevelNumber = maxJump >= 1 ? maxJump : 1;
+        int maxPathNumber = maxPath >= 1 ? maxPath : 1;
+
+        String relationPathEntityFilter = generatePathEntityFilterQuery(relationPathEntityFilterParameters,"path",PathEntityType.RelationEntity,"WHERE");
+        String relationEntityFilterLogic = relationPathEntityFilter.equals("")?"":relationPathEntityFilter+"\n";
+        String conceptionPathEntityFilter = generatePathEntityFilterQuery(conceptionPathEntityFilterParameters,"path",PathEntityType.ConceptionEntity,"WHERE");
+        String conceptionEntityFilterLogic = conceptionPathEntityFilter.equals("")?"":conceptionPathEntityFilter+"\n";
+
+        String cypherProcedureString = "MATCH (startNode) WHERE id(startNode)= "+this.getEntityUID()+"\n" +
+                "MATCH (endNode) WHERE id(endNode)= "+targetEntityUID+"\n" +
+                "CALL apoc.algo.allSimplePaths(startNode,endNode, \""+relationMatchLogicFullString+"\", "+maxLevelNumber+")\n" +
+                "YIELD path\n" +
+                relationEntityFilterLogic + conceptionEntityFilterLogic+
+                "RETURN path, length(path) AS hops\n" +
+                "ORDER BY length(path) DESC LIMIT "+maxPathNumber;
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        if(this.getEntityUID() != null && targetEntityUID != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            GetListEntitiesPathTransformer getListEntitiesPathTransformer = new GetListEntitiesPathTransformer(workingGraphOperationExecutor);
+            try {
+                Object queryResponse = workingGraphOperationExecutor.executeRead(getListEntitiesPathTransformer,cypherProcedureString);
+                return queryResponse != null? (List<EntitiesPath>)queryResponse : null;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
+    }
+
     private String generateShortPathsQuery(String pathFindingFunction,String targetEntityUID, List<String> pathAllowedRelationKinds, int maxJump,
                                            PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters){
         /*
