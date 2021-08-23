@@ -196,6 +196,7 @@ public interface EntityRelationable {
      */
     public List<ConceptionEntity> getRelatedConceptionEntities(String targetConceptionKind, String relationKind, RelationDirection relationDirection, int maxJump,
                                                                AttributesParameters relationAttributesParameters, AttributesParameters conceptionAttributesParameters, ResultEntitiesParameters resultEntitiesParameters) throws CoreRealmServiceEntityExploreException;
+
     /**
      * 获取与当前实体关联的概念实体,并根据输入的属性类型返回相应的属性值
      *
