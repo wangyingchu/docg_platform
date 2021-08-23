@@ -26,6 +26,8 @@ public class TravelParameters {
     private boolean matchStartConceptionEntity = false;
     private LinkedList<List<? extends EntityKindMatchLogic>> entityPathFlowMatchLogics;
     private boolean matchStartEntityForFlow = true;
+    private PathEntityFilterParameters relationPathEntityFilterParameters;
+    private PathEntityFilterParameters conceptionPathEntityFilterParameters;
 
     public TravelParameters(){
         this.relationKindMatchLogics = new ArrayList<>();
@@ -165,5 +167,21 @@ public class TravelParameters {
 
     public void setMatchStartEntityForFlow(boolean matchStartEntityForFlow) {
         this.matchStartEntityForFlow = matchStartEntityForFlow;
+    }
+
+    public PathEntityFilterParameters getRelationPathEntityFilterParameters() {
+        return relationPathEntityFilterParameters;
+    }
+
+    public void setRelationPathEntityFilterParameters(PathEntityFilterParameters relationPathEntityFilterParameters) {
+        this.relationPathEntityFilterParameters = relationPathEntityFilterParameters;
+    }
+
+    public PathEntityFilterParameters getConceptionPathEntityFilterParameters() {
+        return conceptionPathEntityFilterParameters;
+    }
+
+    public void setConceptionPathEntityFilterParameters(PathEntityFilterParameters conceptionPathEntityFilterParameters) {
+        this.conceptionPathEntityFilterParameters = conceptionPathEntityFilterParameters;
     }
 }

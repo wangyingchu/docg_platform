@@ -4,6 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesGraph;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesPath;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesSpanningTree;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 
 import java.util.List;
@@ -25,6 +26,8 @@ public interface PathTravelable {
 
     public EntitiesSpanningTree advancedExpandSpanningTree(TravelParameters travelParameters);
 
+    public List<ConceptionEntity> getEndConceptionEntitiesOfPathPattern(TravelParameters travelParameters);
+
     public List<EntitiesPath> getAllPathBetweenEntity(String targetEntityUID,List<RelationKindMatchLogic> relationKindMatchLogics,
                                                       RelationDirection defaultDirectionForNoneRelationKindMatch,int maxJump,
                                                       PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters);
@@ -38,6 +41,7 @@ public interface PathTravelable {
     public List<EntitiesPath> getLongestPathsBetweenEntity(String targetEntityUID,List<RelationKindMatchLogic> relationKindMatchLogics,
                                                       RelationDirection defaultDirectionForNoneRelationKindMatch,int maxJump,int maxPathNumber,
                                                       PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters);
+
     /*
     public EntitiesPath getShortestPathWithWeightBetweenEntity(String targetEntityUID,List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch);
     */
