@@ -1,6 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.feature;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesGraph;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesPath;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesSpanningTree;
@@ -20,27 +21,31 @@ public interface PathTravelable {
     public EntitiesSpanningTree expandSpanningTree(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,
                                                    List<ConceptionKindMatchLogic> conceptionKindMatchLogics, int maxJump);
 
-    public List<EntitiesPath> advancedExpandPath(TravelParameters travelParameters);
+    public List<EntitiesPath> advancedExpandPath(TravelParameters travelParameters) throws CoreRealmServiceEntityExploreException;
 
-    public EntitiesGraph advancedExpandGraph(TravelParameters travelParameters);
+    public EntitiesGraph advancedExpandGraph(TravelParameters travelParameters) throws CoreRealmServiceEntityExploreException;
 
-    public EntitiesSpanningTree advancedExpandSpanningTree(TravelParameters travelParameters);
+    public EntitiesSpanningTree advancedExpandSpanningTree(TravelParameters travelParameters) throws CoreRealmServiceEntityExploreException;
 
-    public List<ConceptionEntity> getEndConceptionEntitiesByPathPattern(TravelParameters travelParameters);
+    public List<ConceptionEntity> getEndConceptionEntitiesByPathPattern(TravelParameters travelParameters) throws CoreRealmServiceEntityExploreException;
 
     public List<EntitiesPath> getAllPathBetweenEntity(String targetEntityUID,List<RelationKindMatchLogic> relationKindMatchLogics,
                                                       RelationDirection defaultDirectionForNoneRelationKindMatch,int maxJump,
-                                                      PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters);
+                                                      PathEntityFilterParameters relationPathEntityFilterParameters,
+                                                      PathEntityFilterParameters conceptionPathEntityFilterParameters) throws CoreRealmServiceEntityExploreException;
 
     public EntitiesPath getShortestPathBetweenEntity(String targetEntityUID, List<String> pathAllowedRelationKinds, int maxJump,
-                                                     PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters);
+                                                     PathEntityFilterParameters relationPathEntityFilterParameters,
+                                                     PathEntityFilterParameters conceptionPathEntityFilterParameters) throws CoreRealmServiceEntityExploreException;
 
     public List<EntitiesPath> getAllShortestPathsBetweenEntity(String targetEntityUID, List<String> pathAllowedRelationKinds, int maxJump,
-                                                     PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters);
+                                                     PathEntityFilterParameters relationPathEntityFilterParameters,
+                                                               PathEntityFilterParameters conceptionPathEntityFilterParameters) throws CoreRealmServiceEntityExploreException;
 
     public List<EntitiesPath> getLongestPathsBetweenEntity(String targetEntityUID,List<RelationKindMatchLogic> relationKindMatchLogics,
                                                       RelationDirection defaultDirectionForNoneRelationKindMatch,int maxJump,int maxPathNumber,
-                                                      PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters);
+                                                      PathEntityFilterParameters relationPathEntityFilterParameters,
+                                                           PathEntityFilterParameters conceptionPathEntityFilterParameters) throws CoreRealmServiceEntityExploreException;
 
     /*
     public EntitiesPath getShortestPathWithWeightBetweenEntity(String targetEntityUID,List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch);

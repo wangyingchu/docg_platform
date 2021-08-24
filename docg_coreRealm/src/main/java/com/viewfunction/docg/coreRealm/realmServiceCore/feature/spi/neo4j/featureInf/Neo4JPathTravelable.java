@@ -154,7 +154,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         return null;
     }
 
-    default public List<EntitiesPath> advancedExpandPath(TravelParameters travelParameters){
+    default public List<EntitiesPath> advancedExpandPath(TravelParameters travelParameters) throws CoreRealmServiceEntityExploreException{
         /*
         Example:
         https://neo4j.com/labs/apoc/4.1/graph-querying/expand-paths-config/
@@ -193,7 +193,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         return null;
     }
 
-    default public EntitiesGraph advancedExpandGraph(TravelParameters travelParameters){
+    default public EntitiesGraph advancedExpandGraph(TravelParameters travelParameters) throws CoreRealmServiceEntityExploreException{
         /*
         Example:
         https://neo4j.com/labs/apoc/4.1/overview/apoc.path/apoc.path.subgraphAll/
@@ -212,7 +212,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
        return null;
     }
 
-    default public EntitiesSpanningTree advancedExpandSpanningTree(TravelParameters travelParameters){
+    default public EntitiesSpanningTree advancedExpandSpanningTree(TravelParameters travelParameters) throws CoreRealmServiceEntityExploreException{
         /*
         Example:
         https://neo4j.com/labs/apoc/4.1/graph-querying/expand-spanning-tree/
@@ -231,7 +231,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         return null;
     }
 
-    default public List<ConceptionEntity> getEndConceptionEntitiesByPathPattern(TravelParameters travelParameters){
+    default public List<ConceptionEntity> getEndConceptionEntitiesByPathPattern(TravelParameters travelParameters) throws CoreRealmServiceEntityExploreException{
         String cypherProcedureString = getAdvancedExpandQuery(AdvancedExpandType.EndConceptionEntity,travelParameters);
         if(this.getEntityUID() != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
@@ -248,12 +248,11 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
 
     default List<EntitiesPath> getAllPathBetweenEntity(String targetEntityUID,List<RelationKindMatchLogic> relationKindMatchLogics,
                                                        RelationDirection defaultDirectionForNoneRelationKindMatch,int maxJump,
-                                                       PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters){
+                                                       PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters) throws CoreRealmServiceEntityExploreException{
         /*
         Example:
         https://neo4j.com/labs/apoc/4.1/overview/apoc.algo/apoc.algo.allSimplePaths/
         */
-
         String relationMatchLogicFullString = generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
         int maxLevelNumber = maxJump >= 1 ? maxJump : 1;
 
@@ -286,7 +285,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
     }
 
     default public EntitiesPath getShortestPathBetweenEntity(String targetEntityUID, List<String> pathAllowedRelationKinds, int maxJump,
-                                                             PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters){
+                                                             PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters) throws CoreRealmServiceEntityExploreException{
         String cypherProcedureString = generateShortPathsQuery("shortestPath",targetEntityUID,pathAllowedRelationKinds,maxJump,relationPathEntityFilterParameters,conceptionPathEntityFilterParameters);
 
         if(this.getEntityUID() != null && targetEntityUID != null) {
@@ -303,7 +302,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
     }
 
     default public List<EntitiesPath> getAllShortestPathsBetweenEntity(String targetEntityUID, List<String> pathAllowedRelationKinds, int maxJump,
-                                                             PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters){
+                                                             PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters) throws CoreRealmServiceEntityExploreException{
         String cypherProcedureString = generateShortPathsQuery("allshortestPaths",targetEntityUID,pathAllowedRelationKinds,maxJump,relationPathEntityFilterParameters,conceptionPathEntityFilterParameters);
 
         if(this.getEntityUID() != null && targetEntityUID != null) {
@@ -321,12 +320,11 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
 
     default List<EntitiesPath> getLongestPathsBetweenEntity(String targetEntityUID,List<RelationKindMatchLogic> relationKindMatchLogics,
                                                        RelationDirection defaultDirectionForNoneRelationKindMatch,int maxJump,int maxPath,
-                                                       PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters){
+                                                       PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters) throws CoreRealmServiceEntityExploreException{
         /*
         Example:
         https://neo4j.com/labs/apoc/4.1/overview/apoc.algo/apoc.algo.allSimplePaths/
         */
-
         String relationMatchLogicFullString = generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
         int maxLevelNumber = maxJump >= 1 ? maxJump : 1;
         int maxPathNumber = maxPath >= 1 ? maxPath : 1;
@@ -360,7 +358,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
     }
 
     private String generateShortPathsQuery(String pathFindingFunction,String targetEntityUID, List<String> pathAllowedRelationKinds, int maxJump,
-                                           PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters){
+                                           PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters) throws CoreRealmServiceEntityExploreException{
         /*
         Example:
         https://neo4j.com/docs/cypher-manual/current/clauses/match/
@@ -415,7 +413,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         return cypherProcedureString;
     }
 
-    private String generatePathEntityFilterQuery(PathEntityFilterParameters pathEntityFilterParameters,String pathElementName,PathEntityType pathEntityType,String conjunctionKey){
+    private String generatePathEntityFilterQuery(PathEntityFilterParameters pathEntityFilterParameters,String pathElementName,PathEntityType pathEntityType,String conjunctionKey) throws CoreRealmServiceEntityExploreException{
         if(pathEntityFilterParameters != null && pathEntityFilterParameters.getEntityAttributesFilterParameters() != null){
             String entityCollectFunction = "";
             String entityNodeName ="anyEntity";
@@ -440,7 +438,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
             }
 
             AttributesParameters attributesParameters = pathEntityFilterParameters.getEntityAttributesFilterParameters();
-            String wherePartQuery = generatePathEntityFilterParametersQuery(attributesParameters,pathEntityType,entityNodeName);
+            String wherePartQuery = generatePathEntityFilterParametersQuery(attributesParameters,entityNodeName);
             if(!wherePartQuery.equals("")){
                 String filterPartQueryString = conjunctionKey+" "+pathEntityFilterScopeFunction+"("+entityNodeName+" in "+entityCollectFunction+" "+wherePartQuery+") ";
                 return filterPartQueryString;
@@ -449,7 +447,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         return "";
     }
 
-    private String generatePathEntityFilterParametersQuery(AttributesParameters attributesParameters,PathEntityType pathEntityType,String entityNodeName){
+    private String generatePathEntityFilterParametersQuery(AttributesParameters attributesParameters,String entityNodeName) throws CoreRealmServiceEntityExploreException {
         String tempMatchStringForReplace = "MATCH ("+entityNodeName+") ";
         String tempReturnStringForReplace = " RETURN TEMP_RESULT";
         if(attributesParameters != null){
@@ -465,7 +463,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                     logger.error("Default Filtering Item is required");
                     CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
                     e.setCauseMessage("Default Filtering Item is required");
-                    //throw e; ? 需要统一考虑此类API是否要抛出异常
+                    throw e;
                 }
             } else {
                 ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(CommonOperationUtil.getQueryCondition(unwindRelationAlias, defaultRelationFilteringItem));
@@ -655,7 +653,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         return null;
     }
 
-    private String getAdvancedExpandQuery(AdvancedExpandType advancedExpandType,TravelParameters travelParameters){
+    private String getAdvancedExpandQuery(AdvancedExpandType advancedExpandType,TravelParameters travelParameters) throws CoreRealmServiceEntityExploreException{
         String apocProcedure = "";
         switch (advancedExpandType){
             case Path: apocProcedure = "apoc.path.expandConfig";
