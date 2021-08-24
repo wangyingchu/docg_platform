@@ -2,6 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.feature;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationKindMatchLogic;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.ResultEntitiesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
@@ -14,6 +15,10 @@ import java.util.List;
 import java.util.Map;
 
 public interface EntityRelationable {
+
+    public enum JumpStopLogic {
+        AT,TO }
+
     /**
      * 计算当前实体的所有数据关联数量
      *
@@ -213,4 +218,13 @@ public interface EntityRelationable {
      */
     public ConceptionEntitiesAttributesRetrieveResult getAttributesOfRelatedConceptionEntities(String targetConceptionKind, List<String> attributeNames,String relationKind, RelationDirection relationDirection, int maxJump,
                                                                AttributesParameters relationAttributesParameters, AttributesParameters conceptionAttributesParameters, ResultEntitiesParameters resultEntitiesParameters) throws CoreRealmServiceEntityExploreException;
+
+    public List<ConceptionEntity> getRelatedConceptionEntities(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,JumpStopLogic JumpStopLogic,int jumpNumber,
+                                                               AttributesParameters conceptionAttributesParameters, ResultEntitiesParameters resultEntitiesParameters) throws CoreRealmServiceEntityExploreException;
+
+    public Long countRelatedConceptionEntities(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,JumpStopLogic JumpStopLogic,int jumpNumber,
+                                                                     AttributesParameters conceptionAttributesParameters) throws CoreRealmServiceEntityExploreException;
+
+    public Map<Long,List<ConceptionEntity>> getRelatedConceptionEntitiesByJump(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,int jumpNumber,
+                                                               AttributesParameters conceptionAttributesParameters, ResultEntitiesParameters resultEntitiesParameters) throws CoreRealmServiceEntityExploreException;
 }

@@ -2,6 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featu
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationKindMatchLogic;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.ResultEntitiesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
@@ -500,6 +501,21 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }
         }
+        return null;
+    }
+
+    default public List<ConceptionEntity> getRelatedConceptionEntities(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch, JumpStopLogic JumpStopLogic, int jumpNumber,
+                                                               AttributesParameters conceptionAttributesParameters, ResultEntitiesParameters resultEntitiesParameters) throws CoreRealmServiceEntityExploreException{
+        return null;
+    }
+
+    default public Long countRelatedConceptionEntities(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,JumpStopLogic JumpStopLogic,int jumpNumber,
+                                               AttributesParameters conceptionAttributesParameters) throws CoreRealmServiceEntityExploreException{
+        return null;
+    }
+
+    default public Map<Long,List<ConceptionEntity>> getRelatedConceptionEntitiesByJump(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,int jumpNumber,
+                                                                               AttributesParameters conceptionAttributesParameters, ResultEntitiesParameters resultEntitiesParameters) throws CoreRealmServiceEntityExploreException{
         return null;
     }
 
