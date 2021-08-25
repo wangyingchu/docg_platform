@@ -35,7 +35,6 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
     static Logger logger = LoggerFactory.getLogger(Neo4JEntityRelationable.class);
 
     enum NeighborsSearchUsage {Count , Entity}
-    enum NeighborsReturnMethod {ByJump,SingleEntity}
 
     default public Long countAllRelations(){
         if(this.getEntityUID() != null) {
@@ -508,7 +507,7 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
 
     default public List<ConceptionEntity> getRelatedConceptionEntities(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch, JumpStopLogic jumpStopLogic, int jumpNumber,
                                                                AttributesParameters conceptionAttributesParameters, ResultEntitiesParameters resultEntitiesParameters) throws CoreRealmServiceEntityExploreException{
-        String cypherProcedureString = generateApocNeighborsQuery(NeighborsSearchUsage.Entity,NeighborsReturnMethod.SingleEntity,relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch,
+        String cypherProcedureString = generateApocNeighborsQuery(NeighborsSearchUsage.Entity,relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch,
                 jumpStopLogic,jumpNumber,conceptionAttributesParameters,resultEntitiesParameters);
         if(this.getEntityUID() != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
@@ -525,7 +524,7 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
 
     default public Long countRelatedConceptionEntities(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,JumpStopLogic jumpStopLogic,int jumpNumber,
                                                AttributesParameters conceptionAttributesParameters) throws CoreRealmServiceEntityExploreException{
-        String cypherProcedureString = generateApocNeighborsQuery(NeighborsSearchUsage.Count,NeighborsReturnMethod.SingleEntity,relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch,
+        String cypherProcedureString = generateApocNeighborsQuery(NeighborsSearchUsage.Count,relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch,
                 jumpStopLogic,jumpNumber,conceptionAttributesParameters,null);
         if(this.getEntityUID() != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
@@ -540,12 +539,7 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
         return null;
     }
 
-    default public Map<Long,List<ConceptionEntity>> getRelatedConceptionEntitiesByJump(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,int jumpNumber,
-                                                                               AttributesParameters conceptionAttributesParameters, ResultEntitiesParameters resultEntitiesParameters) throws CoreRealmServiceEntityExploreException{
-        return null;
-    }
-
-    private String generateApocNeighborsQuery(NeighborsSearchUsage neighborsSearchUsage,NeighborsReturnMethod neighborsReturnMethod,List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch, JumpStopLogic jumpStopLogic, int jumpNumber,
+    private String generateApocNeighborsQuery(NeighborsSearchUsage neighborsSearchUsage,List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch, JumpStopLogic jumpStopLogic, int jumpNumber,
                                               AttributesParameters conceptionAttributesParameters, ResultEntitiesParameters resultEntitiesParameters) throws CoreRealmServiceEntityExploreException {
         if(relationKindMatchLogics != null && relationKindMatchLogics.size() == 0){
             logger.error("At lease one RelationKind must be provided.");
@@ -578,11 +572,6 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
                 break;
             case AT:
                 apocProcedure = "apoc.neighbors.athop";
-        }
-
-        switch(neighborsReturnMethod){
-            case ByJump:
-                apocProcedure = "apoc.neighbors.byhop";
         }
 
         String wherePartQuery = CypherBuilder.generateAttributesParametersQueryLogic(conceptionAttributesParameters,"node");
