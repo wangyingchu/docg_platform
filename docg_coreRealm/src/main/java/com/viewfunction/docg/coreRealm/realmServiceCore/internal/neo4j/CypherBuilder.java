@@ -2469,13 +2469,10 @@ public class CypherBuilder {
             List<FilteringItem> andRelationFilteringItemList = attributesParameters.getAndFilteringItemsList();
             List<FilteringItem> orRelationFilteringItemList = attributesParameters.getOrFilteringItemsList();
             if (defaultRelationFilteringItem == null) {
-                if ((andRelationFilteringItemList != null && andRelationFilteringItemList.size() > 0) ||
-                        (orRelationFilteringItemList != null && orRelationFilteringItemList.size() > 0)) {
-                    logger.error("Default Filtering Item is required");
-                    CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
-                    e.setCauseMessage("Default Filtering Item is required");
-                    throw e;
-                }
+                logger.error("Default Filtering Item is required");
+                CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+                e.setCauseMessage("Default Filtering Item is required");
+                throw e;
             } else {
                 ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(CommonOperationUtil.getQueryCondition(unwindRelationAlias, defaultRelationFilteringItem));
                 if (andRelationFilteringItemList != null && andRelationFilteringItemList.size() > 0) {
@@ -2493,7 +2490,8 @@ public class CypherBuilder {
             String fullCql = cypherRenderer.render(ongoingReadingWithWhere.returning("TEMP_RESULT").build());
             String whereLogic = fullCql.replace(tempMatchStringForReplace,"").replace(tempReturnStringForReplace,"");
             return whereLogic;
+        }else{
+            return "";
         }
-        return "";
     }
 }

@@ -30,12 +30,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder.ReturnRelationableDataType.NODE;
-import static com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder.ReturnRelationableDataType.RELATION;
-
 public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyResourcesRetrievable {
 
     static Logger logger = LoggerFactory.getLogger(Neo4JEntityRelationable.class);
+
+    enum NeighborsSearchUsage {Count , Entity}
+    enum NeighborsReturnMethod {ByJump,SingleEntity}
 
     default public Long countAllRelations(){
         if(this.getEntityUID() != null) {
@@ -508,29 +508,8 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
 
     default public List<ConceptionEntity> getRelatedConceptionEntities(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch, JumpStopLogic jumpStopLogic, int jumpNumber,
                                                                AttributesParameters conceptionAttributesParameters, ResultEntitiesParameters resultEntitiesParameters) throws CoreRealmServiceEntityExploreException{
-        String relationMatchLogicFullString = CypherBuilder.generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
-        int distanceNumber = jumpNumber >=1 ? jumpNumber : 1;
-        String apocProcedure ="";
-        switch(jumpStopLogic) {
-            case TO:
-                apocProcedure = "apoc.neighbors.athop";
-                break;
-            case AT:
-                apocProcedure = "apoc.neighbors.tohop";
-        }
-
-        String wherePartQuery = CypherBuilder.generateAttributesParametersQueryLogic(conceptionAttributesParameters,"node");
-
-        String resultPartQuery = generateResultEntitiesParametersFilterLogic(resultEntitiesParameters,"node");
-
-        String wherePartQueryString = wherePartQuery.equals("") ? "":wherePartQuery +"\n";
-        String cypherProcedureString = "MATCH (n) WHERE id(n)= "+this.getEntityUID()+"\n" +
-                "CALL "+apocProcedure+"(n, \""+relationMatchLogicFullString+"\","+distanceNumber+")\n" +
-                "YIELD node\n" +
-                wherePartQueryString +
-                "RETURN node AS operationResult\n" +resultPartQuery;
-        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
-
+        String cypherProcedureString = generateApocNeighborsQuery(NeighborsSearchUsage.Entity,NeighborsReturnMethod.SingleEntity,relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch,
+                jumpStopLogic,jumpNumber,conceptionAttributesParameters,resultEntitiesParameters);
         if(this.getEntityUID() != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(null,workingGraphOperationExecutor);
@@ -544,14 +523,85 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
         return null;
     }
 
-    default public Long countRelatedConceptionEntities(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,JumpStopLogic JumpStopLogic,int jumpNumber,
+    default public Long countRelatedConceptionEntities(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,JumpStopLogic jumpStopLogic,int jumpNumber,
                                                AttributesParameters conceptionAttributesParameters) throws CoreRealmServiceEntityExploreException{
+        String cypherProcedureString = generateApocNeighborsQuery(NeighborsSearchUsage.Count,NeighborsReturnMethod.SingleEntity,relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch,
+                jumpStopLogic,jumpNumber,conceptionAttributesParameters,null);
+        if(this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer();
+            try {
+                Object queryResponse = workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer,cypherProcedureString);
+                return queryResponse != null ? (Long)queryResponse : null;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
 
     default public Map<Long,List<ConceptionEntity>> getRelatedConceptionEntitiesByJump(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,int jumpNumber,
                                                                                AttributesParameters conceptionAttributesParameters, ResultEntitiesParameters resultEntitiesParameters) throws CoreRealmServiceEntityExploreException{
         return null;
+    }
+
+    private String generateApocNeighborsQuery(NeighborsSearchUsage neighborsSearchUsage,NeighborsReturnMethod neighborsReturnMethod,List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch, JumpStopLogic jumpStopLogic, int jumpNumber,
+                                              AttributesParameters conceptionAttributesParameters, ResultEntitiesParameters resultEntitiesParameters) throws CoreRealmServiceEntityExploreException {
+        if(relationKindMatchLogics != null && relationKindMatchLogics.size() == 0){
+            logger.error("At lease one RelationKind must be provided.");
+            CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+            exception.setCauseMessage("At lease one RelationKind must be provided.");
+            throw exception;
+        }
+        if(relationKindMatchLogics == null & defaultDirectionForNoneRelationKindMatch == null){
+            logger.error("At lease one RelationKind or global relation direction must be provided.");
+            CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+            exception.setCauseMessage("At lease one RelationKind or global relation direction must be provided.");
+            throw exception;
+        }
+        if(relationKindMatchLogics == null & defaultDirectionForNoneRelationKindMatch != null){
+            switch(defaultDirectionForNoneRelationKindMatch){
+                case TWO_WAY:
+                    logger.error("Only FROM or TO direction options are allowed here.");
+                    CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+                    exception.setCauseMessage("Only FROM or TO direction options are allowed here.");
+                    throw exception;
+            }
+        }
+
+        String relationMatchLogicFullString = CypherBuilder.generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
+        int distanceNumber = jumpNumber >=1 ? jumpNumber : 1;
+        String apocProcedure ="";
+        switch(jumpStopLogic){
+            case TO:
+                apocProcedure = "apoc.neighbors.tohop";
+                break;
+            case AT:
+                apocProcedure = "apoc.neighbors.athop";
+        }
+
+        switch(neighborsReturnMethod){
+            case ByJump:
+                apocProcedure = "apoc.neighbors.byhop";
+        }
+
+        String wherePartQuery = CypherBuilder.generateAttributesParametersQueryLogic(conceptionAttributesParameters,"node");
+        String resultPartQuery = generateResultEntitiesParametersFilterLogic(resultEntitiesParameters,"node");
+        String returnPartQuery = "";
+        switch(neighborsSearchUsage){
+            case Entity: returnPartQuery = "RETURN node AS operationResult\n" +resultPartQuery;
+                break;
+            case Count: returnPartQuery = "RETURN count(node) AS operationResult";
+        }
+
+        String wherePartQueryString = wherePartQuery.equals("") ? "":wherePartQuery +"\n";
+        String cypherProcedureString = "MATCH (n) WHERE id(n)= "+this.getEntityUID()+"\n" +
+                "CALL "+apocProcedure+"(n, \""+relationMatchLogicFullString+"\","+distanceNumber+")\n" +
+                "YIELD node\n" +
+                wherePartQueryString +
+                returnPartQuery;
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+        return cypherProcedureString;
     }
 
     private void checkEntityExistence(GraphOperationExecutor workingGraphOperationExecutor,String entityUID) throws CoreRealmServiceRuntimeException{
@@ -654,25 +704,19 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
 
     private String generateResultEntitiesParametersFilterLogic(ResultEntitiesParameters resultEntitiesParameters,String filterNodeName) throws CoreRealmServiceEntityExploreException {
         if(resultEntitiesParameters != null){
-
-            //Node sourceNode = Cypher.anyNode().named(filterNodeName);
-            //Node resultNodes = targetConceptionKind != null ? Cypher.node(targetConceptionKind).named(operationResultName):Cypher.anyNode().named(operationResultName);
-
             Node resultNodes = Cypher.anyNode().named(filterNodeName);
 
             int startPage = resultEntitiesParameters.getStartPage();
             int endPage = resultEntitiesParameters.getEndPage();
             int pageSize = resultEntitiesParameters.getPageSize();
             int resultNumber = resultEntitiesParameters.getResultNumber();
-            List<SortingItem> sortingItemList = resultEntitiesParameters.getSortingItems();
-
-            CypherBuilder.ReturnRelationableDataType returnRelationableDataType = NODE;
             int defaultReturnRecordNumber = 10000;
             int skipRecordNumber = 0;
             int limitRecordNumber = 0;
+            List<SortingItem> sortingItemList = resultEntitiesParameters.getSortingItems();
             SortItem[] sortItemArray = null;
 
-            if ((sortingItemList.size() > 0 && returnRelationableDataType.equals(NODE)) || (sortingItemList.size() > 0 && returnRelationableDataType.equals(RELATION))){
+            if (sortingItemList!= null && (sortingItemList.size() > 0)){
                 sortItemArray = new SortItem[sortingItemList.size()];
                 for (int i = 0; i < sortingItemList.size(); i++) {
                     SortingItem currentSortingItem = sortingItemList.get(i);
@@ -680,24 +724,10 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
                     QueryParameters.SortingLogic sortingLogic = currentSortingItem.getSortingLogic();
                     switch (sortingLogic) {
                         case ASC:
-                            switch(returnRelationableDataType){
-                                case NODE:
-                                    sortItemArray[i] = Cypher.sort(resultNodes.property(attributeName)).ascending();
-                                    break;
-                                case RELATION:
-                                    //sortItemArray[i] = Cypher.sort(resultRelationship.property(attributeName)).ascending();
-                                    //break;
-                            }
+                            sortItemArray[i] = Cypher.sort(resultNodes.property(attributeName)).ascending();
                             break;
                         case DESC:
-                            switch(returnRelationableDataType){
-                                case NODE:
-                                    sortItemArray[i] = Cypher.sort(resultNodes.property(attributeName)).descending();
-                                    break;
-                                case RELATION:
-                                   // sortItemArray[i] = Cypher.sort(resultRelationship.property(attributeName)).descending();
-                                    //break;
-                            }
+                            sortItemArray[i] = Cypher.sort(resultNodes.property(attributeName)).descending();
                     }
                 }
             }
@@ -751,13 +781,10 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
                 limitRecordNumber = defaultReturnRecordNumber;
             }
 
-
-
-
             StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(resultNodes);
             StatementBuilder.OngoingReadingAndReturn ongoingReadingAndReturn;
             ongoingReadingAndReturn = ongoingReadingWithoutWhere.returning(resultNodes);
-            Statement statement = null;
+            Statement statement;
 
             if (skipRecordNumber != 0){
                 if(sortItemArray != null){
@@ -775,10 +802,10 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
 
             Renderer cypherRenderer = Renderer.getDefaultRenderer();
             String rel = cypherRenderer.render(statement);
-            logger.debug("Generated Cypher Statement: {}", rel);
 
+            String tempStringToReplace = "MATCH ("+filterNodeName+") RETURN "+filterNodeName+" ";
+            return rel.replace(tempStringToReplace,"");
         }
-
         return "";
     }
 }

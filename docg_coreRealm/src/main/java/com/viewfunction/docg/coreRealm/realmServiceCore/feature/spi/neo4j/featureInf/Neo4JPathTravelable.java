@@ -1,23 +1,17 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.*;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.PathTravelable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesGraph;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesPath;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesSpanningTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 
-import org.neo4j.cypherdsl.core.Cypher;
-import org.neo4j.cypherdsl.core.Node;
-import org.neo4j.cypherdsl.core.StatementBuilder;
-import org.neo4j.cypherdsl.core.renderer.Renderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

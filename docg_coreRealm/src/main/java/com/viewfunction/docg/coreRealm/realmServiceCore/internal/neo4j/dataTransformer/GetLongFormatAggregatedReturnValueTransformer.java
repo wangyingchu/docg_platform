@@ -8,6 +8,7 @@ public class GetLongFormatAggregatedReturnValueTransformer implements DataTransf
 
     private String aggregationFunctionName;
     private String prefixParam;
+    private boolean notUseAggregationFunction = false;
 
     public GetLongFormatAggregatedReturnValueTransformer(String aggregationFunctionName){
         this.aggregationFunctionName = aggregationFunctionName;
@@ -18,12 +19,21 @@ public class GetLongFormatAggregatedReturnValueTransformer implements DataTransf
         this.prefixParam = prefixParam;
     }
 
+    public GetLongFormatAggregatedReturnValueTransformer(){
+        this.notUseAggregationFunction = true;
+    }
+
     @Override
     public Long transformResult(Result result) {
         if(result.hasNext()){
             Record record = result.next();
-            String prefixParamText = this.prefixParam != null ? this.prefixParam+" ":"";
-            String resultDataProperty = aggregationFunctionName+"("+ prefixParamText + CypherBuilder.operationResultName+")";
+            String resultDataProperty = null;
+            if(this.notUseAggregationFunction){
+                resultDataProperty = CypherBuilder.operationResultName;
+            }else{
+                String prefixParamText = this.prefixParam != null ? this.prefixParam+" ":"";
+                resultDataProperty = aggregationFunctionName+"("+ prefixParamText + CypherBuilder.operationResultName+")";
+            }
             if(record.containsKey(resultDataProperty)){
                 return record.get(resultDataProperty).asLong();
             }
