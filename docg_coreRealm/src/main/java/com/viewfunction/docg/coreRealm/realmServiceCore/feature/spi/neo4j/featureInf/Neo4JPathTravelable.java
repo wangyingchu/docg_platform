@@ -439,7 +439,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
             }
 
             AttributesParameters attributesParameters = pathEntityFilterParameters.getEntityAttributesFilterParameters();
-            String wherePartQuery = generatePathEntityFilterParametersQuery(attributesParameters,entityNodeName);
+            String wherePartQuery = CypherBuilder.generateAttributesParametersQueryLogic(attributesParameters,entityNodeName);
             if(!wherePartQuery.equals("")){
                 String filterPartQueryString = conjunctionKey+" "+pathEntityFilterScopeFunction+"("+entityNodeName+" in "+entityCollectFunction+" "+wherePartQuery+") ";
                 return filterPartQueryString;
@@ -447,48 +447,6 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         }
         return "";
     }
-
-    private String generatePathEntityFilterParametersQuery(AttributesParameters attributesParameters,String entityNodeName) throws CoreRealmServiceEntityExploreException {
-        String tempMatchStringForReplace = "MATCH ("+entityNodeName+") ";
-        String tempReturnStringForReplace = " RETURN TEMP_RESULT";
-        if(attributesParameters != null){
-            Node unwindRelationAlias = Cypher.anyNode().named(entityNodeName);
-            StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(unwindRelationAlias);
-            StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
-            FilteringItem defaultRelationFilteringItem = attributesParameters.getDefaultFilteringItem();
-            List<FilteringItem> andRelationFilteringItemList = attributesParameters.getAndFilteringItemsList();
-            List<FilteringItem> orRelationFilteringItemList = attributesParameters.getOrFilteringItemsList();
-            if (defaultRelationFilteringItem == null) {
-                if ((andRelationFilteringItemList != null && andRelationFilteringItemList.size() > 0) ||
-                        (orRelationFilteringItemList != null && orRelationFilteringItemList.size() > 0)) {
-                    logger.error("Default Filtering Item is required");
-                    CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
-                    e.setCauseMessage("Default Filtering Item is required");
-                    throw e;
-                }
-            } else {
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(CommonOperationUtil.getQueryCondition(unwindRelationAlias, defaultRelationFilteringItem));
-                if (andRelationFilteringItemList != null && andRelationFilteringItemList.size() > 0) {
-                    for (FilteringItem currentFilteringItem : andRelationFilteringItemList) {
-                        ongoingReadingWithWhere = ongoingReadingWithWhere.and(CommonOperationUtil.getQueryCondition(unwindRelationAlias, currentFilteringItem));
-                    }
-                }
-                if (orRelationFilteringItemList != null && orRelationFilteringItemList.size() > 0) {
-                    for (FilteringItem currentFilteringItem : orRelationFilteringItemList) {
-                        ongoingReadingWithWhere = ongoingReadingWithWhere.or(CommonOperationUtil.getQueryCondition(unwindRelationAlias, currentFilteringItem));
-                    }
-                }
-            }
-
-            Renderer cypherRenderer = Renderer.getDefaultRenderer();
-            String fullCql = cypherRenderer.render(ongoingReadingWithWhere.returning("TEMP_RESULT").build());
-            String whereLogic = fullCql.replace(tempMatchStringForReplace,"").replace(tempReturnStringForReplace,"");
-            return whereLogic;
-        }
-        return "";
-    }
-
-
 
     private String generateRelationKindFlowMatchLogicsQuery(LinkedList<List<RelationKindMatchLogic>> relationKindFlowMatchLogicsLink){
         if(relationKindFlowMatchLogicsLink != null && relationKindFlowMatchLogicsLink.size() > 0){
