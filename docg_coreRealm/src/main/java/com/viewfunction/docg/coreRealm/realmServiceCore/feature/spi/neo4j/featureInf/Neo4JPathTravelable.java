@@ -4,6 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.PathTravelable;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
@@ -41,8 +42,8 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         RETURN path, length(path) AS hops
         ORDER BY hops;
         */
-        String relationMatchLogicFullString = generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
-        String conceptionMatchLogicFullString = generateConceptionKindMatchLogicsQuery(conceptionKindMatchLogics);
+        String relationMatchLogicFullString = CypherBuilder.generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
+        String conceptionMatchLogicFullString = CypherBuilder.generateConceptionKindMatchLogicsQuery(conceptionKindMatchLogics);
         int minHopNumber =  minJump > 0 ? minJump:1;
         int maxHopNumber = maxJump >= minHopNumber ? maxJump : minHopNumber;
 
@@ -82,8 +83,8 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         RETURN nodes, relationships;
          */
 
-        String relationMatchLogicFullString = generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
-        String conceptionMatchLogicFullString = generateConceptionKindMatchLogicsQuery(conceptionKindMatchLogics);
+        String relationMatchLogicFullString = CypherBuilder.generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
+        String conceptionMatchLogicFullString = CypherBuilder.generateConceptionKindMatchLogicsQuery(conceptionKindMatchLogics);
         int minLevelNumber =  containsSelf ? 0:1;
         int maxLevelNumber = maxJump >= 1 ? maxJump : -1;
 
@@ -125,8 +126,8 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         YIELD path
         RETURN path;
         */
-        String relationMatchLogicFullString = generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
-        String conceptionMatchLogicFullString = generateConceptionKindMatchLogicsQuery(conceptionKindMatchLogics);
+        String relationMatchLogicFullString = CypherBuilder.generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
+        String conceptionMatchLogicFullString = CypherBuilder.generateConceptionKindMatchLogicsQuery(conceptionKindMatchLogics);
         int minLevelNumber =  0;
         int maxLevelNumber = maxJump >= 1 ? maxJump : -1;
 
@@ -253,7 +254,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         Example:
         https://neo4j.com/labs/apoc/4.1/overview/apoc.algo/apoc.algo.allSimplePaths/
         */
-        String relationMatchLogicFullString = generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
+        String relationMatchLogicFullString = CypherBuilder.generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
         int maxLevelNumber = maxJump >= 1 ? maxJump : 1;
 
         String relationPathEntityFilter = generatePathEntityFilterQuery(relationPathEntityFilterParameters,"path",PathEntityType.RelationEntity,"WHERE");
@@ -325,7 +326,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         Example:
         https://neo4j.com/labs/apoc/4.1/overview/apoc.algo/apoc.algo.allSimplePaths/
         */
-        String relationMatchLogicFullString = generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
+        String relationMatchLogicFullString = CypherBuilder.generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
         int maxLevelNumber = maxJump >= 1 ? maxJump : 1;
         int maxPathNumber = maxPath >= 1 ? maxPath : 1;
 
@@ -487,93 +488,14 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         return "";
     }
 
-    private String generateRelationKindMatchLogicsQuery(List<RelationKindMatchLogic> relationKindMatchLogics,RelationDirection defaultDirectionForNoneRelationKindMatch){
-        String relationMatchLogicFullString = null;
-        if(relationKindMatchLogics != null && relationKindMatchLogics.size()>0){
-            boolean isFirstMatchLogic = true;
-            for(RelationKindMatchLogic currentRelationKindMatchLogic:relationKindMatchLogics){
-                String currentRelationKindName = currentRelationKindMatchLogic.getRelationKindName();
-                if(currentRelationKindName != null){
-                    String currentRelationMatchLogicString = null;
-                    switch(currentRelationKindMatchLogic.getRelationDirection()){
-                        case FROM: currentRelationMatchLogicString = currentRelationKindName+">";
-                            break;
-                        case TO: currentRelationMatchLogicString = "<"+currentRelationKindName;
-                            break;
-                        case TWO_WAY:currentRelationMatchLogicString = currentRelationKindName;
-                    }
-                    if(isFirstMatchLogic){
-                        relationMatchLogicFullString = currentRelationMatchLogicString;
-                        isFirstMatchLogic = false;
-                    }else{
-                        relationMatchLogicFullString = relationMatchLogicFullString + "|"+currentRelationMatchLogicString;
-                    }
-                }
-            }
-            if(relationMatchLogicFullString == null){
-                relationMatchLogicFullString = "";
-            }
-        }else{
-            if(defaultDirectionForNoneRelationKindMatch != null){
-                switch(defaultDirectionForNoneRelationKindMatch) {
-                    case FROM: relationMatchLogicFullString = ">";
-                        break;
-                    case TO: relationMatchLogicFullString = "<";
-                        break;
-                    case TWO_WAY:relationMatchLogicFullString = "";
-                }
-            }else{
-                relationMatchLogicFullString = "";
-            }
-        }
-        return relationMatchLogicFullString;
-    }
 
-    private String generateConceptionKindMatchLogicsQuery(List<ConceptionKindMatchLogic> conceptionKindMatchLogics){
-        String conceptionMatchLogicFullString = null;
-        if(conceptionKindMatchLogics != null && conceptionKindMatchLogics.size()>0){
-            boolean isFirstMatchLogic = true;
-            for(ConceptionKindMatchLogic currentConceptionKindMatchLogic:conceptionKindMatchLogics){
-                String conceptionKindName = currentConceptionKindMatchLogic.getConceptionKindName();
-                if(conceptionKindName != null){
-                    String currentConceptionMatchLogicString = null;
-                    if(currentConceptionKindMatchLogic instanceof MatchAllConceptionKindLogic){
-                        currentConceptionMatchLogicString = "*";
-                    }else{
-                        switch(currentConceptionKindMatchLogic.getConceptionKindExistenceRule()){
-                            case NOT_ALLOW: currentConceptionMatchLogicString = "-"+conceptionKindName;
-                                break;
-                            case END_WITH: currentConceptionMatchLogicString = ">"+conceptionKindName;
-                                break;
-                            case MUST_HAVE: currentConceptionMatchLogicString = "+"+conceptionKindName;
-                                break;
-                            case TERMINATE_AT: currentConceptionMatchLogicString = "/"+conceptionKindName;
-                                break;
-                        }
-                    }
-                    if(isFirstMatchLogic){
-                        conceptionMatchLogicFullString = currentConceptionMatchLogicString;
-                        isFirstMatchLogic = false;
-                    }else{
-                        conceptionMatchLogicFullString = conceptionMatchLogicFullString + "|"+currentConceptionMatchLogicString;
-                    }
-                }
-            }
-            if(conceptionMatchLogicFullString == null){
-                conceptionMatchLogicFullString = "";
-            }
-        }else{
-            conceptionMatchLogicFullString = "";
-        }
-        return conceptionMatchLogicFullString;
-    }
 
     private String generateRelationKindFlowMatchLogicsQuery(LinkedList<List<RelationKindMatchLogic>> relationKindFlowMatchLogicsLink){
         if(relationKindFlowMatchLogicsLink != null && relationKindFlowMatchLogicsLink.size() > 0){
             String resultFullQueryString = "";
             boolean isFirstMatchLogic = true;
             for(List<RelationKindMatchLogic> currentMatchLogicList : relationKindFlowMatchLogicsLink){
-                String currentQueryString = generateRelationKindMatchLogicsQuery(currentMatchLogicList,null);
+                String currentQueryString = CypherBuilder.generateRelationKindMatchLogicsQuery(currentMatchLogicList,null);
                 if(isFirstMatchLogic){
                     resultFullQueryString = currentQueryString;
                     if(!resultFullQueryString.equals("")){
@@ -597,7 +519,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
             String resultFullQueryString = "";
             boolean isFirstMatchLogic = true;
             for(List<ConceptionKindMatchLogic> currentMatchLogicList : conceptionKindFlowMatchLogicList){
-                String currentQueryString = generateConceptionKindMatchLogicsQuery(currentMatchLogicList);
+                String currentQueryString = CypherBuilder.generateConceptionKindMatchLogicsQuery(currentMatchLogicList);
                 if(isFirstMatchLogic){
                     resultFullQueryString = currentQueryString;
                     if(!resultFullQueryString.equals("")){
@@ -628,11 +550,11 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                     String currentQueryString = "";
                     if(currentEntityKindMatchLogicsList.get(0) instanceof ConceptionKindMatchLogic){
                         List<ConceptionKindMatchLogic> currentConceptionEntityKindMatchLogics = (List<ConceptionKindMatchLogic>)currentEntityKindMatchLogicsList;
-                        currentQueryString = generateConceptionKindMatchLogicsQuery(currentConceptionEntityKindMatchLogics);
+                        currentQueryString = CypherBuilder.generateConceptionKindMatchLogicsQuery(currentConceptionEntityKindMatchLogics);
                     }
                     if(currentEntityKindMatchLogicsList.get(0) instanceof RelationKindMatchLogic){
                         List<RelationKindMatchLogic> currentRelationEntityKindMatchLogics = (List<RelationKindMatchLogic>)currentEntityKindMatchLogicsList;
-                        currentQueryString = generateRelationKindMatchLogicsQuery(currentRelationEntityKindMatchLogics,null);
+                        currentQueryString = CypherBuilder.generateRelationKindMatchLogicsQuery(currentRelationEntityKindMatchLogics,null);
                     }
                     if(isFirstMatchLogic){
                         resultFullQueryString = currentQueryString;
@@ -698,11 +620,11 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
             }
 
             List<ConceptionKindMatchLogic> conceptionKindMatchLogicList = travelParameters.getConceptionKindMatchLogics();
-            String labelFilterQueryString = generateConceptionKindMatchLogicsQuery(conceptionKindMatchLogicList);
+            String labelFilterQueryString = CypherBuilder.generateConceptionKindMatchLogicsQuery(conceptionKindMatchLogicList);
 
             List<RelationKindMatchLogic> relationKindMatchLogicList = travelParameters.getRelationKindMatchLogics();
             RelationDirection relationDirection = travelParameters.getDefaultDirectionForNoneRelationKindMatch();
-            String relationshipFilter = generateRelationKindMatchLogicsQuery(relationKindMatchLogicList,relationDirection);
+            String relationshipFilter = CypherBuilder.generateRelationKindMatchLogicsQuery(relationKindMatchLogicList,relationDirection);
 
             LinkedList<List<RelationKindMatchLogic>> relationKindFlowMatchLogicsLink = travelParameters.getRelationKindFlowMatchLogics();
             String relationKindFlowMatchLogicsQuery = generateRelationKindFlowMatchLogicsQuery(relationKindFlowMatchLogicsLink);

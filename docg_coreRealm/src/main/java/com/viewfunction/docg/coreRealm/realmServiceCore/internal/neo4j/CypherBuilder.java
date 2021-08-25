@@ -1,9 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j;
 
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.ResultEntitiesParameters;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.SortingItem;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.StatisticalAndEvaluable;
@@ -2370,5 +2367,94 @@ public class CypherBuilder {
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
+    }
+
+    /* Used for APOC query
+    Example:
+    https://neo4j.com/labs/apoc/4.1/graph-querying/expand-paths-config/#path-expander-paths-config-config-relationship-filters
+    */
+    public static String generateRelationKindMatchLogicsQuery(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch){
+        String relationMatchLogicFullString = null;
+        if(relationKindMatchLogics != null && relationKindMatchLogics.size()>0){
+            boolean isFirstMatchLogic = true;
+            for(RelationKindMatchLogic currentRelationKindMatchLogic:relationKindMatchLogics){
+                String currentRelationKindName = currentRelationKindMatchLogic.getRelationKindName();
+                if(currentRelationKindName != null){
+                    String currentRelationMatchLogicString = null;
+                    switch(currentRelationKindMatchLogic.getRelationDirection()){
+                        case FROM: currentRelationMatchLogicString = currentRelationKindName+">";
+                            break;
+                        case TO: currentRelationMatchLogicString = "<"+currentRelationKindName;
+                            break;
+                        case TWO_WAY:currentRelationMatchLogicString = currentRelationKindName;
+                    }
+                    if(isFirstMatchLogic){
+                        relationMatchLogicFullString = currentRelationMatchLogicString;
+                        isFirstMatchLogic = false;
+                    }else{
+                        relationMatchLogicFullString = relationMatchLogicFullString + "|"+currentRelationMatchLogicString;
+                    }
+                }
+            }
+            if(relationMatchLogicFullString == null){
+                relationMatchLogicFullString = "";
+            }
+        }else{
+            if(defaultDirectionForNoneRelationKindMatch != null){
+                switch(defaultDirectionForNoneRelationKindMatch) {
+                    case FROM: relationMatchLogicFullString = ">";
+                        break;
+                    case TO: relationMatchLogicFullString = "<";
+                        break;
+                    case TWO_WAY:relationMatchLogicFullString = "";
+                }
+            }else{
+                relationMatchLogicFullString = "";
+            }
+        }
+        return relationMatchLogicFullString;
+    }
+
+    /* Used for APOC query
+    Example:
+    https://neo4j.com/labs/apoc/4.1/graph-querying/expand-paths-config/#path-expander-paths-config-config-relationship-filters
+    */
+    public static String generateConceptionKindMatchLogicsQuery(List<ConceptionKindMatchLogic> conceptionKindMatchLogics){
+        String conceptionMatchLogicFullString = null;
+        if(conceptionKindMatchLogics != null && conceptionKindMatchLogics.size()>0){
+            boolean isFirstMatchLogic = true;
+            for(ConceptionKindMatchLogic currentConceptionKindMatchLogic:conceptionKindMatchLogics){
+                String conceptionKindName = currentConceptionKindMatchLogic.getConceptionKindName();
+                if(conceptionKindName != null){
+                    String currentConceptionMatchLogicString = null;
+                    if(currentConceptionKindMatchLogic instanceof MatchAllConceptionKindLogic){
+                        currentConceptionMatchLogicString = "*";
+                    }else{
+                        switch(currentConceptionKindMatchLogic.getConceptionKindExistenceRule()){
+                            case NOT_ALLOW: currentConceptionMatchLogicString = "-"+conceptionKindName;
+                                break;
+                            case END_WITH: currentConceptionMatchLogicString = ">"+conceptionKindName;
+                                break;
+                            case MUST_HAVE: currentConceptionMatchLogicString = "+"+conceptionKindName;
+                                break;
+                            case TERMINATE_AT: currentConceptionMatchLogicString = "/"+conceptionKindName;
+                                break;
+                        }
+                    }
+                    if(isFirstMatchLogic){
+                        conceptionMatchLogicFullString = currentConceptionMatchLogicString;
+                        isFirstMatchLogic = false;
+                    }else{
+                        conceptionMatchLogicFullString = conceptionMatchLogicFullString + "|"+currentConceptionMatchLogicString;
+                    }
+                }
+            }
+            if(conceptionMatchLogicFullString == null){
+                conceptionMatchLogicFullString = "";
+            }
+        }else{
+            conceptionMatchLogicFullString = "";
+        }
+        return conceptionMatchLogicFullString;
     }
 }
