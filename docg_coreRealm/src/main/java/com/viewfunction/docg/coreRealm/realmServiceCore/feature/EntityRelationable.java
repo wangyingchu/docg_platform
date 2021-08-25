@@ -15,7 +15,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface EntityRelationable {
-
+    /**
+     关联传播停止逻辑,
+     AT 表示只返回 jumpNumber 指定跳数的实体，
+     TO 表示返回从 0 到 jumpNumber 沿途所有符合条件的实体
+    **/
     public enum JumpStopLogic {
         AT,TO }
 
@@ -219,9 +223,32 @@ public interface EntityRelationable {
     public ConceptionEntitiesAttributesRetrieveResult getAttributesOfRelatedConceptionEntities(String targetConceptionKind, List<String> attributeNames,String relationKind, RelationDirection relationDirection, int maxJump,
                                                                AttributesParameters relationAttributesParameters, AttributesParameters conceptionAttributesParameters, ResultEntitiesParameters resultEntitiesParameters) throws CoreRealmServiceEntityExploreException;
 
+    /**
+     * 获取与当前实体关联的概念实体
+     *
+     * @param relationKindMatchLogics List<RelationKindMatchLogic> 目标关系类型名称与关系方向组合，如存在该参数至少需要输入一项数值
+     * @param defaultDirectionForNoneRelationKindMatch RelationDirection 未输入目标关系类型名称与关系方向组合时使用的全局关系方向，必须为 RelationDirection.FROM 或 RelationDirection.TO
+     * @param jumpStopLogic JumpStopLogic 关联传播停止逻辑 JumpStopLogic.AT 只返回 jumpNumber 指定跳数的概念实体，JumpStopLogic.TO 返回从 0 到 jumpNumber 沿途所有符合条件的概念实体
+     * @param jumpNumber int 关联传播的跳数
+     * @param conceptionAttributesParameters AttributesParameters 需要获取的数据的概念实体属性查询条件
+     * @param resultEntitiesParameters ResultEntitiesParameters 返回概念实体数据的控制参数
+     *
+     * @return 符合条件的概念实体对象列表
+     */
     public List<ConceptionEntity> getRelatedConceptionEntities(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch, JumpStopLogic jumpStopLogic, int jumpNumber,
                                                                AttributesParameters conceptionAttributesParameters, ResultEntitiesParameters resultEntitiesParameters) throws CoreRealmServiceEntityExploreException;
 
+    /**
+     * 计算与当前实体关联的概念实体数量
+     *
+     * @param relationKindMatchLogics List<RelationKindMatchLogic> 目标关系类型名称与关系方向组合，如存在该参数至少需要输入一项数值
+     * @param defaultDirectionForNoneRelationKindMatch RelationDirection 未输入目标关系类型名称与关系方向组合时使用的全局关系方向，必须为 RelationDirection.FROM 或 RelationDirection.TO
+     * @param jumpStopLogic JumpStopLogic 关联传播停止逻辑 JumpStopLogic.AT 只返回 jumpNumber 指定跳数的概念实体，JumpStopLogic.TO 返回从 0 到 jumpNumber 沿途所有符合条件的概念实体
+     * @param jumpNumber int 关联传播的跳数
+     * @param conceptionAttributesParameters AttributesParameters 需要获取的数据的概念实体属性查询条件
+     *
+     * @return 符合条件的概念实体数量
+     */
     public Long countRelatedConceptionEntities(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,JumpStopLogic jumpStopLogic,int jumpNumber,
                                                                      AttributesParameters conceptionAttributesParameters) throws CoreRealmServiceEntityExploreException;
 }
