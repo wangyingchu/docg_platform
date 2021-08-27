@@ -2,8 +2,8 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.feature;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesGraph;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesPath;
+import com.viewfunction.docg.coreRealm.realmServiceCore.structure.EntitiesGraph;
+import com.viewfunction.docg.coreRealm.realmServiceCore.structure.EntitiesPath;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesSpanningTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;

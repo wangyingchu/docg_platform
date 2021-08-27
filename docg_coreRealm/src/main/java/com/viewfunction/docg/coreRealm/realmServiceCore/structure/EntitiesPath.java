@@ -1,4 +1,4 @@
-package com.viewfunction.docg.coreRealm.realmServiceCore.payload;
+package com.viewfunction.docg.coreRealm.realmServiceCore.structure;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
