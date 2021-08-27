@@ -352,6 +352,70 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         return null;
     }
 
+    default public EntitiesPath getShortestPathWithWeightBetweenEntity(String targetEntityUID, List<RelationKindMatchLogic> relationKindMatchLogics,
+                                                               RelationDirection defaultDirectionForNoneRelationKindMatch,String relationWeightProperty,
+                                                               PathEntityFilterParameters relationPathEntityFilterParameters,
+                                                               PathEntityFilterParameters conceptionPathEntityFilterParameters) throws CoreRealmServiceEntityExploreException{
+        /*
+        Example:
+        https://neo4j.com/labs/apoc/4.1/overview/apoc.algo/apoc.algo.dijkstra/
+        */
+        String relationMatchLogicFullString = CypherBuilder.generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
+
+        String relationPathEntityFilter = generatePathEntityFilterQuery(relationPathEntityFilterParameters,"path",PathEntityType.RelationEntity,"WHERE");
+        String relationEntityFilterLogic = relationPathEntityFilter.equals("")?"":relationPathEntityFilter+"\n";
+        String conjunctionKey = relationEntityFilterLogic.equals("") ? "WHERE" : "AND";
+        String conceptionPathEntityFilter = generatePathEntityFilterQuery(conceptionPathEntityFilterParameters,"path",PathEntityType.ConceptionEntity,conjunctionKey);
+        String conceptionEntityFilterLogic = conceptionPathEntityFilter.equals("")?"":conceptionPathEntityFilter+"\n";
+
+        String cypherProcedureString = "MATCH (startNode) WHERE id(startNode)= "+this.getEntityUID()+"\n" +
+                "MATCH (endNode) WHERE id(endNode)= "+targetEntityUID+"\n" +
+                "CALL apoc.algo.dijkstra(startNode,endNode, \""+relationMatchLogicFullString+"\", \""+relationWeightProperty+"\")\n" +
+                "YIELD path, weight\n" +
+                relationEntityFilterLogic + conceptionEntityFilterLogic+
+                "RETURN path, weight\n" ;
+
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        if(this.getEntityUID() != null && targetEntityUID != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            GetSingleEntitiesPathTransformer getSingleEntitiesPathTransformer = new GetSingleEntitiesPathTransformer(workingGraphOperationExecutor);
+            try {
+                Object queryResponse = workingGraphOperationExecutor.executeRead(getSingleEntitiesPathTransformer,cypherProcedureString);
+                return queryResponse != null? (EntitiesPath)queryResponse : null;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
+    }
+
+    default public List<EntitiesPath> getShortestPathsWithWeightBetweenEntity(String targetEntityUID, List<RelationKindMatchLogic> relationKindMatchLogics,
+                                                                      RelationDirection defaultDirectionForNoneRelationKindMatch,String relationWeightProperty,float defaultWeight,int maxPathNumber,
+                                                                      PathEntityFilterParameters relationPathEntityFilterParameters,
+                                                                      PathEntityFilterParameters conceptionPathEntityFilterParameters) throws CoreRealmServiceEntityExploreException{
+        /*
+        Example:
+        https://neo4j.com/labs/apoc/4.1/overview/apoc.algo/apoc.algo.dijkstra/
+        */
+        String relationMatchLogicFullString = CypherBuilder.generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
+
+
+
+
+
+
+
+
+        return null;
+    }
+
+
+
+
+
+
+
     private String generateShortPathsQuery(String pathFindingFunction,String targetEntityUID, List<String> pathAllowedRelationKinds, int maxJump,
                                            PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters) throws CoreRealmServiceEntityExploreException{
         /*

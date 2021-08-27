@@ -38,6 +38,16 @@ public interface PathTravelable {
                                                      PathEntityFilterParameters relationPathEntityFilterParameters,
                                                      PathEntityFilterParameters conceptionPathEntityFilterParameters) throws CoreRealmServiceEntityExploreException;
 
+    public EntitiesPath getShortestPathWithWeightBetweenEntity(String targetEntityUID, List<RelationKindMatchLogic> relationKindMatchLogics,
+                                                                RelationDirection defaultDirectionForNoneRelationKindMatch,String relationWeightProperty,
+                                                                PathEntityFilterParameters relationPathEntityFilterParameters,
+                                                                PathEntityFilterParameters conceptionPathEntityFilterParameters) throws CoreRealmServiceEntityExploreException;
+
+    public List<EntitiesPath> getShortestPathsWithWeightBetweenEntity(String targetEntityUID, List<RelationKindMatchLogic> relationKindMatchLogics,
+                                                                RelationDirection defaultDirectionForNoneRelationKindMatch,String relationWeightProperty,float defaultWeight,int maxPathNumber,
+                                                                PathEntityFilterParameters relationPathEntityFilterParameters,
+                                                                PathEntityFilterParameters conceptionPathEntityFilterParameters) throws CoreRealmServiceEntityExploreException;
+
     public List<EntitiesPath> getAllShortestPathsBetweenEntity(String targetEntityUID, List<String> pathAllowedRelationKinds, int maxJump,
                                                      PathEntityFilterParameters relationPathEntityFilterParameters,
                                                                PathEntityFilterParameters conceptionPathEntityFilterParameters) throws CoreRealmServiceEntityExploreException;
@@ -46,8 +56,4 @@ public interface PathTravelable {
                                                       RelationDirection defaultDirectionForNoneRelationKindMatch,int maxJump,int maxPathNumber,
                                                       PathEntityFilterParameters relationPathEntityFilterParameters,
                                                            PathEntityFilterParameters conceptionPathEntityFilterParameters) throws CoreRealmServiceEntityExploreException;
-
-    /*
-    public EntitiesPath getShortestPathWithWeightBetweenEntity(String targetEntityUID,List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch);
-    */
 }
