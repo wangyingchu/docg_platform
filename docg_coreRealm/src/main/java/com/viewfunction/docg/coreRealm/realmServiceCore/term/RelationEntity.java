@@ -1,8 +1,9 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.AttributesMeasurable;
+import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntity;
 
-public interface RelationEntity extends AttributesMeasurable {
+public interface RelationEntity extends AttributesMeasurable, PathEntity {
     /**
      * 获取当前关系实体对象唯一ID
      *
