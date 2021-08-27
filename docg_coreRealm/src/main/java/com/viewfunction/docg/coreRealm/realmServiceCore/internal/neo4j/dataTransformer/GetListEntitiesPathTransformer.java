@@ -22,6 +22,7 @@ import java.util.List;
 public class GetListEntitiesPathTransformer implements DataTransformer<List<EntitiesPath>>{
 
     private GraphOperationExecutor workingGraphOperationExecutor;
+    private boolean recordPathWeight = false;
 
     public GetListEntitiesPathTransformer(GraphOperationExecutor workingGraphOperationExecutor){
         this.workingGraphOperationExecutor =  workingGraphOperationExecutor;
@@ -40,9 +41,15 @@ public class GetListEntitiesPathTransformer implements DataTransformer<List<Enti
             int pathJumps = currentPath.length();
             LinkedList<ConceptionEntity> pathConceptionEntities = new LinkedList<>();
             LinkedList<RelationEntity> pathRelationEntities = new LinkedList<>();
-
-            EntitiesPath currentEntitiesPath = new EntitiesPath(startEntityType,startEntityUID,
-                    endEntityType,endEntityUID,pathJumps,pathConceptionEntities,pathRelationEntities);
+            EntitiesPath currentEntitiesPath;
+            if(recordPathWeight){
+                float pathWeight = currentRecord.get("weight").asFloat();
+                currentEntitiesPath = new EntitiesPath(startEntityType,startEntityUID,
+                        endEntityType,endEntityUID,pathJumps,pathConceptionEntities,pathRelationEntities,pathWeight);
+            }else{
+                currentEntitiesPath = new EntitiesPath(startEntityType,startEntityUID,
+                        endEntityType,endEntityUID,pathJumps,pathConceptionEntities,pathRelationEntities);
+            }
             entitiesPathList.add(currentEntitiesPath);
 
             Iterator<Node> nodeIterator = currentPath.nodes().iterator();
@@ -73,5 +80,9 @@ public class GetListEntitiesPathTransformer implements DataTransformer<List<Enti
             }
         }
         return entitiesPathList;
+    }
+
+    public void enableRecordPathWeight(){
+        this.recordPathWeight = true;
     }
 }

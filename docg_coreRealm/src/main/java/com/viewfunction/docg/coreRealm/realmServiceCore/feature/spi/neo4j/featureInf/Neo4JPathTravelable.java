@@ -415,6 +415,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         if(this.getEntityUID() != null && targetEntityUID != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             GetListEntitiesPathTransformer getListEntitiesPathTransformer = new GetListEntitiesPathTransformer(workingGraphOperationExecutor);
+            getListEntitiesPathTransformer.enableRecordPathWeight();
             try {
                 Object queryResponse = workingGraphOperationExecutor.executeRead(getListEntitiesPathTransformer,cypherProcedureString);
                 return queryResponse != null? (List<EntitiesPath>)queryResponse : null;

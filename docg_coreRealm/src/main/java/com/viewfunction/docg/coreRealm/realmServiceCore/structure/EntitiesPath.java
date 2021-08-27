@@ -7,6 +7,7 @@ import java.util.LinkedList;
 
 public class EntitiesPath {
 
+    private float pathWeight = Float.NaN;
     private String startConceptionEntityType;
     private String startConceptionEntityUID;
     private String endConceptionEntityType;
@@ -24,6 +25,18 @@ public class EntitiesPath {
         this.pathJumps = pathJumps;
         this.pathConceptionEntities = pathConceptionEntities;
         this.pathRelationEntities = pathRelationEntities;
+    }
+
+    public EntitiesPath(String startConceptionEntityType, String startConceptionEntityUID, String endConceptionEntityType, String endConceptionEntityUID,
+                        int pathJumps, LinkedList<ConceptionEntity> pathConceptionEntities, LinkedList<RelationEntity> pathRelationEntities,float pathWeight){
+        this.startConceptionEntityType = startConceptionEntityType;
+        this.startConceptionEntityUID = startConceptionEntityUID;
+        this.endConceptionEntityType = endConceptionEntityType;
+        this.endConceptionEntityUID = endConceptionEntityUID;
+        this.pathJumps = pathJumps;
+        this.pathConceptionEntities = pathConceptionEntities;
+        this.pathRelationEntities = pathRelationEntities;
+        this.pathWeight = pathWeight;
     }
 
     public String getStartConceptionEntityType() {
@@ -52,5 +65,9 @@ public class EntitiesPath {
 
     public LinkedList<RelationEntity> getPathRelationEntities() {
         return pathRelationEntities;
+    }
+
+    public float getPathWeight() {
+        return this.pathWeight;
     }
 }
