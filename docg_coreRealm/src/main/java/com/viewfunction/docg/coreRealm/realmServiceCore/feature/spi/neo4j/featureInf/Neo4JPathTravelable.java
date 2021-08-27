@@ -361,7 +361,6 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         https://neo4j.com/labs/apoc/4.1/overview/apoc.algo/apoc.algo.dijkstra/
         */
         String relationMatchLogicFullString = CypherBuilder.generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
-
         String relationPathEntityFilter = generatePathEntityFilterQuery(relationPathEntityFilterParameters,"path",PathEntityType.RelationEntity,"WHERE");
         String relationEntityFilterLogic = relationPathEntityFilter.equals("")?"":relationPathEntityFilter+"\n";
         String conjunctionKey = relationEntityFilterLogic.equals("") ? "WHERE" : "AND";
@@ -374,7 +373,6 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                 "YIELD path, weight\n" +
                 relationEntityFilterLogic + conceptionEntityFilterLogic+
                 "RETURN path, weight\n" ;
-
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
         if(this.getEntityUID() != null && targetEntityUID != null) {
@@ -399,22 +397,33 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
         https://neo4j.com/labs/apoc/4.1/overview/apoc.algo/apoc.algo.dijkstra/
         */
         String relationMatchLogicFullString = CypherBuilder.generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
+        int maxReturnPathNumber = maxPathNumber >= 1 ? maxPathNumber : 1;
+        String relationPathEntityFilter = generatePathEntityFilterQuery(relationPathEntityFilterParameters,"path",PathEntityType.RelationEntity,"WHERE");
+        String relationEntityFilterLogic = relationPathEntityFilter.equals("")?"":relationPathEntityFilter+"\n";
+        String conjunctionKey = relationEntityFilterLogic.equals("") ? "WHERE" : "AND";
+        String conceptionPathEntityFilter = generatePathEntityFilterQuery(conceptionPathEntityFilterParameters,"path",PathEntityType.ConceptionEntity,conjunctionKey);
+        String conceptionEntityFilterLogic = conceptionPathEntityFilter.equals("")?"":conceptionPathEntityFilter+"\n";
 
+        String cypherProcedureString = "MATCH (startNode) WHERE id(startNode)= "+this.getEntityUID()+"\n" +
+                "MATCH (endNode) WHERE id(endNode)= "+targetEntityUID+"\n" +
+                "CALL apoc.algo.dijkstra(startNode,endNode, \""+relationMatchLogicFullString+"\", \""+relationWeightProperty+"\","+defaultWeight+","+maxReturnPathNumber+")\n" +
+                "YIELD path, weight\n" +
+                relationEntityFilterLogic + conceptionEntityFilterLogic+
+                "RETURN path, weight\n" ;
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
-
-
-
-
-
-
+        if(this.getEntityUID() != null && targetEntityUID != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            GetListEntitiesPathTransformer getListEntitiesPathTransformer = new GetListEntitiesPathTransformer(workingGraphOperationExecutor);
+            try {
+                Object queryResponse = workingGraphOperationExecutor.executeRead(getListEntitiesPathTransformer,cypherProcedureString);
+                return queryResponse != null? (List<EntitiesPath>)queryResponse : null;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
-
-
-
-
-
-
 
     private String generateShortPathsQuery(String pathFindingFunction,String targetEntityUID, List<String> pathAllowedRelationKinds, int maxJump,
                                            PathEntityFilterParameters relationPathEntityFilterParameters, PathEntityFilterParameters conceptionPathEntityFilterParameters) throws CoreRealmServiceEntityExploreException{
