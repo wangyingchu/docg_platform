@@ -29,10 +29,10 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         Example:
         https://neo4j.com/labs/apoc/4.1/overview/apoc.algo/apoc.algo.cover/
         */
-        if(conceptionEntityUIDs == null || conceptionEntityUIDs.size() ==0){
-            logger.error("At least one conception entity UID is required");
+        if(conceptionEntityUIDs == null || conceptionEntityUIDs.size() < 2){
+            logger.error("At least two conception entity UID is required");
             CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
-            e.setCauseMessage("At least one conception entity UID is required");
+            e.setCauseMessage("At least two conception entity UID is required");
             throw e;
         }
 

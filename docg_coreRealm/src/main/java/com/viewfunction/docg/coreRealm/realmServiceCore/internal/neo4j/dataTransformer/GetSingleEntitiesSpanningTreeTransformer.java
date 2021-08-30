@@ -2,7 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTran
 
 import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesSpanningTree;
+import com.viewfunction.docg.coreRealm.realmServiceCore.structure.EntitiesSpanningTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionEntityImpl;
