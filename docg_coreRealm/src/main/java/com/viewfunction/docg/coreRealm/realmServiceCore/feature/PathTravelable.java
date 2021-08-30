@@ -11,13 +11,43 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import java.util.List;
 
 public interface PathTravelable {
-
+    /**
+     * 从当前实体对象出发展开路径
+     *
+     * @param relationKindMatchLogics List<RelationKindMatchLogic> 路径上允许的关系类型名称与关系方向组合，如存在该参数至少需要输入一项数值
+     * @param defaultDirectionForNoneRelationKindMatch RelationDirection 未输入目标关系类型名称与关系方向组合时使用的全局关系方向，必须为 RelationDirection.FROM 或 RelationDirection.TO
+     * @param conceptionKindMatchLogics List<ConceptionKindMatchLogic> 路径上允许的概念类型名称与搜索规则
+     * @param minJump int 路径展开的最小跳数
+     * @param maxJump int 路径展开的最大跳数
+     *
+     * @return 符合条件的实体路径列表
+     */
     public List<EntitiesPath> expandPath(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,
                                          List<ConceptionKindMatchLogic> conceptionKindMatchLogics, int minJump, int maxJump);
-
+    /**
+     * 从当前实体对象出发展开成图
+     *
+     * @param relationKindMatchLogics List<RelationKindMatchLogic> 图中允许的关系类型名称与关系方向组合，如存在该参数至少需要输入一项数值
+     * @param defaultDirectionForNoneRelationKindMatch RelationDirection 未输入目标关系类型名称与关系方向组合时使用的全局关系方向，必须为 RelationDirection.FROM 或 RelationDirection.TO
+     * @param conceptionKindMatchLogics List<ConceptionKindMatchLogic> 图中允许的概念类型名称与搜索规则
+     * @param containsSelf boolean 是否在图中包含当前对象自身
+     * @param maxJump int 图展开的最大跳数
+     *
+     * @return 符合条件的实体组成的图
+     */
     public EntitiesGraph expandGraph(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,
                                         List<ConceptionKindMatchLogic> conceptionKindMatchLogics,boolean containsSelf,int maxJump);
 
+    /**
+     * 从当前实体对象出发展开成生成树
+     *
+     * @param relationKindMatchLogics List<RelationKindMatchLogic> 图中允许的关系类型名称与关系方向组合，如存在该参数至少需要输入一项数值
+     * @param defaultDirectionForNoneRelationKindMatch RelationDirection 未输入目标关系类型名称与关系方向组合时使用的全局关系方向，必须为 RelationDirection.FROM 或 RelationDirection.TO
+     * @param conceptionKindMatchLogics List<ConceptionKindMatchLogic> 图中允许的概念类型名称与搜索规则
+     * @param maxJump int 生成树径展开的最大跳数
+     *
+     * @return 符合条件的实体组成的图
+     */
     public EntitiesSpanningTree expandSpanningTree(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,
                                                    List<ConceptionKindMatchLogic> conceptionKindMatchLogics, int maxJump);
 
