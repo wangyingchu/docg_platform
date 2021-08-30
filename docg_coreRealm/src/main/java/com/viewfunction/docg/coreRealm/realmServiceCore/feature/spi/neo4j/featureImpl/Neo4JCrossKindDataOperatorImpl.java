@@ -63,7 +63,21 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             e.setCauseMessage("At least one relation entity UID is required");
             throw e;
         }
-        return null;
+
+        String cypherProcedureString = "MATCH ()-[r]->()\n" +
+                "WHERE id(r) IN "+relationEntityUIDs.toString()+"\n" +
+                "RETURN DISTINCT r as operationResult";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(null,
+                    this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object relationEntityList = workingGraphOperationExecutor.executeRead(getListRelationEntityTransformer,cypherProcedureString);
+            return relationEntityList != null ? (List<RelationEntity>)relationEntityList : null;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
@@ -76,7 +90,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         }
 
         String cypherProcedureString = "MATCH (targetNodes) WHERE id(targetNodes) IN " + conceptionEntityUIDs.toString()+"\n"+
-                "RETURN targetNodes as operationResult";
+                "RETURN DISTINCT targetNodes as operationResult";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
