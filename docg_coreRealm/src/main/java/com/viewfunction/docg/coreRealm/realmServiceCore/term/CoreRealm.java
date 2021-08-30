@@ -2,6 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionKindCorrelationInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
@@ -427,6 +428,13 @@ public interface CoreRealm {
      * @return 各个关联的概念类型结对与相关的关系类型信息的列表
      */
     public List<ConceptionKindCorrelationInfo> getConceptionKindsCorrelation();
+
+    /**
+     * 获取当前领域的跨类型数据操作器
+     *
+     * @return 前领域的跨类型数据操作器
+     */
+    public CrossKindDataOperator getCrossKindDataOperator();
 
     /**
      * 开启全局会话，此操作会创建一个持久化的后端数据库连接，执行该操作后由当前 CoreRealm 所创建的所有对象（以及这些对象创建的后续对象）将继承性的共享该持久化后端数据库连接。

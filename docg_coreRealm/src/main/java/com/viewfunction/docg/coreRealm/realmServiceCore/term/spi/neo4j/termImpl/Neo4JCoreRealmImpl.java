@@ -5,6 +5,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filtering
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.CrossKindDataOperator;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureImpl.Neo4JCrossKindDataOperatorImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
@@ -1164,6 +1166,13 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
         return conceptionKindCorrelationInfoList;
+    }
+
+    @Override
+    public CrossKindDataOperator getCrossKindDataOperator() {
+        Neo4JCrossKindDataOperatorImpl crossKindDataOperator= new Neo4JCrossKindDataOperatorImpl(coreRealmName);
+        crossKindDataOperator.setGlobalGraphOperationExecutor(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+        return crossKindDataOperator;
     }
 
     @Override
