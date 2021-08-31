@@ -1404,7 +1404,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
   ​	具有此特性的对象：|___ConceptionEntity___|
   
 - StatisticalAndEvaluable：具有此特性的对象能够执行对自身包含的数值类数据的统计与评估相关的操作
-  ​	具有此特性的对象：|___ConceptionKind___|
+  ​	具有此特性的对象：|___ConceptionKind___|___RelationKind___|
   
 - TimeScaleFeatureSupportable：具有此特性的对象能够执行与时间刻度相关的操作，为时间域数据分析提供数据支持
   ​	具有此特性的对象：|___ConceptionEntity___|

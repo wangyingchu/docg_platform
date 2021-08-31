@@ -190,4 +190,14 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
         }
         return null;
     }
+
+    default void evaluateEntityAttributesDistribution(long sampleCount){
+        /*
+        Example:
+        https://neo4j.com/labs/apoc/4.1/overview/apoc.meta/apoc.meta.nodeTypeProperties/
+        https://neo4j.com/labs/apoc/4.1/overview/apoc.meta/apoc.meta.relTypeProperties/
+        */
+
+
+    }
 }

@@ -8,6 +8,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationAttachable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaAttributeFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaConfigItemFeatureSupportable;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.StatisticalAndEvaluable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
@@ -15,7 +16,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntities
 
 import java.util.List;
 
-public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttributeFeatureSupportable, ClassificationAttachable {
+public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttributeFeatureSupportable, ClassificationAttachable, StatisticalAndEvaluable {
     /**
      * 获取当前关系类型对象名称
      *
