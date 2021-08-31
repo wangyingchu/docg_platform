@@ -2369,6 +2369,96 @@ public class CypherBuilder {
         return rel;
     }
 
+    public static String statistRelationsWithQueryParametersAndStatisticFunctions(String typeName, QueryParameters queryParameters, List<NumericalAttributeStatisticCondition> statisticConditions, String groupByProperty) throws CoreRealmServiceEntityExploreException {
+        Node sourceNode = Cypher.anyNode().named(sourceNodeName);
+        Node targetNode = Cypher.anyNode().named(targetNodeName);
+        Relationship relations;
+        Statement statement = null;
+        if (typeName != null) {
+            relations = sourceNode.relationshipBetween(targetNode, typeName).named(operationResultName);
+        } else {
+            relations = sourceNode.relationshipBetween(targetNode).named(operationResultName);
+        }
+
+        Expression[] returnedFunctionValue = groupByProperty != null ? new Expression[statisticConditions.size()+1] : new Expression[statisticConditions.size()];
+        int currentStatisticConditionIndex = 0;
+        for(NumericalAttributeStatisticCondition currentNumericalAttributeStatisticCondition : statisticConditions){
+            Expression currentStatisticFunctionValue = null;
+            String currentKey = currentNumericalAttributeStatisticCondition.getAttributeName();
+            StatisticalAndEvaluable.StatisticFunction currentStatisticFunction = currentNumericalAttributeStatisticCondition.getStatisticFunction();
+            switch(currentStatisticFunction){
+                case AVG:
+                    currentStatisticFunctionValue = Functions.avg(relations.property(currentKey));
+                    break;
+                case MAX:
+                    currentStatisticFunctionValue = Functions.max(relations.property(currentKey));
+                    break;
+                case MIN:
+                    currentStatisticFunctionValue = Functions.min(relations.property(currentKey));
+                    break;
+                case SUM:
+                    currentStatisticFunctionValue = Functions.sum(relations.property(currentKey));
+                    break;
+                case COUNT:
+                    currentStatisticFunctionValue = Functions.count(relations.property(currentKey));
+                    break;
+                case STDEV:
+                    currentStatisticFunctionValue = Functions.stDev(relations.property(currentKey));
+                    break;
+            }
+            returnedFunctionValue[currentStatisticConditionIndex] = currentStatisticFunctionValue;
+            currentStatisticConditionIndex++;
+        }
+        if(groupByProperty != null){
+            returnedFunctionValue[currentStatisticConditionIndex] = relations.property(groupByProperty);
+        }
+
+        boolean isDistinctMode = queryParameters.isDistinctMode();
+
+        StatementBuilder.OngoingReadingAndReturn activeOngoingReadingAndReturn = null;
+
+        if (isDistinctMode) {
+            activeOngoingReadingAndReturn = Cypher.match(relations).returningDistinct(returnedFunctionValue);
+        } else {
+            activeOngoingReadingAndReturn = Cypher.match(relations).returning(returnedFunctionValue);
+        }
+
+        FilteringItem defaultFilteringItem = queryParameters.getDefaultFilteringItem();
+        List<FilteringItem> andFilteringItemList = queryParameters.getAndFilteringItemsList();
+        List<FilteringItem> orFilteringItemList = queryParameters.getOrFilteringItemsList();
+        if (defaultFilteringItem == null) {
+            if ((andFilteringItemList != null && andFilteringItemList.size() > 0) ||
+                    (orFilteringItemList != null && orFilteringItemList.size() > 0)) {
+                logger.error("Default Filtering Item is required");
+                CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+                e.setCauseMessage("Default Filtering Item is required");
+                throw e;
+            }
+        } else {
+            StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = Cypher.match(relations).where(CommonOperationUtil.getQueryCondition(relations, defaultFilteringItem));
+            if (andFilteringItemList != null && andFilteringItemList.size() > 0) {
+                for (FilteringItem currentFilteringItem : andFilteringItemList) {
+                    ongoingReadingWithWhere = ongoingReadingWithWhere.and(CommonOperationUtil.getQueryCondition(relations, currentFilteringItem));
+                }
+            }
+            if (orFilteringItemList != null && orFilteringItemList.size() > 0) {
+                for (FilteringItem currentFilteringItem : orFilteringItemList) {
+                    ongoingReadingWithWhere = ongoingReadingWithWhere.or(CommonOperationUtil.getQueryCondition(relations, currentFilteringItem));
+                }
+            }
+            if (isDistinctMode) {
+                activeOngoingReadingAndReturn = ongoingReadingWithWhere.returningDistinct(returnedFunctionValue);
+            } else {
+                activeOngoingReadingAndReturn = ongoingReadingWithWhere.returning(returnedFunctionValue);
+            }
+        }
+        statement = activeOngoingReadingAndReturn.build();
+
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        return rel;
+    }
+
     /* Used for APOC query
     Example:
     https://neo4j.com/labs/apoc/4.1/graph-querying/expand-paths-config/#path-expander-paths-config-config-relationship-filters

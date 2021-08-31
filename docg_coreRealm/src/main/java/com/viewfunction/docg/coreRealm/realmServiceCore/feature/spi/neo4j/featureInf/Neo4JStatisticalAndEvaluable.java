@@ -14,7 +14,9 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GroupNumericalAttributesStatisticResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.NumericalAttributeStatisticCondition;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionEntityImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 
@@ -80,7 +82,13 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
                 String statisticTargetLabel = ((AttributeValue)resultRes).getAttributeValue().toString();
 
                 QueryParameters realQueryParameters = queryParameters != null ?queryParameters:new QueryParameters();
-                String statisticCql = CypherBuilder.statistNodesWithQueryParametersAndStatisticFunctions(statisticTargetLabel,realQueryParameters,statisticConditions,groupByAttribute);
+                String statisticCql = "";
+                if(this instanceof ConceptionKind){
+                    statisticCql = CypherBuilder.statistNodesWithQueryParametersAndStatisticFunctions(statisticTargetLabel,realQueryParameters,statisticConditions,groupByAttribute);
+                }
+                if(this instanceof RelationKind){
+                    statisticCql = CypherBuilder.statistRelationsWithQueryParametersAndStatisticFunctions(statisticTargetLabel,realQueryParameters,statisticConditions,groupByAttribute);
+                }
 
                 DataTransformer resultHandleDataTransformer = new DataTransformer() {
                     @Override

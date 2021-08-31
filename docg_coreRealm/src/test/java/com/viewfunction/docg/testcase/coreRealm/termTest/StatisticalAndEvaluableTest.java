@@ -204,5 +204,17 @@ public class StatisticalAndEvaluableTest {
 
         staticClassificationResult = _ConceptionKind2.statisticRelatedClassifications(null,"RelationKind0001", RelationDirection.TWO_WAY);
         Assert.assertEquals(staticClassificationResult.keySet().size(),3);
+
+        RelationKind _RelationKind0001 = coreRealm2.getRelationKind("RelationKind0001");
+
+        if(_RelationKind0001 != null){
+            try {
+                coreRealm.removeRelationKind("RelationKind0001",true);
+            } catch (CoreRealmServiceRuntimeException e) {
+                e.printStackTrace();
+            }
+        }
+        _RelationKind0001 = coreRealm2.createRelationKind("RelationKind0001","DESC");
+        _RelationKind0001.statisticNumericalAttributesByGroup("groupPropA",queryParameters,statisticConditionList);
     }
 }
