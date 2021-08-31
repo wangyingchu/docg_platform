@@ -38,7 +38,13 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
                 String statisticTargetLabel = ((AttributeValue)resultRes).getAttributeValue().toString();
 
                 QueryParameters realQueryParameters = queryParameters != null ?queryParameters:new QueryParameters();
-                String statisticCql = CypherBuilder.statistNodesWithQueryParametersAndStatisticFunctions(statisticTargetLabel,realQueryParameters,statisticConditions,null);
+                String statisticCql = "";
+                if(this instanceof ConceptionKind){
+                    statisticCql = CypherBuilder.statistNodesWithQueryParametersAndStatisticFunctions(statisticTargetLabel,realQueryParameters,statisticConditions,null);
+                }
+                if(this instanceof RelationKind){
+                    statisticCql = CypherBuilder.statistRelationsWithQueryParametersAndStatisticFunctions(statisticTargetLabel,realQueryParameters,statisticConditions,null);
+                }
 
                 DataTransformer resultHandleDataTransformer = new DataTransformer() {
                     @Override

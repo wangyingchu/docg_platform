@@ -216,5 +216,7 @@ public class StatisticalAndEvaluableTest {
         }
         _RelationKind0001 = coreRealm2.createRelationKind("RelationKind0001","DESC");
         _RelationKind0001.statisticNumericalAttributesByGroup("groupPropA",queryParameters,statisticConditionList);
+        _RelationKind0001.statisticNumericalAttributes(queryParameters,statisticConditionList);
+
     }
 }
