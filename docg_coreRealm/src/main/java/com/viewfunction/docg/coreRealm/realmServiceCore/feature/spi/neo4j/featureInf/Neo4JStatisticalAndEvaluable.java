@@ -12,6 +12,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GroupNumericalAttributesStatisticResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.KindEntityAttributeRuntimeStatistics;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.NumericalAttributeStatisticCondition;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
@@ -215,13 +216,73 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
         return null;
     }
 
-    default void evaluateEntityAttributesDistribution(long sampleCount){
+    default List<KindEntityAttributeRuntimeStatistics> statisticEntityAttributesDistribution(long sampleCount){
         /*
         Example:
         https://neo4j.com/labs/apoc/4.1/overview/apoc.meta/apoc.meta.nodeTypeProperties/
         https://neo4j.com/labs/apoc/4.1/overview/apoc.meta/apoc.meta.relTypeProperties/
         */
+        if (this.getEntityUID() != null) {
+            List<KindEntityAttributeRuntimeStatistics> resultList = new ArrayList<>();
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                String checkCql = CypherBuilder.matchNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.getEntityUID()),new String[]{RealmConstant._NameProperty});
+                GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._NameProperty);
+                Object resultRes = workingGraphOperationExecutor.executeRead(getSingleAttributeValueTransformer,checkCql);
+                String statisticTargetType = ((AttributeValue)resultRes).getAttributeValue().toString();
 
+                long sampleCountRealValue = sampleCount > 1000 ? sampleCount : 1000;
+                String evaluateCql = "";
+                if(this instanceof ConceptionKind){
+                    evaluateCql = "CALL apoc.meta.nodeTypeProperties({labels: [\""+statisticTargetType+"\"],sample:"+sampleCountRealValue+"});";
+                    logger.debug("Generated Cypher Statement: {}", evaluateCql);
+                    DataTransformer nodeTypePropertiesDataTransformer = new DataTransformer() {
+                        @Override
+                        public Object transformResult(Result result) {
 
+                            while(result.hasNext()){
+                                Record nodeRecord = result.next();
+                                String kindName = nodeRecord.get("nodeType").asString().replace(":","").replaceAll("`","");
+                                String propertyName = nodeRecord.get("propertyName").asString();
+                                String propertyTypes = nodeRecord.get("propertyTypes").asList().get(0).toString();
+                                long propertyObservations = nodeRecord.get("propertyObservations").asLong();
+                                long totalObservations = nodeRecord.get("totalObservations").asLong();
+                                KindEntityAttributeRuntimeStatistics currentKindEntityAttributeRuntimeStatistics =
+                                        new KindEntityAttributeRuntimeStatistics(kindName,propertyName,propertyTypes,totalObservations,propertyObservations);
+                                resultList.add(currentKindEntityAttributeRuntimeStatistics);
+                            }
+                            return null;
+                        }
+                    };
+                    workingGraphOperationExecutor.executeRead(nodeTypePropertiesDataTransformer,evaluateCql);
+                }
+                if(this instanceof RelationKind){
+                    evaluateCql = "CALL apoc.meta.relTypeProperties({rels: [\""+statisticTargetType+"\"],maxRels: "+sampleCountRealValue+"});";
+                    logger.debug("Generated Cypher Statement: {}", evaluateCql);
+                    DataTransformer relTypePropertiesDataTransformer = new DataTransformer() {
+                        @Override
+                        public Object transformResult(Result result) {
+                            while(result.hasNext()){
+                                Record nodeRecord = result.next();
+                                String kindName = nodeRecord.get("relType").asString().replace(":","").replaceAll("`","");
+                                String propertyName = nodeRecord.get("propertyName").asString();
+                                String propertyTypes = nodeRecord.get("propertyTypes").asList().get(0).toString();
+                                long propertyObservations = nodeRecord.get("propertyObservations").asLong();
+                                long totalObservations = nodeRecord.get("totalObservations").asLong();
+                                KindEntityAttributeRuntimeStatistics currentKindEntityAttributeRuntimeStatistics =
+                                        new KindEntityAttributeRuntimeStatistics(kindName,propertyName,propertyTypes,totalObservations,propertyObservations);
+                                resultList.add(currentKindEntityAttributeRuntimeStatistics);
+                            }
+                            return null;
+                        }
+                    };
+                    workingGraphOperationExecutor.executeRead(relTypePropertiesDataTransformer,evaluateCql);
+                }
+                return resultList;
+            } finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
     }
 }
