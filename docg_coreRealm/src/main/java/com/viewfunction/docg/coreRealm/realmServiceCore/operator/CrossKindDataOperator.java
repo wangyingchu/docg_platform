@@ -1,4 +1,4 @@
-package com.viewfunction.docg.coreRealm.realmServiceCore.feature;
+package com.viewfunction.docg.coreRealm.realmServiceCore.operator;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;

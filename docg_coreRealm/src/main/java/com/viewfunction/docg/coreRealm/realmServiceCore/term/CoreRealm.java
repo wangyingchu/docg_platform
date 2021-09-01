@@ -2,7 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.feature.CrossKindDataOperator;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionKindCorrelationInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
@@ -432,7 +432,7 @@ public interface CoreRealm {
     /**
      * 获取当前领域的跨类型数据操作器
      *
-     * @return 前领域的跨类型数据操作器
+     * @return 当前领域的跨类型数据操作器
      */
     public CrossKindDataOperator getCrossKindDataOperator();
 

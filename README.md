@@ -496,7 +496,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     /**
      * 获取当前领域的跨类型数据操作器
      *
-     * @return 前领域的跨类型数据操作器
+     * @return 当前领域的跨类型数据操作器
      */
     public CrossKindDataOperator getCrossKindDataOperator();
 
