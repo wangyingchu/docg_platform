@@ -539,6 +539,30 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
         return null;
     }
 
+    default public boolean isDense() {
+        if(this.getEntityUID() != null) {
+            String cypherProcedureString = "MATCH (targetNode) WHERE id(targetNode)= "+this.getEntityUID()+"\n" +
+                    "RETURN apoc.nodes.isDense(targetNode) AS "+ CypherBuilder.operationResultName+";";
+            logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            DataTransformer<Boolean> booleanValueDataTransformer = (DataTransformer) result -> {
+                if(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    return nodeRecord.get(CypherBuilder.operationResultName).asBoolean();
+                }
+                return false;
+            };
+            try {
+                Object queryResponse = workingGraphOperationExecutor.executeRead(booleanValueDataTransformer,cypherProcedureString);
+                return queryResponse != null? (Boolean)queryResponse: false;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return false;
+    }
+
     private String generateApocNeighborsQuery(NeighborsSearchUsage neighborsSearchUsage,List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch, JumpStopLogic jumpStopLogic, int jumpNumber,
                                               AttributesParameters conceptionAttributesParameters, ResultEntitiesParameters resultEntitiesParameters) throws CoreRealmServiceEntityExploreException {
         if(relationKindMatchLogics != null && relationKindMatchLogics.size() == 0){

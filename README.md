@@ -2184,6 +2184,12 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public Long countRelatedConceptionEntities(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,JumpStopLogic jumpStopLogic,int jumpNumber,
                                                                      AttributesParameters conceptionAttributesParameters) throws CoreRealmServiceEntityExploreException;
 
+    /**
+     * 判断当前概念实体对象是否稠密节点
+     *
+     * @return 如是稠密节点返回 true，否则返回 false
+     */
+    public boolean isDense();
 ```
 ###### ↳ MetaAttributeFeatureSupportable
 
