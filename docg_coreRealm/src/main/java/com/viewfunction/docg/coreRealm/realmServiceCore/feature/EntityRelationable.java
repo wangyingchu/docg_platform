@@ -253,7 +253,7 @@ public interface EntityRelationable {
                                                                      AttributesParameters conceptionAttributesParameters) throws CoreRealmServiceEntityExploreException;
 
     /**
-     * 判断当前概念实体对象是否稠密节点
+     * 判断当前实体对象是否稠密节点
      *
      * @return 如是稠密节点返回 true，否则返回 false
      */
