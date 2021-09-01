@@ -215,8 +215,20 @@ public class StatisticalAndEvaluableTest {
             }
         }
         _RelationKind0001 = coreRealm2.createRelationKind("RelationKind0001","DESC");
-        _RelationKind0001.statisticNumericalAttributesByGroup("groupPropA",queryParameters,statisticConditionList);
-        _RelationKind0001.statisticNumericalAttributes(queryParameters,statisticConditionList);
 
+        List<GroupNumericalAttributesStatisticResult> groupNumericalAttributesStatisticResult2 = _RelationKind0001.statisticNumericalAttributesByGroup("groupPropA",queryParameters,statisticConditionList);
+        Assert.assertEquals(groupNumericalAttributesStatisticResult2.size(),0);
+
+
+        Map<String,Number> numberMap2 = _RelationKind0001.statisticNumericalAttributes(queryParameters,statisticConditionList);
+        Assert.assertEquals(numberMap2.size(),6);
+
+        boolean exceptionShouldThrown = false;
+        try {
+            _RelationKind0001.statisticRelatedClassifications(null, "RelationKind0001", RelationDirection.TO);
+        }catch (CoreRealmServiceEntityExploreException e){
+            exceptionShouldThrown = true;
+        }
+        Assert.assertTrue(exceptionShouldThrown);
     }
 }

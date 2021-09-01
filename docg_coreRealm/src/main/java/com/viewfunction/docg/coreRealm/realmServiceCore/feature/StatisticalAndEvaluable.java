@@ -48,7 +48,7 @@ public interface StatisticalAndEvaluable {
      *
      * @return 统计结果键值对，Key 为分类名称， Value 为与其相关的概念实体列表
      */
-    public Map<String,List<ConceptionEntity>> statisticRelatedClassifications(QueryParameters queryParameters, String relationKindName, RelationDirection relationDirection);
+    public Map<String,List<ConceptionEntity>> statisticRelatedClassifications(QueryParameters queryParameters, String relationKindName, RelationDirection relationDirection) throws CoreRealmServiceEntityExploreException;
 
     public void evaluateEntityAttributesDistribution(long sampleCount);
 }

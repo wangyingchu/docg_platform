@@ -23,10 +23,14 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Neo4JKeyResourcesRetrievable{
+
+    static Logger logger = LoggerFactory.getLogger(StatisticalAndEvaluable.class);
 
     default Map<String,Number> statisticNumericalAttributes(QueryParameters queryParameters, List<NumericalAttributeStatisticCondition> statisticConditions) throws CoreRealmServiceEntityExploreException {
         if (this.getEntityUID() != null) {
@@ -135,7 +139,13 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
         return null;
     }
 
-    default public Map<String,List<ConceptionEntity>> statisticRelatedClassifications(QueryParameters queryParameters, String relationKindName, RelationDirection relationDirection){
+    default public Map<String,List<ConceptionEntity>> statisticRelatedClassifications(QueryParameters queryParameters, String relationKindName, RelationDirection relationDirection) throws CoreRealmServiceEntityExploreException{
+        if(this instanceof RelationKind){
+            logger.error("Method statisticRelatedClassifications can not used for RelationKind");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("Method statisticRelatedClassifications can not used for RelationKind");
+            throw e;
+        }
         if (this.getEntityUID() != null) {
             Map<String,List<ConceptionEntity>> resultMap = new HashMap<>();
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
