@@ -51,5 +51,12 @@ public interface StatisticalAndEvaluable {
      */
     public Map<String,List<ConceptionEntity>> statisticRelatedClassifications(QueryParameters queryParameters, String relationKindName, RelationDirection relationDirection) throws CoreRealmServiceEntityExploreException;
 
+    /**
+     * 统计类型已有数据实体中存在的所有 Attribute 属性信息
+     *
+     * @param sampleCount long 执行统计时抽样的实体数据数量
+     *
+     * @return 类型中抽样选取的数据实体中已经存在的所有属性的统计信息列表
+     */
     public List<KindEntityAttributeRuntimeStatistics> statisticEntityAttributesDistribution(long sampleCount);
 }

@@ -2340,6 +2340,15 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 统计结果键值对，Key 为分类名称， Value 为与其相关的概念实体列表
      */
     public Map<String,List<ConceptionEntity>> statisticRelatedClassifications(QueryParameters queryParameters, String relationKindName, RelationDirection relationDirection);
+
+    /**
+     * 统计类型已有数据实体中存在的所有 Attribute 属性信息
+     *
+     * @param sampleCount long 执行统计时抽样的实体数据数量
+     *
+     * @return 类型中抽样选取的数据实体中已经存在的所有属性的统计信息列表
+     */
+    public List<KindEntityAttributeRuntimeStatistics> statisticEntityAttributesDistribution(long sampleCount);
 ```
 
 ###### ↳ TimeScaleFeatureSupportable
