@@ -2,6 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featu
 
 import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationKindMatchLogic;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.StatisticalAndEvaluable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
@@ -283,6 +284,11 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }
         }
+        return null;
+    }
+
+    default public Map<String,Long> statisticEntityRelationDegree(QueryParameters queryParameters, List<RelationKindMatchLogic> relationKindMatchLogics,
+                                                          RelationDirection defaultDirectionForNoneRelationKindMatch) throws CoreRealmServiceEntityExploreException{
         return null;
     }
 }

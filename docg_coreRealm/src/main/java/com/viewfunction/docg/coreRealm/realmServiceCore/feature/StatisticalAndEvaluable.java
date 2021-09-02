@@ -1,6 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.feature;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationKindMatchLogic;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GroupNumericalAttributesStatisticResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.KindEntityAttributeRuntimeStatistics;
@@ -59,4 +60,15 @@ public interface StatisticalAndEvaluable {
      * @return 类型中抽样选取的数据实体中已经存在的所有属性的统计信息列表
      */
     public List<KindEntityAttributeRuntimeStatistics> statisticEntityAttributesDistribution(long sampleCount);
+
+    /**
+     * 统计特定实体对象按照指定关联规律的 Degree 值
+     *
+     * @param queryParameters QueryParameters 待统计数据查询条件
+     * @param relationKindMatchLogics List<RelationKindMatchLogic> 路径上允许的关系类型名称与关系方向组合，如存在该参数至少需要输入一项数值
+     * @param defaultDirectionForNoneRelationKindMatch RelationDirection 未输入目标关系类型名称与关系方向组合时使用的全局关系方向，必须为 RelationDirection.FROM 或 RelationDirection.TO
+     *
+     * @return 统计结果Map， key为实体对象的唯一值ID，value 为 degree 数值
+     */
+    public Map<String,Long> statisticEntityRelationDegree(QueryParameters queryParameters,List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch) throws CoreRealmServiceEntityExploreException;
 }
