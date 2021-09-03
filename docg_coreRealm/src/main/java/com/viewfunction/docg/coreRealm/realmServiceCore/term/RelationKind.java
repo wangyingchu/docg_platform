@@ -10,6 +10,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaAttributeFea
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaConfigItemFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.StatisticalAndEvaluable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationDegreeDistributionInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntitiesRetrieveResult;
@@ -110,4 +111,13 @@ public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttr
      * @return 关系实体对象
      */
     public RelationEntity getEntityByUID(String relationEntityUID);
+
+    /**
+     * 计算当前关系类型的所有关系实体的度分布
+     *
+     * @param relationDirection RelationDirection 关系关联方向
+     *
+     * @return 关系实体度分布信息对象
+     */
+    public RelationDegreeDistributionInfo computeRelationDegreeDistribution(RelationDirection relationDirection);
 }

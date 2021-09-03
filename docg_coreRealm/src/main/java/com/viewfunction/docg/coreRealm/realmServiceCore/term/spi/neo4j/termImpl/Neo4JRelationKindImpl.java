@@ -15,10 +15,13 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.paylo
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonRelationEntitiesAttributesRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonRelationEntitiesRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JRelationKind;
 
+import org.neo4j.driver.Record;
+import org.neo4j.driver.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -238,6 +241,57 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
             }
         }
         return null;
+    }
+
+    @Override
+    public RelationDegreeDistributionInfo computeRelationDegreeDistribution(RelationDirection relationDirection) {
+        String relationKindNameAndDirection = this.relationKindName;
+        if(relationDirection != null){
+            switch(relationDirection){
+                case FROM: relationKindNameAndDirection = this.relationKindName+">";
+                    break;
+                case TO: relationKindNameAndDirection = "<"+this.relationKindName;
+                    break;
+                case TWO_WAY: relationKindNameAndDirection = this.relationKindName;
+            }
+        }
+
+        String cypherProcedureString = "CALL apoc.stats.degrees(\""+relationKindNameAndDirection+"\");";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        DataTransformer<RelationDegreeDistributionInfo> entityRelationDegreeDataTransformer = new DataTransformer() {
+            @Override
+            public RelationDegreeDistributionInfo transformResult(Result result) {
+                if(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    String type = ""+nodeRecord.get("type").asString();
+                    long total = nodeRecord.get("total").asLong();
+                    long p50 = nodeRecord.get("p50").asLong();
+                    long p75 = nodeRecord.get("p75").asLong();
+                    long p90 = nodeRecord.get("p90").asLong();
+                    long p95 = nodeRecord.get("p95").asLong();
+                    long p99 = nodeRecord.get("p99").asLong();
+                    long p999 = nodeRecord.get("p999").asLong();
+                    long max = nodeRecord.get("max").asLong();
+                    long min = nodeRecord.get("min").asLong();
+                    float mean = nodeRecord.get("mean").asNumber().floatValue();
+
+                    RelationDegreeDistributionInfo relationDegreeDistributionInfo = new RelationDegreeDistributionInfo(
+                            type, relationDirection,total,p50,p75,p90,p95,p99,p999,max,min,mean
+                    );
+                    return relationDegreeDistributionInfo;
+                }
+                return null;
+            }
+        };
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            Object resEntityRes = workingGraphOperationExecutor.executeRead(entityRelationDegreeDataTransformer, cypherProcedureString);
+            return resEntityRes != null ? (RelationDegreeDistributionInfo) resEntityRes : null;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     //internal graphOperationExecutor management logic

@@ -841,6 +841,15 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 关系实体对象
      */
     public RelationEntity getEntityByUID(String relationEntityUID);
+
+    /**
+     * 计算当前关系类型的所有关系实体的度分布
+     *
+     * @param relationDirection RelationDirection 关系关联方向
+     *
+     * @return 关系实体度分布信息对象
+     */
+    public RelationDegreeDistributionInfo computeRelationDegreeDistribution(RelationDirection relationDirection);
 ```
 ###### ↳ AttributesViewKind
 ---
