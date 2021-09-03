@@ -1,6 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf;
 
 import com.google.common.collect.Lists;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationKindMatchLogic;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
@@ -287,8 +288,58 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
         return null;
     }
 
-    default public Map<String,Long> statisticEntityRelationDegree(QueryParameters queryParameters, List<RelationKindMatchLogic> relationKindMatchLogics,
-                                                          RelationDirection defaultDirectionForNoneRelationKindMatch) throws CoreRealmServiceEntityExploreException{
+    default public Map<String,Long> statisticEntityRelationDegree(AttributesParameters queryParameters, List<RelationKindMatchLogic> relationKindMatchLogics,
+                                                                  RelationDirection defaultDirectionForNoneRelationKindMatch) throws CoreRealmServiceEntityExploreException{
+        if(this instanceof RelationKind){
+            logger.error("Method statisticEntityRelationDegree can not used for RelationKind");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("Method statisticEntityRelationDegree can not used for RelationKind");
+            throw e;
+        }
+        /*
+        Example:
+        https://neo4j.com/labs/apoc/4.1/overview/apoc.node/apoc.node.degree/
+        */
+        if (this.getEntityUID() != null) {
+            Map<String,Long> resultMap = new HashMap<>();
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                String checkCql = CypherBuilder.matchNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.getEntityUID()),new String[]{RealmConstant._NameProperty});
+                GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._NameProperty);
+                Object resultRes = workingGraphOperationExecutor.executeRead(getSingleAttributeValueTransformer,checkCql);
+                String statisticTargetLabel = ((AttributeValue)resultRes).getAttributeValue().toString();
+
+                String statisticCql = "MATCH (entity:"+statisticTargetLabel+")";
+                String wherePartQuery = CypherBuilder.generateAttributesParametersQueryLogic(queryParameters,"entity");
+                String relationMatchLogicFullString = CypherBuilder.generateRelationKindMatchLogicsQuery(relationKindMatchLogics,defaultDirectionForNoneRelationKindMatch);
+                if(!wherePartQuery.equals("")){
+                    statisticCql = statisticCql + " " + wherePartQuery;
+                }
+                statisticCql = statisticCql +"\n" + "RETURN id(entity) as uid,apoc.node.degree(entity,\""+relationMatchLogicFullString+"\") AS degree;";
+                logger.debug("Generated Cypher Statement: {}", statisticCql);
+
+                DataTransformer entityRelationDegreeDataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        if(result.hasNext()){
+                            while(result.hasNext()){
+                                Record nodeRecord = result.next();
+                                String entityUID = ""+nodeRecord.get("uid").asLong();
+                                long entityDegree = nodeRecord.get("degree").asLong();
+                                resultMap.put(entityUID,entityDegree);
+                            }
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(entityRelationDegreeDataTransformer,statisticCql);
+                return resultMap;
+            } catch (CoreRealmServiceEntityExploreException e) {
+                e.printStackTrace();
+            } finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
 }

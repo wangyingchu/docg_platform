@@ -2355,6 +2355,18 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 类型中抽样选取的数据实体中已经存在的所有属性的统计信息列表
      */
     public List<KindEntityAttributeRuntimeStatistics> statisticEntityAttributesDistribution(long sampleCount);
+
+    /**
+     * 统计特定实体对象按照指定关联规律的 Degree 值
+     *
+     * @param queryParameters AttributesParameters 待统计数据查询条件
+     * @param relationKindMatchLogics List<RelationKindMatchLogic> 路径上允许的关系类型名称与关系方向组合
+     * @param defaultDirectionForNoneRelationKindMatch RelationDirection 未输入目标关系类型名称与关系方向组合时使用的全局关系方向
+     *
+     * @return 统计结果Map， key为实体对象的唯一值ID，value 为 degree 数值
+     */
+    public Map<String,Long> statisticEntityRelationDegree(AttributesParameters queryParameters, List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch) throws CoreRealmServiceEntityExploreException;
+
 ```
 
 ###### ↳ TimeScaleFeatureSupportable
