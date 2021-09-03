@@ -546,15 +546,33 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
             logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
-            DataTransformer<Boolean> booleanValueDataTransformer = (DataTransformer) result -> {
-                if(result.hasNext()){
-                    Record nodeRecord = result.next();
-                    return nodeRecord.get(CypherBuilder.operationResultName).asBoolean();
-                }
-                return false;
-            };
+            GetBooleanFormatReturnValueTransformer getBooleanFormatReturnValueTransformer = new GetBooleanFormatReturnValueTransformer();
             try {
-                Object queryResponse = workingGraphOperationExecutor.executeRead(booleanValueDataTransformer,cypherProcedureString);
+                Object queryResponse = workingGraphOperationExecutor.executeRead(getBooleanFormatReturnValueTransformer,cypherProcedureString);
+                return queryResponse != null? (Boolean)queryResponse: false;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return false;
+    }
+
+    default public boolean isAttachedTo(String targetRelationableUID,List<RelationKindMatchLogic> relationKindMatchLogics) throws CoreRealmServiceRuntimeException{
+        /*
+        Example:
+        https://neo4j.com/labs/apoc/4.1/overview/apoc.nodes/apoc.nodes.connected/
+        */
+        if(this.getEntityUID() != null && targetRelationableUID != null) {
+            String relationMatchLogicFullString = CypherBuilder.generateRelationKindMatchLogicsQuery(relationKindMatchLogics,null);
+            String cypherProcedureString = "MATCH (sourceNode) WHERE id(sourceNode)= "+this.getEntityUID()+"\n" +
+                    "MATCH (targetNode) WHERE id(targetNode)= "+targetRelationableUID+"\n" +
+                    "RETURN apoc.nodes.connected(sourceNode, targetNode, \""+relationMatchLogicFullString+"\") AS "+CypherBuilder.operationResultName+";";
+            logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            GetBooleanFormatReturnValueTransformer getBooleanFormatReturnValueTransformer = new GetBooleanFormatReturnValueTransformer();
+            try {
+                Object queryResponse = workingGraphOperationExecutor.executeRead(getBooleanFormatReturnValueTransformer,cypherProcedureString);
                 return queryResponse != null? (Boolean)queryResponse: false;
             }finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();

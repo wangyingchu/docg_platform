@@ -258,4 +258,14 @@ public interface EntityRelationable {
      * @return 如是稠密节点返回 true，否则返回 false
      */
     public boolean isDense();
+
+    /**
+     * 判断当前实体对象是否与目标实体关联
+     *
+     * @param targetRelationableUID String 目标实体唯一ID
+     * @param relationKindMatchLogics List<RelationKindMatchLogic> 目标关系类型名称与关系方向组合
+     *
+     * @return 如关联返回 true，否则返回 false
+     */
+    public boolean isAttachedTo(String targetRelationableUID,List<RelationKindMatchLogic> relationKindMatchLogics) throws CoreRealmServiceRuntimeException;
 }
