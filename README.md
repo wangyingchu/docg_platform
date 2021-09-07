@@ -2409,7 +2409,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @return 属性值分布信息对象
      */
-    public AttributeValueDistributionInfo statisticAttributeValueDistribution(AttributesParameters queryParameters,String attributeName);
+    public AttributeValueDistributionInfo statisticAttributeValueDistribution(AttributesParameters queryParameters,String attributeName) throws CoreRealmServiceEntityExploreException;
 
 ```
 
