@@ -2216,6 +2216,14 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 关系类型名称列表
      */
     public List<String> listAttachedRelationKinds();
+
+    /**
+     * 检查当前实体对象是否存在由关系类型名称与关系方向组合描述的数据关联
+     * @param relationKindMatchLogics List<RelationKindMatchLogic> 目标关系类型名称与关系方向组合列表
+     *
+     * @return 目标关系类型名称与关系方向组合和检查结果的Map，如存在关系类型名称与关系方向组合描述的关系实体数据则返回true，反之返回false
+     */
+    public Map<RelationKindMatchLogic,Boolean> checkRelationKindAttachExistence(List<RelationKindMatchLogic> relationKindMatchLogics);
 ```
 ###### ↳ MetaAttributeFeatureSupportable
 

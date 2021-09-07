@@ -25,10 +25,7 @@ import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyResourcesRetrievable {
 
@@ -611,6 +608,59 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
                 };
                 workingGraphOperationExecutor.executeRead(resultDataTransformer,cypherProcedureString);
                 return relationKindsList;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
+    }
+
+    default public Map<RelationKindMatchLogic,Boolean> checkRelationKindAttachExistence(List<RelationKindMatchLogic> relationKindMatchLogics){
+        /*
+        Example:
+        https://neo4j.com/labs/apoc/4.1/overview/apoc.node/apoc.node.relationships.exist/
+        */
+        if(this.getEntityUID() != null) {
+            String relationMatchLogicFullString = CypherBuilder.generateRelationKindMatchLogicsQuery(relationKindMatchLogics,null);
+            String cypherProcedureString = "MATCH (sourceNode) WHERE id(sourceNode)= "+this.getEntityUID()+"\n" +
+                    "RETURN apoc.node.relationships.exist(sourceNode, \""+relationMatchLogicFullString+"\") AS "+CypherBuilder.operationResultName+";";
+            logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+            Map<RelationKindMatchLogic,Boolean> checkResultMap = new HashMap<>();
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                DataTransformer resultDataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        if(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            Map resultMap = nodeRecord.get(CypherBuilder.operationResultName).asMap();
+                            if(resultMap != null){
+                                Iterator keyIterator = resultMap.keySet().iterator();
+                                while (keyIterator.hasNext()){
+                                    String currentKey = keyIterator.next().toString();
+                                    String currentRelationKind = null;
+                                    RelationDirection relationDirection = null;
+                                    if(currentKey.startsWith("<")){
+                                        currentRelationKind = currentKey.replaceFirst("<","");
+                                        relationDirection = RelationDirection.TO;
+                                    }else if(currentKey.endsWith(">")){
+                                        currentRelationKind = currentKey.replaceFirst(">","");
+                                        relationDirection = RelationDirection.FROM;
+                                    }else{
+                                        currentRelationKind = currentKey;
+                                        relationDirection = RelationDirection.TWO_WAY;
+                                    }
+                                    Boolean existenceValue = Boolean.valueOf(resultMap.get(currentKey).toString());
+                                    checkResultMap.put(new RelationKindMatchLogic(currentRelationKind,relationDirection),existenceValue);
+                                }
+                            }
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(resultDataTransformer,cypherProcedureString);
+                return checkResultMap;
             }finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }
