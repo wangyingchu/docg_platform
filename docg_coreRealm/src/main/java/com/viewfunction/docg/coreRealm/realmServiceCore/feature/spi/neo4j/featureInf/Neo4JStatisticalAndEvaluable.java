@@ -340,15 +340,60 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
         return null;
     }
 
-    default public AttributeValueDistributionInfo statisticAttributeValueDistribution(AttributesParameters queryParameters, String attributeName) {
+    default public AttributeValueDistributionInfo statisticAttributeValueDistribution(AttributesParameters queryParameters, String attributeName) throws CoreRealmServiceEntityExploreException {
+        if(attributeName == null){
+            logger.error("AttributeName is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("AttributeName is required");
+            throw e;
+        }
         /*
         Example:
         https://neo4j.com/labs/apoc/4.1/overview/apoc.agg/apoc.agg.statistics/
         */
+        if (this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                String checkCql = CypherBuilder.matchNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.getEntityUID()),new String[]{RealmConstant._NameProperty});
+                GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._NameProperty);
+                Object resultRes = workingGraphOperationExecutor.executeRead(getSingleAttributeValueTransformer,checkCql);
+                String statisticTargetType = ((AttributeValue)resultRes).getAttributeValue().toString();
+                String statisticCql = "";
+                if(this instanceof ConceptionKind){
+                    statisticCql = "MATCH (entity:"+statisticTargetType+")";
+                }
+                if(this instanceof RelationKind){
+                    statisticCql = "MATCH ()-[entity:"+statisticTargetType+"]-()";
+                }
+
+                String wherePartQuery = CypherBuilder.generateAttributesParametersQueryLogic(queryParameters,"entity");
+                if(!wherePartQuery.equals("")){
+                    statisticCql = statisticCql + " " + wherePartQuery;
+                }
 
 
 
 
+
+                String fullQuery = statisticCql+
+                        "RETURN apoc.agg.statistics(entity."+attributeName+", [0.1, 0.25, 0.4,0.5,0.75,0.90,0.95,0.99,0.999]) AS stats;";
+                       // "WITH apoc.agg.statistics(entity."+attributeName+", [0.1, 0.25]) AS stats\n" +
+                       //         "UNWIND keys(stats) AS key\n" +
+                       //         "RETURN key, stats[key] AS value;";
+
+
+
+
+
+            }finally{
+
+
+            }
+
+
+
+
+        }
         return null;
     }
 }

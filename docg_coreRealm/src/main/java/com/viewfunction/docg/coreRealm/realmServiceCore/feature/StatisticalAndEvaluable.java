@@ -82,5 +82,5 @@ public interface StatisticalAndEvaluable {
      *
      * @return 属性值分布信息对象
      */
-    public AttributeValueDistributionInfo statisticAttributeValueDistribution(AttributesParameters queryParameters,String attributeName);
+    public AttributeValueDistributionInfo statisticAttributeValueDistribution(AttributesParameters queryParameters,String attributeName) throws CoreRealmServiceEntityExploreException;
 }

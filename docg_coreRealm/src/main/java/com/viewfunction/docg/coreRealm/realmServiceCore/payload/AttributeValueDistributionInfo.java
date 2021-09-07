@@ -21,7 +21,7 @@ public class AttributeValueDistributionInfo {
     private float stDev;
 
     public AttributeValueDistributionInfo(String conceptionKind,String attributeName,long conceptionEntityCount,float p10,
-                                          float p25,float p40,float p50,float p75,float p90,float p95,float p999,float max,
+                                          float p25,float p40,float p50,float p75,float p90,float p95,float p99,float p999,float max,
                                           float min,float minNonZero,float mean,float stDev){
         this.conceptionKind = conceptionKind;
         this.attributeName = attributeName;
@@ -33,6 +33,7 @@ public class AttributeValueDistributionInfo {
         this.p75 = p75;
         this.p90 = p90;
         this.p95 = p95;
+        this.p99 = p99;
         this.p999 = p999;
         this.max = max;
         this.min = min;
