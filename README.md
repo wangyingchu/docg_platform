@@ -2401,6 +2401,16 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      */
     public Map<String,Long> statisticEntityRelationDegree(AttributesParameters queryParameters, List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch) throws CoreRealmServiceEntityExploreException;
 
+    /**
+     * 统计特定实体对象中指定数值类属性的数据分布信息
+     *
+     * @param queryParameters AttributesParameters 待统计数据查询条件
+     * @param attributeName String 待统计数值类属性名称
+     *
+     * @return 属性值分布信息对象
+     */
+    public AttributeValueDistributionInfo statisticAttributeValueDistribution(AttributesParameters queryParameters,String attributeName);
+
 ```
 
 ###### ↳ TimeScaleFeatureSupportable

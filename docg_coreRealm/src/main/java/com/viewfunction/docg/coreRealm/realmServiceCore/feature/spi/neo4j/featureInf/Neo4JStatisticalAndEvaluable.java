@@ -12,10 +12,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListObjectValueTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleAttributeValueTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GroupNumericalAttributesStatisticResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.KindEntityAttributeRuntimeStatistics;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.NumericalAttributeStatisticCondition;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
@@ -340,6 +337,18 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }
         }
+        return null;
+    }
+
+    default public AttributeValueDistributionInfo statisticAttributeValueDistribution(AttributesParameters queryParameters, String attributeName) {
+        /*
+        Example:
+        https://neo4j.com/labs/apoc/4.1/overview/apoc.agg/apoc.agg.statistics/
+        */
+
+
+
+
         return null;
     }
 }
