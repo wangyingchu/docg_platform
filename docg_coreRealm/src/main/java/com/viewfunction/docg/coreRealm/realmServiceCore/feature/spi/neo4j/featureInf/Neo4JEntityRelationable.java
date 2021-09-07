@@ -557,7 +557,7 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
         return false;
     }
 
-    default public boolean isAttachedTo(String targetRelationableUID,List<RelationKindMatchLogic> relationKindMatchLogics) throws CoreRealmServiceRuntimeException{
+    default public boolean isAttachedWith(String targetRelationableUID, List<RelationKindMatchLogic> relationKindMatchLogics) throws CoreRealmServiceRuntimeException{
         /*
         Example:
         https://neo4j.com/labs/apoc/4.1/overview/apoc.nodes/apoc.nodes.connected/
@@ -579,6 +579,43 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
             }
         }
         return false;
+    }
+
+    default public List<String> listAttachedRelationKinds(){
+        /*
+        Example:
+        https://neo4j.com/labs/apoc/4.1/overview/apoc.node/apoc.node.relationship.types/
+        */
+        if(this.getEntityUID() != null) {
+            String cypherProcedureString = "MATCH (sourceNode) WHERE id(sourceNode)= "+this.getEntityUID()+"\n" +
+                    "RETURN apoc.node.relationship.types(sourceNode) AS "+CypherBuilder.operationResultName+";";
+            logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+            List<String> relationKindsList = new ArrayList<>();
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                DataTransformer resultDataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        if(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            List<Object> kindList = nodeRecord.get(CypherBuilder.operationResultName).asList();
+                            if(kindList != null){
+                                for(Object currentKindName:kindList){
+                                    relationKindsList.add(currentKindName.toString());
+                                }
+                            }
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(resultDataTransformer,cypherProcedureString);
+                return relationKindsList;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
     }
 
     private String generateApocNeighborsQuery(NeighborsSearchUsage neighborsSearchUsage,List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch, JumpStopLogic jumpStopLogic, int jumpNumber,

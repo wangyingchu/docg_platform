@@ -2208,7 +2208,14 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @return 如关联返回 true，否则返回 false
      */
-    public boolean isAttachedTo(String targetRelationableUID,List<RelationKindMatchLogic> relationKindMatchLogics) throws CoreRealmServiceRuntimeException;
+    public boolean isAttachedWith(String targetRelationableUID,List<RelationKindMatchLogic> relationKindMatchLogics) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取当前实体对象的所有关联的关系类型
+     *
+     * @return 关系类型名称列表
+     */
+    public List<String> listAttachedRelationKinds();
 ```
 ###### ↳ MetaAttributeFeatureSupportable
 
