@@ -2,9 +2,9 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.payload;
 
 public class AttributeValueDistributionInfo {
 
-    private String conceptionKind;
+    private String kindName;
     private String attributeName;
-    private long conceptionEntityCount;
+    private long entityCount;
     private float p10;
     private float p25;
     private float p40;
@@ -20,12 +20,12 @@ public class AttributeValueDistributionInfo {
     private float mean;
     private float stDev;
 
-    public AttributeValueDistributionInfo(String conceptionKind,String attributeName,long conceptionEntityCount,float p10,
-                                          float p25,float p40,float p50,float p75,float p90,float p95,float p99,float p999,float max,
-                                          float min,float minNonZero,float mean,float stDev){
-        this.conceptionKind = conceptionKind;
+    public AttributeValueDistributionInfo(String kindName, String attributeName, long entityCount, float p10,
+                                          float p25, float p40, float p50, float p75, float p90, float p95, float p99, float p999, float max,
+                                          float min, float minNonZero, float mean, float stDev){
+        this.kindName = kindName;
         this.attributeName = attributeName;
-        this.conceptionEntityCount = conceptionEntityCount;
+        this.entityCount = entityCount;
         this.p10 = p10;
         this.p25 = p25;
         this.p40 = p40;
@@ -42,16 +42,16 @@ public class AttributeValueDistributionInfo {
         this.stDev = stDev;
     }
 
-    public String getConceptionKind() {
-        return conceptionKind;
+    public String getKindName() {
+        return kindName;
     }
 
     public String getAttributeName() {
         return attributeName;
     }
 
-    public long getConceptionEntityCount() {
-        return conceptionEntityCount;
+    public long getEntityCount() {
+        return entityCount;
     }
 
     public float getP10() {

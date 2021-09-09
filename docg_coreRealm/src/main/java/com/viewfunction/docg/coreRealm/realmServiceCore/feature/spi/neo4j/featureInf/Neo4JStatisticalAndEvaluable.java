@@ -371,28 +371,71 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
                     statisticCql = statisticCql + " " + wherePartQuery;
                 }
 
+                String fullQuery = statisticCql +"\n" +
+                        "WITH apoc.agg.statistics(entity."+attributeName+", [0.1,0.25,0.4,0.5,0.75,0.90,0.95,0.99,0.999]) AS stats"+"\n" +
+                        "RETURN stats";
+                logger.debug("Generated Cypher Statement: {}", fullQuery);
 
+                DataTransformer<AttributeValueDistributionInfo> attributeValueDistributionDataTransformer = new DataTransformer() {
+                    @Override
+                    public AttributeValueDistributionInfo transformResult(Result result) {
+                        if(result.hasNext()){
+                            while(result.hasNext()){
+                                Record nodeRecord = result.next();
+                                Map<String,Object> statsResultMap = nodeRecord.get("stats").asMap();
 
+                                if(statsResultMap.size() == 6){
+                                    /*value of attributeName noe exist in entities, will return below values:
+                                        "total": 0,
+                                        "min": null,
+                                        "minNonZero": 9223372036854776000.0,
+                                        "max": null,
+                                        "mean": 0.0,
+                                        "stdev": 0.0
+                                    */
+                                    return null;
+                                }else {
+                                    String kindName = statisticTargetType;
+                                    String attributeNameValue = attributeName;
+                                    long entityCount = ((Number) statsResultMap.get("total")).longValue();
+                                    float p10 = ((Number) statsResultMap.get("0.1")).floatValue();
+                                    float p25 = ((Number) statsResultMap.get("0.25")).floatValue();
+                                    float p40 = ((Number) statsResultMap.get("0.4")).floatValue();
+                                    float p50 = ((Number) statsResultMap.get("0.5")).floatValue();
+                                    float p75 = ((Number) statsResultMap.get("0.75")).floatValue();
+                                    float p90 = ((Number) statsResultMap.get("0.9")).floatValue();
+                                    float p95 = ((Number) statsResultMap.get("0.95")).floatValue();
+                                    float p99 = ((Number) statsResultMap.get("0.99")).floatValue();
+                                    float p999 = ((Number) statsResultMap.get("0.999")).floatValue();
+                                    float max = ((Number) statsResultMap.get("max")).floatValue();
+                                    float min = ((Number) statsResultMap.get("min")).floatValue();
+                                    float minNonZero = ((Number) statsResultMap.get("minNonZero")).floatValue();
+                                    float mean = ((Number) statsResultMap.get("mean")).floatValue();
+                                    float stDev = ((Number) statsResultMap.get("stdev")).floatValue();
 
-
-                String fullQuery = statisticCql+
-                        "RETURN apoc.agg.statistics(entity."+attributeName+", [0.1, 0.25, 0.4,0.5,0.75,0.90,0.95,0.99,0.999]) AS stats;";
-                       // "WITH apoc.agg.statistics(entity."+attributeName+", [0.1, 0.25]) AS stats\n" +
-                       //         "UNWIND keys(stats) AS key\n" +
-                       //         "RETURN key, stats[key] AS value;";
-
-
-
-
-
-            }finally{
-
-
+                                    AttributeValueDistributionInfo targetAttributeValueDistributionInfo =
+                                            new AttributeValueDistributionInfo(kindName, attributeNameValue, entityCount, p10,
+                                                    p25, p40, p50, p75, p90, p95, p99, p999, max, min, minNonZero, mean, stDev);
+                                    return targetAttributeValueDistributionInfo;
+                                }
+                            }
+                        }
+                        return null;
+                    }
+                };
+                Object responseObject = workingGraphOperationExecutor.executeRead(attributeValueDistributionDataTransformer,fullQuery);
+                return responseObject != null ? (AttributeValueDistributionInfo)responseObject : null;
+            } catch (org.neo4j.driver.exceptions.ClientException e){
+                logger.error("AttributeName value contains format error -> "+e.getMessage());
+                CoreRealmServiceEntityExploreException e1 = new CoreRealmServiceEntityExploreException();
+                e1.setCauseMessage("AttributeName value contains format error -> "+e.getMessage());
+                throw e1;
+            } catch (Exception e){
+                e.printStackTrace();
             }
-
-
-
-
+            finally{
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
         }
         return null;
     }
