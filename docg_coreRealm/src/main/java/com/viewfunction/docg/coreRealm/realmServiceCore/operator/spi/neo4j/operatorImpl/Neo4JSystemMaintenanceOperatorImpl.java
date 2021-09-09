@@ -6,14 +6,14 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.Grap
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.SystemMaintenanceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.DataStatusSnapshotInfo;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RuntimeRelationAndConceptionKindAttachInfo;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOperator {
 
@@ -47,6 +47,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                         int wholePhysicAttributeNameCount = ((Number) staticResultMap.get("propertyKeyCount")).intValue();
                         Map<String,Long> conceptionKindsDataCount = new HashMap<>();
                         Map<String,Long> relationKindsDataCount = new HashMap<>();
+                        List<RuntimeRelationAndConceptionKindAttachInfo> relationAndConceptionKindAttachInfo = new ArrayList<>();
 
                         Map<String,Object> conceptionKindsDataCountData = (Map<String,Object>)staticResultMap.get("labels");
                         Set<String> conceptionKindName = conceptionKindsDataCountData.keySet();
@@ -62,11 +63,20 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                             relationKindsDataCount.put(currentKind,currentDataCount);
                         }
 
-
+                        Map<String,Object> relationAndConceptionAttachData = (Map<String,Object>)staticResultMap.get("relTypes");
+                        Set<String> attachInfo = relationAndConceptionAttachData.keySet();
+                        for(String currentAttachInfo : attachInfo){
+                            long currentDataCount = ((Number) relationAndConceptionAttachData.get(currentAttachInfo)).longValue();
+                            RuntimeRelationAndConceptionKindAttachInfo currentRuntimeRelationAndConceptionKindAttachInfo =
+                                    getRuntimeRelationAndConceptionKindAttachInfo(currentAttachInfo,currentDataCount);
+                            if(currentRuntimeRelationAndConceptionKindAttachInfo != null){
+                                relationAndConceptionKindAttachInfo.add(currentRuntimeRelationAndConceptionKindAttachInfo);
+                            }
+                        }
 
                         DataStatusSnapshotInfo dataStatusSnapshotInfo = new DataStatusSnapshotInfo(wholeConceptionEntityCount,
                                 wholeRelationEntityCount,wholeConceptionKindCount,wholeRelationKindCount,wholePhysicAttributeNameCount,
-                                conceptionKindsDataCount,relationKindsDataCount);
+                                conceptionKindsDataCount,relationKindsDataCount,relationAndConceptionKindAttachInfo);
                         return dataStatusSnapshotInfo;
                     }
                     return null;
@@ -81,5 +91,30 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
+    }
+
+    private RuntimeRelationAndConceptionKindAttachInfo getRuntimeRelationAndConceptionKindAttachInfo(String attachInfoString,long relationEntityCount){
+        if(attachInfoString.startsWith("()-[:") & attachInfoString.endsWith("]->()")){
+            //Only contains relationKind info, skip it.
+        }else{
+            if(attachInfoString.startsWith("()-[:")){
+                int relationTypeEndIndex = attachInfoString.indexOf("]->(:");
+                String relationType = attachInfoString.substring(5,relationTypeEndIndex);
+                String conceptionType = attachInfoString.substring(relationTypeEndIndex+5,attachInfoString.length()-1);
+                RuntimeRelationAndConceptionKindAttachInfo runtimeRelationAndConceptionKindAttachInfo =
+                        new RuntimeRelationAndConceptionKindAttachInfo(relationType,conceptionType, RelationDirection.TO,relationEntityCount);
+                return runtimeRelationAndConceptionKindAttachInfo;
+            }
+            if(attachInfoString.endsWith("]->()")){
+                int relationTypeStartIndex = attachInfoString.indexOf(")-[:");
+                int relationTypeEndIndex = attachInfoString.indexOf("]->()");
+                String relationType = attachInfoString.substring(relationTypeStartIndex+4,relationTypeEndIndex);
+                String conceptionType = attachInfoString.substring(2,relationTypeStartIndex);
+                RuntimeRelationAndConceptionKindAttachInfo runtimeRelationAndConceptionKindAttachInfo =
+                        new RuntimeRelationAndConceptionKindAttachInfo(relationType,conceptionType, RelationDirection.FROM,relationEntityCount);
+                return runtimeRelationAndConceptionKindAttachInfo;
+            }
+        }
+        return null;
     }
 }
