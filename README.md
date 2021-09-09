@@ -501,6 +501,13 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public CrossKindDataOperator getCrossKindDataOperator();
 
     /**
+     * 获取当前领域的系统维护操作器
+     *
+     * @return 当前领域的系统维护操作器
+     */
+    public SystemMaintenanceOperator getSystemMaintenanceOperator();
+
+    /**
      * 开启全局会话，此操作会创建一个持久化的后端数据库连接，执行该操作后由当前 CoreRealm 所创建的所有对象（以及这些对象创建的后续对象）将继承性的共享该持久化后端数据库连接。
      */
     public void openGlobalSession();
