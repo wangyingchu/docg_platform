@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOperator {
 
@@ -46,6 +47,23 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                         int wholePhysicAttributeNameCount = ((Number) staticResultMap.get("propertyKeyCount")).intValue();
                         Map<String,Long> conceptionKindsDataCount = new HashMap<>();
                         Map<String,Long> relationKindsDataCount = new HashMap<>();
+
+                        Map<String,Object> conceptionKindsDataCountData = (Map<String,Object>)staticResultMap.get("labels");
+                        Set<String> conceptionKindName = conceptionKindsDataCountData.keySet();
+                        for(String currentKind:conceptionKindName){
+                            long currentDataCount = ((Number) conceptionKindsDataCountData.get(currentKind)).longValue();
+                            conceptionKindsDataCount.put(currentKind,currentDataCount);
+                        }
+
+                        Map<String,Object> relationKindsDataCountData = (Map<String,Object>)staticResultMap.get("relTypesCount");
+                        Set<String> relationKindName = relationKindsDataCountData.keySet();
+                        for(String currentKind:relationKindName){
+                            long currentDataCount = ((Number) relationKindsDataCountData.get(currentKind)).longValue();
+                            relationKindsDataCount.put(currentKind,currentDataCount);
+                        }
+
+
+
                         DataStatusSnapshotInfo dataStatusSnapshotInfo = new DataStatusSnapshotInfo(wholeConceptionEntityCount,
                                 wholeRelationEntityCount,wholeConceptionKindCount,wholeRelationKindCount,wholePhysicAttributeNameCount,
                                 conceptionKindsDataCount,relationKindsDataCount);

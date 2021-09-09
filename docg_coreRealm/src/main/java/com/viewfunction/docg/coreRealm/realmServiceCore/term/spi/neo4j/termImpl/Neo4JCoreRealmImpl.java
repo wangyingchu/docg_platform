@@ -1132,7 +1132,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     @Override
     public List<ConceptionKindCorrelationInfo> getConceptionKindsCorrelation() {
         List<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoList = new ArrayList<>();
-        String cypherProcedureString = "CALL db.schema.visualization";
+        String cypherProcedureString = "CALL apoc.meta.graph";
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
@@ -1155,8 +1155,9 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                             String relationKindName = currentNeo4JRelation.type();
                             String startConceptionKindName = conceptionKindMetaInfoMap.get(""+currentNeo4JRelation.startNodeId());
                             String targetConceptionKindName = conceptionKindMetaInfoMap.get(""+currentNeo4JRelation.endNodeId());
+                            int relationEntityCount = currentNeo4JRelation.get("count").asInt();
                             conceptionKindCorrelationInfoList.add(new ConceptionKindCorrelationInfo(startConceptionKindName,
-                                    targetConceptionKindName,relationKindName)
+                                    targetConceptionKindName,relationKindName,relationEntityCount)
                             );
                         }
                     }
