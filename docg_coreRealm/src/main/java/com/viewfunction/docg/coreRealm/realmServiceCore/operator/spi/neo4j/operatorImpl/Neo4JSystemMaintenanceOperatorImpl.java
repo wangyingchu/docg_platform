@@ -31,6 +31,10 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
 
     @Override
     public DataStatusSnapshotInfo getDataStatusSnapshot() {
+        /*
+        Example:
+        https://neo4j.com/labs/apoc/4.1/overview/apoc.meta/apoc.meta.stats/
+        */
         String cypherProcedureString = "CALL apoc.meta.stats();";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
@@ -94,6 +98,12 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
 
     @Override
     public SystemStatusSnapshotInfo getSystemStatusSnapshot() {
+        /*
+        Example:
+        https://neo4j.com/labs/apoc/4.1/overview/apoc.meta/apoc.meta.schema/
+        https://neo4j.com/labs/apoc/4.1/overview/apoc.monitor/apoc.monitor.tx/
+        https://neo4j.com/labs/apoc/4.1/overview/apoc.monitor/apoc.monitor.store/
+        */
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
             SystemStatusSnapshotInfo systemStatusSnapshotInfo = new SystemStatusSnapshotInfo();
