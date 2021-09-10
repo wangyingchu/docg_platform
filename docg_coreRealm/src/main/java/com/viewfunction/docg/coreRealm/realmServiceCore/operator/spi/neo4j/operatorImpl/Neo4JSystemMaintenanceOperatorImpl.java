@@ -2,8 +2,10 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.oper
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListAttributeSystemInfoTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.SystemMaintenanceOperator;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeSystemInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.DataStatusSnapshotInfo;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RuntimeRelationAndConceptionKindAttachInfo;
@@ -173,6 +175,70 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
             workingGraphOperationExecutor.executeRead(dataTransformer3,cypherProcedureString);
 
             return systemStatusSnapshotInfo;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public List<AttributeSystemInfo> getConceptionKindAttributesSystemInfo(String conceptionKindName) {
+        /*
+        Example:
+        https://neo4j.com/labs/apoc/4.1/overview/apoc.meta/apoc.meta.schema/
+        https://neo4j.com/developer/kb/viewing-schema-data-with-apoc/
+        */
+        String cypherProcedureString = "CALL apoc.meta.schema() yield value\n" +
+                "UNWIND apoc.map.sortedProperties(value) as labelData\n" +
+                "WITH labelData[0] as label, labelData[1] as data\n" +
+                "WHERE data.type = \"node\" AND label = \""+conceptionKindName+"\"\n" +
+                "UNWIND apoc.map.sortedProperties(data.properties) as property\n" +
+                "WITH label, property[0] as property, property[1] as propData\n" +
+                "RETURN label,\n" +
+                "property,\n" +
+                "propData.type as type,\n" +
+                "propData.indexed as isIndexed,\n" +
+                "propData.unique as uniqueConstraint,\n" +
+                "propData.existence as existenceConstraint";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListAttributeSystemInfoTransformer getListAttributeSystemInfoTransformer =
+                    new GetListAttributeSystemInfoTransformer(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object responseObj = workingGraphOperationExecutor.executeRead(getListAttributeSystemInfoTransformer,cypherProcedureString);
+            return responseObj != null ? (List<AttributeSystemInfo>)responseObj : null;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public List<AttributeSystemInfo> getRelationKindAttributesSystemInfo(String relationKindName) {
+        /*
+        Example:
+        https://neo4j.com/labs/apoc/4.1/overview/apoc.meta/apoc.meta.schema/
+        https://neo4j.com/developer/kb/viewing-schema-data-with-apoc/
+        */
+        String cypherProcedureString =
+                "CALL apoc.meta.schema() yield value\n" +
+                "UNWIND apoc.map.sortedProperties(value) as labelData\n" +
+                "WITH labelData[0] as label, labelData[1] as data\n" +
+                "WHERE data.type = \"relationship\" AND label = \""+relationKindName+"\"\n" +
+                "UNWIND apoc.map.sortedProperties(data.properties) as property\n" +
+                "WITH label, property[0] as property, property[1] as propData\n" +
+                "RETURN label,\n" +
+                "property,\n" +
+                "propData.type as type,\n" +
+                "propData.indexed as isIndexed,\n" +
+                "propData.unique as uniqueConstraint,\n" +
+                "propData.existence as existenceConstraint";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListAttributeSystemInfoTransformer getListAttributeSystemInfoTransformer =
+                    new GetListAttributeSystemInfoTransformer(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object responseObj = workingGraphOperationExecutor.executeRead(getListAttributeSystemInfoTransformer,cypherProcedureString);
+            return responseObj != null ? (List<AttributeSystemInfo>)responseObj : null;
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }

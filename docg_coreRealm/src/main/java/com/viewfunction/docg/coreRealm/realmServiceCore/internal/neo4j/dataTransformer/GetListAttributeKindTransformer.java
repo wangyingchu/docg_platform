@@ -15,7 +15,7 @@ import org.neo4j.driver.types.Node;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetListAttributeKindTransformer  implements DataTransformer<List<AttributeKind>>{
+public class GetListAttributeKindTransformer implements DataTransformer<List<AttributeKind>>{
 
     private GraphOperationExecutor workingGraphOperationExecutor;
     private String currentCoreRealmName;
