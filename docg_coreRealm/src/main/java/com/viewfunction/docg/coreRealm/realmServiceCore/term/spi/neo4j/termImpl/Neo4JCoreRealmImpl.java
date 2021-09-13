@@ -6,6 +6,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunct
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.SystemMaintenanceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl.Neo4JCrossKindDataOperatorImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
@@ -13,6 +14,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOper
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl.Neo4JDataScienceOperatorImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl.Neo4JSystemMaintenanceOperatorImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
@@ -1183,6 +1185,13 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         Neo4JSystemMaintenanceOperatorImpl systemMaintenanceOperatorImpl = new Neo4JSystemMaintenanceOperatorImpl(coreRealmName);
         systemMaintenanceOperatorImpl.setGlobalGraphOperationExecutor(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
         return systemMaintenanceOperatorImpl;
+    }
+
+    @Override
+    public DataScienceOperator getDataScienceOperator() {
+        Neo4JDataScienceOperatorImpl neo4JDataScienceOperatorImpl = new Neo4JDataScienceOperatorImpl(coreRealmName);
+        neo4JDataScienceOperatorImpl.setGlobalGraphOperationExecutor(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+        return neo4JDataScienceOperatorImpl;
     }
 
     @Override

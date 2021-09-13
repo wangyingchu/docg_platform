@@ -3,6 +3,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.orientdb.termI
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.SystemMaintenanceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionKindCorrelationInfo;
@@ -242,6 +243,11 @@ public class OrientDBCoreRealmImpl implements CoreRealm {
 
     @Override
     public SystemMaintenanceOperator getSystemMaintenanceOperator() {
+        return null;
+    }
+
+    @Override
+    public DataScienceOperator getDataScienceOperator() {
         return null;
     }
 
