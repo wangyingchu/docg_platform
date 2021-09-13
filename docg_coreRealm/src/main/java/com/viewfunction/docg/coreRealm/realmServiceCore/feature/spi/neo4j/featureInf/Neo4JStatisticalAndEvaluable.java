@@ -363,7 +363,7 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
                     statisticCql = "MATCH (entity:"+statisticTargetType+")";
                 }
                 if(this instanceof RelationKind){
-                    statisticCql = "MATCH ()-[entity:"+statisticTargetType+"]-()";
+                    statisticCql = "MATCH ()-[entity:"+statisticTargetType+"]->()";
                 }
 
                 String wherePartQuery = CypherBuilder.generateAttributesParametersQueryLogic(queryParameters,"entity");
