@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
@@ -36,6 +37,17 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
 
     @Override
     public AnalyzableGraph getAnalyzableGraph(String graphName) {
+        return null;
+    }
+
+    @Override
+    public boolean removeAnalyzableGraph(String graphName) throws CoreRealmServiceRuntimeException{
+        return false;
+    }
+
+    @Override
+    public AnalyzableGraph createAnalyzableGraph(String graphName, List<String> conceptionKindList,
+                                                 List<String> relationKindList) throws CoreRealmServiceRuntimeException {
         return null;
     }
 }

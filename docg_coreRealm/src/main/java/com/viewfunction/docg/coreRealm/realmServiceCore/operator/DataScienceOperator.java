@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AnalyzableGraph;
 
 import java.util.List;
@@ -12,4 +13,9 @@ public interface DataScienceOperator {
     public boolean checkAnalyzableGraphExistence(String graphName);
 
     public AnalyzableGraph getAnalyzableGraph(String graphName);
+
+    public boolean removeAnalyzableGraph(String graphName) throws CoreRealmServiceRuntimeException;
+
+    public AnalyzableGraph createAnalyzableGraph(String graphName,List<String> conceptionKindList,
+                                                 List<String> relationKindList) throws CoreRealmServiceRuntimeException;
 }
