@@ -33,4 +33,9 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
     public boolean checkAnalyzableGraphExistence(String graphName) {
         return false;
     }
+
+    @Override
+    public AnalyzableGraph getAnalyzableGraph(String graphName) {
+        return null;
+    }
 }

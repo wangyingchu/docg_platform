@@ -11,6 +11,5 @@ public interface DataScienceOperator {
 
     public boolean checkAnalyzableGraphExistence(String graphName);
 
-
-
+    public AnalyzableGraph getAnalyzableGraph(String graphName);
 }
