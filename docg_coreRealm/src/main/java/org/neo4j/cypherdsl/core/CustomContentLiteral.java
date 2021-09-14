@@ -1,6 +1,8 @@
 package org.neo4j.cypherdsl.core;
 
-public class CustomContentLiteral extends Literal<String>{
+import org.neo4j.cypherdsl.core.internal.LiteralBase;
+
+public class CustomContentLiteral extends LiteralBase<String> {
 
     public CustomContentLiteral(String content) {
         super(content);
