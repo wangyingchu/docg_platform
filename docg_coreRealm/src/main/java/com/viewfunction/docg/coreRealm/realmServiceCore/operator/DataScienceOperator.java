@@ -18,4 +18,6 @@ public interface DataScienceOperator {
 
     public AnalyzableGraph createAnalyzableGraph(String graphName,List<String> conceptionKindList,
                                                  List<String> relationKindList) throws CoreRealmServiceRuntimeException;
+
+    public AnalyzableGraph createAnalyzableGraph(String graphName) throws CoreRealmServiceRuntimeException;
 }
