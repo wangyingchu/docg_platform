@@ -15,6 +15,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
 
@@ -255,6 +257,20 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
+        return null;
+    }
+
+    @Override
+    public AnalyzableGraph createAnalyzableGraph(String graphName, Map<String, Set<String>> conceptionKindInfoMap, Map<String, Set<String>> relationKindInfoMap) throws CoreRealmServiceRuntimeException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/management-ops/native-projection/#native-projection-syntax-node-projections
+        */
+        return null;
+    }
+
+    @Override
+    public AnalyzableGraph createAnalyzableGraph(String graphName, List<String> conceptionKindList, Set<String> conceptionKindAttributeSet, List<String> relationKindList, Set<String> relationKindAttributeSet) throws CoreRealmServiceRuntimeException {
         return null;
     }
 
