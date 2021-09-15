@@ -1,7 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.payload;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 public class AnalyzableGraph {
 
@@ -12,8 +12,8 @@ public class AnalyzableGraph {
     private float graphDensity;
     private Date createTime;
     private Date lastModifyTime;
-    private List<String> containsConceptionKinds;
-    private List<String> containsRelationKinds;
+    private Set<String> containsConceptionKinds;
+    private Set<String> containsRelationKinds;
 
     public AnalyzableGraph(String graphName,Date createTime){
         this.graphName = graphName;
@@ -22,10 +22,6 @@ public class AnalyzableGraph {
 
     public String getGraphName() {
         return graphName;
-    }
-
-    public void setGraphName(String graphName) {
-        this.graphName = graphName;
     }
 
     public GraphDegreeDistributionInfo getGraphDegreeDistribution() {
@@ -72,19 +68,19 @@ public class AnalyzableGraph {
         this.lastModifyTime = lastModifyTime;
     }
 
-    public List<String> getContainsConceptionKinds() {
+    public Set<String> getContainsConceptionKinds() {
         return containsConceptionKinds;
     }
 
-    public void setContainsConceptionKinds(List<String> containsConceptionKinds) {
+    public void setContainsConceptionKinds(Set<String> containsConceptionKinds) {
         this.containsConceptionKinds = containsConceptionKinds;
     }
 
-    public List<String> getContainsRelationKinds() {
+    public Set<String> getContainsRelationKinds() {
         return containsRelationKinds;
     }
 
-    public void setContainsRelationKinds(List<String> containsRelationKinds) {
+    public void setContainsRelationKinds(Set<String> containsRelationKinds) {
         this.containsRelationKinds = containsRelationKinds;
     }
 }

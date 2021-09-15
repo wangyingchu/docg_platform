@@ -11,10 +11,10 @@ public class GraphDegreeDistributionInfo {
     private long p999;
     private long max;
     private long min;
-    private float mean;
+    private double mean;
 
     public GraphDegreeDistributionInfo(String graphName,long p50,long p75,long p90,long p95,long p99,long p999,long max,
-                                       long min,float mean ){
+                                       long min,double mean ){
         this.graphName = graphName;
         this.p50 = p50;
         this.p75 = p75;
@@ -99,11 +99,11 @@ public class GraphDegreeDistributionInfo {
         this.min = min;
     }
 
-    public float getMean() {
+    public double getMean() {
         return mean;
     }
 
-    public void setMean(float mean) {
+    public void setMean(double mean) {
         this.mean = mean;
     }
 }
