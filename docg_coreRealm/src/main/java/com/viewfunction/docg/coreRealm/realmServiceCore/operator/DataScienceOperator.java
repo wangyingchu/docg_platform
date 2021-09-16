@@ -20,10 +20,12 @@ public interface DataScienceOperator {
 
     public AnalyzableGraph createAnalyzableGraph(String graphName,List<String> conceptionKindList,
                                                  List<String> relationKindList) throws CoreRealmServiceRuntimeException;
+
     public AnalyzableGraph createAnalyzableGraph(String graphName) throws CoreRealmServiceRuntimeException;
 
     public AnalyzableGraph createAnalyzableGraph(String graphName, Map<String, Set<String>> conceptionKindInfoMap,
                                                  Map<String, Set<String>> relationKindInfoMap) throws CoreRealmServiceRuntimeException;
+
     public AnalyzableGraph createAnalyzableGraph(String graphName,List<String> conceptionKindList,Set<String> conceptionKindAttributeSet,
                                                  List<String> relationKindList,Set<String> relationKindAttributeSet) throws CoreRealmServiceRuntimeException;
 }

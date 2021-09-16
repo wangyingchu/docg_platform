@@ -13,10 +13,7 @@ import org.neo4j.driver.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
 
@@ -266,6 +263,63 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         Example:
         https://neo4j.com/docs/graph-data-science/current/management-ops/native-projection/#native-projection-syntax-node-projections
         */
+        if(conceptionKindInfoMap == null || conceptionKindInfoMap.size() ==0){
+            logger.error("At least one ConceptionKind is required");
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("At least one ConceptionKind is required");
+            throw e;
+        }
+        if(relationKindInfoMap == null || relationKindInfoMap.size() ==0){
+            logger.error("At least one RelationKind is required");
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("At least one RelationKind is required");
+            throw e;
+        }
+        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
+        if(checkGraphExistence){
+            logger.error("AnalyzableGraph with name {} already exist",graphName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("AnalyzableGraph with name "+graphName+" already exist");
+            throw e;
+        }
+
+        String conceptionKindDefinitionStr = getConceptionKindAndAttributesDefinition(conceptionKindInfoMap);
+        String relationKindDefinitionStr = getRelationKindAndAttributesDefinition(relationKindInfoMap);
+
+        String cypherProcedureString = "CALL gds.graph.create('"+graphName+"',"+conceptionKindDefinitionStr+","+relationKindDefinitionStr+")";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        final List<Boolean> createGraphSuccessSign = new ArrayList<>();
+
+        DataTransformer dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+
+                if(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    if(nodeRecord != null){
+                        createGraphSuccessSign.add(Boolean.TRUE);
+                    }
+                }
+                return null;
+            }
+        };
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+
+            if(createGraphSuccessSign.size() >0 & createGraphSuccessSign.get(0)){
+                cypherProcedureString = "CALL gds.graph.list('"+graphName+"');";
+                logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+                GetSingleAnalyzableGraphTransformer getSingleAnalyzableGraphTransformer =
+                        new GetSingleAnalyzableGraphTransformer(this.coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object queryResponse = workingGraphOperationExecutor.executeRead(getSingleAnalyzableGraphTransformer,cypherProcedureString);
+                return queryResponse != null ? (AnalyzableGraph) queryResponse : null;
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
         return null;
     }
 
@@ -285,5 +339,63 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         }
         kindNamesArrayString = kindNamesArrayString+"]";
         return kindNamesArrayString;
+    }
+
+    private String getConceptionKindAndAttributesDefinition(Map<String, Set<String>> indInfoMap){
+        Set<String>  kindNames = indInfoMap.keySet();
+        Iterator<String> kindNameIterator = kindNames.iterator();
+
+        String wholeRelationKindsDefinitionStr ="";
+        while(kindNameIterator.hasNext()){
+            String kindName = kindNameIterator.next();
+            Set<String> kindAttributesSet = indInfoMap.get(kindName);
+
+            String attributeValuesString = "";
+            for(String currentAttribute:kindAttributesSet){
+                String currentAttributeDefinition = currentAttribute+": {" + "property: '"+currentAttribute+"'"+"}"+"\n"+",";
+                attributeValuesString = attributeValuesString + currentAttributeDefinition;
+            }
+            if(attributeValuesString.length()>1) {
+                attributeValuesString = attributeValuesString.substring(0, attributeValuesString.length() - 1);
+            }
+            String currentKindDefinitionStr = ""+kindName+": {\n" +
+                    "label: '"+kindName+"',\n" +
+                    "properties: {\n" +
+                    attributeValuesString +
+                    "}\n" +
+                    "},";
+            wholeRelationKindsDefinitionStr = wholeRelationKindsDefinitionStr+currentKindDefinitionStr;
+        }
+        wholeRelationKindsDefinitionStr = wholeRelationKindsDefinitionStr.substring(0,wholeRelationKindsDefinitionStr.length()-1);
+        return "{"+wholeRelationKindsDefinitionStr+"}";
+    }
+
+    private String getRelationKindAndAttributesDefinition(Map<String, Set<String>> indInfoMap){
+        Set<String>  kindNames = indInfoMap.keySet();
+        Iterator<String> kindNameIterator = kindNames.iterator();
+
+        String wholeRelationKindsDefinitionStr ="";
+        while(kindNameIterator.hasNext()){
+            String kindName = kindNameIterator.next();
+            Set<String> kindAttributesSet = indInfoMap.get(kindName);
+
+            String attributeValuesString = "";
+            for(String currentAttribute:kindAttributesSet){
+                String currentAttributeDefinition = currentAttribute+": {" + "property: '"+currentAttribute+"'"+"}"+"\n"+",";
+                attributeValuesString = attributeValuesString + currentAttributeDefinition;
+            }
+            if(attributeValuesString.length()>1) {
+                attributeValuesString = attributeValuesString.substring(0, attributeValuesString.length() - 1);
+            }
+            String currentKindDefinitionStr = ""+kindName+": {\n" +
+                    "type: '"+kindName+"',\n" +
+                    "properties: {\n" +
+                    attributeValuesString +
+                    "}\n" +
+                    "},";
+            wholeRelationKindsDefinitionStr = wholeRelationKindsDefinitionStr+currentKindDefinitionStr;
+        }
+        wholeRelationKindsDefinitionStr = wholeRelationKindsDefinitionStr.substring(0,wholeRelationKindsDefinitionStr.length()-1);
+        return "{"+wholeRelationKindsDefinitionStr+"}";
     }
 }
