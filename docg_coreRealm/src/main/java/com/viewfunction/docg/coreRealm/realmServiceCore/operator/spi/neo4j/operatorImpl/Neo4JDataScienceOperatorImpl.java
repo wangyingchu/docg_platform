@@ -150,7 +150,6 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         Example:
         https://neo4j.com/docs/graph-data-science/current/management-ops/native-projection/
         */
-
         if(conceptionKindList == null || conceptionKindList.size() ==0){
             logger.error("At least one ConceptionKind is required");
             CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
@@ -172,38 +171,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         String cypherProcedureString = "CALL gds.graph.create('"+graphName+"', "+conceptionKindsString+", "+relationKindsString+")";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
-        final List<Boolean> createGraphSuccessSign = new ArrayList<>();
-
-        DataTransformer dataTransformer = new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-
-                if(result.hasNext()){
-                    Record nodeRecord = result.next();
-                    if(nodeRecord != null){
-                        createGraphSuccessSign.add(Boolean.TRUE);
-                    }
-                }
-                return null;
-            }
-        };
-
-        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-        try {
-            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
-
-            if(createGraphSuccessSign.size() >0 & createGraphSuccessSign.get(0)){
-                cypherProcedureString = "CALL gds.graph.list('"+graphName+"');";
-                logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
-                GetSingleAnalyzableGraphTransformer getSingleAnalyzableGraphTransformer =
-                        new GetSingleAnalyzableGraphTransformer(this.coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
-                Object queryResponse = workingGraphOperationExecutor.executeRead(getSingleAnalyzableGraphTransformer,cypherProcedureString);
-                return queryResponse != null ? (AnalyzableGraph) queryResponse : null;
-            }
-        } finally {
-            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-        }
-        return null;
+        return executeCreateAnalyzableGraphOperation(graphName,cypherProcedureString);
     }
 
     @Override
@@ -223,38 +191,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         String cypherProcedureString = "CALL gds.graph.create('"+graphName+"','*','*')";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
-        final List<Boolean> createGraphSuccessSign = new ArrayList<>();
-
-        DataTransformer dataTransformer = new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-
-                if(result.hasNext()){
-                    Record nodeRecord = result.next();
-                    if(nodeRecord != null){
-                        createGraphSuccessSign.add(Boolean.TRUE);
-                    }
-                }
-                return null;
-            }
-        };
-
-        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-        try {
-            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
-
-            if(createGraphSuccessSign.size() >0 & createGraphSuccessSign.get(0)){
-                cypherProcedureString = "CALL gds.graph.list('"+graphName+"');";
-                logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
-                GetSingleAnalyzableGraphTransformer getSingleAnalyzableGraphTransformer =
-                        new GetSingleAnalyzableGraphTransformer(this.coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
-                Object queryResponse = workingGraphOperationExecutor.executeRead(getSingleAnalyzableGraphTransformer,cypherProcedureString);
-                return queryResponse != null ? (AnalyzableGraph) queryResponse : null;
-            }
-        } finally {
-            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-        }
-        return null;
+        return executeCreateAnalyzableGraphOperation(graphName,cypherProcedureString);
     }
 
     @Override
@@ -285,42 +222,10 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
 
         String conceptionKindDefinitionStr = getConceptionKindAndAttributesDefinition(conceptionKindInfoMap);
         String relationKindDefinitionStr = getRelationKindAndAttributesDefinition(relationKindInfoMap);
-
         String cypherProcedureString = "CALL gds.graph.create('"+graphName+"',"+conceptionKindDefinitionStr+","+relationKindDefinitionStr+")";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
-        final List<Boolean> createGraphSuccessSign = new ArrayList<>();
-
-        DataTransformer dataTransformer = new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-
-                if(result.hasNext()){
-                    Record nodeRecord = result.next();
-                    if(nodeRecord != null){
-                        createGraphSuccessSign.add(Boolean.TRUE);
-                    }
-                }
-                return null;
-            }
-        };
-
-        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-        try {
-            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
-
-            if(createGraphSuccessSign.size() >0 & createGraphSuccessSign.get(0)){
-                cypherProcedureString = "CALL gds.graph.list('"+graphName+"');";
-                logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
-                GetSingleAnalyzableGraphTransformer getSingleAnalyzableGraphTransformer =
-                        new GetSingleAnalyzableGraphTransformer(this.coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
-                Object queryResponse = workingGraphOperationExecutor.executeRead(getSingleAnalyzableGraphTransformer,cypherProcedureString);
-                return queryResponse != null ? (AnalyzableGraph) queryResponse : null;
-            }
-        } finally {
-            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-        }
-        return null;
+        return executeCreateAnalyzableGraphOperation(graphName,cypherProcedureString);
     }
 
     @Override
@@ -397,5 +302,40 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         }
         wholeRelationKindsDefinitionStr = wholeRelationKindsDefinitionStr.substring(0,wholeRelationKindsDefinitionStr.length()-1);
         return "{"+wholeRelationKindsDefinitionStr+"}";
+    }
+
+    private AnalyzableGraph executeCreateAnalyzableGraphOperation(String graphName,String cypherProcedureString){
+
+        List<Boolean> createGraphSuccessSign = new ArrayList<>();
+        DataTransformer dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+
+                if(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    if(nodeRecord != null){
+                        createGraphSuccessSign.add(Boolean.TRUE);
+                    }
+                }
+                return null;
+            }
+        };
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+
+            if(createGraphSuccessSign.size() >0 & createGraphSuccessSign.get(0)){
+                cypherProcedureString = "CALL gds.graph.list('"+graphName+"');";
+                logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+                GetSingleAnalyzableGraphTransformer getSingleAnalyzableGraphTransformer =
+                        new GetSingleAnalyzableGraphTransformer(this.coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object queryResponse = workingGraphOperationExecutor.executeRead(getSingleAnalyzableGraphTransformer,cypherProcedureString);
+                return queryResponse != null ? (AnalyzableGraph) queryResponse : null;
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return null;
     }
 }
