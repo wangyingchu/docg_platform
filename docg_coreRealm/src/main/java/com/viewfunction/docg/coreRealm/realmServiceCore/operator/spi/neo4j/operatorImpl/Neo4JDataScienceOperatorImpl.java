@@ -8,6 +8,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AnalyzableGraph;
+
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.slf4j.Logger;
@@ -144,13 +145,13 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
     }
 
     @Override
-    public AnalyzableGraph createAnalyzableGraph(String graphName, List<String> conceptionKindList,
-                                                 List<String> relationKindList) throws CoreRealmServiceRuntimeException {
+    public AnalyzableGraph createAnalyzableGraph(String graphName,List<String> conceptionKindList,Set<String> conceptionKindAttributeSet,
+                                                 List<String> relationKindList,Set<String> relationKindAttributeSet) throws CoreRealmServiceRuntimeException {
         /*
         Example:
         https://neo4j.com/docs/graph-data-science/current/management-ops/native-projection/
         */
-        if(conceptionKindList == null || conceptionKindList.size() ==0){
+        if(conceptionKindList == null || conceptionKindList.size() == 0){
             logger.error("At least one ConceptionKind is required");
             CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
             e.setCauseMessage("At least one ConceptionKind is required");
@@ -168,7 +169,8 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         String conceptionKindsString = getKindNamesArrayString(conceptionKindList);
         String relationKindsString = ( relationKindList == null || relationKindList.size() == 0) ? "'*'" :
                 getKindNamesArrayString(relationKindList);
-        String cypherProcedureString = "CALL gds.graph.create('"+graphName+"', "+conceptionKindsString+", "+relationKindsString+")";
+        String globalKindPropertiesString = getGlobalKindPropertiesString(conceptionKindAttributeSet,relationKindAttributeSet);
+        String cypherProcedureString = "CALL gds.graph.create('"+graphName+"', "+conceptionKindsString+", "+ relationKindsString+globalKindPropertiesString+")";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
         return executeCreateAnalyzableGraphOperation(graphName,cypherProcedureString);
@@ -226,11 +228,6 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
         return executeCreateAnalyzableGraphOperation(graphName,cypherProcedureString);
-    }
-
-    @Override
-    public AnalyzableGraph createAnalyzableGraph(String graphName, List<String> conceptionKindList, Set<String> conceptionKindAttributeSet, List<String> relationKindList, Set<String> relationKindAttributeSet) throws CoreRealmServiceRuntimeException {
-        return null;
     }
 
     private String getKindNamesArrayString(List<String> kindNamesList){
@@ -304,7 +301,43 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         return "{"+wholeRelationKindsDefinitionStr+"}";
     }
 
-    private AnalyzableGraph executeCreateAnalyzableGraphOperation(String graphName,String cypherProcedureString){
+    private String getGlobalKindPropertiesString(Set<String> conceptionKindAttributeSet,Set<String> relationKindAttributeSet){
+        if((conceptionKindAttributeSet != null && conceptionKindAttributeSet.size() > 0) ||
+                (relationKindAttributeSet != null && relationKindAttributeSet.size() > 0)){
+            String conceptionPropertiesString = "";
+            String relationPropertiesString = "";
+            boolean hasRelationProperties = false;
+            if(conceptionKindAttributeSet != null && conceptionKindAttributeSet.size() > 0){
+                String fullKindDefinitionsStr="";
+                for(String currentKind:conceptionKindAttributeSet){
+                    String currentKindDefinitionStr = "{ "+currentKind+": '"+currentKind+"' },";
+                    fullKindDefinitionsStr = fullKindDefinitionsStr+currentKindDefinitionStr;
+                }
+                if(fullKindDefinitionsStr.length() > 1){
+                    fullKindDefinitionsStr = fullKindDefinitionsStr.substring(0,fullKindDefinitionsStr.length()-1);
+                }
+                conceptionPropertiesString = "nodeProperties: ["+fullKindDefinitionsStr+"]";
+                hasRelationProperties = true;
+            }
+            if(relationKindAttributeSet != null && relationKindAttributeSet.size() > 0){
+                String fullKindDefinitionsStr="";
+                for(String currentKind:relationKindAttributeSet){
+                    String currentKindDefinitionStr = "{ "+currentKind+": '"+currentKind+"' },";
+                    fullKindDefinitionsStr = fullKindDefinitionsStr+currentKindDefinitionStr;
+                }
+                if(fullKindDefinitionsStr.length() > 1){
+                    fullKindDefinitionsStr = fullKindDefinitionsStr.substring(0,fullKindDefinitionsStr.length()-1);
+                }
+                relationPropertiesString = hasRelationProperties? ",relationshipProperties: ["+fullKindDefinitionsStr+"]"
+                        :"relationshipProperties: ["+fullKindDefinitionsStr+"]";
+            }
+            return ",{"+conceptionPropertiesString + relationPropertiesString+"}";
+        }else{
+            return "";
+        }
+    }
+
+    private AnalyzableGraph executeCreateAnalyzableGraphOperation(String graphName,String cypherProcedureString) throws CoreRealmServiceRuntimeException {
 
         List<Boolean> createGraphSuccessSign = new ArrayList<>();
         DataTransformer dataTransformer = new DataTransformer() {
@@ -333,7 +366,12 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
                 Object queryResponse = workingGraphOperationExecutor.executeRead(getSingleAnalyzableGraphTransformer,cypherProcedureString);
                 return queryResponse != null ? (AnalyzableGraph) queryResponse : null;
             }
-        } finally {
+        }catch (Exception e){
+            logger.error(e.getMessage());
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
         return null;
