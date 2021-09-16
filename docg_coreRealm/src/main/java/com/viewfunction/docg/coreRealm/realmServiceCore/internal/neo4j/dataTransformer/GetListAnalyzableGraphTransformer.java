@@ -58,6 +58,9 @@ public class GetListAnalyzableGraphTransformer  implements DataTransformer<List<
                 Map<String,Object> conceptionKindMetaInfoMap = (Map<String,Object>)schemaMap.get("nodes");
                 Map<String,Object> relationKindMetaInfoMap = (Map<String,Object>)schemaMap.get("relationships");
 
+                List<Map<String,String>> conceptionKindsAttributesInfo = new ArrayList<>();
+                List<Map<String,String>> relationKindsAttributesInfo = new ArrayList<>();
+
                 AnalyzableGraph analyzableGraph = new AnalyzableGraph(graphName,createDateValue);
                 analyzableGraph.setGraphDegreeDistribution(graphDegreeDistributionInfo);
                 analyzableGraph.setConceptionEntityCount(conceptionEntityCount);
@@ -66,7 +69,8 @@ public class GetListAnalyzableGraphTransformer  implements DataTransformer<List<
                 analyzableGraph.setLastModifyTime(laseModifyDateValue);
                 analyzableGraph.setContainsConceptionKinds(conceptionKindMetaInfoMap.keySet());
                 analyzableGraph.setContainsRelationKinds(relationKindMetaInfoMap.keySet());
-
+                analyzableGraph.setConceptionKindsAttributesInfo(conceptionKindsAttributesInfo);
+                analyzableGraph.setRelationKindsAttributesInfo(relationKindsAttributesInfo);
                 analyzableGraphList.add(analyzableGraph);
             }
         }

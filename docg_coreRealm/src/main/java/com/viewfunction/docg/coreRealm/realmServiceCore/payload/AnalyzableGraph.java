@@ -1,6 +1,8 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.payload;
 
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class AnalyzableGraph {
@@ -14,6 +16,8 @@ public class AnalyzableGraph {
     private Date lastModifyTime;
     private Set<String> containsConceptionKinds;
     private Set<String> containsRelationKinds;
+    private List<Map<String,String>> conceptionKindsAttributesInfo;
+    private List<Map<String,String>> relationKindsAttributesInfo;
 
     public AnalyzableGraph(String graphName,Date createTime){
         this.graphName = graphName;
@@ -82,5 +86,21 @@ public class AnalyzableGraph {
 
     public void setContainsRelationKinds(Set<String> containsRelationKinds) {
         this.containsRelationKinds = containsRelationKinds;
+    }
+
+    public List<Map<String, String>> getConceptionKindsAttributesInfo() {
+        return conceptionKindsAttributesInfo;
+    }
+
+    public void setConceptionKindsAttributesInfo(List<Map<String, String>> conceptionKindsAttributesInfo) {
+        this.conceptionKindsAttributesInfo = conceptionKindsAttributesInfo;
+    }
+
+    public List<Map<String, String>> getRelationKindsAttributesInfo() {
+        return relationKindsAttributesInfo;
+    }
+
+    public void setRelationKindsAttributesInfo(List<Map<String, String>> relationKindsAttributesInfo) {
+        this.relationKindsAttributesInfo = relationKindsAttributesInfo;
     }
 }

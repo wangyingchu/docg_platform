@@ -8,7 +8,9 @@ import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 public class GetSingleAnalyzableGraphTransformer implements DataTransformer<AnalyzableGraph>{
@@ -55,6 +57,9 @@ public class GetSingleAnalyzableGraphTransformer implements DataTransformer<Anal
             Map<String,Object> conceptionKindMetaInfoMap = (Map<String,Object>)schemaMap.get("nodes");
             Map<String,Object> relationKindMetaInfoMap = (Map<String,Object>)schemaMap.get("relationships");
 
+            List<Map<String,String>> conceptionKindsAttributesInfo = new ArrayList<>();
+            List<Map<String,String>> relationKindsAttributesInfo = new ArrayList<>();
+
             AnalyzableGraph analyzableGraph = new AnalyzableGraph(graphName,createDateValue);
             analyzableGraph.setGraphDegreeDistribution(graphDegreeDistributionInfo);
             analyzableGraph.setConceptionEntityCount(conceptionEntityCount);
@@ -63,7 +68,8 @@ public class GetSingleAnalyzableGraphTransformer implements DataTransformer<Anal
             analyzableGraph.setLastModifyTime(laseModifyDateValue);
             analyzableGraph.setContainsConceptionKinds(conceptionKindMetaInfoMap.keySet());
             analyzableGraph.setContainsRelationKinds(relationKindMetaInfoMap.keySet());
-
+            analyzableGraph.setConceptionKindsAttributesInfo(conceptionKindsAttributesInfo);
+            analyzableGraph.setRelationKindsAttributesInfo(relationKindsAttributesInfo);
             return analyzableGraph;
         }
         return null;
