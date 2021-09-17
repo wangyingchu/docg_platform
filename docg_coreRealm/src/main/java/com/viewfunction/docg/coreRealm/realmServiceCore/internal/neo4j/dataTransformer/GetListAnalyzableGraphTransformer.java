@@ -2,15 +2,13 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTran
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AnalyzableGraph;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AnalyzableGraphAttributeInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GraphDegreeDistributionInfo;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GetListAnalyzableGraphTransformer  implements DataTransformer<List<AnalyzableGraph>>{
 
@@ -58,8 +56,35 @@ public class GetListAnalyzableGraphTransformer  implements DataTransformer<List<
                 Map<String,Object> conceptionKindMetaInfoMap = (Map<String,Object>)schemaMap.get("nodes");
                 Map<String,Object> relationKindMetaInfoMap = (Map<String,Object>)schemaMap.get("relationships");
 
-                List<Map<String,String>> conceptionKindsAttributesInfo = new ArrayList<>();
-                List<Map<String,String>> relationKindsAttributesInfo = new ArrayList<>();
+                Map<String,List<AnalyzableGraphAttributeInfo>> conceptionKindsAttributesInfo = new HashMap<>();
+                Map<String,List<AnalyzableGraphAttributeInfo>> relationKindsAttributesInfo = new HashMap<>();
+
+                Set<String> conceptionKindNameSet = conceptionKindMetaInfoMap.keySet();
+                Set<String> relationKindNameSet = relationKindMetaInfoMap.keySet();
+
+                for(String conceptionKindName:conceptionKindNameSet){
+                    List<AnalyzableGraphAttributeInfo> propertiesInfoList = new ArrayList<>();
+                    Map<String,Object> propertiesInfoMap = (Map<String,Object>)conceptionKindMetaInfoMap.get(conceptionKindName);
+                    if(propertiesInfoMap != null){
+                        Set<String> propertyNameSet = propertiesInfoMap.keySet();
+                        for(String currentProperty:propertyNameSet){
+                            propertiesInfoList.add(new AnalyzableGraphAttributeInfo(currentProperty,propertiesInfoMap.get(currentProperty).toString()));
+                        }
+                    }
+                    conceptionKindsAttributesInfo.put(conceptionKindName,propertiesInfoList);
+                }
+
+                for(String relationKindName:relationKindNameSet){
+                    List<AnalyzableGraphAttributeInfo> propertiesInfoList = new ArrayList<>();
+                    Map<String,Object> propertiesInfoMap = (Map<String,Object>)relationKindMetaInfoMap.get(relationKindName);
+                    if(propertiesInfoMap != null){
+                        Set<String> propertyNameSet = propertiesInfoMap.keySet();
+                        for(String currentProperty:propertyNameSet){
+                            propertiesInfoList.add(new AnalyzableGraphAttributeInfo(currentProperty,propertiesInfoMap.get(currentProperty).toString()));
+                        }
+                    }
+                    relationKindsAttributesInfo.put(relationKindName,propertiesInfoList);
+                }
 
                 AnalyzableGraph analyzableGraph = new AnalyzableGraph(graphName,createDateValue);
                 analyzableGraph.setGraphDegreeDistribution(graphDegreeDistributionInfo);
@@ -67,8 +92,8 @@ public class GetListAnalyzableGraphTransformer  implements DataTransformer<List<
                 analyzableGraph.setRelationEntityCount(relationEntityCount);
                 analyzableGraph.setGraphDensity(graphDensity);
                 analyzableGraph.setLastModifyTime(laseModifyDateValue);
-                analyzableGraph.setContainsConceptionKinds(conceptionKindMetaInfoMap.keySet());
-                analyzableGraph.setContainsRelationKinds(relationKindMetaInfoMap.keySet());
+                analyzableGraph.setContainsConceptionKinds(conceptionKindNameSet);
+                analyzableGraph.setContainsRelationKinds(relationKindNameSet);
                 analyzableGraph.setConceptionKindsAttributesInfo(conceptionKindsAttributesInfo);
                 analyzableGraph.setRelationKindsAttributesInfo(relationKindsAttributesInfo);
                 analyzableGraphList.add(analyzableGraph);

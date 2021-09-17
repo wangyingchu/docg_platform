@@ -16,8 +16,8 @@ public class AnalyzableGraph {
     private Date lastModifyTime;
     private Set<String> containsConceptionKinds;
     private Set<String> containsRelationKinds;
-    private List<Map<String,String>> conceptionKindsAttributesInfo;
-    private List<Map<String,String>> relationKindsAttributesInfo;
+    private Map<String,List<AnalyzableGraphAttributeInfo>> conceptionKindsAttributesInfo;
+    private Map<String,List<AnalyzableGraphAttributeInfo>> relationKindsAttributesInfo;
 
     public AnalyzableGraph(String graphName,Date createTime){
         this.graphName = graphName;
@@ -88,19 +88,19 @@ public class AnalyzableGraph {
         this.containsRelationKinds = containsRelationKinds;
     }
 
-    public List<Map<String, String>> getConceptionKindsAttributesInfo() {
+    public Map<String,List<AnalyzableGraphAttributeInfo>> getConceptionKindsAttributesInfo() {
         return conceptionKindsAttributesInfo;
     }
 
-    public void setConceptionKindsAttributesInfo(List<Map<String, String>> conceptionKindsAttributesInfo) {
+    public void setConceptionKindsAttributesInfo(Map<String,List<AnalyzableGraphAttributeInfo>> conceptionKindsAttributesInfo) {
         this.conceptionKindsAttributesInfo = conceptionKindsAttributesInfo;
     }
 
-    public List<Map<String, String>> getRelationKindsAttributesInfo() {
+    public Map<String,List<AnalyzableGraphAttributeInfo>> getRelationKindsAttributesInfo() {
         return relationKindsAttributesInfo;
     }
 
-    public void setRelationKindsAttributesInfo(List<Map<String, String>> relationKindsAttributesInfo) {
+    public void setRelationKindsAttributesInfo(Map<String,List<AnalyzableGraphAttributeInfo>> relationKindsAttributesInfo) {
         this.relationKindsAttributesInfo = relationKindsAttributesInfo;
     }
 }
