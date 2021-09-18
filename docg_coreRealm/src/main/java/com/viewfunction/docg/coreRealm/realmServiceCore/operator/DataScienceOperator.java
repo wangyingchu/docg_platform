@@ -25,4 +25,7 @@ public interface DataScienceOperator {
 
     public AnalyzableGraph createAnalyzableGraph(String graphName, Map<String, Set<String>> conceptionKindInfoMap,
                                                  Map<String, Set<String>> relationKindInfoMap) throws CoreRealmServiceRuntimeException;
+
+    public AnalyzableGraph createAnalyzableGraph(String graphName, String conceptionEntitiesQuery,
+                                                 String relationEntitiesQuery) throws CoreRealmServiceRuntimeException;
 }

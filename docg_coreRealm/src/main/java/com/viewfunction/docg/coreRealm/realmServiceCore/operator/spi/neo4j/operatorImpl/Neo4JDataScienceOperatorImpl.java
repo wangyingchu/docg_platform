@@ -230,6 +230,29 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         return executeCreateAnalyzableGraphOperation(graphName,cypherProcedureString);
     }
 
+    @Override
+    public AnalyzableGraph createAnalyzableGraph(String graphName, String conceptionEntitiesQuery, String relationEntitiesQuery) throws CoreRealmServiceRuntimeException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/management-ops/cypher-projection/
+        */
+        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
+        if(checkGraphExistence){
+            logger.error("AnalyzableGraph with name {} already exist",graphName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("AnalyzableGraph with name "+graphName+" already exist");
+            throw e;
+        }
+        String cypherProcedureString = "CALL gds.graph.create.cypher(\n" +
+                "    '"+graphName+"',\n" +
+                "    '"+conceptionEntitiesQuery+"',\n" +
+                "    '"+relationEntitiesQuery+"'\n" +
+                ")";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        return executeCreateAnalyzableGraphOperation(graphName,cypherProcedureString);
+    }
+
     private String getKindNamesArrayString(List<String> kindNamesList){
         String kindNamesArrayString = "[";
 
