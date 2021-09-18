@@ -28,4 +28,6 @@ public interface DataScienceOperator {
 
     public AnalyzableGraph createAnalyzableGraph(String graphName, String conceptionEntitiesQuery,
                                                  String relationEntitiesQuery) throws CoreRealmServiceRuntimeException;
+
+    public void executePageRankAlgorithm(String graphName) throws CoreRealmServiceRuntimeException;
 }

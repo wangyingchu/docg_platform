@@ -253,6 +253,11 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         return executeCreateAnalyzableGraphOperation(graphName,cypherProcedureString);
     }
 
+    @Override
+    public void executePageRankAlgorithm(String graphName) throws CoreRealmServiceRuntimeException {
+
+    }
+
     private String getKindNamesArrayString(List<String> kindNamesList){
         String kindNamesArrayString = "[";
 
