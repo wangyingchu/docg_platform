@@ -255,7 +255,10 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
 
     @Override
     public void executePageRankAlgorithm(String graphName) throws CoreRealmServiceRuntimeException {
-
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/page-rank/
+        */
     }
 
     private String getKindNamesArrayString(List<String> kindNamesList){
