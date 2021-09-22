@@ -3,6 +3,10 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.
 public class PageRankAlgorithmConfig extends DataScienceBaseAlgorithmConfig{
 
     public enum ScoreSortingLogic { ASC, DESC }
+    /*
+    Document:
+    https://neo4j.com/docs/graph-data-science/current/alpha-algorithms/scale-properties/
+    */
     public enum ScoreScalerLogic {None, MinMax, Max, Mean, Log, L1Norm, L2Norm, StdScore}
 
     private float dampingFactor = 0.85f;
