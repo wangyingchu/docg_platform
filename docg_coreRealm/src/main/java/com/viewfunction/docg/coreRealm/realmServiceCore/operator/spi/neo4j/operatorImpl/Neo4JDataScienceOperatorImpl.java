@@ -329,6 +329,10 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
             workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
             pageRankAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
             return pageRankAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
@@ -353,7 +357,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         for(String currentKindName : kindNamesSet){
             kindNamesArrayString = kindNamesArrayString +"'"+currentKindName+"'";
             currentLoopIndex++;
-            if(currentLoopIndex<kindNamesSet.size()-1){
+            if(currentLoopIndex<kindNamesSet.size()){
                 kindNamesArrayString = kindNamesArrayString + ",";
             }
         }
