@@ -11,6 +11,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOper
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig.PageRankAlgorithmConfig;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AnalyzableGraph;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.PageRankAlgorithmResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.PageRankScoreInfo;
 
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
@@ -262,6 +263,14 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         Example:
         https://neo4j.com/docs/graph-data-science/current/algorithms/page-rank/
         */
+        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
+        if(!checkGraphExistence){
+            logger.error("AnalyzableGraph with name {} does not exist",graphName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
+            throw e;
+        }
+
         PageRankAlgorithmConfig pageRankAlgorithmConfiguration = pageRankAlgorithmConfig != null ? pageRankAlgorithmConfig :
                 new PageRankAlgorithmConfig();
 
@@ -282,6 +291,10 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
                 "  relationshipWeightProperty: '"+relationshipWeightAttribute+"',\n" : "";
         String scalerCQLPart = scoreScaler != null ?
                 "  scaler: '"+scoreScaler+"',\n" : "";
+
+        String orderCQLPart = pageRankAlgorithmConfig.getScoreSortingLogic()!= null ?
+                "ORDER BY score "+pageRankAlgorithmConfig.getScoreSortingLogic().toString() : "";
+
         String cypherProcedureString = "CALL gds.pageRank.stream('"+graphName+"', {\n" +
                 nodeLabelsCQLPart+
                 relationshipTypes+
@@ -292,13 +305,35 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
                 "  tolerance: "+pageRankAlgorithmConfiguration.getTolerance()+"\n" +
                 "})\n" +
                 "YIELD nodeId, score\n" +
-                "RETURN gds.util.asNode(nodeId).name AS name, score\n" +
-                "ORDER BY score DESC, name ASC" +getReturnDataControlLogic(pageRankAlgorithmConfiguration);
+                //"RETURN gds.util.asNode(nodeId) AS node, score\n" +
+                "RETURN nodeId AS entityUID, score\n" +
+                orderCQLPart+
+                getReturnDataControlLogic(pageRankAlgorithmConfiguration);
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
+        PageRankAlgorithmResult pageRankAlgorithmResult = new PageRankAlgorithmResult(graphName,pageRankAlgorithmConfiguration);
+        List<PageRankScoreInfo> pageRankScoreInfoList = pageRankAlgorithmResult.getPageRankScores();
 
-
-        return null;
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityUID = nodeRecord.get("entityUID").asLong();
+                    double pageRankScore = nodeRecord.get("score").asNumber().doubleValue();
+                    pageRankScoreInfoList.add(new PageRankScoreInfo(""+entityUID,pageRankScore));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            pageRankAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return pageRankAlgorithmResult;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     private String getKindNamesArrayString(List<String> kindNamesList){
