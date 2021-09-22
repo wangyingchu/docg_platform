@@ -277,7 +277,6 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         Set<String> conceptionKindsForCompute = pageRankAlgorithmConfiguration.getConceptionKindsForCompute();
         Set<String> relationKindsForCompute = pageRankAlgorithmConfiguration.getRelationKindsForCompute();
         String relationshipWeightAttribute = pageRankAlgorithmConfiguration.getRelationshipWeightAttribute();
-        String scoreScaler = pageRankAlgorithmConfiguration.getScoreScaler();
 
         String nodeLabelsCQLPart = "";
         if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
@@ -289,9 +288,8 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         }
         String relationshipWeightAttributeCQLPart = relationshipWeightAttribute != null ?
                 "  relationshipWeightProperty: '"+relationshipWeightAttribute+"',\n" : "";
-        String scalerCQLPart = scoreScaler != null ?
-                "  scaler: '"+scoreScaler+"',\n" : "";
-
+        String scalerCQLPart = pageRankAlgorithmConfiguration.getScoreScalerLogic() != null ?
+                "  scaler: '"+pageRankAlgorithmConfiguration.getScoreScalerLogic()+"',\n" : "";
         String orderCQLPart = pageRankAlgorithmConfig.getScoreSortingLogic()!= null ?
                 "ORDER BY score "+pageRankAlgorithmConfig.getScoreSortingLogic().toString() : "";
 
