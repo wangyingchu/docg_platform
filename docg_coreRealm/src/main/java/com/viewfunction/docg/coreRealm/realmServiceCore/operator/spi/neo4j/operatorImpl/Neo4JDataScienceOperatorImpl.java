@@ -7,7 +7,9 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleAnalyzableGraphTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig.PageRankAlgorithmConfig;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AnalyzableGraph;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.PageRankAlgorithmResult;
 
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
@@ -254,11 +256,13 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
     }
 
     @Override
-    public void executePageRankAlgorithm(String graphName) throws CoreRealmServiceRuntimeException {
+    public PageRankAlgorithmResult executePageRankAlgorithm(String graphName, PageRankAlgorithmConfig pageRankAlgorithmConfig) throws CoreRealmServiceRuntimeException {
         /*
         Example:
         https://neo4j.com/docs/graph-data-science/current/algorithms/page-rank/
         */
+
+        return null;
     }
 
     private String getKindNamesArrayString(List<String> kindNamesList){

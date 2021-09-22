@@ -1,7 +1,9 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig.PageRankAlgorithmConfig;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AnalyzableGraph;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.PageRankAlgorithmResult;
 
 import java.util.List;
 import java.util.Map;
@@ -29,5 +31,5 @@ public interface DataScienceOperator {
     public AnalyzableGraph createAnalyzableGraph(String graphName, String conceptionEntitiesQuery,
                                                  String relationEntitiesQuery) throws CoreRealmServiceRuntimeException;
 
-    public void executePageRankAlgorithm(String graphName) throws CoreRealmServiceRuntimeException;
+    public PageRankAlgorithmResult executePageRankAlgorithm(String graphName, PageRankAlgorithmConfig pageRankAlgorithmConfig) throws CoreRealmServiceRuntimeException;
 }
