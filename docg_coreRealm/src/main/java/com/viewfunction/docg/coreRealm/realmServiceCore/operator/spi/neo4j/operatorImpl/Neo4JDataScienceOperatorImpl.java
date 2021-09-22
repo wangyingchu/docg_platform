@@ -261,6 +261,41 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         Example:
         https://neo4j.com/docs/graph-data-science/current/algorithms/page-rank/
         */
+        PageRankAlgorithmConfig pageRankAlgorithmConfiguration = pageRankAlgorithmConfig != null ? pageRankAlgorithmConfig :
+                new PageRankAlgorithmConfig();
+
+        Set<String> conceptionKindsForCompute = pageRankAlgorithmConfiguration.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = pageRankAlgorithmConfiguration.getRelationKindsForCompute();
+        String relationshipWeightAttribute = pageRankAlgorithmConfiguration.getRelationshipWeightAttribute();
+        String scoreScaler = pageRankAlgorithmConfiguration.getScoreScaler();
+
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+        String relationshipWeightAttributeCQLPart = relationshipWeightAttribute != null ?
+                "  relationshipWeightProperty: '"+relationshipWeightAttribute+"',\n" : "";
+        String scalerCQLPart = scoreScaler != null ?
+                "  scaler: '"+scoreScaler+"',\n" : "";
+        String cypherProcedureString = "CALL gds.pageRank.stream('"+graphName+"', {\n" +
+                nodeLabelsCQLPart+
+                relationshipTypes+
+                scalerCQLPart+
+                relationshipWeightAttributeCQLPart +
+                "  maxIterations: "+pageRankAlgorithmConfiguration.getMaxIterations()+",\n" +
+                "  dampingFactor: "+pageRankAlgorithmConfiguration.getDampingFactor()+",\n" +
+                "  tolerance: "+pageRankAlgorithmConfiguration.getTolerance()+"\n" +
+                "})\n" +
+                "YIELD nodeId, score\n" +
+                "RETURN gds.util.asNode(nodeId).name AS name, score\n" +
+                "ORDER BY score DESC, name ASC";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+
 
         return null;
     }
@@ -271,6 +306,20 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         for(int i= 0; i<kindNamesList.size();i++){
             kindNamesArrayString = kindNamesArrayString +"'"+kindNamesList.get(i)+"'";
             if(i<kindNamesList.size()-1){
+                kindNamesArrayString = kindNamesArrayString + ",";
+            }
+        }
+        kindNamesArrayString = kindNamesArrayString+"]";
+        return kindNamesArrayString;
+    }
+
+    private String getKindNamesSetString(Set<String> kindNamesSet){
+        String kindNamesArrayString = "[";
+        int currentLoopIndex = 0;
+        for(String currentKindName : kindNamesSet){
+            kindNamesArrayString = kindNamesArrayString +"'"+currentKindName+"'";
+            currentLoopIndex++;
+            if(currentLoopIndex<kindNamesSet.size()-1){
                 kindNamesArrayString = kindNamesArrayString + ",";
             }
         }
