@@ -12,7 +12,7 @@ public class PageRankAlgorithmConfig extends DataScienceBaseAlgorithmConfig{
     private int pageSize = 50;
     private int startPage = 1;
     private int endPage = 21;
-    private int resultNumber;
+    private int resultNumber = 0;
     private ScoreSortingLogic scoreSortingLogic;
 
     public int getPageSize() {

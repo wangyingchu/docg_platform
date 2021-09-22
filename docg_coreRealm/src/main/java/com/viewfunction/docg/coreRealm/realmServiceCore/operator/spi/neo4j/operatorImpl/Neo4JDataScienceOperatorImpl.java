@@ -485,37 +485,33 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
                 int runtimePageSize = pageSize != 0 ? pageSize : 50;
                 int runtimeStartPage = startPage - 1;
 
-                if (endPage != 0) {
-                    //get data from start page to end page, each page has runtimePageSize number of record
-                    if (endPage < 0 || endPage <= startPage) {
-                        String exceptionMessage = "end page must great than start page";
-                        CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
-                        coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
-                        throw coreRealmServiceEntityExploreException;
-                    }
-                    int runtimeEndPage = endPage - 1;
+                //get data from start page to end page, each page has runtimePageSize number of record
+                if (endPage <= startPage) {
+                    String exceptionMessage = "end page must great than start page";
+                    CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
+                    coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
+                    throw coreRealmServiceEntityExploreException;
+                }
+                int runtimeEndPage = endPage - 1;
 
-                    skipRecordNumber = runtimePageSize * runtimeStartPage;
-                    limitRecordNumber = (runtimeEndPage - runtimeStartPage) * runtimePageSize;
-                } else {
-                    //filter the data before the start page
-                    limitRecordNumber = runtimePageSize * runtimeStartPage;
+                skipRecordNumber = runtimePageSize * runtimeStartPage;
+                limitRecordNumber = (runtimeEndPage - runtimeStartPage) * runtimePageSize;
+            }
+
+            if (resultNumber != 0) {
+                if (resultNumber < 0) {
+                    String exceptionMessage = "result number must great then zero";
+                    CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
+                    coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
+                    throw coreRealmServiceEntityExploreException;
                 }
-            } else {
-                //if there is no page parameters,use resultNumber to control result information number
-                if (resultNumber != 0) {
-                    if (resultNumber < 0) {
-                        String exceptionMessage = "result number must great then zero";
-                        CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
-                        coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
-                        throw coreRealmServiceEntityExploreException;
-                    }
-                    limitRecordNumber = resultNumber;
-                }
+                limitRecordNumber = resultNumber;
+                skipRecordNumber = 0;
             }
             if (limitRecordNumber == 0) {
                 limitRecordNumber = defaultReturnRecordNumber;
             }
+
             return " SKIP "+skipRecordNumber+" LIMIT "+limitRecordNumber+"";
         }else{
             return "";
