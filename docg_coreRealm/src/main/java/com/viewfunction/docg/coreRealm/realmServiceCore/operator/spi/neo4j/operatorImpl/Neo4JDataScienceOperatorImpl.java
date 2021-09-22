@@ -300,8 +300,8 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         String sourceNodesCQLPart= "";
         if(conceptionEntityUIDSet != null && conceptionEntityUIDSet.size()>0){
             queryEntitiesByIDCQLPart =  "MATCH (targetNodes) WHERE id(targetNodes) IN " + conceptionEntityUIDSet.toString()+"\n"+
-                    "with collect(targetNodes) as nodes\n";
-            sourceNodesCQLPart = "  sourceNodes: nodes"+",\n";
+                    "with collect(targetNodes) as pSourceNodes\n";
+            sourceNodesCQLPart = "  sourceNodes: pSourceNodes"+",\n";
         }
 
         String nodeLabelsCQLPart = "";
