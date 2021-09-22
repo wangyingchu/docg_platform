@@ -265,7 +265,15 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
 
     @Override
     public PageRankAlgorithmResult executePersonalisedPageRankAlgorithm(String graphName, PersonalizedPageRankAlgorithmConfig personalizedPageRankAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
-        return null;
+        if(personalizedPageRankAlgorithmConfig == null ||
+                personalizedPageRankAlgorithmConfig.getPersonalizedPageRankEntityUIDs() == null ||
+                personalizedPageRankAlgorithmConfig.getPersonalizedPageRankEntityUIDs().size() ==0){
+            logger.error("personalized PageRank EntityUIDs is required");
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("personalized PageRank EntityUIDs is required");
+            throw e;
+        }
+        return doExecutePageRankAlgorithms(graphName,personalizedPageRankAlgorithmConfig.getPersonalizedPageRankEntityUIDs(),personalizedPageRankAlgorithmConfig);
     }
 
     private PageRankAlgorithmResult doExecutePageRankAlgorithms(String graphName, Set<String> conceptionEntityUIDSet,PageRankAlgorithmConfig pageRankAlgorithmConfig) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException {
@@ -288,6 +296,14 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         Set<String> relationKindsForCompute = pageRankAlgorithmConfiguration.getRelationKindsForCompute();
         String relationshipWeightAttribute = pageRankAlgorithmConfiguration.getRelationshipWeightAttribute();
 
+        String queryEntitiesByIDCQLPart = "";
+        String sourceNodesCQLPart= "";
+        if(conceptionEntityUIDSet != null && conceptionEntityUIDSet.size()>0){
+            queryEntitiesByIDCQLPart =  "MATCH (targetNodes) WHERE id(targetNodes) IN " + conceptionEntityUIDSet.toString()+"\n"+
+                    "with collect(targetNodes) as nodes\n";
+            sourceNodesCQLPart = "  sourceNodes: nodes"+",\n";
+        }
+
         String nodeLabelsCQLPart = "";
         if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
             nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
@@ -303,11 +319,13 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         String orderCQLPart = pageRankAlgorithmConfig.getScoreSortingLogic()!= null ?
                 "ORDER BY score "+pageRankAlgorithmConfig.getScoreSortingLogic().toString() : "";
 
-        String cypherProcedureString = "CALL gds.pageRank.stream('"+graphName+"', {\n" +
+        String cypherProcedureString = queryEntitiesByIDCQLPart +
+                "CALL gds.pageRank.stream('"+graphName+"', {\n" +
                 nodeLabelsCQLPart+
                 relationshipTypes+
                 scalerCQLPart+
                 relationshipWeightAttributeCQLPart +
+                sourceNodesCQLPart +
                 "  maxIterations: "+pageRankAlgorithmConfiguration.getMaxIterations()+",\n" +
                 "  dampingFactor: "+pageRankAlgorithmConfiguration.getDampingFactor()+",\n" +
                 "  tolerance: "+pageRankAlgorithmConfiguration.getTolerance()+"\n" +
