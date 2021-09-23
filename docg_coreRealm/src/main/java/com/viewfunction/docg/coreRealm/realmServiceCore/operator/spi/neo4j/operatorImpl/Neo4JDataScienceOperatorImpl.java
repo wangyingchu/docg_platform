@@ -13,7 +13,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.d
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig.ResultPaginationableConfig;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AnalyzableGraph;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.PageRankAlgorithmResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.EntityScoreInfo;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.EntityAnalyzeResult;
 
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
@@ -339,7 +339,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
         PageRankAlgorithmResult pageRankAlgorithmResult = new PageRankAlgorithmResult(graphName,pageRankAlgorithmConfiguration);
-        List<EntityScoreInfo> entityScoreInfoList = pageRankAlgorithmResult.getPageRankScores();
+        List<EntityAnalyzeResult> entityAnalyzeResultList = pageRankAlgorithmResult.getPageRankScores();
 
         DataTransformer<Object> dataTransformer = new DataTransformer() {
             @Override
@@ -348,7 +348,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
                     Record nodeRecord = result.next();
                     long entityUID = nodeRecord.get("entityUID").asLong();
                     double pageRankScore = nodeRecord.get("score").asNumber().doubleValue();
-                    entityScoreInfoList.add(new EntityScoreInfo(""+entityUID,pageRankScore));
+                    entityAnalyzeResultList.add(new EntityAnalyzeResult(""+entityUID,pageRankScore));
                 }
                 return null;
             }
