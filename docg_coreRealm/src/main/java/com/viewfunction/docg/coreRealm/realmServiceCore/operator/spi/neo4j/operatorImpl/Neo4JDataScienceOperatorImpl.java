@@ -300,6 +300,20 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         return doExecuteEigenvectorCentrality(graphName,null,eigenvectorCentralityAlgorithmConfig);
     }
 
+    @Override
+    public EigenvectorCentralityAlgorithmResult executePersonalisedEigenvectorCentralityAlgorithm(String graphName, PersonalisedEigenvectorCentralityAlgorithmConfig personalisedEigenvectorCentralityAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        if(personalisedEigenvectorCentralityAlgorithmConfig == null ||
+                personalisedEigenvectorCentralityAlgorithmConfig.getPersonalizedEigenvectorCentralityEntityUIDs() == null ||
+                personalisedEigenvectorCentralityAlgorithmConfig.getPersonalizedEigenvectorCentralityEntityUIDs().size() ==0){
+            logger.error("personalized EigenvectorCentrality EntityUIDs is required");
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("personalized EigenvectorCentrality EntityUIDs is required");
+            throw e;
+        }
+        return doExecuteEigenvectorCentrality(graphName,personalisedEigenvectorCentralityAlgorithmConfig.getPersonalizedEigenvectorCentralityEntityUIDs(),
+                personalisedEigenvectorCentralityAlgorithmConfig);
+    }
+
     private PageRankAlgorithmResult doExecutePageRankAlgorithms(String graphName, Set<String> conceptionEntityUIDSet,PageRankAlgorithmConfig pageRankAlgorithmConfig) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException {
         /*
         Example:
