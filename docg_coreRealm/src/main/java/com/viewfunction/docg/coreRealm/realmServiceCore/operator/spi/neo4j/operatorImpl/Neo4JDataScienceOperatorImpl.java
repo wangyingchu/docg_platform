@@ -10,10 +10,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.Grap
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AnalyzableGraph;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.ArticleRankAlgorithmResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.EigenvectorCentralityAlgorithmResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.PageRankAlgorithmResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.EntityAnalyzeResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.*;
 
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
@@ -312,6 +309,87 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         }
         return doExecuteEigenvectorCentrality(graphName,personalisedEigenvectorCentralityAlgorithmConfig.getPersonalizedEigenvectorCentralityEntityUIDs(),
                 personalisedEigenvectorCentralityAlgorithmConfig);
+    }
+
+    @Override
+    public BetweennessCentralityAlgorithmResult executeBetweennessCentralityAlgorithm(String graphName, BetweennessCentralityAlgorithmConfig betweennessCentralityAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/betweenness-centrality/
+        */
+        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
+        if(!checkGraphExistence){
+            logger.error("AnalyzableGraph with name {} does not exist",graphName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
+            throw e;
+        }
+
+        BetweennessCentralityAlgorithmConfig betweennessCentralityAlgorithmConfiguration = betweennessCentralityAlgorithmConfig != null ?
+                betweennessCentralityAlgorithmConfig : new BetweennessCentralityAlgorithmConfig();
+        Set<String> conceptionKindsForCompute = betweennessCentralityAlgorithmConfiguration.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = betweennessCentralityAlgorithmConfiguration.getRelationKindsForCompute();
+
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+
+        String samplingSizeAttributeCQLPart = betweennessCentralityAlgorithmConfig.getSamplingSize() != null ?
+                "  samplingSize: '"+betweennessCentralityAlgorithmConfig.getSamplingSize().intValue()+"',\n" : "";
+        String samplingSeedAttributeCQLPart = betweennessCentralityAlgorithmConfig.getSamplingSeed() != null ?
+                "  samplingSeed: '"+betweennessCentralityAlgorithmConfig.getSamplingSeed().intValue()+"',\n" : "";
+
+        String orderCQLPart = betweennessCentralityAlgorithmConfig.getScoreSortingLogic()!= null ?
+                "ORDER BY score "+betweennessCentralityAlgorithmConfig.getScoreSortingLogic().toString() : "";
+
+        String cypherProcedureString =
+                "CALL gds.betweenness.stream('"+graphName+"', {\n" +
+                nodeLabelsCQLPart+
+                relationshipTypes+
+                        samplingSizeAttributeCQLPart+
+                        samplingSeedAttributeCQLPart +
+
+                "  concurrency: 4 \n" +
+                "})\n" +
+                "YIELD nodeId, score\n" +
+                //"RETURN gds.util.asNode(nodeId) AS node, score\n" +
+                "RETURN nodeId AS entityUID, score\n" +
+                orderCQLPart+
+                getReturnDataControlLogic(betweennessCentralityAlgorithmConfig);
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        BetweennessCentralityAlgorithmResult betweennessCentralityAlgorithmResult = new BetweennessCentralityAlgorithmResult(graphName,betweennessCentralityAlgorithmConfig);
+        List<EntityAnalyzeResult> entityAnalyzeResultList = betweennessCentralityAlgorithmResult.getBetweennessCentralityScores();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityUID = nodeRecord.get("entityUID").asLong();
+                    double pageRankScore = nodeRecord.get("score").asNumber().doubleValue();
+                    entityAnalyzeResultList.add(new EntityAnalyzeResult(""+entityUID,pageRankScore));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            betweennessCentralityAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return betweennessCentralityAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     private PageRankAlgorithmResult doExecutePageRankAlgorithms(String graphName, Set<String> conceptionEntityUIDSet,PageRankAlgorithmConfig pageRankAlgorithmConfig) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException {
