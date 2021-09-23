@@ -1,20 +1,15 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig;
 
-public class PageRankAlgorithmConfig extends ResultPaginationableConfig {
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
 
-    public enum ScoreSortingLogic { ASC, DESC }
-    /*
-    Document:
-    https://neo4j.com/docs/graph-data-science/current/alpha-algorithms/scale-properties/
-    */
-    public enum ScoreScalerLogic {None, MinMax, Max, Mean, Log, L1Norm, L2Norm, StdScore}
+public class PageRankAlgorithmConfig extends ResultPaginationableConfig {
 
     private float dampingFactor = 0.85f;
     private int maxIterations = 20;
     private float tolerance = 0.0000001f;
     private String relationshipWeightAttribute;
-    private ScoreScalerLogic scoreScalerLogic;
-    private ScoreSortingLogic scoreSortingLogic;
+    private DataScienceOperator.ValueScalerLogic valueScalerLogic;
+    private DataScienceOperator.ValueSortingLogic valueSortingLogic;
 
     public float getDampingFactor() {
         return dampingFactor;
@@ -48,19 +43,19 @@ public class PageRankAlgorithmConfig extends ResultPaginationableConfig {
         this.relationshipWeightAttribute = relationshipWeightAttribute;
     }
 
-    public ScoreSortingLogic getScoreSortingLogic() {
-        return scoreSortingLogic;
+    public DataScienceOperator.ValueSortingLogic getScoreSortingLogic() {
+        return valueSortingLogic;
     }
 
-    public void setScoreSortingLogic(ScoreSortingLogic scoreSortingLogic) {
-        this.scoreSortingLogic = scoreSortingLogic;
+    public void setScoreSortingLogic(DataScienceOperator.ValueSortingLogic valueSortingLogic) {
+        this.valueSortingLogic = valueSortingLogic;
     }
 
-    public ScoreScalerLogic getScoreScalerLogic() {
-        return scoreScalerLogic;
+    public DataScienceOperator.ValueScalerLogic getScoreScalerLogic() {
+        return valueScalerLogic;
     }
 
-    public void setScoreScalerLogic(ScoreScalerLogic scoreScalerLogic) {
-        this.scoreScalerLogic = scoreScalerLogic;
+    public void setScoreScalerLogic(DataScienceOperator.ValueScalerLogic valueScalerLogic) {
+        this.valueScalerLogic = valueScalerLogic;
     }
 }
