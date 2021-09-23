@@ -1,11 +1,11 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult;
 
-public class PageRankScoreInfo {
+public class EntityScoreInfo {
 
     private String conceptionEntityUID;
     private double score;
 
-    public PageRankScoreInfo(String conceptionEntityUID,double score){
+    public EntityScoreInfo(String conceptionEntityUID, double score){
         this.conceptionEntityUID = conceptionEntityUID;
         this.score = score;
     }

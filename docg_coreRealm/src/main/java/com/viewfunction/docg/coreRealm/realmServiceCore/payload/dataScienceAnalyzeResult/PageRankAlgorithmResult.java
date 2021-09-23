@@ -12,7 +12,7 @@ public class PageRankAlgorithmResult {
     private PageRankAlgorithmConfig pageRankAlgorithmConfig;
     private Date algorithmExecuteStartTime;
     private Date algorithmExecuteEndTime;
-    private List<PageRankScoreInfo> pageRankScores;
+    private List<EntityScoreInfo> pageRankScores;
 
     public PageRankAlgorithmResult(String graphName,PageRankAlgorithmConfig pageRankAlgorithmConfig){
         this.graphName = graphName;
@@ -41,7 +41,7 @@ public class PageRankAlgorithmResult {
         this.algorithmExecuteEndTime = algorithmExecuteEndTime;
     }
 
-    public List<PageRankScoreInfo> getPageRankScores() {
+    public List<EntityScoreInfo> getPageRankScores() {
         return pageRankScores;
     }
 }

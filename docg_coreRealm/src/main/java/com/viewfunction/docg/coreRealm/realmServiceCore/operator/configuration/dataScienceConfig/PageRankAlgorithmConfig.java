@@ -1,6 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig;
 
-public class PageRankAlgorithmConfig extends DataScienceBaseAlgorithmConfig{
+public class PageRankAlgorithmConfig extends ResultPaginationableConfig {
 
     public enum ScoreSortingLogic { ASC, DESC }
     /*
@@ -14,43 +14,7 @@ public class PageRankAlgorithmConfig extends DataScienceBaseAlgorithmConfig{
     private float tolerance = 0.0000001f;
     private String relationshipWeightAttribute;
     private ScoreScalerLogic scoreScalerLogic;
-    private int pageSize = 50;
-    private int startPage = 1;
-    private int endPage = 21;
-    private int resultNumber = 0;
     private ScoreSortingLogic scoreSortingLogic;
-
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
-    }
-
-    public int getStartPage() {
-        return startPage;
-    }
-
-    public void setStartPage(int startPage) {
-        this.startPage = startPage;
-    }
-
-    public int getEndPage() {
-        return endPage;
-    }
-
-    public void setEndPage(int endPage) {
-        this.endPage = endPage;
-    }
-
-    public int getResultNumber() {
-        return resultNumber;
-    }
-
-    public void setResultNumber(int resultNumber) {
-        this.resultNumber = resultNumber;
-    }
 
     public float getDampingFactor() {
         return dampingFactor;
