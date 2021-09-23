@@ -8,10 +8,9 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleAnalyzableGraphTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
-import com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig.PageRankAlgorithmConfig;
-import com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig.PersonalizedPageRankAlgorithmConfig;
-import com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig.ResultPaginationableConfig;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AnalyzableGraph;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.ArticleRankAlgorithmResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.PageRankAlgorithmResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.EntityAnalyzeResult;
 
@@ -277,6 +276,24 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         return doExecutePageRankAlgorithms(graphName,personalizedPageRankAlgorithmConfig.getPersonalizedPageRankEntityUIDs(),personalizedPageRankAlgorithmConfig);
     }
 
+    @Override
+    public ArticleRankAlgorithmResult executeArticleRankAlgorithm(String graphName, ArticleRankAlgorithmConfig articleRankAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        return doExecuteArticleRankAlgorithms(graphName,null,articleRankAlgorithmConfig);
+    }
+
+    @Override
+    public ArticleRankAlgorithmResult executePersonalisedArticleRankAlgorithm(String graphName, PersonalizedArticleRankAlgorithmConfig personalizedArticleRankAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        if(personalizedArticleRankAlgorithmConfig == null ||
+                personalizedArticleRankAlgorithmConfig.getPersonalizedArticleRankEntityUIDs() == null ||
+                personalizedArticleRankAlgorithmConfig.getPersonalizedArticleRankEntityUIDs().size() ==0){
+            logger.error("personalized ArticleRank EntityUIDs is required");
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("personalized ArticleRank EntityUIDs is required");
+            throw e;
+        }
+        return doExecuteArticleRankAlgorithms(graphName,personalizedArticleRankAlgorithmConfig.getPersonalizedArticleRankEntityUIDs(),personalizedArticleRankAlgorithmConfig);
+    }
+
     private PageRankAlgorithmResult doExecutePageRankAlgorithms(String graphName, Set<String> conceptionEntityUIDSet,PageRankAlgorithmConfig pageRankAlgorithmConfig) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException {
         /*
         Example:
@@ -289,7 +306,79 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
             e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
             throw e;
         }
+        String cypherProcedureString = getRankAlgorithmsCQL(graphName, "pageRank",conceptionEntityUIDSet,pageRankAlgorithmConfig);
+        PageRankAlgorithmResult pageRankAlgorithmResult = new PageRankAlgorithmResult(graphName,pageRankAlgorithmConfig);
+        List<EntityAnalyzeResult> entityAnalyzeResultList = pageRankAlgorithmResult.getPageRankScores();
 
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityUID = nodeRecord.get("entityUID").asLong();
+                    double pageRankScore = nodeRecord.get("score").asNumber().doubleValue();
+                    entityAnalyzeResultList.add(new EntityAnalyzeResult(""+entityUID,pageRankScore));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            pageRankAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return pageRankAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    private ArticleRankAlgorithmResult doExecuteArticleRankAlgorithms(String graphName, Set<String> conceptionEntityUIDSet,ArticleRankAlgorithmConfig articleRankAlgorithmConfig) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/article-rank/
+        */
+        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
+        if(!checkGraphExistence){
+            logger.error("AnalyzableGraph with name {} does not exist",graphName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
+            throw e;
+        }
+        String cypherProcedureString = getRankAlgorithmsCQL(graphName, "articleRank",conceptionEntityUIDSet,articleRankAlgorithmConfig);
+        ArticleRankAlgorithmResult articleRankAlgorithmResult = new ArticleRankAlgorithmResult(graphName,articleRankAlgorithmConfig);
+        List<EntityAnalyzeResult> entityAnalyzeResultList = articleRankAlgorithmResult.getArticleRankScores();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityUID = nodeRecord.get("entityUID").asLong();
+                    double pageRankScore = nodeRecord.get("score").asNumber().doubleValue();
+                    entityAnalyzeResultList.add(new EntityAnalyzeResult(""+entityUID,pageRankScore));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            articleRankAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return articleRankAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    private String getRankAlgorithmsCQL(String graphName, String algorithm,Set<String> conceptionEntityUIDSet,PageRankAlgorithmConfig pageRankAlgorithmConfig) throws CoreRealmServiceEntityExploreException {
         PageRankAlgorithmConfig pageRankAlgorithmConfiguration = pageRankAlgorithmConfig != null ? pageRankAlgorithmConfig :
                 new PageRankAlgorithmConfig();
 
@@ -321,7 +410,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
                 "ORDER BY score "+pageRankAlgorithmConfig.getScoreSortingLogic().toString() : "";
 
         String cypherProcedureString = queryEntitiesByIDCQLPart +
-                "CALL gds.pageRank.stream('"+graphName+"', {\n" +
+                "CALL gds."+algorithm+".stream('"+graphName+"', {\n" +
                 nodeLabelsCQLPart+
                 relationshipTypes+
                 scalerCQLPart+
@@ -338,33 +427,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
                 getReturnDataControlLogic(pageRankAlgorithmConfiguration);
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
-        PageRankAlgorithmResult pageRankAlgorithmResult = new PageRankAlgorithmResult(graphName,pageRankAlgorithmConfiguration);
-        List<EntityAnalyzeResult> entityAnalyzeResultList = pageRankAlgorithmResult.getPageRankScores();
-
-        DataTransformer<Object> dataTransformer = new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-                while(result.hasNext()){
-                    Record nodeRecord = result.next();
-                    long entityUID = nodeRecord.get("entityUID").asLong();
-                    double pageRankScore = nodeRecord.get("score").asNumber().doubleValue();
-                    entityAnalyzeResultList.add(new EntityAnalyzeResult(""+entityUID,pageRankScore));
-                }
-                return null;
-            }
-        };
-        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-        try {
-            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
-            pageRankAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
-            return pageRankAlgorithmResult;
-        } catch(org.neo4j.driver.exceptions.ClientException e){
-            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
-            e1.setCauseMessage(e.getMessage());
-            throw e1;
-        } finally {
-            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-        }
+       return cypherProcedureString;
     }
 
     private String getKindNamesArrayString(List<String> kindNamesList){

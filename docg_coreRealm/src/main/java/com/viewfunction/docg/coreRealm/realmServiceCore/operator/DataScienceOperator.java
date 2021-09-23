@@ -2,9 +2,12 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.operator;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig.ArticleRankAlgorithmConfig;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig.PageRankAlgorithmConfig;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig.PersonalizedArticleRankAlgorithmConfig;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig.PersonalizedPageRankAlgorithmConfig;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AnalyzableGraph;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.ArticleRankAlgorithmResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.PageRankAlgorithmResult;
 
 import java.util.List;
@@ -36,4 +39,9 @@ public interface DataScienceOperator {
     public PageRankAlgorithmResult executePageRankAlgorithm(String graphName, PageRankAlgorithmConfig pageRankAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
     public PageRankAlgorithmResult executePersonalisedPageRankAlgorithm(String graphName, PersonalizedPageRankAlgorithmConfig personalizedPageRankAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
+    public ArticleRankAlgorithmResult executeArticleRankAlgorithm(String graphName, ArticleRankAlgorithmConfig articleRankAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
+    public ArticleRankAlgorithmResult executePersonalisedArticleRankAlgorithm(String graphName, PersonalizedArticleRankAlgorithmConfig personalizedArticleRankAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
 }
