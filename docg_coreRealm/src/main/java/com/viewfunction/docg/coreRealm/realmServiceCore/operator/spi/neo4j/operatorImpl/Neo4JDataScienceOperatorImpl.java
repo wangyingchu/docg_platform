@@ -11,6 +11,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOper
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AnalyzableGraph;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.ArticleRankAlgorithmResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.EigenvectorCentralityAlgorithmResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.PageRankAlgorithmResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.EntityAnalyzeResult;
 
@@ -294,6 +295,11 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         return doExecuteArticleRankAlgorithms(graphName,personalizedArticleRankAlgorithmConfig.getPersonalizedArticleRankEntityUIDs(),personalizedArticleRankAlgorithmConfig);
     }
 
+    @Override
+    public EigenvectorCentralityAlgorithmResult executeEigenvectorCentralityAlgorithm(String graphName, EigenvectorCentralityAlgorithmConfig eigenvectorCentralityAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        return doExecuteEigenvectorCentrality(graphName,null,eigenvectorCentralityAlgorithmConfig);
+    }
+
     private PageRankAlgorithmResult doExecutePageRankAlgorithms(String graphName, Set<String> conceptionEntityUIDSet,PageRankAlgorithmConfig pageRankAlgorithmConfig) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException {
         /*
         Example:
@@ -306,7 +312,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
             e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
             throw e;
         }
-        String cypherProcedureString = getRankAlgorithmsCQL(graphName, "pageRank",conceptionEntityUIDSet,pageRankAlgorithmConfig);
+        String cypherProcedureString = getRankAlgorithmsCQL(graphName, "pageRank",conceptionEntityUIDSet,pageRankAlgorithmConfig,true);
         PageRankAlgorithmResult pageRankAlgorithmResult = new PageRankAlgorithmResult(graphName,pageRankAlgorithmConfig);
         List<EntityAnalyzeResult> entityAnalyzeResultList = pageRankAlgorithmResult.getPageRankScores();
 
@@ -348,7 +354,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
             e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
             throw e;
         }
-        String cypherProcedureString = getRankAlgorithmsCQL(graphName, "articleRank",conceptionEntityUIDSet,articleRankAlgorithmConfig);
+        String cypherProcedureString = getRankAlgorithmsCQL(graphName, "articleRank",conceptionEntityUIDSet,articleRankAlgorithmConfig,true);
         ArticleRankAlgorithmResult articleRankAlgorithmResult = new ArticleRankAlgorithmResult(graphName,articleRankAlgorithmConfig);
         List<EntityAnalyzeResult> entityAnalyzeResultList = articleRankAlgorithmResult.getArticleRankScores();
 
@@ -378,7 +384,67 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         }
     }
 
-    private String getRankAlgorithmsCQL(String graphName, String algorithm,Set<String> conceptionEntityUIDSet,PageRankAlgorithmConfig pageRankAlgorithmConfig) throws CoreRealmServiceEntityExploreException {
+    private EigenvectorCentralityAlgorithmResult doExecuteEigenvectorCentrality(String graphName, Set<String> conceptionEntityUIDSet,EigenvectorCentralityAlgorithmConfig eigenvectorCentralityAlgorithmConfig) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/eigenvector-centrality/
+        */
+        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
+        if(!checkGraphExistence){
+            logger.error("AnalyzableGraph with name {} does not exist",graphName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
+            throw e;
+        }
+
+        PageRankAlgorithmConfig pageRankAlgorithmConfig = new PageRankAlgorithmConfig();
+        if(eigenvectorCentralityAlgorithmConfig != null){
+            pageRankAlgorithmConfig.setStartPage(eigenvectorCentralityAlgorithmConfig.getStartPage());
+            pageRankAlgorithmConfig.setEndPage(eigenvectorCentralityAlgorithmConfig.getEndPage());
+            pageRankAlgorithmConfig.setPageSize(eigenvectorCentralityAlgorithmConfig.getPageSize());
+            pageRankAlgorithmConfig.setResultNumber(eigenvectorCentralityAlgorithmConfig.getResultNumber());
+
+            pageRankAlgorithmConfig.setConceptionKindsForCompute(eigenvectorCentralityAlgorithmConfig.getConceptionKindsForCompute());
+            pageRankAlgorithmConfig.setRelationKindsForCompute(eigenvectorCentralityAlgorithmConfig.getRelationKindsForCompute());
+
+            pageRankAlgorithmConfig.setMaxIterations(eigenvectorCentralityAlgorithmConfig.getMaxIterations());
+            pageRankAlgorithmConfig.setTolerance(eigenvectorCentralityAlgorithmConfig.getTolerance());
+            pageRankAlgorithmConfig.setRelationshipWeightAttribute(eigenvectorCentralityAlgorithmConfig.getRelationshipWeightAttribute());
+            pageRankAlgorithmConfig.setScoreScalerLogic(eigenvectorCentralityAlgorithmConfig.getScoreScalerLogic());
+            pageRankAlgorithmConfig.setScoreSortingLogic(eigenvectorCentralityAlgorithmConfig.getScoreSortingLogic());
+        }
+
+        String cypherProcedureString = getRankAlgorithmsCQL(graphName, "eigenvector",conceptionEntityUIDSet,pageRankAlgorithmConfig,false);
+        EigenvectorCentralityAlgorithmResult eigenvectorCentralityAlgorithmResult = new EigenvectorCentralityAlgorithmResult(graphName,eigenvectorCentralityAlgorithmConfig);
+        List<EntityAnalyzeResult> entityAnalyzeResultList = eigenvectorCentralityAlgorithmResult.getEigenvectorCentralityScores();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityUID = nodeRecord.get("entityUID").asLong();
+                    double pageRankScore = nodeRecord.get("score").asNumber().doubleValue();
+                    entityAnalyzeResultList.add(new EntityAnalyzeResult(""+entityUID,pageRankScore));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            eigenvectorCentralityAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return eigenvectorCentralityAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    private String getRankAlgorithmsCQL(String graphName, String algorithm,Set<String> conceptionEntityUIDSet,PageRankAlgorithmConfig pageRankAlgorithmConfig,boolean usingDampingFactor) throws CoreRealmServiceEntityExploreException {
         PageRankAlgorithmConfig pageRankAlgorithmConfiguration = pageRankAlgorithmConfig != null ? pageRankAlgorithmConfig :
                 new PageRankAlgorithmConfig();
 
@@ -409,6 +475,11 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         String orderCQLPart = pageRankAlgorithmConfig.getScoreSortingLogic()!= null ?
                 "ORDER BY score "+pageRankAlgorithmConfig.getScoreSortingLogic().toString() : "";
 
+        // this logic is used for executeEigenvectorCentralityAlgorithm,Eigenvector Centrality does not use DampingFactor
+        String dampingFactorCQLPart = usingDampingFactor?
+                "  dampingFactor: "+pageRankAlgorithmConfiguration.getDampingFactor()+",\n":"";
+
+
         String cypherProcedureString = queryEntitiesByIDCQLPart +
                 "CALL gds."+algorithm+".stream('"+graphName+"', {\n" +
                 nodeLabelsCQLPart+
@@ -417,7 +488,8 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
                 relationshipWeightAttributeCQLPart +
                 sourceNodesCQLPart +
                 "  maxIterations: "+pageRankAlgorithmConfiguration.getMaxIterations()+",\n" +
-                "  dampingFactor: "+pageRankAlgorithmConfiguration.getDampingFactor()+",\n" +
+                //"  dampingFactor: "+pageRankAlgorithmConfiguration.getDampingFactor()+",\n" +
+                dampingFactorCQLPart+
                 "  tolerance: "+pageRankAlgorithmConfiguration.getTolerance()+"\n" +
                 "})\n" +
                 "YIELD nodeId, score\n" +
