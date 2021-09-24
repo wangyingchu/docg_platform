@@ -343,17 +343,15 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
                 "  samplingSize: '"+betweennessCentralityAlgorithmConfig.getSamplingSize().intValue()+"',\n" : "";
         String samplingSeedAttributeCQLPart = betweennessCentralityAlgorithmConfig.getSamplingSeed() != null ?
                 "  samplingSeed: '"+betweennessCentralityAlgorithmConfig.getSamplingSeed().intValue()+"',\n" : "";
-
         String orderCQLPart = betweennessCentralityAlgorithmConfig.getScoreSortingLogic()!= null ?
                 "ORDER BY score "+betweennessCentralityAlgorithmConfig.getScoreSortingLogic().toString() : "";
 
         String cypherProcedureString =
                 "CALL gds.betweenness.stream('"+graphName+"', {\n" +
-                nodeLabelsCQLPart+
-                relationshipTypes+
-                        samplingSizeAttributeCQLPart+
-                        samplingSeedAttributeCQLPart +
-
+                nodeLabelsCQLPart +
+                relationshipTypes +
+                samplingSizeAttributeCQLPart +
+                samplingSeedAttributeCQLPart +
                 "  concurrency: 4 \n" +
                 "})\n" +
                 "YIELD nodeId, score\n" +
@@ -571,7 +569,6 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         String dampingFactorCQLPart = usingDampingFactor?
                 "  dampingFactor: "+pageRankAlgorithmConfiguration.getDampingFactor()+",\n":"";
 
-
         String cypherProcedureString = queryEntitiesByIDCQLPart +
                 "CALL gds."+algorithm+".stream('"+graphName+"', {\n" +
                 nodeLabelsCQLPart+
@@ -582,7 +579,8 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
                 "  maxIterations: "+pageRankAlgorithmConfiguration.getMaxIterations()+",\n" +
                 //"  dampingFactor: "+pageRankAlgorithmConfiguration.getDampingFactor()+",\n" +
                 dampingFactorCQLPart+
-                "  tolerance: "+pageRankAlgorithmConfiguration.getTolerance()+"\n" +
+                "  tolerance: "+pageRankAlgorithmConfiguration.getTolerance()+",\n" +
+                "  concurrency: 4 \n" +
                 "})\n" +
                 "YIELD nodeId, score\n" +
                 //"RETURN gds.util.asNode(nodeId) AS node, score\n" +
