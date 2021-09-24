@@ -340,9 +340,9 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         }
 
         String samplingSizeAttributeCQLPart = betweennessCentralityAlgorithmConfig.getSamplingSize() != null ?
-                "  samplingSize: '"+betweennessCentralityAlgorithmConfig.getSamplingSize().intValue()+"',\n" : "";
+                "  samplingSize: "+betweennessCentralityAlgorithmConfig.getSamplingSize().intValue()+",\n" : "";
         String samplingSeedAttributeCQLPart = betweennessCentralityAlgorithmConfig.getSamplingSeed() != null ?
-                "  samplingSeed: '"+betweennessCentralityAlgorithmConfig.getSamplingSeed().intValue()+"',\n" : "";
+                "  samplingSeed: "+betweennessCentralityAlgorithmConfig.getSamplingSeed().intValue()+",\n" : "";
         String orderCQLPart = betweennessCentralityAlgorithmConfig.getScoreSortingLogic()!= null ?
                 "ORDER BY score "+betweennessCentralityAlgorithmConfig.getScoreSortingLogic().toString() : "";
 
