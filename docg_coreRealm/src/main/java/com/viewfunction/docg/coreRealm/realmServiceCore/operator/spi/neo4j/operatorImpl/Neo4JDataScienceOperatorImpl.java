@@ -390,6 +390,86 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         }
     }
 
+    @Override
+    public DegreeCentralityAlgorithmResult executeDegreeCentralityAlgorithm(String graphName, DegreeCentralityAlgorithmConfig degreeCentralityAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/degree-centrality/
+        */
+        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
+        if(!checkGraphExistence){
+            logger.error("AnalyzableGraph with name {} does not exist",graphName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
+            throw e;
+        }
+
+        DegreeCentralityAlgorithmConfig degreeCentralityAlgorithmConfiguration = degreeCentralityAlgorithmConfig != null ?
+                degreeCentralityAlgorithmConfig : new DegreeCentralityAlgorithmConfig();
+        Set<String> conceptionKindsForCompute = degreeCentralityAlgorithmConfiguration.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = degreeCentralityAlgorithmConfiguration.getRelationKindsForCompute();
+
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+
+        String orientationAttributeCQLPart = degreeCentralityAlgorithmConfiguration.getComputeOrientation() != null ?
+                "  orientation: '"+degreeCentralityAlgorithmConfiguration.getComputeOrientation()+"',\n" : "";
+        String relationshipWeightAttributeCQLPart = degreeCentralityAlgorithmConfiguration.getRelationshipWeightAttribute() != null ?
+                "  relationshipWeightProperty: '"+degreeCentralityAlgorithmConfiguration.getRelationshipWeightAttribute()+"',\n" : "";
+
+        String orderCQLPart = degreeCentralityAlgorithmConfiguration.getScoreSortingLogic()!= null ?
+                "ORDER BY score "+degreeCentralityAlgorithmConfiguration.getScoreSortingLogic().toString() : "";
+
+        String cypherProcedureString =
+                "CALL gds.degree.stream('"+graphName+"', {\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
+                        orientationAttributeCQLPart +
+                        relationshipWeightAttributeCQLPart +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD nodeId, score\n" +
+                        //"RETURN gds.util.asNode(nodeId) AS node, score\n" +
+                        "RETURN nodeId AS entityUID, score\n" +
+                        orderCQLPart+
+                        getReturnDataControlLogic(degreeCentralityAlgorithmConfiguration);
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        DegreeCentralityAlgorithmResult degreeCentralityAlgorithmResult = new DegreeCentralityAlgorithmResult(graphName,degreeCentralityAlgorithmConfig);
+        List<EntityAnalyzeResult> entityAnalyzeResultList = degreeCentralityAlgorithmResult.getDegreeCentralityScores();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityUID = nodeRecord.get("entityUID").asLong();
+                    double pageRankScore = nodeRecord.get("score").asNumber().doubleValue();
+                    entityAnalyzeResultList.add(new EntityAnalyzeResult(""+entityUID,pageRankScore));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            degreeCentralityAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return degreeCentralityAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
     private PageRankAlgorithmResult doExecutePageRankAlgorithms(String graphName, Set<String> conceptionEntityUIDSet,PageRankAlgorithmConfig pageRankAlgorithmConfig) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException {
         /*
         Example:

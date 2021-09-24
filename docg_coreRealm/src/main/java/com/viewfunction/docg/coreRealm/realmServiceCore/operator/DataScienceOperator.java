@@ -4,10 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AnalyzableGraph;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.ArticleRankAlgorithmResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.BetweennessCentralityAlgorithmResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.EigenvectorCentralityAlgorithmResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.PageRankAlgorithmResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.*;
 
 import java.util.List;
 import java.util.Map;
@@ -23,6 +20,8 @@ public interface DataScienceOperator {
     enum ValueScalerLogic {None, MinMax, Max, Mean, Log, L1Norm, L2Norm, StdScore}
 
     enum ValueSortingLogic { ASC, DESC }
+
+    enum ComputeOrientation { NATURAL, REVERSE, UNDIRECTED}
 
     public List<AnalyzableGraph> getAnalyzableGraphs();
 
@@ -56,5 +55,7 @@ public interface DataScienceOperator {
     public EigenvectorCentralityAlgorithmResult executePersonalisedEigenvectorCentralityAlgorithm(String graphName, PersonalisedEigenvectorCentralityAlgorithmConfig personalisedEigenvectorCentralityAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
     public BetweennessCentralityAlgorithmResult executeBetweennessCentralityAlgorithm(String graphName, BetweennessCentralityAlgorithmConfig betweennessCentralityAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
+    public DegreeCentralityAlgorithmResult executeDegreeCentralityAlgorithm(String graphName, DegreeCentralityAlgorithmConfig degreeCentralityAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
 }
