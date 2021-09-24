@@ -1,17 +1,19 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult;
 
+import java.util.List;
+
 public class CommunityDetectionResult {
 
     private String conceptionEntityUID;
     private int communityId;
-    private int[] intermediateCommunityIds;
+    private List<Integer> intermediateCommunityIds;
 
     public CommunityDetectionResult(String conceptionEntityUID,int communityId){
         this.conceptionEntityUID = conceptionEntityUID;
         this.communityId = communityId;
     }
 
-    public CommunityDetectionResult(String conceptionEntityUID,int communityId,int[] intermediateCommunityIds){
+    public CommunityDetectionResult(String conceptionEntityUID,int communityId,List<Integer> intermediateCommunityIds){
         this.conceptionEntityUID = conceptionEntityUID;
         this.communityId = communityId;
         this.intermediateCommunityIds = intermediateCommunityIds;
@@ -25,11 +27,11 @@ public class CommunityDetectionResult {
         return communityId;
     }
 
-    public int[] getIntermediateCommunityIds() {
+    public List<Integer> getIntermediateCommunityIds() {
         return intermediateCommunityIds;
     }
 
-    public void setIntermediateCommunityIds(int[] intermediateCommunityIds) {
+    public void setIntermediateCommunityIds(List<Integer> intermediateCommunityIds) {
         this.intermediateCommunityIds = intermediateCommunityIds;
     }
 

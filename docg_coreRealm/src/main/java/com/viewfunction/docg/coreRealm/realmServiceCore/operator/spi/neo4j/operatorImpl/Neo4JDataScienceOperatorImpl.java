@@ -472,7 +472,92 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
 
     @Override
     public LouvainAlgorithmResult executeLouvainAlgorithm(String graphName, LouvainAlgorithmConfig louvainAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
-        return null;
+         /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/louvain/
+        */
+        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
+        if(!checkGraphExistence){
+            logger.error("AnalyzableGraph with name {} does not exist",graphName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
+            throw e;
+        }
+
+        LouvainAlgorithmConfig louvainAlgorithmConfiguration = louvainAlgorithmConfig != null ?
+                louvainAlgorithmConfig : new LouvainAlgorithmConfig();
+        Set<String> conceptionKindsForCompute = louvainAlgorithmConfiguration.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = louvainAlgorithmConfiguration.getRelationKindsForCompute();
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+
+        String relationshipWeightAttributeCQLPart = louvainAlgorithmConfiguration.getRelationshipWeightAttribute() != null ?
+                "  relationshipWeightProperty: '"+louvainAlgorithmConfiguration.getRelationshipWeightAttribute()+"',\n" : "";
+        String seedPropertyAttributeCQLPart = louvainAlgorithmConfiguration.getSeedProperty() != null ?
+                "  seedProperty: '"+louvainAlgorithmConfiguration.getSeedProperty()+"',\n" : "";
+        String maxLevelsAttributeCQLPart = "  maxLevels: " + louvainAlgorithmConfiguration.getMaxLevels()+",\n";
+        String maxIterationsAttributeCQLPart = "  maxIterations: " + louvainAlgorithmConfiguration.getMaxIterations()+",\n";
+        String toleranceAttributeCQLPart = "  tolerance: " + louvainAlgorithmConfiguration.getTolerance()+",\n";
+        String includeIntermediateCommunitiesAttributeCQLPart = "  includeIntermediateCommunities: " + louvainAlgorithmConfiguration.isIncludeIntermediateCommunities()+",\n";
+        String consecutiveIdsAttributeCQLPart = "  consecutiveIds: " + louvainAlgorithmConfiguration.isConsecutiveIds()+",\n";
+
+        String orderCQLPart = louvainAlgorithmConfiguration.getCommunityIdSortingLogic()!= null ?
+                "ORDER BY score "+louvainAlgorithmConfiguration.getCommunityIdSortingLogic().toString() : "";
+
+        String cypherProcedureString =
+                "CALL gds.louvain.stream('"+graphName+"', {\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
+                        relationshipWeightAttributeCQLPart +
+                        seedPropertyAttributeCQLPart +
+                        maxLevelsAttributeCQLPart +
+                        maxIterationsAttributeCQLPart +
+                        toleranceAttributeCQLPart +
+                        includeIntermediateCommunitiesAttributeCQLPart +
+                        consecutiveIdsAttributeCQLPart +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD nodeId, communityId, intermediateCommunityIds\n" +
+                        "RETURN nodeId AS entityUID, communityId,intermediateCommunityIds\n" +
+                        orderCQLPart+
+                        getReturnDataControlLogic(louvainAlgorithmConfiguration);
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        LouvainAlgorithmResult louvainAlgorithmResult = new LouvainAlgorithmResult(graphName,louvainAlgorithmConfig);
+        List<CommunityDetectionResult> communityDetectionResultList = louvainAlgorithmResult.getCommunityDetectionResults();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityUID = nodeRecord.get("entityUID").asLong();
+                    int communityId = nodeRecord.get("communityId").asNumber().intValue();
+                    List intermediateCommunityIds = nodeRecord.get("intermediateCommunityIds").isNull() ? null:
+                            (List)nodeRecord.get("intermediateCommunityIds").asObject();
+                    communityDetectionResultList.add(new CommunityDetectionResult(""+entityUID,communityId,intermediateCommunityIds));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            louvainAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return louvainAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     private PageRankAlgorithmResult doExecutePageRankAlgorithms(String graphName, Set<String> conceptionEntityUIDSet,PageRankAlgorithmConfig pageRankAlgorithmConfig) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException {
