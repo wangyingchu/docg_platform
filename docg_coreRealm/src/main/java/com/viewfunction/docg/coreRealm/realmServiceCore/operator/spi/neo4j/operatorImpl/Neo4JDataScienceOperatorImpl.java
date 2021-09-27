@@ -573,6 +573,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
             e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
             throw e;
         }
+
         LabelPropagationAlgorithmConfig labelPropagationAlgorithmConfiguration = labelPropagationAlgorithmConfig != null ?
                 labelPropagationAlgorithmConfig : new LabelPropagationAlgorithmConfig();
         Set<String> conceptionKindsForCompute = labelPropagationAlgorithmConfiguration.getConceptionKindsForCompute();
@@ -635,6 +636,89 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
             workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
             labelPropagationAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
             return labelPropagationAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public WeaklyConnectedComponentsAlgorithmResult executeWeaklyConnectedComponentsAlgorithm(String graphName, WeaklyConnectedComponentsAlgorithmConfig weaklyConnectedComponentsAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/wcc/
+        */
+        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
+        if(!checkGraphExistence){
+            logger.error("AnalyzableGraph with name {} does not exist",graphName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
+            throw e;
+        }
+
+        WeaklyConnectedComponentsAlgorithmConfig weaklyConnectedComponentsAlgorithmConfiguration = weaklyConnectedComponentsAlgorithmConfig != null ?
+                weaklyConnectedComponentsAlgorithmConfig : new WeaklyConnectedComponentsAlgorithmConfig();
+        Set<String> conceptionKindsForCompute = weaklyConnectedComponentsAlgorithmConfiguration.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = weaklyConnectedComponentsAlgorithmConfiguration.getRelationKindsForCompute();
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+
+        String relationshipWeightAttributeCQLPart = weaklyConnectedComponentsAlgorithmConfiguration.getRelationshipWeightAttribute() != null ?
+                "  relationshipWeightProperty: '"+weaklyConnectedComponentsAlgorithmConfiguration.getRelationshipWeightAttribute()+"',\n" : "";
+        String seedPropertyAttributeCQLPart = weaklyConnectedComponentsAlgorithmConfiguration.getSeedProperty() != null ?
+                "  seedProperty: '"+weaklyConnectedComponentsAlgorithmConfiguration.getSeedProperty()+"',\n" : "";
+        String thresholdPropertyAttributeCQLPart = weaklyConnectedComponentsAlgorithmConfiguration.getThreshold() != null ?
+                "  threshold: "+weaklyConnectedComponentsAlgorithmConfiguration.getThreshold().floatValue()+",\n" : "";
+        String consecutiveIdsAttributeCQLPart = "  consecutiveIds: " + weaklyConnectedComponentsAlgorithmConfiguration.isConsecutiveIds()+",\n";
+
+        String orderCQLPart = weaklyConnectedComponentsAlgorithmConfiguration.getCommunityIdSortingLogic()!= null ?
+                "ORDER BY componentId "+weaklyConnectedComponentsAlgorithmConfiguration.getCommunityIdSortingLogic().toString() : "";
+
+        String cypherProcedureString =
+                "CALL gds.wcc.stream('"+graphName+"', {\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
+                        relationshipWeightAttributeCQLPart +
+                        seedPropertyAttributeCQLPart +
+                        thresholdPropertyAttributeCQLPart +
+                        consecutiveIdsAttributeCQLPart +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD nodeId, componentId\n" +
+                        "RETURN nodeId AS entityUID, componentId\n" +
+                        orderCQLPart+
+                        getReturnDataControlLogic(weaklyConnectedComponentsAlgorithmConfiguration);
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        WeaklyConnectedComponentsAlgorithmResult weaklyConnectedComponentsAlgorithmResult = new WeaklyConnectedComponentsAlgorithmResult(graphName,weaklyConnectedComponentsAlgorithmConfig);
+        List<ComponentDetectionResult> communityDetectionResultList = weaklyConnectedComponentsAlgorithmResult.getComponentDetectionResults();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityUID = nodeRecord.get("entityUID").asLong();
+                    int communityId = nodeRecord.get("componentId").asNumber().intValue();
+                    communityDetectionResultList.add(new ComponentDetectionResult(""+entityUID,communityId));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            weaklyConnectedComponentsAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return weaklyConnectedComponentsAlgorithmResult;
         } catch(org.neo4j.driver.exceptions.ClientException e){
             CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
             e1.setCauseMessage(e.getMessage());

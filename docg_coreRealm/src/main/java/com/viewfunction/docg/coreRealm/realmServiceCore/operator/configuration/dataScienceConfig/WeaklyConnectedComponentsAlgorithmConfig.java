@@ -2,13 +2,12 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
 
-public class LabelPropagationAlgorithmConfig extends ResultPaginationableConfig{
+public class WeaklyConnectedComponentsAlgorithmConfig extends ResultPaginationableConfig{
 
     private String seedProperty = null;
-    private int maxIterations = 10;
     private boolean consecutiveIds = false;
     private String relationshipWeightAttribute = null;
-    private String nodeWeightAttribute = null;
+    private Float threshold = null;
     private DataScienceOperator.ValueSortingLogic valueSortingLogic;
 
     public String getSeedProperty() {
@@ -17,14 +16,6 @@ public class LabelPropagationAlgorithmConfig extends ResultPaginationableConfig{
 
     public void setSeedProperty(String seedProperty) {
         this.seedProperty = seedProperty;
-    }
-
-    public int getMaxIterations() {
-        return maxIterations;
-    }
-
-    public void setMaxIterations(int maxIterations) {
-        this.maxIterations = maxIterations;
     }
 
     public boolean isConsecutiveIds() {
@@ -43,12 +34,12 @@ public class LabelPropagationAlgorithmConfig extends ResultPaginationableConfig{
         this.relationshipWeightAttribute = relationshipWeightAttribute;
     }
 
-    public String getNodeWeightAttribute() {
-        return nodeWeightAttribute;
+    public Float getThreshold() {
+        return threshold;
     }
 
-    public void setNodeWeightAttribute(String nodeWeightAttribute) {
-        this.nodeWeightAttribute = nodeWeightAttribute;
+    public void setThreshold(Float threshold) {
+        this.threshold = threshold;
     }
 
     public DataScienceOperator.ValueSortingLogic getCommunityIdSortingLogic() {

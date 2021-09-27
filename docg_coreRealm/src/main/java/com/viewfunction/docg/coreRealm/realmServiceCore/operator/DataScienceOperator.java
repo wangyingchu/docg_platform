@@ -11,8 +11,8 @@ import java.util.Map;
 import java.util.Set;
 
 public interface DataScienceOperator {
-    //墨子悲丝 - 染于苍则苍，染于黄则黄。五入为五色，不可不慎也。非独染丝，治国亦然。
-
+    //墨子悲丝    染于苍则苍，染于黄则黄。五入为五色，不可不慎也。
+    //           非独染丝，治国亦然。
     /*
     Document:
     https://neo4j.com/docs/graph-data-science/current/alpha-algorithms/scale-properties/
@@ -61,5 +61,7 @@ public interface DataScienceOperator {
     public LouvainAlgorithmResult executeLouvainAlgorithm(String graphName, LouvainAlgorithmConfig louvainAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
     public LabelPropagationAlgorithmResult executeLabelPropagationAlgorithm(String graphName, LabelPropagationAlgorithmConfig labelPropagationAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
+    public WeaklyConnectedComponentsAlgorithmResult executeWeaklyConnectedComponentsAlgorithm(String graphName, WeaklyConnectedComponentsAlgorithmConfig weaklyConnectedComponentsAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
 }
