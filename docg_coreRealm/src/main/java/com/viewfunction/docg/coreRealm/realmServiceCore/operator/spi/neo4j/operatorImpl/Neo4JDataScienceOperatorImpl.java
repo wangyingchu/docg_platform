@@ -472,7 +472,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
 
     @Override
     public LouvainAlgorithmResult executeLouvainAlgorithm(String graphName, LouvainAlgorithmConfig louvainAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
-         /*
+        /*
         Example:
         https://neo4j.com/docs/graph-data-science/current/algorithms/louvain/
         */
@@ -508,7 +508,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         String consecutiveIdsAttributeCQLPart = "  consecutiveIds: " + louvainAlgorithmConfiguration.isConsecutiveIds()+",\n";
 
         String orderCQLPart = louvainAlgorithmConfiguration.getCommunityIdSortingLogic()!= null ?
-                "ORDER BY score "+louvainAlgorithmConfiguration.getCommunityIdSortingLogic().toString() : "";
+                "ORDER BY communityId "+louvainAlgorithmConfiguration.getCommunityIdSortingLogic().toString() : "";
 
         String cypherProcedureString =
                 "CALL gds.louvain.stream('"+graphName+"', {\n" +
@@ -551,6 +551,90 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
             workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
             louvainAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
             return louvainAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public LabelPropagationAlgorithmResult executeLabelPropagationAlgorithm(String graphName, LabelPropagationAlgorithmConfig labelPropagationAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/label-propagation/
+        */
+        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
+        if(!checkGraphExistence){
+            logger.error("AnalyzableGraph with name {} does not exist",graphName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
+            throw e;
+        }
+        LabelPropagationAlgorithmConfig labelPropagationAlgorithmConfiguration = labelPropagationAlgorithmConfig != null ?
+                labelPropagationAlgorithmConfig : new LabelPropagationAlgorithmConfig();
+        Set<String> conceptionKindsForCompute = labelPropagationAlgorithmConfiguration.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = labelPropagationAlgorithmConfiguration.getRelationKindsForCompute();
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+
+        String relationshipWeightAttributeCQLPart = labelPropagationAlgorithmConfiguration.getRelationshipWeightAttribute() != null ?
+                "  relationshipWeightProperty: '"+labelPropagationAlgorithmConfiguration.getRelationshipWeightAttribute()+"',\n" : "";
+        String nodeWeightAttributeCQLPart = labelPropagationAlgorithmConfiguration.getNodeWeightAttribute() != null ?
+                "  nodeWeightProperty: '"+labelPropagationAlgorithmConfiguration.getNodeWeightAttribute()+"',\n" : "";
+        String seedPropertyAttributeCQLPart = labelPropagationAlgorithmConfiguration.getSeedProperty() != null ?
+                "  seedProperty: '"+labelPropagationAlgorithmConfiguration.getSeedProperty()+"',\n" : "";
+        String maxIterationsAttributeCQLPart = "  maxIterations: " + labelPropagationAlgorithmConfiguration.getMaxIterations()+",\n";
+        String consecutiveIdsAttributeCQLPart = "  consecutiveIds: " + labelPropagationAlgorithmConfiguration.isConsecutiveIds()+",\n";
+
+        String orderCQLPart = labelPropagationAlgorithmConfiguration.getCommunityIdSortingLogic()!= null ?
+                "ORDER BY communityId "+labelPropagationAlgorithmConfiguration.getCommunityIdSortingLogic().toString() : "";
+
+        String cypherProcedureString =
+                "CALL gds.labelPropagation.stream('"+graphName+"', {\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
+                        relationshipWeightAttributeCQLPart +
+                        nodeWeightAttributeCQLPart +
+                        seedPropertyAttributeCQLPart +
+                        maxIterationsAttributeCQLPart +
+                        consecutiveIdsAttributeCQLPart +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD nodeId, communityId\n" +
+                        "RETURN nodeId AS entityUID, communityId\n" +
+                        orderCQLPart+
+                        getReturnDataControlLogic(labelPropagationAlgorithmConfiguration);
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        LabelPropagationAlgorithmResult labelPropagationAlgorithmResult = new LabelPropagationAlgorithmResult(graphName,labelPropagationAlgorithmConfig);
+        List<CommunityDetectionResult> communityDetectionResultList = labelPropagationAlgorithmResult.getCommunityDetectionResults();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityUID = nodeRecord.get("entityUID").asLong();
+                    int communityId = nodeRecord.get("communityId").asNumber().intValue();
+                    communityDetectionResultList.add(new CommunityDetectionResult(""+entityUID,communityId));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            labelPropagationAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return labelPropagationAlgorithmResult;
         } catch(org.neo4j.driver.exceptions.ClientException e){
             CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
             e1.setCauseMessage(e.getMessage());
