@@ -728,6 +728,81 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         }
     }
 
+    @Override
+    public TriangleCountAlgorithmResult executeTriangleCountAlgorithm(String graphName, TriangleCountAlgorithmConfig triangleCountAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/triangle-count/
+        */
+        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
+        if(!checkGraphExistence){
+            logger.error("AnalyzableGraph with name {} does not exist",graphName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
+            throw e;
+        }
+
+        TriangleCountAlgorithmConfig triangleCountAlgorithmConfiguration = triangleCountAlgorithmConfig != null ?
+                triangleCountAlgorithmConfig : new TriangleCountAlgorithmConfig();
+        Set<String> conceptionKindsForCompute = triangleCountAlgorithmConfiguration.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = triangleCountAlgorithmConfiguration.getRelationKindsForCompute();
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+
+        String maxDegreePropertyAttributeCQLPart = triangleCountAlgorithmConfiguration.getMaxDegree() != null ?
+                "  maxDegree: "+triangleCountAlgorithmConfiguration.getMaxDegree().intValue()+",\n" : "";
+
+        String orderCQLPart = triangleCountAlgorithmConfiguration.getTriangleCountSortingLogic()!= null ?
+                "ORDER BY triangleCount "+triangleCountAlgorithmConfiguration.getTriangleCountSortingLogic().toString() : "";
+
+        String cypherProcedureString =
+                "CALL gds.triangleCount.stream('"+graphName+"', {\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
+                        maxDegreePropertyAttributeCQLPart +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD nodeId, triangleCount\n" +
+                        "RETURN nodeId AS entityUID, triangleCount\n" +
+                        orderCQLPart+
+                        getReturnDataControlLogic(triangleCountAlgorithmConfiguration);
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        TriangleCountAlgorithmResult triangleCountAlgorithmResult = new TriangleCountAlgorithmResult(graphName,triangleCountAlgorithmConfig);
+        List<TriangleCountResult> triangleCountResultList = triangleCountAlgorithmResult.getTriangleCountResults();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityUID = nodeRecord.get("entityUID").asLong();
+                    int triangleCount = nodeRecord.get("triangleCount").asNumber().intValue();
+                    triangleCountResultList.add(new TriangleCountResult(""+entityUID,triangleCount));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            triangleCountAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return triangleCountAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
     private PageRankAlgorithmResult doExecutePageRankAlgorithms(String graphName, Set<String> conceptionEntityUIDSet,PageRankAlgorithmConfig pageRankAlgorithmConfig) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException {
         /*
         Example:
