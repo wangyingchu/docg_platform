@@ -822,6 +822,82 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         }
     }
 
+    @Override
+    public LocalClusteringCoefficientAlgorithmResult executeLocalClusteringCoefficientAlgorithm(String graphName, LocalClusteringCoefficientAlgorithmConfig localClusteringCoefficientAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/local-clustering-coefficient/
+        */
+        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
+        if(!checkGraphExistence){
+            logger.error("AnalyzableGraph with name {} does not exist",graphName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
+            throw e;
+        }
+
+        LocalClusteringCoefficientAlgorithmConfig localClusteringCoefficientAlgorithmConfiguration = localClusteringCoefficientAlgorithmConfig != null ?
+                localClusteringCoefficientAlgorithmConfig : new LocalClusteringCoefficientAlgorithmConfig();
+        Set<String> conceptionKindsForCompute = localClusteringCoefficientAlgorithmConfiguration.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = localClusteringCoefficientAlgorithmConfiguration.getRelationKindsForCompute();
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+
+        String triangleCountPropertyPropertyAttributeCQLPart = localClusteringCoefficientAlgorithmConfiguration.getTriangleCountProperty() != null ?
+                "  triangleCountProperty: '"+localClusteringCoefficientAlgorithmConfiguration.getTriangleCountProperty()+"',\n" : "";
+
+        String orderCQLPart = localClusteringCoefficientAlgorithmConfiguration.getCoefficientSortingLogic()!= null ?
+                "ORDER BY localClusteringCoefficient "+localClusteringCoefficientAlgorithmConfiguration.getCoefficientSortingLogic().toString() : "";
+
+        String cypherProcedureString =
+                "CALL gds.localClusteringCoefficient.stream('"+graphName+"', {\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
+                        triangleCountPropertyPropertyAttributeCQLPart +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD nodeId, localClusteringCoefficient\n" +
+                        "RETURN nodeId AS entityUID, localClusteringCoefficient\n" +
+                        orderCQLPart+
+                        getReturnDataControlLogic(localClusteringCoefficientAlgorithmConfiguration);
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+
+        LocalClusteringCoefficientAlgorithmResult localClusteringCoefficientAlgorithmResult = new LocalClusteringCoefficientAlgorithmResult(graphName,localClusteringCoefficientAlgorithmConfig);
+        List<EntityAnalyzeResult> localClusteringCoefficientResultList = localClusteringCoefficientAlgorithmResult.getLocalClusteringCoefficients();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityUID = nodeRecord.get("entityUID").asLong();
+                    double localClusteringCoefficient = nodeRecord.get("localClusteringCoefficient").asNumber().doubleValue();
+                    localClusteringCoefficientResultList.add(new EntityAnalyzeResult(""+entityUID,localClusteringCoefficient,"localClusteringCoefficient"));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            localClusteringCoefficientAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return localClusteringCoefficientAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
     private PageRankAlgorithmResult doExecutePageRankAlgorithms(String graphName, Set<String> conceptionEntityUIDSet,PageRankAlgorithmConfig pageRankAlgorithmConfig) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException {
         /*
         Example:
