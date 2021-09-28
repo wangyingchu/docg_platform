@@ -41,7 +41,8 @@ public class LouvainAlgorithmResult {
         this.algorithmExecuteEndTime = algorithmExecuteEndTime;
     }
 
-    public List<CommunityDetectionResult> getCommunityDetectionResults() {
+    public List<CommunityDetectionResult> getLouvainCommunities() {
         return communityDetectionResults;
     }
 }
+

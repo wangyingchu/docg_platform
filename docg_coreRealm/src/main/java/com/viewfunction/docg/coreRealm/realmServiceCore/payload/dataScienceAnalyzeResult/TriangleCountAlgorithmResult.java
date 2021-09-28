@@ -12,12 +12,12 @@ public class TriangleCountAlgorithmResult {
     private TriangleCountAlgorithmConfig triangleCountAlgorithmConfig;
     private Date algorithmExecuteStartTime;
     private Date algorithmExecuteEndTime;
-    private List<TriangleCountResult> triangleCountResult;
+    private List<TriangleCountDetectionResult> triangleCountDetectionResult;
 
     public TriangleCountAlgorithmResult(String graphName, TriangleCountAlgorithmConfig triangleCountAlgorithmConfig){
         this.graphName = graphName;
         this.triangleCountAlgorithmConfig = triangleCountAlgorithmConfig;
-        this.triangleCountResult = new ArrayList<>();
+        this.triangleCountDetectionResult = new ArrayList<>();
         this.algorithmExecuteStartTime = new Date();
     }
 
@@ -41,7 +41,7 @@ public class TriangleCountAlgorithmResult {
         this.algorithmExecuteEndTime = algorithmExecuteEndTime;
     }
 
-    public List<TriangleCountResult> getTriangleCountResults() {
-        return triangleCountResult;
+    public List<TriangleCountDetectionResult> getTriangleCounts() {
+        return triangleCountDetectionResult;
     }
 }

@@ -41,7 +41,7 @@ public class LabelPropagationAlgorithmResult {
         this.algorithmExecuteEndTime = algorithmExecuteEndTime;
     }
 
-    public List<CommunityDetectionResult> getCommunityDetectionResults() {
+    public List<CommunityDetectionResult> getLabelPropagationCommunities() {
         return communityDetectionResults;
     }
 }

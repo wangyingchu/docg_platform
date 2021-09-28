@@ -549,7 +549,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
         LouvainAlgorithmResult louvainAlgorithmResult = new LouvainAlgorithmResult(graphName,louvainAlgorithmConfig);
-        List<CommunityDetectionResult> communityDetectionResultList = louvainAlgorithmResult.getCommunityDetectionResults();
+        List<CommunityDetectionResult> communityDetectionResultList = louvainAlgorithmResult.getLouvainCommunities();
 
         DataTransformer<Object> dataTransformer = new DataTransformer() {
             @Override
@@ -636,7 +636,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
         LabelPropagationAlgorithmResult labelPropagationAlgorithmResult = new LabelPropagationAlgorithmResult(graphName,labelPropagationAlgorithmConfig);
-        List<CommunityDetectionResult> communityDetectionResultList = labelPropagationAlgorithmResult.getCommunityDetectionResults();
+        List<CommunityDetectionResult> communityDetectionResultList = labelPropagationAlgorithmResult.getLabelPropagationCommunities();
 
         DataTransformer<Object> dataTransformer = new DataTransformer() {
             @Override
@@ -719,7 +719,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
         WeaklyConnectedComponentsAlgorithmResult weaklyConnectedComponentsAlgorithmResult = new WeaklyConnectedComponentsAlgorithmResult(graphName,weaklyConnectedComponentsAlgorithmConfig);
-        List<ComponentDetectionResult> communityDetectionResultList = weaklyConnectedComponentsAlgorithmResult.getComponentDetectionResults();
+        List<ComponentDetectionResult> communityDetectionResultList = weaklyConnectedComponentsAlgorithmResult.getWCCComponents();
 
         DataTransformer<Object> dataTransformer = new DataTransformer() {
             @Override
@@ -794,7 +794,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
         TriangleCountAlgorithmResult triangleCountAlgorithmResult = new TriangleCountAlgorithmResult(graphName,triangleCountAlgorithmConfig);
-        List<TriangleCountResult> triangleCountResultList = triangleCountAlgorithmResult.getTriangleCountResults();
+        List<TriangleCountDetectionResult> triangleCountDetectionResultList = triangleCountAlgorithmResult.getTriangleCounts();
 
         DataTransformer<Object> dataTransformer = new DataTransformer() {
             @Override
@@ -803,7 +803,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
                     Record nodeRecord = result.next();
                     long entityUID = nodeRecord.get("entityUID").asLong();
                     int triangleCount = nodeRecord.get("triangleCount").asNumber().intValue();
-                    triangleCountResultList.add(new TriangleCountResult(""+entityUID,triangleCount));
+                    triangleCountDetectionResultList.add(new TriangleCountDetectionResult(""+entityUID,triangleCount));
                 }
                 return null;
             }
@@ -868,7 +868,6 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
                         getReturnDataControlLogic(localClusteringCoefficientAlgorithmConfiguration);
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
-
         LocalClusteringCoefficientAlgorithmResult localClusteringCoefficientAlgorithmResult = new LocalClusteringCoefficientAlgorithmResult(graphName,localClusteringCoefficientAlgorithmConfig);
         List<EntityAnalyzeResult> localClusteringCoefficientResultList = localClusteringCoefficientAlgorithmResult.getLocalClusteringCoefficients();
 
@@ -889,6 +888,94 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
             workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
             localClusteringCoefficientAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
             return localClusteringCoefficientAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public NodeSimilarityAlgorithmResult executeNodeSimilarityAlgorithm(String graphName, NodeSimilarityAlgorithmConfig nodeSimilarityAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/node-similarity/
+        */
+        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
+        if(!checkGraphExistence){
+            logger.error("AnalyzableGraph with name {} does not exist",graphName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
+            throw e;
+        }
+
+        NodeSimilarityAlgorithmConfig nodeSimilarityAlgorithmConfiguration = nodeSimilarityAlgorithmConfig != null ?
+                nodeSimilarityAlgorithmConfig : new NodeSimilarityAlgorithmConfig();
+        Set<String> conceptionKindsForCompute = nodeSimilarityAlgorithmConfiguration.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = nodeSimilarityAlgorithmConfiguration.getRelationKindsForCompute();
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+
+        String similarityCutoffPropertyAttributeCQLPart = nodeSimilarityAlgorithmConfiguration.getSimilarityCutoff() != null ?
+                "  similarityCutoff: "+nodeSimilarityAlgorithmConfiguration.getSimilarityCutoff().floatValue()+",\n" : "";
+        String degreeCutoffAttributeCQLPart = "  degreeCutoff: " + nodeSimilarityAlgorithmConfiguration.getDegreeCutoff()+",\n";
+        String topKAttributeCQLPart = "  topK: " + nodeSimilarityAlgorithmConfiguration.getTopK()+",\n";
+        String bottomKAttributeCQLPart = "  bottomK: " + nodeSimilarityAlgorithmConfiguration.getBottomK()+",\n";
+        String topNAttributeCQLPart = "  topN: " + nodeSimilarityAlgorithmConfiguration.getTopN()+",\n";
+        String bottomNAttributeCQLPart = "  bottomN: " + nodeSimilarityAlgorithmConfiguration.getBottomN()+",\n";
+        String relationshipWeightAttributeCQLPart = nodeSimilarityAlgorithmConfiguration.getRelationshipWeightAttribute() != null ?
+                "  relationshipWeightProperty: '"+nodeSimilarityAlgorithmConfiguration.getRelationshipWeightAttribute()+"',\n" : "";
+        String orderCQLPart = nodeSimilarityAlgorithmConfiguration.getSimilaritySortingLogic()!= null ?
+                "ORDER BY similarity "+ nodeSimilarityAlgorithmConfiguration.getSimilaritySortingLogic().toString() : "";
+
+        String cypherProcedureString =
+                "CALL gds.nodeSimilarity.stream('"+graphName+"', {\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
+                        similarityCutoffPropertyAttributeCQLPart +
+                        degreeCutoffAttributeCQLPart +
+                        topKAttributeCQLPart +
+                        bottomKAttributeCQLPart +
+                        topNAttributeCQLPart +
+                        bottomNAttributeCQLPart +
+                        relationshipWeightAttributeCQLPart +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD node1, node2, similarity\n" +
+                        "RETURN node1 AS entityAUID, node2 AS entityBUID, similarity\n" +
+                        orderCQLPart+
+                        getReturnDataControlLogic(nodeSimilarityAlgorithmConfiguration);
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        NodeSimilarityAlgorithmResult nodeSimilarityAlgorithmResult = new NodeSimilarityAlgorithmResult(graphName,nodeSimilarityAlgorithmConfig);
+        List<SimilarityDetectionResult> similarityDetectionResultList = nodeSimilarityAlgorithmResult.getNodeSimilarityScores();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityAUID = nodeRecord.get("entityAUID").asLong();
+                    long entityBUID = nodeRecord.get("entityBUID").asLong();
+                    float similarityScore = nodeRecord.get("similarity").asNumber().floatValue();
+                    similarityDetectionResultList.add(new SimilarityDetectionResult(""+entityAUID,""+entityBUID,similarityScore));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            nodeSimilarityAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return nodeSimilarityAlgorithmResult;
         } catch(org.neo4j.driver.exceptions.ClientException e){
             CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
             e1.setCauseMessage(e.getMessage());

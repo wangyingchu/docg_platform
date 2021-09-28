@@ -1,11 +1,11 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult;
 
-public class TriangleCountResult {
+public class TriangleCountDetectionResult {
 
     private String conceptionEntityUID;
     private int triangleCount;
 
-    public TriangleCountResult(String conceptionEntityUID,int triangleCount){
+    public TriangleCountDetectionResult(String conceptionEntityUID, int triangleCount){
         this.conceptionEntityUID = conceptionEntityUID;
         this.triangleCount = triangleCount;
     }

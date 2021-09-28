@@ -41,7 +41,7 @@ public class WeaklyConnectedComponentsAlgorithmResult {
         this.algorithmExecuteEndTime = algorithmExecuteEndTime;
     }
 
-    public List<ComponentDetectionResult> getComponentDetectionResults() {
+    public List<ComponentDetectionResult> getWCCComponents() {
         return componentDetectionResults;
     }
 }
