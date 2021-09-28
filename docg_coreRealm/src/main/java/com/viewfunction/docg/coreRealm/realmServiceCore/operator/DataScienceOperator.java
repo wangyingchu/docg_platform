@@ -23,6 +23,8 @@ public interface DataScienceOperator {
 
     enum ComputeOrientation { NATURAL, REVERSE, UNDIRECTED}
 
+    enum ComputeAggregation { NONE, MIN, MAX, SUM, SINGLE, COUNT}
+
     public List<AnalyzableGraph> getAnalyzableGraphs();
 
     public boolean checkAnalyzableGraphExistence(String graphName);
@@ -34,10 +36,15 @@ public interface DataScienceOperator {
     public AnalyzableGraph createAnalyzableGraph(String graphName,List<String> conceptionKindList,Set<String> conceptionKindAttributeSet,
                                                  List<String> relationKindList,Set<String> relationKindAttributeSet) throws CoreRealmServiceRuntimeException;
 
+    /*
+    public AnalyzableGraph createAnalyzableGraph(String graphName,List<String> conceptionKindList,Set<String> conceptionKindAttributeSet,
+                                                 List<RelationComputeConfig> relationKindConfigList) throws CoreRealmServiceRuntimeException;
+    */
     public AnalyzableGraph createAnalyzableGraph(String graphName) throws CoreRealmServiceRuntimeException;
 
-    public AnalyzableGraph createAnalyzableGraph(String graphName, Map<String, Set<String>> conceptionKindInfoMap,
-                                                 Map<String, Set<String>> relationKindInfoMap) throws CoreRealmServiceRuntimeException;
+
+    public AnalyzableGraph createAnalyzableGraph(String graphName, Set<ConceptionKindComputeConfig> conceptionKindsConfig,
+                                                 Set<RelationKindComputeConfig> relationKindsConfig) throws CoreRealmServiceRuntimeException;
 
     public AnalyzableGraph createAnalyzableGraph(String graphName, String conceptionEntitiesQuery,
                                                  String relationEntitiesQuery) throws CoreRealmServiceRuntimeException;

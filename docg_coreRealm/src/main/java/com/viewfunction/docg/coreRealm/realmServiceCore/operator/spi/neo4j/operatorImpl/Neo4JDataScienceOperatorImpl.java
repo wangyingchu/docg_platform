@@ -200,18 +200,18 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
     }
 
     @Override
-    public AnalyzableGraph createAnalyzableGraph(String graphName, Map<String, Set<String>> conceptionKindInfoMap, Map<String, Set<String>> relationKindInfoMap) throws CoreRealmServiceRuntimeException {
+    public AnalyzableGraph createAnalyzableGraph(String graphName, Set<ConceptionKindComputeConfig> conceptionKindsConfig, Set<RelationKindComputeConfig> relationKindsConfig) throws CoreRealmServiceRuntimeException {
         /*
         Example:
         https://neo4j.com/docs/graph-data-science/current/management-ops/native-projection/#native-projection-syntax-node-projections
         */
-        if(conceptionKindInfoMap == null || conceptionKindInfoMap.size() ==0){
+        if(conceptionKindsConfig == null || conceptionKindsConfig.size() ==0){
             logger.error("At least one ConceptionKind is required");
             CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
             e.setCauseMessage("At least one ConceptionKind is required");
             throw e;
         }
-        if(relationKindInfoMap == null || relationKindInfoMap.size() ==0){
+        if(relationKindsConfig == null || relationKindsConfig.size() ==0){
             logger.error("At least one RelationKind is required");
             CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
             e.setCauseMessage("At least one RelationKind is required");
@@ -225,8 +225,27 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
             throw e;
         }
 
-        String conceptionKindDefinitionStr = getConceptionKindAndAttributesDefinition(conceptionKindInfoMap);
-        String relationKindDefinitionStr = getRelationKindAndAttributesDefinition(relationKindInfoMap);
+        Map<String, Set<String>> conceptionKindsConfigInfoMap = new HashMap<>();
+        for(ConceptionKindComputeConfig currentConceptionKindComputeConfig:conceptionKindsConfig){
+            conceptionKindsConfigInfoMap.put(currentConceptionKindComputeConfig.getConceptionKindName(),
+                    currentConceptionKindComputeConfig.getConceptionKindAttributes());
+        }
+        String conceptionKindDefinitionStr = getConceptionKindAndAttributesDefinition(conceptionKindsConfigInfoMap);
+
+        Map<String, Set<String>> relationKindsPropertyConfigInfoMap = new HashMap<>();
+        Map<String,DataScienceOperator.ComputeOrientation> relationKindsOrientationConfigInfoMap= new HashMap<>();
+        Map<String,DataScienceOperator.ComputeAggregation> relationKindsAggregationConfigInfoMap= new HashMap<>();
+        for(RelationKindComputeConfig currentRelationKindComputeConfig:relationKindsConfig){
+            relationKindsPropertyConfigInfoMap.put(currentRelationKindComputeConfig.getRelationKindName(),
+                    currentRelationKindComputeConfig.getRelationKindAttributes());
+            relationKindsOrientationConfigInfoMap.put(currentRelationKindComputeConfig.getRelationKindName(),
+                    currentRelationKindComputeConfig.getRelationComputeOrientation());
+            relationKindsAggregationConfigInfoMap.put(currentRelationKindComputeConfig.getRelationKindName(),
+                    currentRelationKindComputeConfig.getRelationComputeAggregation());
+        }
+
+        String relationKindDefinitionStr = getRelationKindAndAttributesDefinition(relationKindsPropertyConfigInfoMap,
+                relationKindsOrientationConfigInfoMap,relationKindsAggregationConfigInfoMap);
         String cypherProcedureString = "CALL gds.graph.create('"+graphName+"',"+conceptionKindDefinitionStr+","+relationKindDefinitionStr+")";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
@@ -1040,11 +1059,12 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         while(kindNameIterator.hasNext()){
             String kindName = kindNameIterator.next();
             Set<String> kindAttributesSet = indInfoMap.get(kindName);
-
             String attributeValuesString = "";
-            for(String currentAttribute:kindAttributesSet){
-                String currentAttributeDefinition = currentAttribute+": {" + "property: '"+currentAttribute+"'"+"}"+"\n"+",";
-                attributeValuesString = attributeValuesString + currentAttributeDefinition;
+            if(kindAttributesSet != null) {
+                for (String currentAttribute : kindAttributesSet) {
+                    String currentAttributeDefinition = currentAttribute + ": {" + "property: '" + currentAttribute + "'" + "}" + "\n" + ",";
+                    attributeValuesString = attributeValuesString + currentAttributeDefinition;
+                }
             }
             if(attributeValuesString.length()>1) {
                 attributeValuesString = attributeValuesString.substring(0, attributeValuesString.length() - 1);
@@ -1061,25 +1081,34 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         return "{"+wholeRelationKindsDefinitionStr+"}";
     }
 
-    private String getRelationKindAndAttributesDefinition(Map<String, Set<String>> indInfoMap){
-        Set<String>  kindNames = indInfoMap.keySet();
+    private String getRelationKindAndAttributesDefinition(Map<String, Set<String>> relationKindsPropertyConfigInfoMap,
+                                                          Map<String,DataScienceOperator.ComputeOrientation> relationKindsOrientationConfigInfoMap,
+                                                          Map<String,DataScienceOperator.ComputeAggregation> relationKindsAggregationConfigInfoMap){
+        Set<String>  kindNames = relationKindsPropertyConfigInfoMap.keySet();
         Iterator<String> kindNameIterator = kindNames.iterator();
 
         String wholeRelationKindsDefinitionStr ="";
         while(kindNameIterator.hasNext()){
             String kindName = kindNameIterator.next();
-            Set<String> kindAttributesSet = indInfoMap.get(kindName);
+            Set<String> kindAttributesSet = relationKindsPropertyConfigInfoMap.get(kindName);
+
+            DataScienceOperator.ComputeOrientation relationComputeOrientation = relationKindsOrientationConfigInfoMap.get(kindName);
+            DataScienceOperator.ComputeAggregation relationComputeAggregation = relationKindsAggregationConfigInfoMap.get(kindName);
 
             String attributeValuesString = "";
-            for(String currentAttribute:kindAttributesSet){
-                String currentAttributeDefinition = currentAttribute+": {" + "property: '"+currentAttribute+"'"+"}"+"\n"+",";
-                attributeValuesString = attributeValuesString + currentAttributeDefinition;
+            if(kindAttributesSet != null) {
+                for (String currentAttribute : kindAttributesSet) {
+                    String currentAttributeDefinition = currentAttribute + ": {" + "property: '" + currentAttribute + "'" + "}" + "\n" + ",";
+                    attributeValuesString = attributeValuesString + currentAttributeDefinition;
+                }
             }
             if(attributeValuesString.length()>1) {
                 attributeValuesString = attributeValuesString.substring(0, attributeValuesString.length() - 1);
             }
             String currentKindDefinitionStr = ""+kindName+": {\n" +
                     "type: '"+kindName+"',\n" +
+                    "orientation: '"+relationComputeOrientation.toString()+"',\n" +
+                    "aggregation: '"+relationComputeAggregation.toString()+"',\n" +
                     "properties: {\n" +
                     attributeValuesString +
                     "}\n" +
