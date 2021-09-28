@@ -7,7 +7,6 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AnalyzableGraph;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.*;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public interface DataScienceOperator {
@@ -36,12 +35,7 @@ public interface DataScienceOperator {
     public AnalyzableGraph createAnalyzableGraph(String graphName,List<String> conceptionKindList,Set<String> conceptionKindAttributeSet,
                                                  List<String> relationKindList,Set<String> relationKindAttributeSet) throws CoreRealmServiceRuntimeException;
 
-    /*
-    public AnalyzableGraph createAnalyzableGraph(String graphName,List<String> conceptionKindList,Set<String> conceptionKindAttributeSet,
-                                                 List<RelationComputeConfig> relationKindConfigList) throws CoreRealmServiceRuntimeException;
-    */
     public AnalyzableGraph createAnalyzableGraph(String graphName) throws CoreRealmServiceRuntimeException;
-
 
     public AnalyzableGraph createAnalyzableGraph(String graphName, Set<ConceptionKindComputeConfig> conceptionKindsConfig,
                                                  Set<RelationKindComputeConfig> relationKindsConfig) throws CoreRealmServiceRuntimeException;
