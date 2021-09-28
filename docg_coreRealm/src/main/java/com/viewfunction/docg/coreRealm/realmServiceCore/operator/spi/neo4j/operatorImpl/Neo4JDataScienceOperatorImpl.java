@@ -111,13 +111,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         Example:
         https://neo4j.com/docs/graph-data-science/current/management-ops/graph-catalog-ops/#catalog-graph-drop
         */
-        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
-        if(!checkGraphExistence){
-            logger.error("AnalyzableGraph with name {} does not exist",graphName);
-            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
-            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
-            throw e;
-        }
+        checkGraphExistence(graphName);
 
         String cypherProcedureString = "CALL gds.graph.drop('"+graphName+"') YIELD graphName;";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
@@ -336,13 +330,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         Example:
         https://neo4j.com/docs/graph-data-science/current/algorithms/betweenness-centrality/
         */
-        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
-        if(!checkGraphExistence){
-            logger.error("AnalyzableGraph with name {} does not exist",graphName);
-            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
-            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
-            throw e;
-        }
+        checkGraphExistence(graphName);
 
         BetweennessCentralityAlgorithmConfig betweennessCentralityAlgorithmConfiguration = betweennessCentralityAlgorithmConfig != null ?
                 betweennessCentralityAlgorithmConfig : new BetweennessCentralityAlgorithmConfig();
@@ -415,13 +403,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         Example:
         https://neo4j.com/docs/graph-data-science/current/algorithms/degree-centrality/
         */
-        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
-        if(!checkGraphExistence){
-            logger.error("AnalyzableGraph with name {} does not exist",graphName);
-            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
-            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
-            throw e;
-        }
+        checkGraphExistence(graphName);
 
         DegreeCentralityAlgorithmConfig degreeCentralityAlgorithmConfiguration = degreeCentralityAlgorithmConfig != null ?
                 degreeCentralityAlgorithmConfig : new DegreeCentralityAlgorithmConfig();
@@ -495,13 +477,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         Example:
         https://neo4j.com/docs/graph-data-science/current/algorithms/louvain/
         */
-        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
-        if(!checkGraphExistence){
-            logger.error("AnalyzableGraph with name {} does not exist",graphName);
-            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
-            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
-            throw e;
-        }
+        checkGraphExistence(graphName);
 
         LouvainAlgorithmConfig louvainAlgorithmConfiguration = louvainAlgorithmConfig != null ?
                 louvainAlgorithmConfig : new LouvainAlgorithmConfig();
@@ -585,13 +561,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         Example:
         https://neo4j.com/docs/graph-data-science/current/algorithms/label-propagation/
         */
-        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
-        if(!checkGraphExistence){
-            logger.error("AnalyzableGraph with name {} does not exist",graphName);
-            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
-            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
-            throw e;
-        }
+        checkGraphExistence(graphName);
 
         LabelPropagationAlgorithmConfig labelPropagationAlgorithmConfiguration = labelPropagationAlgorithmConfig != null ?
                 labelPropagationAlgorithmConfig : new LabelPropagationAlgorithmConfig();
@@ -670,13 +640,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         Example:
         https://neo4j.com/docs/graph-data-science/current/algorithms/wcc/
         */
-        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
-        if(!checkGraphExistence){
-            logger.error("AnalyzableGraph with name {} does not exist",graphName);
-            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
-            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
-            throw e;
-        }
+        checkGraphExistence(graphName);
 
         WeaklyConnectedComponentsAlgorithmConfig weaklyConnectedComponentsAlgorithmConfiguration = weaklyConnectedComponentsAlgorithmConfig != null ?
                 weaklyConnectedComponentsAlgorithmConfig : new WeaklyConnectedComponentsAlgorithmConfig();
@@ -753,13 +717,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         Example:
         https://neo4j.com/docs/graph-data-science/current/algorithms/triangle-count/
         */
-        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
-        if(!checkGraphExistence){
-            logger.error("AnalyzableGraph with name {} does not exist",graphName);
-            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
-            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
-            throw e;
-        }
+        checkGraphExistence(graphName);
 
         TriangleCountAlgorithmConfig triangleCountAlgorithmConfiguration = triangleCountAlgorithmConfig != null ?
                 triangleCountAlgorithmConfig : new TriangleCountAlgorithmConfig();
@@ -828,13 +786,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         Example:
         https://neo4j.com/docs/graph-data-science/current/algorithms/local-clustering-coefficient/
         */
-        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
-        if(!checkGraphExistence){
-            logger.error("AnalyzableGraph with name {} does not exist",graphName);
-            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
-            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
-            throw e;
-        }
+        checkGraphExistence(graphName);
 
         LocalClusteringCoefficientAlgorithmConfig localClusteringCoefficientAlgorithmConfiguration = localClusteringCoefficientAlgorithmConfig != null ?
                 localClusteringCoefficientAlgorithmConfig : new LocalClusteringCoefficientAlgorithmConfig();
@@ -903,13 +855,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         Example:
         https://neo4j.com/docs/graph-data-science/current/algorithms/node-similarity/
         */
-        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
-        if(!checkGraphExistence){
-            logger.error("AnalyzableGraph with name {} does not exist",graphName);
-            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
-            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
-            throw e;
-        }
+        checkGraphExistence(graphName);
 
         NodeSimilarityAlgorithmConfig nodeSimilarityAlgorithmConfiguration = nodeSimilarityAlgorithmConfig != null ?
                 nodeSimilarityAlgorithmConfig : new NodeSimilarityAlgorithmConfig();
@@ -985,18 +931,28 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         }
     }
 
+    @Override
+    public DijkstraSourceTargetAlgorithmResult executeDijkstraSourceTargetAlgorithm(String graphName, DijkstraSourceTargetAlgorithmConfig dijkstraSourceTargetAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/dijkstra-source-target/
+        */
+        checkGraphExistence(graphName);
+
+
+
+
+
+        return null;
+    }
+
     private PageRankAlgorithmResult doExecutePageRankAlgorithms(String graphName, Set<String> conceptionEntityUIDSet,PageRankAlgorithmConfig pageRankAlgorithmConfig) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException {
         /*
         Example:
         https://neo4j.com/docs/graph-data-science/current/algorithms/page-rank/
         */
-        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
-        if(!checkGraphExistence){
-            logger.error("AnalyzableGraph with name {} does not exist",graphName);
-            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
-            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
-            throw e;
-        }
+        checkGraphExistence(graphName);
+
         String cypherProcedureString = getRankAlgorithmsCQL(graphName, "pageRank",conceptionEntityUIDSet,pageRankAlgorithmConfig,true);
         PageRankAlgorithmResult pageRankAlgorithmResult = new PageRankAlgorithmResult(graphName,pageRankAlgorithmConfig);
         List<EntityAnalyzeResult> entityAnalyzeResultList = pageRankAlgorithmResult.getPageRankScores();
@@ -1032,13 +988,8 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         Example:
         https://neo4j.com/docs/graph-data-science/current/algorithms/article-rank/
         */
-        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
-        if(!checkGraphExistence){
-            logger.error("AnalyzableGraph with name {} does not exist",graphName);
-            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
-            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
-            throw e;
-        }
+        checkGraphExistence(graphName);
+
         String cypherProcedureString = getRankAlgorithmsCQL(graphName, "articleRank",conceptionEntityUIDSet,articleRankAlgorithmConfig,true);
         ArticleRankAlgorithmResult articleRankAlgorithmResult = new ArticleRankAlgorithmResult(graphName,articleRankAlgorithmConfig);
         List<EntityAnalyzeResult> entityAnalyzeResultList = articleRankAlgorithmResult.getArticleRankScores();
@@ -1074,13 +1025,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         Example:
         https://neo4j.com/docs/graph-data-science/current/algorithms/eigenvector-centrality/
         */
-        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
-        if(!checkGraphExistence){
-            logger.error("AnalyzableGraph with name {} does not exist",graphName);
-            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
-            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
-            throw e;
-        }
+        checkGraphExistence(graphName);
 
         PageRankAlgorithmConfig pageRankAlgorithmConfig = new PageRankAlgorithmConfig();
         if(eigenvectorCentralityAlgorithmConfig != null){
@@ -1417,5 +1362,15 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
         return null;
+    }
+
+    private void checkGraphExistence(String graphName) throws CoreRealmServiceRuntimeException {
+        boolean checkGraphExistence = checkAnalyzableGraphExistence(graphName);
+        if(!checkGraphExistence){
+            logger.error("AnalyzableGraph with name {} does not exist",graphName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("AnalyzableGraph with name "+graphName+" does not exist");
+            throw e;
+        }
     }
 }
