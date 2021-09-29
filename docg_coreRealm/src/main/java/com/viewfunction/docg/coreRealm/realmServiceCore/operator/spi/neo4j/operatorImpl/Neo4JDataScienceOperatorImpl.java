@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl;
 
+import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
@@ -12,6 +13,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.d
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AnalyzableGraph;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.*;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionEntityImpl;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
@@ -948,7 +951,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
             throw e;
         }
         String relationshipWeightPropertyStr = dijkstraSourceTargetAlgorithmConfig.getRelationshipWeightAttribute() != null?
-                "  relationshipWeightProperty: '"+dijkstraSourceTargetAlgorithmConfig.getRelationshipWeightAttribute()+"'\n":"";
+                "  relationshipWeightProperty: '"+dijkstraSourceTargetAlgorithmConfig.getRelationshipWeightAttribute()+"',\n":"";
         String limitStr = dijkstraSourceTargetAlgorithmConfig.getMaxPathNumber() != null?
                 "LIMIT "+dijkstraSourceTargetAlgorithmConfig.getMaxPathNumber().intValue() : "";
 
@@ -978,6 +981,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         DijkstraSourceTargetAlgorithmResult dijkstraSourceTargetAlgorithmResult = new DijkstraSourceTargetAlgorithmResult(graphName,dijkstraSourceTargetAlgorithmConfig);
         List<PathFindingResult> pathFindingResultList = dijkstraSourceTargetAlgorithmResult.getDijkstraSourceTargetPaths();
 
+        GraphOperationExecutor globalGraphOperationExecutor = this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor();
         DataTransformer<Object> dataTransformer = new DataTransformer() {
             @Override
             public Object transformResult(Result result) {
@@ -987,30 +991,44 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
                     String sourceEntityUID = ""+nodeRecord.get("sourceEntityUID").asLong();
                     String targetEntityUID = ""+nodeRecord.get("targetEntityUID").asLong();
                     double totalCost = nodeRecord.get("totalCost").asNumber().doubleValue();
+
                     Node sourceEntity = nodeRecord.get("sourceEntity").asNode();
                     Node targetEntity = nodeRecord.get("targetEntity").asNode();
+                    List<Object> nodeIdsList = nodeRecord.get("nodeIds").asList();
+                    List<Object> costsList = nodeRecord.get("costs").asList();
 
+                    String sourceEntityKind = sourceEntity.labels().iterator().next();
+                    String targetEntityKind = targetEntity.labels().iterator().next();
+                    Map<String,Double> pathEntityTraversalWeightMap = new HashMap<>();
                     List<String> pathConceptionEntityUIDs = new ArrayList<>();
-                    for(Object currentNodeId:nodeRecord.get("nodeIds").asList()){
-                        pathConceptionEntityUIDs.add(currentNodeId.toString());
+
+                    for(int i=0; i< nodeIdsList.size(); i++){
+                        String entityId = nodeIdsList.get(i).toString();
+                        Double entityCost = (Double) costsList.get(i);
+                        pathEntityTraversalWeightMap.put(entityId,entityCost);
+                        pathConceptionEntityUIDs.add(entityId);
                     }
-                    List<Double> entityTraversalCosts = new ArrayList<>();
-                    for(Object currentCost:nodeRecord.get("costs").asList()){
-                        entityTraversalCosts.add((Double)currentCost);
+
+                    List<ConceptionEntity> pathConceptionEntities = new ArrayList<>();
+                    List<Object> pathNodes = nodeRecord.get("path").asList();
+                    for(Object currentNode:pathNodes){
+                        Node currentEntityNode = (Node)currentNode;
+                        long nodeUID = currentEntityNode.id();
+                        List<String> allConceptionKindNames = Lists.newArrayList(currentEntityNode.labels());
+                        String conceptionEntityUID = ""+nodeUID;
+                        Neo4JConceptionEntityImpl neo4jConceptionEntityImpl =
+                                new Neo4JConceptionEntityImpl(allConceptionKindNames.get(0),conceptionEntityUID);
+                        neo4jConceptionEntityImpl.setAllConceptionKindNames(allConceptionKindNames);
+                        neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(globalGraphOperationExecutor);
+                        pathConceptionEntities.add(neo4jConceptionEntityImpl);
                     }
 
-                    System.out.println(pathConceptionEntityUIDs);
-                    System.out.println(entityTraversalCosts);
-                    System.out.println(totalCost);
+                    PathFindingResult currentPathFindingResult = new PathFindingResult(
+                            sourceEntityUID,sourceEntityKind,targetEntityUID,targetEntityKind,totalCost,
+                            pathConceptionEntityUIDs,pathEntityTraversalWeightMap,pathConceptionEntities
+                    );
 
-                    System.out.println(nodeRecord.get("path").asList());
-
-
-                    System.out.println(nodeRecord);
-                    //long entityAUID = nodeRecord.get("entityAUID").asLong();
-                    //long entityBUID = nodeRecord.get("entityBUID").asLong();
-                    //float similarityScore = nodeRecord.get("similarity").asNumber().floatValue();
-                    //similarityDetectionResultList.add(new SimilarityDetectionResult(""+entityAUID,""+entityBUID,similarityScore));
+                    pathFindingResultList.add(currentPathFindingResult);
                 }
                 return null;
             }
