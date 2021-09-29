@@ -1,11 +1,11 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl;
 
-import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListAnalyzableGraphTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListPathFindingResultTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleAnalyzableGraphTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
@@ -13,11 +13,9 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.d
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AnalyzableGraph;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.*;
 
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionEntityImpl;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
-import org.neo4j.driver.types.Node;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -982,60 +980,14 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         List<PathFindingResult> pathFindingResultList = dijkstraSourceTargetAlgorithmResult.getDijkstraSourceTargetPaths();
 
         GraphOperationExecutor globalGraphOperationExecutor = this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor();
-        DataTransformer<Object> dataTransformer = new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-                while(result.hasNext()){
-                    Record nodeRecord = result.next();
-
-                    String sourceEntityUID = ""+nodeRecord.get("sourceEntityUID").asLong();
-                    String targetEntityUID = ""+nodeRecord.get("targetEntityUID").asLong();
-                    double totalCost = nodeRecord.get("totalCost").asNumber().doubleValue();
-
-                    Node sourceEntity = nodeRecord.get("sourceEntity").asNode();
-                    Node targetEntity = nodeRecord.get("targetEntity").asNode();
-                    List<Object> nodeIdsList = nodeRecord.get("nodeIds").asList();
-                    List<Object> costsList = nodeRecord.get("costs").asList();
-
-                    String sourceEntityKind = sourceEntity.labels().iterator().next();
-                    String targetEntityKind = targetEntity.labels().iterator().next();
-                    Map<String,Double> pathEntityTraversalWeightMap = new HashMap<>();
-                    List<String> pathConceptionEntityUIDs = new ArrayList<>();
-
-                    for(int i=0; i< nodeIdsList.size(); i++){
-                        String entityId = nodeIdsList.get(i).toString();
-                        Double entityCost = (Double) costsList.get(i);
-                        pathEntityTraversalWeightMap.put(entityId,entityCost);
-                        pathConceptionEntityUIDs.add(entityId);
-                    }
-
-                    List<ConceptionEntity> pathConceptionEntities = new ArrayList<>();
-                    List<Object> pathNodes = nodeRecord.get("path").asList();
-                    for(Object currentNode:pathNodes){
-                        Node currentEntityNode = (Node)currentNode;
-                        long nodeUID = currentEntityNode.id();
-                        List<String> allConceptionKindNames = Lists.newArrayList(currentEntityNode.labels());
-                        String conceptionEntityUID = ""+nodeUID;
-                        Neo4JConceptionEntityImpl neo4jConceptionEntityImpl =
-                                new Neo4JConceptionEntityImpl(allConceptionKindNames.get(0),conceptionEntityUID);
-                        neo4jConceptionEntityImpl.setAllConceptionKindNames(allConceptionKindNames);
-                        neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(globalGraphOperationExecutor);
-                        pathConceptionEntities.add(neo4jConceptionEntityImpl);
-                    }
-
-                    PathFindingResult currentPathFindingResult = new PathFindingResult(
-                            sourceEntityUID,sourceEntityKind,targetEntityUID,targetEntityKind,totalCost,
-                            pathConceptionEntityUIDs,pathEntityTraversalWeightMap,pathConceptionEntities
-                    );
-
-                    pathFindingResultList.add(currentPathFindingResult);
-                }
-                return null;
-            }
-        };
+        GetListPathFindingResultTransformer getListPathFindingResultTransformer = new GetListPathFindingResultTransformer(globalGraphOperationExecutor);
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
-            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            Object queryResponse = workingGraphOperationExecutor.executeRead(getListPathFindingResultTransformer,cypherProcedureString);
+            if(queryResponse != null){
+                List<PathFindingResult> responsePathFindingResult = (List<PathFindingResult>)queryResponse;
+                pathFindingResultList.addAll(responsePathFindingResult);
+            }
             dijkstraSourceTargetAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
             return dijkstraSourceTargetAlgorithmResult;
         } catch(org.neo4j.driver.exceptions.ClientException e){
