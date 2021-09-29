@@ -14,6 +14,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnaly
 
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
+import org.neo4j.driver.types.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -939,11 +940,93 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         */
         checkGraphExistence(graphName);
 
+        if(dijkstraSourceTargetAlgorithmConfig == null || dijkstraSourceTargetAlgorithmConfig.getSourceConceptionEntityUID() == null
+                || dijkstraSourceTargetAlgorithmConfig.getTargetConceptionEntityUID() == null){
+            logger.error("Both sourceConceptionEntityUID and targetConceptionEntityUID are required",graphName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("Both sourceConceptionEntityUID and targetConceptionEntityUID are required");
+            throw e;
+        }
+        String relationshipWeightPropertyStr = dijkstraSourceTargetAlgorithmConfig.getRelationshipWeightAttribute() != null?
+                "  relationshipWeightProperty: '"+dijkstraSourceTargetAlgorithmConfig.getRelationshipWeightAttribute()+"'\n":"";
+        String limitStr = dijkstraSourceTargetAlgorithmConfig.getMaxPathNumber() != null?
+                "LIMIT "+dijkstraSourceTargetAlgorithmConfig.getMaxPathNumber().intValue() : "";
+
+        String cypherProcedureString =
+                "MATCH (startNode) WHERE id(startNode)= "+dijkstraSourceTargetAlgorithmConfig.getSourceConceptionEntityUID()+"\n" +
+                "MATCH (endNode) WHERE id(endNode)= "+dijkstraSourceTargetAlgorithmConfig.getTargetConceptionEntityUID()+"\n" +
+        "CALL gds.shortestPath.dijkstra.stream('"+graphName+"', {\n" +
+        "    sourceNode: startNode,\n" +
+        "    targetNode: endNode,\n" +
+                        relationshipWeightPropertyStr+
+                        "  concurrency: 4 \n" +
+        "})\n" +
+        "YIELD index, sourceNode, targetNode, totalCost, nodeIds, costs, path\n" +
+        "RETURN\n" +
+        "    index,\n" +
+        "    sourceNode AS sourceEntityUID,\n" +
+        "    targetNode AS targetEntityUID,\n" +
+                     "gds.util.asNode(sourceNode) AS sourceEntity,\n"+
+                        "gds.util.asNode(targetNode) AS targetEntity,\n"+
+        "    totalCost,\n" +
+        "    nodeIds,\n" +
+        "    costs,\n" +
+        "    nodes(path) as path\n" +
+        "ORDER BY index "+limitStr;
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        DijkstraSourceTargetAlgorithmResult dijkstraSourceTargetAlgorithmResult = new DijkstraSourceTargetAlgorithmResult(graphName,dijkstraSourceTargetAlgorithmConfig);
+        List<PathFindingResult> pathFindingResultList = dijkstraSourceTargetAlgorithmResult.getDijkstraSourceTargetPaths();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+
+                    String sourceEntityUID = ""+nodeRecord.get("sourceEntityUID").asLong();
+                    String targetEntityUID = ""+nodeRecord.get("targetEntityUID").asLong();
+                    double totalCost = nodeRecord.get("totalCost").asNumber().doubleValue();
+                    Node sourceEntity = nodeRecord.get("sourceEntity").asNode();
+                    Node targetEntity = nodeRecord.get("targetEntity").asNode();
+
+                    List<String> pathConceptionEntityUIDs = new ArrayList<>();
+                    for(Object currentNodeId:nodeRecord.get("nodeIds").asList()){
+                        pathConceptionEntityUIDs.add(currentNodeId.toString());
+                    }
+                    List<Double> entityTraversalCosts = new ArrayList<>();
+                    for(Object currentCost:nodeRecord.get("costs").asList()){
+                        entityTraversalCosts.add((Double)currentCost);
+                    }
+
+                    System.out.println(pathConceptionEntityUIDs);
+                    System.out.println(entityTraversalCosts);
+                    System.out.println(totalCost);
+
+                    System.out.println(nodeRecord.get("path").asList());
 
 
-
-
-        return null;
+                    System.out.println(nodeRecord);
+                    //long entityAUID = nodeRecord.get("entityAUID").asLong();
+                    //long entityBUID = nodeRecord.get("entityBUID").asLong();
+                    //float similarityScore = nodeRecord.get("similarity").asNumber().floatValue();
+                    //similarityDetectionResultList.add(new SimilarityDetectionResult(""+entityAUID,""+entityBUID,similarityScore));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            dijkstraSourceTargetAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return dijkstraSourceTargetAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     private PageRankAlgorithmResult doExecutePageRankAlgorithms(String graphName, Set<String> conceptionEntityUIDSet,PageRankAlgorithmConfig pageRankAlgorithmConfig) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException {
