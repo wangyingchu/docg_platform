@@ -948,6 +948,17 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
             e.setCauseMessage("Both sourceConceptionEntityUID and targetConceptionEntityUID are required");
             throw e;
         }
+
+        Set<String> conceptionKindsForCompute = dijkstraSourceTargetAlgorithmConfig.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = dijkstraSourceTargetAlgorithmConfig.getRelationKindsForCompute();
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
         String relationshipWeightPropertyStr = dijkstraSourceTargetAlgorithmConfig.getRelationshipWeightAttribute() != null?
                 "  relationshipWeightProperty: '"+dijkstraSourceTargetAlgorithmConfig.getRelationshipWeightAttribute()+"',\n":"";
         String limitStr = dijkstraSourceTargetAlgorithmConfig.getMaxPathNumber() != null?
@@ -959,6 +970,8 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         "CALL gds.shortestPath.dijkstra.stream('"+graphName+"', {\n" +
         "    sourceNode: startNode,\n" +
         "    targetNode: endNode,\n" +
+                        nodeLabelsCQLPart+
+                        relationshipTypes+
                         relationshipWeightPropertyStr+
                         "  concurrency: 4 \n" +
         "})\n" +
@@ -1001,7 +1014,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
 
     @Override
     public DijkstraSingleSourceAlgorithmResult executeDijkstraSingleSourceAlgorithm(String graphName, DijkstraSingleSourceAlgorithmConfig dijkstraSingleSourceAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
-         /*
+        /*
         Example:
         https://neo4j.com/docs/graph-data-science/current/algorithms/dijkstra-single-source/
         */
@@ -1013,9 +1026,6 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
             e.setCauseMessage("sourceConceptionEntityUID is required");
             throw e;
         }
-
-        String relationshipWeightPropertyStr = dijkstraSingleSourceAlgorithmConfig.getRelationshipWeightAttribute() != null?
-                "  relationshipWeightProperty: '"+dijkstraSingleSourceAlgorithmConfig.getRelationshipWeightAttribute()+"',\n":"";
         Set<String> conceptionKindsForCompute = dijkstraSingleSourceAlgorithmConfig.getConceptionKindsForCompute();
         Set<String> relationKindsForCompute = dijkstraSingleSourceAlgorithmConfig.getRelationKindsForCompute();
         String nodeLabelsCQLPart = "";
@@ -1026,9 +1036,10 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
             relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
         }
+        String relationshipWeightPropertyStr = dijkstraSingleSourceAlgorithmConfig.getRelationshipWeightAttribute() != null?
+                "  relationshipWeightProperty: '"+dijkstraSingleSourceAlgorithmConfig.getRelationshipWeightAttribute()+"',\n":"";
         String orderCQLPart = dijkstraSingleSourceAlgorithmConfig.getPathWeightSortingLogic() != null ?
                 "ORDER BY totalCost "+ dijkstraSingleSourceAlgorithmConfig.getPathWeightSortingLogic().toString() : "";
-
         String cypherProcedureString =
              "MATCH (startNode) WHERE id(startNode)= "+dijkstraSingleSourceAlgorithmConfig.getSourceConceptionEntityUID()+"\n" +
              "CALL gds.allShortestPaths.dijkstra.stream('"+graphName+"', {\n" +
@@ -1097,7 +1108,16 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
             e.setCauseMessage("Both latitudeAttribute and longitudeAttribute are required");
             throw e;
         }
-
+        Set<String> conceptionKindsForCompute = aStarShortestPathAlgorithmConfig.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = aStarShortestPathAlgorithmConfig.getRelationKindsForCompute();
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
         String relationshipWeightPropertyStr = aStarShortestPathAlgorithmConfig.getRelationshipWeightAttribute() != null?
                 "  relationshipWeightProperty: '"+aStarShortestPathAlgorithmConfig.getRelationshipWeightAttribute()+"',\n":"";
         String latitudePropertyStr = aStarShortestPathAlgorithmConfig.getLatitudeAttribute() != null?
@@ -1113,6 +1133,8 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
                         "CALL gds.shortestPath.astar.stream('"+graphName+"', {\n" +
                         "    sourceNode: startNode,\n" +
                         "    targetNode: endNode,\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
                         relationshipWeightPropertyStr +
                         latitudePropertyStr +
                         longitudePropertyStr +
@@ -1146,6 +1168,88 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
             }
             aStarShortestPathAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
             return aStarShortestPathAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public YensKShortestPathAlgorithmResult executeYensKShortestPathAlgorithm(String graphName, YensKShortestPathAlgorithmConfig yensKShortestPathAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/yens/
+        */
+        checkGraphExistence(graphName);
+
+        if(yensKShortestPathAlgorithmConfig == null || yensKShortestPathAlgorithmConfig.getSourceConceptionEntityUID() == null
+                || yensKShortestPathAlgorithmConfig.getTargetConceptionEntityUID() == null){
+            logger.error("Both sourceConceptionEntityUID and targetConceptionEntityUID are required",graphName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("Both sourceConceptionEntityUID and targetConceptionEntityUID are required");
+            throw e;
+        }
+
+        Set<String> conceptionKindsForCompute = yensKShortestPathAlgorithmConfig.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = yensKShortestPathAlgorithmConfig.getRelationKindsForCompute();
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+        String relationshipWeightPropertyStr = yensKShortestPathAlgorithmConfig.getRelationshipWeightAttribute() != null?
+                "  relationshipWeightProperty: '"+yensKShortestPathAlgorithmConfig.getRelationshipWeightAttribute()+"',\n":"";
+        String kPropertyStr =
+                "  k: "+yensKShortestPathAlgorithmConfig.getK()+",\n";
+        String orderCQLPart = yensKShortestPathAlgorithmConfig.getPathWeightSortingLogic() != null ?
+                "ORDER BY totalCost "+ yensKShortestPathAlgorithmConfig.getPathWeightSortingLogic().toString() : "";
+
+        String cypherProcedureString =
+                "MATCH (startNode) WHERE id(startNode)= "+yensKShortestPathAlgorithmConfig.getSourceConceptionEntityUID()+"\n" +
+                        "MATCH (endNode) WHERE id(endNode)= "+yensKShortestPathAlgorithmConfig.getTargetConceptionEntityUID()+"\n" +
+                        "CALL gds.shortestPath.yens.stream('"+graphName+"', {\n" +
+                        "    sourceNode: startNode,\n" +
+                        "    targetNode: endNode,\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
+                        relationshipWeightPropertyStr +
+                        kPropertyStr +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD index, sourceNode, targetNode, totalCost, nodeIds, costs, path\n" +
+                        "RETURN\n" +
+                        "    index,\n" +
+                        "    sourceNode AS sourceEntityUID,\n" +
+                        "    targetNode AS targetEntityUID,\n" +
+                        "gds.util.asNode(sourceNode) AS sourceEntity,\n"+
+                        "gds.util.asNode(targetNode) AS targetEntity,\n"+
+                        "    totalCost,\n" +
+                        "    nodeIds,\n" +
+                        "    costs,\n" +
+                        "    nodes(path) as path\n"+
+                        orderCQLPart;
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        YensKShortestPathAlgorithmResult yensKShortestPathAlgorithmResult = new YensKShortestPathAlgorithmResult(graphName,yensKShortestPathAlgorithmConfig);
+        List<PathFindingResult> pathFindingResultList = yensKShortestPathAlgorithmResult.getYensKPaths();
+
+        GraphOperationExecutor globalGraphOperationExecutor = this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor();
+        GetListPathFindingResultTransformer getListPathFindingResultTransformer = new GetListPathFindingResultTransformer(globalGraphOperationExecutor);
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            Object queryResponse = workingGraphOperationExecutor.executeRead(getListPathFindingResultTransformer,cypherProcedureString);
+            if(queryResponse != null){
+                List<PathFindingResult> responsePathFindingResult = (List<PathFindingResult>)queryResponse;
+                pathFindingResultList.addAll(responsePathFindingResult);
+            }
+            yensKShortestPathAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return yensKShortestPathAlgorithmResult;
         } catch(org.neo4j.driver.exceptions.ClientException e){
             CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
             e1.setCauseMessage(e.getMessage());
