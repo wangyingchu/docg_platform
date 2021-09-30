@@ -1008,9 +1008,9 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         checkGraphExistence(graphName);
 
         if(dijkstraSingleSourceAlgorithmConfig == null || dijkstraSingleSourceAlgorithmConfig.getSourceConceptionEntityUID() == null){
-            logger.error("SourceConceptionEntityUID is required",graphName);
+            logger.error("sourceConceptionEntityUID is required",graphName);
             CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
-            e.setCauseMessage("SourceConceptionEntityUID is required");
+            e.setCauseMessage("sourceConceptionEntityUID is required");
             throw e;
         }
 
@@ -1067,6 +1067,85 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
             }
             dijkstraSingleSourceAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
             return dijkstraSingleSourceAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public AStarShortestPathAlgorithmResult executeAStarShortestPathAlgorithm(String graphName, AStarShortestPathAlgorithmConfig aStarShortestPathAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/astar/
+        */
+        checkGraphExistence(graphName);
+
+        if(aStarShortestPathAlgorithmConfig == null || aStarShortestPathAlgorithmConfig.getSourceConceptionEntityUID() == null
+                || aStarShortestPathAlgorithmConfig.getTargetConceptionEntityUID() == null){
+            logger.error("Both sourceConceptionEntityUID and targetConceptionEntityUID are required",graphName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("Both sourceConceptionEntityUID and targetConceptionEntityUID are required");
+            throw e;
+        }
+        if(aStarShortestPathAlgorithmConfig.getLatitudeAttribute() == null || aStarShortestPathAlgorithmConfig.getLongitudeAttribute() == null){
+            logger.error("Both latitudeAttribute and longitudeAttribute are required",graphName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("Both latitudeAttribute and longitudeAttribute are required");
+            throw e;
+        }
+
+        String relationshipWeightPropertyStr = aStarShortestPathAlgorithmConfig.getRelationshipWeightAttribute() != null?
+                "  relationshipWeightProperty: '"+aStarShortestPathAlgorithmConfig.getRelationshipWeightAttribute()+"',\n":"";
+        String latitudePropertyStr = aStarShortestPathAlgorithmConfig.getLatitudeAttribute() != null?
+                "  latitudeProperty: '"+aStarShortestPathAlgorithmConfig.getLatitudeAttribute()+"',\n":"";
+        String longitudePropertyStr = aStarShortestPathAlgorithmConfig.getLongitudeAttribute() != null?
+                "  longitudeProperty: '"+aStarShortestPathAlgorithmConfig.getLongitudeAttribute()+"',\n":"";
+        String limitStr = aStarShortestPathAlgorithmConfig.getMaxPathNumber() != null?
+                "LIMIT "+aStarShortestPathAlgorithmConfig.getMaxPathNumber().intValue() : "";
+
+        String cypherProcedureString =
+                "MATCH (startNode) WHERE id(startNode)= "+aStarShortestPathAlgorithmConfig.getSourceConceptionEntityUID()+"\n" +
+                        "MATCH (endNode) WHERE id(endNode)= "+aStarShortestPathAlgorithmConfig.getTargetConceptionEntityUID()+"\n" +
+                        "CALL gds.shortestPath.astar.stream('"+graphName+"', {\n" +
+                        "    sourceNode: startNode,\n" +
+                        "    targetNode: endNode,\n" +
+                        relationshipWeightPropertyStr +
+                        latitudePropertyStr +
+                        longitudePropertyStr +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD index, sourceNode, targetNode, totalCost, nodeIds, costs, path\n" +
+                        "RETURN\n" +
+                        "    index,\n" +
+                        "    sourceNode AS sourceEntityUID,\n" +
+                        "    targetNode AS targetEntityUID,\n" +
+                        "gds.util.asNode(sourceNode) AS sourceEntity,\n"+
+                        "gds.util.asNode(targetNode) AS targetEntity,\n"+
+                        "    totalCost,\n" +
+                        "    nodeIds,\n" +
+                        "    costs,\n" +
+                        "    nodes(path) as path\n" +
+                        "ORDER BY index "+limitStr;
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        AStarShortestPathAlgorithmResult aStarShortestPathAlgorithmResult = new AStarShortestPathAlgorithmResult(graphName,aStarShortestPathAlgorithmConfig);
+        List<PathFindingResult> pathFindingResultList = aStarShortestPathAlgorithmResult.getAStarPaths();
+
+        GraphOperationExecutor globalGraphOperationExecutor = this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor();
+        GetListPathFindingResultTransformer getListPathFindingResultTransformer = new GetListPathFindingResultTransformer(globalGraphOperationExecutor);
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            Object queryResponse = workingGraphOperationExecutor.executeRead(getListPathFindingResultTransformer,cypherProcedureString);
+            if(queryResponse != null){
+                List<PathFindingResult> responsePathFindingResult = (List<PathFindingResult>)queryResponse;
+                pathFindingResultList.addAll(responsePathFindingResult);
+            }
+            aStarShortestPathAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return aStarShortestPathAlgorithmResult;
         } catch(org.neo4j.driver.exceptions.ClientException e){
             CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
             e1.setCauseMessage(e.getMessage());
