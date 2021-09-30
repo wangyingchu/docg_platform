@@ -999,6 +999,83 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         }
     }
 
+    @Override
+    public DijkstraSingleSourceAlgorithmResult executeDijkstraSingleSourceAlgorithm(String graphName, DijkstraSingleSourceAlgorithmConfig dijkstraSingleSourceAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+         /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/dijkstra-single-source/
+        */
+        checkGraphExistence(graphName);
+
+        if(dijkstraSingleSourceAlgorithmConfig == null || dijkstraSingleSourceAlgorithmConfig.getSourceConceptionEntityUID() == null){
+            logger.error("SourceConceptionEntityUID is required",graphName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("SourceConceptionEntityUID is required");
+            throw e;
+        }
+
+        String relationshipWeightPropertyStr = dijkstraSingleSourceAlgorithmConfig.getRelationshipWeightAttribute() != null?
+                "  relationshipWeightProperty: '"+dijkstraSingleSourceAlgorithmConfig.getRelationshipWeightAttribute()+"',\n":"";
+        Set<String> conceptionKindsForCompute = dijkstraSingleSourceAlgorithmConfig.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = dijkstraSingleSourceAlgorithmConfig.getRelationKindsForCompute();
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+        String orderCQLPart = dijkstraSingleSourceAlgorithmConfig.getPathWeightSortingLogic() != null ?
+                "ORDER BY totalCost "+ dijkstraSingleSourceAlgorithmConfig.getPathWeightSortingLogic().toString() : "";
+
+        String cypherProcedureString =
+             "MATCH (startNode) WHERE id(startNode)= "+dijkstraSingleSourceAlgorithmConfig.getSourceConceptionEntityUID()+"\n" +
+             "CALL gds.allShortestPaths.dijkstra.stream('"+graphName+"', {\n" +
+                "    sourceNode: startNode,\n" +
+                nodeLabelsCQLPart +
+                relationshipTypes +
+                relationshipWeightPropertyStr+
+                "  concurrency: 4 \n" +
+             "})\n" +
+            "YIELD index, sourceNode, targetNode, totalCost, nodeIds, costs, path\n" +
+            "RETURN\n" +
+                "    index,\n" +
+                "    sourceNode AS sourceEntityUID,\n" +
+                "    targetNode AS targetEntityUID,\n" +
+                "gds.util.asNode(sourceNode) AS sourceEntity,\n"+
+                "gds.util.asNode(targetNode) AS targetEntity,\n"+
+            "    totalCost,\n" +
+            "    nodeIds,\n" +
+            "    costs,\n" +
+            "    nodes(path) as path\n" +
+            orderCQLPart +
+            getReturnDataControlLogic(dijkstraSingleSourceAlgorithmConfig);
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        DijkstraSingleSourceAlgorithmResult dijkstraSingleSourceAlgorithmResult = new DijkstraSingleSourceAlgorithmResult(graphName,dijkstraSingleSourceAlgorithmConfig);
+        List<PathFindingResult> pathFindingResultList = dijkstraSingleSourceAlgorithmResult.getDijkstraSingleSourcePaths();
+
+        GraphOperationExecutor globalGraphOperationExecutor = this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor();
+        GetListPathFindingResultTransformer getListPathFindingResultTransformer = new GetListPathFindingResultTransformer(globalGraphOperationExecutor);
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            Object queryResponse = workingGraphOperationExecutor.executeRead(getListPathFindingResultTransformer,cypherProcedureString);
+            if(queryResponse != null){
+                List<PathFindingResult> responsePathFindingResult = (List<PathFindingResult>)queryResponse;
+                pathFindingResultList.addAll(responsePathFindingResult);
+            }
+            dijkstraSingleSourceAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return dijkstraSingleSourceAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
     private PageRankAlgorithmResult doExecutePageRankAlgorithms(String graphName, Set<String> conceptionEntityUIDSet,PageRankAlgorithmConfig pageRankAlgorithmConfig) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException {
         /*
         Example:
