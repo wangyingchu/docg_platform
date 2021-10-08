@@ -217,6 +217,16 @@ public interface DataScienceOperator {
     public DegreeCentralityAlgorithmResult executeDegreeCentralityAlgorithm(String graphName, DegreeCentralityAlgorithmConfig degreeCentralityAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
     /**
+     * 在指定名称的可分析图上执行 ClosenessCentrality 算法
+     *
+     *  @param graphName String 可分析图名称
+     *  @param closenessCentralityAlgorithmConfig ClosenessCentralityAlgorithmConfig ClosenessCentrality算法执行配置参数
+     *
+     * @return DegreeCentrality算法计算结果集
+     */
+    public ClosenessCentralityAlgorithmResult executeClosenessCentralityAlgorithm(String graphName, ClosenessCentralityAlgorithmConfig closenessCentralityAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
+    /**
      * 在指定名称的可分析图上执行 Louvain 算法
      *
      *  @param graphName String 可分析图名称

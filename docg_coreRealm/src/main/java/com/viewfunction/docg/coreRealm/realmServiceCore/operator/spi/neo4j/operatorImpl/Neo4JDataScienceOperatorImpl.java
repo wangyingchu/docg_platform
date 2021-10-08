@@ -474,6 +474,73 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
     }
 
     @Override
+    public ClosenessCentralityAlgorithmResult executeClosenessCentralityAlgorithm(String graphName, ClosenessCentralityAlgorithmConfig closenessCentralityAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/1.7/algorithms/closeness-centrality/
+        */
+        checkGraphExistence(graphName);
+
+        ClosenessCentralityAlgorithmConfig closenessCentralityAlgorithmConfiguration = closenessCentralityAlgorithmConfig != null ?
+                closenessCentralityAlgorithmConfig : new ClosenessCentralityAlgorithmConfig();
+        Set<String> conceptionKindsForCompute = closenessCentralityAlgorithmConfiguration.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = closenessCentralityAlgorithmConfiguration.getRelationKindsForCompute();
+
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+
+        String orderCQLPart = closenessCentralityAlgorithmConfiguration.getCentralityWeightSortingLogic()!= null ?
+                "ORDER BY centrality "+closenessCentralityAlgorithmConfiguration.getCentralityWeightSortingLogic().toString() : "";
+
+        String cypherProcedureString =
+                "CALL gds.alpha.closeness.stream('"+graphName+"', {\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD nodeId, centrality\n" +
+                        //"RETURN gds.util.asNode(nodeId) AS node, score\n" +
+                        "RETURN nodeId AS entityUID, centrality AS centralityWeight\n" +
+                        orderCQLPart+
+                        getReturnDataControlLogic(closenessCentralityAlgorithmConfiguration);
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        ClosenessCentralityAlgorithmResult closenessCentralityAlgorithmResult = new ClosenessCentralityAlgorithmResult(graphName,closenessCentralityAlgorithmConfig);
+        List<EntityAnalyzeResult> entityAnalyzeResultList = closenessCentralityAlgorithmResult.getClosenessCentralityWeights();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityUID = nodeRecord.get("entityUID").asLong();
+                    double centralityWeight = nodeRecord.get("centralityWeight").asNumber().doubleValue();
+                    entityAnalyzeResultList.add(new EntityAnalyzeResult(""+entityUID,centralityWeight,"centralityWeight"));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            closenessCentralityAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return closenessCentralityAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
     public LouvainAlgorithmResult executeLouvainAlgorithm(String graphName, LouvainAlgorithmConfig louvainAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         /*
         Example:
