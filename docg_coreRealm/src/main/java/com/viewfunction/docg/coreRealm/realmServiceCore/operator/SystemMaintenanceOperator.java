@@ -7,7 +7,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.SystemStatusSnap
 import java.util.List;
 
 public interface SystemMaintenanceOperator {
-    //听 风雪喧嚷 看 流星在飞翔 我的心向我呼唤 去动荡的远方
+    //听风雪喧嚷 看流星在飞翔 我的心向我呼唤 去动荡的远方
     /**
      * 查询并返回当前领域模型所属数据服务系统的事实数据状态快照信息
      *
