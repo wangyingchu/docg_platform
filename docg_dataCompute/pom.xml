@@ -12,7 +12,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
-        <ignite.version>2.10.0</ignite.version>
+        <ignite.version>2.11.0</ignite.version>
         <ignite.geospatial.version>2.7.2</ignite.geospatial.version>
         <spark.version>2.4.7</spark.version>
         <geospark.version>1.3.1</geospark.version>
