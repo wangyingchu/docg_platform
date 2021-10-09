@@ -542,7 +542,69 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
 
     @Override
     public HarmonicCentralityAlgorithmResult executeHarmonicCentralityAlgorithm(String graphName, HarmonicCentralityAlgorithmConfig harmonicCentralityAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
-        return null;
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/harmonic-centrality/
+        */
+        checkGraphExistence(graphName);
+
+        HarmonicCentralityAlgorithmConfig harmonicCentralityAlgorithmConfiguration = harmonicCentralityAlgorithmConfig != null ?
+                harmonicCentralityAlgorithmConfig : new HarmonicCentralityAlgorithmConfig();
+        Set<String> conceptionKindsForCompute = harmonicCentralityAlgorithmConfiguration.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = harmonicCentralityAlgorithmConfiguration.getRelationKindsForCompute();
+
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+
+        String orderCQLPart = harmonicCentralityAlgorithmConfiguration.getCentralityWeightSortingLogic()!= null ?
+                "ORDER BY centrality "+harmonicCentralityAlgorithmConfiguration.getCentralityWeightSortingLogic().toString() : "";
+
+        String cypherProcedureString =
+                "CALL gds.alpha.closeness.harmonic.stream('"+graphName+"', {\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD nodeId, centrality\n" +
+                        //"RETURN gds.util.asNode(nodeId) AS node, score\n" +
+                        "RETURN nodeId AS entityUID, centrality AS centralityWeight\n" +
+                        orderCQLPart+
+                        getReturnDataControlLogic(harmonicCentralityAlgorithmConfiguration);
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        HarmonicCentralityAlgorithmResult harmonicCentralityAlgorithmResult = new HarmonicCentralityAlgorithmResult(graphName,harmonicCentralityAlgorithmConfig);
+        List<EntityAnalyzeResult> entityAnalyzeResultList = harmonicCentralityAlgorithmResult.getHarmonicCentralityWeights();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityUID = nodeRecord.get("entityUID").asLong();
+                    double centralityWeight = nodeRecord.get("centralityWeight").asNumber().doubleValue();
+                    entityAnalyzeResultList.add(new EntityAnalyzeResult(""+entityUID,centralityWeight,"centralityWeight"));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            harmonicCentralityAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return harmonicCentralityAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override

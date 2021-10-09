@@ -236,7 +236,6 @@ public interface DataScienceOperator {
      */
     public HarmonicCentralityAlgorithmResult executeHarmonicCentralityAlgorithm(String graphName, HarmonicCentralityAlgorithmConfig harmonicCentralityAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
-
     /**
      * 在指定名称的可分析图上执行 Louvain 算法
      *
