@@ -222,9 +222,20 @@ public interface DataScienceOperator {
      *  @param graphName String 可分析图名称
      *  @param closenessCentralityAlgorithmConfig ClosenessCentralityAlgorithmConfig ClosenessCentrality算法执行配置参数
      *
-     * @return DegreeCentrality算法计算结果集
+     * @return ClosenessCentrality算法计算结果集
      */
     public ClosenessCentralityAlgorithmResult executeClosenessCentralityAlgorithm(String graphName, ClosenessCentralityAlgorithmConfig closenessCentralityAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
+    /**
+     * 在指定名称的可分析图上执行 HarmonicCentrality 算法
+     *
+     *  @param graphName String 可分析图名称
+     *  @param harmonicCentralityAlgorithmConfig HarmonicCentralityAlgorithmConfig HarmonicCentrality算法执行配置参数
+     *
+     * @return HarmonicCentrality算法计算结果集
+     */
+    public HarmonicCentralityAlgorithmResult executeHarmonicCentralityAlgorithm(String graphName, HarmonicCentralityAlgorithmConfig harmonicCentralityAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
 
     /**
      * 在指定名称的可分析图上执行 Louvain 算法

@@ -3974,7 +3974,7 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      *  @param graphName String 可分析图名称
      *  @param closenessCentralityAlgorithmConfig ClosenessCentralityAlgorithmConfig ClosenessCentrality算法执行配置参数
      *
-     * @return DegreeCentrality算法计算结果集
+     * @return ClosenessCentrality算法计算结果集
      */
     public ClosenessCentralityAlgorithmResult executeClosenessCentralityAlgorithm(String graphName, ClosenessCentralityAlgorithmConfig closenessCentralityAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
