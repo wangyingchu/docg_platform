@@ -3987,7 +3987,17 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return HarmonicCentrality算法计算结果集
      */
     public HarmonicCentralityAlgorithmResult executeHarmonicCentralityAlgorithm(String graphName, HarmonicCentralityAlgorithmConfig harmonicCentralityAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
-    
+
+	/**
+     * 在指定名称的可分析图上执行 HyperlinkInducedTopicSearch(HITS) 算法
+     *
+     *  @param graphName String 可分析图名称
+     *  @param hyperlinkInducedTopicSearchAlgorithmConfig HyperlinkInducedTopicSearchAlgorithmConfig HyperlinkInducedTopicSearch(HITS)算法执行配置参数
+     *
+     * @return HyperlinkInducedTopicSearch(HITS)算法计算结果集
+     */
+    public HyperlinkInducedTopicSearchAlgorithmResult executeHyperlinkInducedTopicSearchAlgorithm(String graphName, HyperlinkInducedTopicSearchAlgorithmConfig hyperlinkInducedTopicSearchAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
     /**
      * 在指定名称的可分析图上执行 Louvain 算法
      *
