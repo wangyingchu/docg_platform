@@ -4008,7 +4008,6 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      */
     public GreedyInfluenceMaximizationAlgorithmResult executeGreedyInfluenceMaximizationAlgorithm(String graphName, GreedyInfluenceMaximizationAlgorithmConfig greedyInfluenceMaximizationAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
-
     /**
      * 在指定名称的可分析图上执行 Louvain 算法
      *
