@@ -257,6 +257,16 @@ public interface DataScienceOperator {
     public GreedyInfluenceMaximizationAlgorithmResult executeGreedyInfluenceMaximizationAlgorithm(String graphName, GreedyInfluenceMaximizationAlgorithmConfig greedyInfluenceMaximizationAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
     /**
+     * 在指定名称的可分析图上执行 Cost Effective Lazy Forward (CELF) influence maximization 算法
+     *
+     *  @param graphName String 可分析图名称
+     *  @param _CELFInfluenceMaximizationAlgorithmConfig CELFInfluenceMaximizationAlgorithmConfig CostEffectiveLazyForward(CELF)InfluenceMaximization算法执行配置参数
+     *
+     * @return CELF Influence Maximization算法计算结果集
+     */
+    public CELFInfluenceMaximizationAlgorithmResult executeCELFInfluenceMaximizationAlgorithm(String graphName, CELFInfluenceMaximizationAlgorithmConfig _CELFInfluenceMaximizationAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
+    /**
      * 在指定名称的可分析图上执行 Louvain 算法
      *
      *  @param graphName String 可分析图名称
