@@ -247,6 +247,16 @@ public interface DataScienceOperator {
     public HyperlinkInducedTopicSearchAlgorithmResult executeHyperlinkInducedTopicSearchAlgorithm(String graphName, HyperlinkInducedTopicSearchAlgorithmConfig hyperlinkInducedTopicSearchAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
     /**
+     * 在指定名称的可分析图上执行 Greedy influence maximization 算法
+     *
+     *  @param graphName String 可分析图名称
+     *  @param greedyInfluenceMaximizationAlgorithmConfig GreedyInfluenceMaximizationAlgorithmConfig GreedyInfluenceMaximization算法执行配置参数
+     *
+     * @return Greedy Influence Maximization算法计算结果集
+     */
+    public GreedyInfluenceMaximizationAlgorithmResult executeGreedyInfluenceMaximizationAlgorithm(String graphName, GreedyInfluenceMaximizationAlgorithmConfig greedyInfluenceMaximizationAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
+    /**
      * 在指定名称的可分析图上执行 Louvain 算法
      *
      *  @param graphName String 可分析图名称

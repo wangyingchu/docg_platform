@@ -609,7 +609,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
 
     @Override
     public HyperlinkInducedTopicSearchAlgorithmResult executeHyperlinkInducedTopicSearchAlgorithm(String graphName, HyperlinkInducedTopicSearchAlgorithmConfig hyperlinkInducedTopicSearchAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
-         /*
+        /*
         Example:
         https://neo4j.com/docs/graph-data-science/current/algorithms/hits/
         */
@@ -691,6 +691,17 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
+    }
+
+    @Override
+    public GreedyInfluenceMaximizationAlgorithmResult executeGreedyInfluenceMaximizationAlgorithm(String graphName, GreedyInfluenceMaximizationAlgorithmConfig greedyInfluenceMaximizationAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/influence-maximization/greedy/
+        */
+        checkGraphExistence(graphName);
+
+        return null;
     }
 
     @Override
