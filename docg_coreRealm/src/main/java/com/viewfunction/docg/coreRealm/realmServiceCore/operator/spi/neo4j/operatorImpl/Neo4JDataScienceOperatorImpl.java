@@ -615,7 +615,82 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         */
         checkGraphExistence(graphName);
 
-        return null;
+        HyperlinkInducedTopicSearchAlgorithmConfig hyperlinkInducedTopicSearchAlgorithmConfiguration = hyperlinkInducedTopicSearchAlgorithmConfig != null ?
+                hyperlinkInducedTopicSearchAlgorithmConfig : new HyperlinkInducedTopicSearchAlgorithmConfig();
+        Set<String> conceptionKindsForCompute = hyperlinkInducedTopicSearchAlgorithmConfiguration.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = hyperlinkInducedTopicSearchAlgorithmConfiguration.getRelationKindsForCompute();
+
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+
+        String hitsIterationsAttributeCQLPart =
+                "  hitsIterations: "+hyperlinkInducedTopicSearchAlgorithmConfiguration.getHitsIterations()+",\n";
+        String authPropertyAttributeCQLPart = hyperlinkInducedTopicSearchAlgorithmConfiguration.getAuthProperty() != null ?
+                "  authProperty: '"+ hyperlinkInducedTopicSearchAlgorithmConfiguration.getAuthProperty()+"',\n" : "";
+        String hubPropertyAttributeCQLPart = hyperlinkInducedTopicSearchAlgorithmConfiguration.getHubProperty() != null ?
+                "  hubProperty: '"+ hyperlinkInducedTopicSearchAlgorithmConfiguration.getHubProperty()+"',\n" : "";
+
+        String authOrderCQLPart = hyperlinkInducedTopicSearchAlgorithmConfiguration.getAuthScoreSortingLogic()!= null ?
+                "auth "+hyperlinkInducedTopicSearchAlgorithmConfiguration.getAuthScoreSortingLogic().toString() : "";
+        String hubOrderByString = authOrderCQLPart.equals("") ? "hub ":" ,hub ";
+        String hubOrderCQLPart = hyperlinkInducedTopicSearchAlgorithmConfiguration.getHubScoreSortingLogic()!= null ?
+                hubOrderByString + hyperlinkInducedTopicSearchAlgorithmConfiguration.getHubScoreSortingLogic().toString() : "";
+        String orderCQLPart;
+        if(authOrderCQLPart.equals("") & hubOrderCQLPart.equals("")){
+            orderCQLPart = "";
+        }else{
+            orderCQLPart = "ORDER BY "+ authOrderCQLPart + hubOrderCQLPart;
+        }
+
+        String cypherProcedureString =
+                "CALL gds.alpha.hits.stream('"+graphName+"', {\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
+                        hitsIterationsAttributeCQLPart +
+                        authPropertyAttributeCQLPart +
+                        hubPropertyAttributeCQLPart +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD nodeId, values\n" +
+                        "RETURN nodeId AS entityUID, values.auth AS auth, values.hub AS hub\n" +
+                        orderCQLPart+
+                        getReturnDataControlLogic(hyperlinkInducedTopicSearchAlgorithmConfiguration);
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        HyperlinkInducedTopicSearchAlgorithmResult hyperlinkInducedTopicSearchAlgorithmResult = new HyperlinkInducedTopicSearchAlgorithmResult(graphName,hyperlinkInducedTopicSearchAlgorithmConfig);
+        List<HITSDetectionResult> _HITSDetectionResultList = hyperlinkInducedTopicSearchAlgorithmResult.getHITSScores();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityUID = nodeRecord.get("entityUID").asLong();
+                    double auth = nodeRecord.get("auth").asNumber().doubleValue();
+                    double hub = nodeRecord.get("hub").asNumber().doubleValue();
+                    _HITSDetectionResultList.add(new HITSDetectionResult(""+entityUID,auth,hub));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            hyperlinkInducedTopicSearchAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return hyperlinkInducedTopicSearchAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
