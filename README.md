@@ -4069,6 +4069,16 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
     public LocalClusteringCoefficientAlgorithmResult executeLocalClusteringCoefficientAlgorithm(String graphName, LocalClusteringCoefficientAlgorithmConfig localClusteringCoefficientAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
     /**
+     * 在指定名称的可分析图上执行 K-1 Coloring 算法
+     *
+     *  @param graphName String 可分析图名称
+     *  @param k1ColoringAlgorithmConfig K1ColoringAlgorithmConfig K-1 Coloring算法执行配置参数
+     *
+     * @return K-1 Coloring算法计算结果集
+     */
+    public K1ColoringAlgorithmResult executeK1ColoringAlgorithm(String graphName, K1ColoringAlgorithmConfig k1ColoringAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
+    /**
      * 在指定名称的可分析图上执行 NodeSimilarity 算法
      *
      *  @param graphName String 可分析图名称
