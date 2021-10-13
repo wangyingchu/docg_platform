@@ -1264,7 +1264,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
         K1ColoringAlgorithmResult k1ColoringAlgorithmResult = new K1ColoringAlgorithmResult(graphName,k1ColoringAlgorithmConfig);
-        List<EntityAnalyzeResult> k1ColorResultList = k1ColoringAlgorithmResult.getK1Colors();
+        List<CommunityDetectionResult> k1ColorResultList = k1ColoringAlgorithmResult.getK1Colors();
 
         DataTransformer<Object> dataTransformer = new DataTransformer() {
             @Override
@@ -1272,8 +1272,8 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
                 while(result.hasNext()){
                     Record nodeRecord = result.next();
                     long entityAUID = nodeRecord.get("entityUID").asLong();
-                    float colorValue = nodeRecord.get("color").asNumber().intValue();
-                    k1ColorResultList.add(new EntityAnalyzeResult(""+entityAUID,colorValue,"color"));
+                    int colorValue = nodeRecord.get("color").asNumber().intValue();
+                    k1ColorResultList.add(new CommunityDetectionResult(""+entityAUID,colorValue));
                 }
                 return null;
             }
@@ -1283,6 +1283,84 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
             workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
             k1ColoringAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
             return k1ColoringAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public ModularityOptimizationAlgorithmResult executeModularityOptimizationAlgorithm(String graphName, ModularityOptimizationAlgorithmConfig modularityOptimizationAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/modularity-optimization/
+        */
+        checkGraphExistence(graphName);
+
+        ModularityOptimizationAlgorithmConfig modularityOptimizationAlgorithmConfiguration = modularityOptimizationAlgorithmConfig != null ?
+                modularityOptimizationAlgorithmConfig : new ModularityOptimizationAlgorithmConfig();
+        Set<String> conceptionKindsForCompute = modularityOptimizationAlgorithmConfiguration.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = modularityOptimizationAlgorithmConfiguration.getRelationKindsForCompute();
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+
+        String maxIterationsAttributeCQLPart = "  maxIterations: " + modularityOptimizationAlgorithmConfiguration.getMaxIterations()+",\n";
+        String toleranceAttributeCQLPart = "  tolerance: " + modularityOptimizationAlgorithmConfiguration.getTolerance()+",\n";
+        String consecutiveIdsAttributeCQLPart = "  consecutiveIds: " + modularityOptimizationAlgorithmConfiguration.isConsecutiveIds()+",\n";
+        String relationshipWeightAttributeCQLPart = modularityOptimizationAlgorithmConfiguration.getRelationshipWeightAttribute() != null ?
+                "  relationshipWeightProperty: '"+ modularityOptimizationAlgorithmConfiguration.getRelationshipWeightAttribute()+"',\n" : "";
+        String seedPropertyAttributeCQLPart = modularityOptimizationAlgorithmConfiguration.getSeedProperty() != null ?
+                "  seedProperty: '"+modularityOptimizationAlgorithmConfiguration.getSeedProperty()+"',\n" : "";
+
+        String orderCQLPart = modularityOptimizationAlgorithmConfiguration.getCommunityIdSortingLogic()!= null ?
+                "ORDER BY communityId "+ modularityOptimizationAlgorithmConfiguration.getCommunityIdSortingLogic().toString() : "";
+
+        String cypherProcedureString =
+                "CALL gds.beta.modularityOptimization.stream('"+graphName+"', {\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
+                        maxIterationsAttributeCQLPart +
+                        toleranceAttributeCQLPart +
+                        consecutiveIdsAttributeCQLPart +
+                        relationshipWeightAttributeCQLPart +
+                        seedPropertyAttributeCQLPart +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD nodeId, communityId\n" +
+                        "RETURN nodeId AS entityUID, communityId\n" +
+                        orderCQLPart+
+                        getReturnDataControlLogic(modularityOptimizationAlgorithmConfiguration);
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        ModularityOptimizationAlgorithmResult modularityOptimizationAlgorithmResult = new ModularityOptimizationAlgorithmResult(graphName,modularityOptimizationAlgorithmConfig);
+        List<CommunityDetectionResult> modularityOptimizationCommunitiesResultList = modularityOptimizationAlgorithmResult.getModularityOptimizationCommunities();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityAUID = nodeRecord.get("entityUID").asLong();
+                    int colorValue = nodeRecord.get("communityId").asNumber().intValue();
+                    modularityOptimizationCommunitiesResultList.add(new CommunityDetectionResult(""+entityAUID,colorValue));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            modularityOptimizationAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return modularityOptimizationAlgorithmResult;
         } catch(org.neo4j.driver.exceptions.ClientException e){
             CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
             e1.setCauseMessage(e.getMessage());

@@ -12,7 +12,7 @@ public class K1ColoringAlgorithmResult {
     private K1ColoringAlgorithmConfig k1ColoringAlgorithmConfig;
     private Date algorithmExecuteStartTime;
     private Date algorithmExecuteEndTime;
-    private List<EntityAnalyzeResult> k1Colors;
+    private List<CommunityDetectionResult> k1Colors;
 
     public K1ColoringAlgorithmResult(String graphName, K1ColoringAlgorithmConfig k1ColoringAlgorithmConfig){
         this.graphName = graphName;
@@ -41,7 +41,7 @@ public class K1ColoringAlgorithmResult {
         this.algorithmExecuteEndTime = algorithmExecuteEndTime;
     }
 
-    public List<EntityAnalyzeResult> getK1Colors() {
+    public List<CommunityDetectionResult> getK1Colors() {
         return k1Colors;
     }
 }
