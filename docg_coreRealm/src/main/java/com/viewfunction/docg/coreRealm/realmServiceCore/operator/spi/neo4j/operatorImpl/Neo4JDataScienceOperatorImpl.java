@@ -1233,7 +1233,63 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         */
         checkGraphExistence(graphName);
 
-        return null;
+        K1ColoringAlgorithmConfig k1ColoringAlgorithmConfiguration = k1ColoringAlgorithmConfig != null ?
+                k1ColoringAlgorithmConfig : new K1ColoringAlgorithmConfig();
+        Set<String> conceptionKindsForCompute = k1ColoringAlgorithmConfiguration.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = k1ColoringAlgorithmConfiguration.getRelationKindsForCompute();
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+
+        String maxIterationsAttributeCQLPart = "  maxIterations: " + k1ColoringAlgorithmConfiguration.getMaxIterations()+",\n";
+        String orderCQLPart = k1ColoringAlgorithmConfiguration.getColorSortingLogic()!= null ?
+                "ORDER BY color "+ k1ColoringAlgorithmConfiguration.getColorSortingLogic().toString() : "";
+
+        String cypherProcedureString =
+                "CALL gds.beta.k1coloring.stream('"+graphName+"', {\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
+                        maxIterationsAttributeCQLPart +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD nodeId, color\n" +
+                        "RETURN nodeId AS entityUID, color\n" +
+                        orderCQLPart+
+                        getReturnDataControlLogic(k1ColoringAlgorithmConfiguration);
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        K1ColoringAlgorithmResult k1ColoringAlgorithmResult = new K1ColoringAlgorithmResult(graphName,k1ColoringAlgorithmConfig);
+        List<EntityAnalyzeResult> k1ColorResultList = k1ColoringAlgorithmResult.getK1Colors();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityAUID = nodeRecord.get("entityUID").asLong();
+                    float colorValue = nodeRecord.get("color").asNumber().intValue();
+                    k1ColorResultList.add(new EntityAnalyzeResult(""+entityAUID,colorValue,"color"));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            k1ColoringAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return k1ColoringAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
