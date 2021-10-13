@@ -1,5 +1,6 @@
-package com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig;
+package com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig.LocalClusteringCoefficientAlgorithmConfig;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.EntityAnalyzeResult;
 
 import java.util.ArrayList;
