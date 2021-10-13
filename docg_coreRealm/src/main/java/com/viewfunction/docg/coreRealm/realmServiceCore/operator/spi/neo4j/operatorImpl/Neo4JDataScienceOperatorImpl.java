@@ -778,7 +778,73 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         */
         checkGraphExistence(graphName);
 
-        return null;
+        if(_CELFInfluenceMaximizationAlgorithmConfig == null || _CELFInfluenceMaximizationAlgorithmConfig.getSeedSetSize() <= 0){
+            logger.error("SeedSetSize is required and must great than 0 ");
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("SeedSetSize is required and must great than 0");
+            throw e;
+        }
+
+        Set<String> conceptionKindsForCompute = _CELFInfluenceMaximizationAlgorithmConfig.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = _CELFInfluenceMaximizationAlgorithmConfig.getRelationKindsForCompute();
+
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+
+        String seedSetSizeAttributeCQLPart =
+                "  seedSetSize: " + _CELFInfluenceMaximizationAlgorithmConfig.getSeedSetSize()+",\n";
+        String monteCarloSimulationsAttributeCQLPart =
+                "  monteCarloSimulations: " + _CELFInfluenceMaximizationAlgorithmConfig.getMonteCarloSimulations()+",\n";
+        String propagationProbabilityAttributeCQLPart =
+                "  propagationProbability: " + _CELFInfluenceMaximizationAlgorithmConfig.getPropagationProbability()+",\n";
+
+        String cypherProcedureString =
+                "CALL gds.alpha.influenceMaximization.celf.stream('"+graphName+"', {\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
+                        seedSetSizeAttributeCQLPart +
+                        monteCarloSimulationsAttributeCQLPart +
+                        propagationProbabilityAttributeCQLPart +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD nodeId, spread\n" +
+                        "RETURN nodeId AS entityUID, spread" ;
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        CELFInfluenceMaximizationAlgorithmResult _CELFInfluenceMaximizationAlgorithmResult = new CELFInfluenceMaximizationAlgorithmResult(graphName,_CELFInfluenceMaximizationAlgorithmConfig);
+        List<EntityAnalyzeResult> influenceMaximizationSpreadsList = _CELFInfluenceMaximizationAlgorithmResult.getInfluenceMaximizationSpreads();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityUID = nodeRecord.get("entityUID").asLong();
+                    double spread = nodeRecord.get("spread").asNumber().doubleValue();
+
+                    influenceMaximizationSpreadsList.add(new EntityAnalyzeResult(""+entityUID,spread,"spread"));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            _CELFInfluenceMaximizationAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return _CELFInfluenceMaximizationAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override

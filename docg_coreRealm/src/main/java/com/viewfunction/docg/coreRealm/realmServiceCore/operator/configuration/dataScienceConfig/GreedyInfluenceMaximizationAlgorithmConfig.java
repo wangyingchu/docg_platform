@@ -1,6 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig;
 
-public class GreedyInfluenceMaximizationAlgorithmConfig extends DataScienceBaseAlgorithmConfig{
+public class GreedyInfluenceMaximizationAlgorithmConfig extends DataScienceBaseAlgorithmConfig {
 
     private int seedSetSize;
     private int monteCarloSimulations = 1000;
