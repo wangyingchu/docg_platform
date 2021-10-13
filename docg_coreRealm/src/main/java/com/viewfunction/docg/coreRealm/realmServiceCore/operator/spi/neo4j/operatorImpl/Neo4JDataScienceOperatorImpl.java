@@ -1087,6 +1087,17 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
     }
 
     @Override
+    public ApproximateMaximumKCutAlgorithmResult executeApproximateMaximumKCutAlgorithm(String graphName, ApproximateMaximumKCutAlgorithmConfig approximateMaximumKCutAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/alpha/approx-max-k-cut/
+        */
+        checkGraphExistence(graphName);
+
+        return null;
+    }
+
+    @Override
     public WeaklyConnectedComponentsAlgorithmResult executeWeaklyConnectedComponentsAlgorithm(String graphName, WeaklyConnectedComponentsAlgorithmConfig weaklyConnectedComponentsAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         /*
         Example:

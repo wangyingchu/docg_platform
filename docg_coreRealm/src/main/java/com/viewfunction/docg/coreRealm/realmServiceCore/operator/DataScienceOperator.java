@@ -297,6 +297,16 @@ public interface DataScienceOperator {
     public SpeakerListenerLabelPropagationAlgorithmResult executeSpeakerListenerLabelPropagationAlgorithm(String graphName, SpeakerListenerLabelPropagationAlgorithmConfig speakerListenerLabelPropagationAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
     /**
+     * 在指定名称的可分析图上执行 Approximate Maximum k-cut 算法
+     *
+     *  @param graphName String 可分析图名称
+     *  @param approximateMaximumKCutAlgorithmConfig ApproximateMaximumKCutAlgorithmConfig Approximate Maximum k-cut算法执行配置参数
+     *
+     * @return Approximate Maximum k-cut算法计算结果集
+     */
+    public ApproximateMaximumKCutAlgorithmResult executeApproximateMaximumKCutAlgorithm(String graphName, ApproximateMaximumKCutAlgorithmConfig approximateMaximumKCutAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
+    /**
      * 在指定名称的可分析图上执行 WeaklyConnectedComponents 算法
      *
      *  @param graphName String 可分析图名称
