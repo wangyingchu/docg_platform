@@ -1088,6 +1088,71 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
     }
 
     @Override
+    public StronglyConnectedComponentsAlgorithmResult executeStronglyConnectedComponentsAlgorithm(String graphName, StronglyConnectedComponentsAlgorithmConfig stronglyConnectedComponentsAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/strongly-connected-components/
+        */
+        checkGraphExistence(graphName);
+
+        StronglyConnectedComponentsAlgorithmConfig stronglyConnectedComponentsAlgorithmConfiguration = stronglyConnectedComponentsAlgorithmConfig != null ?
+                stronglyConnectedComponentsAlgorithmConfig : new StronglyConnectedComponentsAlgorithmConfig();
+        Set<String> conceptionKindsForCompute = stronglyConnectedComponentsAlgorithmConfiguration.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = stronglyConnectedComponentsAlgorithmConfiguration.getRelationKindsForCompute();
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+
+        String orderCQLPart = stronglyConnectedComponentsAlgorithmConfiguration.getCommunityIdSortingLogic()!= null ?
+                "ORDER BY componentId "+stronglyConnectedComponentsAlgorithmConfiguration.getCommunityIdSortingLogic().toString() : "";
+
+        String cypherProcedureString =
+                "CALL gds.alpha.scc.stream('"+graphName+"', {\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD nodeId, componentId\n" +
+                        "RETURN nodeId AS entityUID, componentId\n" +
+                        orderCQLPart+
+                        getReturnDataControlLogic(stronglyConnectedComponentsAlgorithmConfiguration);
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        StronglyConnectedComponentsAlgorithmResult stronglyConnectedComponentsAlgorithmResult = new StronglyConnectedComponentsAlgorithmResult(graphName,stronglyConnectedComponentsAlgorithmConfig);
+        List<ComponentDetectionResult> communityDetectionResultList = stronglyConnectedComponentsAlgorithmResult.getSCCComponents();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityUID = nodeRecord.get("entityUID").asLong();
+                    int communityId = nodeRecord.get("componentId").asNumber().intValue();
+                    communityDetectionResultList.add(new ComponentDetectionResult(""+entityUID,communityId));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            stronglyConnectedComponentsAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return stronglyConnectedComponentsAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
     public TriangleCountAlgorithmResult executeTriangleCountAlgorithm(String graphName, TriangleCountAlgorithmConfig triangleCountAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         /*
         Example:

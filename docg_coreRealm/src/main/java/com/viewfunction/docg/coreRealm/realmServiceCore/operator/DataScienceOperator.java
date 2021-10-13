@@ -297,6 +297,16 @@ public interface DataScienceOperator {
     public WeaklyConnectedComponentsAlgorithmResult executeWeaklyConnectedComponentsAlgorithm(String graphName, WeaklyConnectedComponentsAlgorithmConfig weaklyConnectedComponentsAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
     /**
+     * 在指定名称的可分析图上执行 StronglyConnectedComponents 算法
+     *
+     *  @param graphName String 可分析图名称
+     *  @param stronglyConnectedComponentsAlgorithmConfig StronglyConnectedComponentsAlgorithmConfig StronglyConnectedComponents算法执行配置参数
+     *
+     * @return StronglyConnectedComponents算法计算结果集
+     */
+    public StronglyConnectedComponentsAlgorithmResult executeStronglyConnectedComponentsAlgorithm(String graphName, StronglyConnectedComponentsAlgorithmConfig stronglyConnectedComponentsAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
+    /**
      * 在指定名称的可分析图上执行 TriangleCount 算法
      *
      *  @param graphName String 可分析图名称
