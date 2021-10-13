@@ -1011,6 +1011,82 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
     }
 
     @Override
+    public SpeakerListenerLabelPropagationAlgorithmResult executeSpeakerListenerLabelPropagationAlgorithm(String graphName, SpeakerListenerLabelPropagationAlgorithmConfig speakerListenerLabelPropagationAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/sllpa/
+        */
+        checkGraphExistence(graphName);
+
+        if(speakerListenerLabelPropagationAlgorithmConfig == null || speakerListenerLabelPropagationAlgorithmConfig.getMaxIterations() <= 0){
+            logger.error("maxIterations is required and must great than 0 ");
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("maxIterations is required and must great than 0");
+            throw e;
+        }
+
+        Set<String> conceptionKindsForCompute = speakerListenerLabelPropagationAlgorithmConfig.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = speakerListenerLabelPropagationAlgorithmConfig.getRelationKindsForCompute();
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+        String maxIterationsAttributeCQLPart = "  maxIterations: " + speakerListenerLabelPropagationAlgorithmConfig.getMaxIterations()+",\n";
+        String minAssociationStrengthAttributeCQLPart = "  minAssociationStrength: " + speakerListenerLabelPropagationAlgorithmConfig.getMinAssociationStrength()+",\n";
+
+        String orderCQLPart = speakerListenerLabelPropagationAlgorithmConfig.getCommunityIdsSortingLogic()!= null ?
+                "ORDER BY values.communityIds " + speakerListenerLabelPropagationAlgorithmConfig.getCommunityIdsSortingLogic().toString() : "";
+
+        String cypherProcedureString =
+                "CALL gds.alpha.sllpa.stream('"+graphName+"', {\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
+                        maxIterationsAttributeCQLPart +
+                        minAssociationStrengthAttributeCQLPart +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD nodeId, values\n" +
+                        "RETURN nodeId AS entityUID, values\n" +
+                        orderCQLPart+
+                        getReturnDataControlLogic(speakerListenerLabelPropagationAlgorithmConfig);
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        SpeakerListenerLabelPropagationAlgorithmResult speakerListenerLabelPropagationAlgorithmResult = new SpeakerListenerLabelPropagationAlgorithmResult(graphName,speakerListenerLabelPropagationAlgorithmConfig);
+        List<CommunityDetectionResult> communityDetectionResultList = speakerListenerLabelPropagationAlgorithmResult.getLabelPropagationCommunities();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityUID = nodeRecord.get("entityUID").asLong();
+                    List<Integer> communityIds = (List<Integer>)nodeRecord.get("values").asMap().get("communityIds");
+                    Set<Integer> communityIdsSet = new HashSet<>();
+                    communityIdsSet.addAll(communityIds);
+                    communityDetectionResultList.add(new CommunityDetectionResult(""+entityUID,communityIdsSet));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            speakerListenerLabelPropagationAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return speakerListenerLabelPropagationAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
     public WeaklyConnectedComponentsAlgorithmResult executeWeaklyConnectedComponentsAlgorithm(String graphName, WeaklyConnectedComponentsAlgorithmConfig weaklyConnectedComponentsAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         /*
         Example:

@@ -4039,6 +4039,16 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
     public LabelPropagationAlgorithmResult executeLabelPropagationAlgorithm(String graphName, LabelPropagationAlgorithmConfig labelPropagationAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
     /**
+     * 在指定名称的可分析图上执行 Speaker-Listener LabelPropagation 算法
+     *
+     *  @param graphName String 可分析图名称
+     *  @param speakerListenerLabelPropagationAlgorithmConfig SpeakerListenerLabelPropagationAlgorithmConfig Speaker-Listener LabelPropagation算法执行配置参数
+     *
+     * @return Speaker-Listener LabelPropagation算法计算结果集
+     */
+    public SpeakerListenerLabelPropagationAlgorithmResult executeSpeakerListenerLabelPropagationAlgorithm(String graphName, SpeakerListenerLabelPropagationAlgorithmConfig speakerListenerLabelPropagationAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
+    /**
      * 在指定名称的可分析图上执行 WeaklyConnectedComponents 算法
      *
      *  @param graphName String 可分析图名称
