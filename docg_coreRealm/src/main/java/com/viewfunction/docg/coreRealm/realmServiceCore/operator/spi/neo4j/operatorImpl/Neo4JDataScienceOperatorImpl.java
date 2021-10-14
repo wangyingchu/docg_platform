@@ -1094,7 +1094,71 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         */
         checkGraphExistence(graphName);
 
-        return null;
+        ApproximateMaximumKCutAlgorithmConfig approximateMaximumKCutAlgorithmConfiguration = approximateMaximumKCutAlgorithmConfig != null ?
+                approximateMaximumKCutAlgorithmConfig : new ApproximateMaximumKCutAlgorithmConfig();
+        Set<String> conceptionKindsForCompute = approximateMaximumKCutAlgorithmConfiguration.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = approximateMaximumKCutAlgorithmConfiguration.getRelationKindsForCompute();
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+
+        String relationshipWeightAttributeCQLPart = approximateMaximumKCutAlgorithmConfiguration.getRelationshipWeightAttribute() != null ?
+                "  relationshipWeightProperty: '"+approximateMaximumKCutAlgorithmConfiguration.getRelationshipWeightAttribute()+"',\n" : "";
+        String kAttributeCQLPart = "  k: " + approximateMaximumKCutAlgorithmConfiguration.getK()+",\n";
+        String iterationsAttributeCQLPart = "  iterations: " + approximateMaximumKCutAlgorithmConfiguration.getIterations()+",\n";
+        String vnsMaxNeighborhoodOrderAttributeCQLPart = "  vnsMaxNeighborhoodOrder: " + approximateMaximumKCutAlgorithmConfiguration.getVnsMaxNeighborhoodOrder()+",\n";
+
+        String orderCQLPart = approximateMaximumKCutAlgorithmConfiguration.getCommunityIdSortingLogic()!= null ?
+                "ORDER BY communityId " + approximateMaximumKCutAlgorithmConfiguration.getCommunityIdSortingLogic().toString() : "";
+
+        String cypherProcedureString =
+                "CALL gds.alpha.maxkcut.stream('"+graphName+"', {\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
+                        relationshipWeightAttributeCQLPart +
+                        kAttributeCQLPart +
+                        iterationsAttributeCQLPart +
+                        vnsMaxNeighborhoodOrderAttributeCQLPart +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD nodeId, communityId\n" +
+                        "RETURN nodeId AS entityUID, communityId\n" +
+                        orderCQLPart+
+                        getReturnDataControlLogic(approximateMaximumKCutAlgorithmConfiguration);
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        ApproximateMaximumKCutAlgorithmResult approximateMaximumKCutAlgorithmResult = new ApproximateMaximumKCutAlgorithmResult(graphName,approximateMaximumKCutAlgorithmConfig);
+        List<CommunityDetectionResult> communityDetectionResultList = approximateMaximumKCutAlgorithmResult.getApproximateMaximumKCutCommunities();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityUID = nodeRecord.get("entityUID").asLong();
+                    int communityId = nodeRecord.get("communityId").asNumber().intValue();
+                    communityDetectionResultList.add(new CommunityDetectionResult(""+entityUID,communityId));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            approximateMaximumKCutAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return approximateMaximumKCutAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
