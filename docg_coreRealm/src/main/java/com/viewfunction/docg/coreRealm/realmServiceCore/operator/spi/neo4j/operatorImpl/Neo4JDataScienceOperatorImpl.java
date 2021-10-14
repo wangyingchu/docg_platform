@@ -1669,6 +1669,93 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
     }
 
     @Override
+    public KNearestNeighborsAlgorithmResult executeKNearestNeighborsAlgorithm(String graphName, KNearestNeighborsAlgorithmConfig kNearestNeighborsAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/knn/
+        */
+        checkGraphExistence(graphName);
+
+        if(kNearestNeighborsAlgorithmConfig == null || kNearestNeighborsAlgorithmConfig.getNodeWeightAttribute() == null){
+            logger.error("nodeWeightAttribute is required");
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("nodeWeightAttribute is required");
+            throw e;
+        }
+
+        Set<String> conceptionKindsForCompute = kNearestNeighborsAlgorithmConfig.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = kNearestNeighborsAlgorithmConfig.getRelationKindsForCompute();
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+
+        String nodeWeightAttributeCQLPart = kNearestNeighborsAlgorithmConfig.getNodeWeightAttribute() != null ?
+                "  nodeWeightProperty: '"+ kNearestNeighborsAlgorithmConfig.getNodeWeightAttribute()+"',\n" : "";
+        String topKAttributeCQLPart = "  topK: " + kNearestNeighborsAlgorithmConfig.getTopK()+",\n";
+        String sampleRateAttributeCQLPart = "  sampleRate: " + kNearestNeighborsAlgorithmConfig.getSampleRate()+",\n";
+        String deltaThresholdAttributeCQLPart = "  deltaThreshold: " + kNearestNeighborsAlgorithmConfig.getDeltaThreshold()+",\n";
+        String maxIterationsAttributeCQLPart = "  maxIterations: " + kNearestNeighborsAlgorithmConfig.getMaxIterations()+",\n";
+        String randomJoinsAttributeCQLPart = "  randomJoins: " + kNearestNeighborsAlgorithmConfig.getRandomJoins()+",\n";
+        String randomSeedAttributeCQLPart = "  randomSeed: " + kNearestNeighborsAlgorithmConfig.getRandomSeed()+",\n";
+
+        String orderCQLPart = kNearestNeighborsAlgorithmConfig.getSimilaritySortingLogic()!= null ?
+                "ORDER BY similarity "+ kNearestNeighborsAlgorithmConfig.getSimilaritySortingLogic().toString() : "";
+
+        String cypherProcedureString =
+                "CALL gds.beta.knn.stream('"+graphName+"', {\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
+                        nodeWeightAttributeCQLPart +
+                        topKAttributeCQLPart +
+                        sampleRateAttributeCQLPart +
+                        deltaThresholdAttributeCQLPart +
+                        maxIterationsAttributeCQLPart +
+                        randomJoinsAttributeCQLPart +
+                        randomSeedAttributeCQLPart +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD node1, node2, similarity\n" +
+                        "RETURN node1 AS entityAUID, node2 AS entityBUID, similarity\n" +
+                        orderCQLPart+
+                        getReturnDataControlLogic(kNearestNeighborsAlgorithmConfig);
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        KNearestNeighborsAlgorithmResult kNearestNeighborsAlgorithmResult = new KNearestNeighborsAlgorithmResult(graphName,kNearestNeighborsAlgorithmConfig);
+        List<SimilarityDetectionResult> similarityDetectionResultList = kNearestNeighborsAlgorithmResult.getNodeSimilarityScores();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityAUID = nodeRecord.get("entityAUID").asLong();
+                    long entityBUID = nodeRecord.get("entityBUID").asLong();
+                    float similarityScore = nodeRecord.get("similarity").asNumber().floatValue();
+                    similarityDetectionResultList.add(new SimilarityDetectionResult(""+entityAUID,""+entityBUID,similarityScore));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            kNearestNeighborsAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return kNearestNeighborsAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
     public DijkstraSourceTargetAlgorithmResult executeDijkstraSourceTargetAlgorithm(String graphName, DijkstraSourceTargetAlgorithmConfig dijkstraSourceTargetAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         /*
         Example:
