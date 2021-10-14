@@ -1669,22 +1669,22 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
     }
 
     @Override
-    public KNearestNeighborsAlgorithmResult executeKNearestNeighborsAlgorithm(String graphName, KNearestNeighborsAlgorithmConfig kNearestNeighborsAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+    public KNearestNeighborsSimilarityAlgorithmResult executeKNearestNeighborsSimilarityAlgorithm(String graphName, KNearestNeighborsSimilarityAlgorithmConfig kNearestNeighborsSimilarityAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         /*
         Example:
         https://neo4j.com/docs/graph-data-science/current/algorithms/knn/
         */
         checkGraphExistence(graphName);
 
-        if(kNearestNeighborsAlgorithmConfig == null || kNearestNeighborsAlgorithmConfig.getNodeWeightAttribute() == null){
+        if(kNearestNeighborsSimilarityAlgorithmConfig == null || kNearestNeighborsSimilarityAlgorithmConfig.getNodeWeightAttribute() == null){
             logger.error("nodeWeightAttribute is required");
             CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
             e.setCauseMessage("nodeWeightAttribute is required");
             throw e;
         }
 
-        Set<String> conceptionKindsForCompute = kNearestNeighborsAlgorithmConfig.getConceptionKindsForCompute();
-        Set<String> relationKindsForCompute = kNearestNeighborsAlgorithmConfig.getRelationKindsForCompute();
+        Set<String> conceptionKindsForCompute = kNearestNeighborsSimilarityAlgorithmConfig.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = kNearestNeighborsSimilarityAlgorithmConfig.getRelationKindsForCompute();
         String nodeLabelsCQLPart = "";
         if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
             nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
@@ -1694,17 +1694,17 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
             relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
         }
 
-        String nodeWeightAttributeCQLPart = kNearestNeighborsAlgorithmConfig.getNodeWeightAttribute() != null ?
-                "  nodeWeightProperty: '"+ kNearestNeighborsAlgorithmConfig.getNodeWeightAttribute()+"',\n" : "";
-        String topKAttributeCQLPart = "  topK: " + kNearestNeighborsAlgorithmConfig.getTopK()+",\n";
-        String sampleRateAttributeCQLPart = "  sampleRate: " + kNearestNeighborsAlgorithmConfig.getSampleRate()+",\n";
-        String deltaThresholdAttributeCQLPart = "  deltaThreshold: " + kNearestNeighborsAlgorithmConfig.getDeltaThreshold()+",\n";
-        String maxIterationsAttributeCQLPart = "  maxIterations: " + kNearestNeighborsAlgorithmConfig.getMaxIterations()+",\n";
-        String randomJoinsAttributeCQLPart = "  randomJoins: " + kNearestNeighborsAlgorithmConfig.getRandomJoins()+",\n";
-        String randomSeedAttributeCQLPart = "  randomSeed: " + kNearestNeighborsAlgorithmConfig.getRandomSeed()+",\n";
+        String nodeWeightAttributeCQLPart = kNearestNeighborsSimilarityAlgorithmConfig.getNodeWeightAttribute() != null ?
+                "  nodeWeightProperty: '"+ kNearestNeighborsSimilarityAlgorithmConfig.getNodeWeightAttribute()+"',\n" : "";
+        String topKAttributeCQLPart = "  topK: " + kNearestNeighborsSimilarityAlgorithmConfig.getTopK()+",\n";
+        String sampleRateAttributeCQLPart = "  sampleRate: " + kNearestNeighborsSimilarityAlgorithmConfig.getSampleRate()+",\n";
+        String deltaThresholdAttributeCQLPart = "  deltaThreshold: " + kNearestNeighborsSimilarityAlgorithmConfig.getDeltaThreshold()+",\n";
+        String maxIterationsAttributeCQLPart = "  maxIterations: " + kNearestNeighborsSimilarityAlgorithmConfig.getMaxIterations()+",\n";
+        String randomJoinsAttributeCQLPart = "  randomJoins: " + kNearestNeighborsSimilarityAlgorithmConfig.getRandomJoins()+",\n";
+        String randomSeedAttributeCQLPart = "  randomSeed: " + kNearestNeighborsSimilarityAlgorithmConfig.getRandomSeed()+",\n";
 
-        String orderCQLPart = kNearestNeighborsAlgorithmConfig.getSimilaritySortingLogic()!= null ?
-                "ORDER BY similarity "+ kNearestNeighborsAlgorithmConfig.getSimilaritySortingLogic().toString() : "";
+        String orderCQLPart = kNearestNeighborsSimilarityAlgorithmConfig.getSimilaritySortingLogic()!= null ?
+                "ORDER BY similarity "+ kNearestNeighborsSimilarityAlgorithmConfig.getSimilaritySortingLogic().toString() : "";
 
         String cypherProcedureString =
                 "CALL gds.beta.knn.stream('"+graphName+"', {\n" +
@@ -1722,11 +1722,11 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
                         "YIELD node1, node2, similarity\n" +
                         "RETURN node1 AS entityAUID, node2 AS entityBUID, similarity\n" +
                         orderCQLPart+
-                        getReturnDataControlLogic(kNearestNeighborsAlgorithmConfig);
+                        getReturnDataControlLogic(kNearestNeighborsSimilarityAlgorithmConfig);
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
-        KNearestNeighborsAlgorithmResult kNearestNeighborsAlgorithmResult = new KNearestNeighborsAlgorithmResult(graphName,kNearestNeighborsAlgorithmConfig);
-        List<SimilarityDetectionResult> similarityDetectionResultList = kNearestNeighborsAlgorithmResult.getNodeSimilarityScores();
+        KNearestNeighborsSimilarityAlgorithmResult kNearestNeighborsSimilarityAlgorithmResult = new KNearestNeighborsSimilarityAlgorithmResult(graphName, kNearestNeighborsSimilarityAlgorithmConfig);
+        List<SimilarityDetectionResult> similarityDetectionResultList = kNearestNeighborsSimilarityAlgorithmResult.getNodeSimilarityScores();
 
         DataTransformer<Object> dataTransformer = new DataTransformer() {
             @Override
@@ -1744,8 +1744,8 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
             workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
-            kNearestNeighborsAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
-            return kNearestNeighborsAlgorithmResult;
+            kNearestNeighborsSimilarityAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return kNearestNeighborsSimilarityAlgorithmResult;
         } catch(org.neo4j.driver.exceptions.ClientException e){
             CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
             e1.setCauseMessage(e.getMessage());

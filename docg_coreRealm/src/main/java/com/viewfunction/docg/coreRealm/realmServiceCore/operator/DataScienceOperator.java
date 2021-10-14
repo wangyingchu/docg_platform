@@ -377,14 +377,14 @@ public interface DataScienceOperator {
     public NodeSimilarityAlgorithmResult executeNodeSimilarityAlgorithm(String graphName, NodeSimilarityAlgorithmConfig nodeSimilarityAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
     /**
-     * 在指定名称的可分析图上执行 K-Nearest Neighbors (KNN)  算法
+     * 在指定名称的可分析图上执行 K-Nearest Neighbors (KNN) Similarity 算法
      *
      *  @param graphName String 可分析图名称
-     *  @param kNearestNeighborsAlgorithmConfig KNearestNeighborsAlgorithmConfig K-Nearest Neighbors (KNN) 算法执行配置参数
+     *  @param kNearestNeighborsSimilarityAlgorithmConfig KNearestNeighborsSimilarityAlgorithmConfig K-Nearest Neighbors (KNN) Similarity算法执行配置参数
      *
-     * @return K-Nearest Neighbors (KNN) 算法计算结果集
+     * @return K-Nearest Neighbors (KNN) Similarity算法计算结果集
      */
-    public KNearestNeighborsAlgorithmResult executeKNearestNeighborsAlgorithm(String graphName, KNearestNeighborsAlgorithmConfig kNearestNeighborsAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+    public KNearestNeighborsSimilarityAlgorithmResult executeKNearestNeighborsSimilarityAlgorithm(String graphName, KNearestNeighborsSimilarityAlgorithmConfig kNearestNeighborsSimilarityAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
     /**
      * 在指定名称的可分析图上执行 DijkstraSourceTarget 算法

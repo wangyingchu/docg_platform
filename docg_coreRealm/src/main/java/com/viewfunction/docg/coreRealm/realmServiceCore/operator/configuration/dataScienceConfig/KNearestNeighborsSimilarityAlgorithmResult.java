@@ -6,17 +6,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class KNearestNeighborsAlgorithmResult {
+public class KNearestNeighborsSimilarityAlgorithmResult {
 
     private String graphName;
-    private KNearestNeighborsAlgorithmConfig kNearestNeighborsAlgorithmConfig;
+    private KNearestNeighborsSimilarityAlgorithmConfig kNearestNeighborsSimilarityAlgorithmConfig;
     private Date algorithmExecuteStartTime;
     private Date algorithmExecuteEndTime;
     private List<SimilarityDetectionResult> similarityDetectionResult;
 
-    public KNearestNeighborsAlgorithmResult(String graphName, KNearestNeighborsAlgorithmConfig kNearestNeighborsAlgorithmConfig){
+    public KNearestNeighborsSimilarityAlgorithmResult(String graphName, KNearestNeighborsSimilarityAlgorithmConfig kNearestNeighborsSimilarityAlgorithmConfig){
         this.graphName = graphName;
-        this.kNearestNeighborsAlgorithmConfig = kNearestNeighborsAlgorithmConfig;
+        this.kNearestNeighborsSimilarityAlgorithmConfig = kNearestNeighborsSimilarityAlgorithmConfig;
         this.similarityDetectionResult = new ArrayList<>();
         this.algorithmExecuteStartTime = new Date();
     }
@@ -25,8 +25,8 @@ public class KNearestNeighborsAlgorithmResult {
         return graphName;
     }
 
-    public KNearestNeighborsAlgorithmConfig getKNearestNeighborsAlgorithmConfig() {
-        return kNearestNeighborsAlgorithmConfig;
+    public KNearestNeighborsSimilarityAlgorithmConfig getKNearestNeighborsSimilarityAlgorithmConfig() {
+        return kNearestNeighborsSimilarityAlgorithmConfig;
     }
 
     public Date getAlgorithmExecuteStartTime() {

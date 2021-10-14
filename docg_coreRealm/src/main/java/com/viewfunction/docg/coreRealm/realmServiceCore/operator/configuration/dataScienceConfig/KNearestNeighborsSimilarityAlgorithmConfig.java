@@ -2,7 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
 
-public class KNearestNeighborsAlgorithmConfig extends ResultPaginationableConfig {
+public class KNearestNeighborsSimilarityAlgorithmConfig extends ResultPaginationableConfig {
 
     private String nodeWeightAttribute;
     private int topK = 10;
@@ -13,7 +13,7 @@ public class KNearestNeighborsAlgorithmConfig extends ResultPaginationableConfig
     private int randomSeed = -1;
     private DataScienceOperator.ValueSortingLogic valueSortingLogic;
 
-    public KNearestNeighborsAlgorithmConfig(String nodeWeightAttribute){
+    public KNearestNeighborsSimilarityAlgorithmConfig(String nodeWeightAttribute){
         this.nodeWeightAttribute = nodeWeightAttribute;
     }
 
