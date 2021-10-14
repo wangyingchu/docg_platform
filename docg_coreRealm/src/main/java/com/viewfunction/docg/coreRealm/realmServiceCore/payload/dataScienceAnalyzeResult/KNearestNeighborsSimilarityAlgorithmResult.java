@@ -1,6 +1,6 @@
-package com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig;
+package com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult;
 
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.SimilarityDetectionResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig.KNearestNeighborsSimilarityAlgorithmConfig;
 
 import java.util.ArrayList;
 import java.util.Date;
