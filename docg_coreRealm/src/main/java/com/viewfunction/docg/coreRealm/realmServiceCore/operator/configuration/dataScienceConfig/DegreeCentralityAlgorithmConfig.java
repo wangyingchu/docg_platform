@@ -2,7 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
 
-public class DegreeCentralityAlgorithmConfig extends ResultPaginationableConfig{
+public class DegreeCentralityAlgorithmConfig extends ResultPaginationableConfig {
 
     private DataScienceOperator.ComputeOrientation computeOrientation;
     private String relationshipWeightAttribute;
