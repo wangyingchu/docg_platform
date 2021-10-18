@@ -2,7 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
 
-public class ClosenessCentralityAlgorithmConfig extends ResultPaginationableConfig{
+public class ClosenessCentralityAlgorithmConfig extends ResultPaginationableConfig {
 
     private DataScienceOperator.ValueSortingLogic valueSortingLogic;
 
