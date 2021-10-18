@@ -2081,6 +2081,41 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         }
     }
 
+    @Override
+    public RandomWalkAlgorithmResult executeRandomWalkAlgorithm(String graphName, RandomWalkAlgorithmConfig randomWalkAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/alpha-algorithms/random-walk/
+        */
+        checkGraphExistence(graphName);
+
+        RandomWalkAlgorithmConfig randomWalkAlgorithmConfiguration = randomWalkAlgorithmConfig != null ?
+                randomWalkAlgorithmConfig : new RandomWalkAlgorithmConfig();
+        Set<String> conceptionKindsForCompute = randomWalkAlgorithmConfiguration.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = randomWalkAlgorithmConfiguration.getRelationKindsForCompute();
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+
+        String stepsPropertyStr = "  steps: "+ randomWalkAlgorithmConfiguration.getWalkSteps()+",\n";
+        String walksPropertyStr = "  walks: "+ randomWalkAlgorithmConfiguration.getWalksNumber()+",\n";
+        String modePropertyStr = "  mode: '"+ randomWalkAlgorithmConfiguration.getWalkStrategy()+"',\n";
+        String inOutPropertyStr = "  inOut: "+ randomWalkAlgorithmConfiguration.getNode2vecInOut()+",\n";
+        String returnPropertyStr = "  return: "+ randomWalkAlgorithmConfiguration.getNode2vecReturn()+",\n";
+
+
+        String startPropertyStr = "  start: "+ randomWalkAlgorithmConfiguration.getWalkSteps()+",\n";
+
+
+
+        return null;
+    }
+
     private PageRankAlgorithmResult doExecutePageRankAlgorithms(String graphName, Set<String> conceptionEntityUIDSet,PageRankAlgorithmConfig pageRankAlgorithmConfig) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException {
         /*
         Example:

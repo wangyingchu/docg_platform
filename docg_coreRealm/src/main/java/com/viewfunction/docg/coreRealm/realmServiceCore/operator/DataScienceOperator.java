@@ -425,4 +425,14 @@ public interface DataScienceOperator {
      * @return Yen's KShortestPath算法计算结果集
      */
     public YensKShortestPathAlgorithmResult executeYensKShortestPathAlgorithm(String graphName, YensKShortestPathAlgorithmConfig yensKShortestPathAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
+    /**
+     * 在指定名称的可分析图上执行 Random Walk 算法
+     *
+     *  @param graphName String 可分析图名称
+     *  @param randomWalkAlgorithmConfig RandomWalkAlgorithmConfig Random Walk算法执行配置参数
+     *
+     * @return Random Walk算法计算结果集
+     */
+    public RandomWalkAlgorithmResult executeRandomWalkAlgorithm(String graphName, RandomWalkAlgorithmConfig randomWalkAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 }
