@@ -2108,12 +2108,59 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         String inOutPropertyStr = "  inOut: "+ randomWalkAlgorithmConfiguration.getNode2vecInOut()+",\n";
         String returnPropertyStr = "  return: "+ randomWalkAlgorithmConfiguration.getNode2vecReturn()+",\n";
 
+        String startPropertyStr = "";
+        if(randomWalkAlgorithmConfiguration.getSourceConceptionEntityUIDs() != null &&
+                randomWalkAlgorithmConfiguration.getSourceConceptionEntityUIDs().size() > 0){
+            startPropertyStr = "  start: "+ randomWalkAlgorithmConfiguration.getSourceConceptionEntityUIDs().toString()+",\n";
 
-        String startPropertyStr = "  start: "+ randomWalkAlgorithmConfiguration.getWalkSteps()+",\n";
+        }
+        String cypherProcedureString =
+                "CALL gds.alpha.randomWalk.stream('"+graphName+"', {\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
+                        stepsPropertyStr +
+                        walksPropertyStr +
+                        modePropertyStr +
+                        inOutPropertyStr +
+                        returnPropertyStr +
+                        startPropertyStr +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD nodeIds,startNodeId\n" +
+                        "RETURN nodeIds,startNodeId\n" ;
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
+        RandomWalkAlgorithmResult randomWalkAlgorithmResult = new RandomWalkAlgorithmResult(graphName,randomWalkAlgorithmConfig);
+        List<PathWalkResult> pathWalkResultList = randomWalkAlgorithmResult.getRandomWalkPaths();
 
-
-        return null;
+        DataTransformer<Boolean> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    String startNodeId = ""+nodeRecord.get("startNodeId").asInt();
+                    List<String> footPrintList = new ArrayList<>();
+                    List nodeIdsList = nodeRecord.get("nodeIds").asList();
+                    for(Object currentId :nodeIdsList){
+                        footPrintList.add(""+currentId);
+                    }
+                    pathWalkResultList.add(new PathWalkResult(startNodeId,footPrintList));
+                }
+                return false;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            randomWalkAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return randomWalkAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     private PageRankAlgorithmResult doExecutePageRankAlgorithms(String graphName, Set<String> conceptionEntityUIDSet,PageRankAlgorithmConfig pageRankAlgorithmConfig) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException {

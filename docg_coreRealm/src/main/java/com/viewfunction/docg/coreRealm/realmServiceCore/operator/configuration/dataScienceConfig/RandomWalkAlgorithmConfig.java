@@ -1,21 +1,23 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig;
 
+import java.util.Set;
+
 public class RandomWalkAlgorithmConfig extends DataScienceBaseAlgorithmConfig {
 
     public enum WalkStrategy {random,node2vec}
-    private String sourceConceptionEntityUID;
+    private Set<String> sourceConceptionEntityUIDs;
     private int walkSteps = 10;
     private int walksNumber = 1;
     private WalkStrategy walkStrategy = WalkStrategy.random;
     private float node2vecInOut = 1.0f;
     private float node2vecReturn = 1.0f;
 
-    public String getSourceConceptionEntityUID() {
-        return sourceConceptionEntityUID;
+    public Set<String> getSourceConceptionEntityUIDs() {
+        return sourceConceptionEntityUIDs;
     }
 
-    public void setSourceConceptionEntityUID(String sourceConceptionEntityUID) {
-        this.sourceConceptionEntityUID = sourceConceptionEntityUID;
+    public void setSourceConceptionEntityUIDs(Set<String> sourceConceptionEntityUIDs) {
+        this.sourceConceptionEntityUIDs = sourceConceptionEntityUIDs;
     }
 
     public int getWalkSteps() {
