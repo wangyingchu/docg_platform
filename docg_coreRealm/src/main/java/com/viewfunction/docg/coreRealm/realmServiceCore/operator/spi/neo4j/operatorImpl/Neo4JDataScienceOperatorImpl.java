@@ -2171,9 +2171,72 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         */
         checkGraphExistence(graphName);
 
+        if(singleSourceShortestPathAlgorithmConfig == null || singleSourceShortestPathAlgorithmConfig.getSourceConceptionEntityUID() == null){
+            logger.error("SourceConceptionEntityUID is required",graphName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("SourceConceptionEntityUID is required");
+            throw e;
+        }
 
+        Set<String> conceptionKindsForCompute = singleSourceShortestPathAlgorithmConfig.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = singleSourceShortestPathAlgorithmConfig.getRelationKindsForCompute();
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
 
-        return null;
+        String relationshipWeightAttributeCQLPart = singleSourceShortestPathAlgorithmConfig.getRelationshipWeightAttribute() != null ?
+                "  relationshipWeightProperty: '"+singleSourceShortestPathAlgorithmConfig.getRelationshipWeightAttribute()+"',\n" : "";
+        String deltaPropertyStr = "  delta: "+ singleSourceShortestPathAlgorithmConfig.getDelta()+",\n";
+        String orderCQLPart = singleSourceShortestPathAlgorithmConfig.getDistanceSortingLogic() != null ?
+                "ORDER BY distance "+ singleSourceShortestPathAlgorithmConfig.getDistanceSortingLogic() : "";
+
+        String cypherProcedureString =
+                "MATCH (startNode) WHERE id(startNode)= "+singleSourceShortestPathAlgorithmConfig.getSourceConceptionEntityUID()+"\n" +
+                        "CALL gds.alpha.shortestPath.deltaStepping.stream('"+graphName+"', {\n" +
+                        "    startNode: startNode,\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
+                        relationshipWeightAttributeCQLPart +
+                        deltaPropertyStr +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD nodeId, distance\n" +
+                        "RETURN  nodeId, distance\n" +
+                        orderCQLPart+getReturnDataControlLogic(singleSourceShortestPathAlgorithmConfig);;
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        SingleSourceShortestPathAlgorithmResult singleSourceShortestPathAlgorithmResult = new SingleSourceShortestPathAlgorithmResult(graphName,singleSourceShortestPathAlgorithmConfig);
+        List<EntityAnalyzeResult> entityAnalyzeResultList = singleSourceShortestPathAlgorithmResult.getSingleSourceShortestPathDistances();
+
+        DataTransformer<Object> dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    long entityUID = nodeRecord.get("nodeId").asLong();
+                    double centralityWeight = nodeRecord.get("distance").asNumber().doubleValue();
+                    entityAnalyzeResultList.add(new EntityAnalyzeResult(""+entityUID,centralityWeight,"distance"));
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            singleSourceShortestPathAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return singleSourceShortestPathAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     private PageRankAlgorithmResult doExecutePageRankAlgorithms(String graphName, Set<String> conceptionEntityUIDSet,PageRankAlgorithmConfig pageRankAlgorithmConfig) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException {
