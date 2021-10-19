@@ -446,5 +446,13 @@ public interface DataScienceOperator {
      */
     public SingleSourceShortestPathAlgorithmResult executeSingleSourceShortestPathAlgorithm(String graphName, SingleSourceShortestPathAlgorithmConfig singleSourceShortestPathAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
-
+    /**
+     * 在指定名称的可分析图上执行 All Pairs Shortest Path (APSP)  算法
+     *
+     *  @param graphName String 可分析图名称
+     *  @param allPairsShortestPathAlgorithmConfig AllPairsShortestPathAlgorithmConfig All Pairs Shortest Path (APSP)算法执行配置参数
+     *
+     * @return All Pairs Shortest Path (APSP)算法计算结果集
+     */
+    public AllPairsShortestPathAlgorithmResult executeAllPairsShortestPathAlgorithm(String graphName, AllPairsShortestPathAlgorithmConfig allPairsShortestPathAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 }

@@ -2239,6 +2239,17 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         }
     }
 
+    @Override
+    public AllPairsShortestPathAlgorithmResult executeAllPairsShortestPathAlgorithm(String graphName, AllPairsShortestPathAlgorithmConfig allPairsShortestPathAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/alpha-algorithms/all-pairs-shortest-path/
+        */
+        checkGraphExistence(graphName);
+
+        return null;
+    }
+
     private PageRankAlgorithmResult doExecutePageRankAlgorithms(String graphName, Set<String> conceptionEntityUIDSet,PageRankAlgorithmConfig pageRankAlgorithmConfig) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException {
         /*
         Example:
