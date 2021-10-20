@@ -455,4 +455,18 @@ public interface DataScienceOperator {
      * @return All Pairs Shortest Path (APSP)算法计算结果集
      */
     public AllPairsShortestPathAlgorithmResult executeAllPairsShortestPathAlgorithm(String graphName, AllPairsShortestPathAlgorithmConfig allPairsShortestPathAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
+    /**
+     * 在指定名称的可分析图上执行 Breadth First Search (BFS)  算法
+     *
+     *  @param graphName String 可分析图名称
+     *  @param breadthFirstSearchAlgorithmConfig BreadthFirstSearchAlgorithmConfig Breadth First Search (BFS)算法执行配置参数
+     *
+     * @return Breadth First Search (BFS)算法计算结果集
+     */
+    public BreadthFirstSearchAlgorithmResult executeBreadthFirstSearchAlgorithm(String graphName, BreadthFirstSearchAlgorithmConfig breadthFirstSearchAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
+
+
+
 }

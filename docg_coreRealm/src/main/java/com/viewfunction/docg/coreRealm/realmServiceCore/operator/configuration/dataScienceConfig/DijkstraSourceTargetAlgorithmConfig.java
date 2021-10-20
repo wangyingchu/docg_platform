@@ -1,6 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig;
 
-public class DijkstraSourceTargetAlgorithmConfig extends DataScienceBaseAlgorithmConfig{
+public class DijkstraSourceTargetAlgorithmConfig extends DataScienceBaseAlgorithmConfig {
 
     private Integer maxPathNumber;
     private String relationshipWeightAttribute;
