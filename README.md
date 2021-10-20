@@ -4218,6 +4218,16 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      */
     public BreadthFirstSearchAlgorithmResult executeBreadthFirstSearchAlgorithm(String graphName, BreadthFirstSearchAlgorithmConfig breadthFirstSearchAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
+    /**
+     * 在指定名称的可分析图上执行 Depth First Search (DFS)  算法
+     *
+     *  @param graphName String 可分析图名称
+     *  @param depthFirstSearchAlgorithmConfig DepthFirstSearchAlgorithmConfig Depth First Search (DFS)算法执行配置参数
+     *
+     * @return Depth First Search (DFS)算法计算结果集
+     */
+    public DepthFirstSearchAlgorithmResult executeDepthFirstSearchAlgorithm(String graphName, DepthFirstSearchAlgorithmConfig depthFirstSearchAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
 ```
 
 #### ➜ 领域模型数据分析

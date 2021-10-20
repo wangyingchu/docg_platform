@@ -1,26 +1,18 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl;
 
-import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListAnalyzableGraphTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListPathFindingResultTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleAnalyzableGraphTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.configuration.dataScienceConfig.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AnalyzableGraph;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataScienceAnalyzeResult.*;
 
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionEntityImpl;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 
-import org.neo4j.driver.types.Node;
-import org.neo4j.driver.types.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -2361,47 +2353,82 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
                         "RETURN  path,startNodeId,nodeIds\n";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
-        GraphOperationExecutor globalGraphOperationExecutor = this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor();
         BreadthFirstSearchAlgorithmResult breadthFirstSearchAlgorithmResult = new BreadthFirstSearchAlgorithmResult(graphName,breadthFirstSearchAlgorithmConfig);
-        DataTransformer<Object> dataTransformer = new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-                while(result.hasNext()){
-                    Record nodeRecord = result.next();
-                    long sourceNodeId = nodeRecord.get("startNodeId").asLong();
-                    List targetNodeIds = nodeRecord.get("nodeIds").asList();
-                    Path resultPath = nodeRecord.get("path").asPath();
-
-                    String sourceNodeUID = ""+sourceNodeId;
-                    List<String> entityTraversalFootprints = new ArrayList<>();
-                    for(Object currentId:targetNodeIds){
-                        entityTraversalFootprints.add(""+currentId);
-                    }
-                    List<ConceptionEntity> conceptionEntityList = new ArrayList<>();
-
-                    Iterable<Node> entityNode = resultPath.nodes();
-                    for(Node currentEntityNode:entityNode){
-                        long nodeUID = currentEntityNode.id();
-                        List<String> allConceptionKindNames = Lists.newArrayList(currentEntityNode.labels());
-                        String conceptionEntityUID = ""+nodeUID;
-                        Neo4JConceptionEntityImpl neo4jConceptionEntityImpl =
-                                new Neo4JConceptionEntityImpl(allConceptionKindNames.get(0),conceptionEntityUID);
-                        neo4jConceptionEntityImpl.setAllConceptionKindNames(allConceptionKindNames);
-                        neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(globalGraphOperationExecutor);
-                        conceptionEntityList.add(neo4jConceptionEntityImpl);
-                    }
-                    EntityTraversalResult entityTraversalResult =
-                            new EntityTraversalResult(sourceNodeUID,entityTraversalFootprints,conceptionEntityList);
-                    breadthFirstSearchAlgorithmResult.setEntityTraversalResult(entityTraversalResult);
-                }
-                return null;
-            }
-        };
+        GraphOperationExecutor globalGraphOperationExecutor = this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor();
+        GetSingleEntityTraversalResultTransformer getSingleEntityTraversalResultTransformer = new GetSingleEntityTraversalResultTransformer(globalGraphOperationExecutor);
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
-            workingGraphOperationExecutor.executeRead(dataTransformer,cypherProcedureString);
+            Object executeResult = workingGraphOperationExecutor.executeRead(getSingleEntityTraversalResultTransformer,cypherProcedureString);
+            EntityTraversalResult entityTraversalResult = executeResult != null? (EntityTraversalResult)executeResult :null;
+            breadthFirstSearchAlgorithmResult.setEntityTraversalResult(entityTraversalResult);
             breadthFirstSearchAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
             return breadthFirstSearchAlgorithmResult;
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public DepthFirstSearchAlgorithmResult executeDepthFirstSearchAlgorithm(String graphName, DepthFirstSearchAlgorithmConfig depthFirstSearchAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/docs/graph-data-science/current/algorithms/dfs/
+        */
+        checkGraphExistence(graphName);
+
+        if(depthFirstSearchAlgorithmConfig == null || depthFirstSearchAlgorithmConfig.getSourceConceptionEntityUID() == null){
+            logger.error("SourceConceptionEntityUID is required",graphName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("SourceConceptionEntityUID is required");
+            throw e;
+        }
+
+        Set<String> conceptionKindsForCompute = depthFirstSearchAlgorithmConfig.getConceptionKindsForCompute();
+        Set<String> relationKindsForCompute = depthFirstSearchAlgorithmConfig.getRelationKindsForCompute();
+        String nodeLabelsCQLPart = "";
+        if(conceptionKindsForCompute != null && conceptionKindsForCompute.size()>0){
+            nodeLabelsCQLPart = "  nodeLabels: "+getKindNamesSetString(conceptionKindsForCompute)+",\n";
+        }
+        String relationshipTypes = "";
+        if(relationKindsForCompute != null && relationKindsForCompute.size()>0){
+            relationshipTypes = "  relationshipTypes: "+getKindNamesSetString(relationKindsForCompute)+",\n";
+        }
+
+        String startNodeIdPropertyStr = "  startNode: "+ depthFirstSearchAlgorithmConfig.getSourceConceptionEntityUID()+",\n";
+        String maxDepthPropertyStr = "  maxDepth: "+ depthFirstSearchAlgorithmConfig.getMaxDepth()+",\n";
+        String terminateNodesCQLPart = "";
+        Set terminateConceptionEntityUIDSet = depthFirstSearchAlgorithmConfig.getTerminateAtConceptionEntityUIDs();
+        if(terminateConceptionEntityUIDSet != null && terminateConceptionEntityUIDSet.size()>0){
+            terminateNodesCQLPart = "  targetNodes: "+terminateConceptionEntityUIDSet+",\n";
+        }
+
+        String cypherProcedureString =
+                "CALL gds.alpha.dfs.stream('"+graphName+"', {\n" +
+                        nodeLabelsCQLPart +
+                        relationshipTypes +
+                        startNodeIdPropertyStr+
+                        terminateNodesCQLPart+
+                        maxDepthPropertyStr +
+                        "  concurrency: 4 \n" +
+                        "})\n" +
+                        "YIELD path,startNodeId,nodeIds\n" +
+                        "RETURN  path,startNodeId,nodeIds\n";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        DepthFirstSearchAlgorithmResult depthFirstSearchAlgorithmResult = new DepthFirstSearchAlgorithmResult(graphName,depthFirstSearchAlgorithmConfig);
+        GraphOperationExecutor globalGraphOperationExecutor = this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor();
+        GetSingleEntityTraversalResultTransformer getSingleEntityTraversalResultTransformer = new GetSingleEntityTraversalResultTransformer(globalGraphOperationExecutor);
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            Object executeResult = workingGraphOperationExecutor.executeRead(getSingleEntityTraversalResultTransformer,cypherProcedureString);
+            EntityTraversalResult entityTraversalResult = executeResult != null? (EntityTraversalResult)executeResult :null;
+            depthFirstSearchAlgorithmResult.setEntityTraversalResult(entityTraversalResult);
+            depthFirstSearchAlgorithmResult.setAlgorithmExecuteEndTime(new Date());
+            return depthFirstSearchAlgorithmResult;
         } catch(org.neo4j.driver.exceptions.ClientException e){
             CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
             e1.setCauseMessage(e.getMessage());
