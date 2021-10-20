@@ -3700,7 +3700,25 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
 ---
 
 ```java
-     /**
+    /**
+     * 基于图网络拓扑的相关性计算算法
+     * AdamicAdar : Adamic Adar算法。
+     * CommonNeighbors : Common Neighbors算法。
+     * PreferentialAttachment : Preferential Attachment算法。
+     * ResourceAllocation : Resource Allocation算法。
+     * TotalNeighbors : Tota lNeighbors算法。
+     */
+    enum TopologySimilarityComputeAlgorithm {AdamicAdar, CommonNeighbors, PreferentialAttachment, ResourceAllocation, TotalNeighbors}     
+
+    /**
+     * 基于图网络拓扑的相关性计算关系方向
+     * BOTH : 忽略关系方向。
+     * OUTGOING : 基于出度计算。
+     * INCOMING : 基于入度计算。
+     */
+    enum TopologySimilarityComputeDirection {BOTH, OUTGOING, INCOMING}
+
+    /**
      * 输入一组概念实体的唯一值ID，查询并返回所有包含其中的概念实体两两间的关系实体数据
      *
      * @param conceptionEntityPairUIDs List<String> 概念实体唯一值ID列表
@@ -3726,6 +3744,19 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 匹配的概念实体对象列表
      */
     public List<ConceptionEntity> getConceptionEntitiesByUIDs(List<String> conceptionEntityUIDs) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 基于图网络的拓扑关联计算两个概念实体的相似度
+     *
+     * @param conceptionEntityAUID String 概念实体 A 的唯一值ID
+     * @param conceptionEntityBUID String 概念实体 B 的唯一值ID
+     * @param topologySimilarityComputeAlgorithm TopologySimilarityComputeAlgorithm 计算使用的算法
+     * @param topologySimilarityComputeDirection TopologySimilarityComputeDirection 计算使用的关系方向
+     * @param relationKindForCompute String 计算使用的关系类型，如为空则基于现存的所有关系进行计算
+     *
+     * @return double 类型的相似度数值
+     */
+    public Double computeConceptionEntityPairTopologySimilarity(String conceptionEntityAUID,String conceptionEntityBUID,TopologySimilarityComputeAlgorithm topologySimilarityComputeAlgorithm,TopologySimilarityComputeDirection topologySimilarityComputeDirection,String relationKindForCompute) throws CoreRealmServiceEntityExploreException,CoreRealmServiceRuntimeException;
 ```
 
 ###### ↳ SystemMaintenanceOperator
