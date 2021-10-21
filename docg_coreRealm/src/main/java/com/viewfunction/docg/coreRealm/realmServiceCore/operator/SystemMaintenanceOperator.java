@@ -39,4 +39,6 @@ public interface SystemMaintenanceOperator {
      * @return 属性系统信息列表
      */
     public List<AttributeSystemInfo> getRelationKindAttributesSystemInfo(String relationKindName);
+
+    //functions to build query index ......
 }
