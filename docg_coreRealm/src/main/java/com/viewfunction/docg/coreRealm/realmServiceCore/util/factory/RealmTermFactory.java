@@ -95,6 +95,7 @@ public class RealmTermFactory {
             coreRealmServiceRuntimeException.setCauseMessage("Core Realm with name "+coreRealmName+" already exist.");
             throw coreRealmServiceRuntimeException;
         }else{
+            //only Enterprise edition neo4j support create database XXX command
             String queryCQL = "create database "+coreRealmName;
             GraphOperationExecutor _GraphOperationExecutor = new GraphOperationExecutor();
 
