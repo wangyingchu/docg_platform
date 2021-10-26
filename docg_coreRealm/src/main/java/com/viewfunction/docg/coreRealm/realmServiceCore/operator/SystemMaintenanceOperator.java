@@ -1,10 +1,13 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeSystemInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.DataStatusSnapshotInfo;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.SearchIndexInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.SystemStatusSnapshotInfo;
 
 import java.util.List;
+import java.util.Set;
 
 public interface SystemMaintenanceOperator {
     //听风雪喧嚷 看流星在飞翔 我的心向我呼唤 去动荡的远方
@@ -40,5 +43,18 @@ public interface SystemMaintenanceOperator {
      */
     public List<AttributeSystemInfo> getRelationKindAttributesSystemInfo(String relationKindName);
 
-    //functions to build query index ......
+    public enum SearchIndexType {BTREE, FULLTEXT, LOOKUP}
+
+    public boolean createConceptionKindSearchIndex(String indexName, SearchIndexType indexType, String conceptionKindName, Set<String> indexAttributeNames) throws CoreRealmServiceRuntimeException;
+
+    public boolean createRelationKindSearchIndex(String indexName, SearchIndexType indexType, String relationKindName, Set<String> indexAttributeNames) throws CoreRealmServiceRuntimeException;
+
+    public Set<SearchIndexInfo> listConceptionKindSearchIndex();
+
+    public Set<SearchIndexInfo> listRelationKindSearchIndex();
+
+    public boolean removeConceptionKindSearchIndex(String indexName) throws CoreRealmServiceRuntimeException;
+
+    public boolean removeRelationKindSearchIndex(String indexName) throws CoreRealmServiceRuntimeException;
+
 }

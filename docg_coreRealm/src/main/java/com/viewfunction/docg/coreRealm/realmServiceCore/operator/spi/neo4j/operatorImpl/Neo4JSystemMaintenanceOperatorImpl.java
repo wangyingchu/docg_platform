@@ -1,16 +1,14 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListAttributeSystemInfoTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.SystemMaintenanceOperator;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeSystemInfo;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.DataStatusSnapshotInfo;
-
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RuntimeRelationAndConceptionKindAttachInfo;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.SystemStatusSnapshotInfo;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
+
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.slf4j.Logger;
@@ -242,6 +240,137 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
+    }
+
+    @Override
+    public boolean createConceptionKindSearchIndex(String indexName, SearchIndexType indexType, String conceptionKindName, Set<String> indexAttributeNames) throws CoreRealmServiceRuntimeException {
+        /*
+        https://neo4j.com/docs/cypher-manual/4.3/indexes-for-search-performance/
+        */
+        if(indexName == null){
+            logger.error("Index Name is required");
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("Index Name is required");
+            throw e;
+        }
+        if(conceptionKindName == null){
+            logger.error("Conception Kind Name is required");
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("Conception Kind Name is required");
+            throw e;
+        }
+        if(indexAttributeNames == null || indexAttributeNames.size() ==0){
+            logger.error("At least one attributeName is required");
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("At least one attributeName is required");
+            throw e;
+        }
+        String searchIndexType = "";
+        if(indexType != null){
+            searchIndexType = "" + indexType;
+        }
+        Iterator<String> nameIterator = indexAttributeNames.iterator();
+        String attributeDefineString = "";
+        while(nameIterator.hasNext()){
+            attributeDefineString = attributeDefineString+"n."+nameIterator.next();
+            if(nameIterator.hasNext()){
+                attributeDefineString = attributeDefineString+",";
+            }
+        }
+
+        String cypherProcedureString = "CREATE "+searchIndexType+" INDEX "+indexName+" IF NOT EXISTS FOR (n:"+conceptionKindName+") ON ("+attributeDefineString+")";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        DataTransformer dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                if(result.hasNext()){
+                    Record currentRecord = result.next();
+                    System.out.println(currentRecord);
+                    System.out.println(currentRecord);
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            Object queryResponse = workingGraphOperationExecutor.executeWrite(dataTransformer,cypherProcedureString);
+            if(queryResponse != null){
+
+            }
+
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+
+
+        return false;
+    }
+
+    @Override
+    public boolean createRelationKindSearchIndex(String indexName, SearchIndexType indexType, String relationKindName, Set<String> indexAttributeNames) throws CoreRealmServiceRuntimeException{
+        /*
+        https://neo4j.com/docs/cypher-manual/4.3/indexes-for-search-performance/
+        */
+        return false;
+    }
+
+    @Override
+    public Set<SearchIndexInfo> listConceptionKindSearchIndex(){
+        /*
+        https://neo4j.com/docs/cypher-manual/4.3/indexes-for-search-performance/
+        */
+        String cypherProcedureString ="SHOW INDEXES YIELD name,populationPercent,type,entityType,labelsOrTypes,properties WHERE entityType ='NODE' AND labelsOrTypes IS NOT NULL";
+
+        Set<SearchIndexInfo> searchIndexInfoSet = new HashSet<>();
+
+        DataTransformer dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record currentRecord = result.next();
+                    String name = currentRecord.get("name").asString();
+                    float populationPercent = currentRecord.get("populationPercent").asNumber().floatValue();
+                    String type = currentRecord.get("type").asString();
+                    String entityType = currentRecord.get("entityType").asString();
+                    List labelsOrTypes = currentRecord.get("labelsOrTypes").asList();
+                    List properties = currentRecord.get("properties").asList();
+                    SearchIndexInfo currentSearchIndexInfo = new SearchIndexInfo(name,populationPercent,type,labelsOrTypes,properties);
+                    searchIndexInfoSet.add(currentSearchIndexInfo);
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeWrite(dataTransformer,cypherProcedureString);
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return searchIndexInfoSet;
+    }
+
+    @Override
+    public Set<SearchIndexInfo> listRelationKindSearchIndex() {
+        /*
+        https://neo4j.com/docs/cypher-manual/4.3/indexes-for-search-performance/
+        */
+        String cypherProcedureString ="SHOW INDEXES YIELD name,populationPercent,type,entityType,labelsOrTypes,properties WHERE entityType ='RELATIONSHIP' AND labelsOrTypes IS NOT NULL";
+        return null;
+    }
+
+    @Override
+    public boolean removeConceptionKindSearchIndex(String indexName) throws CoreRealmServiceRuntimeException{
+        return false;
+    }
+
+    @Override
+    public boolean removeRelationKindSearchIndex(String indexName) throws CoreRealmServiceRuntimeException{
+        return false;
     }
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
