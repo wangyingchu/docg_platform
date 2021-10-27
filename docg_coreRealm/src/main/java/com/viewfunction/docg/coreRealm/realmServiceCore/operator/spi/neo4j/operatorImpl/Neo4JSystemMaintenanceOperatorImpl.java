@@ -116,7 +116,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                 public Object transformResult(Result result) {
                     if(result.hasNext()) {
                         Record staticRecord = result.next();
-                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//注意月份是MM
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         try {
                             Date systemStartupTime = simpleDateFormat.parse(staticRecord.get("kernelStartTime").toString().replaceAll("\"",""));
                             systemStatusSnapshotInfo.setSystemStartupTime(systemStartupTime);
@@ -253,6 +253,15 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
             e.setCauseMessage("Index Name is required");
             throw e;
         }
+        Set<SearchIndexInfo> existIndexSet = listConceptionKindSearchIndex();
+        for(SearchIndexInfo currentSearchIndexInfo:existIndexSet){
+            if(currentSearchIndexInfo.getIndexName().equals(indexName)){
+                logger.error("ConceptionKind Search Index with name {} already exist." , indexName);
+                CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+                e.setCauseMessage("ConceptionKind Search Index with name "+ indexName +" already exist.");
+                throw e;
+            }
+        }
         if(conceptionKindName == null){
             logger.error("Conception Kind Name is required");
             CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
@@ -281,24 +290,9 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         String cypherProcedureString = "CREATE "+searchIndexType+" INDEX "+indexName+" IF NOT EXISTS FOR (n:"+conceptionKindName+") ON ("+attributeDefineString+")";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
-        DataTransformer dataTransformer = new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-                if(result.hasNext()){
-                    Record currentRecord = result.next();
-                    System.out.println(currentRecord);
-                    System.out.println(currentRecord);
-                }
-                return null;
-            }
-        };
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
-            Object queryResponse = workingGraphOperationExecutor.executeWrite(dataTransformer,cypherProcedureString);
-            if(queryResponse != null){
-
-            }
-
+            workingGraphOperationExecutor.executeWrite(result -> null, cypherProcedureString);
         } catch(org.neo4j.driver.exceptions.ClientException e){
             CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
             e1.setCauseMessage(e.getMessage());
@@ -306,8 +300,12 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
-
-
+        existIndexSet = listConceptionKindSearchIndex();
+        for(SearchIndexInfo currentSearchIndexInfo:existIndexSet){
+            if(currentSearchIndexInfo.getIndexName().equals(indexName)){
+                return true;
+            }
+        }
         return false;
     }
 
@@ -316,61 +314,174 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         /*
         https://neo4j.com/docs/cypher-manual/4.3/indexes-for-search-performance/
         */
+        if(indexName == null){
+            logger.error("Index Name is required");
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("Index Name is required");
+            throw e;
+        }
+        Set<SearchIndexInfo> existIndexSet = listRelationKindSearchIndex();
+        for(SearchIndexInfo currentSearchIndexInfo:existIndexSet){
+            if(currentSearchIndexInfo.getIndexName().equals(indexName)){
+                logger.error("RelationKind Search Index with name {} already exist." , indexName);
+                CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+                e.setCauseMessage("RelationKind Search Index with name "+ indexName +" already exist.");
+                throw e;
+            }
+        }
+        if(relationKindName == null){
+            logger.error("Relation Kind Name is required");
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("Relation Kind Name is required");
+            throw e;
+        }
+        if(indexAttributeNames == null || indexAttributeNames.size() ==0){
+            logger.error("At least one attributeName is required");
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("At least one attributeName is required");
+            throw e;
+        }
+        String searchIndexType = "";
+        if(indexType != null){
+            searchIndexType = "" + indexType;
+        }
+        Iterator<String> nameIterator = indexAttributeNames.iterator();
+        String attributeDefineString = "";
+        while(nameIterator.hasNext()){
+            attributeDefineString = attributeDefineString+"r."+nameIterator.next();
+            if(nameIterator.hasNext()){
+                attributeDefineString = attributeDefineString+",";
+            }
+        }
+
+        String cypherProcedureString = "CREATE "+searchIndexType+" INDEX "+indexName+" FOR ()-[r:"+relationKindName+"]-() ON ("+attributeDefineString+")";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeWrite(result -> null, cypherProcedureString);
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        existIndexSet = listRelationKindSearchIndex();
+        for(SearchIndexInfo currentSearchIndexInfo:existIndexSet){
+            if(currentSearchIndexInfo.getIndexName().equals(indexName)){
+                return true;
+            }
+        }
         return false;
     }
 
     @Override
     public Set<SearchIndexInfo> listConceptionKindSearchIndex(){
-        /*
-        https://neo4j.com/docs/cypher-manual/4.3/indexes-for-search-performance/
-        */
-        String cypherProcedureString ="SHOW INDEXES YIELD name,populationPercent,type,entityType,labelsOrTypes,properties WHERE entityType ='NODE' AND labelsOrTypes IS NOT NULL";
-
-        Set<SearchIndexInfo> searchIndexInfoSet = new HashSet<>();
-
-        DataTransformer dataTransformer = new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-                while(result.hasNext()){
-                    Record currentRecord = result.next();
-                    String name = currentRecord.get("name").asString();
-                    float populationPercent = currentRecord.get("populationPercent").asNumber().floatValue();
-                    String type = currentRecord.get("type").asString();
-                    String entityType = currentRecord.get("entityType").asString();
-                    List labelsOrTypes = currentRecord.get("labelsOrTypes").asList();
-                    List properties = currentRecord.get("properties").asList();
-                    SearchIndexInfo currentSearchIndexInfo = new SearchIndexInfo(name,populationPercent,type,labelsOrTypes,properties);
-                    searchIndexInfoSet.add(currentSearchIndexInfo);
-                }
-                return null;
-            }
-        };
-        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-        try {
-            workingGraphOperationExecutor.executeWrite(dataTransformer,cypherProcedureString);
-        } finally {
-            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-        }
-        return searchIndexInfoSet;
+        return listKindSearchIndex("NODE");
     }
 
     @Override
     public Set<SearchIndexInfo> listRelationKindSearchIndex() {
-        /*
-        https://neo4j.com/docs/cypher-manual/4.3/indexes-for-search-performance/
-        */
-        String cypherProcedureString ="SHOW INDEXES YIELD name,populationPercent,type,entityType,labelsOrTypes,properties WHERE entityType ='RELATIONSHIP' AND labelsOrTypes IS NOT NULL";
-        return null;
+        return listKindSearchIndex("RELATIONSHIP");
     }
 
     @Override
     public boolean removeConceptionKindSearchIndex(String indexName) throws CoreRealmServiceRuntimeException{
-        return false;
+        /*
+        https://neo4j.com/docs/cypher-manual/4.3/indexes-for-search-performance/
+        */
+        if(indexName == null){
+            logger.error("Index Name is required");
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("Index Name is required");
+            throw e;
+        }
+        boolean indexExist = false;
+        Set<SearchIndexInfo> existIndexSet = listConceptionKindSearchIndex();
+        for(SearchIndexInfo currentSearchIndexInfo:existIndexSet){
+            if(currentSearchIndexInfo.getIndexName().equals(indexName)){
+                indexExist = true;
+                break;
+            }
+        }
+        if(!indexExist){
+            logger.error("ConceptionKind Search Index with name {} does not exist." , indexName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("ConceptionKind Search Index with name "+ indexName +" does not exist.");
+            throw e;
+        }
+
+        String cypherProcedureString = "DROP INDEX " + indexName + " IF EXISTS";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeWrite(result -> null, cypherProcedureString);
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+
+        existIndexSet = listConceptionKindSearchIndex();
+        for(SearchIndexInfo currentSearchIndexInfo:existIndexSet){
+            if(currentSearchIndexInfo.getIndexName().equals(indexName)){
+               return false;
+            }
+        }
+        return true;
     }
 
     @Override
     public boolean removeRelationKindSearchIndex(String indexName) throws CoreRealmServiceRuntimeException{
-        return false;
+        /*
+        https://neo4j.com/docs/cypher-manual/4.3/indexes-for-search-performance/
+        */
+        if(indexName == null){
+            logger.error("Index Name is required");
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("Index Name is required");
+            throw e;
+        }
+        boolean indexExist = false;
+        Set<SearchIndexInfo> existIndexSet = listRelationKindSearchIndex();
+        for(SearchIndexInfo currentSearchIndexInfo:existIndexSet){
+            if(currentSearchIndexInfo.getIndexName().equals(indexName)){
+                indexExist = true;
+                break;
+            }
+        }
+        if(!indexExist){
+            logger.error("RelationKind Search Index with name {} does not exist." , indexName);
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("RelationKind Search Index with name "+ indexName +" does not exist.");
+            throw e;
+        }
+
+        String cypherProcedureString = "DROP INDEX " + indexName + " IF EXISTS";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeWrite(result -> null, cypherProcedureString);
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+
+        existIndexSet = listRelationKindSearchIndex();
+        for(SearchIndexInfo currentSearchIndexInfo:existIndexSet){
+            if(currentSearchIndexInfo.getIndexName().equals(indexName)){
+                return false;
+            }
+        }
+        return true;
     }
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
@@ -400,5 +511,39 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
             }
         }
         return null;
+    }
+
+    private Set<SearchIndexInfo> listKindSearchIndex(String entityType){
+        /*
+        https://neo4j.com/docs/cypher-manual/4.3/indexes-for-search-performance/
+        */
+        String cypherProcedureString ="SHOW INDEXES YIELD name,populationPercent,type,entityType,labelsOrTypes,properties WHERE entityType ='"+entityType+"' AND labelsOrTypes IS NOT NULL";
+
+        Set<SearchIndexInfo> searchIndexInfoSet = new HashSet<>();
+
+        DataTransformer dataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record currentRecord = result.next();
+                    String name = currentRecord.get("name").asString();
+                    float populationPercent = currentRecord.get("populationPercent").asNumber().floatValue();
+                    String type = currentRecord.get("type").asString();
+                    String entityType = currentRecord.get("entityType").asString();
+                    List labelsOrTypes = currentRecord.get("labelsOrTypes").asList();
+                    List properties = currentRecord.get("properties").asList();
+                    SearchIndexInfo currentSearchIndexInfo = new SearchIndexInfo(name,populationPercent,type,labelsOrTypes,properties);
+                    searchIndexInfoSet.add(currentSearchIndexInfo);
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeWrite(dataTransformer,cypherProcedureString);
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return searchIndexInfoSet;
     }
 }
