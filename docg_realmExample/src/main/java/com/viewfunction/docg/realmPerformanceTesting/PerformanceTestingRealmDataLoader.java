@@ -1,8 +1,15 @@
 package com.viewfunction.docg.realmPerformanceTesting;
 
 import com.google.common.collect.Lists;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -30,11 +37,39 @@ public class PerformanceTestingRealmDataLoader {
     private static final String  Latitude = "latitude";
     private static final String  Longitude = "longitude";
 
-    public static void main(String[] args){
-        loadFirmData("/media/wangychu/Data/Data/A_gridded_establishment_dataset_as_a_proxy_for_economic_activity_in_China/firm_2005.csv");
+    public static void main(String[] args) throws CoreRealmServiceRuntimeException {
+        //Step 1 : init Geo Data
+        //initDefaultGeoData();
+        //Step 2 : init Time Data
+        initDefaultTimeData();
+        //loadFirmData("/media/wangychu/Data/Data/A_gridded_establishment_dataset_as_a_proxy_for_economic_activity_in_China/firm_2005.csv");
     }
 
-    private static void loadFirmData(String filePath){
+    private static void initDefaultGeoData(){
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        GeospatialRegion defaultGeospatialRegion = coreRealm.getOrCreateGeospatialRegion();
+        defaultGeospatialRegion.createGeospatialScaleEntities();
+    }
+
+    private static void initDefaultTimeData() throws CoreRealmServiceRuntimeException {
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        TimeFlow defaultTimeFlow = coreRealm.getOrCreateTimeFlow();
+        defaultTimeFlow.createTimeSpanEntities(1980,2025,false);
+    }
+
+    private static void loadFirmData(String filePath) throws CoreRealmServiceRuntimeException {
+        /*
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+
+        ConceptionKind _Fire911CallConceptionKind = coreRealm.getConceptionKind(FirmConceptionType);
+        if(_Fire911CallConceptionKind != null){
+            coreRealm.removeConceptionKind(FirmConceptionType,true);
+        }
+        _Fire911CallConceptionKind = coreRealm.getConceptionKind(FirmConceptionType);
+        if(_Fire911CallConceptionKind == null){
+            _Fire911CallConceptionKind = coreRealm.createConceptionKind(FirmConceptionType,"中国工商企业");
+        }
+*/
         List<ConceptionEntityValue> _FirmEntityValueList = Lists.newArrayList();
         SimpleDateFormat sdf = new SimpleDateFormat("YYYY-mm-dd");
         File file = new File(filePath);
@@ -127,10 +162,8 @@ public class PerformanceTestingRealmDataLoader {
                 }
             }
             reader.close();
-
             System.out.println(notCorrectCount);
-            System.out.println(_FirmEntityValueList.get(0).getEntityAttributesValue());
-
+            System.out.println(_FirmEntityValueList.size());
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         } finally {
@@ -142,6 +175,7 @@ public class PerformanceTestingRealmDataLoader {
                 }
             }
         }
-    }
 
+        BatchDataOperationUtil.batchAddNewEntities(FirmConceptionType,_FirmEntityValueList,20);
+    }
 }

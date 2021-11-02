@@ -49,7 +49,7 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
     }
 
     @Override
-    public boolean createTimeSpanEntities(int fromYear, int toYear) throws CoreRealmServiceRuntimeException {
+    public boolean createTimeSpanEntities(int fromYear, int toYear, boolean createMinuteData) throws CoreRealmServiceRuntimeException {
         if(toYear<=fromYear){
             logger.error("To Year {} must great than From Year {}.", toYear, fromYear);
             CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
@@ -71,7 +71,7 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
         }
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
-            TimeScaleOperationUtil.generateTimeFlowScaleEntities(workingGraphOperationExecutor,getTimeFlowName(),fromYear,toYear);
+            TimeScaleOperationUtil.generateTimeFlowScaleEntities(workingGraphOperationExecutor,getTimeFlowName(),fromYear,toYear,createMinuteData);
             String linkYearsCql = "MATCH (timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"}),(year:DOCG_TS_Year{timeFlow:\""+getTimeFlowName()+"\"}) WHERE year.year in range("+fromYear+","+toYear+")\n" +
                     "MERGE (timeFlow)-[r:DOCG_TS_Contains]->(year) return count(r) as operationResult";
             logger.debug("Generated Cypher Statement: {}", linkYearsCql);
@@ -94,7 +94,7 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
     }
 
     @Override
-    public boolean createTimeSpanEntities(int targetYear) throws CoreRealmServiceRuntimeException {
+    public boolean createTimeSpanEntities(int targetYear, boolean createMinuteData) throws CoreRealmServiceRuntimeException {
         List<Integer> availableTimeSpanYears = getAvailableTimeSpanYears();
         if(availableTimeSpanYears.contains(targetYear)){
             logger.error("Year {} already initialized in TimeFlow {}.", targetYear, getTimeFlowName());
@@ -104,7 +104,7 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
         }
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
-            TimeScaleOperationUtil.generateTimeFlowScaleEntities(workingGraphOperationExecutor,getTimeFlowName(),targetYear);
+            TimeScaleOperationUtil.generateTimeFlowScaleEntities(workingGraphOperationExecutor,getTimeFlowName(),targetYear,createMinuteData);
             String linkYearCql = "MATCH (timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"}),(year:DOCG_TS_Year{timeFlow:\""+getTimeFlowName()+"\"}) WHERE year.year ="+targetYear+"\n" +
                     "MERGE (timeFlow)-[r:DOCG_TS_Contains]->(year) return count(r) as operationResult";
             logger.debug("Generated Cypher Statement: {}", linkYearCql);

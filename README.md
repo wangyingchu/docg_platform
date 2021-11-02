@@ -2869,19 +2869,21 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      *
      * @param fromYear int 起始年度
      * @param toYear int 结束年度
+     * @param createMinuteData boolean 是否创建分钟粒度的数据
      *
      * @return 如操作成功，返回结果为 true
      */
-    public boolean createTimeSpanEntities(int fromYear, int toYear) throws CoreRealmServiceRuntimeException;
+    public boolean createTimeSpanEntities(int fromYear, int toYear, boolean createMinuteData) throws CoreRealmServiceRuntimeException;
 
     /**
      * 创建指定年度内的所有时间刻度实体并构建相应的时间流片段
      *
      * @param targetYear int 指定目标年度
+     * @param createMinuteData boolean 是否创建分钟粒度的数据
      *
      * @return 如操作成功，返回结果为 true
      */
-    public boolean createTimeSpanEntities(int targetYear) throws CoreRealmServiceRuntimeException;
+    public boolean createTimeSpanEntities(int targetYear, boolean createMinuteData) throws CoreRealmServiceRuntimeException;
 
     /**
      * 获取当前时间流中已经包含的年度

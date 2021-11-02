@@ -17,26 +17,34 @@ public class TimeScaleOperationUtil {
 
     private static Logger logger = LoggerFactory.getLogger(TimeScaleOperationUtil.class);
 
-    public static void generateTimeFlowScaleEntities(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int startYear, int endYear){
+    public static void generateTimeFlowScaleEntities(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int startYear, int endYear,boolean initMinuteData){
         generateTimeFlowScaleEntities_YMD(workingGraphOperationExecutor,timeFlowName,startYear,endYear);
         generateTimeFlowScaleEntities_Hour(workingGraphOperationExecutor,timeFlowName,startYear,endYear);
-        generateTimeFlowScaleEntities_Minute(workingGraphOperationExecutor,timeFlowName,startYear,endYear);
+        if(initMinuteData){
+            generateTimeFlowScaleEntities_Minute(workingGraphOperationExecutor,timeFlowName,startYear,endYear);
+        }
         linkTimeFlowScaleEntities_Year(workingGraphOperationExecutor,timeFlowName,startYear-1,endYear+1);
         linkTimeFlowScaleEntities_Month(workingGraphOperationExecutor,timeFlowName,startYear-1,endYear+1);
         linkTimeFlowScaleEntities_Day(workingGraphOperationExecutor,timeFlowName,startYear-1,endYear+1);
         linkTimeFlowScaleEntities_Hour(workingGraphOperationExecutor,timeFlowName,startYear-1,endYear+1);
-        linkTimeFlowScaleEntities_Minute(workingGraphOperationExecutor,timeFlowName,startYear-1,endYear+1);
+        if(initMinuteData){
+            linkTimeFlowScaleEntities_Minute(workingGraphOperationExecutor,timeFlowName,startYear-1,endYear+1);
+        }
     }
 
-    public static void generateTimeFlowScaleEntities(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int targetYear){
+    public static void generateTimeFlowScaleEntities(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int targetYear,boolean initMinuteData){
         generateTimeFlowScaleEntities_YMD(workingGraphOperationExecutor,timeFlowName,targetYear);
         generateTimeFlowScaleEntities_Hour(workingGraphOperationExecutor,timeFlowName,targetYear);
-        generateTimeFlowScaleEntities_Minute(workingGraphOperationExecutor,timeFlowName,targetYear);
+        if(initMinuteData){
+            generateTimeFlowScaleEntities_Minute(workingGraphOperationExecutor,timeFlowName,targetYear);
+        }
         linkTimeFlowScaleEntities_Year(workingGraphOperationExecutor,timeFlowName,targetYear-1,targetYear+1);
         linkTimeFlowScaleEntities_Month(workingGraphOperationExecutor,timeFlowName,targetYear-1,targetYear+1);
         linkTimeFlowScaleEntities_Day(workingGraphOperationExecutor,timeFlowName,targetYear-1,targetYear+1);
         linkTimeFlowScaleEntities_Hour(workingGraphOperationExecutor,timeFlowName,targetYear-1,targetYear+1);
-        linkTimeFlowScaleEntities_Minute(workingGraphOperationExecutor,timeFlowName,targetYear-1,targetYear+1);
+        if(initMinuteData){
+            linkTimeFlowScaleEntities_Minute(workingGraphOperationExecutor,timeFlowName,targetYear-1,targetYear+1);
+        }
     }
 
     private static void generateTimeFlowScaleEntities_YMD(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int startYear, int endYear){
