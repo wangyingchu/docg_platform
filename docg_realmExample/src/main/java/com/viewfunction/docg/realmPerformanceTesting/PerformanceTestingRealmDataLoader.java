@@ -1,8 +1,11 @@
 package com.viewfunction.docg.realmPerformanceTesting;
 
 import com.google.common.collect.Lists;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
@@ -17,10 +20,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class PerformanceTestingRealmDataLoader {
 
@@ -37,15 +37,17 @@ public class PerformanceTestingRealmDataLoader {
     private static final String  Latitude = "latitude";
     private static final String  Longitude = "longitude";
 
-    public static void main(String[] args) throws CoreRealmServiceRuntimeException {
-        //Step 1 : init Geo Data
+    public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        //Step 1: init Geo Data
         //initDefaultGeoData();
-        //Step 2 : init Time Data
+        //Step 2: init Time Data
         //initDefaultTimeData();
         //Step 3: load firm data
         //loadFirmData("/media/wangychu/Data/Data/A_gridded_establishment_dataset_as_a_proxy_for_economic_activity_in_China/firm_2005.csv");
         //loadFirmData("/media/wangychu/Data/Data/A_gridded_establishment_dataset_as_a_proxy_for_economic_activity_in_China/firm_2010.csv");
-        loadFirmData("/media/wangychu/Data/Data/A_gridded_establishment_dataset_as_a_proxy_for_economic_activity_in_China/firm_2015.csv");
+        //loadFirmData("/media/wangychu/Data/Data/A_gridded_establishment_dataset_as_a_proxy_for_economic_activity_in_China/firm_2015.csv");
+        //Step 4: Link Date
+        linkDate(StartDate,"firmStartAt");
     }
 
     private static void initDefaultGeoData(){
@@ -176,5 +178,19 @@ public class PerformanceTestingRealmDataLoader {
             }
         }
         BatchDataOperationUtil.batchAddNewEntities(FirmConceptionType,_FirmEntityValueList,20);
+    }
+
+    private static void linkDate(String datePropertyName,String attachEventName) throws CoreRealmServiceEntityExploreException {
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        //Part 2 link to time
+        ConceptionKind conceptionKind = coreRealm.getConceptionKind(FirmConceptionType);
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(10000000);
+        List<String> attributeNamesList = new ArrayList<>();
+        attributeNamesList.add(datePropertyName);
+        ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributeResult =  conceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeNamesList,queryParameters);
+
+        List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
+        BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,datePropertyName,attachEventName,null, TimeFlow.TimeScaleGrade.DAY,30);
     }
 }
