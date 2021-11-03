@@ -41,8 +41,11 @@ public class PerformanceTestingRealmDataLoader {
         //Step 1 : init Geo Data
         //initDefaultGeoData();
         //Step 2 : init Time Data
-        initDefaultTimeData();
+        //initDefaultTimeData();
+        //Step 3: load firm data
         //loadFirmData("/media/wangychu/Data/Data/A_gridded_establishment_dataset_as_a_proxy_for_economic_activity_in_China/firm_2005.csv");
+        //loadFirmData("/media/wangychu/Data/Data/A_gridded_establishment_dataset_as_a_proxy_for_economic_activity_in_China/firm_2010.csv");
+        loadFirmData("/media/wangychu/Data/Data/A_gridded_establishment_dataset_as_a_proxy_for_economic_activity_in_China/firm_2015.csv");
     }
 
     private static void initDefaultGeoData(){
@@ -58,18 +61,14 @@ public class PerformanceTestingRealmDataLoader {
     }
 
     private static void loadFirmData(String filePath) throws CoreRealmServiceRuntimeException {
-        /*
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
 
-        ConceptionKind _Fire911CallConceptionKind = coreRealm.getConceptionKind(FirmConceptionType);
-        if(_Fire911CallConceptionKind != null){
-            coreRealm.removeConceptionKind(FirmConceptionType,true);
+        ConceptionKind _FirmConceptionKind = coreRealm.getConceptionKind(FirmConceptionType);
+        _FirmConceptionKind = coreRealm.getConceptionKind(FirmConceptionType);
+        if(_FirmConceptionKind == null){
+            _FirmConceptionKind = coreRealm.createConceptionKind(FirmConceptionType,"中国工商企业");
         }
-        _Fire911CallConceptionKind = coreRealm.getConceptionKind(FirmConceptionType);
-        if(_Fire911CallConceptionKind == null){
-            _Fire911CallConceptionKind = coreRealm.createConceptionKind(FirmConceptionType,"中国工商企业");
-        }
-*/
+
         List<ConceptionEntityValue> _FirmEntityValueList = Lists.newArrayList();
         SimpleDateFormat sdf = new SimpleDateFormat("YYYY-mm-dd");
         File file = new File(filePath);
@@ -152,9 +151,10 @@ public class PerformanceTestingRealmDataLoader {
                         if(!lat_wgs.equals("") & !lng_wgs.equals("")){
                             newEntityValueMap.put(RealmConstant._GeospatialGeometryType,"POINT");
                             String locationWKT = "POINT ("+lng_wgs+" "+lat_wgs+")";
+                            newEntityValueMap.put(RealmConstant._GeospatialGLGeometryContent,locationWKT);
                             newEntityValueMap.put(RealmConstant._GeospatialCLGeometryContent,locationWKT);
-                            //newEntityValueMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
-                            newEntityValueMap.put(RealmConstant._GeospatialCountryCRSAID,"EPSG:4326"); // CRS EPSG:4490 - CGCS2000 - Geographic
+                            newEntityValueMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
+                            newEntityValueMap.put(RealmConstant._GeospatialCountryCRSAID,"EPSG:4490"); // CRS EPSG:4490 - CGCS2000 - Geographic
                         }
                         ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValueMap);
                         _FirmEntityValueList.add(conceptionEntityValue);
@@ -175,7 +175,6 @@ public class PerformanceTestingRealmDataLoader {
                 }
             }
         }
-
         BatchDataOperationUtil.batchAddNewEntities(FirmConceptionType,_FirmEntityValueList,20);
     }
 }
