@@ -29,8 +29,9 @@ public class PerformanceTestingRealmDataLoader {
     private static final String  CompanyType = "companyType";
     private static final String  Address = "address";
     private static final String  Status = "status";
-    private static final String  StartDate = "startDate";
-    private static final String  ApprovedDate = "approvedDate";
+    private static final String  StartDate = "registrationDate";
+    private static final String  RegistrationChangeDate = "lastRegistrationChangeDate";
+    private static final String  CancelDate = "cancelDate";
     private static final String  Category = "category";
     private static final String  City = "city";
     private static final String  Province = "province";
@@ -43,7 +44,7 @@ public class PerformanceTestingRealmDataLoader {
         //Step 2: init Time Data
         //initDefaultTimeData();
         //Step 3: load firm data
-        //loadFirmData("/media/wangychu/Data/Data/A_gridded_establishment_dataset_as_a_proxy_for_economic_activity_in_China/firm_2005.csv");
+        loadFirmData("/media/wangychu/Data/Data/A_gridded_establishment_dataset_as_a_proxy_for_economic_activity_in_China/firm_2005.csv");
         //loadFirmData("/media/wangychu/Data/Data/A_gridded_establishment_dataset_as_a_proxy_for_economic_activity_in_China/firm_2010.csv");
         //loadFirmData("/media/wangychu/Data/Data/A_gridded_establishment_dataset_as_a_proxy_for_economic_activity_in_China/firm_2015.csv");
         //Step 4: Link Date
@@ -73,7 +74,7 @@ public class PerformanceTestingRealmDataLoader {
         }
 
         List<ConceptionEntityValue> _FirmEntityValueList = Lists.newArrayList();
-        SimpleDateFormat sdf = new SimpleDateFormat("YYYY-mm-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         File file = new File(filePath);
         BufferedReader reader = null;
         try {
@@ -127,12 +128,16 @@ public class PerformanceTestingRealmDataLoader {
                             newEntityValueMap.put(Status,status);
                         }
                         if(!start_date.equals("")){
-                            Date start_dateObj = sdf.parse(start_date);
+                            Date start_dateObj = sdf.parse(start_date.trim()+" 00:00:00");
                             newEntityValueMap.put(StartDate,start_dateObj);
                         }
                         if(!approved_time.equals("")){
-                            Date approved_timeObj = sdf.parse(approved_time);
-                            newEntityValueMap.put(ApprovedDate,approved_timeObj);
+                            Date approved_timeObj = sdf.parse(approved_time.trim()+" 00:00:00");
+                            if(status != null & status.equals("注销")){
+                                newEntityValueMap.put(CancelDate,approved_timeObj);
+                            }else{
+                                newEntityValueMap.put(RegistrationChangeDate,approved_timeObj);
+                            }
                         }
                         if(!category.equals("")){
                             newEntityValueMap.put(Category,category);
@@ -178,7 +183,7 @@ public class PerformanceTestingRealmDataLoader {
                 }
             }
         }
-        BatchDataOperationUtil.batchAddNewEntities(FirmConceptionType,_FirmEntityValueList,20);
+        BatchDataOperationUtil.batchAddNewEntities(FirmConceptionType,_FirmEntityValueList,30);
     }
 
     private static void linkDate(String datePropertyName,String attachEventName) throws CoreRealmServiceEntityExploreException {
