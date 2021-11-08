@@ -13,6 +13,8 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 
 public class ConceptionKindTest {
@@ -160,6 +162,9 @@ public class ConceptionKindTest {
         newEntityValue.put("prop3",50);
         newEntityValue.put("prop4","thi is s string");
         newEntityValue.put("prop5","我是中文string");
+        newEntityValue.put("propTmp1", LocalDate.of(1667,1,1));
+        newEntityValue.put("propTmp2", new LocalTime[]{LocalTime.of(13,3,3),
+                LocalTime.of(14,4,4)});
 
         ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValue);
 
@@ -182,16 +187,18 @@ public class ConceptionKindTest {
         List<String> attributeNameList = _queryResultConceptionEntity.getAttributeNames();
 
         Assert.assertNotNull(attributeNameList);
-        Assert.assertEquals(attributeNameList.size(),5);
+        Assert.assertEquals(attributeNameList.size(),7);
         Assert.assertTrue(attributeNameList.contains("prop1"));
         Assert.assertTrue(attributeNameList.contains("prop2"));
         Assert.assertTrue(attributeNameList.contains("prop3"));
         Assert.assertTrue(attributeNameList.contains("prop4"));
         Assert.assertTrue(attributeNameList.contains("prop5"));
+        Assert.assertTrue(attributeNameList.contains("propTmp1"));
+        Assert.assertTrue(attributeNameList.contains("propTmp2"));
 
         List<AttributeValue> attributeValueList = _queryResultConceptionEntity.getAttributes();
         Assert.assertNotNull(attributeValueList);
-        Assert.assertEquals(attributeValueList.size(),5);
+        Assert.assertEquals(attributeValueList.size(),7);
 
         entitiesCount = _ConceptionKind01.countConceptionEntities();
         Assert.assertEquals(entitiesCount.longValue(),1);
@@ -218,6 +225,9 @@ public class ConceptionKindTest {
         newEntityValueMap.put("prop19", Byte.valueOf("2"));
         newEntityValueMap.put("prop20", "this is a byte array value".getBytes());
         newEntityValueMap.put("prop21", new Byte[]{Byte.valueOf("1"),Byte.valueOf("3"),Byte.valueOf("5")});
+        newEntityValueMap.put("prop22", LocalDate.of(1667,1,1));
+        newEntityValueMap.put("prop23", new LocalTime[]{LocalTime.of(13,3,3),
+                LocalTime.of(14,4,4)});
 
         List<ConceptionEntityValue> conceptionEntityValueList = new ArrayList<>();
         ConceptionEntityValue conceptionEntityValue1 = new ConceptionEntityValue(newEntityValueMap);
@@ -244,13 +254,14 @@ public class ConceptionKindTest {
         for(String currentEntityUID:addEntitiesResult.getSuccessEntityUIDs()){
             ConceptionEntity currentConceptionEntity = _ConceptionKind01.getEntityByUID(currentEntityUID);
             Assert.assertNotNull(currentConceptionEntity);
-            Assert.assertEquals(currentConceptionEntity.getAttributes().size(),21);
+            Assert.assertEquals(currentConceptionEntity.getAttributes().size(),23);
         }
 
         ConceptionEntity currentConceptionEntity = _ConceptionKind01.getEntityByUID(addEntitiesResult.getSuccessEntityUIDs().get(0));
 
         Assert.assertEquals(currentConceptionEntity.getAttribute("prop1").getAttributeValue(),Long.parseLong("12345"));
         Assert.assertEquals(currentConceptionEntity.getAttribute("prop2").getAttributeValue(),Double.parseDouble("12345.789"));
+        Assert.assertEquals(currentConceptionEntity.getAttribute("prop22").getAttributeValue(),LocalDate.of(1667,1,1));
 
         Map<String,Object> updateEntityValueMap= new HashMap<>();
         updateEntityValueMap.put("prop1",Long.parseLong("59000"));
@@ -258,6 +269,7 @@ public class ConceptionKindTest {
         updateEntityValueMap.put("prop3",new Date());
         updateEntityValueMap.put("prop3_NotExist",new Date());
         updateEntityValueMap.put("prop21", new Byte[]{Byte.valueOf("88"),Byte.valueOf("77"),Byte.valueOf("66")});
+        updateEntityValueMap.put("prop23", new LocalTime[]{LocalTime.of(0,0,0)});
 
         ConceptionEntityValue conceptionEntityValueForUpdate = new ConceptionEntityValue(updateEntityValueMap);
         conceptionEntityValueForUpdate.setConceptionEntityUID(addEntitiesResult.getSuccessEntityUIDs().get(0));
@@ -267,6 +279,7 @@ public class ConceptionKindTest {
         Assert.assertEquals(updatedConceptionEntityValue.getAttribute("prop1").getAttributeValue(),Long.parseLong("59000"));
         Assert.assertEquals(updatedConceptionEntityValue.getAttribute("prop2").getAttributeValue(),Double.parseDouble("10000000.1"));
         Assert.assertEquals(updatedConceptionEntityValue.getAttribute("prop3").getAttributeValue(),Long.parseLong("1234"));
+        Assert.assertEquals(((LocalTime[])updatedConceptionEntityValue.getAttribute("prop23").getAttributeValue())[0],LocalTime.of(0,0,0));
         Assert.assertFalse(updatedConceptionEntityValue.hasAttribute("prop3_NotExist"));
 
         List<ConceptionEntityValue> conceptionEntityValueForUpdateList = new ArrayList<>();
