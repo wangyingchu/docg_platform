@@ -15,6 +15,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,9 +75,17 @@ public class RelationKindTest {
 
             Map<String,Object> relationPropertiesValue= new HashMap<>();
             relationPropertiesValue.put("relProp1",Math.random()*1000);
+            relationPropertiesValue.put("temProp1", LocalTime.now());
+            relationPropertiesValue.put("temProp2", new LocalDate[]{LocalDate.now()});
 
             RelationEntity resultRelationEntity = _ConceptionEntity_1.attachFromRelation(_ConceptionEntity_2.getConceptionEntityUID(),"RelationKind0001ForTest",relationPropertiesValue,false);
             Assert.assertNotNull(resultRelationEntity);
+            Assert.assertNotNull(resultRelationEntity.getAttribute("temProp1").getAttributeValue());
+            Assert.assertTrue(resultRelationEntity.getAttribute("temProp1").getAttributeValue() instanceof LocalTime);
+            Assert.assertEquals(resultRelationEntity.getAttribute("temProp1").getAttributeDataType(),AttributeDataType.TIME);
+            Assert.assertNotNull(resultRelationEntity.getAttribute("temProp2").getAttributeValue());
+            Assert.assertTrue(resultRelationEntity.getAttribute("temProp2").getAttributeValue() instanceof LocalDate[]);
+            Assert.assertEquals(resultRelationEntity.getAttribute("temProp2").getAttributeDataType(),AttributeDataType.DATE_ARRAY);
         }
 
         QueryParameters queryParameters = new QueryParameters();
