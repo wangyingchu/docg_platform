@@ -422,7 +422,7 @@ public class DataSliceSyncUtil {
                         attributeDataType = AttributeDataType.DOUBLE;
                         break;
                     case DATE:
-                        attributeDataType = AttributeDataType.DATE;
+                        attributeDataType = AttributeDataType.TIMESTAMP;
                         break;
                     case STRING:
                         attributeDataType = AttributeDataType.STRING;

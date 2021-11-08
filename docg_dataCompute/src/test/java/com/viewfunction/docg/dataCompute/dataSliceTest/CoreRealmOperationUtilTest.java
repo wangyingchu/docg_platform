@@ -24,7 +24,7 @@ public class CoreRealmOperationUtilTest {
 
             AttributeKind attributeKind01 = coreRealm.createAttributeKind("address","address", AttributeDataType.STRING);
             AttributeKind attributeKind02 = coreRealm.createAttributeKind("type","type", AttributeDataType.STRING);
-            AttributeKind attributeKind03 = coreRealm.createAttributeKind("datetime","datetime", AttributeDataType.DATE);
+            AttributeKind attributeKind03 = coreRealm.createAttributeKind("datetime","datetime", AttributeDataType.TIMESTAMP);
             AttributeKind attributeKind04 = coreRealm.createAttributeKind("latitude","latitude", AttributeDataType.DOUBLE);
             AttributeKind attributeKind05 = coreRealm.createAttributeKind("longitude","longitude", AttributeDataType.DOUBLE);
             AttributeKind attributeKind06 = coreRealm.createAttributeKind("location","location", AttributeDataType.STRING);

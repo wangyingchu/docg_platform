@@ -115,7 +115,7 @@ public class ConceptionKindTest {
         Assert.assertNotNull(attributeKindList);
         Assert.assertEquals(attributeKindList.size(),0);
 
-        AttributeKind attributeKind02 = coreRealm.createAttributeKind("attributeKind02","attributeKind02Desc", AttributeDataType.DATE);
+        AttributeKind attributeKind02 = coreRealm.createAttributeKind("attributeKind02","attributeKind02Desc", AttributeDataType.TIMESTAMP);
         Assert.assertNotNull(attributeKind02);
 
         attachAttributeKindRes = attributesViewKindToAdd01.attachAttributeKind(attributeKind02.getAttributeKindUID());
@@ -127,7 +127,7 @@ public class ConceptionKindTest {
         Assert.assertNotNull(attributeKindList.get(0).getAttributeKindUID());
         Assert.assertEquals(attributeKindList.get(0).getAttributeKindName(),"attributeKind02");
         Assert.assertEquals(attributeKindList.get(0).getAttributeKindDesc(),"attributeKind02Desc");
-        Assert.assertEquals(attributeKindList.get(0).getAttributeDataType(),AttributeDataType.DATE);
+        Assert.assertEquals(attributeKindList.get(0).getAttributeDataType(),AttributeDataType.TIMESTAMP);
 
         attributeKindList = _ConceptionKind01.getContainsSingleValueAttributeKinds("attributeKind02");
         Assert.assertNotNull(attributeKindList);
@@ -135,7 +135,7 @@ public class ConceptionKindTest {
         Assert.assertNotNull(attributeKindList.get(0).getAttributeKindUID());
         Assert.assertEquals(attributeKindList.get(0).getAttributeKindName(),"attributeKind02");
         Assert.assertEquals(attributeKindList.get(0).getAttributeKindDesc(),"attributeKind02Desc");
-        Assert.assertEquals(attributeKindList.get(0).getAttributeDataType(),AttributeDataType.DATE);
+        Assert.assertEquals(attributeKindList.get(0).getAttributeDataType(),AttributeDataType.TIMESTAMP);
 
         attributeKindList = _ConceptionKind01.getContainsSingleValueAttributeKinds("attributeKind02+NotExist");
         Assert.assertNotNull(attributeKindList);

@@ -58,7 +58,7 @@ public class GetSingleAttributeKindTransformer implements DataTransformer<Attrib
                             break;
                         case "DOUBLE":attributeDataType = AttributeDataType.DOUBLE;
                             break;
-                        case "DATE":attributeDataType = AttributeDataType.DATE;
+                        case "TIMESTAMP":attributeDataType = AttributeDataType.TIMESTAMP;
                             break;
                         case "STRING":attributeDataType = AttributeDataType.STRING;
                             break;
@@ -80,13 +80,25 @@ public class GetSingleAttributeKindTransformer implements DataTransformer<Attrib
                             break;
                         case "DOUBLE_ARRAY":attributeDataType = AttributeDataType.DOUBLE_ARRAY;
                             break;
-                        case "DATE_ARRAY":attributeDataType = AttributeDataType.DATE_ARRAY;
+                        case "TIMESTAMP_ARRAY":attributeDataType = AttributeDataType.TIMESTAMP_ARRAY;
                             break;
                         case "STRING_ARRAY":attributeDataType = AttributeDataType.STRING_ARRAY;
                             break;
                         case "BYTE_ARRAY":attributeDataType = AttributeDataType.BYTE_ARRAY;
                             break;
                         case "DECIMAL_ARRAY":attributeDataType = AttributeDataType.DECIMAL_ARRAY;
+                            break;
+                        case "DATE":attributeDataType = AttributeDataType.DATE;
+                            break;
+                        case "DATETIME":attributeDataType = AttributeDataType.DATETIME;
+                            break;
+                        case "TIME":attributeDataType = AttributeDataType.TIME;
+                            break;
+                        case "DATE_ARRAY":attributeDataType = AttributeDataType.DATE_ARRAY;
+                            break;
+                        case "DATETIME_ARRAY":attributeDataType = AttributeDataType.DATETIME_ARRAY;
+                            break;
+                        case "TIME_ARRAY":attributeDataType = AttributeDataType.TIME_ARRAY;
                     }
                     String attributeKindUID = ""+nodeUID;
                     Neo4JAttributeKindImpl Neo4jAttributeKindImpl =

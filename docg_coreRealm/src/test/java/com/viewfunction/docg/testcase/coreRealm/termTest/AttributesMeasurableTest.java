@@ -17,6 +17,9 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 public class AttributesMeasurableTest {
@@ -60,6 +63,7 @@ public class AttributesMeasurableTest {
 
         Map<String,Object> newEntityValue= new HashMap<>();
         newEntityValue.put("prop1",Long.parseLong("12345"));
+
         newEntityValue.put("prop2",Double.parseDouble("12345.789"));
         newEntityValue.put("prop3",Integer.parseInt("1234"));
         newEntityValue.put("prop4","thi is s string");
@@ -183,7 +187,7 @@ public class AttributesMeasurableTest {
                 Assert.assertEquals(currentAttributeValueObj,new Long(2));
             }
             if(attributeName.equals("prop17")){
-                Assert.assertEquals(currentAttributeDataType,AttributeDataType.DATE);
+                Assert.assertEquals(currentAttributeDataType,AttributeDataType.TIMESTAMP);
                 Assert.assertTrue(currentAttributeValueObj instanceof Date);
             }
             if(attributeName.equals("prop9")){
@@ -265,7 +269,7 @@ public class AttributesMeasurableTest {
                 Assert.assertEquals(((Double[])currentAttributeValueObj)[2],new Double(3000.3));
             }
             if(attributeName.equals("prop18")){
-                Assert.assertEquals(currentAttributeDataType,AttributeDataType.DATE_ARRAY);
+                Assert.assertEquals(currentAttributeDataType,AttributeDataType.TIMESTAMP_ARRAY);
                 Assert.assertTrue(currentAttributeValueObj instanceof Date[]);
                 Assert.assertEquals(((Date[])currentAttributeValueObj).length,4);
                 Assert.assertTrue(((Date[])currentAttributeValueObj)[0] instanceof Date);
@@ -291,7 +295,7 @@ public class AttributesMeasurableTest {
 
         AttributeValue attributeValue_prop18 = _queryResultConceptionEntity.getAttribute("prop18");
         Assert.assertNotNull(attributeValue_prop18);
-        Assert.assertEquals(attributeValue_prop18.getAttributeDataType(),AttributeDataType.DATE_ARRAY);
+        Assert.assertEquals(attributeValue_prop18.getAttributeDataType(),AttributeDataType.TIMESTAMP_ARRAY);
         Assert.assertTrue(attributeValue_prop18.getAttributeValue() instanceof Date[]);
         Assert.assertEquals(((Date[])attributeValue_prop18.getAttributeValue()).length,4);
         Assert.assertTrue(((Date[])attributeValue_prop18.getAttributeValue())[0] instanceof Date);
@@ -395,7 +399,7 @@ public class AttributesMeasurableTest {
         Date targetDate = new Date();
         AttributeValue newAddedAttributeValue8 = _queryResultConceptionEntity.addAttribute("newDateAttribute",targetDate);
         Assert.assertNotNull(newAddedAttributeValue8);
-        Assert.assertEquals(newAddedAttributeValue8.getAttributeDataType(),AttributeDataType.DATE);
+        Assert.assertEquals(newAddedAttributeValue8.getAttributeDataType(),AttributeDataType.TIMESTAMP);
         Assert.assertTrue(newAddedAttributeValue8.getAttributeValue() instanceof Date);
         Assert.assertEquals(newAddedAttributeValue8.getAttributeValue(),targetDate);
 
@@ -475,7 +479,7 @@ public class AttributesMeasurableTest {
         Date arrayValue2 = new Date();
         AttributeValue newAddedAttributeValue19 = _queryResultConceptionEntity.addAttribute("newDateArrayAttribute",new Date[]{arrayValue1,arrayValue2});
         Assert.assertNotNull(newAddedAttributeValue19);
-        Assert.assertEquals(newAddedAttributeValue19.getAttributeDataType(),AttributeDataType.DATE_ARRAY);
+        Assert.assertEquals(newAddedAttributeValue19.getAttributeDataType(),AttributeDataType.TIMESTAMP_ARRAY);
         Assert.assertTrue(newAddedAttributeValue19.getAttributeValue() instanceof Date[]);
         Assert.assertEquals(((Date[]) newAddedAttributeValue19.getAttributeValue()).length,2);
         Assert.assertEquals(((Date[]) newAddedAttributeValue19.getAttributeValue())[0],arrayValue1);
@@ -633,13 +637,13 @@ public class AttributesMeasurableTest {
 
         AttributeValue updatedAttributeValue_pro17 = _queryResultConceptionEntity.updateAttribute("prop17",new Date());
         Assert.assertNotNull(updatedAttributeValue_pro17);
-        Assert.assertEquals(updatedAttributeValue_pro17.getAttributeDataType(),AttributeDataType.DATE);
+        Assert.assertEquals(updatedAttributeValue_pro17.getAttributeDataType(),AttributeDataType.TIMESTAMP);
         Assert.assertEquals(updatedAttributeValue_pro17.getAttributeName(),"prop17");
         Assert.assertNotNull(updatedAttributeValue_pro17.getAttributeValue());
 
         AttributeValue updatedAttributeValue_pro18 = _queryResultConceptionEntity.updateAttribute("prop18", new Date[]{new Date(),new Date()});
         Assert.assertNotNull(updatedAttributeValue_pro18);
-        Assert.assertEquals(updatedAttributeValue_pro18.getAttributeDataType(),AttributeDataType.DATE_ARRAY);
+        Assert.assertEquals(updatedAttributeValue_pro18.getAttributeDataType(),AttributeDataType.TIMESTAMP_ARRAY);
         Assert.assertEquals(updatedAttributeValue_pro18.getAttributeName(),"prop18");
         Assert.assertEquals(((Date[])updatedAttributeValue_pro18.getAttributeValue()).length, 2);
         Assert.assertNotNull(((Date[])updatedAttributeValue_pro18.getAttributeValue())[1]);
@@ -737,5 +741,154 @@ public class AttributesMeasurableTest {
         Date lastUpdateDate7 = (Date)_ConceptionEntity.getAttribute(RealmConstant._lastModifyDateProperty).getAttributeValue();
         Assert.assertNotNull(lastUpdateDate7);
         Assert.assertTrue(lastUpdateDate7.getTime() > lastUpdateDate6.getTime());
+
+        LocalDate localDateAttribute = LocalDate.of(2015,7,23);
+        AttributeValue localDateAttributeValue = _ConceptionEntity.addAttribute("localDate",localDateAttribute);
+        Assert.assertNotNull(localDateAttributeValue);
+        Assert.assertEquals(localDateAttributeValue.getAttributeDataType(),AttributeDataType.DATE);
+        localDateAttributeValue = _ConceptionEntity.getAttribute("localDate");
+        Assert.assertNotNull(localDateAttributeValue);
+        Assert.assertTrue(localDateAttributeValue.getAttributeValue() instanceof LocalDate);
+        Assert.assertEquals(localDateAttributeValue.getAttributeDataType(),AttributeDataType.DATE);
+
+        LocalDateTime localDateTimeAttribute = LocalDateTime.of(2011,2,3,19,47,39);
+        AttributeValue localDateTimeAttributeValue = _ConceptionEntity.addAttribute("localDateTime",localDateTimeAttribute);
+        Assert.assertNotNull(localDateTimeAttributeValue);
+        Assert.assertEquals(localDateTimeAttributeValue.getAttributeDataType(),AttributeDataType.DATETIME);
+        localDateTimeAttributeValue = _ConceptionEntity.getAttribute("localDateTime");
+        Assert.assertNotNull(localDateTimeAttributeValue);
+        Assert.assertTrue(localDateTimeAttributeValue.getAttributeValue() instanceof LocalDateTime);
+        Assert.assertEquals(localDateTimeAttributeValue.getAttributeDataType(),AttributeDataType.DATETIME);
+
+        LocalTime localTimeAttribute = LocalTime.of(19,15,33);
+        AttributeValue localTimeAttributeValue = _ConceptionEntity.addAttribute("localTime",localTimeAttribute);
+        Assert.assertNotNull(localTimeAttributeValue);
+        Assert.assertEquals(localTimeAttributeValue.getAttributeDataType(),AttributeDataType.TIME);
+        localTimeAttributeValue = _ConceptionEntity.getAttribute("localTime");
+        Assert.assertNotNull(localTimeAttributeValue);
+        Assert.assertTrue(localTimeAttributeValue.getAttributeValue() instanceof LocalTime);
+        Assert.assertEquals(localTimeAttributeValue.getAttributeDataType(),AttributeDataType.TIME);
+
+        LocalDate[] localDateArrayAttribute = new LocalDate[2];
+        localDateArrayAttribute[0] =   LocalDate.of(1977,11,23);
+        localDateArrayAttribute[1] =   LocalDate.of(1980,9,27);
+        AttributeValue localDateArrayAttributeValue = _ConceptionEntity.addAttribute("localDateArray",localDateArrayAttribute);
+        Assert.assertNotNull(localDateArrayAttributeValue);
+        Assert.assertEquals(localDateArrayAttributeValue.getAttributeDataType(),AttributeDataType.DATE_ARRAY);
+        localDateArrayAttributeValue = _ConceptionEntity.getAttribute("localDateArray");
+        Assert.assertNotNull(localDateArrayAttributeValue);
+        Assert.assertTrue(localDateArrayAttributeValue.getAttributeValue() instanceof LocalDate[]);
+        Assert.assertEquals(localDateArrayAttributeValue.getAttributeDataType(),AttributeDataType.DATE_ARRAY);
+        LocalDate[] resultLocalDate = (LocalDate[])localDateArrayAttributeValue.getAttributeValue();
+        Assert.assertEquals(resultLocalDate.length,2);
+
+        LocalTime[] localTimeArrayAttribute = new LocalTime[2];
+        localTimeArrayAttribute[0] = LocalTime.of(1,4,55);
+        localTimeArrayAttribute[1] = LocalTime.of(21,44,1);
+        AttributeValue localTimeArrayAttributeValue = _ConceptionEntity.addAttribute("localTimeArray",localTimeArrayAttribute);
+        Assert.assertNotNull(localTimeArrayAttributeValue);
+        Assert.assertEquals(localTimeArrayAttributeValue.getAttributeDataType(),AttributeDataType.TIME_ARRAY);
+        localTimeArrayAttributeValue = _ConceptionEntity.getAttribute("localTimeArray");
+        Assert.assertNotNull(localTimeArrayAttributeValue);
+        Assert.assertTrue(localTimeArrayAttributeValue.getAttributeValue() instanceof LocalTime[]);
+        Assert.assertEquals(localTimeArrayAttributeValue.getAttributeDataType(),AttributeDataType.TIME_ARRAY);
+        LocalTime[] resultTimeDate = (LocalTime[])localTimeArrayAttributeValue.getAttributeValue();
+        Assert.assertEquals(resultTimeDate.length,2);
+
+        LocalDateTime[] localDateTimeArrayAttribute = new LocalDateTime[2];
+        localDateTimeArrayAttribute[0] = LocalDateTime.of(1949,10,1,8,15,5);
+        localDateTimeArrayAttribute[1] = LocalDateTime.of(2008,8,8,20,8,8);
+        AttributeValue localDateTimeArrayAttributeValue = _ConceptionEntity.addAttribute("localDateTimeArray",localDateTimeArrayAttribute);
+        Assert.assertNotNull(localDateTimeArrayAttributeValue);
+        Assert.assertEquals(localDateTimeArrayAttributeValue.getAttributeDataType(),AttributeDataType.DATETIME_ARRAY);
+        localDateTimeArrayAttributeValue = _ConceptionEntity.getAttribute("localDateTimeArray");
+        Assert.assertNotNull(localDateTimeArrayAttributeValue);
+        Assert.assertTrue(localDateTimeArrayAttributeValue.getAttributeValue() instanceof LocalDateTime[]);
+        Assert.assertEquals(localDateTimeArrayAttributeValue.getAttributeDataType(),AttributeDataType.DATETIME_ARRAY);
+        LocalDateTime[] resultDateTimeDate = (LocalDateTime[])localDateTimeArrayAttributeValue.getAttributeValue();
+        Assert.assertEquals(resultDateTimeDate.length,2);
+
+        LocalDate localDateAttribute2 = LocalDate.of(2021,11,15);
+        localDateAttributeValue = _ConceptionEntity.updateAttribute("localDate",localDateAttribute2);
+        Assert.assertNotNull(localDateAttributeValue);
+        Assert.assertEquals(localDateAttributeValue.getAttributeDataType(),AttributeDataType.DATE);
+        localDateAttributeValue = _ConceptionEntity.getAttribute("localDate");
+        Assert.assertNotNull(localDateAttributeValue);
+        Assert.assertTrue(localDateAttributeValue.getAttributeValue() instanceof LocalDate);
+        Assert.assertEquals(localDateAttributeValue.getAttributeDataType(),AttributeDataType.DATE);
+        LocalDate updatedLocalDateAttribute = (LocalDate)localDateAttributeValue.getAttributeValue();
+        Assert.assertEquals(updatedLocalDateAttribute.getYear(),2021);
+        Assert.assertEquals(updatedLocalDateAttribute.getDayOfMonth(),15);
+
+        LocalTime localTimeAttribute2 = LocalTime.of(22,18,4);
+        localTimeAttributeValue = _ConceptionEntity.updateAttribute("localTime",localTimeAttribute2);
+        Assert.assertNotNull(localTimeAttributeValue);
+        Assert.assertEquals(localTimeAttributeValue.getAttributeDataType(),AttributeDataType.TIME);
+        localTimeAttributeValue = _ConceptionEntity.getAttribute("localTime");
+        Assert.assertNotNull(localTimeAttributeValue);
+        Assert.assertTrue(localTimeAttributeValue.getAttributeValue() instanceof LocalTime);
+        Assert.assertEquals(localTimeAttributeValue.getAttributeDataType(),AttributeDataType.TIME);
+        LocalTime updatedLocalTimeAttribute = (LocalTime)localTimeAttributeValue.getAttributeValue();
+        Assert.assertEquals(updatedLocalTimeAttribute.getHour(),22);
+        Assert.assertEquals(updatedLocalTimeAttribute.getSecond(),4);
+
+        LocalDateTime localDateTimeAttribute2 = LocalDateTime.of(1979,5,3,5,12,15);
+        localDateTimeAttributeValue = _ConceptionEntity.updateAttribute("localDateTime",localDateTimeAttribute2);
+        Assert.assertNotNull(localDateTimeAttributeValue);
+        Assert.assertEquals(localDateTimeAttributeValue.getAttributeDataType(),AttributeDataType.DATETIME);
+        localDateTimeAttributeValue = _ConceptionEntity.getAttribute("localDateTime");
+        Assert.assertNotNull(localDateTimeAttributeValue);
+        Assert.assertTrue(localDateTimeAttributeValue.getAttributeValue() instanceof LocalDateTime);
+        Assert.assertEquals(localDateTimeAttributeValue.getAttributeDataType(),AttributeDataType.DATETIME);
+        LocalDateTime updatedLocalDateTimeAttribute = (LocalDateTime)localDateTimeAttributeValue.getAttributeValue();
+        Assert.assertEquals(updatedLocalDateTimeAttribute.getHour(),5);
+        Assert.assertEquals(updatedLocalDateTimeAttribute.getSecond(),15);
+        Assert.assertEquals(updatedLocalDateTimeAttribute.getYear(),1979);
+
+        LocalDate[] localDateArrayAttribute2 = new LocalDate[1];
+        localDateArrayAttribute2[0] =   LocalDate.of(1840,5,10);
+        localDateArrayAttributeValue = _ConceptionEntity.updateAttribute("localDateArray",localDateArrayAttribute2);
+        Assert.assertNotNull(localDateArrayAttributeValue);
+        Assert.assertEquals(localDateArrayAttributeValue.getAttributeDataType(),AttributeDataType.DATE_ARRAY);
+        localDateArrayAttributeValue = _ConceptionEntity.getAttribute("localDateArray");
+        Assert.assertNotNull(localDateArrayAttributeValue);
+        Assert.assertTrue(localDateArrayAttributeValue.getAttributeValue() instanceof LocalDate[]);
+        Assert.assertEquals(localDateArrayAttributeValue.getAttributeDataType(),AttributeDataType.DATE_ARRAY);
+        LocalDate[] updatedResultLocalDate = (LocalDate[])localDateArrayAttributeValue.getAttributeValue();
+        Assert.assertEquals(updatedResultLocalDate.length,1);
+        Assert.assertEquals(updatedResultLocalDate[0].getYear(),1840);
+        Assert.assertEquals(updatedResultLocalDate[0].getMonthValue(),5);
+
+        LocalTime[] localTimeArrayAttribute2 = new LocalTime[1];
+        localTimeArrayAttribute2[0] = LocalTime.of(23,59,58);
+        localTimeArrayAttributeValue = _ConceptionEntity.updateAttribute("localTimeArray",localTimeArrayAttribute2);
+        Assert.assertNotNull(localTimeArrayAttributeValue);
+        Assert.assertEquals(localTimeArrayAttributeValue.getAttributeDataType(),AttributeDataType.TIME_ARRAY);
+        localTimeArrayAttributeValue = _ConceptionEntity.getAttribute("localTimeArray");
+        Assert.assertNotNull(localTimeArrayAttributeValue);
+        Assert.assertTrue(localTimeArrayAttributeValue.getAttributeValue() instanceof LocalTime[]);
+        Assert.assertEquals(localTimeArrayAttributeValue.getAttributeDataType(),AttributeDataType.TIME_ARRAY);
+        LocalTime[] updatedResultTimeDate = (LocalTime[])localTimeArrayAttributeValue.getAttributeValue();
+        Assert.assertEquals(updatedResultTimeDate.length,1);
+        Assert.assertEquals(updatedResultTimeDate[0].getHour(),23);
+        Assert.assertEquals(updatedResultTimeDate[0].getMinute(),59);
+        Assert.assertEquals(updatedResultTimeDate[0].getSecond(),58);
+
+        LocalDateTime[] localDateTimeArrayAttribute2 = new LocalDateTime[1];
+        localDateTimeArrayAttribute2[0] = LocalDateTime.of(2144,11,5,4,20,44);
+        localDateTimeArrayAttributeValue = _ConceptionEntity.updateAttribute("localDateTimeArray",localDateTimeArrayAttribute2);
+        Assert.assertNotNull(localDateTimeArrayAttributeValue);
+        Assert.assertEquals(localDateTimeArrayAttributeValue.getAttributeDataType(),AttributeDataType.DATETIME_ARRAY);
+        localDateTimeArrayAttributeValue = _ConceptionEntity.getAttribute("localDateTimeArray");
+        Assert.assertNotNull(localDateTimeArrayAttributeValue);
+        Assert.assertTrue(localDateTimeArrayAttributeValue.getAttributeValue() instanceof LocalDateTime[]);
+        Assert.assertEquals(localDateTimeArrayAttributeValue.getAttributeDataType(),AttributeDataType.DATETIME_ARRAY);
+        LocalDateTime[] updatedResultDateTimeDate = (LocalDateTime[])localDateTimeArrayAttributeValue.getAttributeValue();
+        Assert.assertEquals(updatedResultDateTimeDate.length,1);
+        Assert.assertEquals(updatedResultDateTimeDate[0].getHour(),4);
+        Assert.assertEquals(updatedResultDateTimeDate[0].getMinute(),20);
+        Assert.assertEquals(updatedResultDateTimeDate[0].getSecond(),44);
+        Assert.assertEquals(updatedResultDateTimeDate[0].getYear(),2144);
+
     }
 }

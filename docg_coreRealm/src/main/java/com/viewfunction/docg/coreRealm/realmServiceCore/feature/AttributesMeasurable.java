@@ -4,6 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 
 import java.math.BigDecimal;
+import java.time.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -111,7 +112,7 @@ public interface AttributesMeasurable {
     public AttributeValue addAttribute(String attributeName, double attributeValue) throws CoreRealmServiceRuntimeException;
 
     /**
-     * 在当前对象中添加 Date 类型的属性信息
+     * 在当前对象中添加 Date(对应 TimeStamp) 类型的属性信息
      *
      * @param attributeName String 需要添加的属性名称
      * @param attributeValue Date 需要添加的属性值
@@ -119,6 +120,36 @@ public interface AttributesMeasurable {
      * @return 新建的属性信息值
      */
     public AttributeValue addAttribute(String attributeName, Date attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 LocalDateTime(对应 DateTime) 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue LocalDateTime 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, LocalDateTime attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 LocalDate(对应 Date) 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue LocalDate 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, LocalDate attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 LocalTime(对应 Time) 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue LocalTime 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, LocalTime attributeValue) throws CoreRealmServiceRuntimeException;
 
     /**
      * 在当前对象中添加 String 类型的属性信息
@@ -219,6 +250,36 @@ public interface AttributesMeasurable {
      * @return 新建的属性信息值
      */
     public AttributeValue addAttribute(String attributeName, Date[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 LocalDateTime[] 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue LocalDateTime[] 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, LocalDateTime[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 LocalDate[] 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue LocalDate[] 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, LocalDate[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 LocalTime[] 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue LocalTime[] 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, LocalTime[] attributeValue) throws CoreRealmServiceRuntimeException;
 
     /**
      * 在当前对象中添加 String[] 类型的属性信息
@@ -331,6 +392,36 @@ public interface AttributesMeasurable {
     public AttributeValue updateAttribute(String attributeName, Date attributeValue) throws CoreRealmServiceRuntimeException;
 
     /**
+     * 更新当前对象中已有的 LocalDateTime 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue LocalDateTime 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, LocalDateTime attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 LocalDate 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue LocalDate 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, LocalDate attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 LocalTime 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue LocalTime 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, LocalTime attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
      * 更新当前对象中已有的 String 类型的属性信息值
      *
      * @param attributeName String 需要更新的属性名称
@@ -429,6 +520,36 @@ public interface AttributesMeasurable {
      * @return 新建的属性信息值
      */
     public AttributeValue updateAttribute(String attributeName, Date[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 LocalDateTime[] 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue LocalDateTime[] 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, LocalDateTime[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 LocalDate[] 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue LocalDate[] 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, LocalDate[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 LocalTime[] 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue LocalTime[] 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, LocalTime[] attributeValue) throws CoreRealmServiceRuntimeException;
 
     /**
      * 更新当前对象中已有的 String[] 类型的属性信息值

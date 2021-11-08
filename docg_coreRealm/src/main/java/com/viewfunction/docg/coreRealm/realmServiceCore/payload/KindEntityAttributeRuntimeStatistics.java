@@ -33,7 +33,7 @@ public class KindEntityAttributeRuntimeStatistics {
         }else if(attributeDataTypeValue.equalsIgnoreCase("Double")){
             attributeDataType = AttributeDataType.DOUBLE;
         }else if(attributeDataTypeValue.equalsIgnoreCase("DateTime")){
-            attributeDataType = AttributeDataType.DATE;
+            attributeDataType = AttributeDataType.TIMESTAMP;
         }else if(attributeDataTypeValue.equalsIgnoreCase("Char")){
             attributeDataType = AttributeDataType.STRING;
         }else if(attributeDataTypeValue.equalsIgnoreCase("StringArray")){
@@ -53,7 +53,7 @@ public class KindEntityAttributeRuntimeStatistics {
         }else if(attributeDataTypeValue.equalsIgnoreCase("DoubleArray")){
             attributeDataType = AttributeDataType.DOUBLE_ARRAY;
         }else if(attributeDataTypeValue.equalsIgnoreCase("DateTimeArray")){
-            attributeDataType = AttributeDataType.DATE_ARRAY;
+            attributeDataType = AttributeDataType.TIMESTAMP_ARRAY;
         }else if(attributeDataTypeValue.equalsIgnoreCase("CharArray")){
             attributeDataType = AttributeDataType.STRING_ARRAY;
         }

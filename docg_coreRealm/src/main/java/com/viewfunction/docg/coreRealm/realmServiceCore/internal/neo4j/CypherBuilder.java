@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.Temporal;
 import java.util.*;
 
 import static com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder.ReturnRelationableDataType.NODE;
@@ -456,7 +457,7 @@ public class CypherBuilder {
                     String targetZonedDateTimeString = targetZonedDateTime.toString();
                     targetPropertiesArray[i] = m.property(currentKey).to(Functions2.datetime(Cypher.literalOf(targetZonedDateTimeString)));
                 } else if (currentValue instanceof CharSequence || currentValue instanceof Number ||
-                        currentValue instanceof Iterable || currentValue instanceof Boolean) {
+                        currentValue instanceof Iterable || currentValue instanceof Boolean || currentValue instanceof Temporal) {
                     targetPropertiesArray[i] = m.property(currentKey).to(Cypher.literalOf(currentValue));
                 } else if (currentValue instanceof Date[]) {
                     Date[] dateValueArray = (Date[]) currentValue;

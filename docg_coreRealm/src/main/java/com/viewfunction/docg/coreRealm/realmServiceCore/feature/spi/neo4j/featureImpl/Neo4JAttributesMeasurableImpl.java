@@ -14,6 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 public class Neo4JAttributesMeasurableImpl implements AttributesMeasurable {
@@ -202,6 +205,21 @@ public class Neo4JAttributesMeasurableImpl implements AttributesMeasurable {
     }
 
     @Override
+    public AttributeValue addAttribute(String attributeName, LocalDateTime attributeValue) throws CoreRealmServiceRuntimeException {
+        return setAttribute(attributeName,attributeValue);
+    }
+
+    @Override
+    public AttributeValue addAttribute(String attributeName, LocalDate attributeValue) throws CoreRealmServiceRuntimeException {
+        return setAttribute(attributeName,attributeValue);
+    }
+
+    @Override
+    public AttributeValue addAttribute(String attributeName, LocalTime attributeValue) throws CoreRealmServiceRuntimeException {
+        return setAttribute(attributeName,attributeValue);
+    }
+
+    @Override
     public AttributeValue addAttribute(String attributeName, String attributeValue) throws CoreRealmServiceRuntimeException {
         return setAttribute(attributeName,attributeValue);
     }
@@ -257,6 +275,21 @@ public class Neo4JAttributesMeasurableImpl implements AttributesMeasurable {
     }
 
     @Override
+    public AttributeValue addAttribute(String attributeName, LocalDateTime[] attributeValue) throws CoreRealmServiceRuntimeException {
+        return setAttribute(attributeName,attributeValue);
+    }
+
+    @Override
+    public AttributeValue addAttribute(String attributeName, LocalDate[] attributeValue) throws CoreRealmServiceRuntimeException {
+        return setAttribute(attributeName,attributeValue);
+    }
+
+    @Override
+    public AttributeValue addAttribute(String attributeName, LocalTime[] attributeValue) throws CoreRealmServiceRuntimeException {
+        return setAttribute(attributeName,attributeValue);
+    }
+
+    @Override
     public AttributeValue addAttribute(String attributeName, String[] attributeValue) throws CoreRealmServiceRuntimeException {
         return setAttribute(attributeName,attributeValue);
     }
@@ -303,6 +336,21 @@ public class Neo4JAttributesMeasurableImpl implements AttributesMeasurable {
 
     @Override
     public AttributeValue updateAttribute(String attributeName, Date attributeValue) throws CoreRealmServiceRuntimeException {
+        return checkAndUpdateAttribute(attributeName,attributeValue);
+    }
+
+    @Override
+    public AttributeValue updateAttribute(String attributeName, LocalDateTime attributeValue) throws CoreRealmServiceRuntimeException {
+        return checkAndUpdateAttribute(attributeName,attributeValue);
+    }
+
+    @Override
+    public AttributeValue updateAttribute(String attributeName, LocalDate attributeValue) throws CoreRealmServiceRuntimeException {
+        return checkAndUpdateAttribute(attributeName,attributeValue);
+    }
+
+    @Override
+    public AttributeValue updateAttribute(String attributeName, LocalTime attributeValue) throws CoreRealmServiceRuntimeException {
         return checkAndUpdateAttribute(attributeName,attributeValue);
     }
 
@@ -358,6 +406,21 @@ public class Neo4JAttributesMeasurableImpl implements AttributesMeasurable {
 
     @Override
     public AttributeValue updateAttribute(String attributeName, Date[] attributeValue) throws CoreRealmServiceRuntimeException {
+        return checkAndUpdateAttribute(attributeName,attributeValue);
+    }
+
+    @Override
+    public AttributeValue updateAttribute(String attributeName, LocalDateTime[] attributeValue) throws CoreRealmServiceRuntimeException {
+        return checkAndUpdateAttribute(attributeName,attributeValue);
+    }
+
+    @Override
+    public AttributeValue updateAttribute(String attributeName, LocalDate[] attributeValue) throws CoreRealmServiceRuntimeException {
+        return checkAndUpdateAttribute(attributeName,attributeValue);
+    }
+
+    @Override
+    public AttributeValue updateAttribute(String attributeName, LocalTime[] attributeValue) throws CoreRealmServiceRuntimeException {
         return checkAndUpdateAttribute(attributeName,attributeValue);
     }
 

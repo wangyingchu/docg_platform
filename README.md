@@ -1547,7 +1547,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public AttributeValue addAttribute(String attributeName, double attributeValue) throws CoreRealmServiceRuntimeException;
 
     /**
-     * 在当前对象中添加 Date 类型的属性信息
+     * 在当前对象中添加 Date(对应 TimeStamp) 类型的属性信息
      *
      * @param attributeName String 需要添加的属性名称
      * @param attributeValue Date 需要添加的属性值
@@ -1555,6 +1555,36 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 新建的属性信息值
      */
     public AttributeValue addAttribute(String attributeName, Date attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 LocalDateTime(对应 DateTime) 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue LocalDateTime 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, LocalDateTime attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 LocalDate(对应 Date) 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue LocalDate 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, LocalDate attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 LocalTime(对应 Time) 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue LocalTime 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, LocalTime attributeValue) throws CoreRealmServiceRuntimeException;
 
     /**
      * 在当前对象中添加 String 类型的属性信息
@@ -1655,6 +1685,36 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 新建的属性信息值
      */
     public AttributeValue addAttribute(String attributeName, Date[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 LocalDateTime[] 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue LocalDateTime[] 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, LocalDateTime[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 LocalDate[] 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue LocalDate[] 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, LocalDate[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象中添加 LocalTime[] 类型的属性信息
+     *
+     * @param attributeName String 需要添加的属性名称
+     * @param attributeValue LocalTime[] 需要添加的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue addAttribute(String attributeName, LocalTime[] attributeValue) throws CoreRealmServiceRuntimeException;
 
     /**
      * 在当前对象中添加 String[] 类型的属性信息
@@ -1767,6 +1827,36 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public AttributeValue updateAttribute(String attributeName, Date attributeValue) throws CoreRealmServiceRuntimeException;
 
     /**
+     * 更新当前对象中已有的 LocalDateTime 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue LocalDateTime 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, LocalDateTime attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 LocalDate 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue LocalDate 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, LocalDate attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 LocalTime 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue LocalTime 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, LocalTime attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
      * 更新当前对象中已有的 String 类型的属性信息值
      *
      * @param attributeName String 需要更新的属性名称
@@ -1865,6 +1955,36 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 新建的属性信息值
      */
     public AttributeValue updateAttribute(String attributeName, Date[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 LocalDateTime[] 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue LocalDateTime[] 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, LocalDateTime[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 LocalDate[] 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue LocalDate[] 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, LocalDate[] attributeValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新当前对象中已有的 LocalTime[] 类型的属性信息值
+     *
+     * @param attributeName String 需要更新的属性名称
+     * @param attributeValue LocalTime[] 新的属性值
+     *
+     * @return 新建的属性信息值
+     */
+    public AttributeValue updateAttribute(String attributeName, LocalTime[] attributeValue) throws CoreRealmServiceRuntimeException;
 
     /**
      * 更新当前对象中已有的 String[] 类型的属性信息值

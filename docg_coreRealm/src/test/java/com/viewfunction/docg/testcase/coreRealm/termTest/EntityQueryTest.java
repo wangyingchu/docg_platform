@@ -326,8 +326,8 @@ public class EntityQueryTest {
         AttributeKind attributeKindB014 = coreRealm.createAttributeKind("prop14","-", AttributeDataType.DECIMAL_ARRAY);
         AttributeKind attributeKindB015 = coreRealm.createAttributeKind("prop15","-", AttributeDataType.SHORT_ARRAY);
         AttributeKind attributeKindB016 = coreRealm.createAttributeKind("prop16","-", AttributeDataType.FLOAT_ARRAY);
-        AttributeKind attributeKindB017 = coreRealm.createAttributeKind("prop17","-", AttributeDataType.DATE);
-        AttributeKind attributeKindB018 = coreRealm.createAttributeKind("prop18","-", AttributeDataType.DATE_ARRAY);
+        AttributeKind attributeKindB017 = coreRealm.createAttributeKind("prop17","-", AttributeDataType.TIMESTAMP);
+        AttributeKind attributeKindB018 = coreRealm.createAttributeKind("prop18","-", AttributeDataType.TIMESTAMP_ARRAY);
         AttributeKind attributeKindB019 = coreRealm.createAttributeKind("prop19","-", AttributeDataType.BYTE);
         AttributeKind attributeKindB020 = coreRealm.createAttributeKind("prop20","-", AttributeDataType.BINARY);
         AttributeKind attributeKindB021 = coreRealm.createAttributeKind("prop21","-", AttributeDataType.BYTE_ARRAY);

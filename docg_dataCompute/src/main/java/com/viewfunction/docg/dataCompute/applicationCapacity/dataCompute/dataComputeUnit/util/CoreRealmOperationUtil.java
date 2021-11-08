@@ -77,7 +77,7 @@ public class CoreRealmOperationUtil {
                     case FLOAT:
                         dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.FLOAT);
                         break;
-                    case DATE:
+                    case TIMESTAMP:
                         dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.DATE);
                         break;
                     case LONG:

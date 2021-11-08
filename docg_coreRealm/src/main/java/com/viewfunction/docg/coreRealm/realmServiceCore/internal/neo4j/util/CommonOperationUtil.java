@@ -18,8 +18,7 @@ import org.neo4j.cypherdsl.core.*;
 import org.neo4j.driver.Result;
 
 import java.math.BigDecimal;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.*;
 
 public class CommonOperationUtil {
@@ -73,7 +72,10 @@ public class CommonOperationUtil {
                         propertyValue instanceof BigDecimal[]||
                         propertyValue instanceof String[]||
                         propertyValue instanceof byte[]||
-                        propertyValue instanceof Byte[]){
+                        propertyValue instanceof Byte[]||
+                        propertyValue instanceof LocalDate[]||
+                        propertyValue instanceof LocalTime[]||
+                        propertyValue instanceof LocalDateTime[]){
                     List<Literal> literalList = new ArrayList<>();
 
                     if(propertyValue instanceof Boolean[]){
@@ -133,6 +135,24 @@ public class CommonOperationUtil {
                     if(propertyValue instanceof Byte[]){
                         Byte[] orgValue = (Byte[])propertyValue;
                         for(Byte currentValue:orgValue){
+                            literalList.add(Cypher.literalOf(currentValue));
+                        }
+                    }
+                    if(propertyValue instanceof LocalDate[]){
+                        LocalDate[] orgValue = (LocalDate[])propertyValue;
+                        for(LocalDate currentValue:orgValue){
+                            literalList.add(Cypher.literalOf(currentValue));
+                        }
+                    }
+                    if(propertyValue instanceof LocalTime[]){
+                        LocalTime[] orgValue = (LocalTime[])propertyValue;
+                        for(LocalTime currentValue:orgValue){
+                            literalList.add(Cypher.literalOf(currentValue));
+                        }
+                    }
+                    if(propertyValue instanceof LocalDateTime[]){
+                        LocalDateTime[] orgValue = (LocalDateTime[])propertyValue;
+                        for(LocalDateTime currentValue:orgValue){
                             literalList.add(Cypher.literalOf(currentValue));
                         }
                     }
@@ -234,7 +254,10 @@ public class CommonOperationUtil {
                 case DECIMAL: currentAttributeDataType = AttributeDataType.DECIMAL_ARRAY;break;
                 case STRING: currentAttributeDataType = AttributeDataType.STRING_ARRAY;break;
                 case BYTE: currentAttributeDataType = AttributeDataType.BYTE_ARRAY;break;
+                case TIMESTAMP: currentAttributeDataType = AttributeDataType.TIMESTAMP_ARRAY;break;
                 case DATE: currentAttributeDataType = AttributeDataType.DATE_ARRAY;break;
+                case TIME: currentAttributeDataType = AttributeDataType.TIME_ARRAY;break;
+                case DATETIME: currentAttributeDataType = AttributeDataType.DATETIME_ARRAY;break;
             }
         }else{
             currentAttributeDataType = checkAttributeDataType(attributeValueObject);
@@ -245,13 +268,13 @@ public class CommonOperationUtil {
 
         boolean needSetAttributeValue = true;
         switch(currentAttributeDataType){
-            case DATE:
+            case TIMESTAMP:
                 ZonedDateTime currentZonedDateTime = (ZonedDateTime)attributeValueObject;
                 Date currentDate = Date.from(currentZonedDateTime.toInstant());
                 currentAttributeValue.setAttributeValue(currentDate);
                 needSetAttributeValue = false;
                 break;
-            case DATE_ARRAY:
+            case TIMESTAMP_ARRAY:
                 List<ZonedDateTime> valueList = (List<ZonedDateTime>)attributeValueObject;
                 Date[] returnDateValueArray = new Date[valueList.size()];
                 for(int i=0;i<valueList.size();i++){
@@ -314,6 +337,24 @@ public class CommonOperationUtil {
                 currentAttributeValue.setAttributeValue(returnBigDecimalValueArray);
                 needSetAttributeValue = false;
                 break;
+            case DATETIME_ARRAY:
+                List<LocalDateTime> dateTimeValueList = (List<LocalDateTime>)attributeValueObject;
+                LocalDateTime[] returnDateTimeValueArray = dateTimeValueList.toArray(new LocalDateTime[dateTimeValueList.size()]);
+                currentAttributeValue.setAttributeValue(returnDateTimeValueArray);
+                needSetAttributeValue = false;
+                break;
+            case DATE_ARRAY:
+                List<LocalDate> dateValueList = (List<LocalDate>)attributeValueObject;
+                LocalDate[] returnLocalDateValueArray = dateValueList.toArray(new LocalDate[dateValueList.size()]);
+                currentAttributeValue.setAttributeValue(returnLocalDateValueArray);
+                needSetAttributeValue = false;
+                break;
+            case TIME_ARRAY:
+                List<LocalTime> timeValueList = (List<LocalTime>)attributeValueObject;
+                LocalTime[] returnTimeValueArray = timeValueList.toArray(new LocalTime[timeValueList.size()]);
+                currentAttributeValue.setAttributeValue(returnTimeValueArray);
+                needSetAttributeValue = false;
+                break;
         }
         if(needSetAttributeValue) {
             currentAttributeValue.setAttributeValue(attributeValueObject);
@@ -351,7 +392,16 @@ public class CommonOperationUtil {
             return AttributeDataType.BINARY;
         }
         if(attributeValueObject instanceof ZonedDateTime){
+            return AttributeDataType.TIMESTAMP;
+        }
+        if(attributeValueObject instanceof LocalDateTime){
+            return AttributeDataType.DATETIME;
+        }
+        if(attributeValueObject instanceof LocalDate){
             return AttributeDataType.DATE;
+        }
+        if(attributeValueObject instanceof LocalTime){
+            return AttributeDataType.TIME;
         }
         return null;
     }
@@ -396,7 +446,7 @@ public class CommonOperationUtil {
                         return true;
                     }
                     break;
-                case DATE:
+                case TIMESTAMP:
                     if(dataValue instanceof Date){
                         return true;
                     }
@@ -418,6 +468,21 @@ public class CommonOperationUtil {
                     break;
                 case DECIMAL:
                     if(dataValue instanceof BigDecimal){
+                        return true;
+                    }
+                    break;
+                case DATE:
+                    if(dataValue instanceof LocalDate){
+                        return true;
+                    }
+                    break;
+                case TIME:
+                    if(dataValue instanceof LocalTime){
+                        return true;
+                    }
+                    break;
+                case DATETIME:
+                    if(dataValue instanceof LocalDateTime){
                         return true;
                     }
                     break;
@@ -457,7 +522,7 @@ public class CommonOperationUtil {
                         return true;
                     }
                     break;
-                case DATE_ARRAY:
+                case TIMESTAMP_ARRAY:
                     if(dataValue instanceof Date[]){
                         return true;
                     }
@@ -474,6 +539,21 @@ public class CommonOperationUtil {
                     break;
                 case DECIMAL_ARRAY:
                     if(dataValue instanceof BigDecimal[]){
+                        return true;
+                    }
+                    break;
+                case DATE_ARRAY:
+                    if(dataValue instanceof LocalDate[]){
+                        return true;
+                    }
+                    break;
+                case TIME_ARRAY:
+                    if(dataValue instanceof LocalTime[]){
+                        return true;
+                    }
+                    break;
+                case DATETIME_ARRAY:
+                    if(dataValue instanceof LocalDateTime[]){
                         return true;
                     }
                     break;
@@ -522,7 +602,7 @@ public class CommonOperationUtil {
         else if(filteringItem instanceof EqualFilteringItem){
             EqualFilteringItem currentFilteringItem = (EqualFilteringItem)filteringItem;
             String propertyName = currentFilteringItem.getAttributeName();
-            Object propertyValue = currentFilteringItem.getAttributeValue();
+            Object propertyValue = internalValueConvert(currentFilteringItem.getAttributeValue());
             if(propertyName != null & propertyValue !=null ){
                 if(filteringItem.isReversedCondition()){
                     return targetPropertyContainer.property(propertyName).isNotEqualTo(Cypher.literalOf(propertyValue));
@@ -653,6 +733,14 @@ public class CommonOperationUtil {
             }
         }
         return null;
+    }
+
+    private static Object internalValueConvert(Object orgValue){
+        if(orgValue instanceof Date){
+            ZonedDateTime targetZonedDateTime = ZonedDateTime.ofInstant(((Date)orgValue).toInstant(), systemDefaultZoneId);
+            return targetZonedDateTime;
+        }
+        return orgValue;
     }
 
     public static Literal[] generateListLiteralValue(List<Object> propertyValue){
