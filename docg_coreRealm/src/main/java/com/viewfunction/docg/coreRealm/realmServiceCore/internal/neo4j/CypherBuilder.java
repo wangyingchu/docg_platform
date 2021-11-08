@@ -92,7 +92,8 @@ public class CypherBuilder {
                 String propertyName = propertyNameIterator.next();
                 Object propertyValue = realPropertiesData.get(propertyName);
                 if (propertyValue instanceof CharSequence || propertyValue instanceof Number ||
-                        propertyValue instanceof Iterable || propertyValue instanceof Boolean) {
+                        propertyValue instanceof Iterable || propertyValue instanceof Boolean ||
+                        propertyValue instanceof Temporal) {
                     propertyValuesList.add(m.property(propertyName).to(Cypher.literalOf(propertyValue)));
                 } else if (propertyValue instanceof ZonedDateTime) {
                     ZonedDateTime targetZonedDateTime = (ZonedDateTime) propertyValue;

@@ -84,6 +84,13 @@ public class AttributesMeasurableTest {
         newEntityValue.put("prop19", Byte.valueOf("2"));
         newEntityValue.put("prop20", "this is a byte array value".getBytes());
         newEntityValue.put("prop21", new Byte[]{Byte.valueOf("1"),Byte.valueOf("3"),Byte.valueOf("5")});
+        newEntityValue.put("prop22", LocalDate.of(2011,1,23));
+        newEntityValue.put("prop23", LocalTime.of(12,5,7));
+        newEntityValue.put("prop24", LocalDateTime.of(2011,4,6,17,8,35));
+        newEntityValue.put("prop25", new LocalDate[]{LocalDate.of(2011,1,23),LocalDate.of(2012,2,24)});
+        newEntityValue.put("prop26", new LocalTime[]{LocalTime.of(12,5,7),LocalTime.of(15,16,47)});
+        newEntityValue.put("prop27", new LocalDateTime[]{LocalDateTime.of(2011,4,6,17,8,35),
+                LocalDateTime.of(2031,8,16,7,4,7)});
 
         ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValue);
 
@@ -105,7 +112,7 @@ public class AttributesMeasurableTest {
 
         List<String> attributeNameList = _queryResultConceptionEntity.getAttributeNames();
         Assert.assertNotNull(attributeNameList);
-        Assert.assertEquals(attributeNameList.size(),21);
+        Assert.assertEquals(attributeNameList.size(),27);
         List<String> targetAttributeNameList = new ArrayList();
         targetAttributeNameList.add("prop1");targetAttributeNameList.add("prop2");targetAttributeNameList.add("prop3");
         targetAttributeNameList.add("prop4");targetAttributeNameList.add("prop5");targetAttributeNameList.add("prop6");
@@ -114,12 +121,14 @@ public class AttributesMeasurableTest {
         targetAttributeNameList.add("prop13");targetAttributeNameList.add("prop14");targetAttributeNameList.add("prop15");
         targetAttributeNameList.add("prop16");targetAttributeNameList.add("prop17");targetAttributeNameList.add("prop18");
         targetAttributeNameList.add("prop19");targetAttributeNameList.add("prop20");targetAttributeNameList.add("prop21");
+        targetAttributeNameList.add("prop22");targetAttributeNameList.add("prop23");targetAttributeNameList.add("prop24");
+        targetAttributeNameList.add("prop25");targetAttributeNameList.add("prop26");targetAttributeNameList.add("prop27");
         for(String attributeName:attributeNameList){
             Assert.assertTrue(targetAttributeNameList.contains(attributeName));
         }
         List<AttributeValue> attributeValueList = _queryResultConceptionEntity.getAttributes();
         Assert.assertNotNull(attributeValueList);
-        Assert.assertEquals(attributeValueList.size(),21);
+        Assert.assertEquals(attributeValueList.size(),27);
         for(AttributeValue currentAttributeValue:attributeValueList){
             String attributeName = currentAttributeValue.getAttributeName();
             AttributeDataType currentAttributeDataType = currentAttributeValue.getAttributeDataType();
@@ -287,6 +296,60 @@ public class AttributesMeasurableTest {
                 Assert.assertEquals(((Long[])currentAttributeValueObj)[0],new Long(1));
                 Assert.assertEquals(((Long[])currentAttributeValueObj)[1],new Long(3));
                 Assert.assertEquals(((Long[])currentAttributeValueObj)[2],new Long(5));
+            }
+            if(attributeName.equals("prop22")){
+                Assert.assertEquals(currentAttributeDataType,AttributeDataType.DATE);
+                Assert.assertTrue(currentAttributeValueObj instanceof LocalDate);
+                Assert.assertEquals(((LocalDate)currentAttributeValueObj).getYear(),2011);
+                Assert.assertEquals(((LocalDate)currentAttributeValueObj).getMonthValue(),1);
+                Assert.assertEquals(((LocalDate)currentAttributeValueObj).getDayOfMonth(),23);
+            }
+            if(attributeName.equals("prop23")){
+                Assert.assertEquals(currentAttributeDataType,AttributeDataType.TIME);
+                Assert.assertTrue(currentAttributeValueObj instanceof LocalTime);
+                Assert.assertEquals(((LocalTime)currentAttributeValueObj).getHour(),12);
+                Assert.assertEquals(((LocalTime)currentAttributeValueObj).getMinute(),5);
+                Assert.assertEquals(((LocalTime)currentAttributeValueObj).getSecond(),7);
+            }
+            if(attributeName.equals("prop24")){
+                Assert.assertEquals(currentAttributeDataType,AttributeDataType.DATETIME);
+                Assert.assertTrue(currentAttributeValueObj instanceof LocalDateTime);
+                Assert.assertEquals(((LocalDateTime)currentAttributeValueObj).getYear(),2011);
+                Assert.assertEquals(((LocalDateTime)currentAttributeValueObj).getMonthValue(),4);
+                Assert.assertEquals(((LocalDateTime)currentAttributeValueObj).getDayOfMonth(),6);
+                Assert.assertEquals(((LocalDateTime)currentAttributeValueObj).getHour(),17);
+                Assert.assertEquals(((LocalDateTime)currentAttributeValueObj).getMinute(),8);
+                Assert.assertEquals(((LocalDateTime)currentAttributeValueObj).getSecond(),35);
+            }
+            if(attributeName.equals("prop25")){
+                Assert.assertEquals(currentAttributeDataType,AttributeDataType.DATE_ARRAY);
+                Assert.assertTrue(currentAttributeValueObj instanceof LocalDate[]);
+                Assert.assertEquals(((LocalDate[])currentAttributeValueObj).length,2);
+                LocalDate item0 = ((LocalDate[])currentAttributeValueObj)[0];
+                Assert.assertEquals(item0.getYear(),2011);
+                Assert.assertEquals(item0.getMonthValue(),1);
+                Assert.assertEquals(item0.getDayOfMonth(),23);
+            }
+            if(attributeName.equals("prop26")){
+                Assert.assertEquals(currentAttributeDataType,AttributeDataType.TIME_ARRAY);
+                Assert.assertTrue(currentAttributeValueObj instanceof LocalTime[]);
+                Assert.assertEquals(((LocalTime[])currentAttributeValueObj).length,2);
+                LocalTime item1 = ((LocalTime[])currentAttributeValueObj)[1];
+                Assert.assertEquals(item1.getHour(),15);
+                Assert.assertEquals(item1.getMinute(),16);
+                Assert.assertEquals(item1.getSecond(),47);
+            }
+            if(attributeName.equals("prop27")){
+                Assert.assertEquals(currentAttributeDataType,AttributeDataType.DATETIME_ARRAY);
+                Assert.assertTrue(currentAttributeValueObj instanceof LocalDateTime[]);
+                Assert.assertEquals(((LocalDateTime[])currentAttributeValueObj).length,2);
+                LocalDateTime item0 = ((LocalDateTime[])currentAttributeValueObj)[0];
+                Assert.assertEquals(item0.getYear(),2011);
+                Assert.assertEquals(item0.getMonthValue(),4);
+                Assert.assertEquals(item0.getDayOfMonth(),6);
+                Assert.assertEquals(item0.getHour(),17);
+                Assert.assertEquals(item0.getMinute(),8);
+                Assert.assertEquals(item0.getSecond(),35);
             }
         }
 

@@ -181,7 +181,10 @@ public class CommonOperationUtil {
                         propertyValue instanceof Double[]||
                         propertyValue instanceof BigDecimal[]||
                         propertyValue instanceof String[]||
-                        propertyValue instanceof Byte[]){
+                        propertyValue instanceof Byte[]||
+                        propertyValue instanceof LocalDate[]||
+                        propertyValue instanceof LocalTime[]||
+                        propertyValue instanceof LocalDateTime[]){
                     Object[] dataValueArray = (Object[])propertyValue;
                     Literal[] orgLiteralValue = new Literal[dataValueArray.length];
                     for(int i=0 ;i<dataValueArray.length;i++){
