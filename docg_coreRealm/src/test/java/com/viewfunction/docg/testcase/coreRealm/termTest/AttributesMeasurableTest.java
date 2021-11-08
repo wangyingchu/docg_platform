@@ -791,15 +791,29 @@ public class AttributesMeasurableTest {
         addOrUpdAttributeMap.put("newAtt2",Long.valueOf(2000001));
         addOrUpdAttributeMap.put("prop7",Long.valueOf(34000));
         addOrUpdAttributeMap.put("prop7NotExist",new Long(66000));
+        addOrUpdAttributeMap.put("prop22", LocalDate.of(1999,9,9));
+        addOrUpdAttributeMap.put("prop26", new LocalTime[]{LocalTime.of(9,9,9)});
+        addOrUpdAttributeMap.put("newTmpProp1", LocalDateTime.of(2022,2,2,2,2));
+        addOrUpdAttributeMap.put("newTmpProp2",  new LocalDate[]{LocalDate.of(1888,8,8),
+                LocalDate.of(1777,7,7)});
 
         List<String> addAndUpdateAttributesResult = _queryResultConceptionEntity.addNewOrUpdateAttributes(addOrUpdAttributeMap);
 
         Assert.assertNotNull(addAndUpdateAttributesResult);
-        Assert.assertEquals(addAndUpdateAttributesResult.size(),3);
+        Assert.assertEquals(addAndUpdateAttributesResult.size(),7);
         Assert.assertEquals(_queryResultConceptionEntity.getAttribute("newAtt1").getAttributeValue(),new Long(1000001));
         Assert.assertTrue(_queryResultConceptionEntity.getAttribute("newAtt2").getAttributeValue() instanceof Date);
         Assert.assertEquals(_queryResultConceptionEntity.getAttribute("prop7").getAttributeValue(),new Long(34000));
         Assert.assertEquals(_queryResultConceptionEntity.getAttribute("prop7NotExist").getAttributeValue(),new Long(66000));
+        Assert.assertEquals(_queryResultConceptionEntity.getAttribute("prop22").getAttributeValue(),LocalDate.of(1999,9,9));
+        LocalTime[] prop26Result = (LocalTime[])_queryResultConceptionEntity.getAttribute("prop26").getAttributeValue();
+        Assert.assertEquals(prop26Result.length,1);
+        Assert.assertEquals(prop26Result[0],LocalTime.of(9,9,9));
+        Assert.assertEquals(_queryResultConceptionEntity.getAttribute("newTmpProp1").getAttributeValue(),LocalDateTime.of(2022,2,2,2,2));
+        LocalDate[] newTmpProp2Result = (LocalDate[])_queryResultConceptionEntity.getAttribute("newTmpProp2").getAttributeValue();
+        Assert.assertEquals(newTmpProp2Result.length,2);
+        Assert.assertEquals(newTmpProp2Result[0],LocalDate.of(1888,8,8));
+        Assert.assertEquals(newTmpProp2Result[1],LocalDate.of(1777,7,7));
 
         Date lastUpdateDate7 = (Date)_ConceptionEntity.getAttribute(RealmConstant._lastModifyDateProperty).getAttributeValue();
         Assert.assertNotNull(lastUpdateDate7);
