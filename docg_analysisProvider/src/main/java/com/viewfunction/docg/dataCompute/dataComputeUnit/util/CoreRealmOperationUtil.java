@@ -82,7 +82,7 @@ public class CoreRealmOperationUtil {
                         dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.FLOAT);
                         break;
                     case TIMESTAMP:
-                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.DATE);
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.TIMESTAMP);
                         break;
                     case LONG:
                         dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.LONG);
@@ -92,6 +92,15 @@ public class CoreRealmOperationUtil {
                         break;
                     case INT:
                         dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.INT);
+                        break;
+                    case DATE:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.DATE);
+                        break;
+                    case TIME:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.TIME);
+                        break;
+                    case DATETIME:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.TIMESTAMP);
                         break;
                 }
                 conceptionKindPropertiesList.add(currentAttributeKindName);
