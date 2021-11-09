@@ -120,4 +120,12 @@ public class QueryParameters {
     public void setCustomQuerySentence(String customQuerySentence) {
         this.customQuerySentence = customQuerySentence;
     }
+
+    public AttributesParameters getAttributesParameters(){
+        AttributesParameters attributesParameters = new AttributesParameters();
+        attributesParameters.setDefaultFilteringItem(this.getDefaultFilteringItem());
+        attributesParameters.getAndFilteringItemsList().addAll(this.getAndFilteringItemsList());
+        attributesParameters.getOrFilteringItemsList().addAll(this.getOrFilteringItemsList());
+        return attributesParameters;
+    }
 }
