@@ -35,7 +35,7 @@ class SpatialDataMaintainUtil {
       propertyName = propertyName.replaceAll("OFFSET", "OFFSET_")
       val propertyValueType = propertyType.getBinding.getName
       if(propertyValueType.equals("java.util.Date")){
-        shpDataPropertyTypeMap.put(propertyName,DataSlicePropertyType.DATE)
+        shpDataPropertyTypeMap.put(propertyName,DataSlicePropertyType.TIMESTAMP)
       }
       if(propertyValueType.equals("java.lang.String")){
         shpDataPropertyTypeMap.put(propertyName,DataSlicePropertyType.STRING)

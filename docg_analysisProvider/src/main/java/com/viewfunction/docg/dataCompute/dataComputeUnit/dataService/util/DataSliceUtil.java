@@ -21,7 +21,7 @@ public class DataSliceUtil {
                     break;
                     case BYTE: sb.append(currentFieldName +" "+"TINYINT, ");
                     break;
-                    case DATE: sb.append(currentFieldName +" "+"TIMESTAMP, ");
+                    case TIMESTAMP: sb.append(currentFieldName +" "+"TIMESTAMP, ");
                     break;
                     case LONG: sb.append(currentFieldName +" "+"BIGINT, ");
                     break;
@@ -43,6 +43,10 @@ public class DataSliceUtil {
                     break;
                     case UUID: sb.append(currentFieldName +" "+"UUID, ");
                     break;
+                    case DATE: sb.append(currentFieldName +" "+"DATE, ");
+                        break;
+                    case TIME: sb.append(currentFieldName +" "+"TIME, ");
+                        break;
                 }
             }
             sb.append("PRIMARY KEY (");
