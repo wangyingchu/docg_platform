@@ -588,8 +588,8 @@ public class CommonOperationUtil {
         if(filteringItem instanceof BetweenFilteringItem){
             BetweenFilteringItem currentFilteringItem = (BetweenFilteringItem)filteringItem;
             String propertyName = currentFilteringItem.getAttributeName();
-            Object fromValue = currentFilteringItem.getAttributeFromValue();
-            Object toValue = currentFilteringItem.getAttributeToValue();
+            Object fromValue = internalValueConvert(currentFilteringItem.getAttributeFromValue());
+            Object toValue = internalValueConvert(currentFilteringItem.getAttributeToValue());
             if(propertyName != null & fromValue !=null & toValue != null){
                 if(filteringItem.isReversedCondition()){
                     return targetPropertyContainer.property(propertyName).lt(Cypher.literalOf(fromValue)).or(
@@ -617,7 +617,7 @@ public class CommonOperationUtil {
         else if(filteringItem instanceof GreaterThanEqualFilteringItem){
             GreaterThanEqualFilteringItem currentFilteringItem = (GreaterThanEqualFilteringItem)filteringItem;
             String propertyName = currentFilteringItem.getAttributeName();
-            Object propertyValue = currentFilteringItem.getAttributeValue();
+            Object propertyValue = internalValueConvert(currentFilteringItem.getAttributeValue());
             if(propertyName != null & propertyValue !=null ){
                 if(filteringItem.isReversedCondition()){
                     return targetPropertyContainer.property(propertyName).lt(Cypher.literalOf(propertyValue));
@@ -629,7 +629,7 @@ public class CommonOperationUtil {
         else if(filteringItem instanceof GreaterThanFilteringItem){
             GreaterThanFilteringItem currentFilteringItem = (GreaterThanFilteringItem)filteringItem;
             String propertyName = currentFilteringItem.getAttributeName();
-            Object propertyValue = currentFilteringItem.getAttributeValue();
+            Object propertyValue = internalValueConvert(currentFilteringItem.getAttributeValue());
             if(propertyName != null & propertyValue !=null ){
                 if(filteringItem.isReversedCondition()){
                     return targetPropertyContainer.property(propertyName).lte(Cypher.literalOf(propertyValue));
@@ -652,7 +652,7 @@ public class CommonOperationUtil {
         else if(filteringItem instanceof LessThanEqualFilteringItem){
             LessThanEqualFilteringItem currentFilteringItem = (LessThanEqualFilteringItem)filteringItem;
             String propertyName = currentFilteringItem.getAttributeName();
-            Object propertyValue = currentFilteringItem.getAttributeValue();
+            Object propertyValue = internalValueConvert(currentFilteringItem.getAttributeValue());
             if(propertyName != null & propertyValue !=null ){
                 if(filteringItem.isReversedCondition()){
                     return targetPropertyContainer.property(propertyName).gt(Cypher.literalOf(propertyValue));
@@ -664,7 +664,7 @@ public class CommonOperationUtil {
         else if(filteringItem instanceof LessThanFilteringItem){
             LessThanFilteringItem currentFilteringItem = (LessThanFilteringItem)filteringItem;
             String propertyName = currentFilteringItem.getAttributeName();
-            Object propertyValue = currentFilteringItem.getAttributeValue();
+            Object propertyValue = internalValueConvert(currentFilteringItem.getAttributeValue());
             if(propertyName != null & propertyValue !=null ){
                 if(filteringItem.isReversedCondition()){
                     return targetPropertyContainer.property(propertyName).gte(Cypher.literalOf(propertyValue));
@@ -676,7 +676,7 @@ public class CommonOperationUtil {
         else if(filteringItem instanceof NotEqualFilteringItem){
             NotEqualFilteringItem currentFilteringItem = (NotEqualFilteringItem)filteringItem;
             String propertyName = currentFilteringItem.getAttributeName();
-            Object propertyValue = currentFilteringItem.getAttributeValue();
+            Object propertyValue = internalValueConvert(currentFilteringItem.getAttributeValue());
             if(propertyName != null & propertyValue !=null ){
                 if(filteringItem.isReversedCondition()){
                     return targetPropertyContainer.property(propertyName).isEqualTo(Cypher.literalOf(propertyValue));
@@ -711,7 +711,7 @@ public class CommonOperationUtil {
         else if(filteringItem instanceof SimilarFilteringItem){
             SimilarFilteringItem currentFilteringItem = (SimilarFilteringItem)filteringItem;
             String propertyName = currentFilteringItem.getAttributeName();
-            Object propertyValue = currentFilteringItem.getAttributeValue();
+            Object propertyValue = internalValueConvert(currentFilteringItem.getAttributeValue());
             SimilarFilteringItem.MatchingType matchingType = currentFilteringItem.getMatchingType();
             if(propertyName != null & propertyValue !=null ){
                 if(filteringItem.isReversedCondition()){
