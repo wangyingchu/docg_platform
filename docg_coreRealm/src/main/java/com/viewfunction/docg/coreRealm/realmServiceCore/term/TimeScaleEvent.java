@@ -3,6 +3,8 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.AttributesMeasurable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationAttachable;
 
+import java.time.LocalDateTime;
+
 public interface TimeScaleEvent extends AttributesMeasurable, ClassificationAttachable {
     /**
      * 获取当前时间刻度事件所属的时间流名称
@@ -16,7 +18,7 @@ public interface TimeScaleEvent extends AttributesMeasurable, ClassificationAtta
      *
      * @return 时间值
      */
-    public long getReferTime();
+    public LocalDateTime getReferTime();
 
     /**
      * 获取当前时间刻度事件的时间刻度等级

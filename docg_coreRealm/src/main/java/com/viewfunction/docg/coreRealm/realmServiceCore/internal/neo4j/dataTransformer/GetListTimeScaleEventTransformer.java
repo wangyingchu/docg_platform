@@ -13,6 +13,7 @@ import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class GetListTimeScaleEventTransformer  implements DataTransformer<List<T
                 String timeScaleEventUID = ""+nodeUID;
                 String eventComment = resultNode.get(RealmConstant._TimeScaleEventComment).asString();
                 String timeScaleGrade = resultNode.get(RealmConstant._TimeScaleEventScaleGrade).asString();
-                long referTime = resultNode.get(RealmConstant._TimeScaleEventReferTime).asLong();
+                LocalDateTime referTime = resultNode.get(RealmConstant._TimeScaleEventReferTime).asLocalDateTime();
                 Neo4JTimeScaleEventImpl neo4JTimeScaleEventImpl = new Neo4JTimeScaleEventImpl(timeFlowName,eventComment,referTime,getTimeScaleGrade(timeScaleGrade),timeScaleEventUID);
                 neo4JTimeScaleEventImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
                 timeScaleEventList.add(neo4JTimeScaleEventImpl);

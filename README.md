@@ -2579,6 +2579,57 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public TimeScaleEvent attachTimeScaleEvent(String timeFlowName,long dateTime, String eventComment,
                                                Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException;
 
+     /**
+     * 为当前对象在默认时间流上附加时间刻度事件
+     *
+     * @param dateTime LocalDateTime 事件发生时间
+     * @param eventComment String 事件备注
+     * @param eventData Map<String, Object> 事件数据
+     * @param timeScaleGrade TimeFlow.TimeScaleGrade 事件时间刻度
+     *
+     * @return 如操作成功，返回结果为相应时间刻度事件对象
+     */
+    public TimeScaleEvent attachTimeScaleEvent(LocalDateTime dateTime, String eventComment, Map<String, Object> eventData,
+                                               TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 为当前对象在指定时间流上附加时间刻度事件
+     *
+     * @param timeFlowName String 指定时间流名称
+     * @param dateTime LocalDateTime 事件发生时间
+     * @param eventComment String 事件备注
+     * @param eventData Map<String, Object> 事件数据
+     * @param timeScaleGrade TimeFlow.TimeScaleGrade 事件时间刻度
+     *
+     * @return 如操作成功，返回结果为相应时间刻度事件对象
+     */
+    public TimeScaleEvent attachTimeScaleEvent(String timeFlowName,LocalDateTime dateTime, String eventComment,
+                                               Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 为当前对象在默认时间流上附加 TimeScaleGrade.DAY 粒度的时间刻度事件
+     *
+     * @param date LocalDate 事件发生日期
+     * @param eventComment String 事件备注
+     * @param eventData Map<String, Object> 事件数据
+     *
+     * @return 如操作成功，返回结果为相应时间刻度事件对象
+     */
+    public TimeScaleEvent attachTimeScaleEvent(LocalDate date, String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 为当前对象在指定时间流上附加时间刻度事件
+     *
+     * @param timeFlowName String 指定时间流名称
+     * @param date LocalDate 事件发生日期
+     * @param eventComment String 事件备注
+     * @param eventData Map<String, Object> 事件数据
+     *
+     * @return 如操作成功，返回结果为相应时间刻度事件对象
+     */
+    public TimeScaleEvent attachTimeScaleEvent(String timeFlowName,LocalDate date, String eventComment,
+                                               Map<String, Object> eventData) throws CoreRealmServiceRuntimeException;
+
     /**
      * 删除当前对象上关联的指定时间刻度事件
      *
@@ -3380,7 +3431,7 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      *
      * @return 时间值
      */
-    public long getReferTime();
+    public LocalDateTime getReferTime();
 
     /**
      * 获取当前时间刻度事件的时间刻度等级

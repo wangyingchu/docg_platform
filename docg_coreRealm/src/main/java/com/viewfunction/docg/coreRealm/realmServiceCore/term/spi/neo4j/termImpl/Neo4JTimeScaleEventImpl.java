@@ -14,17 +14,19 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
+
 public class Neo4JTimeScaleEventImpl extends Neo4JAttributesMeasurableImpl implements Neo4JClassificationAttachable, Neo4JTimeScaleEvent {
 
     private static Logger logger = LoggerFactory.getLogger(Neo4JTimeScaleEventImpl.class);
 
     private String timeFlowName;
     private String eventComment;
-    private long referTime;
+    private LocalDateTime referTime;
     private TimeFlow.TimeScaleGrade timeScaleGrade;
     private String timeScaleEventUID;
 
-    public Neo4JTimeScaleEventImpl(String timeFlowName,String eventComment,long referTime,TimeFlow.TimeScaleGrade timeScaleGrade,
+    public Neo4JTimeScaleEventImpl(String timeFlowName,String eventComment,LocalDateTime referTime,TimeFlow.TimeScaleGrade timeScaleGrade,
                                    String timeScaleEventUID) {
         super(timeScaleEventUID);
         this.timeFlowName = timeFlowName;
@@ -44,7 +46,7 @@ public class Neo4JTimeScaleEventImpl extends Neo4JAttributesMeasurableImpl imple
     }
 
     @Override
-    public long getReferTime() {
+    public LocalDateTime getReferTime() {
         return this.referTime;
     }
 

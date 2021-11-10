@@ -19,20 +19,45 @@ import org.neo4j.driver.types.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.*;
+import java.time.temporal.Temporal;
 import java.util.*;
 
 public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSupportable,Neo4JKeyResourcesRetrievable {
 
     static Logger logger = LoggerFactory.getLogger(Neo4JTimeScaleFeatureSupportable.class);
+    static ZoneId zone = ZoneId.systemDefault();
 
     public default TimeScaleEvent attachTimeScaleEvent(long dateTime, String eventComment, Map<String, Object> eventData,
                                                        TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException {
-        return attachTimeScaleEventInnerLogic(RealmConstant._defaultTimeFlowName,dateTime,eventComment,eventData,timeScaleGrade);
+        Instant instant = Instant.ofEpochMilli(dateTime);
+        LocalDateTime timeStamp = LocalDateTime.ofInstant(instant,zone);
+        return attachTimeScaleEventInnerLogic(RealmConstant._defaultTimeFlowName,getReferTime(timeStamp,timeScaleGrade),eventComment,eventData,timeScaleGrade);
     }
 
     public default TimeScaleEvent attachTimeScaleEvent(String timeFlowName,long dateTime, String eventComment, Map<String, Object> eventData,
                                                        TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException {
+        Instant instant = Instant.ofEpochMilli(dateTime);
+        LocalDateTime timeStamp = LocalDateTime.ofInstant(instant,zone);
+        return attachTimeScaleEventInnerLogic(timeFlowName,getReferTime(timeStamp,timeScaleGrade),eventComment,eventData,timeScaleGrade);
+    }
+
+    public default TimeScaleEvent attachTimeScaleEvent(LocalDateTime dateTime, String eventComment, Map<String, Object> eventData,
+                                                       TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException {
+        return attachTimeScaleEventInnerLogic(RealmConstant._defaultTimeFlowName,dateTime,eventComment,eventData,timeScaleGrade);
+    }
+
+    public default TimeScaleEvent attachTimeScaleEvent(String timeFlowName,LocalDateTime dateTime, String eventComment, Map<String, Object> eventData,
+                                                       TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException {
         return attachTimeScaleEventInnerLogic(timeFlowName,dateTime,eventComment,eventData,timeScaleGrade);
+    }
+
+    public default TimeScaleEvent attachTimeScaleEvent(LocalDate date, String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException {
+        return attachTimeScaleEventInnerLogic(RealmConstant._defaultTimeFlowName,date,eventComment,eventData,TimeFlow.TimeScaleGrade.DAY);
+    }
+
+    public default TimeScaleEvent attachTimeScaleEvent(String timeFlowName,LocalDate date, String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException {
+        return attachTimeScaleEventInnerLogic(timeFlowName,date,eventComment,eventData,TimeFlow.TimeScaleGrade.DAY);
     }
 
     public default boolean detachTimeScaleEvent(String timeScaleEventUID) throws CoreRealmServiceRuntimeException{
@@ -49,7 +74,7 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
                     exception.setCauseMessage("TimeScaleEvent does not contains entity with UID " + timeScaleEventUID + ".");
                     throw exception;
                 }else{
-                    Neo4JTimeScaleEventImpl neo4JTimeScaleEventImpl = new Neo4JTimeScaleEventImpl(null,null,0l,null,timeScaleEventUID);
+                    Neo4JTimeScaleEventImpl neo4JTimeScaleEventImpl = new Neo4JTimeScaleEventImpl(null,null,null,null,timeScaleEventUID);
                     neo4JTimeScaleEventImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
                     if(neo4JTimeScaleEventImpl.getAttachConceptionEntity().getConceptionEntityUID().equals(this.getEntityUID())){
                         String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(timeScaleEventUID),null,null);
@@ -173,7 +198,7 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
                                 String timeScaleEventUID = ""+nodeUID;
                                 String eventComment = timeScaleEventNode.get(RealmConstant._TimeScaleEventComment).asString();
                                 String timeScaleGrade = timeScaleEventNode.get(RealmConstant._TimeScaleEventScaleGrade).asString();
-                                long referTime = timeScaleEventNode.get(RealmConstant._TimeScaleEventReferTime).asLong();
+                                LocalDateTime referTime = timeScaleEventNode.get(RealmConstant._TimeScaleEventReferTime).asLocalDateTime();
                                 neo4JTimeScaleEventImpl = new Neo4JTimeScaleEventImpl(null,eventComment,referTime,getTimeScaleGrade(timeScaleGrade),timeScaleEventUID);
                                 neo4JTimeScaleEventImpl.setGlobalGraphOperationExecutor(getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
                             }
@@ -195,7 +220,7 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
         return timeScaleDataPairList;
     }
 
-    private TimeScaleEvent attachTimeScaleEventInnerLogic(String timeFlowName,long dateTime, String eventComment,
+    private TimeScaleEvent attachTimeScaleEventInnerLogic(String timeFlowName,LocalDateTime dateTime, String eventComment,
                                                        Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException {
         if(this.getEntityUID() != null){
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
@@ -229,6 +254,64 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
         return null;
     }
 
+    private TimeScaleEvent attachTimeScaleEventInnerLogic(String timeFlowName, Temporal temporal, String eventComment,
+                                                          Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException {
+        if(this.getEntityUID() != null){
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                Map<String, Object> propertiesMap = eventData != null ? eventData : new HashMap<>();
+                CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
+                propertiesMap.put(RealmConstant._TimeScaleEventReferTime,getReferTime(temporal,timeScaleGrade));
+                propertiesMap.put(RealmConstant._TimeScaleEventComment,eventComment);
+                propertiesMap.put(RealmConstant._TimeScaleEventScaleGrade,""+timeScaleGrade);
+                propertiesMap.put(RealmConstant._TimeScaleEventTimeFlow,timeFlowName);
+                String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.TimeScaleEventClass}, propertiesMap);
+                logger.debug("Generated Cypher Statement: {}", createCql);
+                GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                        new GetSingleConceptionEntityTransformer(RealmConstant.TimeScaleEventClass, workingGraphOperationExecutor);
+                Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer, createCql);
+                if(newEntityRes != null) {
+                    ConceptionEntity timeScaleEventEntity = (ConceptionEntity) newEntityRes;
+                    timeScaleEventEntity.attachToRelation(this.getEntityUID(), RealmConstant.TimeScale_AttachToRelationClass, null, true);
+                    RelationEntity linkToTimeScaleEntityRelation = linkTimeScaleEntity(temporal,timeFlowName,timeScaleGrade,timeScaleEventEntity,workingGraphOperationExecutor);
+                    if(linkToTimeScaleEntityRelation != null){
+                        Neo4JTimeScaleEventImpl neo4JTimeScaleEventImpl = new Neo4JTimeScaleEventImpl(timeFlowName,
+                                eventComment,getReferTime(temporal,timeScaleGrade),timeScaleGrade,timeScaleEventEntity.getConceptionEntityUID());
+                        neo4JTimeScaleEventImpl.setGlobalGraphOperationExecutor(getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
+                        return neo4JTimeScaleEventImpl;
+                    }
+                }
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
+    }
+
+    private RelationEntity linkTimeScaleEntity(Temporal temporal, String timeFlowName, TimeFlow.TimeScaleGrade timeScaleGrade,
+                                               ConceptionEntity timeScaleEventEntity, GraphOperationExecutor workingGraphOperationExecutor){
+        int year = 0 ;
+        int month = 0;
+        int day = 0;
+        int hour = 0;
+        int minute = 0;
+        int second = 0;
+        if(temporal instanceof LocalDateTime){
+            year = ((LocalDateTime) temporal).getYear();
+            month = ((LocalDateTime) temporal).getMonthValue();
+            day = ((LocalDateTime) temporal).getDayOfMonth();
+            hour = ((LocalDateTime) temporal).getHour();
+            minute = ((LocalDateTime) temporal).getMinute();
+            second = ((LocalDateTime) temporal).getSecond();
+        }
+        if(temporal instanceof LocalDate){
+            year = ((LocalDate) temporal).getYear();
+            month = ((LocalDate) temporal).getMonthValue();
+            day = ((LocalDate) temporal).getDayOfMonth();
+        }
+        return linkTimeScaleEntity(year,month,day,hour,minute,second,timeFlowName,timeScaleGrade,timeScaleEventEntity,workingGraphOperationExecutor);
+    }
+
     private RelationEntity linkTimeScaleEntity(long dateTime, String timeFlowName, TimeFlow.TimeScaleGrade timeScaleGrade,
                                                ConceptionEntity timeScaleEventEntity, GraphOperationExecutor workingGraphOperationExecutor){
         Calendar eventCalendar=Calendar.getInstance();
@@ -240,7 +323,12 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
         int hour = eventCalendar.get(Calendar.HOUR_OF_DAY);
         int minute = eventCalendar.get(Calendar.MINUTE);
         int second = eventCalendar.get(Calendar.SECOND);
+        return linkTimeScaleEntity(year,month,day,hour,minute,second,timeFlowName,timeScaleGrade,timeScaleEventEntity,workingGraphOperationExecutor);
+    }
 
+    private RelationEntity linkTimeScaleEntity(int year, int month,int day, int hour,int minute,int second,
+                                               String timeFlowName, TimeFlow.TimeScaleGrade timeScaleGrade,
+                                               ConceptionEntity timeScaleEventEntity, GraphOperationExecutor workingGraphOperationExecutor){
         String queryCql = null;
         switch (timeScaleGrade) {
             case YEAR:
@@ -283,5 +371,44 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
             return TimeFlow.TimeScaleGrade.SECOND;
         }
         return null;
+    }
+
+    private LocalDateTime getReferTime(Temporal dateTime,TimeFlow.TimeScaleGrade timeScaleGrade){
+        if(dateTime instanceof LocalDate){
+            LocalDateTime referTime = ((LocalDate) dateTime).atTime(LocalTime.of(0,0,0));
+            return referTime;
+        }else if(dateTime instanceof LocalDateTime){
+            LocalDateTime timeStampDateTime = (LocalDateTime)dateTime;
+            int year = timeStampDateTime.getYear();
+            int month = timeStampDateTime.getMonthValue();
+            int day = timeStampDateTime.getDayOfMonth();
+            int hour = timeStampDateTime.getHour();
+            int minute = timeStampDateTime.getMinute();
+            int second = timeStampDateTime.getSecond();
+            LocalDateTime referTime = null;
+            switch (timeScaleGrade){
+                case YEAR:
+                    referTime = LocalDateTime.of(year,1,1,0,0,0);
+                    break;
+                case MONTH:
+                    referTime = LocalDateTime.of(year,month,1,0,0,0);
+                    break;
+                case DAY:
+                    referTime = LocalDateTime.of(year,month,day,0,0,0);
+                    break;
+                case HOUR:
+                    referTime = LocalDateTime.of(year,month,day,hour,0,0);
+                    break;
+                case MINUTE:
+                    referTime = LocalDateTime.of(year,month,day,hour,minute,0);
+                    break;
+                case SECOND:
+                    referTime = LocalDateTime.of(year,month,day,hour,minute,second);
+                    break;
+            }
+            return referTime;
+        }else{
+            return null;
+        }
     }
 }
