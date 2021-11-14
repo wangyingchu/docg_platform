@@ -1,7 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util;
 
 import com.google.common.collect.Lists;
-
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionEntityTransformer;
@@ -9,7 +8,10 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleTimeScaleEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeScaleEntityImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
@@ -17,44 +19,62 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFa
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class BatchDataOperationUtil {
 
     private static Logger logger = LoggerFactory.getLogger(BatchDataOperationUtil.class);
 
-    public static void batchAddNewEntities(String targetConceptionTypeName,List<ConceptionEntityValue> conceptionEntityValuesList,int degreeOfParallelism){
+    public static Map<String,Object> batchAddNewEntities(String targetConceptionTypeName,List<ConceptionEntityValue> conceptionEntityValuesList,int degreeOfParallelism){
         int singlePartitionSize = (conceptionEntityValuesList.size()/degreeOfParallelism)+1;
         List<List<ConceptionEntityValue>> rsList = Lists.partition(conceptionEntityValuesList, singlePartitionSize);
-
+        Map<String,Object> threadReturnDataMap = new Hashtable<>();
+        threadReturnDataMap.put("StartTime", LocalDateTime.now());
         ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
         for(List<ConceptionEntityValue> currentConceptionEntityValueList:rsList){
-            InsertRecordThread insertRecordThread = new InsertRecordThread(targetConceptionTypeName,currentConceptionEntityValueList);
+            InsertRecordThread insertRecordThread = new InsertRecordThread(targetConceptionTypeName,currentConceptionEntityValueList,threadReturnDataMap);
             executor.execute(insertRecordThread);
         }
         executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        threadReturnDataMap.put("FinishTime", LocalDateTime.now());
+        return threadReturnDataMap;
     }
 
     private static class InsertRecordThread implements Runnable{
         private List<ConceptionEntityValue> conceptionEntityValueList;
         private String conceptionKindName;
+        private Map<String,Object> threadReturnDataMap;
 
-        public InsertRecordThread(String conceptionKindName,List<ConceptionEntityValue> conceptionEntityValueList){
+        public InsertRecordThread(String conceptionKindName,List<ConceptionEntityValue> conceptionEntityValueList,Map<String,Object> threadReturnDataMap){
             this.conceptionEntityValueList = conceptionEntityValueList;
             this.conceptionKindName = conceptionKindName;
+            this.threadReturnDataMap = threadReturnDataMap;
         }
 
         @Override
         public void run(){
+            String currentThreadName = Thread.currentThread().getName();
             CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
             coreRealm.openGlobalSession();
+            long successfulCount = 0;
             ConceptionKind conceptionKind = coreRealm.getConceptionKind(conceptionKindName);
             for(ConceptionEntityValue currentConceptionEntityValue:conceptionEntityValueList){
-                conceptionKind.newEntity(currentConceptionEntityValue,false);
+                ConceptionEntity resultEntity = conceptionKind.newEntity(currentConceptionEntityValue,false);
+                if(resultEntity != null){
+                    successfulCount ++;
+                }
             }
             coreRealm.closeGlobalSession();
+            threadReturnDataMap.put(currentThreadName,successfulCount);
         }
     }
 
