@@ -256,6 +256,40 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
         return null;
     }
 
+    default public List<RelationEntity> attachFromRelation(List<String> targetRelationableUIDs, String relationKind, Map<String,Object> initRelationProperties, boolean repeatable) throws CoreRealmServiceRuntimeException{
+        if(this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                List<RelationEntity> relationEntityList = new ArrayList<>();
+                for(String targetRelationableUID:targetRelationableUIDs){
+                    RelationEntity currentRelationEntity = attachRelation(workingGraphOperationExecutor,getEntityUID(),targetRelationableUID,relationKind,initRelationProperties,repeatable);
+                    relationEntityList.add(currentRelationEntity);
+                }
+                return relationEntityList;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
+    }
+
+    default public List<RelationEntity> attachToRelation(List<String> targetRelationableUIDs, String relationKind, Map<String,Object> initRelationProperties, boolean repeatable) throws CoreRealmServiceRuntimeException{
+        if(this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                List<RelationEntity> relationEntityList = new ArrayList<>();
+                for(String targetRelationableUID:targetRelationableUIDs){
+                    RelationEntity currentRelationEntity = attachRelation(workingGraphOperationExecutor,targetRelationableUID,getEntityUID(),relationKind,initRelationProperties,repeatable);
+                    relationEntityList.add(currentRelationEntity);
+                }
+                return relationEntityList;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
+    }
+
     default public boolean detachRelation(String relationEntityUID) throws CoreRealmServiceRuntimeException{
         if (this.getEntityUID() != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
@@ -767,6 +801,41 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
             getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
         }
     }
+
+    private RelationEntity attachRelation(GraphOperationExecutor workingGraphOperationExecutor,String sourceRelationableUID,String targetRelationableUID, String relationKind, Map<String,Object> initRelationProperties, boolean repeatable) throws CoreRealmServiceRuntimeException{
+        checkEntityExistence(workingGraphOperationExecutor,sourceRelationableUID);
+        checkEntityExistence(workingGraphOperationExecutor,targetRelationableUID);
+        if(!repeatable){
+            String queryRelationCql = CypherBuilder.matchRelationshipsByBothNodesId(Long.parseLong(sourceRelationableUID),Long.parseLong(targetRelationableUID), relationKind);
+            GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
+                    (RealmConstant.ConceptionKind_AttributesViewKindRelationClass,getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
+            Object existingRelationEntityRes = workingGraphOperationExecutor.executeRead(getSingleRelationEntityTransformer, queryRelationCql);
+            if(existingRelationEntityRes != null){
+                logger.debug("Relation of Kind {} already exist between Entity with UID {} and {}.", relationKind,sourceRelationableUID,targetRelationableUID);
+                return null;
+            }
+        }
+        Map<String,Object> relationPropertiesMap = initRelationProperties != null ? initRelationProperties : new HashMap<>();
+        CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
+        String createCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(sourceRelationableUID),Long.parseLong(targetRelationableUID),
+                relationKind,relationPropertiesMap);
+        GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
+                (relationKind,getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
+        Object newRelationEntityRes = workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, createCql);
+        if(newRelationEntityRes == null){
+            logger.error("Internal error occurs during create relation {} between entity with UID {} and {}.",  relationKind,sourceRelationableUID,targetRelationableUID);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("Internal error occurs during create relation "+relationKind+" between entity with UID "+sourceRelationableUID+" and "+targetRelationableUID+".");
+            throw exception;
+        }else{
+                return (Neo4JRelationEntityImpl)newRelationEntityRes;
+        }
+    }
+
+
+
+
+
 
     private List<String> batchDetachRelations(String relationQueryCql){
         if (this.getEntityUID() != null) {

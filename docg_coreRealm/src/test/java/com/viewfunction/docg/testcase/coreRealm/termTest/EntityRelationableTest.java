@@ -491,5 +491,22 @@ public class EntityRelationableTest {
         detachAllRelationsResult = _ConceptionEntityA.detachSpecifiedRelations(exploreParameters,RelationDirection.TWO_WAY);
         Assert.assertNotNull(detachAllRelationsResult);
         Assert.assertEquals(detachAllRelationsResult.size(),2);
+
+        _ConceptionEntityA.detachAllRelations();
+        List<String> conceptionEntityUIDList = new ArrayList<>();
+        conceptionEntityUIDList.add(_ConceptionEntityB1.getConceptionEntityUID());
+        conceptionEntityUIDList.add(_ConceptionEntityB2.getConceptionEntityUID());
+        conceptionEntityUIDList.add(_ConceptionEntityC1.getConceptionEntityUID());
+        conceptionEntityUIDList.add(_ConceptionEntityC3.getConceptionEntityUID());
+
+        List<RelationEntity> resultList = _ConceptionEntityA.attachFromRelation(conceptionEntityUIDList,"testAttachMultiFromRelation",null,true);
+        Assert.assertEquals(resultList.size(),4);
+        List<RelationEntity> checkResult = _ConceptionEntityA.getAllSpecifiedRelations("testAttachMultiFromRelation",RelationDirection.FROM);
+        Assert.assertEquals(checkResult.size(),4);
+
+        resultList = _ConceptionEntityA.attachToRelation(conceptionEntityUIDList,"testAttachMultiToRelation",null,true);
+        Assert.assertEquals(resultList.size(),4);
+        checkResult = _ConceptionEntityA.getAllSpecifiedRelations("testAttachMultiToRelation",RelationDirection.TO);
+        Assert.assertEquals(checkResult.size(),4);
     }
 }

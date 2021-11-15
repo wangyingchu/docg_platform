@@ -102,6 +102,30 @@ public interface EntityRelationable {
     public RelationEntity attachToRelation(String targetRelationableUID, String relationKind, Map<String,Object> initRelationProperties, boolean repeatable) throws CoreRealmServiceRuntimeException;
 
     /**
+     * 为当前实体附着多个源数据关联
+     *
+     * @param targetRelationableUIDs List<String> 目标实体唯一ID列表
+     * @param relationKind String 关系类型名称
+     * @param initRelationProperties Map<String,Object> 新建的关系实体上的初始属性信息
+     * @param repeatable boolean 是否允许重复建立已有关系类型的数据关联
+     *
+     * @return 新建的关系实体列表
+     */
+    public List<RelationEntity> attachFromRelation(List<String> targetRelationableUIDs, String relationKind, Map<String,Object> initRelationProperties, boolean repeatable) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 为当前实体附着多个目标数据关联
+     *
+     * @param targetRelationableUIDs List<String> 目标实体唯一ID列表
+     * @param relationKind String 关系类型名称
+     * @param initRelationProperties Map<String,Object> 新建的关系实体上的初始属性信息
+     * @param repeatable boolean 是否允许重复建立已有关系类型的数据关联
+     *
+     * @return 新建的关系实体列表
+     */
+    public List<RelationEntity> attachToRelation(List<String> targetRelationableUIDs, String relationKind, Map<String,Object> initRelationProperties, boolean repeatable) throws CoreRealmServiceRuntimeException;
+
+    /**
      * 根据关系实体唯一ID删除当前实体的特定数据关联
      *
      * @param relationEntityUID String 需要删除的关系实体唯一ID
