@@ -1,11 +1,16 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleRelationEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleTimeScaleEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
@@ -287,6 +292,77 @@ public class BatchDataOperationUtil {
                     threadReturnDataMap.put(currentThreadName,successfulCount);
                 }
             }
+        }
+    }
+
+    public static Map<String,Object> batchAttachNewRelationsWithSinglePropertyValueMatch(
+            String fromConceptionKindName,QueryParameters fromExploreParameters,String fromAttributeName,
+            String toConceptionKindName, QueryParameters toExploreParameters,String toAttributeName,
+            String relationKindName,int degreeOfParallelism){
+        LocalDateTime wholeStartDateTime = LocalDateTime.now();
+        List<RelationEntityValue> relationEntityValueList = new ArrayList<>();
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        coreRealm.openGlobalSession();
+
+        QueryParameters exeFromExploreParameters;
+        if(fromExploreParameters != null){
+            exeFromExploreParameters = fromExploreParameters;
+        }else{
+            exeFromExploreParameters = new QueryParameters();
+            exeFromExploreParameters.setResultNumber(10000000);
+        }
+
+        QueryParameters exeToExploreParameters;
+        if(toExploreParameters != null){
+            exeToExploreParameters = toExploreParameters;
+        }else{
+            exeToExploreParameters = new QueryParameters();
+            exeToExploreParameters.setResultNumber(10000000);
+        }
+
+        try {
+            ConceptionKind fromConceptionKind = coreRealm.getConceptionKind(fromConceptionKindName);
+            List<String> fromConceptionKindAttributeList = new ArrayList<>();
+            fromConceptionKindAttributeList.add(fromAttributeName);
+            ConceptionEntitiesAttributesRetrieveResult fromConceptionEntitiesAttributesRetrieveResult =
+                    fromConceptionKind.getSingleValueEntityAttributesByAttributeNames(fromConceptionKindAttributeList,exeFromExploreParameters);
+
+            List<ConceptionEntityValue> fromConceptionEntityValues = fromConceptionEntitiesAttributesRetrieveResult.getConceptionEntityValues();
+            Multimap<Object,String> fromConceptionEntitiesValue_UIDMapping = ArrayListMultimap.create();
+            for(ConceptionEntityValue currentConceptionEntityValue:fromConceptionEntityValues){
+                String conceptionEntityUID = currentConceptionEntityValue.getConceptionEntityUID();
+                Object fromAttributeValue = currentConceptionEntityValue.getEntityAttributesValue().get(fromAttributeName);
+                fromConceptionEntitiesValue_UIDMapping.put(fromAttributeValue,conceptionEntityUID);
+            }
+
+            ConceptionKind toConceptionKind = coreRealm.getConceptionKind(toConceptionKindName);
+            List<String> toConceptionKindAttributeList = new ArrayList<>();
+            toConceptionKindAttributeList.add(toAttributeName);
+            ConceptionEntitiesAttributesRetrieveResult toConceptionEntitiesAttributesRetrieveResult =
+                    toConceptionKind.getSingleValueEntityAttributesByAttributeNames(toConceptionKindAttributeList,exeToExploreParameters);
+
+            List<ConceptionEntityValue> toConceptionEntityValues = toConceptionEntitiesAttributesRetrieveResult.getConceptionEntityValues();
+            for(ConceptionEntityValue currentConceptionEntityValue:toConceptionEntityValues){
+                String conceptionEntityUID = currentConceptionEntityValue.getConceptionEntityUID();
+                Object toAttributeValue = currentConceptionEntityValue.getEntityAttributesValue().get(toAttributeName);
+                Collection<String> fromConceptionEntityUIDCollection = fromConceptionEntitiesValue_UIDMapping.get(toAttributeValue);
+                if(fromConceptionEntityUIDCollection != null & fromConceptionEntityUIDCollection.size()>0){
+                    for(String currentFromEntityUID:fromConceptionEntityUIDCollection){
+                        RelationEntityValue relationEntityValue = new RelationEntityValue(null,currentFromEntityUID,conceptionEntityUID,null);
+                        relationEntityValueList.add(relationEntityValue);
+                    }
+                }
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
+        coreRealm.closeGlobalSession();
+        if(relationEntityValueList.size()>0){
+            Map<String,Object> batchLoadResultMap = BatchDataOperationUtil.batchAttachNewRelations(relationEntityValueList,relationKindName,degreeOfParallelism);
+            batchLoadResultMap.put("StartTime", wholeStartDateTime);
+            return batchLoadResultMap;
+        }else{
+            return null;
         }
     }
 }

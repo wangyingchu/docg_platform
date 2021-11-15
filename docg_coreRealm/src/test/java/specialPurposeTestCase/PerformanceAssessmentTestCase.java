@@ -1,13 +1,10 @@
 package specialPurposeTestCase;
 
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationKind;
@@ -24,7 +21,6 @@ public class PerformanceAssessmentTestCase {
     private static String BuildingElementType = "BuildingElementType";
     private static String ElementProperties = "ElementProperties";
     private static String HasProperty = "HasProperty";
-    private static String ElementToPropertyAttach = "ElementToPropertyAttach";
 
     public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmFunctionNotSupportedException, CoreRealmServiceEntityExploreException {
         setTypeDefinitions();
@@ -99,6 +95,7 @@ public class PerformanceAssessmentTestCase {
     }
 
     private static void linkData() throws CoreRealmServiceEntityExploreException {
+        /*
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         coreRealm.openGlobalSession();
 
@@ -140,6 +137,13 @@ public class PerformanceAssessmentTestCase {
         }
         coreRealm.closeGlobalSession();
         Map<String,Object> batchLoadResultMap = BatchDataOperationUtil.batchAttachNewRelations(relationEntityValueList,HasProperty,30);
+        System.out.println(batchLoadResultMap);
+
+        above logic is equal to below method invoke
+        */
+        Map<String,Object> batchLoadResultMap = BatchDataOperationUtil.batchAttachNewRelationsWithSinglePropertyValueMatch(
+                BuildingElementType,null,"elementId",ElementProperties,
+                null,"parentElementId",HasProperty,30);
         System.out.println(batchLoadResultMap);
     }
 }
