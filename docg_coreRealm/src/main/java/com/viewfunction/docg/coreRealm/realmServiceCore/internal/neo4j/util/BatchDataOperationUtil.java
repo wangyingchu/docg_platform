@@ -41,7 +41,7 @@ public class BatchDataOperationUtil {
         }
         executor.shutdown();
         try {
-            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -78,19 +78,27 @@ public class BatchDataOperationUtil {
         }
     }
 
-    public static void batchAttachTimeScaleEvents(List<ConceptionEntityValue> conceptionEntityValueList, String timeEventAttributeName,String eventComment,
+    public static Map<String,Object> batchAttachTimeScaleEvents(List<ConceptionEntityValue> conceptionEntityValueList, String timeEventAttributeName,String eventComment,
                                                   Map<String,Object> globalEventData, TimeFlow.TimeScaleGrade timeScaleGrade,int degreeOfParallelism){
         int singlePartitionSize = (conceptionEntityValueList.size()/degreeOfParallelism)+1;
         List<List<ConceptionEntityValue>> rsList = Lists.partition(conceptionEntityValueList, singlePartitionSize);
-
         Map<String,String> timeScaleEntitiesMetaInfoMapping = new HashMap<>();
+        Map<String,Object> threadReturnDataMap = new Hashtable<>();
+        threadReturnDataMap.put("StartTime", LocalDateTime.now());
         ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
         for(List<ConceptionEntityValue> currentConceptionEntityValueList:rsList){
             LinkTimeScaleEventThread linkTimeScaleEventThread = new LinkTimeScaleEventThread(timeEventAttributeName,
-                    eventComment,globalEventData,timeScaleGrade,currentConceptionEntityValueList,timeScaleEntitiesMetaInfoMapping);
+                    eventComment,globalEventData,timeScaleGrade,currentConceptionEntityValueList,timeScaleEntitiesMetaInfoMapping,threadReturnDataMap);
             executor.execute(linkTimeScaleEventThread);
         }
         executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        threadReturnDataMap.put("FinishTime", LocalDateTime.now());
+        return threadReturnDataMap;
     }
 
     private static class LinkTimeScaleEventThread implements Runnable{
@@ -100,10 +108,10 @@ public class BatchDataOperationUtil {
         private TimeFlow.TimeScaleGrade timeScaleGrade;
         private List<ConceptionEntityValue> conceptionEntityValueList;
         private Map<String,String> timeScaleEntitiesMetaInfoMapping;
-
+        private Map<String,Object> threadReturnDataMap;
         public LinkTimeScaleEventThread(String timeEventAttributeName,String eventComment,Map<String,Object> globalEventData,
                                         TimeFlow.TimeScaleGrade timeScaleGrade,List<ConceptionEntityValue> conceptionEntityValueList,
-                                        Map<String,String> timeScaleEntitiesMetaInfoMapping
+                                        Map<String,String> timeScaleEntitiesMetaInfoMapping,Map<String,Object> threadReturnDataMap
                                          ){
             this.timeEventAttributeName = timeEventAttributeName;
             this.eventComment = eventComment;
@@ -111,23 +119,30 @@ public class BatchDataOperationUtil {
             this.timeScaleGrade = timeScaleGrade;
             this.conceptionEntityValueList = conceptionEntityValueList;
             this.timeScaleEntitiesMetaInfoMapping = timeScaleEntitiesMetaInfoMapping;
+            this.threadReturnDataMap = threadReturnDataMap;
         }
 
         @Override
         public void run() {
+            String currentThreadName = Thread.currentThread().getName();
+            long successfulCount = 0;
             GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
             for(ConceptionEntityValue currentConceptionEntityValue:conceptionEntityValueList){
                 if(currentConceptionEntityValue.getEntityAttributesValue().get(timeEventAttributeName) != null){
                     Date targetDateValue = (Date)currentConceptionEntityValue.getEntityAttributesValue().get(timeEventAttributeName);
-                    attachTimeScaleEventLogic(timeScaleEntitiesMetaInfoMapping,currentConceptionEntityValue.getConceptionEntityUID(),targetDateValue.getTime(),
+                    boolean attachResult = attachTimeScaleEventLogic(timeScaleEntitiesMetaInfoMapping,currentConceptionEntityValue.getConceptionEntityUID(),targetDateValue.getTime(),
                             eventComment,globalEventData,timeScaleGrade,graphOperationExecutor);
+                    if(attachResult){
+                        successfulCount++;
+                    }
                 }
             }
             graphOperationExecutor.close();
+            threadReturnDataMap.put(currentThreadName,successfulCount);
         }
     }
 
-    private static void attachTimeScaleEventLogic(Map<String,String> timeScaleEntitiesMetaInfoMapping,String conceptionEntityUID,long dateTime,String eventComment,
+    private static boolean attachTimeScaleEventLogic(Map<String,String> timeScaleEntitiesMetaInfoMapping,String conceptionEntityUID,long dateTime,String eventComment,
                                                  Map<String,Object> globalEventData,TimeFlow.TimeScaleGrade timeScaleGrade,
                                                   GraphOperationExecutor workingGraphOperationExecutor){
         Map<String, Object> propertiesMap = new HashMap<>();
@@ -160,6 +175,7 @@ public class BatchDataOperationUtil {
                 }
             }
         }
+        return true;
     }
 
     private static String getTimeScaleEntityUID(Map<String,String> timeScaleEntitiesMetaInfoMapping,long dateTime, String timeFlowName, TimeFlow.TimeScaleGrade timeScaleGrade,GraphOperationExecutor workingGraphOperationExecutor){
@@ -216,30 +232,42 @@ public class BatchDataOperationUtil {
         return null;
     }
 
-    public static void batchAttachNewRelations(List<RelationEntityValue> relationEntityValueList, String relationKindName, int degreeOfParallelism){
+    public static Map<String,Object> batchAttachNewRelations(List<RelationEntityValue> relationEntityValueList, String relationKindName, int degreeOfParallelism){
         int singlePartitionSize = (relationEntityValueList.size()/degreeOfParallelism)+1;
         List<List<RelationEntityValue>> rsList = Lists.partition(relationEntityValueList, singlePartitionSize);
-
+        Map<String,Object> threadReturnDataMap = new Hashtable<>();
+        threadReturnDataMap.put("StartTime", LocalDateTime.now());
         ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
         for(List<RelationEntityValue> currentRelationEntityValueList:rsList){
-            AttachRelationThread attachRelationThread = new AttachRelationThread(currentRelationEntityValueList,relationKindName);
+            AttachRelationThread attachRelationThread = new AttachRelationThread(currentRelationEntityValueList,relationKindName,threadReturnDataMap);
             executor.execute(attachRelationThread);
         }
         executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        threadReturnDataMap.put("FinishTime", LocalDateTime.now());
+        return threadReturnDataMap;
     }
 
     private static class AttachRelationThread implements Runnable{
         private List<RelationEntityValue> relationEntityValueList;
         private String relationKindName;
+        private Map<String,Object> threadReturnDataMap;
 
-        public AttachRelationThread(List<RelationEntityValue> relationEntityValueList,String relationKindName){
+        public AttachRelationThread(List<RelationEntityValue> relationEntityValueList,String relationKindName,Map<String,Object> threadReturnDataMap){
             this.relationEntityValueList = relationEntityValueList;
             this.relationKindName = relationKindName;
+            this.threadReturnDataMap = threadReturnDataMap;
         }
 
         @Override
         public void run(){
             if(this.relationEntityValueList != null && this.relationEntityValueList.size() >0){
+                String currentThreadName = Thread.currentThread().getName();
+                long successfulCount = 0;
                 CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
                 if(coreRealm.getStorageImplTech().equals(CoreRealmStorageImplTech.NEO4J)){
                     GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
@@ -250,9 +278,13 @@ public class BatchDataOperationUtil {
                         String targetEntityUID = currentRelationEntityValue.getToConceptionEntityUID();
                         Map<String, Object> relationPropertiesValue = currentRelationEntityValue.getEntityAttributesValue();
                         String attachRelationCQL = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(sourceEntityUID),Long.parseLong(targetEntityUID),this.relationKindName,relationPropertiesValue);
-                        graphOperationExecutor.executeWrite(getSingleRelationEntityTransformer,attachRelationCQL);
+                        Object returnObj = graphOperationExecutor.executeWrite(getSingleRelationEntityTransformer,attachRelationCQL);
+                        if(returnObj != null){
+                            successfulCount++;
+                        }
                     }
                     graphOperationExecutor.close();
+                    threadReturnDataMap.put(currentThreadName,successfulCount);
                 }
             }
         }
