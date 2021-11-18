@@ -1,13 +1,16 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.GreaterThanFilteringItem;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
-
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -30,7 +33,7 @@ public class ConceptionKindTest {
     }
 
     @Test
-    public void testConceptionKindFunction() throws CoreRealmServiceRuntimeException {
+    public void testConceptionKindFunction() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
 
@@ -44,6 +47,18 @@ public class ConceptionKindTest {
             Assert.assertNotNull(_ConceptionKind01);
             Assert.assertEquals(_ConceptionKind01.getConceptionKindName(),testConceptionKindName);
             Assert.assertEquals(_ConceptionKind01.getConceptionKindDesc(),"TestConceptionKindADesc+中文描述");
+        }
+
+        ConceptionKind _ConceptionKind02 = coreRealm.getConceptionKind(testConceptionKindName+"_TestRelation");
+        if(_ConceptionKind02 != null){
+            coreRealm.removeConceptionKind(testConceptionKindName+"_TestRelation",true);
+        }
+        _ConceptionKind02 = coreRealm.getConceptionKind(testConceptionKindName+"_TestRelation");
+        if(_ConceptionKind02 == null){
+            _ConceptionKind02 = coreRealm.createConceptionKind(testConceptionKindName+"_TestRelation","TestConceptionKind_TestRelationADesc+中文描述");
+            Assert.assertNotNull(_ConceptionKind02);
+            Assert.assertEquals(_ConceptionKind02.getConceptionKindName(),testConceptionKindName+"_TestRelation");
+            Assert.assertEquals(_ConceptionKind02.getConceptionKindDesc(),"TestConceptionKind_TestRelationADesc+中文描述");
         }
 
         EntitiesOperationResult purgeEntitiesOperationResult = _ConceptionKind01.purgeAllEntities();
@@ -351,5 +366,38 @@ public class ConceptionKindTest {
         Assert.assertTrue(entitiesOperationResult.getSuccessEntityUIDs().contains(addEntitiesResult.getSuccessEntityUIDs().get(2)));
         Assert.assertEquals(entitiesOperationResult.getOperationStatistics().getSuccessItemsCount(),2);
         Assert.assertEquals(entitiesOperationResult.getOperationStatistics().getFailItemsCount(),2);
+
+        ConceptionEntity relationQueryTest01 = _ConceptionKind01.newEntity(conceptionEntityValueForUpdate,false);
+        ConceptionEntity relationQueryTest02 = _ConceptionKind01.newEntity(conceptionEntityValueForUpdate,false);
+        for(int i=0;i<100;i++){
+            Map<String,Object> newEntityForRelationTestValueMap= new HashMap<>();
+            newEntityForRelationTestValueMap.put("prop1",1000);
+            ConceptionEntityValue newRelationTestEntityValue = new ConceptionEntityValue(newEntityForRelationTestValueMap);
+            ConceptionEntity relationEntity = _ConceptionKind02.newEntity(newRelationTestEntityValue,false);
+            relationQueryTest01.attachFromRelation(relationEntity.getConceptionEntityUID(),"queryTestRelation01",null,false);
+        }
+        for(int i=0;i<5;i++){
+            Map<String,Object> newEntityForRelationTestValueMap= new HashMap<>();
+            newEntityForRelationTestValueMap.put("prop1",5000);
+            ConceptionEntityValue newRelationTestEntityValue = new ConceptionEntityValue(newEntityForRelationTestValueMap);
+            ConceptionEntity relationEntity = _ConceptionKind02.newEntity(newRelationTestEntityValue,false);
+            relationQueryTest02.attachFromRelation(relationEntity.getConceptionEntityUID(),"queryTestRelation01",null,false);
+        }
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setStartPage(1);
+        queryParameters.setEndPage(100);
+        queryParameters.setPageSize(10);
+        ConceptionEntitiesRetrieveResult conceptionEntitiesRetrieveResult =_ConceptionKind01.getKindDirectRelatedEntities("queryTestRelation01",RelationDirection.FROM,null,queryParameters);
+        Assert.assertEquals(conceptionEntitiesRetrieveResult.getConceptionEntities().size(),105);
+
+        conceptionEntitiesRetrieveResult =_ConceptionKind01.getKindDirectRelatedEntities("queryTestRelation01",RelationDirection.TO,null,queryParameters);
+        Assert.assertEquals(conceptionEntitiesRetrieveResult.getConceptionEntities().size(),0);
+
+        conceptionEntitiesRetrieveResult =_ConceptionKind01.getKindDirectRelatedEntities("queryTestRelation01",RelationDirection.TWO_WAY,null,queryParameters);
+        Assert.assertEquals(conceptionEntitiesRetrieveResult.getConceptionEntities().size(),105);
+
+        queryParameters.setDefaultFilteringItem(new GreaterThanFilteringItem("prop1",1000));
+        conceptionEntitiesRetrieveResult =_ConceptionKind01.getKindDirectRelatedEntities("queryTestRelation01",RelationDirection.FROM,null,queryParameters);
+        Assert.assertEquals(conceptionEntitiesRetrieveResult.getConceptionEntities().size(),5);
     }
 }

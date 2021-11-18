@@ -2586,4 +2586,162 @@ public class CypherBuilder {
             return "";
         }
     }
+
+    public static String matchNodeWithSpecialRelationAndAttributeFilter(String relationKind, RelationDirection relationDirection, String originalConceptionKind,String aimConceptionKind, QueryParameters targetConceptionKindQueryParameters) throws CoreRealmServiceEntityExploreException {
+        Node sourceNode = Cypher.node(originalConceptionKind).named(sourceNodeName);
+        Node resultNodes = aimConceptionKind != null ? Cypher.node(aimConceptionKind).named(operationResultName):Cypher.anyNode().named(operationResultName);
+        Relationship r = null;
+        switch(relationDirection){
+            case FROM:
+                r = sourceNode.relationshipTo(resultNodes,relationKind).named(relationResultName);
+                break;
+            case TO:
+                r = sourceNode.relationshipFrom(resultNodes,relationKind).named(relationResultName);
+                break;
+            case TWO_WAY:
+                r = sourceNode.relationshipBetween(resultNodes,relationKind).named(relationResultName);
+        }
+
+        StatementBuilder.OngoingReadingWithoutWhere ongoingReadingWithoutWhere = Cypher.match(r);
+        StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
+        Statement statement;
+
+        if (targetConceptionKindQueryParameters != null) {
+            int defaultReturnRecordNumber = 10000;
+            int skipRecordNumber = 0;
+            int limitRecordNumber = 0;
+
+            int startPage = targetConceptionKindQueryParameters.getStartPage();
+            int endPage = targetConceptionKindQueryParameters.getEndPage();
+            int pageSize = targetConceptionKindQueryParameters.getPageSize();
+            int resultNumber = targetConceptionKindQueryParameters.getResultNumber();
+            boolean isDistinctMode = targetConceptionKindQueryParameters.isDistinctMode();
+            List<SortingItem> sortingItemList = targetConceptionKindQueryParameters.getSortingItems();
+
+            SortItem[] sortItemArray = null;
+            if (sortingItemList.size() > 0) {
+                sortItemArray = new SortItem[sortingItemList.size()];
+                for (int i = 0; i < sortingItemList.size(); i++) {
+                    SortingItem currentSortingItem = sortingItemList.get(i);
+                    String attributeName = currentSortingItem.getAttributeName();
+                    QueryParameters.SortingLogic sortingLogic = currentSortingItem.getSortingLogic();
+                    switch (sortingLogic) {
+                        case ASC:
+                            sortItemArray[i] = Cypher.sort(resultNodes.property(attributeName)).ascending();
+                            break;
+                        case DESC:
+                            sortItemArray[i] = Cypher.sort(resultNodes.property(attributeName)).descending();
+                    }
+                }
+            }
+
+            if (startPage != 0) {
+                if (startPage < 0) {
+                    String exceptionMessage = "start page must great then zero";
+                    CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
+                    coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
+                    throw coreRealmServiceEntityExploreException;
+                }
+                if (pageSize < 0) {
+                    String exceptionMessage = "page size must great then zero";
+                    CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
+                    coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
+                    throw coreRealmServiceEntityExploreException;
+                }
+
+                int runtimePageSize = pageSize != 0 ? pageSize : 50;
+                int runtimeStartPage = startPage - 1;
+
+                if (endPage != 0) {
+                    //get data from start page to end page, each page has runtimePageSize number of record
+                    if (endPage < 0 || endPage <= startPage) {
+                        String exceptionMessage = "end page must great than start page";
+                        CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
+                        coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
+                        throw coreRealmServiceEntityExploreException;
+                    }
+                    int runtimeEndPage = endPage - 1;
+
+                    skipRecordNumber = runtimePageSize * runtimeStartPage;
+                    limitRecordNumber = (runtimeEndPage - runtimeStartPage) * runtimePageSize;
+                } else {
+                    //filter the data before the start page
+                    limitRecordNumber = runtimePageSize * runtimeStartPage;
+                }
+            } else {
+                //if there is no page parameters,use resultNumber to control result information number
+                if (resultNumber != 0) {
+                    if (resultNumber < 0) {
+                        String exceptionMessage = "result number must great then zero";
+                        CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
+                        coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
+                        throw coreRealmServiceEntityExploreException;
+                    }
+                    limitRecordNumber = resultNumber;
+                }
+            }
+
+            if (limitRecordNumber == 0) {
+                limitRecordNumber = defaultReturnRecordNumber;
+            }
+
+            StatementBuilder.OngoingReadingAndReturn activeOngoingReadingAndReturn;
+
+            FilteringItem defaultFilteringItem = targetConceptionKindQueryParameters.getDefaultFilteringItem();
+            List<FilteringItem> andFilteringItemList = targetConceptionKindQueryParameters.getAndFilteringItemsList();
+            List<FilteringItem> orFilteringItemList = targetConceptionKindQueryParameters.getOrFilteringItemsList();
+            if (defaultFilteringItem == null) {
+                if ((andFilteringItemList != null && andFilteringItemList.size() > 0) ||
+                        (orFilteringItemList != null && orFilteringItemList.size() > 0)) {
+                    logger.error("Default Filtering Item is required");
+                    CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+                    e.setCauseMessage("Default Filtering Item is required");
+                    throw e;
+                }
+            } else {
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(CommonOperationUtil.getQueryCondition(resultNodes, defaultFilteringItem));
+                if (andFilteringItemList != null && andFilteringItemList.size() > 0) {
+                    for (FilteringItem currentFilteringItem : andFilteringItemList) {
+                        ongoingReadingWithWhere = ongoingReadingWithWhere.and(CommonOperationUtil.getQueryCondition(resultNodes, currentFilteringItem));
+                    }
+                }
+                if (orFilteringItemList != null && orFilteringItemList.size() > 0) {
+                    for (FilteringItem currentFilteringItem : orFilteringItemList) {
+                        ongoingReadingWithWhere = ongoingReadingWithWhere.or(CommonOperationUtil.getQueryCondition(resultNodes, currentFilteringItem));
+                    }
+                }
+            }
+
+            if (isDistinctMode) {
+                activeOngoingReadingAndReturn = ongoingReadingWithWhere != null ?
+                        ongoingReadingWithWhere.returningDistinct(resultNodes):
+                        ongoingReadingWithoutWhere.returningDistinct(resultNodes);
+            } else {
+                activeOngoingReadingAndReturn = ongoingReadingWithWhere != null ?
+                        ongoingReadingWithWhere.returning(resultNodes):
+                        ongoingReadingWithoutWhere.returning(resultNodes);
+            }
+
+            if (skipRecordNumber != 0) {
+                if (sortItemArray != null) {
+                    //Function can not use together with sort in this case
+                    statement = activeOngoingReadingAndReturn.orderBy(sortItemArray).skip(skipRecordNumber).limit(limitRecordNumber).build();
+                } else {
+                    statement = activeOngoingReadingAndReturn.skip(skipRecordNumber).limit(limitRecordNumber).build();
+                }
+            } else {
+                if (sortItemArray != null) {
+                    //Function can not use together with sort in this case
+                    statement = activeOngoingReadingAndReturn.orderBy(sortItemArray).limit(limitRecordNumber).build();
+                } else {
+                    statement = activeOngoingReadingAndReturn.limit(limitRecordNumber).build();
+                }
+            }
+        }else{
+            statement = ongoingReadingWithoutWhere.returning(resultNodes).build();
+        }
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        return rel;
+    }
 }

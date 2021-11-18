@@ -614,6 +614,37 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         }
     }
 
+    @Override
+    public ConceptionEntitiesRetrieveResult getKindDirectRelatedEntities(String relationKind, RelationDirection relationDirection, String targetConceptionKind, QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException {
+        if(relationKind == null){
+            logger.error("RelationKind is required.");
+            CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+            exception.setCauseMessage("RelationKind is required.");
+            throw exception;
+        }
+        RelationDirection realRelationDirection = relationDirection != null ? relationDirection : RelationDirection.TWO_WAY;
+        CommonConceptionEntitiesRetrieveResultImpl commonConceptionEntitiesRetrieveResultImpl = new CommonConceptionEntitiesRetrieveResultImpl();
+        commonConceptionEntitiesRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.matchNodeWithSpecialRelationAndAttributeFilter(relationKind,realRelationDirection,
+                    this.conceptionKindName,targetConceptionKind,queryParameters);
+            GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(null,
+                    this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object queryRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
+            if(queryRes != null){
+                List<ConceptionEntity> resultConceptionEntityList = (List<ConceptionEntity>)queryRes;
+                commonConceptionEntitiesRetrieveResultImpl.addConceptionEntities(resultConceptionEntityList);
+                commonConceptionEntitiesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultConceptionEntityList.size());
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        commonConceptionEntitiesRetrieveResultImpl.finishEntitiesRetrieving();
+        return commonConceptionEntitiesRetrieveResultImpl;
+    }
+
     private List<AttributeKind> getContainsSingleValueAttributeKinds(GraphOperationExecutor workingGraphOperationExecutor) {
         return getSingleValueAttributeKinds(null,workingGraphOperationExecutor);
     }
