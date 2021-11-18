@@ -7,6 +7,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryPara
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleRelationEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleTimeScaleEntityTransformer;
@@ -21,6 +22,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
+import org.neo4j.driver.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -363,6 +365,68 @@ public class BatchDataOperationUtil {
             return batchLoadResultMap;
         }else{
             return null;
+        }
+    }
+
+    public static Map<String,Object> batchDeleteEntities(List<String> conceptionEntityUIDs,int degreeOfParallelism){
+        int singlePartitionSize = (conceptionEntityUIDs.size()/degreeOfParallelism)+1;
+        List<List<String>> rsList = Lists.partition(conceptionEntityUIDs, singlePartitionSize);
+        Map<String,Object> threadReturnDataMap = new Hashtable<>();
+        threadReturnDataMap.put("StartTime", LocalDateTime.now());
+        ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+        for(List<String> currentConceptionEntityUIDList:rsList){
+            DeleteConceptionEntityThread deleteConceptionEntityThread = new DeleteConceptionEntityThread(currentConceptionEntityUIDList,threadReturnDataMap);
+            executor.execute(deleteConceptionEntityThread);
+        }
+        executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        threadReturnDataMap.put("FinishTime", LocalDateTime.now());
+        return threadReturnDataMap;
+    }
+
+    private static class DeleteConceptionEntityThread implements Runnable{
+        private List<String> conceptionEntityUIDList;
+        private Map<String,Object> threadReturnDataMap;
+
+        public DeleteConceptionEntityThread(List<String> conceptionEntityUIDList,Map<String,Object> threadReturnDataMap){
+            this.conceptionEntityUIDList = conceptionEntityUIDList;
+            this.threadReturnDataMap = threadReturnDataMap;
+        }
+
+        @Override
+        public void run(){
+            if(this.conceptionEntityUIDList != null && this.conceptionEntityUIDList.size() >0){
+                String currentThreadName = Thread.currentThread().getName();
+                long successfulCount = 0;
+                CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+                if(coreRealm.getStorageImplTech().equals(CoreRealmStorageImplTech.NEO4J)){
+                    GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
+                    DataTransformer<Boolean> singleDeleteDataTransformer = new DataTransformer() {
+                        @Override
+                        public Object transformResult(Result result) {
+                            if(result != null & result.hasNext()){
+                                if(result.next()!=null){
+                                    return true;
+                                }
+                            }
+                            return false;
+                        }
+                    };
+                    for(String currentConceptionEntityUID:this.conceptionEntityUIDList){
+                        String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(currentConceptionEntityUID),null,null);
+                        Object returnObj = graphOperationExecutor.executeWrite(singleDeleteDataTransformer,deleteCql);
+                        if(returnObj != null){
+                            successfulCount++;
+                        }
+                    }
+                    graphOperationExecutor.close();
+                    threadReturnDataMap.put(currentThreadName,successfulCount);
+                }
+            }
         }
     }
 }

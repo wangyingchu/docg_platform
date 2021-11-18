@@ -1,10 +1,13 @@
 package specialPurposeTestCase;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationKind;
@@ -29,6 +32,7 @@ public class PerformanceAssessmentTestCase {
         prepareConceptionKindDataMap(conceptionEntityValuesList1,conceptionEntityValuesList2);
         loadData(conceptionEntityValuesList1,conceptionEntityValuesList2);
         linkData();
+        deleteData();
     }
 
     private static void setTypeDefinitions() throws CoreRealmServiceRuntimeException, CoreRealmFunctionNotSupportedException {
@@ -144,6 +148,24 @@ public class PerformanceAssessmentTestCase {
         Map<String,Object> batchLoadResultMap = BatchDataOperationUtil.batchAttachNewRelationsWithSinglePropertyValueMatch(
                 BuildingElementType,null,"elementId",ElementProperties,
                 null,"parentElementId",HasProperty,30);
+        System.out.println(batchLoadResultMap);
+    }
+
+    private static void deleteData() throws CoreRealmServiceEntityExploreException {
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        coreRealm.openGlobalSession();
+        ConceptionKind _ElementProperties = coreRealm.getConceptionKind(ElementProperties);
+        QueryParameters exploreParameters = new QueryParameters();
+        exploreParameters.setResultNumber(1000000);
+        ConceptionEntitiesRetrieveResult _ConceptionEntitiesRetrieveResult = _ElementProperties.getEntities(exploreParameters);
+        List<String> entityUIDList = new ArrayList<>();
+        List<ConceptionEntity> resultEntityList = _ConceptionEntitiesRetrieveResult.getConceptionEntities();
+        for(ConceptionEntity currentConceptionEntity:resultEntityList){
+            entityUIDList.add(currentConceptionEntity.getConceptionEntityUID());
+        }
+        coreRealm.closeGlobalSession();
+
+        Map<String,Object> batchLoadResultMap = BatchDataOperationUtil.batchDeleteEntities(entityUIDList,30);
         System.out.println(batchLoadResultMap);
     }
 }
