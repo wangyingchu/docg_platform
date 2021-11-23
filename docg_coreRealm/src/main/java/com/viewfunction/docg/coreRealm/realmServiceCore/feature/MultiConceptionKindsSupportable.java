@@ -3,6 +3,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.feature;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 
 public interface MultiConceptionKindsSupportable {
+    //心中有赤诚 眼中有光芒
     /**
      * 将当前实体对象加入更多的概念类型中
      *
