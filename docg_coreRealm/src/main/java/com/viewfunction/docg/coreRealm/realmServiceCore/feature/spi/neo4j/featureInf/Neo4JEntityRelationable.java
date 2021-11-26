@@ -775,7 +775,7 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
             if(!repeatable){
                 String queryRelationCql = CypherBuilder.matchRelationshipsByBothNodesId(Long.parseLong(sourceRelationableUID),Long.parseLong(targetRelationableUID), relationKind);
                 GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
-                        (RealmConstant.ConceptionKind_AttributesViewKindRelationClass,getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
+                        (relationKind,getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
                 Object existingRelationEntityRes = workingGraphOperationExecutor.executeRead(getSingleRelationEntityTransformer, queryRelationCql);
                 if(existingRelationEntityRes != null){
                     logger.debug("Relation of Kind {} already exist between Entity with UID {} and {}.", relationKind,sourceRelationableUID,targetRelationableUID);

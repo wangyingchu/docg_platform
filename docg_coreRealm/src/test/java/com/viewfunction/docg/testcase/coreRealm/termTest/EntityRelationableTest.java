@@ -343,6 +343,7 @@ public class EntityRelationableTest {
         _ConceptionEntityA.attachFromRelation(_ConceptionEntityC3.getConceptionEntityUID(),"testRelationTypeType2",null,true);
         _ConceptionEntityB1.attachFromRelation(_ConceptionEntityC2.getConceptionEntityUID(),"testRelationTypeType1",null,true);
         _ConceptionEntityB2.attachFromRelation(_ConceptionEntityB1.getConceptionEntityUID(),"testRelationTypeType1",null,true);
+        _ConceptionEntityA.attachFromRelation(_ConceptionEntityB1.getConceptionEntityUID(),"testRelationTypeType1",null,false);
 
         List<ConceptionEntity> resultListConceptionEntityList = _ConceptionEntityA.getRelatedConceptionEntities(null,"testRelationTypeType1",RelationDirection.TWO_WAY,2);
 
