@@ -15,8 +15,6 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JRelationEntityImpl;
-import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
-
 import org.neo4j.cypherdsl.core.*;
 import org.neo4j.cypherdsl.core.renderer.Renderer;
 import org.neo4j.driver.Record;
@@ -808,7 +806,7 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
         if(!repeatable){
             String queryRelationCql = CypherBuilder.matchRelationshipsByBothNodesId(Long.parseLong(sourceRelationableUID),Long.parseLong(targetRelationableUID), relationKind);
             GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
-                    (RealmConstant.ConceptionKind_AttributesViewKindRelationClass,getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
+                    (relationKind,getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
             Object existingRelationEntityRes = workingGraphOperationExecutor.executeRead(getSingleRelationEntityTransformer, queryRelationCql);
             if(existingRelationEntityRes != null){
                 logger.debug("Relation of Kind {} already exist between Entity with UID {} and {}.", relationKind,sourceRelationableUID,targetRelationableUID);
@@ -831,11 +829,6 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
                 return (Neo4JRelationEntityImpl)newRelationEntityRes;
         }
     }
-
-
-
-
-
 
     private List<String> batchDetachRelations(String relationQueryCql){
         if (this.getEntityUID() != null) {
