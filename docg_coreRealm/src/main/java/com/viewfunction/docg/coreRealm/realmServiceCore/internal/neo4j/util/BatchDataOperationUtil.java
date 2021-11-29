@@ -11,6 +11,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleRelationEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleTimeScaleEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
@@ -434,6 +435,83 @@ public class BatchDataOperationUtil {
                         }
                     }
                     graphOperationExecutor.close();
+                    threadReturnDataMap.put(currentThreadName,successfulCount);
+                }
+            }
+        }
+    }
+
+    public static Map<String,Object> batchAddNewOrUpdateEntityAttributes(String conceptionEntityUIDKeyName,List<Map<String,Object>> entityPropertiesValueList,int degreeOfParallelism){
+        int singlePartitionSize = (entityPropertiesValueList.size()/degreeOfParallelism)+1;
+        List<List<Map<String,Object>>> rsList = Lists.partition(entityPropertiesValueList, singlePartitionSize);
+        Map<String,Object> threadReturnDataMap = new Hashtable<>();
+
+        threadReturnDataMap.put("StartTime", LocalDateTime.now());
+        ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+        for(List<Map<String,Object>> currentEntityPropertiesValueList:rsList){
+            AddNewOrUpdateEntityAttributeThread addNewOrUpdateEntityAttributeThread = new AddNewOrUpdateEntityAttributeThread(conceptionEntityUIDKeyName,currentEntityPropertiesValueList,threadReturnDataMap);
+            executor.execute(addNewOrUpdateEntityAttributeThread);
+        }
+        executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        threadReturnDataMap.put("FinishTime", LocalDateTime.now());
+        return threadReturnDataMap;
+    }
+
+    private static class AddNewOrUpdateEntityAttributeThread implements Runnable{
+        private String conceptionEntityUIDKeyName;
+        private List<Map<String,Object>> entityPropertiesValueList;
+        private Map<String,Object> threadReturnDataMap;
+
+        public AddNewOrUpdateEntityAttributeThread(String conceptionEntityUIDKeyName,List<Map<String,Object>> entityPropertiesValueList,Map<String,Object> threadReturnDataMap){
+            this.conceptionEntityUIDKeyName = conceptionEntityUIDKeyName;
+            this.entityPropertiesValueList = entityPropertiesValueList;
+            this.threadReturnDataMap = threadReturnDataMap;
+        }
+
+        @Override
+        public void run() {
+            if(this.conceptionEntityUIDKeyName != null && this.entityPropertiesValueList.size() >0){
+                String currentThreadName = Thread.currentThread().getName();
+                long successfulCount = 0;
+                CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+                coreRealm.openGlobalSession();
+                CrossKindDataOperator crossKindDataOperator = coreRealm.getCrossKindDataOperator();
+
+                if(coreRealm.getStorageImplTech().equals(CoreRealmStorageImplTech.NEO4J)){
+
+                    Map<String,Map<String,Object>> entityUID_EntityMapping = new HashMap<>();
+                    List<String> conceptionEntityUIDList = new ArrayList<>();
+                    for(Map<String,Object> currentConceptionEntityProperties:this.entityPropertiesValueList){
+                        Object currentConceptionEntityUIDObj = currentConceptionEntityProperties.get(this.conceptionEntityUIDKeyName);
+                        if(currentConceptionEntityUIDObj != null){
+                            String currentConceptionEntityUID = currentConceptionEntityUIDObj.toString();
+                            currentConceptionEntityProperties.remove(this.conceptionEntityUIDKeyName);
+                            entityUID_EntityMapping.put(currentConceptionEntityUID,currentConceptionEntityProperties);
+                            conceptionEntityUIDList.add(currentConceptionEntityUID);
+                        }
+                    }
+                    try {
+                        List<ConceptionEntity> resultConceptionEntityList = crossKindDataOperator.getConceptionEntitiesByUIDs(conceptionEntityUIDList);
+                        if(resultConceptionEntityList != null){
+                            for(ConceptionEntity currentEntity:resultConceptionEntityList){
+                                String currentUID = currentEntity.getConceptionEntityUID();
+                                Map<String,Object> currentEntityProperties = entityUID_EntityMapping.get(currentUID);
+                                List<String> updatedProperties = currentEntity.addNewOrUpdateAttributes(currentEntityProperties);
+                                if(updatedProperties != null & updatedProperties.size() == currentEntityProperties.size()){
+                                    successfulCount++;
+                                }
+                            }
+                        }
+                    } catch (CoreRealmServiceEntityExploreException e) {
+                        e.printStackTrace();
+                    }
+
+                    coreRealm.closeGlobalSession();
                     threadReturnDataMap.put(currentThreadName,successfulCount);
                 }
             }
