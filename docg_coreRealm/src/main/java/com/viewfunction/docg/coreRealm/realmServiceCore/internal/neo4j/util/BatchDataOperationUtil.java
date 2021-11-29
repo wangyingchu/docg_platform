@@ -26,7 +26,7 @@ import org.neo4j.driver.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 public class BatchDataOperationUtil {
 
     private static Logger logger = LoggerFactory.getLogger(BatchDataOperationUtil.class);
+    private static ZoneId zone = ZoneId.systemDefault();
 
     public static Map<String,Object> batchAddNewEntities(String targetConceptionTypeName,List<ConceptionEntityValue> conceptionEntityValuesList,int degreeOfParallelism){
         int singlePartitionSize = (conceptionEntityValuesList.size()/degreeOfParallelism)+1;
@@ -136,8 +137,8 @@ public class BatchDataOperationUtil {
             GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
             for(ConceptionEntityValue currentConceptionEntityValue:conceptionEntityValueList){
                 if(currentConceptionEntityValue.getEntityAttributesValue().get(timeEventAttributeName) != null){
-                    Date targetDateValue = (Date)currentConceptionEntityValue.getEntityAttributesValue().get(timeEventAttributeName);
-                    boolean attachResult = attachTimeScaleEventLogic(timeScaleEntitiesMetaInfoMapping,currentConceptionEntityValue.getConceptionEntityUID(),targetDateValue.getTime(),
+                    Object targetDateValue = currentConceptionEntityValue.getEntityAttributesValue().get(timeEventAttributeName);
+                    boolean attachResult = attachTimeScaleEventLogic(timeScaleEntitiesMetaInfoMapping,currentConceptionEntityValue.getConceptionEntityUID(),targetDateValue,
                             eventComment,globalEventData,timeScaleGrade,graphOperationExecutor);
                     if(attachResult){
                         successfulCount++;
@@ -149,7 +150,7 @@ public class BatchDataOperationUtil {
         }
     }
 
-    private static boolean attachTimeScaleEventLogic(Map<String,String> timeScaleEntitiesMetaInfoMapping,String conceptionEntityUID,long dateTime,String eventComment,
+    private static boolean attachTimeScaleEventLogic(Map<String,String> timeScaleEntitiesMetaInfoMapping,String conceptionEntityUID,Object dateTime,String eventComment,
                                                  Map<String,Object> globalEventData,TimeFlow.TimeScaleGrade timeScaleGrade,
                                                   GraphOperationExecutor workingGraphOperationExecutor){
         Map<String, Object> propertiesMap = new HashMap<>();
@@ -157,9 +158,21 @@ public class BatchDataOperationUtil {
             propertiesMap.putAll(globalEventData);
         }
         CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
-        propertiesMap.put(RealmConstant._TimeScaleEventReferTime,dateTime);
+        TimeFlow.TimeScaleGrade referTimeScaleGrade = timeScaleGrade;
+        LocalDateTime eventReferTime = null;
+        if(dateTime instanceof ZonedDateTime){
+            eventReferTime = ((ZonedDateTime)dateTime).toLocalDateTime();
+        }else if(dateTime instanceof LocalDateTime){
+            eventReferTime = (LocalDateTime)dateTime;
+        }else if(dateTime instanceof LocalDate){
+            eventReferTime = ((LocalDate) dateTime).atTime(LocalTime.of(0,0,0));
+        }else if(dateTime instanceof Date){
+            Instant instant = ((Date)dateTime).toInstant();
+            eventReferTime = LocalDateTime.ofInstant(instant, zone);
+        }
+        propertiesMap.put(RealmConstant._TimeScaleEventReferTime,eventReferTime);
         propertiesMap.put(RealmConstant._TimeScaleEventComment,eventComment);
-        propertiesMap.put(RealmConstant._TimeScaleEventScaleGrade,""+timeScaleGrade);
+        propertiesMap.put(RealmConstant._TimeScaleEventScaleGrade,""+referTimeScaleGrade);
         propertiesMap.put(RealmConstant._TimeScaleEventTimeFlow,RealmConstant._defaultTimeFlowName);
 
         String createEventCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.TimeScaleEventClass}, propertiesMap);
@@ -175,7 +188,7 @@ public class BatchDataOperationUtil {
                     (RealmConstant.TimeScale_AttachToRelationClass,workingGraphOperationExecutor);
             Object newRelationEntityRes = workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, createCql);
             if(newRelationEntityRes != null){
-                String timeScaleEntityUID = getTimeScaleEntityUID(timeScaleEntitiesMetaInfoMapping,dateTime,RealmConstant._defaultTimeFlowName, timeScaleGrade, workingGraphOperationExecutor);
+                String timeScaleEntityUID = getTimeScaleEntityUID(timeScaleEntitiesMetaInfoMapping,eventReferTime,RealmConstant._defaultTimeFlowName, referTimeScaleGrade, workingGraphOperationExecutor);
                 if(timeScaleEntityUID != null){
                     String linkToTimeScaleEntityCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(timeScaleEntityUID),Long.parseLong(timeEventUID),RealmConstant.TimeScale_TimeReferToRelationClass,relationPropertiesMap);
                     workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, linkToTimeScaleEntityCql);
@@ -185,16 +198,13 @@ public class BatchDataOperationUtil {
         return true;
     }
 
-    private static String getTimeScaleEntityUID(Map<String,String> timeScaleEntitiesMetaInfoMapping,long dateTime, String timeFlowName, TimeFlow.TimeScaleGrade timeScaleGrade,GraphOperationExecutor workingGraphOperationExecutor){
-        Calendar eventCalendar=Calendar.getInstance();
-        eventCalendar.setTimeInMillis(dateTime);
-
-        int year = eventCalendar.get(Calendar.YEAR) ;
-        int month = eventCalendar.get(Calendar.MONTH)+1;
-        int day = eventCalendar.get(Calendar.DAY_OF_MONTH);
-        int hour = eventCalendar.get(Calendar.HOUR_OF_DAY);
-        int minute = eventCalendar.get(Calendar.MINUTE);
-        //int second = eventCalendar.get(Calendar.SECOND);
+    private static String getTimeScaleEntityUID(Map<String,String> timeScaleEntitiesMetaInfoMapping,LocalDateTime eventReferTime, String timeFlowName, TimeFlow.TimeScaleGrade timeScaleGrade,GraphOperationExecutor workingGraphOperationExecutor){
+        int year = eventReferTime.getYear();
+        int month = eventReferTime.getMonthValue();
+        int day = eventReferTime.getDayOfMonth();
+        int hour = eventReferTime.getHour();
+        int minute = eventReferTime.getMinute();
+        //int second = eventReferTime.getSecond();
 
         String TimeScaleEntityKey = timeFlowName+":"+year+"_"+month+"_"+day+"_"+hour+"_"+minute;
 

@@ -20,11 +20,12 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 
 public class PerformanceTestingRealmDataLoader {
 
-    private static final String FirmConceptionType = "Firm";
+    private static final String FirmConceptionType = "FirmAA";
     private static final String  Name = "name";
     private static final String  CompanyType = "companyType";
     private static final String  Address = "address";
@@ -74,7 +75,7 @@ public class PerformanceTestingRealmDataLoader {
         }
 
         List<ConceptionEntityValue> _FirmEntityValueList = Lists.newArrayList();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        //SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         File file = new File(filePath);
         BufferedReader reader = null;
         try {
@@ -128,15 +129,18 @@ public class PerformanceTestingRealmDataLoader {
                             newEntityValueMap.put(Status,status);
                         }
                         if(!start_date.equals("")){
-                            Date start_dateObj = sdf.parse(start_date.trim()+" 00:00:00");
-                            newEntityValueMap.put(StartDate,start_dateObj);
+                            String startDateString = start_date.trim().replace(" 00:00:00","");
+                            LocalDate startDate = LocalDate.parse(startDateString);
+                            newEntityValueMap.put(StartDate,startDate);
                         }
                         if(!approved_time.equals("")){
-                            Date approved_timeObj = sdf.parse(approved_time.trim()+" 00:00:00");
+                            //Date approved_timeObj = sdf.parse(approved_time.trim()+" 00:00:00");
+                            String approvedDateString = approved_time.trim().replace(" 00:00:00","");
+                            LocalDate approvedDate = LocalDate.parse(approvedDateString);
                             if(status != null & status.equals("注销")){
-                                newEntityValueMap.put(CancelDate,approved_timeObj);
+                                newEntityValueMap.put(CancelDate,approvedDate);
                             }else{
-                                newEntityValueMap.put(RegistrationChangeDate,approved_timeObj);
+                                newEntityValueMap.put(RegistrationChangeDate,approvedDate);
                             }
                         }
                         if(!category.equals("")){
@@ -172,7 +176,7 @@ public class PerformanceTestingRealmDataLoader {
             reader.close();
             System.out.println(notCorrectCount);
             System.out.println(_FirmEntityValueList.size());
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
             if (reader != null) {
