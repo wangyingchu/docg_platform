@@ -18,14 +18,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PerformanceTestingRealmDataLoader {
 
-    private static final String FirmConceptionType = "FirmAA";
+    private static final String FirmConceptionType = "Firm";
     private static final String  Name = "name";
     private static final String  CompanyType = "companyType";
     private static final String  Address = "address";
