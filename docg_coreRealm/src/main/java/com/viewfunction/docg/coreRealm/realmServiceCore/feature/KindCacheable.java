@@ -6,7 +6,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.util.cache.ResourceCache
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.dataValueObject.*;
 
 public interface KindCacheable<K,V>{
-
+    /* 聚是一团火 散是满天星 */
     String ATTRIBUTE_KIND_CACHE = "ATTRIBUTE_KIND_CACHE";
     String ATTRIBUTES_VIEW_KIND_CACHE = "ATTRIBUTES_VIEW_KIND_CACHE";
     String CLASSIFICATION_KIND_CACHE = "CLASSIFICATION_KIND_CACHE";
