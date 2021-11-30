@@ -11,7 +11,7 @@
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <neo4j.version>4.3.2</neo4j.version>
+        <neo4j.version>4.3.7</neo4j.version>
     </properties>
 
     <dependencies>
