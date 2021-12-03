@@ -48,7 +48,7 @@ public class GetListRelationEntityValueTransformer  implements DataTransformer<L
                         if(returnedAttributeList != null && returnedAttributeList.size() > 0){
                             for(String currentAttributeName : returnedAttributeList){
                                 Value targetValue = resultRelationship.get(currentAttributeName);
-                                if(targetValue != null){
+                                if(targetValue != null & !(targetValue instanceof org.neo4j.driver.internal.value.NullValue)){
                                     entityAttributesValue.put(currentAttributeName,targetValue);
                                 }
                             }

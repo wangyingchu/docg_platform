@@ -3,12 +3,9 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.oper
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityValueTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListRelationEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
@@ -245,7 +242,19 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             throw e;
         }
 
-
+        String cypherProcedureString = CypherBuilder.matchRelationsWithUIDs(relationEntityUIDs);
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListRelationEntityValueTransformer getListRelationEntityValueTransformer =
+                    new GetListRelationEntityValueTransformer(null,attributeNames);
+            Object queryRes = workingGraphOperationExecutor.executeRead(getListRelationEntityValueTransformer,cypherProcedureString);
+            if(queryRes != null){
+                List<RelationEntityValue> resultEntitiesValues = (List<RelationEntityValue>)queryRes;
+                return resultEntitiesValues;
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
         return null;
     }
 

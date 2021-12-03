@@ -5,6 +5,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
@@ -89,10 +90,14 @@ public class CrossKindDataOperatorTest {
         for(int i=0;i<50;i++){
             Map<String,Object> newEntityValue= new HashMap<>();
             newEntityValue.put("propA",i);
+            newEntityValue.put("propB","String-"+i);
+            Map<String,Object> newRelationEntityValue= new HashMap<>();
+            newRelationEntityValue.put("propR1",i);
+            newRelationEntityValue.put("propR2","String-"+i);
             ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValue);
             ConceptionEntity _ConceptionEntity = _ConceptionKind02.newEntity(conceptionEntityValue,false);
             conceptionEntityPairUIDList.add(_ConceptionEntity.getConceptionEntityUID());
-            RelationEntity resultRelationEntity = _ConceptionEntity.attachFromRelation(relationAttachTargetEntityUID,"crossKindTestRelationKind",newEntityValue,true);
+            RelationEntity resultRelationEntity = _ConceptionEntity.attachFromRelation(relationAttachTargetEntityUID,"crossKindTestRelationKind",newRelationEntityValue,true);
             relationUidList.add(resultRelationEntity.getRelationEntityUID());
         }
         relationUidList.add("20000000000000");// means a not exist entity's UID
@@ -126,12 +131,19 @@ public class CrossKindDataOperatorTest {
             Assert.assertTrue(currentConceptionEntityValue.getEntityAttributesValue().containsKey(("prop2")));
         }
 
-
-
-
-
-
-
+        attributesNameList.add("propR1");
+        attributesNameList.add("propR2");
+        List<RelationEntityValue> relationEntityValueList = targetCrossKindDataOperator.getSingleValueRelationEntityAttributesByUIDs(relationUidList,attributesNameList);
+        Assert.assertEquals(relationEntityValueList.size(),50);
+        for(RelationEntityValue currentRelationEntityValue:relationEntityValueList){
+            Assert.assertTrue(!currentRelationEntityValue.getEntityAttributesValue().containsKey("prop1"));
+            Assert.assertTrue(!currentRelationEntityValue.getEntityAttributesValue().containsKey("prop2"));
+            Assert.assertTrue(currentRelationEntityValue.getEntityAttributesValue().containsKey(("propR1")));
+            Assert.assertTrue(currentRelationEntityValue.getEntityAttributesValue().containsKey(("propR2")));
+            Assert.assertTrue(relationUidList.contains(currentRelationEntityValue.getRelationEntityUID()));
+            Assert.assertNotNull(currentRelationEntityValue.getFromConceptionEntityUID());
+            Assert.assertNotNull(currentRelationEntityValue.getToConceptionEntityUID());
+        }
 
         coreRealm.closeGlobalSession();
     }

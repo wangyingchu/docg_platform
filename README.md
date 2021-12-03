@@ -3967,6 +3967,27 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return double 类型的相似度数值
      */
     public Double computeConceptionEntityPairTopologySimilarity(String conceptionEntityAUID,String conceptionEntityBUID,TopologySimilarityComputeAlgorithm topologySimilarityComputeAlgorithm,TopologySimilarityComputeDirection topologySimilarityComputeDirection,String relationKindForCompute) throws CoreRealmServiceEntityExploreException,CoreRealmServiceRuntimeException;
+
+    /**
+     * 输入一组概念实体的唯一值ID和属性列表，返回所有匹配的概念实体数据的目标属性值
+     *
+     * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
+     * @param attributeNames List<String> 需要返回值的属性名称列表
+     *
+     * @return 匹配的概念实体对象的属性值列表
+     */
+    public List<ConceptionEntityValue> getSingleValueConceptionEntityAttributesByUIDs(List<String> conceptionEntityUIDs, List<String> attributeNames) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 输入一组关系实体的唯一值ID和属性列表，返回所有匹配的关系实体数据的目标属性值
+     *
+     * @param relationEntityUIDs List<String> 关系实体唯一值ID列表
+     * @param attributeNames List<String> 需要返回值的属性名称列表
+     *
+     * @return 匹配的关系实体对象的属性值列表
+     */
+    public List<RelationEntityValue> getSingleValueRelationEntityAttributesByUIDs(List<String> relationEntityUIDs, List<String> attributeNames) throws CoreRealmServiceEntityExploreException;
+
 ```
 
 ###### ↳ SystemMaintenanceOperator
