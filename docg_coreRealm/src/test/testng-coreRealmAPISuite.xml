@@ -65,9 +65,13 @@
             <class name="com.viewfunction.docg.testcase.coreRealm.termTest.RelationAttachKindTest"/>
         </classes>
     </test>
-
+    <test verbose="14" name="CrossKindDataOperatorTest">
+        <classes>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.CrossKindDataOperatorTest"/>
+        </classes>
+    </test>
     <!-- KindCacheableTest must be the last test case at anytime-->
-    <test verbose="14" name="KindCacheableTest">
+    <test verbose="15" name="KindCacheableTest">
         <classes>
             <class name="com.viewfunction.docg.testcase.coreRealm.termTest.KindCacheableTest"/>
         </classes>
