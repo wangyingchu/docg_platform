@@ -387,17 +387,27 @@ public class ConceptionKindTest {
         queryParameters.setStartPage(1);
         queryParameters.setEndPage(100);
         queryParameters.setPageSize(10);
-        ConceptionEntitiesRetrieveResult conceptionEntitiesRetrieveResult =_ConceptionKind01.getKindDirectRelatedEntities("queryTestRelation01",RelationDirection.FROM,null,queryParameters);
+        ConceptionEntitiesRetrieveResult conceptionEntitiesRetrieveResult =_ConceptionKind01.getKindDirectRelatedEntities(null,"queryTestRelation01",RelationDirection.FROM,null,queryParameters);
         Assert.assertEquals(conceptionEntitiesRetrieveResult.getConceptionEntities().size(),105);
 
-        conceptionEntitiesRetrieveResult =_ConceptionKind01.getKindDirectRelatedEntities("queryTestRelation01",RelationDirection.TO,null,queryParameters);
+        conceptionEntitiesRetrieveResult =_ConceptionKind01.getKindDirectRelatedEntities(null,"queryTestRelation01",RelationDirection.TO,null,queryParameters);
         Assert.assertEquals(conceptionEntitiesRetrieveResult.getConceptionEntities().size(),0);
 
-        conceptionEntitiesRetrieveResult =_ConceptionKind01.getKindDirectRelatedEntities("queryTestRelation01",RelationDirection.TWO_WAY,null,queryParameters);
+        conceptionEntitiesRetrieveResult =_ConceptionKind01.getKindDirectRelatedEntities(null,"queryTestRelation01",RelationDirection.TWO_WAY,null,queryParameters);
         Assert.assertEquals(conceptionEntitiesRetrieveResult.getConceptionEntities().size(),105);
 
         queryParameters.setDefaultFilteringItem(new GreaterThanFilteringItem("prop1",1000));
-        conceptionEntitiesRetrieveResult =_ConceptionKind01.getKindDirectRelatedEntities("queryTestRelation01",RelationDirection.FROM,null,queryParameters);
+        conceptionEntitiesRetrieveResult =_ConceptionKind01.getKindDirectRelatedEntities(null,"queryTestRelation01",RelationDirection.FROM,null,queryParameters);
         Assert.assertEquals(conceptionEntitiesRetrieveResult.getConceptionEntities().size(),5);
+
+        List<String> startEntityUIDS = new ArrayList<>();
+        startEntityUIDS.add(relationQueryTest02.getConceptionEntityUID());
+        conceptionEntitiesRetrieveResult =_ConceptionKind01.getKindDirectRelatedEntities(startEntityUIDS,"queryTestRelation01",RelationDirection.FROM,null,queryParameters);
+        Assert.assertEquals(conceptionEntitiesRetrieveResult.getConceptionEntities().size(),5);
+
+        startEntityUIDS.clear();
+        startEntityUIDS.add(relationQueryTest01.getConceptionEntityUID());
+        conceptionEntitiesRetrieveResult =_ConceptionKind01.getKindDirectRelatedEntities(startEntityUIDS,"queryTestRelation01",RelationDirection.FROM,null,queryParameters);
+        Assert.assertEquals(conceptionEntitiesRetrieveResult.getConceptionEntities().size(),0);
     }
 }

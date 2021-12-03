@@ -2587,7 +2587,16 @@ public class CypherBuilder {
         }
     }
 
-    public static String matchNodeWithSpecialRelationAndAttributeFilter(String relationKind, RelationDirection relationDirection, String originalConceptionKind,String aimConceptionKind, QueryParameters targetConceptionKindQueryParameters) throws CoreRealmServiceEntityExploreException {
+    public static String matchNodeWithSpecialRelationAndAttributeFilter(String relationKind, RelationDirection relationDirection, String originalConceptionKind,List<String> originalConceptionEntityUIDS,String aimConceptionKind, QueryParameters targetConceptionKindQueryParameters) throws CoreRealmServiceEntityExploreException {
+
+        List<Long> originalConceptionEntitiesUIDList = null;
+        if(originalConceptionEntityUIDS != null){
+            originalConceptionEntitiesUIDList = new ArrayList<>();
+            for(int i=0;i<originalConceptionEntityUIDS.size();i++){
+                originalConceptionEntitiesUIDList.add(Long.parseLong(originalConceptionEntityUIDS.get(i)));
+            }
+        }
+
         Node sourceNode = Cypher.node(originalConceptionKind).named(sourceNodeName);
         Node resultNodes = aimConceptionKind != null ? Cypher.node(aimConceptionKind).named(operationResultName):Cypher.anyNode().named(operationResultName);
         Relationship r = null;
@@ -2699,7 +2708,12 @@ public class CypherBuilder {
                     throw e;
                 }
             } else {
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(CommonOperationUtil.getQueryCondition(resultNodes, defaultFilteringItem));
+                if(originalConceptionEntitiesUIDList != null){
+                    ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).in(Cypher.literalOf(originalConceptionEntitiesUIDList)))
+                            .and(CommonOperationUtil.getQueryCondition(resultNodes, defaultFilteringItem));
+                }else{
+                    ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(CommonOperationUtil.getQueryCondition(resultNodes, defaultFilteringItem));
+                }
                 if (andFilteringItemList != null && andFilteringItemList.size() > 0) {
                     for (FilteringItem currentFilteringItem : andFilteringItemList) {
                         ongoingReadingWithWhere = ongoingReadingWithWhere.and(CommonOperationUtil.getQueryCondition(resultNodes, currentFilteringItem));
@@ -2738,7 +2752,12 @@ public class CypherBuilder {
                 }
             }
         }else{
-            statement = ongoingReadingWithoutWhere.returning(resultNodes).build();
+            if(originalConceptionEntitiesUIDList != null){
+                statement = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).in(Cypher.literalOf(originalConceptionEntitiesUIDList)))
+                        .returning(resultNodes).build();
+            }else{
+                statement = ongoingReadingWithoutWhere.returning(resultNodes).build();
+            }
         }
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}", rel);

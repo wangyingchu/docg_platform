@@ -615,7 +615,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public ConceptionEntitiesRetrieveResult getKindDirectRelatedEntities(String relationKind, RelationDirection relationDirection, String targetConceptionKind, QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException {
+    public ConceptionEntitiesRetrieveResult getKindDirectRelatedEntities(List<String> startEntityUIDS,String relationKind, RelationDirection relationDirection, String targetConceptionKind, QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException {
         if(relationKind == null){
             logger.error("RelationKind is required.");
             CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
@@ -629,7 +629,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
             String queryCql = CypherBuilder.matchNodeWithSpecialRelationAndAttributeFilter(relationKind,realRelationDirection,
-                    this.conceptionKindName,targetConceptionKind,queryParameters);
+                    this.conceptionKindName,startEntityUIDS,targetConceptionKind,queryParameters);
             GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(null,
                     this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object queryRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);

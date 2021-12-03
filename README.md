@@ -762,6 +762,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
 	/**
      * 查询符合过滤条件的与当前概念类型的实体对象直接关联的其他实体对象
      *
+     * @param startEntityUIDS List<String> 当前概念类型实体对象 UID 列表，只有与该列表中UID定义的实体对象关联的数据才会计入查询过滤结果，如传入 null 则忽略特定实体关联，从类型上执行全局查询
      * @param relationKind String 关联的关系类型名称
      * @param relationDirection RelationDirection 关联方向
      * @param aimConceptionKind List<String> 查询目标概念类型名称，入传入 null 则忽略类型
@@ -769,7 +770,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @return 概念实体查询结果集
      */
-    public ConceptionEntitiesRetrieveResult getKindDirectRelatedEntities(String relationKind,RelationDirection
+    public ConceptionEntitiesRetrieveResult getKindDirectRelatedEntities(List<String> startEntityUIDS,String relationKind,RelationDirection
             relationDirection,String aimConceptionKind,QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
 ```
 ###### ↳ RelationKind
