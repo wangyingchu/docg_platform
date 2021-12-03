@@ -63,6 +63,7 @@ public class CrossKindDataOperatorTest {
         for(int i=0;i<10;i++){
             Map<String,Object> newEntityValue= new HashMap<>();
             newEntityValue.put("prop1",i);
+            newEntityValue.put("prop2","StringValueOf "+i);
             ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValue);
             ConceptionEntity _ConceptionEntity = _ConceptionKind01.newEntity(conceptionEntityValue,false);
             uidList.add(_ConceptionEntity.getConceptionEntityUID());
@@ -112,6 +113,26 @@ public class CrossKindDataOperatorTest {
             Assert.assertTrue(relationUidList.contains(currentRelationEntity.getRelationEntityUID()));
             Assert.assertTrue(conceptionEntityPairUIDList.contains(currentRelationEntity.getFromConceptionEntityUID()));
         }
+
+        List<String> attributesNameList = new ArrayList<>();
+        attributesNameList.add("prop1");
+        attributesNameList.add("prop2");
+        List<ConceptionEntityValue> conceptionEntityValueList = targetCrossKindDataOperator.getSingleValueConceptionEntityAttributesByUIDs(uidList,attributesNameList);
+
+        Assert.assertEquals(conceptionEntityValueList.size(),10);
+        for(ConceptionEntityValue currentConceptionEntityValue:conceptionEntityValueList){
+            Assert.assertTrue(uidList.contains(currentConceptionEntityValue.getConceptionEntityUID()));
+            Assert.assertTrue(currentConceptionEntityValue.getEntityAttributesValue().containsKey(("prop1")));
+            Assert.assertTrue(currentConceptionEntityValue.getEntityAttributesValue().containsKey(("prop2")));
+        }
+
+
+
+
+
+
+
+
         coreRealm.closeGlobalSession();
     }
 }

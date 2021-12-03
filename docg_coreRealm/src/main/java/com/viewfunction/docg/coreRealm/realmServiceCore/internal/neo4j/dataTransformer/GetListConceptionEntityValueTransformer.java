@@ -18,12 +18,12 @@ public class GetListConceptionEntityValueTransformer implements DataTransformer<
     private List<AttributeKind> containsAttributeKindList;
     private List<String> returnedAttributeList;
     private Map<String,AttributeDataType> attributeDataTypeMap;
-    boolean useIDMatchLogic = true;
+    private boolean useIDMatchLogic = true;
 
     public GetListConceptionEntityValueTransformer(List<String> returnedAttributeList){
         this.containsAttributeKindList = new ArrayList<>();
         this.returnedAttributeList = returnedAttributeList;
-        this.useIDMatchLogic = false;
+        this.setUseIDMatchLogic(false);
         this.attributeDataTypeMap = new HashMap<>();
         for(AttributeKind currentAttributeKind:this.containsAttributeKindList){
             String attributeName = currentAttributeKind.getAttributeKindName();
@@ -51,7 +51,7 @@ public class GetListConceptionEntityValueTransformer implements DataTransformer<
             Record nodeRecord = result.next();
             String conceptionEntityUID;
             Map<String,Object> valueMap;
-            if(this.useIDMatchLogic){
+            if(this.isUseIDMatchLogic()){
                 valueMap = nodeRecord.asMap();
                 String idKey = "id("+CypherBuilder.operationResultName+")";
                 Long uidValue = (Long)valueMap.get(idKey);
@@ -66,7 +66,7 @@ public class GetListConceptionEntityValueTransformer implements DataTransformer<
             Map<String,Object> entityAttributesValue = new HashMap<>();
             ConceptionEntityValue currentConceptionEntityValue = new ConceptionEntityValue(conceptionEntityUID,entityAttributesValue);
             conceptionEntityValueList.add(currentConceptionEntityValue);
-            if(this.useIDMatchLogic){
+            if(this.isUseIDMatchLogic()){
                 for(String currentAttributeName:returnedAttributeList){
                     String entityAttributeName = CypherBuilder.operationResultName+"."+currentAttributeName;
                     Object objectValue = valueMap.get(entityAttributeName);
@@ -220,5 +220,13 @@ public class GetListConceptionEntityValueTransformer implements DataTransformer<
             }
         }
         return null;
+    }
+
+    public boolean isUseIDMatchLogic() {
+        return useIDMatchLogic;
+    }
+
+    public void setUseIDMatchLogic(boolean useIDMatchLogic) {
+        this.useIDMatchLogic = useIDMatchLogic;
     }
 }

@@ -2744,4 +2744,57 @@ public class CypherBuilder {
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
     }
+
+    public static String matchAttributesWithNodeIDs(List<String> nodeIdList,List<String> returnProperties) throws CoreRealmServiceEntityExploreException {
+        List<Long> nodeIdValueList = new ArrayList<>();
+        for(int i=0;i<nodeIdList.size();i++){
+            nodeIdValueList.add(Long.parseLong(nodeIdList.get(i)));
+        }
+
+        Node m = Cypher.anyNode().named(operationResultName);
+        if (returnProperties == null || returnProperties.size() == 0) {
+            String exceptionMessage = "must input at least one attribute name";
+            CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
+            coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
+            throw coreRealmServiceEntityExploreException;
+        }
+        Expression[] returnPropertyArray = new Expression[returnProperties.size()+1];
+        for(int i = 0; i < returnProperties.size(); i++){
+            returnPropertyArray[i] = m.property(returnProperties.get(i).trim());
+        }
+        returnPropertyArray[returnProperties.size()] = Functions.id(m);
+
+        Statement statement = Cypher.match(m).where(Functions.id(m).in(Cypher.literalOf(nodeIdValueList))).returningDistinct(returnPropertyArray).build();
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        return rel;
+    }
+
+    public static String matchAttributesWithRelationIDs(List<String> relationIdList,List<String> returnProperties) throws CoreRealmServiceEntityExploreException {
+        List<Long> nodeIdValueList = new ArrayList<>();
+        for(int i=0;i<relationIdList.size();i++){
+            nodeIdValueList.add(Long.parseLong(relationIdList.get(i)));
+        }
+        Node sourceNode = Cypher.anyNode();
+        Node targetNode = Cypher.anyNode();
+
+        Relationship r =  sourceNode.relationshipBetween(targetNode).named(operationResultName);;
+
+        if (returnProperties == null || returnProperties.size() == 0) {
+            String exceptionMessage = "must input at least one attribute name";
+            CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
+            coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
+            throw coreRealmServiceEntityExploreException;
+        }
+        Expression[] returnPropertyArray = new Expression[returnProperties.size()+1];
+        for(int i = 0; i < returnProperties.size(); i++){
+            returnPropertyArray[i] = r.property(returnProperties.get(i).trim());
+        }
+        returnPropertyArray[returnProperties.size()] = Functions.id(r);
+
+        Statement statement = Cypher.match(r).where(Functions.id(r).in(Cypher.literalOf(nodeIdValueList))).returningDistinct(returnPropertyArray).build();
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        return rel;
+    }
 }

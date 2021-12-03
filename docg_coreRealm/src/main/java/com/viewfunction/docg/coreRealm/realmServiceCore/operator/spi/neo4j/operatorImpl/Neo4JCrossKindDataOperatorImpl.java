@@ -2,12 +2,16 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.oper
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityValueTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListRelationEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import org.neo4j.driver.Record;
@@ -101,8 +105,8 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         try {
             GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(null,
                     this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
-            Object relationEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,cypherProcedureString);
-            return relationEntityList != null ? (List<ConceptionEntity>)relationEntityList : null;
+            Object conceptionEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,cypherProcedureString);
+            return conceptionEntityList != null ? (List<ConceptionEntity>)conceptionEntityList : null;
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
@@ -193,6 +197,56 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
+    }
+
+    @Override
+    public List<ConceptionEntityValue> getSingleValueConceptionEntityAttributesByUIDs(List<String> conceptionEntityUIDs, List<String> attributeNames) throws CoreRealmServiceEntityExploreException {
+        if(conceptionEntityUIDs == null || conceptionEntityUIDs.size() < 1){
+            logger.error("At least one conception entity UID is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("At least one conception entity UID is required");
+            throw e;
+        }
+        if(attributeNames == null || attributeNames.size() < 1){
+            logger.error("At least one attribute name is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("At least one attribute name is required");
+            throw e;
+        }
+
+        String cypherProcedureString = CypherBuilder.matchAttributesWithNodeIDs(conceptionEntityUIDs,attributeNames);
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer = new GetListConceptionEntityValueTransformer(attributeNames);
+            getListConceptionEntityValueTransformer.setUseIDMatchLogic(true);
+            Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer,cypherProcedureString);
+            if(resEntityRes != null){
+                List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
+               return resultEntitiesValues;
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return null;
+    }
+
+    @Override
+    public List<RelationEntityValue> getSingleValueRelationEntityAttributesByUIDs(List<String> relationEntityUIDs, List<String> attributeNames) throws CoreRealmServiceEntityExploreException {
+        if(relationEntityUIDs == null || relationEntityUIDs.size() < 1){
+            logger.error("At least one relation entity UID is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("At least one relation entity UID is required");
+            throw e;
+        }
+        if(attributeNames == null || attributeNames.size() < 1){
+            logger.error("At least one attribute name is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("At least one attribute name is required");
+            throw e;
+        }
+
+
+        return null;
     }
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
