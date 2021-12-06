@@ -52,6 +52,7 @@ public class PerformanceTestingRealmDataLoader {
         //Step 4: Link Date
         //linkDate(StartDate,"firmStartedAt");
         //linkDate(ApprovedDate,"firmApprovedAt");
+        linkDate(CancelDate,"firmCanceledAt");
     }
 
     private static void initDefaultGeoData(){
