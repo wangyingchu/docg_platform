@@ -149,6 +149,7 @@
     <orderEntry type="library" name="Maven: commons-net:commons-net:3.1" level="project" />
     <orderEntry type="library" name="Maven: org.json4s:json4s-jackson_2.11:3.5.3" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.jersey.core:jersey-client:2.22.2" level="project" />
+    <orderEntry type="library" name="Maven: javax.ws.rs:javax.ws.rs-api:2.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.hk2:hk2-api:2.4.0-b34" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.hk2:hk2-utils:2.4.0-b34" level="project" />
     <orderEntry type="library" name="Maven: org.glassfish.hk2.external:aopalliance-repackaged:2.4.0-b34" level="project" />
@@ -214,10 +215,6 @@
     <orderEntry type="library" name="Maven: org.scala-lang.modules:scala-xml_2.11:1.0.6" level="project" />
     <orderEntry type="library" name="Maven: org.apache.ignite:ignite-log4j:2.11.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.ignite:ignite-scalar:2.11.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.ignite:ignite-kafka:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.kafka:kafka-clients:2.0.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.kafka:connect-api:2.0.1" level="project" />
-    <orderEntry type="library" name="Maven: javax.ws.rs:javax.ws.rs-api:2.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.ignite:ignite-ml:2.11.0" level="project" />
     <orderEntry type="library" name="Maven: it.unimi.dsi:fastutil:7.0.12" level="project" />
     <orderEntry type="library" name="Maven: com.github.fommil.netlib:core:1.1.2" level="project" />
