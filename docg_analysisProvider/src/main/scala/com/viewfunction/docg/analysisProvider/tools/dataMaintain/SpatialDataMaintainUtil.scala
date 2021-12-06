@@ -1,7 +1,7 @@
 package com.viewfunction.docg.analysisProvider.tools.dataMaintain
 
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
-import com.viewfunction.docg.dataCompute.dataComputeUnit.dataService.{DataSlice, DataSlicePropertyType}
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.{DataSlice, DataSlicePropertyType}
 import org.geotools.data.shapefile.ShapefileDataStore
 import org.geotools.data.simple.{SimpleFeatureCollection, SimpleFeatureIterator, SimpleFeatureSource}
 import org.geotools.data.{FileDataStore, FileDataStoreFinder}

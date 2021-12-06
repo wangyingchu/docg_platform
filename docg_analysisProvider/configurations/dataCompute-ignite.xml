@@ -20,6 +20,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
     <!-- Imports default Ignite configuration -->
-    <import resource="dataAnalysis-default.xml"/>
+    <import resource="dataCompute-default.xml"/>
     <bean parent="ignite.cfg" id="configuration"/>
 </beans>

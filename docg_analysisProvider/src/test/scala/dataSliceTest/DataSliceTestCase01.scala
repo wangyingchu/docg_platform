@@ -1,6 +1,7 @@
 package dataSliceTest
 
-import com.viewfunction.docg.dataCompute.dataComputeUnit.dataService.{DataSliceServiceInvoker, DataSlicePropertyType}
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlicePropertyType
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker
 
 import java.util
 import java.util.Date
@@ -11,14 +12,14 @@ import scala.collection.mutable.ArrayBuffer
 object DataSliceTestCase01{
 
   def main(args:Array[String]):Unit ={
-    val memoryTableServiceInvoker:DataSliceServiceInvoker =  DataSliceServiceInvoker.getInvokerInstance
+    val memoryTableServiceInvoker:DataServiceInvoker =  DataServiceInvoker.getInvokerInstance
     val newMemoryTableName = "TestMemoryTable01"+ new Date().getTime
     memoryTableCreate(memoryTableServiceInvoker,newMemoryTableName)
     memoryTableCRUD(memoryTableServiceInvoker,newMemoryTableName)
     memoryTableServiceInvoker.close()
   }
 
-  def memoryTableCreate(memoryTableServiceInvoker:DataSliceServiceInvoker, memoryTableName:String):Unit={
+  def memoryTableCreate(memoryTableServiceInvoker:DataServiceInvoker, memoryTableName:String):Unit={
     println("======== memoryTableCreate Start ===")
     val tablePropertiesDefineMap: java.util.Map[String, DataSlicePropertyType] = mutable.HashMap(
       "property1" -> DataSlicePropertyType.STRING,
@@ -38,7 +39,7 @@ object DataSliceTestCase01{
     println("======== memoryTableCreate Finish ===")
   }
 
-  def memoryTableCRUD(memoryTableServiceInvoker:DataSliceServiceInvoker, memoryTableName:String):Unit={
+  def memoryTableCRUD(memoryTableServiceInvoker:DataServiceInvoker, memoryTableName:String):Unit={
     println("======== memoryTableCRUD Start ===")
     val memoryTable = memoryTableServiceInvoker.getDataSlice(memoryTableName)
     memoryTable.emptyDataSlice()

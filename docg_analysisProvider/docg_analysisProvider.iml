@@ -260,5 +260,6 @@
     <orderEntry type="library" name="Maven: com.databricks:spark-csv_2.11:1.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-csv:1.1" level="project" />
     <orderEntry type="library" name="Maven: it.unimi.dsi:fastutil:7.0.8" level="project" />
+    <orderEntry type="module" module-name="docg_dataCompute" />
   </component>
 </module>

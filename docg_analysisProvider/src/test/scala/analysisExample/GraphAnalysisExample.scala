@@ -1,10 +1,9 @@
 package analysisExample
 
-
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
 import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.ResultSetConvertor
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
-import com.viewfunction.docg.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
 import ml.sparkling.graph.api.operators.measures.VertexMeasureConfiguration
 import org.apache.spark.graphx.{Edge, Graph, PartitionStrategy, VertexId}
 import org.apache.spark.rdd.RDD

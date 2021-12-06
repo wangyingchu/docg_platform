@@ -3,8 +3,8 @@ package com.viewfunction.docg.analysisProvider.feature.common
 import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.GeospatialScaleLevel.{CountryLevel, GeospatialScaleLevel, GlobalLevel, LocalLevel}
 import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.ResultSetConvertor
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
-import com.viewfunction.docg.dataCompute.dataComputeUnit.dataService.{DataSlice, DataSliceServiceInvoker}
-import com.viewfunction.docg.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlice}
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
 import org.apache.ignite.{Ignite, Ignition}
 import org.apache.sedona.sql.utils.SedonaSQLRegistrator
 import org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
@@ -19,10 +19,10 @@ import java.sql.{DriverManager, ResultSet}
 
 class GlobalDataAccessor (private val sessionName:String, private val masterLocation:String){
 
-  val isClientIgniteNode = Boolean.parseBoolean(AnalysisProviderApplicationUtil.getApplicationProperty("isClientIgniteNode"))
-  Ignition.setClientMode(isClientIgniteNode)
-  val igniteNode = Ignition.start("configurations/dataAnalysis-ignite.xml")
-  val dataServiceInvoker = DataSliceServiceInvoker.getInvokerInstance(igniteNode)
+  //val isClientIgniteNode = Boolean.parseBoolean(AnalysisProviderApplicationUtil.getApplicationProperty("isClientIgniteNode"))
+  //Ignition.setClientMode(isClientIgniteNode)
+  //val igniteNode = Ignition.start("configurations/dataAnalysis-ignite.xml")
+  val dataServiceInvoker = DataServiceInvoker.getInvokerInstance()
 
   val sparkCoresMax = AnalysisProviderApplicationUtil.getApplicationProperty("sparkCoresMax")
   val sparkExecutorCores = AnalysisProviderApplicationUtil.getApplicationProperty("sparkExecutorCores")
@@ -207,18 +207,20 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
 
   def close():Unit={
     sparkSession.close()
-    igniteNode.close()
+    //igniteNode.close()
+    _getDataSliceServiceInvoker().close()
   }
 
   def getSparkSession(): SparkSession = {
     sparkSession
   }
-
+/*
   def _getIgniteNode(): Ignite = {
-    igniteNode
-  }
+    //igniteNode
 
-  def _getDataSliceServiceInvoker():DataSliceServiceInvoker = {
+  }
+*/
+  def _getDataSliceServiceInvoker():DataServiceInvoker = {
     dataServiceInvoker
   }
 
