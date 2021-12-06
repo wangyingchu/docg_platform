@@ -51,8 +51,7 @@ public class PerformanceTestingRealmDataLoader {
         //loadFirmData("/media/wangychu/Data/Data/A_gridded_establishment_dataset_as_a_proxy_for_economic_activity_in_China/firm_2015.csv");
         //Step 4: Link Date
         //linkDate(StartDate,"firmStartedAt");
-        //linkDate(ApprovedDate,"firmApprovedAt");
-        linkDate(CancelDate,"firmCanceledAt");
+        //linkDate(RegistrationChangeDate,"firmRegistrationChangedAt");
     }
 
     private static void initDefaultGeoData(){
