@@ -5,25 +5,19 @@ import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.ResultSetCo
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlice}
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
-import org.apache.ignite.{Ignite, Ignition}
 import org.apache.sedona.sql.utils.SedonaSQLRegistrator
 import org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
-import org.apache.spark.graphx.{Edge, VertexId, VertexRDD}
+import org.apache.spark.graphx.{Edge, VertexId}
 import org.apache.spark.rdd.{JdbcRDD, RDD}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.serializer.KryoSerializer
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
-import java.lang.Boolean
 import java.sql.{DriverManager, ResultSet}
 
 class GlobalDataAccessor (private val sessionName:String, private val masterLocation:String){
 
-  //val isClientIgniteNode = Boolean.parseBoolean(AnalysisProviderApplicationUtil.getApplicationProperty("isClientIgniteNode"))
-  //Ignition.setClientMode(isClientIgniteNode)
-  //val igniteNode = Ignition.start("configurations/dataAnalysis-ignite.xml")
   val dataServiceInvoker = DataServiceInvoker.getInvokerInstance()
-
   val sparkCoresMax = AnalysisProviderApplicationUtil.getApplicationProperty("sparkCoresMax")
   val sparkExecutorCores = AnalysisProviderApplicationUtil.getApplicationProperty("sparkExecutorCores")
   val sparkExecutorMemory = AnalysisProviderApplicationUtil.getApplicationProperty("sparkExecutorMemory")
@@ -207,19 +201,13 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
 
   def close():Unit={
     sparkSession.close()
-    //igniteNode.close()
     _getDataSliceServiceInvoker().close()
   }
 
   def getSparkSession(): SparkSession = {
     sparkSession
   }
-/*
-  def _getIgniteNode(): Ignite = {
-    //igniteNode
 
-  }
-*/
   def _getDataSliceServiceInvoker():DataServiceInvoker = {
     dataServiceInvoker
   }
