@@ -28,6 +28,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
+
 public class CoreRealmOperationUtil {
 
     public final static String RealmGlobalUID = "RealmGlobalUID";
@@ -35,6 +37,280 @@ public class CoreRealmOperationUtil {
     public final static String RelationToEntityUID = "RelationToEntityUID";
     public final static String defaultSliceGroup = "DefaultSliceGroup";
     private final static int defaultResultNumber = 100000000;
+
+
+
+
+   // public enum GeospatialScaleLevel {GlobalLevel,CountryLevel,LocalLevel}
+
+
+
+    /*
+
+    public static DataSliceOperationResult syncConceptionKindToDataSlice(String conceptionKindName, String dataSliceName, String dataSliceGroup, GeospatialScaleLevel geospatialScaleLevel){
+
+        String dataSliceRealName = dataSliceName != null ? dataSliceName : conceptionKindName;
+        String dataSliceRealGroup = dataSliceGroup != null ? dataSliceGroup : defaultSliceGroup;
+
+        Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
+        dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID,DataSlicePropertyType.STRING);
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        ConceptionKind targetConceptionKind = coreRealm.getConceptionKind(conceptionKindName);
+        List<AttributeKind> attributeKindList = targetConceptionKind.getContainsSingleValueAttributeKinds();
+        if(attributeKindList.size() == 0){
+            return null;
+        }
+
+        List<String> conceptionKindPropertiesList = new ArrayList<>();
+        if(attributeKindList != null && attributeKindList.size() >0){
+            for(AttributeKind currentAttributeKind :attributeKindList){
+                String currentAttributeKindName = currentAttributeKind.getAttributeKindName();
+                AttributeDataType currentAttributeDataType = currentAttributeKind.getAttributeDataType();
+                switch (currentAttributeDataType){
+                    case DECIMAL:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.DECIMAL);
+                        break;
+                    case BOOLEAN:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.BOOLEAN);
+                        break;
+                    case STRING:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.STRING);
+                        break;
+                    case DOUBLE:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.DOUBLE);
+                        break;
+                    case BINARY:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.BINARY);
+                        break;
+                    case SHORT:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.SHORT);
+                        break;
+                    case FLOAT:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.FLOAT);
+                        break;
+                    case TIMESTAMP:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.TIMESTAMP);
+                        break;
+                    case LONG:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.LONG);
+                        break;
+                    case BYTE:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.BYTE);
+                        break;
+                    case INT:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.INT);
+                        break;
+                    case DATE:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.DATE);
+                        break;
+                    case TIME:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.TIME);
+                        break;
+                    case DATETIME:
+                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.TIMESTAMP);
+                        break;
+                }
+                conceptionKindPropertiesList.add(currentAttributeKindName);
+            }
+        }
+
+        if(geospatialScaleLevel != null){
+            dataSlicePropertyMap.put(RealmConstant._GeospatialGeometryType,DataSlicePropertyType.STRING);
+            conceptionKindPropertiesList.add(RealmConstant._GeospatialGeometryType);
+            switch(geospatialScaleLevel){
+                case LocalLevel:
+                    dataSlicePropertyMap.put(RealmConstant._GeospatialLLGeometryContent,DataSlicePropertyType.STRING);
+                    dataSlicePropertyMap.put(RealmConstant._GeospatialLocalCRSAID,DataSlicePropertyType.STRING);
+                    conceptionKindPropertiesList.add(RealmConstant._GeospatialLLGeometryContent);
+                    conceptionKindPropertiesList.add(RealmConstant._GeospatialLocalCRSAID);
+                    break;
+                case CountryLevel:
+                    dataSlicePropertyMap.put(RealmConstant._GeospatialCLGeometryContent,DataSlicePropertyType.STRING);
+                    dataSlicePropertyMap.put(RealmConstant._GeospatialCountryCRSAID,DataSlicePropertyType.STRING);
+                    conceptionKindPropertiesList.add(RealmConstant._GeospatialCLGeometryContent);
+                    conceptionKindPropertiesList.add(RealmConstant._GeospatialCountryCRSAID);
+                    break;
+                case GlobalLevel:
+                    dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryContent,DataSlicePropertyType.STRING);
+                    dataSlicePropertyMap.put(RealmConstant._GeospatialGlobalCRSAID,DataSlicePropertyType.STRING);
+                    conceptionKindPropertiesList.add(RealmConstant._GeospatialGLGeometryContent);
+                    conceptionKindPropertiesList.add(RealmConstant._GeospatialGlobalCRSAID);
+            }
+        }
+
+        try(DataServiceInvoker dataSliceServiceInvoker = DataServiceInvoker.getInvokerInstance()){
+            DataSlice targetDataSlice = dataSliceServiceInvoker.getDataSlice(dataSliceRealName);
+            if(targetDataSlice == null){
+                List<String> pkList = new ArrayList<>();
+                pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
+                dataSliceServiceInvoker.createGridDataSlice(dataSliceRealName,dataSliceRealGroup,dataSlicePropertyMap,pkList);
+            }
+        } catch (ComputeGridNotActiveException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if(conceptionKindPropertiesList.size() > 0){
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setResultNumber(defaultResultNumber);
+            int processorNumber = Runtime.getRuntime().availableProcessors();
+            int degreeOfParallelism = (processorNumber/2) >=4 ? (processorNumber/2) : 4;
+            return loadConceptionKindEntitiesToDataSlice(conceptionKindName,conceptionKindPropertiesList,queryParameters,dataSliceRealName,true,degreeOfParallelism);
+        }else{
+            return null;
+        }
+    }
+
+    public static DataSliceOperationResult syncConceptionKindToDataSlice(String conceptionKindName,String dataSliceName,String dataSliceGroup,Map<String, DataSlicePropertyType> dataSlicePropertyMap, GeospatialScaleLevel geospatialScaleLevel){
+        String dataSliceRealName = dataSliceName != null ? dataSliceName : conceptionKindName;
+        String dataSliceRealGroup = dataSliceGroup != null ? dataSliceGroup : defaultSliceGroup;
+        List<String> conceptionKindPropertiesList = new ArrayList<>();
+
+        if(dataSlicePropertyMap != null && dataSlicePropertyMap.size() >0){
+
+            Set<String> propertiesNameSet = dataSlicePropertyMap.keySet();
+            conceptionKindPropertiesList.addAll(propertiesNameSet);
+            dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID,DataSlicePropertyType.STRING);
+
+            if(geospatialScaleLevel != null){
+                dataSlicePropertyMap.put(RealmConstant._GeospatialGeometryType,DataSlicePropertyType.STRING);
+                conceptionKindPropertiesList.add(RealmConstant._GeospatialGeometryType);
+                switch(geospatialScaleLevel){
+                    case LocalLevel:
+                        dataSlicePropertyMap.put(RealmConstant._GeospatialLLGeometryContent,DataSlicePropertyType.STRING);
+                        dataSlicePropertyMap.put(RealmConstant._GeospatialLocalCRSAID,DataSlicePropertyType.STRING);
+                        conceptionKindPropertiesList.add(RealmConstant._GeospatialLLGeometryContent);
+                        conceptionKindPropertiesList.add(RealmConstant._GeospatialLocalCRSAID);
+                        break;
+                    case CountryLevel:
+                        dataSlicePropertyMap.put(RealmConstant._GeospatialCLGeometryContent,DataSlicePropertyType.STRING);
+                        dataSlicePropertyMap.put(RealmConstant._GeospatialCountryCRSAID,DataSlicePropertyType.STRING);
+                        conceptionKindPropertiesList.add(RealmConstant._GeospatialCLGeometryContent);
+                        conceptionKindPropertiesList.add(RealmConstant._GeospatialCountryCRSAID);
+                        break;
+                    case GlobalLevel:
+                        dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryContent,DataSlicePropertyType.STRING);
+                        dataSlicePropertyMap.put(RealmConstant._GeospatialGlobalCRSAID,DataSlicePropertyType.STRING);
+                        conceptionKindPropertiesList.add(RealmConstant._GeospatialGLGeometryContent);
+                        conceptionKindPropertiesList.add(RealmConstant._GeospatialGlobalCRSAID);
+                }
+            }
+
+            try(DataServiceInvoker dataSliceServiceInvoker = DataServiceInvoker.getInvokerInstance()){
+                DataSlice targetDataSlice = dataSliceServiceInvoker.getDataSlice(dataSliceRealName);
+                if(targetDataSlice == null){
+                    List<String> pkList = new ArrayList<>();
+                    pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
+                    dataSliceServiceInvoker.createGridDataSlice(dataSliceRealName,dataSliceRealGroup,dataSlicePropertyMap,pkList);
+                }
+            } catch (ComputeGridNotActiveException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if(conceptionKindPropertiesList.size() > 0){
+                QueryParameters queryParameters = new QueryParameters();
+                queryParameters.setResultNumber(defaultResultNumber);
+                int processorNumber = Runtime.getRuntime().availableProcessors();
+                int degreeOfParallelism = (processorNumber/2) >=4 ? (processorNumber/2) : 4;
+                return loadConceptionKindEntitiesToDataSlice(conceptionKindName,conceptionKindPropertiesList,queryParameters,dataSliceRealName,true,degreeOfParallelism);
+            }else{
+                return null;
+            }
+        }else{
+            return null;
+        }
+    }
+
+
+
+    public static DataSliceOperationResult syncRelationKindToDataSlice(String relationKindName,String dataSliceName,String dataSliceGroup,Map<String, DataSlicePropertyType> dataSlicePropertyMap){
+        String dataSliceRealName = dataSliceName != null ? dataSliceName : relationKindName;
+        String dataSliceRealGroup = dataSliceGroup != null ? dataSliceGroup : defaultSliceGroup;
+        List<String> relationKindPropertiesList = new ArrayList<>();
+
+        Map<String, DataSlicePropertyType> finalDataSlicePropertyMap = dataSlicePropertyMap != null ? dataSlicePropertyMap : new HashMap<>();
+        finalDataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID,DataSlicePropertyType.STRING);
+        finalDataSlicePropertyMap.put(CoreRealmOperationUtil.RelationFromEntityUID,DataSlicePropertyType.STRING);
+        finalDataSlicePropertyMap.put(CoreRealmOperationUtil.RelationToEntityUID,DataSlicePropertyType.STRING);
+
+        try(DataServiceInvoker dataSliceServiceInvoker = DataServiceInvoker.getInvokerInstance()){
+            DataSlice targetDataSlice = dataSliceServiceInvoker.getDataSlice(dataSliceRealName);
+            if(targetDataSlice == null){
+                List<String> pkList = new ArrayList<>();
+                pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
+                dataSliceServiceInvoker.createGridDataSlice(dataSliceRealName,dataSliceRealGroup,finalDataSlicePropertyMap,pkList);
+            }
+        } catch (ComputeGridNotActiveException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Set<String> propertiesNameSet = finalDataSlicePropertyMap.keySet();
+        relationKindPropertiesList.addAll(propertiesNameSet);
+
+        if(relationKindPropertiesList.size() > 0){
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setResultNumber(defaultResultNumber);
+            int processorNumber = Runtime.getRuntime().availableProcessors();
+            int degreeOfParallelism = (processorNumber/2) >=4 ? (processorNumber/2) : 4;
+            return loadRelationKindEntitiesToDataSlice(relationKindName,relationKindPropertiesList,queryParameters,dataSliceRealName,degreeOfParallelism);
+        }else{
+            return null;
+        }
+    }
+
+    public static DataSliceOperationResult loadRelationKindEntitiesToDataSlice(String relationKindName, List<String> attributeNamesList,QueryParameters queryParameters, String dataSliceName,int degreeOfParallelism) {
+        DataSliceOperationResult dataSliceOperationResult = new DataSliceOperationResult();
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        RelationKind targetRelationKind = coreRealm.getRelationKind(relationKindName);
+        int totalResultRelationEntitiesCount = 0;
+        try {
+            RelationEntitiesAttributesRetrieveResult relationEntitiesAttributesRetrieveResult = targetRelationKind.getEntityAttributesByAttributeNames(attributeNamesList,queryParameters);
+            List<RelationEntityValue> relationEntityValue = relationEntitiesAttributesRetrieveResult.getRelationEntityValues();
+            totalResultRelationEntitiesCount = relationEntityValue.size();
+
+            int singlePartitionSize = (relationEntityValue.size()/degreeOfParallelism)+1;
+            List<List<RelationEntityValue>> rsList = Lists.partition(relationEntityValue, singlePartitionSize);
+
+            ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+            for(int i = 0;i < rsList.size(); i++){
+                List<RelationEntityValue> currentRelationEntityValueList = rsList.get(i);
+                DataSliceInsertRelationThread dataSliceInsertRelationThread = new DataSliceInsertRelationThread(i,dataSliceName,attributeNamesList,currentRelationEntityValueList,true);
+                executor.execute(dataSliceInsertRelationThread);
+            }
+            executor.shutdown();
+            executor.awaitTermination(Long.MAX_VALUE,TimeUnit.NANOSECONDS);
+        } catch (CoreRealmServiceEntityExploreException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        try(DataServiceInvoker dataSliceServiceInvoker = DataServiceInvoker.getInvokerInstance()){
+            DataSlice targetDataSlice = dataSliceServiceInvoker.getDataSlice(dataSliceName);
+            DataSliceMetaInfo dataSliceMetaInfo = targetDataSlice.getDataSliceMetaInfo();
+            int successDataCount = dataSliceMetaInfo.getPrimaryDataCount() + dataSliceMetaInfo.getBackupDataCount();
+            dataSliceOperationResult.setSuccessItemsCount(successDataCount);
+            dataSliceOperationResult.setFailItemsCount(totalResultRelationEntitiesCount-successDataCount);
+        } catch (ComputeGridNotActiveException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        dataSliceOperationResult.finishOperation();
+        dataSliceOperationResult.setOperationSummary("Load RelationKind Entities To DataSlice Operation");
+        return dataSliceOperationResult;
+    }
+
+
+
+
+
+*/
+
+
 
     public static DataSliceOperationResult syncConceptionKindToDataSlice(String conceptionKindName,String dataSliceName,String dataSliceGroup){
 

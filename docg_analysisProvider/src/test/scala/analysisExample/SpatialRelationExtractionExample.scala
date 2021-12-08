@@ -71,9 +71,13 @@ object SpatialRelationExtractionExample extends App {
     dataSlicePropertyMap.put("MNLCP_FEA_",DataSlicePropertyType.INT)
     dataSlicePropertyMap.put("MNLCP_ROTA",DataSlicePropertyType.INT)
     dataSlicePropertyMap.put("MNLCP_CV_2",DataSlicePropertyType.DOUBLE)
-    //val mainlineConnectionPointDataSlice: DataSliceOperationResult =
-    //  CoreRealmOperationUtil.syncConceptionKindToDataSlice("MainlineConnectionPoint", "MainlineConnectionPoint", CoreRealmOperationUtil.defaultSliceGroup,dataSlicePropertyMap,CoreRealmOperationUtil.GeospatialScaleLevel.GlobalLevel)
-    //println(mainlineConnectionPointDataSlice.getSuccessItemsCount)
+
+    /*
+    val mainlineConnectionPointDataSlice: DataSliceOperationResult =
+      CoreRealmOperationUtil.syncConceptionKindToDataSlice("MainlineConnectionPoint", "MainlineConnectionPoint", CoreRealmOperationUtil.defaultSliceGroup,dataSlicePropertyMap,CoreRealmOperationUtil.GeospatialScaleLevel.GlobalLevel)
+    println(mainlineConnectionPointDataSlice.getSuccessItemsCount)
+    */
+
   }
 
   def loadMainlineEndPointDS():Unit = {
@@ -83,9 +87,13 @@ object SpatialRelationExtractionExample extends App {
     dataSlicePropertyMap.put("MNLEP_X_CO",DataSlicePropertyType.DOUBLE)
     dataSlicePropertyMap.put("MNLEP_Y_CO",DataSlicePropertyType.DOUBLE)
     dataSlicePropertyMap.put("MNLEP_ELEV",DataSlicePropertyType.DOUBLE)
-    //val mainlineEndPointDataSlice: DataSliceOperationResult =
-    //  CoreRealmOperationUtil.syncConceptionKindToDataSlice("MainlineEndPoint", "MainlineEndPoint", CoreRealmOperationUtil.defaultSliceGroup,dataSlicePropertyMap,CoreRealmOperationUtil.GeospatialScaleLevel.GlobalLevel)
-    //(mainlineEndPointDataSlice.getSuccessItemsCount)
+
+    /*
+    val mainlineEndPointDataSlice: DataSliceOperationResult =
+      CoreRealmOperationUtil.syncConceptionKindToDataSlice("MainlineEndPoint", "MainlineEndPoint", CoreRealmOperationUtil.defaultSliceGroup,dataSlicePropertyMap,CoreRealmOperationUtil.GeospatialScaleLevel.GlobalLevel)
+    (mainlineEndPointDataSlice.getSuccessItemsCount)
+    */
+
   }
 
   def loadPermittedUseMainlineDS():Unit = {
@@ -95,9 +103,13 @@ object SpatialRelationExtractionExample extends App {
     dataSlicePropertyMap.put("MNL_DNS_FE",DataSlicePropertyType.INT)
     dataSlicePropertyMap.put("MNL_PIPE_1",DataSlicePropertyType.STRING)
     dataSlicePropertyMap.put("MNL_LIFE_1",DataSlicePropertyType.STRING)
-    //val mainlineEndPointDataSlice: DataSliceOperationResult =
-    //  CoreRealmOperationUtil.syncConceptionKindToDataSlice("PermittedUseMainline", "PermittedUseMainline", CoreRealmOperationUtil.defaultSliceGroup,dataSlicePropertyMap,CoreRealmOperationUtil.GeospatialScaleLevel.GlobalLevel)
-    //println(mainlineEndPointDataSlice.getSuccessItemsCount)
+
+    /*
+    val mainlineEndPointDataSlice: DataSliceOperationResult =
+      CoreRealmOperationUtil.syncConceptionKindToDataSlice("PermittedUseMainline", "PermittedUseMainline", CoreRealmOperationUtil.defaultSliceGroup,dataSlicePropertyMap,CoreRealmOperationUtil.GeospatialScaleLevel.GlobalLevel)
+    println(mainlineEndPointDataSlice.getSuccessItemsCount)
+    */
+
   }
 
   def generateMainlineConnectionPoint_PermittedUseMainlineSpatialRelation(relationInfoArray:Array[Row]):Unit = {
@@ -123,9 +135,11 @@ object SpatialRelationExtractionExample extends App {
   }
 
   def loadSpatialConnectionRelationDS:Unit = {
-    //val _GS_SpatialConnectDataSlice: DataSliceOperationResult =
-    //  CoreRealmOperationUtil.syncRelationKindToDataSlice("DOCG_GS_SpatialConnect","GS_SpatialConnect",CoreRealmOperationUtil.defaultSliceGroup,null)
-    //println(_GS_SpatialConnectDataSlice.getSuccessItemsCount)
+    /*
+    val _GS_SpatialConnectDataSlice: DataSliceOperationResult =
+      CoreRealmOperationUtil.syncRelationKindToDataSlice("DOCG_GS_SpatialConnect","GS_SpatialConnect",CoreRealmOperationUtil.defaultSliceGroup,null)
+    println(_GS_SpatialConnectDataSlice.getSuccessItemsCount)
+    */
   }
 
 }
