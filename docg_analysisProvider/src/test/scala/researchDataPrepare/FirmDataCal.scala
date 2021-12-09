@@ -1,6 +1,6 @@
 package researchDataPrepare
 
-import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.GeospatialScaleLevel
+import com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScaleLevel
 import com.viewfunction.docg.analysisProvider.tools.dataMaintain.SpatialDataMaintainUtil
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlicePropertyType}
 

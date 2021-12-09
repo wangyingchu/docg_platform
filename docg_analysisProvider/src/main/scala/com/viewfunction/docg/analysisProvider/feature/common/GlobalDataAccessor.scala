@@ -1,7 +1,6 @@
 package com.viewfunction.docg.analysisProvider.feature.common
 
-import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.GeospatialScaleLevel.{CountryLevel, GeospatialScaleLevel, GlobalLevel, LocalLevel}
-import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.ResultSetConvertor
+import com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScaleLevel.{CountryLevel, GeospatialScaleLevel, GlobalLevel, LocalLevel}
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlice}
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil

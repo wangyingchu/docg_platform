@@ -1,8 +1,8 @@
 package analysisExample
 
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
-import com.viewfunction.docg.analysisProvider.feature.spark.spatial.{SpatialPredicateType, SpatialQueryMetaFunction, SpatialQueryParam}
-import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.GeospatialScaleLevel
+import com.viewfunction.docg.analysisProvider.feature.spark.spatial.{SpatialQueryMetaFunction, SpatialQueryParam}
+import com.viewfunction.docg.analysisProvider.fundamental.spatial.{GeospatialScaleLevel, SpatialPredicateType}
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue

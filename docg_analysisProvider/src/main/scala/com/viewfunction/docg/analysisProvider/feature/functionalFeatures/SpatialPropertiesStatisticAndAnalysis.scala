@@ -3,8 +3,9 @@ package com.viewfunction.docg.analysisProvider.feature.functionalFeatures
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.{CalculationOperator, ObjectAggregationType, PredicateType}
-import com.viewfunction.docg.analysisProvider.feature.spark.spatial.SpatialPredicateType.SpatialPredicateType
-import com.viewfunction.docg.analysisProvider.feature.spark.spatial.{SpatialPredicateType, SpatialQueryMetaFunction, SpatialQueryParam}
+import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredicateType.SpatialPredicateType
+import com.viewfunction.docg.analysisProvider.feature.spark.spatial.{SpatialQueryMetaFunction, SpatialQueryParam}
+import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredicateType
 import org.apache.spark.sql.{DataFrame, Row}
 import org.apache.spark.sql.functions.{avg, count, max, min, stddev, sum, variance}
 import org.apache.spark.sql.types.{DoubleType, StructField, StructType}

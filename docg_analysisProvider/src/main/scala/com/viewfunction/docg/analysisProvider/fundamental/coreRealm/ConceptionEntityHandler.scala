@@ -1,4 +1,4 @@
-package com.viewfunction.docg.analysisProvider.feature.util.coreRealm
+package com.viewfunction.docg.analysisProvider.fundamental.coreRealm
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesRetrieveStatistics
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity

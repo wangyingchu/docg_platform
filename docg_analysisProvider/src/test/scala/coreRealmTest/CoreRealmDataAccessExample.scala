@@ -1,6 +1,6 @@
 package coreRealmTest
 
-import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.{ConceptionEntityHandler, CoreRealmDataAccessor, RelationEntityHandler}
+import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.{ConceptionEntityHandler, CoreRealmDataAccessor}
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.{ConceptionEntityValue, EntitiesRetrieveStatistics, RelationEntityValue}
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.{ConceptionEntity, RelationEntity}

@@ -1,11 +1,12 @@
 package analysisExample
 
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
-import com.viewfunction.docg.analysisProvider.feature.spark.spatial.{SpatialPredicateType, SpatialQueryMetaFunction, SpatialQueryParam}
+import com.viewfunction.docg.analysisProvider.feature.spark.spatial.{SpatialQueryMetaFunction, SpatialQueryParam}
+import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredicateType
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import org.apache.spark.sql.Row
 import org.apache.spark.sql.functions.{avg, stddev, sum}
-import org.apache.spark.sql.types.{DoubleType, StringType, StructField, StructType,IntegerType}
+import org.apache.spark.sql.types.{DoubleType, IntegerType, StringType, StructField, StructType}
 
 import scala.collection.mutable
 

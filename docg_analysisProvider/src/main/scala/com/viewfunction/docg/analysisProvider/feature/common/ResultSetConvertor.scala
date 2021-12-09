@@ -1,4 +1,4 @@
-package com.viewfunction.docg.analysisProvider.feature.util.coreRealm
+package com.viewfunction.docg.analysisProvider.feature.common
 
 import java.sql.ResultSet
 

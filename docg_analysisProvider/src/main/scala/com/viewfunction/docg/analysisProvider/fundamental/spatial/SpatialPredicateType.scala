@@ -1,6 +1,6 @@
-package com.viewfunction.docg.analysisProvider.feature.spark.spatial
+package com.viewfunction.docg.analysisProvider.fundamental.spatial
 
-object SpatialPredicateType extends Enumeration{
+object SpatialPredicateType extends Enumeration {
   type SpatialPredicateType = Value
   val Contains = Value("Contains")
   val Intersects = Value("Intersects")
@@ -10,15 +10,7 @@ object SpatialPredicateType extends Enumeration{
   val Touches = Value("Touches")
   val Overlaps = Value("Overlaps")
 
-  def checkExists(item:String) = this.values.exists(_.toString==item)
+  def checkExists(item: String) = this.values.exists(_.toString == item)
+
   def showAll = this.values.foreach(println)
 }
-
-
-
-
-
-
-
-
-

@@ -1,7 +1,7 @@
 package com.viewfunction.docg.analysisProvider.tools.dataMaintain
 
 import com.viewfunction.docg.analysisProvider.exception.AnalysisProviderRuntimeException
-import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.GeospatialScaleLevel.{CountryLevel, GeospatialScaleLevel, GlobalLevel, LocalLevel}
+import com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScaleLevel.{CountryLevel, GeospatialScaleLevel, GlobalLevel, LocalLevel}
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlice, DataSlicePropertyType}
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil

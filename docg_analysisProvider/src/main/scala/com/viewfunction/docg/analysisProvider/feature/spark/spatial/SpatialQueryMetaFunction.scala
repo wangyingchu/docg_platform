@@ -1,10 +1,11 @@
 package com.viewfunction.docg.analysisProvider.feature.spark.spatial
 
-import SpatialDirectionType.SpatialDirectionType
-import SpatialOrderType.SpatialOrderType
-import SpatialPredicateType.SpatialPredicateType
+import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialDirectionType.SpatialDirectionType
+import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialOrderType.SpatialOrderType
+import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredicateType.SpatialPredicateType
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
-import org.apache.sedona.core.enums.{GridType}
+import com.viewfunction.docg.analysisProvider.fundamental.spatial.{SpatialOrderType, SpatialPredicateType}
+import org.apache.sedona.core.enums.GridType
 import org.apache.sedona.sql.utils.Adapter
 import org.apache.spark.sql.DataFrame
 
