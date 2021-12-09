@@ -1,11 +1,11 @@
-package com.viewfunction.docg.analysisProvider.tools.dataMaintain
+package com.viewfunction.docg.analysisProvider.fundamental.dataMaintenance
 
 import com.viewfunction.docg.analysisProvider.exception.AnalysisProviderRuntimeException
+import com.viewfunction.docg.analysisProvider.fundamental.dataMaintenance
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScaleLevel.{CountryLevel, GeospatialScaleLevel, GlobalLevel, LocalLevel}
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlice, DataSlicePropertyType}
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
-
 import org.geotools.data.shapefile.ShapefileDataStore
 import org.geotools.data.simple.{SimpleFeatureCollection, SimpleFeatureIterator, SimpleFeatureSource}
 import org.geotools.data.{FileDataStore, FileDataStoreFinder}
@@ -137,7 +137,7 @@ class SpatialDataMaintainUtil {
       shpDataValueList.add(newEntityValueMap)
     }
 
-    SpatialDataInfo(shpDataPropertyTypeMap,shpDataValueList)
+    dataMaintenance.SpatialDataInfo(shpDataPropertyTypeMap,shpDataValueList)
   }
 
   def duplicateSpatialDataInfoToDataSlice(dataServiceInvoker:DataServiceInvoker, spatialDataInfo: SpatialDataInfo,

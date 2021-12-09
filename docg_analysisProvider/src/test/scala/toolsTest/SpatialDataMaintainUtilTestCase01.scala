@@ -1,8 +1,8 @@
 package toolsTest
 
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
+import com.viewfunction.docg.analysisProvider.fundamental.dataMaintenance.SpatialDataMaintainUtil
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
-import com.viewfunction.docg.analysisProvider.tools.dataMaintain.SpatialDataMaintainUtil
 
 import java.io.File
 
