@@ -1,8 +1,10 @@
 package com.viewfunction.docg.analysisProvider.tools.dataMaintain
 
+import com.viewfunction.docg.analysisProvider.exception.AnalysisProviderRuntimeException
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
 import com.viewfunction.docg.analysisProvider.feature.util.coreRealm.GeospatialScaleLevel.{CountryLevel, GeospatialScaleLevel, GlobalLevel, LocalLevel}
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.{DataSlice, DataSlicePropertyType}
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlice, DataSlicePropertyType}
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
 import org.geotools.data.shapefile.ShapefileDataStore
 import org.geotools.data.simple.{SimpleFeatureCollection, SimpleFeatureIterator, SimpleFeatureSource}
@@ -166,20 +168,35 @@ class SpatialDataMaintainUtil {
     targetDataSlice
   }
 
-  def syncGeospatialConceptionKindToDataSlice(conceptionKindName: String, dataSliceName: String, dataSliceGroup: String,geospatialScaleLevel:GeospatialScaleLevel):Unit={
+  @throws(classOf[AnalysisProviderRuntimeException])
+  def syncGeospatialConceptionKindToDataSlice(dataServiceInvoker:DataServiceInvoker, conceptionKindName: String, dataSliceName: String, dataSliceGroup: String,
+                                              conceptionEntityPropertyMap: util.HashMap[String, DataSlicePropertyType],geospatialScaleLevel:GeospatialScaleLevel):DataSlice={
+    val targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName)
+    if(targetDataSlice != null){
+      throw new AnalysisProviderRuntimeException("DataSlice with name "+dataSliceName +" already exist.")
+    }
+
+    val dataSlicePropertyMap: util.HashMap[String, DataSlicePropertyType] = new util.HashMap[String, DataSlicePropertyType]()
+    dataSlicePropertyMap.put(RealmConstant._GeospatialGeometryType,DataSlicePropertyType.STRING)
+
+    if(conceptionEntityPropertyMap != null){
+      dataSlicePropertyMap.putAll(conceptionEntityPropertyMap);
+    }
 
     geospatialScaleLevel match {
       case GlobalLevel =>
+        dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryContent,DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put(RealmConstant._GeospatialGlobalCRSAID,DataSlicePropertyType.STRING);
       case CountryLevel =>
+        dataSlicePropertyMap.put(RealmConstant._GeospatialCLGeometryContent,DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put(RealmConstant._GeospatialCountryCRSAID,DataSlicePropertyType.STRING);
       case LocalLevel =>
+        dataSlicePropertyMap.put(RealmConstant._GeospatialLLGeometryContent,DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put(RealmConstant._GeospatialLocalCRSAID,DataSlicePropertyType.STRING);
     }
 
-    val dataSliceOperationResult = CoreRealmOperationUtil.syncConceptionKindToDataSlice(conceptionKindName,dataSliceName,dataSliceGroup)
+    val dataSliceOperationResult =
+      CoreRealmOperationUtil.syncConceptionKindToDataSlice(conceptionKindName,dataSliceName,dataSliceGroup,dataSlicePropertyMap)
+    dataServiceInvoker.getDataSlice(dataSliceName)
   }
-
-
-
-
-
-
 }

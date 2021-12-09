@@ -78,7 +78,7 @@
                 <property name="defaultDataRegionConfiguration">
                     <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
                         <property name="name" value="Default_DataStore_Region"/>
-                        <!-- Setting the size of the default region to 5GB. -->
+                        <!-- Setting the size of the default region to 10GB. -->
                         <property name="maxSize" value="#{10L * 1024 * 1024 * 1024}"/>
                         <!-- When persistence is enabled, data and indexes are stored both in memory and on disk across all the cluster nodes. -->
                         <property name="persistenceEnabled" value="false"/>

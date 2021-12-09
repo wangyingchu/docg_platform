@@ -415,7 +415,12 @@ public class CoreRealmOperationUtil {
             conceptionKindPropertiesList.addAll(propertiesNameSet);
             dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID,DataSlicePropertyType.STRING);
 
-            try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
+            // use this logic to avoid create ready exist ignite nodes has same name
+            IgniteConfiguration igniteConfiguration= new IgniteConfiguration();
+            igniteConfiguration.setClientMode(true);
+            igniteConfiguration.setIgniteInstanceName("DataSliceCreateThread_"+new Date().getTime());
+            Ignite invokerIgnite =Ignition.start(igniteConfiguration);
+            try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance(invokerIgnite)){
                 DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceRealName);
                 if(targetDataSlice == null){
                     List<String> pkList = new ArrayList<>();
@@ -500,7 +505,12 @@ public class CoreRealmOperationUtil {
             e.printStackTrace();
         }
 
-        try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
+        // use this logic to avoid create ready exist ignite nodes has same name
+        IgniteConfiguration igniteConfiguration= new IgniteConfiguration();
+        igniteConfiguration.setClientMode(true);
+        igniteConfiguration.setIgniteInstanceName("DataSliceConfirmThread_"+new Date().getTime());
+        Ignite invokerIgnite =Ignition.start(igniteConfiguration);
+        try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance(invokerIgnite)){
             DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
             DataSliceMetaInfo dataSliceMetaInfo = targetDataSlice.getDataSliceMetaInfo();
             int successDataCount = dataSliceMetaInfo.getPrimaryDataCount() + dataSliceMetaInfo.getBackupDataCount();
