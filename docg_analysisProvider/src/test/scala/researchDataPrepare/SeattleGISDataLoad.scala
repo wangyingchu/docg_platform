@@ -132,7 +132,7 @@ object SeattleGISDataLoad extends App{
   seattleGISDataSHPInfoMapping.forEach((objectType,shpLocation)=>{
   val shpFile = new File(shpLocation)
   val shpParseResult = spatialDataMaintainUtil.parseSHPData(shpFile,null)
-  spatialDataMaintainUtil.duplicateSpatialDataInfoToDataSlice(globalDataAccessor,shpParseResult,objectType,"defaultGroup",true,null)
+  spatialDataMaintainUtil.duplicateSpatialDataInfoToDataSlice(globalDataAccessor._getDataSliceServiceInvoker(),shpParseResult,objectType,"defaultGroup",true,null)
   })
 
   Thread.sleep(5000)

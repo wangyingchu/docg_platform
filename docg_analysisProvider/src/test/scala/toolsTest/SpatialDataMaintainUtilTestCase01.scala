@@ -19,7 +19,7 @@ object SpatialDataMaintainUtilTestCase01 {
     val globalDataAccessor = new GlobalDataAccessor(sparkApplicationName,sparkMasterLocation)
 
 
-    val targetMemoryTable = spatialDataMaintainUtil.duplicateSpatialDataInfoToDataSlice(globalDataAccessor,shpParseResult,"Streets","defaultGroup",true,null)
+    val targetMemoryTable = spatialDataMaintainUtil.duplicateSpatialDataInfoToDataSlice(globalDataAccessor._getDataSliceServiceInvoker(),shpParseResult,"Streets","defaultGroup",true,null)
 
     val memoryTableMetaInfo = targetMemoryTable.getDataSliceMetaInfo
 
