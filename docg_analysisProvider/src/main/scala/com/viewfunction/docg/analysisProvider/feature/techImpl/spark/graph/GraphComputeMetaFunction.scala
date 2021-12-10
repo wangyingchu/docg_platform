@@ -1,4 +1,4 @@
-package com.viewfunction.docg.analysisProvider.feature.spark.graph
+package com.viewfunction.docg.analysisProvider.feature.techImpl.spark.graph
 
 class GraphComputeMetaFunction {
   def closenessCentralityCompute():Unit = {}

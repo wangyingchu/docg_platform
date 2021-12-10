@@ -1,7 +1,8 @@
 package analysisExample
 
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
-import com.viewfunction.docg.analysisProvider.feature.spark.spatial.{SpatialQueryMetaFunction, SpatialQueryParam}
+import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial
+import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial.{SpatialQueryMetaFunction, SpatialQueryParam}
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.{GeospatialScaleLevel, SpatialPredicateType}
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil
@@ -49,11 +50,11 @@ object SpatialRelationExtractionExample extends App {
 
     val spatialQueryMetaFunction = new SpatialQueryMetaFunction
 
-    val mainlineEndPoint_spatialQueryParam = SpatialQueryParam("mainlineEndPointSpDF","geo_EndPointLocation",mutable.Buffer[String]("REALMGLOBALUID","MNLEP_FE_1"))
-    val permittedUseMainline_spatialQueryParam = SpatialQueryParam("permittedUseMainlineSpDF","geo_LineLocation",mutable.Buffer[String]("REALMGLOBALUID","MNL_LIFE_1"))
+    val mainlineEndPoint_spatialQueryParam = spatial.SpatialQueryParam("mainlineEndPointSpDF","geo_EndPointLocation",mutable.Buffer[String]("REALMGLOBALUID","MNLEP_FE_1"))
+    val permittedUseMainline_spatialQueryParam = spatial.SpatialQueryParam("permittedUseMainlineSpDF","geo_LineLocation",mutable.Buffer[String]("REALMGLOBALUID","MNL_LIFE_1"))
     val mainlineEndPoint_permittedUseMainlineJoinDF = spatialQueryMetaFunction.spatialJoinQuery(globalDataAccessor,mainlineEndPoint_spatialQueryParam,SpatialPredicateType.Touches,permittedUseMainline_spatialQueryParam,"mainlineEndPoint_permittedUseMainlineJoinDF")
 
-    val mainlineConnectionPoint_spatialQueryParam = SpatialQueryParam("mainlineConnectionPointSpDF","geo_ConnectionPointLocation",mutable.Buffer[String]("REALMGLOBALUID","MNLCP_DEPT"))
+    val mainlineConnectionPoint_spatialQueryParam = spatial.SpatialQueryParam("mainlineConnectionPointSpDF","geo_ConnectionPointLocation",mutable.Buffer[String]("REALMGLOBALUID","MNLCP_DEPT"))
     val mainlineConnectionPoint_permittedUseMainlineJoinDF = spatialQueryMetaFunction.spatialWithinDistanceJoinQuery(globalDataAccessor,mainlineConnectionPoint_spatialQueryParam, permittedUseMainline_spatialQueryParam,spatialQueryMetaFunction.transferMeterValueToDegree(0.01),"distanceValue","mainlineEndPoint_permittedUseMainlineJoinDF")
 
     val schemas= Seq("uid0","MNLCP_DEPT", "uid1","MNL_LIFE_1","distanceValue")

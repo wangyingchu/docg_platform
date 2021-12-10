@@ -3,8 +3,9 @@ package com.viewfunction.docg.analysisProvider.feature.functionalFeatures
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.{CalculationOperator, ObjectAggregationType, PredicateType}
+import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredicateType.SpatialPredicateType
-import com.viewfunction.docg.analysisProvider.feature.spark.spatial.{SpatialQueryMetaFunction, SpatialQueryParam}
+import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial.{SpatialQueryMetaFunction, SpatialQueryParam}
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredicateType
 import org.apache.spark.sql.{DataFrame, Row}
 import org.apache.spark.sql.functions.{avg, count, max, min, stddev, sum, variance}
@@ -41,14 +42,14 @@ object SpatialPropertiesStatisticAndAnalysis {
     val subjectConceptionSpatialAttributeName = "subjectConceptionGeoAttr"
     val subjectConceptionSpDF = globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(subjectConception,sliceGroupName,spatialValuePropertyName,subjectConceptionSpDFName,subjectConceptionSpatialAttributeName)
     //subjectConceptionSpDF.printSchema()
-    val subjectConception_spatialQueryParam = SpatialQueryParam(subjectConceptionSpDFName,subjectConceptionSpatialAttributeName,mutable.Buffer[String](subjectIdentityProperty))
+    val subjectConception_spatialQueryParam = spatial.SpatialQueryParam(subjectConceptionSpDFName,subjectConceptionSpatialAttributeName,mutable.Buffer[String](subjectIdentityProperty))
 
     //获取Object conception(客体) 空间dataframe
     val objectConceptionSpDFName = "objectConceptionSpDF"
     val objectConceptionSpatialAttributeName = "objectConceptionGeoAttr"
     val objectConceptionSpDF = globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(objectConception,sliceGroupName,spatialValuePropertyName,objectConceptionSpDFName,objectConceptionSpatialAttributeName)
     //objectConceptionSpDF.printSchema()
-    val objectConception_spatialQueryParam = SpatialQueryParam(objectConceptionSpDFName,objectConceptionSpatialAttributeName,mutable.Buffer[String](objectCalculationProperty))
+    val objectConception_spatialQueryParam = spatial.SpatialQueryParam(objectConceptionSpDFName,objectConceptionSpatialAttributeName,mutable.Buffer[String](objectCalculationProperty))
 
     //执行主体客体见的空间join计算
     val subject_objectSpJoinDFName = "subject_objectSpJoinDF"
