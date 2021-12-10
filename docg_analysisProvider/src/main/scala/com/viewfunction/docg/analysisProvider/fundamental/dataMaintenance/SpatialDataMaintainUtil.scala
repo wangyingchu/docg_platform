@@ -2,7 +2,11 @@ package com.viewfunction.docg.analysisProvider.fundamental.dataMaintenance
 
 import com.viewfunction.docg.analysisProvider.exception.AnalysisProviderRuntimeException
 import com.viewfunction.docg.analysisProvider.fundamental.dataMaintenance
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.{AttributeDataType, AttributeKind}
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JAttributeKindImpl
+//import com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScaleGrade.GeospatialScaleGrade
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScaleLevel.{CountryLevel, GeospatialScaleLevel, GlobalLevel, LocalLevel}
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion.GeospatialScaleGrade
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlice, DataSlicePropertyType}
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
@@ -205,4 +209,91 @@ class SpatialDataMaintainUtil {
       CoreRealmOperationUtil.syncConceptionKindToDataSlice(conceptionKindName,dataSliceName,dataSliceGroup,dataSlicePropertyMap)
     dataServiceInvoker.getDataSlice(dataSliceName)
   }
+
+
+
+
+  def syncGeospatialScaleEntityToDataSlice(dataServiceInvoker:DataServiceInvoker, geospatialScaleGrade:GeospatialScaleGrade,
+                                           dataSliceName: String, dataSliceGroup: String):DataSlice={
+    val targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName)
+    if(targetDataSlice != null){
+      throw new AnalysisProviderRuntimeException("DataSlice with name "+dataSliceName +" already exist.")
+    }
+
+   // val dataSlicePropertyMap: util.HashMap[String, DataSlicePropertyType] = new util.HashMap[String, DataSlicePropertyType]()
+   // dataSlicePropertyMap.put(RealmConstant._GeospatialGeometryType,DataSlicePropertyType.STRING)
+
+    var innerDataKindName:String = null
+    val dataSlicePropertyList: util.List[AttributeKind] = new util.ArrayList[AttributeKind]()
+
+    /*
+
+      propertiesMap.put("ISO_Code",_ISOCode);
+                    propertiesMap.put(RealmConstant.GeospatialChineseNameProperty,_ChnName);
+                    propertiesMap.put(RealmConstant.GeospatialEnglishNameProperty,_EngName);
+                    propertiesMap.put("ChineseFullName",_ChnFullName);
+                    propertiesMap.put(RealmConstant.GeospatialCodeProperty,_EngName);
+                    propertiesMap.put(RealmConstant.GeospatialRegionProperty,geospatialRegionName);
+                    propertiesMap.put(RealmConstant.GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.CONTINENT);
+
+    */
+
+
+
+    geospatialScaleGrade match {
+      case GeospatialScaleGrade.CONTINENT =>
+        innerDataKindName = RealmConstant.GeospatialScaleContinentEntityClass
+        val isoCodeAttributeKind:AttributeKind = new Neo4JAttributeKindImpl(null,"ISO_Code",null, AttributeDataType.STRING,null)
+        dataSlicePropertyList.add(isoCodeAttributeKind)
+
+        /*
+        dataSlicePropertyList.add("ISO_Code")
+        dataSlicePropertyList.add("ChineseFullName")
+        dataSlicePropertyList.add(RealmConstant.GeospatialChineseNameProperty)
+        dataSlicePropertyList.add(RealmConstant.GeospatialEnglishNameProperty)
+        dataSlicePropertyList.add(RealmConstant.GeospatialCodeProperty)
+        dataSlicePropertyList.add(RealmConstant.GeospatialRegionProperty)
+        dataSlicePropertyList.add(RealmConstant.GeospatialScaleGradeProperty)
+        */
+
+
+      case GeospatialScaleGrade.COUNTRY_REGION =>
+        innerDataKindName = RealmConstant.GeospatialScaleCountryRegionEntityClass
+      case GeospatialScaleGrade.PROVINCE =>
+        innerDataKindName = RealmConstant.GeospatialScaleProvinceEntityClass
+      case GeospatialScaleGrade.PREFECTURE =>
+        innerDataKindName = RealmConstant.GeospatialScalePrefectureEntityClass
+      case GeospatialScaleGrade.COUNTY =>
+        innerDataKindName = RealmConstant.GeospatialScaleCountyEntityClass
+      case GeospatialScaleGrade.TOWNSHIP =>
+        innerDataKindName = RealmConstant.GeospatialScaleTownshipEntityClass
+      case GeospatialScaleGrade.VILLAGE =>
+        innerDataKindName = RealmConstant.GeospatialScaleVillageEntityClass
+    }
+
+    CoreRealmOperationUtil.loadInnerDataKindEntitiesToDataSlice(dataServiceInvoker,innerDataKindName,dataSlicePropertyList ,null,dataSliceName,true,10)
+
+  /*
+    geospatialScaleLevel match {
+      case GlobalLevel =>
+        dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryContent,DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put(RealmConstant._GeospatialGlobalCRSAID,DataSlicePropertyType.STRING);
+      case CountryLevel =>
+        dataSlicePropertyMap.put(RealmConstant._GeospatialCLGeometryContent,DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put(RealmConstant._GeospatialCountryCRSAID,DataSlicePropertyType.STRING);
+      case LocalLevel =>
+        dataSlicePropertyMap.put(RealmConstant._GeospatialLLGeometryContent,DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put(RealmConstant._GeospatialLocalCRSAID,DataSlicePropertyType.STRING);
+    }
+
+    val dataSliceOperationResult =
+      CoreRealmOperationUtil.syncConceptionKindToDataSlice(conceptionKindName,dataSliceName,dataSliceGroup,dataSlicePropertyMap)
+    dataServiceInvoker.getDataSlice(dataSliceName)
+
+
+    */
+    dataServiceInvoker.getDataSlice(dataSliceName)
+  }
+
+
 }
