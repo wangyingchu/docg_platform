@@ -36,7 +36,7 @@ class SpatialDataMaintainUtil {
     dataSlicePropertyMap.put(RealmConstant._GeospatialGeometryType,DataSlicePropertyType.STRING)
 
     if(conceptionEntityPropertyMap != null){
-      dataSlicePropertyMap.putAll(conceptionEntityPropertyMap);
+      dataSlicePropertyMap.putAll(conceptionEntityPropertyMap)
     }
 
     geospatialScaleLevel match {
@@ -52,7 +52,7 @@ class SpatialDataMaintainUtil {
     }
 
     //val dataSliceOperationResult =
-    CoreRealmOperationUtil.syncConceptionKindToDataSlice(conceptionKindName,dataSliceName,dataSliceGroup,dataSlicePropertyMap)
+    CoreRealmOperationUtil.syncConceptionKindToDataSlice(conceptionKindName,dataSliceName,dataSliceGroup,dataSlicePropertyMap,null)
     dataServiceInvoker.getDataSlice(dataSliceName)
   }
 
