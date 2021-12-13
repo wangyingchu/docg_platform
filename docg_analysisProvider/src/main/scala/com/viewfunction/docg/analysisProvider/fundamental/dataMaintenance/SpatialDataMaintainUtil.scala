@@ -7,10 +7,10 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.{AttributeDataType,
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JAttributeKindImpl
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.{DataSliceExistException, DataSlicePropertiesStructureException}
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScaleLevel.{CountryLevel, GeospatialScaleLevel, GlobalLevel, LocalLevel}
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion.GeospatialScaleGrade
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlice, DataSlicePropertyType}
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
-
 import org.geotools.data.shapefile.ShapefileDataStore
 import org.geotools.data.simple.{SimpleFeatureCollection, SimpleFeatureIterator, SimpleFeatureSource}
 import org.geotools.data.{FileDataStore, FileDataStoreFinder}
@@ -198,6 +198,27 @@ class SpatialDataMaintainUtil {
       case e: DataSlicePropertiesStructureException =>
         e.printStackTrace()
     }
+  }
+
+  def getGeospatialRegionDataSlice(dataServiceInvoker: DataServiceInvoker,geospatialScaleGrade:GeospatialScaleGrade): DataSlice = {
+    var innerDataKindName:String = null
+    geospatialScaleGrade match {
+      case GeospatialScaleGrade.CONTINENT =>
+        innerDataKindName = RealmConstant.GeospatialScaleContinentEntityClass
+      case GeospatialScaleGrade.COUNTRY_REGION =>
+        innerDataKindName = RealmConstant.GeospatialScaleCountryRegionEntityClass
+      case GeospatialScaleGrade.PROVINCE =>
+        innerDataKindName = RealmConstant.GeospatialScaleProvinceEntityClass
+      case GeospatialScaleGrade.PREFECTURE =>
+        innerDataKindName = RealmConstant.GeospatialScalePrefectureEntityClass
+      case GeospatialScaleGrade.COUNTY =>
+        innerDataKindName = RealmConstant.GeospatialScaleCountyEntityClass
+      case GeospatialScaleGrade.TOWNSHIP =>
+        innerDataKindName = RealmConstant.GeospatialScaleTownshipEntityClass
+      case GeospatialScaleGrade.VILLAGE =>
+        innerDataKindName = RealmConstant.GeospatialScaleVillageEntityClass
+    }
+    dataServiceInvoker.getDataSlice(innerDataKindName)
   }
 
   private def buildAttributeKindList(dataSlicePropertyMap: util.Map[String, DataSlicePropertyType]) = {
