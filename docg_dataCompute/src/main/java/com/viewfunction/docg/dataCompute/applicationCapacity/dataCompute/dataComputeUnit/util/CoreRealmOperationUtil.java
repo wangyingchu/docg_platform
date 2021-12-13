@@ -36,98 +36,7 @@ public class CoreRealmOperationUtil {
     public final static String defaultSliceGroup = "DefaultSliceGroup";
     private final static int defaultResultNumber = 100000000;
 
-    public static DataSliceOperationResult syncConceptionKindToDataSlice(String conceptionKindName,String dataSliceName,String dataSliceGroup){
-
-        String dataSliceRealName = dataSliceName != null ? dataSliceName : conceptionKindName;
-        String dataSliceRealGroup = dataSliceGroup != null ? dataSliceGroup : defaultSliceGroup;
-
-        Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
-        dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID,DataSlicePropertyType.STRING);
-        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
-        ConceptionKind targetConceptionKind = coreRealm.getConceptionKind(conceptionKindName);
-        List<AttributeKind> attributeKindList = targetConceptionKind.getContainsSingleValueAttributeKinds();
-        if(attributeKindList.size() == 0){
-            return null;
-        }
-
-        List<String> conceptionKindPropertiesList = new ArrayList<>();
-        if(attributeKindList != null && attributeKindList.size() >0){
-            for(AttributeKind currentAttributeKind :attributeKindList){
-                String currentAttributeKindName = currentAttributeKind.getAttributeKindName();
-                AttributeDataType currentAttributeDataType = currentAttributeKind.getAttributeDataType();
-                switch (currentAttributeDataType){
-                    case DECIMAL:
-                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.DECIMAL);
-                        break;
-                    case BOOLEAN:
-                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.BOOLEAN);
-                        break;
-                    case STRING:
-                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.STRING);
-                        break;
-                    case DOUBLE:
-                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.DOUBLE);
-                        break;
-                    case BINARY:
-                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.BINARY);
-                        break;
-                    case SHORT:
-                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.SHORT);
-                        break;
-                    case FLOAT:
-                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.FLOAT);
-                        break;
-                    case TIMESTAMP:
-                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.TIMESTAMP);
-                        break;
-                    case LONG:
-                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.LONG);
-                        break;
-                    case BYTE:
-                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.BYTE);
-                        break;
-                    case INT:
-                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.INT);
-                        break;
-                    case DATE:
-                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.DATE);
-                        break;
-                    case TIME:
-                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.TIME);
-                        break;
-                    case DATETIME:
-                        dataSlicePropertyMap.put(currentAttributeKindName,DataSlicePropertyType.TIMESTAMP);
-                        break;
-                }
-                conceptionKindPropertiesList.add(currentAttributeKindName);
-            }
-        }
-
-        try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
-            DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceRealName);
-            if(targetDataSlice == null){
-                List<String> pkList = new ArrayList<>();
-                pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
-                dataServiceInvoker.createGridDataSlice(dataSliceRealName,dataSliceRealGroup,dataSlicePropertyMap,pkList);
-            }
-        } catch (ComputeGridNotActiveException e) {
-                e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if(conceptionKindPropertiesList.size() > 0){
-            QueryParameters queryParameters = new QueryParameters();
-            queryParameters.setResultNumber(defaultResultNumber);
-            int processorNumber = Runtime.getRuntime().availableProcessors();
-            int degreeOfParallelism = (processorNumber/2) >=4 ? (processorNumber/2) : 4;
-            return loadConceptionKindEntitiesToDataSlice(conceptionKindName,conceptionKindPropertiesList,queryParameters,dataSliceRealName,true,degreeOfParallelism);
-        }else{
-            return null;
-        }
-    }
-
-    public static DataSliceOperationResult syncConceptionKindToDataSlice(String conceptionKindName,String dataSliceName,String dataSliceGroup,Map<String, DataSlicePropertyType> dataSlicePropertyMap){
+    public static DataSliceOperationResult syncConceptionKindToDataSlice(String conceptionKindName,String dataSliceName,String dataSliceGroup,Map<String, DataSlicePropertyType> dataSlicePropertyMap,QueryParameters queryParameters){
 
         String dataSliceRealName = dataSliceName != null ? dataSliceName : conceptionKindName;
         String dataSliceRealGroup = dataSliceGroup != null ? dataSliceGroup : defaultSliceGroup;
@@ -158,11 +67,16 @@ public class CoreRealmOperationUtil {
             }
 
             if(conceptionKindPropertiesList.size() > 0){
-                QueryParameters queryParameters = new QueryParameters();
-                queryParameters.setResultNumber(defaultResultNumber);
+                QueryParameters executedQueryParameters;
+                if(queryParameters != null){
+                    executedQueryParameters = queryParameters;
+                }else{
+                    executedQueryParameters = new QueryParameters();
+                    executedQueryParameters.setResultNumber(defaultResultNumber);
+                }
                 int processorNumber = Runtime.getRuntime().availableProcessors();
                 int degreeOfParallelism = (processorNumber/2) >=4 ? (processorNumber/2) : 4;
-                return loadConceptionKindEntitiesToDataSlice(conceptionKindName,conceptionKindPropertiesList,queryParameters,dataSliceRealName,true,degreeOfParallelism);
+                return loadConceptionKindEntitiesToDataSlice(conceptionKindName,conceptionKindPropertiesList,executedQueryParameters,dataSliceRealName,true,degreeOfParallelism);
             }else{
                 return null;
             }

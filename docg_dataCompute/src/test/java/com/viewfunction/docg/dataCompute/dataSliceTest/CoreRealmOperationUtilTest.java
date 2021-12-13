@@ -50,7 +50,7 @@ public class CoreRealmOperationUtilTest {
         dataSlicePropertyMap.put("location",DataSlicePropertyType.STRING);
         dataSlicePropertyMap.put("incidentNumber",DataSlicePropertyType.STRING);
 
-        DataSliceOperationResult dataSliceOperationResult = CoreRealmOperationUtil.syncConceptionKindToDataSlice("Fire911Call",null,null,dataSlicePropertyMap);
+        DataSliceOperationResult dataSliceOperationResult = CoreRealmOperationUtil.syncConceptionKindToDataSlice("Fire911Call",null,null,dataSlicePropertyMap,null);
 
         System.out.println(dataSliceOperationResult.getStartTime());
         System.out.println(dataSliceOperationResult.getFinishTime());
