@@ -34,7 +34,7 @@ object FirmDataCal extends App{
 
   }catch{
     case e : Exception =>
-      println("Exception Occured : "+e)
+      e.printStackTrace()
       dataServiceInvoker.close()
   }
 
