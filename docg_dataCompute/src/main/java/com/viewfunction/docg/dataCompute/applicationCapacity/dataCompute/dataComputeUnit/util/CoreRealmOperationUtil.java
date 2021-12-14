@@ -278,11 +278,11 @@ public class CoreRealmOperationUtil {
         igniteConfiguration.setIgniteInstanceName("DataSliceCreateThread_"+new Date().getTime());
         Ignite invokerIgnite =Ignition.start(igniteConfiguration);
         try(DataServiceInvoker dataServiceInvokerForCreate = DataServiceInvoker.getInvokerInstance(invokerIgnite)){
-            DataSlice targetDataSlice = dataServiceInvokerForCreate.getDataSlice(innerDataKindName);
+            DataSlice targetDataSlice = dataServiceInvokerForCreate.getDataSlice(dataSliceName);
             if(targetDataSlice == null){
                 List<String> pkList = new ArrayList<>();
                 pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
-                dataServiceInvokerForCreate.createGridDataSlice(innerDataKindName,dataSliceGroup,dataSlicePropertyMap,pkList);
+                dataServiceInvokerForCreate.createGridDataSlice(dataSliceName,dataSliceGroup,dataSlicePropertyMap,pkList);
             }
         } catch (ComputeGridNotActiveException e) {
             e.printStackTrace();

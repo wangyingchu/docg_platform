@@ -7,6 +7,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.{AttributeDataType,
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JAttributeKindImpl
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.{DataSliceExistException, DataSlicePropertiesStructureException}
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScaleLevel.{CountryLevel, GeospatialScaleLevel, GlobalLevel, LocalLevel}
+import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialAnalysisConstant
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion.GeospatialScaleGrade
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlice, DataSlicePropertyType}
@@ -59,26 +60,26 @@ class SpatialDataMaintainUtil {
   @throws(classOf[AnalysisProviderRuntimeException])
   def syncGeospatialRegionToDataSlice(dataServiceInvoker: DataServiceInvoker,dataSliceGroup:String): Unit = {
     val existDataSlices = dataServiceInvoker.listDataSlices()
-    if(existDataSlices.contains(RealmConstant.GeospatialScaleContinentEntityClass)){
-      throw new AnalysisProviderRuntimeException("DataSlice with name "+RealmConstant.GeospatialScaleContinentEntityClass +" already exist.")
+    if(existDataSlices.contains(SpatialAnalysisConstant.GeospatialScaleContinentDataSlice)){
+      throw new AnalysisProviderRuntimeException("DataSlice with name "+SpatialAnalysisConstant.GeospatialScaleContinentDataSlice +" already exist.")
     }
-    if(existDataSlices.contains(RealmConstant.GeospatialScaleCountryRegionEntityClass)){
-      throw new AnalysisProviderRuntimeException("DataSlice with name "+RealmConstant.GeospatialScaleCountryRegionEntityClass +" already exist.")
+    if(existDataSlices.contains(SpatialAnalysisConstant.GeospatialScaleCountryRegionDataSlice)){
+      throw new AnalysisProviderRuntimeException("DataSlice with name "+SpatialAnalysisConstant.GeospatialScaleCountryRegionDataSlice +" already exist.")
     }
-    if(existDataSlices.contains(RealmConstant.GeospatialScaleProvinceEntityClass)){
-      throw new AnalysisProviderRuntimeException("DataSlice with name "+RealmConstant.GeospatialScaleProvinceEntityClass +" already exist.")
+    if(existDataSlices.contains(SpatialAnalysisConstant.GeospatialScaleProvinceDataSlice)){
+      throw new AnalysisProviderRuntimeException("DataSlice with name "+SpatialAnalysisConstant.GeospatialScaleProvinceDataSlice +" already exist.")
     }
-    if(existDataSlices.contains(RealmConstant.GeospatialScalePrefectureEntityClass)){
-      throw new AnalysisProviderRuntimeException("DataSlice with name "+RealmConstant.GeospatialScalePrefectureEntityClass +" already exist.")
+    if(existDataSlices.contains(SpatialAnalysisConstant.GeospatialScalePrefectureDataSlice)){
+      throw new AnalysisProviderRuntimeException("DataSlice with name "+SpatialAnalysisConstant.GeospatialScalePrefectureDataSlice +" already exist.")
     }
-    if(existDataSlices.contains(RealmConstant.GeospatialScaleCountyEntityClass)){
-      throw new AnalysisProviderRuntimeException("DataSlice with name "+RealmConstant.GeospatialScaleCountyEntityClass +" already exist.")
+    if(existDataSlices.contains(SpatialAnalysisConstant.GeospatialScaleCountyDataSlice)){
+      throw new AnalysisProviderRuntimeException("DataSlice with name "+SpatialAnalysisConstant.GeospatialScaleCountyDataSlice +" already exist.")
     }
-    if(existDataSlices.contains(RealmConstant.GeospatialScaleTownshipEntityClass)){
-      throw new AnalysisProviderRuntimeException("DataSlice with name "+RealmConstant.GeospatialScaleTownshipEntityClass +" already exist.")
+    if(existDataSlices.contains(SpatialAnalysisConstant.GeospatialScaleTownshipDataSlice)){
+      throw new AnalysisProviderRuntimeException("DataSlice with name "+SpatialAnalysisConstant.GeospatialScaleTownshipDataSlice +" already exist.")
     }
-    if(existDataSlices.contains(RealmConstant.GeospatialScaleVillageEntityClass)){
-      throw new AnalysisProviderRuntimeException("DataSlice with name "+RealmConstant.GeospatialScaleVillageEntityClass +" already exist.")
+    if(existDataSlices.contains(SpatialAnalysisConstant.GeospatialScaleVillageDataSlice)){
+      throw new AnalysisProviderRuntimeException("DataSlice with name "+SpatialAnalysisConstant.GeospatialScaleVillageDataSlice +" already exist.")
     }
 
     val dataSyncPerLoadResultNum =  100000000
@@ -101,7 +102,7 @@ class SpatialDataMaintainUtil {
       dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID, DataSlicePropertyType.STRING)
       var containsAttributesKinds = buildAttributeKindList(dataSlicePropertyMap)
       CoreRealmOperationUtil.syncInnerDataKindEntitiesToDataSlice(dataServiceInvoker, RealmConstant.GeospatialScaleContinentEntityClass, dataSliceGroup,
-        containsAttributesKinds, queryParameters, RealmConstant.GeospatialScaleContinentEntityClass, true, degreeOfParallelismNum)
+        containsAttributesKinds, queryParameters, SpatialAnalysisConstant.GeospatialScaleContinentDataSlice, true, degreeOfParallelismNum)
 
       // For CountryRegion
       dataSlicePropertyMap = new util.HashMap[String, DataSlicePropertyType]
@@ -123,7 +124,7 @@ class SpatialDataMaintainUtil {
       dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID, DataSlicePropertyType.STRING)
       containsAttributesKinds = buildAttributeKindList(dataSlicePropertyMap)
       CoreRealmOperationUtil.syncInnerDataKindEntitiesToDataSlice(dataServiceInvoker, RealmConstant.GeospatialScaleCountryRegionEntityClass, dataSliceGroup,
-        containsAttributesKinds, queryParameters, RealmConstant.GeospatialScaleCountryRegionEntityClass, true, degreeOfParallelismNum)
+        containsAttributesKinds, queryParameters, SpatialAnalysisConstant.GeospatialScaleCountryRegionDataSlice, true, degreeOfParallelismNum)
 
       // For Province
       dataSlicePropertyMap = new util.HashMap[String, DataSlicePropertyType]
@@ -149,7 +150,7 @@ class SpatialDataMaintainUtil {
       dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID, DataSlicePropertyType.STRING)
       containsAttributesKinds = buildAttributeKindList(dataSlicePropertyMap)
       CoreRealmOperationUtil.syncInnerDataKindEntitiesToDataSlice(dataServiceInvoker, RealmConstant.GeospatialScaleProvinceEntityClass, dataSliceGroup,
-        containsAttributesKinds, queryParameters, RealmConstant.GeospatialScaleProvinceEntityClass, true, degreeOfParallelismNum)
+        containsAttributesKinds, queryParameters, SpatialAnalysisConstant.GeospatialScaleProvinceDataSlice, true, degreeOfParallelismNum)
 
       // For Prefecture
       val targetPrefectureDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScalePrefectureEntityClass)
@@ -173,25 +174,25 @@ class SpatialDataMaintainUtil {
       dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID, DataSlicePropertyType.STRING)
       containsAttributesKinds = buildAttributeKindList(dataSlicePropertyMap)
       CoreRealmOperationUtil.syncInnerDataKindEntitiesToDataSlice(dataServiceInvoker, RealmConstant.GeospatialScalePrefectureEntityClass, dataSliceGroup,
-        containsAttributesKinds, queryParameters, RealmConstant.GeospatialScalePrefectureEntityClass, true, degreeOfParallelismNum)
+        containsAttributesKinds, queryParameters, SpatialAnalysisConstant.GeospatialScalePrefectureDataSlice, true, degreeOfParallelismNum)
 
       // For County
       dataSlicePropertyMap.put("ChinaPrefectureName", DataSlicePropertyType.STRING)
       containsAttributesKinds = buildAttributeKindList(dataSlicePropertyMap)
       CoreRealmOperationUtil.syncInnerDataKindEntitiesToDataSlice(dataServiceInvoker, RealmConstant.GeospatialScaleCountyEntityClass, dataSliceGroup,
-        containsAttributesKinds, queryParameters, RealmConstant.GeospatialScaleCountyEntityClass, true, degreeOfParallelismNum)
+        containsAttributesKinds, queryParameters, SpatialAnalysisConstant.GeospatialScaleCountyDataSlice, true, degreeOfParallelismNum)
 
       // For Township
       dataSlicePropertyMap.put("ChinaCountyName", DataSlicePropertyType.STRING)
       containsAttributesKinds = buildAttributeKindList(dataSlicePropertyMap)
       CoreRealmOperationUtil.syncInnerDataKindEntitiesToDataSlice(dataServiceInvoker, RealmConstant.GeospatialScaleTownshipEntityClass, dataSliceGroup,
-        containsAttributesKinds, queryParameters, RealmConstant.GeospatialScaleTownshipEntityClass, true, degreeOfParallelismNum)
+        containsAttributesKinds, queryParameters, SpatialAnalysisConstant.GeospatialScaleTownshipDataSlice, true, degreeOfParallelismNum)
 
       // For Village
       dataSlicePropertyMap.put("ChinaTownshipName", DataSlicePropertyType.STRING)
       containsAttributesKinds = buildAttributeKindList(dataSlicePropertyMap)
       CoreRealmOperationUtil.syncInnerDataKindEntitiesToDataSlice(dataServiceInvoker, RealmConstant.GeospatialScaleVillageEntityClass, dataSliceGroup,
-        containsAttributesKinds, queryParameters, RealmConstant.GeospatialScaleVillageEntityClass, true, degreeOfParallelismNum)
+        containsAttributesKinds, queryParameters, SpatialAnalysisConstant.GeospatialScaleVillageDataSlice, true, degreeOfParallelismNum)
     } catch {
       case e: DataSliceExistException =>
         e.printStackTrace()
@@ -204,19 +205,19 @@ class SpatialDataMaintainUtil {
     var innerDataKindName:String = null
     geospatialScaleGrade match {
       case GeospatialScaleGrade.CONTINENT =>
-        innerDataKindName = RealmConstant.GeospatialScaleContinentEntityClass
+        innerDataKindName = SpatialAnalysisConstant.GeospatialScaleContinentDataSlice
       case GeospatialScaleGrade.COUNTRY_REGION =>
-        innerDataKindName = RealmConstant.GeospatialScaleCountryRegionEntityClass
+        innerDataKindName = SpatialAnalysisConstant.GeospatialScaleCountryRegionDataSlice
       case GeospatialScaleGrade.PROVINCE =>
-        innerDataKindName = RealmConstant.GeospatialScaleProvinceEntityClass
+        innerDataKindName = SpatialAnalysisConstant.GeospatialScaleProvinceDataSlice
       case GeospatialScaleGrade.PREFECTURE =>
-        innerDataKindName = RealmConstant.GeospatialScalePrefectureEntityClass
+        innerDataKindName = SpatialAnalysisConstant.GeospatialScalePrefectureDataSlice
       case GeospatialScaleGrade.COUNTY =>
-        innerDataKindName = RealmConstant.GeospatialScaleCountyEntityClass
+        innerDataKindName = SpatialAnalysisConstant.GeospatialScaleCountyDataSlice
       case GeospatialScaleGrade.TOWNSHIP =>
-        innerDataKindName = RealmConstant.GeospatialScaleTownshipEntityClass
+        innerDataKindName = SpatialAnalysisConstant.GeospatialScaleTownshipDataSlice
       case GeospatialScaleGrade.VILLAGE =>
-        innerDataKindName = RealmConstant.GeospatialScaleVillageEntityClass
+        innerDataKindName = SpatialAnalysisConstant.GeospatialScaleVillageDataSlice
     }
     dataServiceInvoker.getDataSlice(innerDataKindName)
   }

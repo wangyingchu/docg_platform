@@ -22,9 +22,8 @@ object FirmDataCal extends App{
         "Firm","firmData","defaultGroup",syncPropertiesMapping,GeospatialScaleLevel.CountryLevel)
       println(resultDataSlice.getDataSliceMetaInfo.getDataSliceName)
       println(resultDataSlice.getDataSliceMetaInfo.getTotalDataCount)
-    spatialDataMaintainUtil.syncGeospatialRegionToDataSlice(dataServiceInvoker,"defaultGroup");
     */
-
+    spatialDataMaintainUtil.syncGeospatialRegionToDataSlice(dataServiceInvoker,"defaultGroup")
     val _CONTINENT_DataSlice = spatialDataMaintainUtil.getGeospatialRegionDataSlice(dataServiceInvoker,GeospatialScaleGrade.CONTINENT)
     println(_CONTINENT_DataSlice.getDataSliceMetaInfo.getDataSliceName)
     println(_CONTINENT_DataSlice.getDataSliceMetaInfo.getTotalDataCount)
