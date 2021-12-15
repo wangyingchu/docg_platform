@@ -48,8 +48,8 @@ object FirmDataCal extends App{
     //firmLocationDF.show(10)
     //println(firmLocationDF.count())
 
-    //val spatialCountyDF = globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(SpatialAnalysisConstant.GeospatialScaleCountyDataSlice,"defaultGroup", RealmConstant._GeospatialCLGeometryContent,"spatialCountyDF","geo_CountyArea")
-    val spatialCountyDF = globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(SpatialAnalysisConstant.GeospatialScaleProvinceDataSlice,"defaultGroup", RealmConstant._GeospatialCLGeometryContent,"spatialCountyDF","geo_CountyArea")
+    val spatialCountyDF = globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(SpatialAnalysisConstant.GeospatialScaleCountyDataSlice,"defaultGroup", RealmConstant._GeospatialCLGeometryContent,"spatialCountyDF","geo_CountyArea")
+    //val spatialCountyDF = globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(SpatialAnalysisConstant.GeospatialScaleProvinceDataSlice,"defaultGroup", RealmConstant._GeospatialCLGeometryContent,"spatialCountyDF","geo_CountyArea")
     //spatialCountyDF.printSchema()
     //spatialCountyDF.show(10)
     //println(spatialCountyDF.count())

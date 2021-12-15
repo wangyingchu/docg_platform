@@ -1008,36 +1008,10 @@ public class GeospatialScaleOperationUtil {
 
     private static Map<String,String> generateChinaEntityWKTMap(){
         Map<String,String> _ChinaEntityWKTMap = new HashMap<>();
-        String filePath = PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/China_GISInfo_WKT.txt";
+        generateChina_PrefectureEntityWKTMap(_ChinaEntityWKTMap);
+        generateChina_CountyEntityWKTMap(_ChinaEntityWKTMap);
+        String filePath = PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/China_GISInfo_Point_Border.txt";
         File file = new File(filePath);
-        if (file.exists()) {
-            BufferedReader reader = null;
-            try {
-                reader = new BufferedReader(new FileReader(file));
-                String tempStr;
-                while ((tempStr = reader.readLine()) != null) {
-                    String _ChinaEntityWKTStr = tempStr.trim();
-                    String[] wktDataValueArray = _ChinaEntityWKTStr.split("-");
-                    String entityGeospatialCode = wktDataValueArray[0];
-                    String entityWKT = wktDataValueArray[2];
-                    _ChinaEntityWKTMap.put(entityGeospatialCode.trim(),entityWKT);
-                }
-                reader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-            }
-        }
-
-        filePath = PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/China_GISInfo_Point_Border.txt";
-        file = new File(filePath);
         if (file.exists()) {
             BufferedReader reader = null;
             try {
@@ -1095,6 +1069,38 @@ public class GeospatialScaleOperationUtil {
 
         public String getDivisionCode() {
             return divisionCode;
+        }
+    }
+
+    private static void generateChina_PrefectureEntityWKTMap(Map<String,String> entityWKTMap){
+        String filePath =
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/China_Prefecture_shp/"+"China_Prefecture.shp";
+        SimpleFeatureCollection colls = readShp(filePath,null);
+        SimpleFeatureIterator iters = colls.features();
+        while(iters.hasNext()){
+            SimpleFeature sf = iters.next();
+            String prefectureCode = sf.getAttribute("市代码").toString();
+            String prefectureWKT = sf.getAttribute("the_geom").toString();
+            entityWKTMap.put(prefectureCode.trim(),prefectureWKT);
+        }
+
+    }
+
+    private static void generateChina_CountyEntityWKTMap(Map<String,String> entityWKTMap){
+        String filePath =
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/China_County_shp/"+"China_County.shp";
+        SimpleFeatureCollection colls = readShp(filePath,null);
+        SimpleFeatureIterator iters = colls.features();
+        while(iters.hasNext()){
+            SimpleFeature sf = iters.next();
+            String prefectureCode = sf.getAttribute("PAC").toString();
+            String prefectureWKT = sf.getAttribute("the_geom").toString();
+
+            if(entityWKTMap.containsKey(prefectureCode)){
+                System.out.println(prefectureCode);
+            }
+
+            entityWKTMap.put(prefectureCode.trim(),prefectureWKT);
         }
     }
 }
