@@ -18,51 +18,44 @@ object FirmDataCal extends App{
   val sparkApplicationName = AnalysisProviderApplicationUtil.getApplicationProperty("sparkApplicationName")
   val sparkMasterLocation = AnalysisProviderApplicationUtil.getApplicationProperty("sparkMasterLocation")
   val globalDataAccessor = new GlobalDataAccessor(sparkApplicationName,sparkMasterLocation)
-
   val dataServiceInvoker = globalDataAccessor._getDataSliceServiceInvoker()
   //val dataServiceInvoker = DataServiceInvoker.getInvokerInstance()
   val spatialDataMaintainUtil = new SpatialDataMaintainUtil
+  val spatialQueryMetaFunction = new SpatialQueryMetaFunction
+
   try{
-    //loadFirmDataSlice(dataServiceInvoker,spatialDataMaintainUtil)
-    //loadSpatialDataSlice(dataServiceInvoker,spatialDataMaintainUtil)
-    calculateFirmLocation(dataServiceInvoker)
+    //loadFirmDataSlice
+    //loadSpatialDataSlice
+    calculateFirmLocation
   }catch{
     case e : Exception =>
       e.printStackTrace()
       globalDataAccessor.close()
   }
-
   globalDataAccessor.close()
 
-  def calculateFirmLocation(dataServiceInvoker:DataServiceInvoker):Unit = {
-    //val firmDataSlice = dataServiceInvoker.getDataSlice("firmData")
-    //val spatialCountyDataSlice = dataServiceInvoker.getDataSlice(SpatialAnalysisConstant.GeospatialScaleCountyDataSlice)
+  def calculateFirmLocation():Unit = {
+    val firmLocationDF =
+      globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice("firmData","defaultGroup", RealmConstant._GeospatialCLGeometryContent,"firmLocationDF","geo_FirmLocation")
 
-    //println(firmDataSlice.getDataSliceMetaInfo.getTotalDataCount)
-    //println(spatialCountyDataSlice.getDataSliceMetaInfo.getTotalDataCount)
+    val spatialCountyDF =
+      globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(SpatialAnalysisConstant.GeospatialScaleCountyDataSlice,"defaultGroup", RealmConstant._GeospatialCLGeometryContent,"spatialCountyDF","geo_CountyArea")
 
-    val firmLocationDF = globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice("firmData","defaultGroup", RealmConstant._GeospatialCLGeometryContent,"firmLocationDF","geo_FirmLocation")
-    //firmLocationDF.printSchema()
-    //firmLocationDF.show(10)
-    //println(firmLocationDF.count())
+    val sampledFirmDF = firmLocationDF.sample(0.01)
+    sampledFirmDF.createOrReplaceTempView("sampledFirmDF")
 
-    val spatialCountyDF = globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(SpatialAnalysisConstant.GeospatialScaleCountyDataSlice,"defaultGroup", RealmConstant._GeospatialCLGeometryContent,"spatialCountyDF","geo_CountyArea")
-    //val spatialCountyDF = globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(SpatialAnalysisConstant.GeospatialScaleProvinceDataSlice,"defaultGroup", RealmConstant._GeospatialCLGeometryContent,"spatialCountyDF","geo_CountyArea")
-    //spatialCountyDF.printSchema()
-    //spatialCountyDF.show(10)
-    //println(spatialCountyDF.count())
-
-    val spatialQueryMetaFunction = new SpatialQueryMetaFunction
-    val firmLocationPoint_spatialQueryParam = spatial.SpatialQueryParam("firmLocationDF","geo_FirmLocation",mutable.Buffer[String]("REALMGLOBALUID","NAME"))
+    //val firmLocationPoint_spatialQueryParam = spatial.SpatialQueryParam("firmLocationDF","geo_FirmLocation",mutable.Buffer[String]("REALMGLOBALUID","NAME"))
+    val firmLocationPoint_spatialQueryParam = spatial.SpatialQueryParam("sampledFirmDF","geo_FirmLocation",mutable.Buffer[String]("REALMGLOBALUID","NAME"))
     val spatialCountyArea_spatialQueryParam = spatial.SpatialQueryParam("spatialCountyDF","geo_CountyArea",mutable.Buffer[String]("REALMGLOBALUID","DOCG_GEOSPATIALCODE","DOCG_GEOSPATIALCHINESENAME"))
 
-    val calculateResultDF = spatialQueryMetaFunction.spatialJoinQuery(globalDataAccessor,firmLocationPoint_spatialQueryParam,SpatialPredicateType.Within,spatialCountyArea_spatialQueryParam,"mainlineEndPoint_permittedUseMainlineJoinDF")
-    calculateResultDF.printSchema()
-    //calculateResultDF.show(1000)
+    val calculateResultDF =
+      spatialQueryMetaFunction.spatialJoinQuery(globalDataAccessor,firmLocationPoint_spatialQueryParam,SpatialPredicateType.Within,spatialCountyArea_spatialQueryParam,"firm_CountyJoinDF")
+
     println(calculateResultDF.count())
+
   }
 
-  def loadFirmDataSlice(dataServiceInvoker:DataServiceInvoker,spatialDataMaintainUtil:SpatialDataMaintainUtil):Unit={
+  def loadFirmDataSlice():Unit={
     val syncPropertiesMapping = new util.HashMap[String,DataSlicePropertyType]
     syncPropertiesMapping.put("name",DataSlicePropertyType.STRING)
     val resultDataSlice =
@@ -72,7 +65,7 @@ object FirmDataCal extends App{
     println(resultDataSlice.getDataSliceMetaInfo.getTotalDataCount)
   }
 
-  def loadSpatialDataSlice(dataServiceInvoker:DataServiceInvoker,spatialDataMaintainUtil:SpatialDataMaintainUtil):Unit={
+  def loadSpatialDataSlice():Unit={
     spatialDataMaintainUtil.syncGeospatialRegionToDataSlice(dataServiceInvoker,"defaultGroup")
     val _CONTINENT_DataSlice = spatialDataMaintainUtil.getGeospatialRegionDataSlice(dataServiceInvoker,GeospatialScaleGrade.CONTINENT)
     println(_CONTINENT_DataSlice.getDataSliceMetaInfo.getDataSliceName)
