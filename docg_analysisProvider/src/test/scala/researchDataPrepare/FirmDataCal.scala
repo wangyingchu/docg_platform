@@ -62,7 +62,7 @@ object FirmDataCal extends App{
       SpatialPredicateType.Within,
       com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScaleGrade.COUNTY,
       mutable.Buffer[String]("DOCG_GEOSPATIALCODE","DOCG_GEOSPATIALCHINESENAME"),
-      GeospatialScaleLevel.CountryLevel,1
+      GeospatialScaleLevel.CountryLevel,0.0001
     )
 
     println(calculateResult.getPropertiesInfo)
