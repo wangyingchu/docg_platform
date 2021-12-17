@@ -8,6 +8,9 @@ import com.viewfunction.docg.analysisProvider.fundamental.spatial.{GeospatialSca
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScaleLevel.GeospatialScaleLevel
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredicateType.SpatialPredicateType
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
+import org.apache.spark.sql.Row
+import org.apache.spark.sql.types.StructType
 
 import scala.collection.mutable
 
@@ -15,9 +18,12 @@ object AdministrativeDivisionBasedSpatialAnalysis {
 
   def executeDataSliceAdministrativeDivisionSpatialCalculation(globalDataAccessor:GlobalDataAccessor,
                                                                dataSlice:String,sliceGroup:String,
+                                                               dataSliceAttributes: mutable.Buffer[String],
                                                                spatialPredicateType:SpatialPredicateType,
                                                                geospatialScaleGrade:GeospatialScaleGrade,
-                                                               geospatialScaleLevel:GeospatialScaleLevel):Unit = {
+                                                               administrativeDivisionAttributes: mutable.Buffer[String],
+                                                               geospatialScaleLevel:GeospatialScaleLevel):
+  com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
     val dataSliceGeometryContent = getGeospatialGeometryContent(geospatialScaleLevel)
     val dataSliceSpatialDFName = dataSlice+"_SPDF"
     val dataSliceSpatialAttributeName = dataSlice+"_SPAttr"
@@ -31,29 +37,37 @@ object AdministrativeDivisionBasedSpatialAnalysis {
       globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(administrativeDivisionDataSlice,
         SpatialAnalysisConstant.GeospatialScaleDataSliceSystemGroup, dataSliceGeometryContent,administrativeDivisionSpatialDFName,administrativeDivisionSpatialAttributeName)
 
-    val dataSlice_spatialQueryParam = spatial.SpatialQueryParam(dataSliceSpatialDFName,dataSliceSpatialAttributeName,
-      mutable.Buffer[String]("REALMGLOBALUID","NAME"))
-    val administrativeDivision_spatialQueryParam = spatial.SpatialQueryParam(administrativeDivisionSpatialDFName,administrativeDivisionSpatialAttributeName,
-      mutable.Buffer[String]("REALMGLOBALUID","DOCG_GEOSPATIALCODE","DOCG_GEOSPATIALCHINESENAME"))
+    val dataSliceAttributesBuffer = mutable.Buffer[String](CoreRealmOperationUtil.RealmGlobalUID)
+    dataSliceAttributes.foreach(attribute=>{
+      dataSliceAttributesBuffer += attribute
+    })
+    val dataSlice_spatialQueryParam = spatial.SpatialQueryParam(dataSliceSpatialDFName,dataSliceSpatialAttributeName,dataSliceAttributesBuffer)
+
+    val administrativeDivisionAttributesBuffer = mutable.Buffer[String](CoreRealmOperationUtil.RealmGlobalUID)
+    administrativeDivisionAttributes.foreach(attribute=>{
+      administrativeDivisionAttributesBuffer += attribute
+    })
+    val administrativeDivision_spatialQueryParam = spatial.SpatialQueryParam(administrativeDivisionSpatialDFName,administrativeDivisionSpatialAttributeName,administrativeDivisionAttributesBuffer)
 
     val spatialQueryMetaFunction = new SpatialQueryMetaFunction
     val calculateResultDFName = "calculateResultJoinDF"
     val calculateResultDF =
       spatialQueryMetaFunction.spatialJoinQuery(globalDataAccessor,dataSlice_spatialQueryParam,spatialPredicateType,administrativeDivision_spatialQueryParam,calculateResultDFName)
 
-    calculateResultDF.take(100).foreach( item=> {
-      println(item)
+    val newNames = mutable.Buffer[String](dataSlice+"."+CoreRealmOperationUtil.RealmGlobalUID)
+    dataSliceAttributes.foreach(attribute=>{
+      newNames += (dataSlice+"."+attribute)
     })
+    newNames += (geospatialScaleGrade+"."+CoreRealmOperationUtil.RealmGlobalUID)
 
-
-
-
-
+    administrativeDivisionAttributes.foreach(attribute=>{
+      newNames += (geospatialScaleGrade+"."+attribute)
+    })
+    val dfRenamed = calculateResultDF.toDF(newNames: _*)
+    generateResultDataSet(dfRenamed.schema,dfRenamed.collect())
   }
 
-
-
-  def getGeospatialGeometryContent(geospatialScaleLevel:GeospatialScaleLevel):String = {
+  private def getGeospatialGeometryContent(geospatialScaleLevel:GeospatialScaleLevel):String = {
     var runtimeGeometryContent:String = null
     geospatialScaleLevel match {
       case GeospatialScaleLevel.GlobalLevel =>
@@ -66,7 +80,7 @@ object AdministrativeDivisionBasedSpatialAnalysis {
     runtimeGeometryContent
   }
 
-  def getAdministrativeDivisionDataSliceName(geospatialScaleGrade:GeospatialScaleGrade):String = {
+  private def getAdministrativeDivisionDataSliceName(geospatialScaleGrade:GeospatialScaleGrade):String = {
     var runtimeAdministrativeDivisionDataSliceName:String = null
     geospatialScaleGrade match {
       case GeospatialScaleGrade.CONTINENT =>
@@ -85,5 +99,24 @@ object AdministrativeDivisionBasedSpatialAnalysis {
         runtimeAdministrativeDivisionDataSliceName = SpatialAnalysisConstant.GeospatialScaleVillageDataSlice
     }
     runtimeAdministrativeDivisionDataSliceName
+  }
+
+  private def generateResultDataSet(dataStructure:StructType,dataRowArray:Array[Row]): com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
+    val structureFields = dataStructure.fields
+    val propertiesInfo = new java.util.HashMap[String,String]
+    structureFields.foreach(item =>{
+      propertiesInfo.put(item.name,item.dataType.typeName)
+    })
+
+    val dataList = new java.util.ArrayList[java.util.HashMap[String,Object]]
+    dataRowArray.foreach(row=>{
+      val currentMap = new java.util.HashMap[String,Object]
+      dataList.add(currentMap)
+      structureFields.foreach(fieldStructure=>{
+        currentMap.put(fieldStructure.name,row.get(row.fieldIndex(fieldStructure.name)).asInstanceOf[AnyRef])
+      })
+    })
+
+    new com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset(propertiesInfo,dataList)
   }
 }

@@ -1,13 +1,11 @@
 package researchDataPrepare
 
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset
 import com.viewfunction.docg.analysisProvider.feature.functionalFeatures.AdministrativeDivisionBasedSpatialAnalysis
 import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial
 import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial.SpatialQueryMetaFunction
 import com.viewfunction.docg.analysisProvider.fundamental.dataMaintenance.SpatialDataMaintainUtil
-import com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScaleGrade.GeospatialScaleGrade
-import com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScaleLevel.GeospatialScaleLevel
-import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredicateType.SpatialPredicateType
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.{GeospatialScaleLevel, SpatialAnalysisConstant, SpatialPredicateType}
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion.GeospatialScaleGrade
@@ -23,7 +21,6 @@ object FirmDataCal extends App{
   val sparkMasterLocation = AnalysisProviderApplicationUtil.getApplicationProperty("sparkMasterLocation")
   val globalDataAccessor = new GlobalDataAccessor(sparkApplicationName,sparkMasterLocation)
   val dataServiceInvoker = globalDataAccessor._getDataSliceServiceInvoker()
-  //val dataServiceInvoker = DataServiceInvoker.getInvokerInstance()
   val spatialDataMaintainUtil = new SpatialDataMaintainUtil
   val spatialQueryMetaFunction = new SpatialQueryMetaFunction
 
@@ -59,12 +56,19 @@ object FirmDataCal extends App{
   }
 
   def calculateFirmLocation2():Unit = {
-    AdministrativeDivisionBasedSpatialAnalysis.executeDataSliceAdministrativeDivisionSpatialCalculation(
+    val calculateResult : ResponseDataset = AdministrativeDivisionBasedSpatialAnalysis.executeDataSliceAdministrativeDivisionSpatialCalculation(
       globalDataAccessor,"firmData","defaultGroup",
+      mutable.Buffer[String]("name"),
       SpatialPredicateType.Within,
       com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScaleGrade.COUNTY,
+      mutable.Buffer[String]("DOCG_GEOSPATIALCODE","DOCG_GEOSPATIALCHINESENAME"),
       GeospatialScaleLevel.CountryLevel
     )
+
+    println(calculateResult.getPropertiesInfo)
+    println( calculateResult.getDataList.size)
+    println( calculateResult.getDataList.get(5000000))
+
   }
 
   def loadFirmDataSlice():Unit={

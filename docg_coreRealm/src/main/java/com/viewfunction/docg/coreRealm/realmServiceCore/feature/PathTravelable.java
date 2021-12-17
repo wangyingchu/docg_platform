@@ -11,6 +11,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import java.util.List;
 
 public interface PathTravelable {
+    // 陈词唱穿又如何 白骨青灰皆我
     /**
      * 从当前实体对象出发展开路径
      *
