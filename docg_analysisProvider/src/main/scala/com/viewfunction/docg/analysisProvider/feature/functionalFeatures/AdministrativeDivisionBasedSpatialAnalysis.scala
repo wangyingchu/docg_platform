@@ -1,5 +1,6 @@
 package com.viewfunction.docg.analysisProvider.feature.functionalFeatures
 
+import com.viewfunction.docg.analysisProvider.exception.AnalysisProviderRuntimeException
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
 import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial
 import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial.SpatialQueryMetaFunction
@@ -16,19 +17,32 @@ import scala.collection.mutable
 
 object AdministrativeDivisionBasedSpatialAnalysis {
 
+  @throws(classOf[AnalysisProviderRuntimeException])
   def executeDataSliceAdministrativeDivisionSpatialCalculation(globalDataAccessor:GlobalDataAccessor,
                                                                dataSlice:String,sliceGroup:String,
                                                                dataSliceAttributes: mutable.Buffer[String],
                                                                spatialPredicateType:SpatialPredicateType,
                                                                geospatialScaleGrade:GeospatialScaleGrade,
                                                                administrativeDivisionAttributes: mutable.Buffer[String],
-                                                               geospatialScaleLevel:GeospatialScaleLevel):
+                                                               geospatialScaleLevel:GeospatialScaleLevel,
+                                                               sampleValue:Double):
   com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
+
+    if(sampleValue<=0 | sampleValue>1){
+      throw new AnalysisProviderRuntimeException("sampleValue should in (0,1] range")
+    }
+
     val dataSliceGeometryContent = getGeospatialGeometryContent(geospatialScaleLevel)
-    val dataSliceSpatialDFName = dataSlice+"_SPDF"
+    var dataSliceSpatialDFName = dataSlice+"_SPDF"
     val dataSliceSpatialAttributeName = dataSlice+"_SPAttr"
-    //val dataSliceSpatialDF =
+    val dataSliceSpatialDF =
       globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(dataSlice,sliceGroup,dataSliceGeometryContent,dataSliceSpatialDFName,dataSliceSpatialAttributeName)
+
+    if(sampleValue != 1.0){
+      val sampledDataSliceSpatialDF = dataSliceSpatialDF.sample(sampleValue)
+      dataSliceSpatialDFName = dataSlice+"_SPDF_Sample"
+      sampledDataSliceSpatialDF.createOrReplaceTempView(dataSliceSpatialDFName)
+    }
 
     val administrativeDivisionDataSlice = getAdministrativeDivisionDataSliceName(geospatialScaleGrade)
     val administrativeDivisionSpatialDFName = administrativeDivisionDataSlice+"_SPDF"
@@ -59,7 +73,6 @@ object AdministrativeDivisionBasedSpatialAnalysis {
       newNames += (dataSlice+"."+attribute)
     })
     newNames += (geospatialScaleGrade+"."+CoreRealmOperationUtil.RealmGlobalUID)
-
     administrativeDivisionAttributes.foreach(attribute=>{
       newNames += (geospatialScaleGrade+"."+attribute)
     })
