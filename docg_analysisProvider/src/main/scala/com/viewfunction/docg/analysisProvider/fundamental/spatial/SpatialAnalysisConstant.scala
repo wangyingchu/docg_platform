@@ -2,6 +2,7 @@ package com.viewfunction.docg.analysisProvider.fundamental.spatial
 
 object SpatialAnalysisConstant {
 
+  val GeospatialScaleDataSliceSystemGroup:String = "SYS_GS_GROUP"
   val GeospatialScaleContinentDataSlice:String = "GS_ContinentDS"
   val GeospatialScaleCountryRegionDataSlice:String = "GS_CountryRegionDS"
   val GeospatialScaleProvinceDataSlice:String = "GS_ProvinceDS"

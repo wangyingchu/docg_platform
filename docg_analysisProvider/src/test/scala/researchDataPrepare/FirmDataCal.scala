@@ -1,9 +1,13 @@
 package researchDataPrepare
 
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
+import com.viewfunction.docg.analysisProvider.feature.functionalFeatures.AdministrativeDivisionBasedSpatialAnalysis
 import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial
 import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial.SpatialQueryMetaFunction
 import com.viewfunction.docg.analysisProvider.fundamental.dataMaintenance.SpatialDataMaintainUtil
+import com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScaleGrade.GeospatialScaleGrade
+import com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScaleLevel.GeospatialScaleLevel
+import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredicateType.SpatialPredicateType
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.{GeospatialScaleLevel, SpatialAnalysisConstant, SpatialPredicateType}
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion.GeospatialScaleGrade
@@ -26,7 +30,8 @@ object FirmDataCal extends App{
   try{
     //loadFirmDataSlice
     //loadSpatialDataSlice
-    calculateFirmLocation
+    //calculateFirmLocation
+    calculateFirmLocation2
   }catch{
     case e : Exception =>
       e.printStackTrace()
@@ -50,9 +55,16 @@ object FirmDataCal extends App{
 
     val calculateResultDF =
       spatialQueryMetaFunction.spatialJoinQuery(globalDataAccessor,firmLocationPoint_spatialQueryParam,SpatialPredicateType.Within,spatialCountyArea_spatialQueryParam,"firm_CountyJoinDF")
-
     println(calculateResultDF.count())
+  }
 
+  def calculateFirmLocation2():Unit = {
+    AdministrativeDivisionBasedSpatialAnalysis.executeDataSliceAdministrativeDivisionSpatialCalculation(
+      globalDataAccessor,"firmData","defaultGroup",
+      SpatialPredicateType.Within,
+      com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScaleGrade.COUNTY,
+      GeospatialScaleLevel.CountryLevel
+    )
   }
 
   def loadFirmDataSlice():Unit={
@@ -66,7 +78,7 @@ object FirmDataCal extends App{
   }
 
   def loadSpatialDataSlice():Unit={
-    spatialDataMaintainUtil.syncGeospatialRegionToDataSlice(dataServiceInvoker,"defaultGroup")
+    spatialDataMaintainUtil.syncGeospatialRegionToDataSlice(dataServiceInvoker)
     val _CONTINENT_DataSlice = spatialDataMaintainUtil.getGeospatialRegionDataSlice(dataServiceInvoker,GeospatialScaleGrade.CONTINENT)
     println(_CONTINENT_DataSlice.getDataSliceMetaInfo.getDataSliceName)
     println(_CONTINENT_DataSlice.getDataSliceMetaInfo.getTotalDataCount)

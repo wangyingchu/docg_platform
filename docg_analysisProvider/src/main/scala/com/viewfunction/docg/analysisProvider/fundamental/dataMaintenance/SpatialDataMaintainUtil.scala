@@ -58,7 +58,8 @@ class SpatialDataMaintainUtil {
   }
 
   @throws(classOf[AnalysisProviderRuntimeException])
-  def syncGeospatialRegionToDataSlice(dataServiceInvoker: DataServiceInvoker,dataSliceGroup:String): Unit = {
+  def syncGeospatialRegionToDataSlice(dataServiceInvoker: DataServiceInvoker): Unit = {
+    val dataSliceGroup = SpatialAnalysisConstant.GeospatialScaleDataSliceSystemGroup
     val existDataSlices = dataServiceInvoker.listDataSlices()
     if(existDataSlices.contains(SpatialAnalysisConstant.GeospatialScaleContinentDataSlice)){
       throw new AnalysisProviderRuntimeException("DataSlice with name "+SpatialAnalysisConstant.GeospatialScaleContinentDataSlice +" already exist.")
