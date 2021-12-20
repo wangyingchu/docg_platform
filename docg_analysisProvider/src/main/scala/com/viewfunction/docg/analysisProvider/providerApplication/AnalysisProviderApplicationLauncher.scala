@@ -73,7 +73,7 @@ object AnalysisProviderApplicationLauncher {
          |      canonical.hostname = ""$providerCommunicationHostName""
          |      canonical.port = "$providerCommunicationPort"
          |      advanced{
-         |        maximum-frame-size = 5000m
+         |        maximum-frame-size = 50000m
          |      }
          |    }
          |  }
