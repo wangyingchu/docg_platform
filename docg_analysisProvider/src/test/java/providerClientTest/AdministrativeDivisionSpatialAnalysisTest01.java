@@ -24,7 +24,8 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
         AdministrativeDivisionSpatialCalculateRequest administrativeDivisionSpatialCalculateRequest = new AdministrativeDivisionSpatialCalculateRequest();
 
         administrativeDivisionSpatialCalculateRequest.setSubjectConception("firmData");
-        administrativeDivisionSpatialCalculateRequest.setSampleValue(0.001d);
+        //administrativeDivisionSpatialCalculateRequest.setSampleValue(0.5);
+        administrativeDivisionSpatialCalculateRequest.setSampleValue(0.1);
 
         String[] subjectReturnProperties = new String[1];
         subjectReturnProperties[0] = "name";
@@ -38,7 +39,6 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
         administrativeDivisionSpatialCalculateRequest.setPredicateType(SpatialCommonConfig.PredicateType.Within);
         administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.County);
         administrativeDivisionSpatialCalculateRequest.setGeospatialScaleLevel(SpatialCommonConfig.GeospatialScaleLevel.CountryLevel);
-
 
         try {
             System.out.println(new Date());
@@ -69,6 +69,7 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
 
                     System.out.println(datalist.size());
 
+                    System.out.println(datalist.get(1000));
                     for(HashMap<String,Object> currentDataRow : datalist){
                         //System.out.println(currentDataRow);
                     }
@@ -94,7 +95,7 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
                 }
             };
 
-            analysisProviderClient.sendAnalyseRequest(administrativeDivisionSpatialCalculateRequest,analyseResponseCallback,120);
+            analysisProviderClient.sendAnalyseRequest(administrativeDivisionSpatialCalculateRequest,analyseResponseCallback,1200);
 
         } catch (AnalysisEngineRuntimeException | ProviderClientInitException e) {
             e.printStackTrace();

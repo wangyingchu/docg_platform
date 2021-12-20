@@ -72,6 +72,9 @@ object AnalysisProviderApplicationLauncher {
          |      transport = tcp # See Selecting a transport below
          |      canonical.hostname = ""$providerCommunicationHostName""
          |      canonical.port = "$providerCommunicationPort"
+         |      advanced{
+         |        maximum-frame-size = 5000m
+         |      }
          |    }
          |  }
          |}
