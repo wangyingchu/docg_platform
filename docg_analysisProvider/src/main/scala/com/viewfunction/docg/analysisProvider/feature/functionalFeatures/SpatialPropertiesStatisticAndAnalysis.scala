@@ -1,8 +1,10 @@
 package com.viewfunction.docg.analysisProvider.feature.functionalFeatures
 
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
-import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest
-import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.{CalculationOperator, ObjectAggregationType, PredicateType}
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialCommonConfig.PredicateType
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialPropertiesAggregateStatisticRequest.{CalculationOperator, ObjectAggregationType}
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialPropertiesAggregateStatisticRequest
 import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredicateType.SpatialPredicateType
 import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial.{SpatialQueryMetaFunction, SpatialQueryParam}
@@ -55,19 +57,19 @@ object SpatialPropertiesStatisticAndAnalysis {
     val subject_objectSpJoinDFName = "subject_objectSpJoinDF"
     var spatialPredicateType:SpatialPredicateType = SpatialPredicateType.Contains
     predicateType match {
-      case com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.PredicateType.Contains =>
+      case spatialAnalysis.SpatialCommonConfig.PredicateType.Contains =>
         spatialPredicateType = SpatialPredicateType.Contains
-      case com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.PredicateType.Intersects =>
+      case spatialAnalysis.SpatialCommonConfig.PredicateType.Intersects =>
         spatialPredicateType = SpatialPredicateType.Intersects
-      case com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.PredicateType.Crosses =>
+      case spatialAnalysis.SpatialCommonConfig.PredicateType.Crosses =>
         spatialPredicateType = SpatialPredicateType.Crosses
-      case com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.PredicateType.Within =>
+      case spatialAnalysis.SpatialCommonConfig.PredicateType.Within =>
         spatialPredicateType = SpatialPredicateType.Within
-      case com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.PredicateType.Equals =>
+      case spatialAnalysis.SpatialCommonConfig.PredicateType.Equals =>
         spatialPredicateType = SpatialPredicateType.Equals
-      case com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.PredicateType.Touches =>
+      case spatialAnalysis.SpatialCommonConfig.PredicateType.Touches =>
         spatialPredicateType = SpatialPredicateType.Touches
-      case com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.PredicateType.Overlaps =>
+      case spatialAnalysis.SpatialCommonConfig.PredicateType.Overlaps =>
         spatialPredicateType = SpatialPredicateType.Overlaps
     }
 
@@ -78,26 +80,26 @@ object SpatialPropertiesStatisticAndAnalysis {
     var subject_objectAggResultDF:DataFrame = null
     var aggregateColumnName:String = ""
     objectAggregationType match {
-      case com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.ObjectAggregationType.SUM =>
+      case spatialAnalysis.SpatialPropertiesAggregateStatisticRequest.ObjectAggregationType.SUM =>
         subject_objectAggResultDF = subject_objectSpJoinDF.groupBy(subjectIdentityProperty).agg(sum(objectCalculationProperty))
         aggregateColumnName = "sum("+objectCalculationProperty+")"
-      case com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.ObjectAggregationType.AVG =>
+      case spatialAnalysis.SpatialPropertiesAggregateStatisticRequest.ObjectAggregationType.AVG =>
         subject_objectAggResultDF = subject_objectSpJoinDF.groupBy(subjectIdentityProperty).agg(avg(objectCalculationProperty))
         aggregateColumnName = "avg("+objectCalculationProperty+")"
-      case com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.ObjectAggregationType.STDDEV =>
+      case spatialAnalysis.SpatialPropertiesAggregateStatisticRequest.ObjectAggregationType.STDDEV =>
         subject_objectAggResultDF = subject_objectSpJoinDF.groupBy(subjectIdentityProperty).agg(stddev(objectCalculationProperty))
         aggregateColumnName = "stddev_samp("+objectCalculationProperty+")"
-      case com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.ObjectAggregationType.COUNT =>
+      case spatialAnalysis.SpatialPropertiesAggregateStatisticRequest.ObjectAggregationType.COUNT =>
         subject_objectAggResultDF = subject_objectSpJoinDF.groupBy(subjectIdentityProperty).agg(count(objectCalculationProperty))
         aggregateColumnName = "count("+objectCalculationProperty+")"
-      case com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.ObjectAggregationType.MAX =>
+      case spatialAnalysis.SpatialPropertiesAggregateStatisticRequest.ObjectAggregationType.MAX =>
         subject_objectAggResultDF = subject_objectSpJoinDF.groupBy(subjectIdentityProperty).agg(max(objectCalculationProperty))
         aggregateColumnName = "max("+objectCalculationProperty+")"
-      case com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.ObjectAggregationType.MIN =>
+      case spatialAnalysis.SpatialPropertiesAggregateStatisticRequest.ObjectAggregationType.MIN =>
         subject_objectAggResultDF = subject_objectSpJoinDF.groupBy(subjectIdentityProperty).agg(min(objectCalculationProperty))
         aggregateColumnName = "mix("+objectCalculationProperty+")"
 
-      case com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.ObjectAggregationType.VARIANCE =>
+      case spatialAnalysis.SpatialPropertiesAggregateStatisticRequest.ObjectAggregationType.VARIANCE =>
         subject_objectAggResultDF = subject_objectSpJoinDF.groupBy(subjectIdentityProperty).agg(variance(objectCalculationProperty))
         aggregateColumnName = "var_samp("+objectCalculationProperty+")"
     }
@@ -123,13 +125,13 @@ object SpatialPropertiesStatisticAndAnalysis {
       val calculationResultRDD = calculationDF.rdd.map(row=>{
         var calValue = 0.0
         calculationOperator match{
-          case com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.CalculationOperator.Add =>
+          case spatialAnalysis.SpatialPropertiesAggregateStatisticRequest.CalculationOperator.Add =>
             calValue = row.get(1).asInstanceOf[Double] + row.get(2).asInstanceOf[Double]
-          case com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.CalculationOperator.Subtract =>
+          case spatialAnalysis.SpatialPropertiesAggregateStatisticRequest.CalculationOperator.Subtract =>
             calValue = row.get(1).asInstanceOf[Double] - row.get(2).asInstanceOf[Double]
-          case com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.CalculationOperator.Multiply =>
+          case spatialAnalysis.SpatialPropertiesAggregateStatisticRequest.CalculationOperator.Multiply =>
             calValue = row.get(1).asInstanceOf[Double] * row.get(2).asInstanceOf[Double]
-          case com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.SpatialPropertiesAggregateStatisticRequest.CalculationOperator.Divide =>
+          case spatialAnalysis.SpatialPropertiesAggregateStatisticRequest.CalculationOperator.Divide =>
             calValue = row.get(1).asInstanceOf[Double] / row.get(2).asInstanceOf[Double]
         }
         Row(row.get(0),calValue)

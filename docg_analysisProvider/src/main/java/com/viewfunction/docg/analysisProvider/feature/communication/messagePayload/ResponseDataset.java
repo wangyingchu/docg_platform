@@ -15,7 +15,6 @@ public class ResponseDataset implements Serializable {
         this.setPropertiesInfo(propertiesInfo);
     }
 
-
     public ArrayList<HashMap<String,Object>> getDataList() {
         return dataList;
     }

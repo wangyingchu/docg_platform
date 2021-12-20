@@ -1,6 +1,8 @@
-package com.viewfunction.docg.analysisProvider.feature.communication.messagePayload;
+package com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis;
 
-public class SpatialPropertiesAggregateStatisticRequest extends AnalyseRequest{
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseRequest;
+
+public class SpatialPropertiesAggregateStatisticRequest extends AnalyseRequest {
 
     public CalculationOperator getCalculationOperator() {
         return calculationOperator;
@@ -8,10 +10,6 @@ public class SpatialPropertiesAggregateStatisticRequest extends AnalyseRequest{
 
     public void setCalculationOperator(CalculationOperator calculationOperator) {
         this.calculationOperator = calculationOperator;
-    }
-
-    public enum PredicateType {
-        Contains,Intersects,Crosses,Within,Equals,Touches,Overlaps
     }
 
     public enum ObjectAggregationType {
@@ -24,7 +22,7 @@ public class SpatialPropertiesAggregateStatisticRequest extends AnalyseRequest{
 
     private String subjectConception;
     private String objectConception;
-    private PredicateType predicateType;
+    private SpatialCommonConfig.PredicateType predicateType;
 
     private String subjectIdentityProperty;
     private String[] subjectReturnProperties;
@@ -52,11 +50,11 @@ public class SpatialPropertiesAggregateStatisticRequest extends AnalyseRequest{
         this.objectConception = objectConception;
     }
 
-    public PredicateType getPredicateType() {
+    public SpatialCommonConfig.PredicateType getPredicateType() {
         return predicateType;
     }
 
-    public void setPredicateType(PredicateType predicateType) {
+    public void setPredicateType(SpatialCommonConfig.PredicateType predicateType) {
         this.predicateType = predicateType;
     }
 
