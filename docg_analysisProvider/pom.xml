@@ -25,11 +25,13 @@
             <artifactId>docg_coreRealm</artifactId>
             <version>0.5</version>
         </dependency>
+        <!-- this dependency only needed during generate runtime ENV, will stop application launch in development ENV
         <dependency>
             <groupId>com.viewfunction</groupId>
             <artifactId>docg_dataCompute</artifactId>
             <version>0.1.0</version>
         </dependency>
+        -->
         <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-core -->
         <dependency>
             <groupId>org.apache.spark</groupId>
