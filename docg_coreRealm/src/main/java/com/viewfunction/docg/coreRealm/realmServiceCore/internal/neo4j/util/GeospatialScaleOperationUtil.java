@@ -1010,6 +1010,7 @@ public class GeospatialScaleOperationUtil {
         Map<String,String> _ChinaEntityWKTMap = new HashMap<>();
         generateChina_PrefectureEntityWKTMap(_ChinaEntityWKTMap);
         generateChina_CountyEntityWKTMap(_ChinaEntityWKTMap);
+        generateChina_TownshipEntityWKTMap(_ChinaEntityWKTMap);
         String filePath = PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/China_GISInfo_Point_Border.txt";
         File file = new File(filePath);
         if (file.exists()) {
@@ -1095,12 +1096,34 @@ public class GeospatialScaleOperationUtil {
             SimpleFeature sf = iters.next();
             String prefectureCode = sf.getAttribute("PAC").toString();
             String prefectureWKT = sf.getAttribute("the_geom").toString();
-
-            if(entityWKTMap.containsKey(prefectureCode)){
-                System.out.println(prefectureCode);
-            }
-
             entityWKTMap.put(prefectureCode.trim(),prefectureWKT);
         }
+    }
+
+    private static void generateChina_TownshipEntityWKTMap(Map<String,String> entityWKTMap){
+        String filePath =
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/China_Township_shp/"+"我国乡镇行政区划.shp";
+        filePath = "/media/wangychu/Application/Local_Git/DataOcean&CloudGraph/docg_platform/docg_coreRealm/systemResource/geospatialData/ChinaData/China_Township_shp/我国乡镇行政区划.shp";
+        File shpFile = new File(filePath);
+        if(shpFile.exists()){
+            SimpleFeatureCollection colls = readShp(filePath,null);
+            SimpleFeatureIterator iters = colls.features();
+            while(iters.hasNext()){
+                SimpleFeature sf = iters.next();
+                String provinceCode = sf.getAttribute("省").toString();
+                String prefectureCode = sf.getAttribute("市").toString();
+                String countyCode = sf.getAttribute("县").toString();
+                String townshipCode = sf.getAttribute("乡").toString();
+                String townshipWKT = sf.getAttribute("the_geom").toString();
+                String townshipKey = prefectureCode+"_"+countyCode+"_"+townshipCode;
+                System.out.println(townshipKey);
+                //entityWKTMap.put(prefectureCode.trim(),prefectureWKT);
+            }
+            System.out.println(colls.size());
+        }
+    }
+
+    public static void main(String[] args){
+        generateChina_TownshipEntityWKTMap(null);
     }
 }
