@@ -51,6 +51,7 @@ object AnalysisProviderApplicationLauncher {
 
     val providerCommunicationHostName = AnalysisProviderApplicationUtil.getApplicationProperty("providerCommunicationHostName")
     val providerCommunicationPort = AnalysisProviderApplicationUtil.getApplicationProperty("providerCommunicationPort")
+    val providerMaximumDataTransformFrameSize = AnalysisProviderApplicationUtil.getApplicationProperty("providerMaximumDataTransformFrameSize")
 
     val configStr =
       s"""
@@ -73,7 +74,7 @@ object AnalysisProviderApplicationLauncher {
          |      canonical.hostname = ""$providerCommunicationHostName""
          |      canonical.port = "$providerCommunicationPort"
          |      advanced{
-         |        maximum-frame-size = 50000m
+         |        maximum-frame-size = "$providerMaximumDataTransformFrameSize"
          |      }
          |    }
          |  }
