@@ -80,7 +80,7 @@ object AnalysisProviderApplicationLauncher {
          |      }
          |    }
          |  }
-         |  loglevel = ERROR
+         |  loglevel = WARNING
          |}
        """.stripMargin
     val config = ConfigFactory.parseString(configStr)
