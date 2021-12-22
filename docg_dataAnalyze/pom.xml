@@ -13,7 +13,7 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <ignite.version>2.11.0</ignite.version>
+        <ignite.version>2.11.1</ignite.version>
         <ignite.geospatial.version>2.7.2</ignite.geospatial.version>
         <spark.version>2.4.8</spark.version>
         <geotools.version>geotools-24.0</geotools.version>
