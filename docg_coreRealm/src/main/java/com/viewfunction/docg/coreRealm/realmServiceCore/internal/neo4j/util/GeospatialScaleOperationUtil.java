@@ -1106,20 +1106,124 @@ public class GeospatialScaleOperationUtil {
         filePath = "/media/wangychu/Application/Local_Git/DataOcean&CloudGraph/docg_platform/docg_coreRealm/systemResource/geospatialData/ChinaData/China_Township_shp/我国乡镇行政区划.shp";
         File shpFile = new File(filePath);
         if(shpFile.exists()){
-            SimpleFeatureCollection colls = readShp(filePath,null);
-            SimpleFeatureIterator iters = colls.features();
-            while(iters.hasNext()){
-                SimpleFeature sf = iters.next();
-                String provinceCode = sf.getAttribute("省").toString();
-                String prefectureCode = sf.getAttribute("市").toString();
-                String countyCode = sf.getAttribute("县").toString();
-                String townshipCode = sf.getAttribute("乡").toString();
-                String townshipWKT = sf.getAttribute("the_geom").toString();
-                String townshipKey = prefectureCode+"_"+countyCode+"_"+townshipCode;
-                System.out.println(townshipKey);
-                //entityWKTMap.put(prefectureCode.trim(),prefectureWKT);
+            String folderPath =
+                    PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/China_DetailInfo(MinistryOfCivilAffairs)/";
+            folderPath = "/media/wangychu/Application/Local_Git/DataOcean&CloudGraph/docg_platform/docg_coreRealm/systemResource/geospatialData/ChinaData/China_DetailInfo(MinistryOfCivilAffairs)/";
+            File folder = new File(folderPath);
+
+            if(folder.exists() && folder.isDirectory()){
+                Map<String,String> _ChinaDivisionCodeMap = new HashMap<>();
+
+                File[] ministryOfCivilAffairsFiles = folder.listFiles();
+                for(File currentFile:ministryOfCivilAffairsFiles){
+
+                    System.out.println(currentFile);
+
+                    BufferedReader reader = null;
+                    try {
+                        reader = new BufferedReader(new FileReader(currentFile));
+                        String tempStr;
+                        while ((tempStr = reader.readLine()) != null) {
+                            String administrativeDivision_CodeInfoStr=tempStr.trim();
+                            String[] codeInfoValueArray = administrativeDivision_CodeInfoStr.split(" ");
+                            if(codeInfoValueArray.length ==3){
+                                String firstPartCode = codeInfoValueArray[0].trim();
+                                String secondPartCode = codeInfoValueArray[1].trim();
+                                String administrativeDivisionContent = codeInfoValueArray[2];
+                                String[] divisionNameArray = administrativeDivisionContent.split("-");
+                                if(divisionNameArray.length == 1){
+                                    //length == 1 means is province level entity itself, ignore it
+                                }else{
+                                    String _ChinaDivisionCode = null;
+
+                                    if(secondPartCode.equals("000000")){
+                                        _ChinaDivisionCode = firstPartCode;
+                                    }else{
+                                        if(secondPartCode.endsWith("000")){
+                                            _ChinaDivisionCode = firstPartCode+secondPartCode;
+                                            _ChinaDivisionCode = _ChinaDivisionCode.substring(0,9);
+                                        }else{
+                                            _ChinaDivisionCode = firstPartCode+secondPartCode;
+                                        }
+                                    }
+
+                                    if(divisionNameArray.length == 4){
+                                        String PREFECTURE_Name = divisionNameArray[1].trim();
+                                        String COUNTY_Name = divisionNameArray[2].trim();
+                                        String TOWNSHIP_Name = divisionNameArray[3].trim();
+                                        String townshipKey = PREFECTURE_Name+"_"+COUNTY_Name+"_"+TOWNSHIP_Name;
+                                        townshipKey = COUNTY_Name+"_"+TOWNSHIP_Name;
+                                        //System.out.println(townshipKey+" -> "+ _ChinaDivisionCode);
+                                        _ChinaDivisionCodeMap.put(townshipKey,_ChinaDivisionCode);
+                                    }
+                                }
+                            }
+                        }
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } finally {
+                        if (reader != null) {
+                            try {
+                                reader.close();
+                            } catch (IOException e1) {
+                                e1.printStackTrace();
+                            }
+                        }
+                    }
+                }
+
+
+
+
+                List<String> xxx = new ArrayList<>();
+
+                // get WKT from SHP
+                SimpleFeatureCollection colls = readShp(filePath,null);
+                SimpleFeatureIterator iters = colls.features();
+                while(iters.hasNext()){
+                    SimpleFeature sf = iters.next();
+                    String provinceCode = sf.getAttribute("省").toString();
+                    String prefectureCode = sf.getAttribute("市").toString();
+                    String countyCode = sf.getAttribute("县").toString();
+                    String townshipCode = sf.getAttribute("乡").toString();
+                    String townshipWKT = sf.getAttribute("the_geom").toString();
+                    String townshipKey = prefectureCode+"_"+countyCode+"_"+townshipCode;
+                    townshipKey = countyCode+"_"+townshipCode;
+
+                    //entityWKTMap.put(prefectureCode.trim(),prefectureWKT);
+
+                    if(_ChinaDivisionCodeMap.get(townshipKey) != null){
+                        xxx.add(_ChinaDivisionCodeMap.get(townshipKey));
+                    }else{
+                        System.out.println( provinceCode+"_"+prefectureCode+"_"+countyCode+"_"+townshipCode);
+                    }
+
+                    //System.out.println(_ChinaDivisionCodeMap.get(townshipKey));
+
+
+                }
+
+
+
+                System.out.println(xxx.size());
+                System.out.println(colls.size());
+
+
+
+
+
             }
-            System.out.println(colls.size());
+
+
+
+
+
+
+
+
+
+
         }
     }
 
