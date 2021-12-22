@@ -60,13 +60,15 @@ object AnalysisProviderApplicationLauncher {
          |    # provider=remote is possible, but prefer cluster
          |    provider = cluster
          |    allow-java-serialization = on
-         |  }
-         |  serializers {
-         |    kryo = "com.twitter.chill.akka.AkkaSerializer"
-         |  }
-         |  serialization-bindings {
-         |    "java.io.Serializable" = none
-         |    "scala.Product" = kryo
+         |    serializers {
+         |      kryo = "com.twitter.chill.akka.AkkaSerializer"
+         |    }
+         |    serialization-bindings {
+         |      "java.io.Serializable" = none
+         |      "scala.Product" = kryo
+         |      "com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseRequest" = kryo
+         |      "com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseResponse" = kryo
+         |    }
          |  }
          |  remote {
          |    artery {

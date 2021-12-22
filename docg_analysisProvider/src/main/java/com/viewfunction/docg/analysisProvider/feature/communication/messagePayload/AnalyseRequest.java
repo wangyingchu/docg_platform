@@ -1,10 +1,9 @@
 package com.viewfunction.docg.analysisProvider.feature.communication.messagePayload;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-public class AnalyseRequest implements Serializable {
+public class AnalyseRequest{
 
     private String uuid;
     private long requestDateTime;

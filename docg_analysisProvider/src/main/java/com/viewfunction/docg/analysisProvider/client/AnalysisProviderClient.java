@@ -41,22 +41,22 @@ public class AnalysisProviderClient {
     public void openSession(){
         String configStr = "akka{" +
                 "actor {"+
-                "provider = cluster," +
-                "allow-java-serialization = on" +
+                    "provider = cluster," +
+                    "serializers {  " +
+                        "kryo = \"com.twitter.chill.akka.AkkaSerializer\"," +
+                        "java = \"akka.serialization.JavaSerializer\""+
+                    "}," +
+                    "serialization-bindings {" +
+                        "\"com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseRequest\" = kryo,"+
+                        "\"com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseResponse\" = kryo"+
+                    "}" +
                 "},"+
-                "serializers {" +
-                "kryo = \"com.twitter.chill.akka.AkkaSerializer\"" +
-                "}," +
-                "serialization-bindings {" +
-                "java.io.Serializable = none," +
-                "scala.Product = kryo" +
-                "}," +
                 "remote {" +
-                "artery {" +
-                "transport = tcp," +
-                "canonical.hostname = \""+this.hostName+"\"," +
-                "canonical.port = "+this.hostPort+
-                "}" +
+                    "artery {" +
+                        "transport = tcp," +
+                        "canonical.hostname = \""+this.hostName+"\"," +
+                        "canonical.port = "+this.hostPort+
+                    "}" +
                 "}," +
                 "loglevel=ERROR" +
                 "}";
