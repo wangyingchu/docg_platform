@@ -160,8 +160,9 @@
         <dependency>
             <groupId>com.twitter</groupId>
             <artifactId>chill-akka_2.12</artifactId>
-            <version>0.9.5</version>
+            <version>0.10.0</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>io.aeron</groupId>
             <artifactId>aeron-driver</artifactId>
@@ -172,6 +173,7 @@
             <artifactId>aeron-client</artifactId>
             <version>1.32.0</version>
         </dependency>
+        -->
         <!-- https://mvnrepository.com/artifact/org.jooq/jooq -->
         <dependency>
             <groupId>org.jooq</groupId>
