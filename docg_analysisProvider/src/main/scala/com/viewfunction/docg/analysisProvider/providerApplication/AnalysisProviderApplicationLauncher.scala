@@ -65,7 +65,6 @@ object AnalysisProviderApplicationLauncher {
          |    }
          |    serialization-bindings {
          |      "java.io.Serializable" = none
-         |      "scala.Product" = kryo
          |      "com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseRequest" = kryo
          |      "com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseResponse" = kryo
          |    }
