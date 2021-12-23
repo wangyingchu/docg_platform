@@ -9,6 +9,7 @@ public class AnalyseResponse {
     private String responseUUID;
     private long responseDateTime;
     private Object responseData;
+    private AnalyseRequest.ResponseDataForm responseDataForm;
 
     public AnalyseResponse(String requestUUID){
         this.requestUUID = requestUUID;
@@ -42,5 +43,13 @@ public class AnalyseResponse {
         }else{
             return false;
         }
+    }
+
+    public AnalyseRequest.ResponseDataForm getResponseDataForm() {
+        return responseDataForm;
+    }
+
+    public void setResponseDataForm(AnalyseRequest.ResponseDataForm responseDataForm) {
+        this.responseDataForm = responseDataForm;
     }
 }

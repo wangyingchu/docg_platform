@@ -30,4 +30,8 @@ public class ResponseDataset implements Serializable {
     private void setPropertiesInfo(Map<String, String> propertiesInfo) {
         this.propertiesInfo = propertiesInfo;
     }
+
+    public void clearDataList(){
+        this.dataList.clear();
+    }
 }

@@ -24,8 +24,8 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
         AdministrativeDivisionSpatialCalculateRequest administrativeDivisionSpatialCalculateRequest = new AdministrativeDivisionSpatialCalculateRequest();
 
         administrativeDivisionSpatialCalculateRequest.setSubjectConception("firmData");
-        //administrativeDivisionSpatialCalculateRequest.setSampleValue(0.1);
-        administrativeDivisionSpatialCalculateRequest.setSampleValue(0.4);
+        //administrativeDivisionSpatialCalculateRequest.setSampleValue(0.13);
+        administrativeDivisionSpatialCalculateRequest.setSampleValue(0.0013);
 
         String[] subjectReturnProperties = new String[1];
         subjectReturnProperties[0] = "name";
@@ -60,8 +60,10 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
                     System.out.println(analyseResponse);
                     System.out.println(analyseResponse.getResponseUUID());
                     System.out.println(analyseResponse.getResponseDateTime());
-                    System.out.println(analyseResponse.getRequestUUID());
                     System.out.println(analyseResponse.getResponseData());
+                    System.out.println("===================");
+                    System.out.println(analyseResponse.getRequestUUID());
+                    System.out.println(analyseResponse.getResponseDataForm());
 
                     ResponseDataset responseDataset = (ResponseDataset)analyseResponse.getResponseData();
                     Map<String,String> propertiesInfoMap =  responseDataset.getPropertiesInfo();
@@ -95,7 +97,7 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
                 }
             };
 
-            analysisProviderClient.sendAnalyseRequest(administrativeDivisionSpatialCalculateRequest,analyseResponseCallback,1200);
+            analysisProviderClient.sendAnalyseRequest(administrativeDivisionSpatialCalculateRequest,analyseResponseCallback,800);
 
         } catch (AnalysisEngineRuntimeException | ProviderClientInitException e) {
             e.printStackTrace();

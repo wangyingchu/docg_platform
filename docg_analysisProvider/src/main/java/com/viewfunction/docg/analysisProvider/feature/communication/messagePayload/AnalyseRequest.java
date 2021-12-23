@@ -5,14 +5,20 @@ import java.util.UUID;
 
 public class AnalyseRequest{
 
+    public enum ResponseDataForm {STREAM_BACK,DATA_SLICE}
     private String uuid;
     private long requestDateTime;
+    private ResponseDataForm responseDataForm;
 
     public String getRequestUUID(){
         return this.uuid;
     }
     public long getRequestDateTime(){
         return this.requestDateTime;
+    }
+
+    public AnalyseRequest(){
+        this.responseDataForm = ResponseDataForm.STREAM_BACK;
     }
 
     public boolean generateMetaInfo(){
@@ -23,5 +29,13 @@ public class AnalyseRequest{
         }else{
             return false;
         }
+    }
+
+    public ResponseDataForm getResponseDataForm() {
+        return responseDataForm;
+    }
+
+    public void setResponseDataForm(ResponseDataForm responseDataForm) {
+        this.responseDataForm = responseDataForm;
     }
 }
