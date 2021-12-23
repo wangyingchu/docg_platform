@@ -5,6 +5,7 @@ import com.viewfunction.docg.analysisProvider.client.exception.AnalyseRequestFor
 import com.viewfunction.docg.analysisProvider.client.exception.AnalysisEngineRuntimeException;
 import com.viewfunction.docg.analysisProvider.client.exception.ProviderClientInitException;
 import com.viewfunction.docg.analysisProvider.feature.communication.AnalyseResponseCallback;
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseRequest;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseResponse;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.AdministrativeDivisionSpatialCalculateRequest;
@@ -40,6 +41,8 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
         administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.County);
         administrativeDivisionSpatialCalculateRequest.setGeospatialScaleLevel(SpatialCommonConfig.GeospatialScaleLevel.CountryLevel);
 
+        //administrativeDivisionSpatialCalculateRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.DATA_SLICE);
+
         try {
             System.out.println(new Date());
             AnalyseResponseCallback analyseResponseCallback = new AnalyseResponseCallback() {
@@ -71,7 +74,9 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
 
                     System.out.println(datalist.size());
 
-                    System.out.println(datalist.get(1000));
+                    if(analyseResponse.getResponseDataForm().equals(AnalyseRequest.ResponseDataForm.STREAM_BACK)){
+                        System.out.println(datalist.get(1000));
+                    }
                     for(HashMap<String,Object> currentDataRow : datalist){
                         //System.out.println(currentDataRow);
                     }
@@ -97,7 +102,7 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
                 }
             };
 
-            analysisProviderClient.sendAnalyseRequest(administrativeDivisionSpatialCalculateRequest,analyseResponseCallback,800);
+            analysisProviderClient.sendAnalyseRequest(administrativeDivisionSpatialCalculateRequest,analyseResponseCallback,2000);
 
         } catch (AnalysisEngineRuntimeException | ProviderClientInitException e) {
             e.printStackTrace();

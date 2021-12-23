@@ -85,8 +85,8 @@ object AnalysisProviderApplicationLauncher {
        """.stripMargin
     val config = ConfigFactory.parseString(configStr)
     engineCommunicationAKKASystem = ActorSystem("DOCGAnalysisProviderCommunicationSystem",config)
-    val _CIMAnalysisEngineCommunicationMessageHandler = new AnalysisProviderCommunicationMessageHandler(globalDataAccessor)
-    val communicationActor = engineCommunicationAKKASystem.actorOf(Props(new CommunicationActor(_CIMAnalysisEngineCommunicationMessageHandler)), name = "communicationRouter")
+    val _AnalysisEngineCommunicationMessageHandler = new AnalysisProviderCommunicationMessageHandler(globalDataAccessor)
+    val communicationActor = engineCommunicationAKKASystem.actorOf(Props(new CommunicationActor(_AnalysisEngineCommunicationMessageHandler)), name = "communicationRouter")
     //communicationActor ! "DOCG Analysis Provider communication router Started."
     true
   }

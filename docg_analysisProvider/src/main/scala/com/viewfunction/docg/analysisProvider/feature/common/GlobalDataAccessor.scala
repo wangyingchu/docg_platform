@@ -47,6 +47,11 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
   sparkConfig.set("sedona.join.numpartition",sedonaJoinNumPartition) //use this configuration to improve Spatial Join query performance enormously
   sparkConfig.set("spark.serializer", classOf[KryoSerializer].getName) // org.apache.spark.serializer.KryoSerializer
   sparkConfig.set("spark.kryo.registrator", classOf[SedonaVizKryoRegistrator].getName) // org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
+
+
+  sparkConfig.set("spark.kryoserializer.buffer.max","2047")
+
+
   val sc = new SparkContext(sparkConfig)
   val sparkSession = SparkSession.builder.config(sc.getConf).getOrCreate()
 
