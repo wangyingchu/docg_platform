@@ -1114,10 +1114,14 @@ public class GeospatialScaleOperationUtil {
             if(folder.exists() && folder.isDirectory()){
                 Map<String,String> _ChinaDivisionCodeMap = new HashMap<>();
 
+                Map<String,String> _ChinaTownshipDivisionCodeMap = new HashMap<>();
+
+                Map<String,Integer> _ChinaTownshipDupCountMap = new HashMap<>() ;
+
                 File[] ministryOfCivilAffairsFiles = folder.listFiles();
                 for(File currentFile:ministryOfCivilAffairsFiles){
 
-                    System.out.println(currentFile);
+                    //System.out.println(currentFile);
 
                     BufferedReader reader = null;
                     try {
@@ -1155,6 +1159,26 @@ public class GeospatialScaleOperationUtil {
                                         townshipKey = COUNTY_Name+"_"+TOWNSHIP_Name;
                                         //System.out.println(townshipKey+" -> "+ _ChinaDivisionCode);
                                         _ChinaDivisionCodeMap.put(townshipKey,_ChinaDivisionCode);
+
+
+                                        if(_ChinaTownshipDivisionCodeMap.containsKey(TOWNSHIP_Name)){
+                                            _ChinaTownshipDupCountMap.put(TOWNSHIP_Name,_ChinaTownshipDupCountMap.get(TOWNSHIP_Name)+1);
+
+
+
+                                            _ChinaTownshipDivisionCodeMap.remove(TOWNSHIP_Name);
+                                        }else{
+                                            _ChinaTownshipDivisionCodeMap.put(TOWNSHIP_Name,_ChinaDivisionCode);
+                                            if(_ChinaTownshipDupCountMap.get(TOWNSHIP_Name)!=null){
+                                                _ChinaTownshipDupCountMap.put(TOWNSHIP_Name,_ChinaTownshipDupCountMap.get(TOWNSHIP_Name)+1);
+                                            }else{
+                                                _ChinaTownshipDupCountMap.put(TOWNSHIP_Name,1);
+                                            }
+
+
+                                        }
+
+
                                     }
                                 }
                             }
@@ -1196,7 +1220,17 @@ public class GeospatialScaleOperationUtil {
                     if(_ChinaDivisionCodeMap.get(townshipKey) != null){
                         xxx.add(_ChinaDivisionCodeMap.get(townshipKey));
                     }else{
-                        System.out.println( provinceCode+"_"+prefectureCode+"_"+countyCode+"_"+townshipCode);
+
+                        String singleTownshipCode = _ChinaTownshipDivisionCodeMap.get(townshipCode);
+                        if(singleTownshipCode != null) {
+                            xxx.add(_ChinaTownshipDivisionCodeMap.get(singleTownshipCode));
+                        }else{
+                            System.out.println( townshipKey);
+                            System.out.println( provinceCode+"_"+prefectureCode+"_"+countyCode+"_"+townshipCode);
+                            System.out.println("..........................");
+                        }
+
+
                     }
 
                     //System.out.println(_ChinaDivisionCodeMap.get(townshipKey));
@@ -1210,7 +1244,7 @@ public class GeospatialScaleOperationUtil {
                 System.out.println(colls.size());
 
 
-
+                System.out.println(_ChinaTownshipDupCountMap);
 
 
             }
