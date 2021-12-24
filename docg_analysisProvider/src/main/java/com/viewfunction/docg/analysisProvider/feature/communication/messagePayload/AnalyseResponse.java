@@ -13,6 +13,7 @@ public class AnalyseResponse {
 
     public AnalyseResponse(String requestUUID){
         this.requestUUID = requestUUID;
+        this.responseUUID = "R"+UUID.randomUUID().toString().replaceAll("-","");
     }
 
     public String getRequestUUID(){
@@ -37,7 +38,7 @@ public class AnalyseResponse {
 
     public boolean generateMetaInfo(){
         if(this.responseUUID == null){
-            this.responseUUID = UUID.randomUUID().toString().replaceAll("-","");
+            this.responseUUID = "R"+UUID.randomUUID().toString().replaceAll("-","");
             responseDateTime = new Date().getTime() ;
             return true;
         }else{

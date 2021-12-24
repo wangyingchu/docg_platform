@@ -6,6 +6,8 @@ import com.viewfunction.docg.analysisProvider.providerApplication.communication.
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.{AdministrativeDivisionSpatialCalculateRequest, SpatialPropertiesAggregateStatisticRequest}
 import com.viewfunction.docg.analysisProvider.feature.functionalFeatures.{AdministrativeDivisionBasedSpatialAnalysis, EcologicalEnvironmentAnalysis, SpatialPropertiesStatisticAndAnalysis}
+import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.{DataSliceOperationConstant, DataSliceOperationUtil, ResponseDataSourceTech}
+import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.ResponseDataSourceTech.ResponseDataSourceTech
 
 class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalDataAccessor) extends CommunicationMessageHandler{
   override def handleMessage(communicationMessage: Any, communicationActor: ActorRef, senderActor: ActorRef): Unit = {
@@ -35,13 +37,13 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
       case communicationMessage: SpatialPropertiesAggregateStatisticRequest =>
         if(analyseResponse!=null){
           val result = SpatialPropertiesStatisticAndAnalysis.executeSpatialPropertiesAggregateStatistic(globalDataAccessor,communicationMessage.asInstanceOf[SpatialPropertiesAggregateStatisticRequest])
-          setupResponseDataAccordingToRequestForm(analyseResponse,result)
+          setupResponseDataAccordingToRequestForm(analyseResponse,result,ResponseDataSourceTech.SPARK)
         }
 
       case communicationMessage: AdministrativeDivisionSpatialCalculateRequest =>
         if(analyseResponse!=null){
           val result = AdministrativeDivisionBasedSpatialAnalysis.doExecuteDataSliceAdministrativeDivisionSpatialCalculation(globalDataAccessor,communicationMessage.asInstanceOf[AdministrativeDivisionSpatialCalculateRequest])
-          setupResponseDataAccordingToRequestForm(analyseResponse,result)
+          setupResponseDataAccordingToRequestForm(analyseResponse,result,ResponseDataSourceTech.SPARK)
         }
     }
     if(analyseResponse!=null){
@@ -50,14 +52,15 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
     }
   }
 
-  def setupResponseDataAccordingToRequestForm(analyseResponse:AnalyseResponse,responseDataset:ResponseDataset):Unit = {
+  def setupResponseDataAccordingToRequestForm(analyseResponse:AnalyseResponse,responseDataset:ResponseDataset,responseDataSourceTech:ResponseDataSourceTech):Unit = {
       val responseDataFormValue = analyseResponse.getResponseDataForm
       if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.STREAM_BACK)){
       }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DATA_SLICE)){
-        // add datalist to data slice responseDataset.getDataList ....
+        val dataSliceName:String = analyseResponse.getResponseUUID
+        DataSliceOperationUtil.createDataSliceFromResponseDataset(globalDataAccessor.dataServiceInvoker,
+          dataSliceName,DataSliceOperationConstant.AnalysisResponseDataFormGroup,responseDataset,responseDataSourceTech)
         //clear datalist content
         responseDataset.clearDataList()
-        //analyseResponse.setResponseData(responseDataset)
       }
       analyseResponse.setResponseData(responseDataset)
   }

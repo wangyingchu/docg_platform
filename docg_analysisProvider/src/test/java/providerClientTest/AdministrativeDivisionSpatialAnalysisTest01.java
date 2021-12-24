@@ -25,7 +25,7 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
         AdministrativeDivisionSpatialCalculateRequest administrativeDivisionSpatialCalculateRequest = new AdministrativeDivisionSpatialCalculateRequest();
 
         administrativeDivisionSpatialCalculateRequest.setSubjectConception("firmData");
-        //administrativeDivisionSpatialCalculateRequest.setSampleValue(0.13);
+        //administrativeDivisionSpatialCalculateRequest.setSampleValue(0.5);
         administrativeDivisionSpatialCalculateRequest.setSampleValue(0.0013);
 
         String[] subjectReturnProperties = new String[1];
@@ -41,7 +41,7 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
         administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.County);
         administrativeDivisionSpatialCalculateRequest.setGeospatialScaleLevel(SpatialCommonConfig.GeospatialScaleLevel.CountryLevel);
 
-        //administrativeDivisionSpatialCalculateRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.DATA_SLICE);
+        administrativeDivisionSpatialCalculateRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.DATA_SLICE);
 
         try {
             System.out.println(new Date());
