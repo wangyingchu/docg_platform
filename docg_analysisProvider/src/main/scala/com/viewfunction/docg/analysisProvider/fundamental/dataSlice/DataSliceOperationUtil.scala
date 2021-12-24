@@ -13,6 +13,8 @@ object DataSliceOperationUtil {
                                          responseDataset:ResponseDataset,responseDataSourceTech:ResponseDataSourceTech):Unit = {
 
     val dataSlicePropertiesDefinitions:java.util.Map[String,String] = responseDataset.getPropertiesInfo
+    val dataSlicePK:java.util.ArrayList[String] = new java.util.ArrayList[String]()
+    dataSlicePK.add(DataSliceOperationConstant.TempResponseDataSlicePK)
 
     val dataSlicePropertyMap: util.HashMap[String, DataSlicePropertyType] = new util.HashMap[String, DataSlicePropertyType]()
     dataSlicePropertiesDefinitions.forEach((propertyName,propertyType) =>{
@@ -20,31 +22,20 @@ object DataSliceOperationUtil {
         getDataSlicePropertyType(propertyType,responseDataSourceTech)
       )
     })
+    dataSlicePropertyMap.put(DataSliceOperationConstant.TempResponseDataSlicePK,DataSlicePropertyType.STRING)
+    val resultDataSlice:DataSlice = dataServiceInvoker.createGridDataSlice(dataSliceName,dataSliceGroup,dataSlicePropertyMap,dataSlicePK)
 
+    val dataList: java.util.ArrayList[java.util.HashMap[String,Object]]  = responseDataset.getDataList
 
-     val resultDataSlice:DataSlice = dataServiceInvoker.createGridDataSlice(dataSliceName,dataSliceGroup,dataSlicePropertyMap,null)
-
-    //val dataList: java.util.ArrayList[java.util.Map[String,Object]]  = responseDataset.getDataList
-
-    //resultDataSlice.addDataRecords(null,dataList)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    var pkIndex = 0
+    dataList.forEach(currentSliceData=>{
+      currentSliceData.put(DataSliceOperationConstant.TempResponseDataSlicePK,"pk"+pkIndex)
+      pkIndex = pkIndex+1
+      resultDataSlice.addDataRecord(currentSliceData)
+    })
   }
 
   def getDataSlicePropertyType(propertyType:String,responseDataSourceTech:ResponseDataSourceTech):DataSlicePropertyType = {
-    //var resultType = DataSlicePropertyType.INT
     var resultType = DataSlicePropertyType.STRING
     if(responseDataSourceTech.equals(ResponseDataSourceTech.SPARK)){
       if(propertyType.equals(DataTypes.StringType.typeName)){resultType = DataSlicePropertyType.STRING}
@@ -63,5 +54,4 @@ object DataSliceOperationUtil {
     }
     resultType
   }
-
 }

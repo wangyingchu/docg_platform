@@ -26,7 +26,7 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
 
         administrativeDivisionSpatialCalculateRequest.setSubjectConception("firmData");
         //administrativeDivisionSpatialCalculateRequest.setSampleValue(0.5);
-        administrativeDivisionSpatialCalculateRequest.setSampleValue(0.0013);
+        //administrativeDivisionSpatialCalculateRequest.setSampleValue(0.0013);
 
         String[] subjectReturnProperties = new String[1];
         subjectReturnProperties[0] = "name";
@@ -71,17 +71,15 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
                     ResponseDataset responseDataset = (ResponseDataset)analyseResponse.getResponseData();
                     Map<String,String> propertiesInfoMap =  responseDataset.getPropertiesInfo();
                     ArrayList<HashMap<String,Object>> datalist = responseDataset.getDataList();
-
-                    System.out.println(datalist.size());
+                    System.out.println(propertiesInfoMap);
 
                     if(analyseResponse.getResponseDataForm().equals(AnalyseRequest.ResponseDataForm.STREAM_BACK)){
+                        System.out.println(datalist.size());
                         System.out.println(datalist.get(1000));
+                        for(HashMap<String,Object> currentDataRow : datalist){
+                            //System.out.println(currentDataRow);
+                        }
                     }
-                    for(HashMap<String,Object> currentDataRow : datalist){
-                        //System.out.println(currentDataRow);
-                    }
-                    System.out.println();
-                    System.out.println(propertiesInfoMap);
 
                     try {
                         analysisProviderClient.closeSession();
