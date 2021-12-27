@@ -17,8 +17,9 @@ import java.sql.{DriverManager, ResultSet}
 class GlobalDataAccessor (private val sessionName:String, private val masterLocation:String){
 
   val dataServiceInvoker = DataServiceInvoker.getInvokerInstance()
-  val sparkCoresMax = AnalysisProviderApplicationUtil.getApplicationProperty("sparkCoresMax")
+
   val sparkExecutorCores = AnalysisProviderApplicationUtil.getApplicationProperty("sparkExecutorCores")
+  val sparkDefaultParallelism = AnalysisProviderApplicationUtil.getApplicationProperty("sparkDefaultParallelism")
   val sparkExecutorMemory = AnalysisProviderApplicationUtil.getApplicationProperty("sparkExecutorMemory")
   val sparkMemoryOffHeapEnabled = AnalysisProviderApplicationUtil.getApplicationProperty("sparkMemoryOffHeapEnabled")
   val sparkMemoryOffHeapSize = AnalysisProviderApplicationUtil.getApplicationProperty("sparkMemoryOffHeapSize")
@@ -33,9 +34,8 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
     //use spark cluster,need set analysis Provider runtime jar location
     sparkConfig.setJars(Array[String]{analysisProviderSparkRuntimeJarLocation})
   }
-  //sparkConfig.set("spark.default.parallelism","200")
-  sparkConfig.set("spark.cores.max",sparkCoresMax)
   sparkConfig.set("spark.executor.cores",sparkExecutorCores)
+  sparkConfig.set("spark.default.parallelism",sparkDefaultParallelism)
   sparkConfig.set("spark.executor.memory",sparkExecutorMemory)
   sparkConfig.set("spark.memory.offHeap.enabled",sparkMemoryOffHeapEnabled)
   sparkConfig.set("spark.memory.offHeap.size",sparkMemoryOffHeapSize)
@@ -47,10 +47,7 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
   sparkConfig.set("sedona.join.numpartition",sedonaJoinNumPartition) //use this configuration to improve Spatial Join query performance enormously
   sparkConfig.set("spark.serializer", classOf[KryoSerializer].getName) // org.apache.spark.serializer.KryoSerializer
   sparkConfig.set("spark.kryo.registrator", classOf[SedonaVizKryoRegistrator].getName) // org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
-
-
   sparkConfig.set("spark.kryoserializer.buffer.max","2047")
-
 
   val sc = new SparkContext(sparkConfig)
   val sparkSession = SparkSession.builder.config(sc.getConf).getOrCreate()

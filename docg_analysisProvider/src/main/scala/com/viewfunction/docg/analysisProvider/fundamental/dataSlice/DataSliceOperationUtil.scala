@@ -2,6 +2,7 @@ package com.viewfunction.docg.analysisProvider.fundamental.dataSlice
 
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.ResponseDataSourceTech.ResponseDataSourceTech
+import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.result.DataSliceOperationResult
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlice, DataSlicePropertyType}
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.MassDataOperationUtil
@@ -11,9 +12,10 @@ import java.util
 
 object DataSliceOperationUtil {
 
+  val massDataOperationParallelism = AnalysisProviderApplicationUtil.getApplicationProperty("massDataOperationParallelism")
+
   def createDataSliceFromResponseDataset(dataServiceInvoker:DataServiceInvoker,dataSliceName:String,dataSliceGroup:String,
                                          responseDataset:ResponseDataset,responseDataSourceTech:ResponseDataSourceTech):Unit = {
-
     val dataSlicePropertiesDefinitions:java.util.Map[String,String] = responseDataset.getPropertiesInfo
     val dataSlicePK:java.util.ArrayList[String] = new java.util.ArrayList[String]()
     dataSlicePK.add(DataSliceOperationConstant.TempResponseDataSlicePK)
@@ -31,7 +33,7 @@ object DataSliceOperationUtil {
     val resultDataSlice:DataSlice = dataServiceInvoker.createGridDataSlice(dataSliceName,dataSliceGroup,dataSlicePropertyMap,dataSlicePK)
     val dataList: java.util.ArrayList[java.util.HashMap[String,Object]]  = responseDataset.getDataList
     val dataSliceOperationResult:DataSliceOperationResult = MassDataOperationUtil.massInsertSliceData(dataServiceInvoker,dataSliceName,dataList.asInstanceOf[util.List[util.Map[String,Object]]],
-      dataSliceProperties,DataSliceOperationConstant.TempResponseDataSlicePK,20)
+      dataSliceProperties,DataSliceOperationConstant.TempResponseDataSlicePK,massDataOperationParallelism.toInt)
   }
 
   def getDataSlicePropertyType(propertyType:String,responseDataSourceTech:ResponseDataSourceTech):DataSlicePropertyType = {
