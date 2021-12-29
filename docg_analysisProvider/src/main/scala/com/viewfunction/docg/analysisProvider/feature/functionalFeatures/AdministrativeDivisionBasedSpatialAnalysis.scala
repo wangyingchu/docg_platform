@@ -12,8 +12,8 @@ import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredica
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.{AdministrativeDivisionSpatialCalculateRequest, SpatialCommonConfig}
-import org.apache.spark.sql.Row
-import org.apache.spark.sql.types.StructType
+
+import org.apache.spark.sql.DataFrame
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -158,7 +158,7 @@ object AdministrativeDivisionBasedSpatialAnalysis {
       newNames += (geospatialScaleGrade+"__"+attribute)
     })
     val dfRenamed = calculateResultDF.toDF(newNames: _*)
-    generateResultDataSet(dfRenamed.schema,dfRenamed.collect())
+    generateResultDataSet(dfRenamed)
   }
 
   private def getGeospatialGeometryContent(geospatialScaleLevel:GeospatialScaleLevel):String = {
@@ -195,15 +195,37 @@ object AdministrativeDivisionBasedSpatialAnalysis {
     runtimeAdministrativeDivisionDataSliceName
   }
 
-  private def generateResultDataSet(dataStructure:StructType,dataRowArray:Array[Row]): com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
-    val structureFields = dataStructure.fields
+  private def generateResultDataSet(dataFrame:DataFrame): com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
+    val dataList = new java.util.ArrayList[java.util.HashMap[String,Object]]
+    val structureFields =dataFrame.schema.fields
     val propertiesInfo = new java.util.HashMap[String,String]
     structureFields.foreach(item =>{
       propertiesInfo.put(item.name,item.dataType.typeName)
     })
 
-    val dataList = new java.util.ArrayList[java.util.HashMap[String,Object]]
-    dataRowArray.foreach(row=>{
+/*
+    dataFrame.rdd.foreachPartition(iterator=>{
+      iterator.foreach(row=>{
+        val currentItemMap = new java.util.HashMap[String,Object]
+        structureFields.foreach(fieldStructure=>{
+          currentItemMap.put(fieldStructure.name,row.get(row.fieldIndex(fieldStructure.name)).asInstanceOf[AnyRef])
+        })
+        dataList.add(currentItemMap)
+      })
+    })
+*/
+/*
+    dataFrame.rdd.foreach(row =>{
+      val currentItemMap = new java.util.HashMap[String,Object]
+      dataList.add(currentItemMap)
+      structureFields.foreach(fieldStructure=>{
+        currentItemMap.put(fieldStructure.name,row.get(row.fieldIndex(fieldStructure.name)).asInstanceOf[AnyRef])
+      })
+    })
+*/
+
+
+    dataFrame.collect().foreach(row=>{
       val currentMap = new java.util.HashMap[String,Object]
       dataList.add(currentMap)
       structureFields.foreach(fieldStructure=>{
