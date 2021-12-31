@@ -4,10 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryPara
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.GreaterThanFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
@@ -389,6 +386,20 @@ public class ConceptionKindTest {
         queryParameters.setPageSize(10);
         ConceptionEntitiesRetrieveResult conceptionEntitiesRetrieveResult =_ConceptionKind01.getKindDirectRelatedEntities(null,"queryTestRelation01",RelationDirection.FROM,null,queryParameters);
         Assert.assertEquals(conceptionEntitiesRetrieveResult.getConceptionEntities().size(),105);
+
+        List<String> attributesList = new ArrayList<>();
+        attributesList.add("prop1");
+        attributesList.add("propNotExist");
+        ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributesRetrieveResult =_ConceptionKind01.getAttributesOfKindDirectRelatedEntities(null,attributesList,"queryTestRelation01",RelationDirection.FROM,null,queryParameters);
+        Assert.assertNotNull(conceptionEntitiesAttributesRetrieveResult);
+        List<ConceptionEntityValue> conceptionEntityValuesList = conceptionEntitiesAttributesRetrieveResult.getConceptionEntityValues();
+
+        for(ConceptionEntityValue currentConceptionEntityValue:conceptionEntityValuesList){
+            Assert.assertNotNull(currentConceptionEntityValue.getEntityAttributesValue());
+            Assert.assertNotNull(currentConceptionEntityValue.getConceptionEntityUID());
+            Assert.assertNotNull(currentConceptionEntityValue.getEntityAttributesValue().get("prop1"));
+            Assert.assertNull(currentConceptionEntityValue.getEntityAttributesValue().get("propNotExist"));
+        }
 
         conceptionEntitiesRetrieveResult =_ConceptionKind01.getKindDirectRelatedEntities(null,"queryTestRelation01",RelationDirection.TO,null,queryParameters);
         Assert.assertEquals(conceptionEntitiesRetrieveResult.getConceptionEntities().size(),0);

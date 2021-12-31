@@ -645,6 +645,41 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         return commonConceptionEntitiesRetrieveResultImpl;
     }
 
+    @Override
+    public ConceptionEntitiesAttributesRetrieveResult getAttributesOfKindDirectRelatedEntities(List<String> startEntityUIDS, List<String> attributeNames, String relationKind, RelationDirection relationDirection, String targetConceptionKind, QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException {
+        if(relationKind == null){
+            logger.error("RelationKind is required.");
+            CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+            exception.setCauseMessage("RelationKind is required.");
+            throw exception;
+        }
+        if(attributeNames != null && attributeNames.size()>0){
+            CommonConceptionEntitiesAttributesRetrieveResultImpl commonConceptionEntitiesAttributesRetrieveResultImpl
+                    = new CommonConceptionEntitiesAttributesRetrieveResultImpl();
+            RelationDirection realRelationDirection = relationDirection != null ? relationDirection : RelationDirection.TWO_WAY;
+
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String queryCql = CypherBuilder.matchNodeWithSpecialRelationAndAttributeFilter(relationKind,realRelationDirection,
+                        this.conceptionKindName,startEntityUIDS,targetConceptionKind,queryParameters);
+
+                GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer = new GetListConceptionEntityValueTransformer(attributeNames);
+                Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
+                if(resEntityRes != null){
+                    List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
+                    commonConceptionEntitiesAttributesRetrieveResultImpl.addConceptionEntitiesAttributes(resultEntitiesValues);
+                    commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultEntitiesValues.size());
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            commonConceptionEntitiesAttributesRetrieveResultImpl.finishEntitiesRetrieving();
+            return commonConceptionEntitiesAttributesRetrieveResultImpl;
+        }else{
+            return null;
+        }
+    }
+
     private List<AttributeKind> getContainsSingleValueAttributeKinds(GraphOperationExecutor workingGraphOperationExecutor) {
         return getSingleValueAttributeKinds(null,workingGraphOperationExecutor);
     }
