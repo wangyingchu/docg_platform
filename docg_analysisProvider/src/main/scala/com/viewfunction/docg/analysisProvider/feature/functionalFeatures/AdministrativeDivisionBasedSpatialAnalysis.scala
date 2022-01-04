@@ -2,7 +2,7 @@ package com.viewfunction.docg.analysisProvider.feature.functionalFeatures
 
 import com.viewfunction.docg.analysisProvider.exception.AnalysisProviderRuntimeException
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
-import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.{AnalyseRequest, AnalyseResponse, spatialAnalysis}
 import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial
 import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial.SpatialQueryMetaFunction
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScaleGrade.GeospatialScaleGrade
@@ -12,16 +12,17 @@ import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredica
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.{AdministrativeDivisionSpatialCalculateRequest, SpatialCommonConfig}
+import org.apache.spark.api.java.function.ForeachPartitionFunction
+import org.apache.spark.sql.{DataFrame, Row}
 
-import org.apache.spark.sql.DataFrame
-
+import java.util
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 object AdministrativeDivisionBasedSpatialAnalysis {
 
   @throws(classOf[AnalysisProviderRuntimeException])
-  def doExecuteDataSliceAdministrativeDivisionSpatialCalculation(globalDataAccessor:GlobalDataAccessor,
+  def doExecuteDataSliceAdministrativeDivisionSpatialCalculation(globalDataAccessor:GlobalDataAccessor,analyseResponse:AnalyseResponse,
                                                                administrativeDivisionSpatialCalculateRequest:AdministrativeDivisionSpatialCalculateRequest):
   com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset={
     val dataSlice = administrativeDivisionSpatialCalculateRequest.getSubjectConception
@@ -93,13 +94,14 @@ object AdministrativeDivisionBasedSpatialAnalysis {
         calGeospatialScaleLevel = GeospatialScaleLevel.LocalLevel
     }
 
-    executeDataSliceAdministrativeDivisionSpatialCalculation(globalDataAccessor,dataSlice,sliceGroup,
+    executeDataSliceAdministrativeDivisionSpatialCalculation(globalDataAccessor,analyseResponse,dataSlice,sliceGroup,
       calSubjectReturnProperties,calSpatialPredicateType,calGeospatialScaleGrade,
       calAdministrativeDivisionReturnProperties,calGeospatialScaleLevel,sampleValue)
   }
 
   @throws(classOf[AnalysisProviderRuntimeException])
   def executeDataSliceAdministrativeDivisionSpatialCalculation(globalDataAccessor:GlobalDataAccessor,
+                                                               analyseResponse:AnalyseResponse,
                                                                dataSlice:String,sliceGroup:String,
                                                                dataSliceAttributes: mutable.Buffer[String],
                                                                spatialPredicateType:SpatialPredicateType,
@@ -158,7 +160,7 @@ object AdministrativeDivisionBasedSpatialAnalysis {
       newNames += (geospatialScaleGrade+"__"+attribute)
     })
     val dfRenamed = calculateResultDF.toDF(newNames: _*)
-    generateResultDataSet(dfRenamed)
+    generateResultDataSet(dfRenamed,analyseResponse)
   }
 
   private def getGeospatialGeometryContent(geospatialScaleLevel:GeospatialScaleLevel):String = {
@@ -195,7 +197,18 @@ object AdministrativeDivisionBasedSpatialAnalysis {
     runtimeAdministrativeDivisionDataSliceName
   }
 
-  private def generateResultDataSet(dataFrame:DataFrame): com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
+  private def generateResultDataSet(dataFrame:DataFrame,analyseResponse:AnalyseResponse): com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
+
+    val responseDataFormValue = analyseResponse.getResponseDataForm
+    if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.STREAM_BACK)){
+
+
+    }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DATA_SLICE)){
+
+    }
+
+
+
     val dataList = new java.util.ArrayList[java.util.HashMap[String,Object]]
     val structureFields =dataFrame.schema.fields
     val propertiesInfo = new java.util.HashMap[String,String]
@@ -203,36 +216,20 @@ object AdministrativeDivisionBasedSpatialAnalysis {
       propertiesInfo.put(item.name,item.dataType.typeName)
     })
 
-/*
-    dataFrame.rdd.foreachPartition(iterator=>{
-      iterator.foreach(row=>{
-        val currentItemMap = new java.util.HashMap[String,Object]
-        structureFields.foreach(fieldStructure=>{
-          currentItemMap.put(fieldStructure.name,row.get(row.fieldIndex(fieldStructure.name)).asInstanceOf[AnyRef])
+    dataFrame.foreachPartition(new ForeachPartitionFunction[Row] {
+      override def call(iterator: util.Iterator[Row]): Unit = {
+
+        iterator.forEachRemaining(row=>{
+          val currentItemMap = new java.util.HashMap[String,Object]
+          structureFields.foreach(fieldStructure=>{
+            currentItemMap.put(fieldStructure.name,row.get(row.fieldIndex(fieldStructure.name)).asInstanceOf[AnyRef])
+          })
         })
-        dataList.add(currentItemMap)
-      })
-    })
-*/
-/*
-    dataFrame.rdd.foreach(row =>{
-      val currentItemMap = new java.util.HashMap[String,Object]
-      dataList.add(currentItemMap)
-      structureFields.foreach(fieldStructure=>{
-        currentItemMap.put(fieldStructure.name,row.get(row.fieldIndex(fieldStructure.name)).asInstanceOf[AnyRef])
-      })
-    })
-*/
-
-
-    dataFrame.collect().foreach(row=>{
-      val currentMap = new java.util.HashMap[String,Object]
-      dataList.add(currentMap)
-      structureFields.foreach(fieldStructure=>{
-        currentMap.put(fieldStructure.name,row.get(row.fieldIndex(fieldStructure.name)).asInstanceOf[AnyRef])
-      })
+      }
     })
 
-    new com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset(propertiesInfo,dataList)
+    val responseData = new com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset(propertiesInfo,dataList)
+    analyseResponse.setResponseData(responseData)
+    responseData
   }
 }

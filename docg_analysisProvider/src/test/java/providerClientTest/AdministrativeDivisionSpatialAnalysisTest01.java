@@ -26,7 +26,7 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
 
         administrativeDivisionSpatialCalculateRequest.setSubjectConception("firmData");
         //administrativeDivisionSpatialCalculateRequest.setSampleValue(0.5);
-        //administrativeDivisionSpatialCalculateRequest.setSampleValue(0.1);
+        //administrativeDivisionSpatialCalculateRequest.setSampleValue(0.01);
 
         String[] subjectReturnProperties = new String[1];
         subjectReturnProperties[0] = "name";
@@ -38,8 +38,8 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
         administrativeDivisionSpatialCalculateRequest.setAdministrativeDivisionReturnProperties(administrativeDivisionReturnProperties);
 
         administrativeDivisionSpatialCalculateRequest.setPredicateType(SpatialCommonConfig.PredicateType.Within);
-        //administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.Township);
-        administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.County);
+        administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.Township);
+        //administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.County);
         administrativeDivisionSpatialCalculateRequest.setGeospatialScaleLevel(SpatialCommonConfig.GeospatialScaleLevel.CountryLevel);
 
         administrativeDivisionSpatialCalculateRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.DATA_SLICE);

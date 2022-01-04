@@ -37,13 +37,14 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
       case communicationMessage: SpatialPropertiesAggregateStatisticRequest =>
         if(analyseResponse!=null){
           val result = SpatialPropertiesStatisticAndAnalysis.executeSpatialPropertiesAggregateStatistic(globalDataAccessor,communicationMessage.asInstanceOf[SpatialPropertiesAggregateStatisticRequest])
-          setupResponseDataAccordingToRequestForm(analyseResponse,result,ResponseDataSourceTech.SPARK)
+          //setupResponseDataAccordingToRequestForm(analyseResponse,result,ResponseDataSourceTech.SPARK)
         }
 
       case communicationMessage: AdministrativeDivisionSpatialCalculateRequest =>
         if(analyseResponse!=null){
-          val result = AdministrativeDivisionBasedSpatialAnalysis.doExecuteDataSliceAdministrativeDivisionSpatialCalculation(globalDataAccessor,communicationMessage.asInstanceOf[AdministrativeDivisionSpatialCalculateRequest])
-          setupResponseDataAccordingToRequestForm(analyseResponse,result,ResponseDataSourceTech.SPARK)
+          val result = AdministrativeDivisionBasedSpatialAnalysis.doExecuteDataSliceAdministrativeDivisionSpatialCalculation(
+            globalDataAccessor,analyseResponse,communicationMessage.asInstanceOf[AdministrativeDivisionSpatialCalculateRequest])
+          //setupResponseDataAccordingToRequestForm(analyseResponse,result,ResponseDataSourceTech.SPARK)
         }
     }
     if(analyseResponse!=null){
@@ -55,12 +56,16 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
   def setupResponseDataAccordingToRequestForm(analyseResponse:AnalyseResponse,responseDataset:ResponseDataset,responseDataSourceTech:ResponseDataSourceTech):Unit = {
       val responseDataFormValue = analyseResponse.getResponseDataForm
       if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.STREAM_BACK)){
+
+
       }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DATA_SLICE)){
         val dataSliceName:String = analyseResponse.getResponseUUID
+        /*
         DataSliceOperationUtil.createDataSliceFromResponseDataset(globalDataAccessor.dataServiceInvoker,
           dataSliceName,DataSliceOperationConstant.AnalysisResponseDataFormGroup,responseDataset,responseDataSourceTech)
         //clear datalist content
         responseDataset.clearDataList()
+        */
       }
       analyseResponse.setResponseData(responseDataset)
   }

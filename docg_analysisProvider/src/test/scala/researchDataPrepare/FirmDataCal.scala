@@ -57,7 +57,7 @@ object FirmDataCal extends App{
 
   def calculateFirmLocation2():Unit = {
     val calculateResult : ResponseDataset = AdministrativeDivisionBasedSpatialAnalysis.executeDataSliceAdministrativeDivisionSpatialCalculation(
-      globalDataAccessor,"firmData","defaultGroup",
+      globalDataAccessor,null,"firmData","defaultGroup",
       mutable.Buffer[String]("name"),
       SpatialPredicateType.Within,
       com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScaleGrade.COUNTY,
