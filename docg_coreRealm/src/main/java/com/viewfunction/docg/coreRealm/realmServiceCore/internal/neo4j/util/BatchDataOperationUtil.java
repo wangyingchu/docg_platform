@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
@@ -15,10 +16,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOp
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeScaleEntityImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
@@ -515,6 +513,94 @@ public class BatchDataOperationUtil {
                     threadReturnDataMap.put(currentThreadName,successfulCount);
                 }
             }
+        }
+    }
+
+    public static Map<String,Object> batchAttachGeospatialScaleEvents(List<RelationEntityValue> relationEntityValueList,String eventComment,Map<String,Object> globalEventData,
+                                                                      GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade, int degreeOfParallelism){
+        int singlePartitionSize = (relationEntityValueList.size()/degreeOfParallelism)+1;
+        List<List<RelationEntityValue>> rsList = Lists.partition(relationEntityValueList, singlePartitionSize);
+        Map<String,Object> threadReturnDataMap = new Hashtable<>();
+        threadReturnDataMap.put("StartTime", LocalDateTime.now());
+        ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+        for(List<RelationEntityValue> currentRelationEntityValueList:rsList){
+            LinkGeospatialScaleEventThread linkGeospatialScaleEventThread = new LinkGeospatialScaleEventThread(RealmConstant._defaultGeospatialRegionName,
+                    eventComment,globalEventData,geospatialScaleGrade,currentRelationEntityValueList,threadReturnDataMap);
+            executor.execute(linkGeospatialScaleEventThread);
+        }
+        executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        threadReturnDataMap.put("FinishTime", LocalDateTime.now());
+        return threadReturnDataMap;
+    }
+
+    private static class LinkGeospatialScaleEventThread implements Runnable{
+        private String geospatialRegionName;
+        private String eventComment;
+        private Map<String,Object> globalEventData;
+        private GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade;
+        private List<RelationEntityValue> relationEntityValueList;
+
+        private Map<String,Object> threadReturnDataMap;
+        public LinkGeospatialScaleEventThread(String geospatialRegionName,String eventComment,Map<String,Object> globalEventData,
+                                              GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade,List<RelationEntityValue> relationEntityValueList,
+                                              Map<String,Object> threadReturnDataMap){
+            this.geospatialRegionName = geospatialRegionName;
+            this.eventComment = eventComment;
+            this.globalEventData = globalEventData;
+            this.geospatialScaleGrade = geospatialScaleGrade;
+            this.relationEntityValueList = relationEntityValueList;
+            this.threadReturnDataMap = threadReturnDataMap;
+        }
+
+        @Override
+        public void run() {
+            String currentThreadName = Thread.currentThread().getName();
+            long successfulCount = 0;
+            GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
+            try{
+                for(RelationEntityValue currentRelationEntityValue:relationEntityValueList){
+                    String conceptionEntityUID = currentRelationEntityValue.getFromConceptionEntityUID();
+                    String geospatialScaleEntityUID = currentRelationEntityValue.getToConceptionEntityUID();
+                    Map<String,Object> linkDataMap = currentRelationEntityValue.getEntityAttributesValue();
+                    if(conceptionEntityUID != null && geospatialScaleEntityUID != null && linkDataMap != null){
+                        Map<String, Object> propertiesMap = linkDataMap ;
+
+                        if(linkDataMap.containsKey(RealmConstant.GeospatialCodeProperty)){
+                            CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
+                            propertiesMap.put(RealmConstant._GeospatialScaleEventReferLocation,linkDataMap.get(RealmConstant.GeospatialCodeProperty));
+                            propertiesMap.put(RealmConstant._GeospatialScaleEventComment,this.eventComment);
+                            propertiesMap.put(RealmConstant._GeospatialScaleEventScaleGrade,this.geospatialScaleGrade.toString());
+                            propertiesMap.put(RealmConstant._GeospatialScaleEventGeospatialRegion,this.geospatialRegionName);
+                            if(this.globalEventData!=null){
+                                linkDataMap.putAll(this.globalEventData);
+                            }
+                            String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.GeospatialScaleEventClass}, propertiesMap);
+                            logger.debug("Generated Cypher Statement: {}", createCql);
+                            GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                                    new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleEventClass, graphOperationExecutor);
+                            Object newEntityRes = graphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer, createCql);
+                            if(newEntityRes != null) {
+                                ConceptionEntity geospatialScaleEventEntity = (ConceptionEntity) newEntityRes;
+                                RelationEntity linkToConceptionEntityRelation = geospatialScaleEventEntity.attachToRelation(conceptionEntityUID, RealmConstant.GeospatialScale_AttachToRelationClass, null, true);
+                                RelationEntity linkToGeospatialScaleEntityRelation = geospatialScaleEventEntity.attachToRelation(geospatialScaleEntityUID, RealmConstant.GeospatialScale_GeospatialReferToRelationClass, null, true);
+                                if(linkToGeospatialScaleEntityRelation != null && linkToConceptionEntityRelation!= null){
+                                    successfulCount++;
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (CoreRealmServiceRuntimeException e) {
+                e.printStackTrace();
+            }finally {
+                graphOperationExecutor.close();
+            }
+            threadReturnDataMap.put(currentThreadName,successfulCount);
         }
     }
 }

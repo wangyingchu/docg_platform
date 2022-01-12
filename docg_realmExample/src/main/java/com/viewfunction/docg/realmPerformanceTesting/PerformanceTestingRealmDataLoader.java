@@ -7,12 +7,17 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.result.DataSliceQueryResult;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.ComputeGridNotActiveException;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -53,6 +58,8 @@ public class PerformanceTestingRealmDataLoader {
         //linkDate(StartDate,"firmStartedAt");
         //linkDate(RegistrationChangeDate,"firmRegistrationChangedAt");
         //linkDate(CancelDate,"firmCanceledAt");
+        linkCountyGeoData("R924dce5b06ea4f8e920fce8e8f1d9277");
+        //linkTownshipGeoData("R2dcccb8ceeb648d8a99dbc9b342d4209");
     }
 
     private static void initDefaultGeoData(){
@@ -205,4 +212,31 @@ public class PerformanceTestingRealmDataLoader {
         List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
         BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,datePropertyName,attachEventName,null, TimeFlow.TimeScaleGrade.DAY,30);
     }
+
+    private static void  linkCountyGeoData(String dataSliceName){
+        List<RelationEntityValue> relationEntityValueList = new ArrayList<>();
+        try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
+            DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+            DataSliceQueryResult dataSliceQueryResult = targetDataSlice.queryDataRecords((com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.QueryParameters) null);
+            for(Map<String,Object> currentData:dataSliceQueryResult.getResultRecords()){
+                RelationEntityValue currentRelationEntityValue = new RelationEntityValue();
+                currentRelationEntityValue.setFromConceptionEntityUID(currentData.get("FIRMDATA__REALMGLOBALUID").toString());
+                currentRelationEntityValue.setToConceptionEntityUID(currentData.get("COUNTY__REALMGLOBALUID").toString());
+                Map<String,Object> geospatialCodePropertyDataMap = new HashMap<>();
+                geospatialCodePropertyDataMap.put(RealmConstant.GeospatialCodeProperty,currentData.get("COUNTY__DOCG_GEOSPATIALCODE").toString());
+                currentRelationEntityValue.setEntityAttributesValue(geospatialCodePropertyDataMap);
+                relationEntityValueList.add(currentRelationEntityValue);
+            }
+        } catch (ComputeGridNotActiveException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Map<String,Object> attachGeoResult =
+                BatchDataOperationUtil.batchAttachGeospatialScaleEvents(relationEntityValueList,"firmLocatedAtCounty",null, GeospatialRegion.GeospatialScaleGrade.COUNTY,16);
+        System.out.println(attachGeoResult);
+    }
+
+    private static void  linkTownshipGeoData(String dataSliceName){}
 }
