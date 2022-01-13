@@ -577,8 +577,9 @@ public class BatchDataOperationUtil {
                             propertiesMap.put(RealmConstant._GeospatialScaleEventScaleGrade,this.geospatialScaleGrade.toString());
                             propertiesMap.put(RealmConstant._GeospatialScaleEventGeospatialRegion,this.geospatialRegionName);
                             if(this.globalEventData!=null){
-                                linkDataMap.putAll(this.globalEventData);
+                                propertiesMap.putAll(this.globalEventData);
                             }
+                            propertiesMap.remove(RealmConstant.GeospatialCodeProperty);
                             String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.GeospatialScaleEventClass}, propertiesMap);
                             logger.debug("Generated Cypher Statement: {}", createCql);
                             GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =

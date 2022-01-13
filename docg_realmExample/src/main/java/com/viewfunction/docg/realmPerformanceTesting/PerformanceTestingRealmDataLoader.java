@@ -58,7 +58,7 @@ public class PerformanceTestingRealmDataLoader {
         //linkDate(StartDate,"firmStartedAt");
         //linkDate(RegistrationChangeDate,"firmRegistrationChangedAt");
         //linkDate(CancelDate,"firmCanceledAt");
-        linkCountyGeoData("R924dce5b06ea4f8e920fce8e8f1d9277");
+        //linkCountyGeoData("R924dce5b06ea4f8e920fce8e8f1d9277");
         //linkTownshipGeoData("R2dcccb8ceeb648d8a99dbc9b342d4209");
     }
 
@@ -232,11 +232,33 @@ public class PerformanceTestingRealmDataLoader {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         Map<String,Object> attachGeoResult =
                 BatchDataOperationUtil.batchAttachGeospatialScaleEvents(relationEntityValueList,"firmLocatedAtCounty",null, GeospatialRegion.GeospatialScaleGrade.COUNTY,16);
         System.out.println(attachGeoResult);
     }
 
-    private static void  linkTownshipGeoData(String dataSliceName){}
+    private static void  linkTownshipGeoData(String dataSliceName){
+        List<RelationEntityValue> relationEntityValueList = new ArrayList<>();
+        try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
+            DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+            DataSliceQueryResult dataSliceQueryResult = targetDataSlice.queryDataRecords((com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.QueryParameters) null);
+            for(Map<String,Object> currentData:dataSliceQueryResult.getResultRecords()){
+                RelationEntityValue currentRelationEntityValue = new RelationEntityValue();
+                currentRelationEntityValue.setFromConceptionEntityUID(currentData.get("FIRMDATA__REALMGLOBALUID").toString());
+                currentRelationEntityValue.setToConceptionEntityUID(currentData.get("TOWNSHIP__REALMGLOBALUID").toString());
+                Map<String,Object> geospatialCodePropertyDataMap = new HashMap<>();
+                geospatialCodePropertyDataMap.put(RealmConstant.GeospatialCodeProperty,currentData.get("TOWNSHIP__DOCG_GEOSPATIALCODE").toString());
+                currentRelationEntityValue.setEntityAttributesValue(geospatialCodePropertyDataMap);
+                relationEntityValueList.add(currentRelationEntityValue);
+            }
+        } catch (ComputeGridNotActiveException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Map<String,Object> attachGeoResult =
+                BatchDataOperationUtil.batchAttachGeospatialScaleEvents(relationEntityValueList,"firmLocatedAtTownship",null, GeospatialRegion.GeospatialScaleGrade.TOWNSHIP,16);
+        System.out.println(attachGeoResult);
+    }
 }
