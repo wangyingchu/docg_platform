@@ -273,4 +273,17 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      */
     public ConceptionEntitiesAttributesRetrieveResult getAttributesOfKindDirectRelatedEntities(List<String> startEntityUIDS,List<String> attributeNames,String relationKind,RelationDirection
             relationDirection,String aimConceptionKind,QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 查询与符合过滤条件的目标概念类型实体直接关联的实体对象
+     *
+     * @param relationKind String 关联的关系类型名称
+     * @param relationDirection RelationDirection 关联方向
+     * @param aimConceptionKind List<String> 查询目标概念类型名称，如传入 null 则忽略类型
+     * @param queryParameters QueryParameters 查询的目标关联概念实体过滤参数
+     *
+     * @return 概念实体查询结果集
+     */
+    public ConceptionEntitiesRetrieveResult getEntitiesByDirectRelations(String relationKind,RelationDirection
+            relationDirection,String aimConceptionKind,QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
 }

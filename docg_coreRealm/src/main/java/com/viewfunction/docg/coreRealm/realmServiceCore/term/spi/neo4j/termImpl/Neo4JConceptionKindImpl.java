@@ -11,15 +11,19 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOper
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonConceptionEntitiesAttributesRetrieveResultImpl;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonConceptionEntitiesRetrieveResultImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
-
+import org.neo4j.driver.Record;
+import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -678,6 +682,68 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         }else{
             return null;
         }
+    }
+
+    @Override
+    public ConceptionEntitiesRetrieveResult getEntitiesByDirectRelations(String relationKind, RelationDirection relationDirection, String aimConceptionKind, QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException {
+        if(relationKind == null){
+            logger.error("RelationKind is required.");
+            CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+            exception.setCauseMessage("RelationKind is required.");
+            throw exception;
+        }
+        RelationDirection realRelationDirection =  RelationDirection.TWO_WAY;
+
+        if(relationDirection != null){
+            switch(relationDirection){
+                case FROM:
+                    realRelationDirection = RelationDirection.TO;
+                    break;
+                case TO:
+                    realRelationDirection = RelationDirection.FROM;
+                    break;
+                case TWO_WAY:
+                    realRelationDirection =  RelationDirection.TWO_WAY;
+            }
+        }
+        CommonConceptionEntitiesRetrieveResultImpl commonConceptionEntitiesRetrieveResultImpl = new CommonConceptionEntitiesRetrieveResultImpl();
+        commonConceptionEntitiesRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(aimConceptionKind,queryParameters,null);
+            DataTransformer<List<String>> aimConceptionKindEntityUIDListDataTransformer = new DataTransformer<List<String>>() {
+                @Override
+                public List<String> transformResult(Result result) {
+                    List<String> conceptionEntityUIDList = new ArrayList<>();
+                    while(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        Node resultNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
+                        long nodeUID = resultNode.id();
+                        String conceptionEntityUID = ""+nodeUID;
+                        conceptionEntityUIDList.add(conceptionEntityUID);
+
+                    }
+                    return conceptionEntityUIDList;
+                }
+            };
+            Object queryRes = workingGraphOperationExecutor.executeRead(aimConceptionKindEntityUIDListDataTransformer,queryCql);
+            List aimConceptionKindEntityUIDList = (List<String>)queryRes;
+            queryCql = CypherBuilder.matchNodeWithSpecialRelationAndAttributeFilter(relationKind,realRelationDirection,
+                    aimConceptionKind,aimConceptionKindEntityUIDList,this.conceptionKindName,null);
+            GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(null,
+                    this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            queryRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
+            if(queryRes != null){
+                List<ConceptionEntity> resultConceptionEntityList = (List<ConceptionEntity>)queryRes;
+                commonConceptionEntitiesRetrieveResultImpl.addConceptionEntities(resultConceptionEntityList);
+                commonConceptionEntitiesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultConceptionEntityList.size());
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        commonConceptionEntitiesRetrieveResultImpl.finishEntitiesRetrieving();
+        return commonConceptionEntitiesRetrieveResultImpl;
     }
 
     private List<AttributeKind> getContainsSingleValueAttributeKinds(GraphOperationExecutor workingGraphOperationExecutor) {
