@@ -3976,6 +3976,16 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      */
     public List<RelationEntity> getRelationEntitiesByUIDs(List<String> relationEntityUIDs) throws CoreRealmServiceEntityExploreException;
 
+	/**
+     * 输入一组概念实体的唯一值ID，查询并删除所有包含其中的概念实体两两间的关系实体数据
+     *
+     * @param conceptionEntityPairUIDs List<String> 概念实体唯一值ID列表
+     * @param relationKind String 实体间关联关系的关系类型
+     *
+     * @return 删除的关系实体对象数量
+     */
+    public long removeRelationsOfConceptionEntityPair(List<String> conceptionEntityPairUIDs,String relationKind) throws CoreRealmServiceEntityExploreException;
+
     /**
      * 输入一组概念实体的唯一值ID，返回所有匹配的概念实体数据
      *

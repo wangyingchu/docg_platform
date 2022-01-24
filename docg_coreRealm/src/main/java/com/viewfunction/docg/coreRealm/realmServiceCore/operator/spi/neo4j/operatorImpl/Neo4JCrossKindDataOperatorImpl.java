@@ -16,6 +16,7 @@ import org.neo4j.driver.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
@@ -58,6 +59,62 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
+    }
+
+    @Override
+    public long removeRelationsOfConceptionEntityPair(List<String> conceptionEntityPairUIDs, String relationKind) throws CoreRealmServiceEntityExploreException {
+        /*
+        Example:
+        https://neo4j.com/labs/apoc/4.1/overview/apoc.algo/apoc.algo.cover/
+        */
+        if(conceptionEntityPairUIDs == null || conceptionEntityPairUIDs.size() < 2){
+            logger.error("At least two conception entity UID is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("At least two conception entity UID is required");
+            throw e;
+        }
+
+        String cypherProcedureString = "MATCH (targetNodes) WHERE id(targetNodes) IN " + conceptionEntityPairUIDs.toString()+"\n"+
+                "with collect(targetNodes) as nodes\n" +
+                "CALL apoc.algo.cover(nodes)\n" +
+                "YIELD rel\n" +
+                "RETURN startNode(rel) as startNode, rel as operationResult, endNode(rel) as endNode;";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(null,
+                    this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object relationEntityList = workingGraphOperationExecutor.executeRead(getListRelationEntityTransformer,cypherProcedureString);
+            if(relationEntityList != null){
+                List<RelationEntity> resultRelationEntities = (List<RelationEntity>)relationEntityList;
+                List<String> relationsForDeleteList = new ArrayList<>();
+                for(RelationEntity currentRelationEntity:resultRelationEntities){
+                    if(relationKind != null){
+                        if(currentRelationEntity.getRelationKindName().equals(relationKind)){
+                            relationsForDeleteList.add(currentRelationEntity.getRelationEntityUID());
+                        }
+
+                    }else{
+                        relationsForDeleteList.add(currentRelationEntity.getRelationEntityUID());
+                    }
+                }
+                if(resultRelationEntities.size() > 0){
+                    cypherProcedureString = "MATCH ()-[r]->() WHERE id(r) IN "+relationsForDeleteList.toString()+
+                            " DELETE r";
+                    logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+                    workingGraphOperationExecutor.executeWrite(new DataTransformer() {
+                        @Override
+                        public Object transformResult(Result result) {
+                            return null;
+                        }
+                    },cypherProcedureString);
+                }
+                return relationsForDeleteList.size();
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return 0;
     }
 
     @Override
