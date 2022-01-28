@@ -37,9 +37,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
 
 各个术语代表的对象间的基本交互关系说明如下：
 
-![image](documentPic/modelStructure.png)
-
-
+![image](documentPic/coreRealmScope.jpg)
 
 
 
