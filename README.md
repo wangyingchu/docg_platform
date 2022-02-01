@@ -71,7 +71,13 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
 
 
 
+
+
 #### ➜ 领域模型数据分析工具
+
+![image](documentPic/graphDataAnalysisInforstructure.jpg)
+
+
 
 ###### *Demo 领域模型创建*
 
