@@ -69,7 +69,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
 
 ###### *领域模型数据存储 SDK*
 
-
+ DOCG 数据分析平台的 docg_coreRealm 模块提供的 ***CoreRealm SDK*** 提供 OLTP 类数据操作功能所需的各类API。该SDK结合使用DDD领域驱动设计的业务模型描述方法与DOCG平台的概念术语构建了统一的基于领域模型概念的数据操作模型，将所有的数据透明的存储在后端的图数据库中。该SDK使用 Java 技术开发，详细技术说明请参考文档 Documentation\coreRealm\Java SDK API.md 。
 
 ###### *领域模型数据计算 SDK*
 
