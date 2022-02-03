@@ -73,7 +73,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
 
 ###### *领域模型数据计算 SDK*
 
-
+DOCG 数据分析平台的 docg_dataCompute 模块提供的 ***DataCompute SDK*** 提供基于实时内存查询技术的高速数据缓存操作所需的各类API。该SDK结合使用DataSlice数据切片概念与DOCG平台的概念术语构建了统一的基于领域模型概念的数据缓存操作模型，将所有的数据透明的存储在后端的分布式内存存储节点集群中。该SDK使用 Java 技术开发，详细技术说明请参考文档 Documentation\dataCompute\Java SDK API.md 。
 
 
 
