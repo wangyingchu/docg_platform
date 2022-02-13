@@ -14,8 +14,26 @@ object DataSliceOperationUtil {
 
   val massDataOperationParallelism = AnalysisProviderApplicationUtil.getApplicationProperty("massDataOperationParallelism")
 
-  def createDataSliceFromResponseDataset(dataServiceInvoker:DataServiceInvoker,dataSliceName:String,dataSliceGroup:String,
-                                         responseDataset:ResponseDataset,responseDataSourceTech:ResponseDataSourceTech):Unit = {
+  def createDataSliceAccordingToResponseDataSourceTech(dataServiceInvoker:DataServiceInvoker, dataSliceName:String, dataSliceGroup:String,
+                                                       dataSlicePropertiesDefinitions:java.util.Map[String,String], responseDataSourceTech:ResponseDataSourceTech):Unit = {
+    val dataSlicePK:java.util.ArrayList[String] = new java.util.ArrayList[String]()
+    dataSlicePK.add(DataSliceOperationConstant.TempResponseDataSlicePK)
+    val dataSliceProperties:java.util.ArrayList[String] = new java.util.ArrayList[String]()
+    dataSliceProperties.add(DataSliceOperationConstant.TempResponseDataSlicePK)
+
+    val dataSlicePropertyMap: util.HashMap[String, DataSlicePropertyType] = new util.HashMap[String, DataSlicePropertyType]()
+    dataSlicePropertiesDefinitions.forEach((propertyName,propertyType) =>{
+      dataSlicePropertyMap.put(propertyName,
+        getDataSlicePropertyType(propertyType,responseDataSourceTech)
+      )
+      dataSliceProperties.add(propertyName)
+    })
+    dataSlicePropertyMap.put(DataSliceOperationConstant.TempResponseDataSlicePK,DataSlicePropertyType.STRING)
+    val resultDataSlice:DataSlice = dataServiceInvoker.createGridDataSlice(dataSliceName,dataSliceGroup,dataSlicePropertyMap,dataSlicePK)
+  }
+
+  def syncDataSliceFromResponseDataset(dataServiceInvoker:DataServiceInvoker, dataSliceName:String, dataSliceGroup:String,
+                                       responseDataset:ResponseDataset, responseDataSourceTech:ResponseDataSourceTech):Unit = {
     val dataSlicePropertiesDefinitions:java.util.Map[String,String] = responseDataset.getPropertiesInfo
     val dataSlicePK:java.util.ArrayList[String] = new java.util.ArrayList[String]()
     dataSlicePK.add(DataSliceOperationConstant.TempResponseDataSlicePK)
