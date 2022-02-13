@@ -90,7 +90,7 @@
     <orderEntry type="library" name="Maven: com.h2database:h2:1.4.197" level="project" />
     <orderEntry type="library" name="Maven: org.apache.ignite:ignite-clients:2.11.1" level="project" />
     <orderEntry type="module" module-name="docg_dataCompute" />
-    <orderEntry type="library" name="Maven: org.apache.ignite:ignite-spark-2.4:2.11.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.ignite:ignite-spark-2.4:2.12.0" level="project" />
     <orderEntry type="library" name="Maven: org.scala-lang:scala-library:2.11.12" level="project" />
     <orderEntry type="library" name="Maven: org.scala-lang:scala-reflect:2.11.12" level="project" />
     <orderEntry type="library" name="Maven: org.apache.spark:spark-core_2.11:2.4.4" level="project" />
@@ -139,6 +139,8 @@
     <orderEntry type="library" name="Maven: org.apache.zookeeper:zookeeper:3.4.6" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:jul-to-slf4j:1.7.16" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:jcl-over-slf4j:1.7.16" level="project" />
+    <orderEntry type="library" name="Maven: log4j:log4j:1.2.17" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-log4j12:1.7.16" level="project" />
     <orderEntry type="library" name="Maven: com.ning:compress-lzf:1.0.3" level="project" />
     <orderEntry type="library" name="Maven: org.xerial.snappy:snappy-java:1.1.7.3" level="project" />
     <orderEntry type="library" name="Maven: org.lz4:lz4-java:1.4.0" level="project" />
@@ -212,9 +214,9 @@
     <orderEntry type="library" name="Maven: org.json4s:json4s-ast_2.11:3.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.json4s:json4s-scalap_2.11:3.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.scala-lang.modules:scala-xml_2.11:1.0.6" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.ignite:ignite-log4j:2.11.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.ignite:ignite-scalar:2.11.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.ignite:ignite-ml:2.11.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.ignite:ignite-log4j:2.12.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.ignite:ignite-scalar:2.12.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.ignite:ignite-ml:2.12.0" level="project" />
     <orderEntry type="library" name="Maven: it.unimi.dsi:fastutil:7.0.12" level="project" />
     <orderEntry type="library" name="Maven: com.github.fommil.netlib:core:1.1.2" level="project" />
     <orderEntry type="library" name="Maven: net.sourceforge.f2j:arpack_combined_all:0.1" level="project" />
@@ -223,7 +225,7 @@
     <orderEntry type="library" name="Maven: org.apache.commons:commons-rng-simple:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.zaxxer:SparseBitSet:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-math3:3.6.1" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.ignite:ignite-rest-http:2.11.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.ignite:ignite-rest-http:2.12.0" level="project" />
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-continuation:9.4.39.v20210325" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-http:9.4.39.v20210325" level="project" />
@@ -232,10 +234,8 @@
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-util:9.4.39.v20210325" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-xml:9.4.39.v20210325" level="project" />
     <orderEntry type="library" name="Maven: javax.servlet:javax.servlet-api:3.1.0" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.9.10" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.9.10" level="project" />
-    <orderEntry type="library" name="Maven: org.slf4j:slf4j-log4j12:1.7.7" level="project" />
-    <orderEntry type="library" name="Maven: log4j:log4j:1.2.17" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.12.4" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.12.4" level="project" />
     <orderEntry type="library" name="Maven: org.jooq:jooq:3.14.7" level="project" />
     <orderEntry type="library" name="Maven: javax.xml.bind:jaxb-api:2.3.1" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.6.7.1" level="project" />
