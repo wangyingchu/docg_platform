@@ -81,11 +81,20 @@ DOCG 数据分析平台的 docg_realmKnowledgeManage 模块提供基于图数据
 
 #### ➜ 领域模型数据分析工具
 
+DOCG 数据分析平台具有 OLTP 类联机事务处理与 OLAP 类联机数据分析双重能力。使用中可以通过 docg_coreRealm 模块的 ***CoreRealm SDK*** 执行与实时业务处理相关的数据操作，产生的各类数据变更会存储在底层的图数据库集群中，并根据分析需求动态的同步到由 docg_dataCompute 模块提供的待分析数据分布式缓存中。之后在OLAP类数据分析场景中，可以联合使用  docg_dataCompute 模块的 ***DataCompute SDK***   ，docg_coreRealm 模块的 ***CoreRealm SDK*** 和  docg_analysisProvider 模块的 ***DataAnalysis SDK***  执行基于 Spark，实时内存与领域模型技术的 图计算，平面地理空间分析，时间轴分析，机器学习分析与常规的业务数据查询分析。
+
+各个不同模块在数据分析场景的作用与交互关系说明如下：
+
+
 ![image](documentPic/graphDataAnalysisInforstructure.jpg)
 
 
+###### *领域模型数据分析 SDK*
 
-###### *Demo 领域模型创建*
+DOCG 数据分析平台的 docg_analysisProvider 模块提供基于领域模型概念的图数据分析，平面地理空间分析，时间轴分析，机器学习分析与常规的业务数据查询分析等功能。详细技术说明请参考文档 Documentation\dataAnalysis\usageGuide.md 。
+
+
+#### ➜  Demo 领域模型创建
 
 DOCG 数据分析平台的 docg_realmExample 模块中包含若干内置的模拟领域模型数据集。通过执行Demo领域模型创建程序， 可以生成对应的领域模型定义与实体对象。
 
