@@ -16,7 +16,7 @@ import java.util.Map;
 
 public interface CoreRealm {
     /**
-     * 获取底层图数据库的实现技术，可能的类型有 NEO4J 或 ORIENTDB
+     * 获取底层图数据库的实现技术，可能的类型有 NEO4J 或 ARCADEDB
      *
      * @return 底层图数据库实现技术枚举
      */
