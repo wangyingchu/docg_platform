@@ -1,19 +1,10 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.util.factory;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JCoreRealmImpl;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.orientdb.termImpl.OrientDBCoreRealmImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.config.PropertiesHandler;
-import org.neo4j.driver.Record;
-import org.neo4j.driver.Result;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class RealmTermFactory {
 
@@ -30,8 +21,9 @@ public class RealmTermFactory {
                 exception.setCauseMessage("Current Neo4J storage implements doesn't support multi Realm");
                 throw exception;
             }
-        }else if(CoreRealmStorageImplTech.ORIENTDB.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
-            return new OrientDBCoreRealmImpl(coreRealmName);
+        }else if(CoreRealmStorageImplTech.ARCADEDB.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
+            //return new OrientDBCoreRealmImpl(coreRealmName);
+            return null;
         }else{
             return null;
         }
@@ -40,8 +32,9 @@ public class RealmTermFactory {
     public static CoreRealm getDefaultCoreRealm(){
         if(CoreRealmStorageImplTech.NEO4J.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
             return new Neo4JCoreRealmImpl();
-        }else if(CoreRealmStorageImplTech.ORIENTDB.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
-            return new OrientDBCoreRealmImpl();
+        }else if(CoreRealmStorageImplTech.ARCADEDB.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
+            //return new OrientDBCoreRealmImpl();
+            return null;
         }else{
             return null;
         }
@@ -81,7 +74,7 @@ public class RealmTermFactory {
                 exception.setCauseMessage("Current Neo4J storage implements doesn't support multi Realm");
                 throw exception;
             }
-        }else if(CoreRealmStorageImplTech.ORIENTDB.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
+        }else if(CoreRealmStorageImplTech.ARCADEDB.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
             return null;
         }else{
             return null;
