@@ -15,6 +15,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeScaleEntityImpl;
@@ -74,12 +75,23 @@ public class BatchDataOperationUtil {
             coreRealm.openGlobalSession();
             long successfulCount = 0;
             ConceptionKind conceptionKind = coreRealm.getConceptionKind(conceptionKindName);
-            for(ConceptionEntityValue currentConceptionEntityValue:conceptionEntityValueList){
-                ConceptionEntity resultEntity = conceptionKind.newEntity(currentConceptionEntityValue,false);
-                if(resultEntity != null){
-                    successfulCount ++;
+            int singleBatchLoopInsertCount = 1000;
+
+            if(conceptionEntityValueList.size() <= singleBatchLoopInsertCount){
+                for(ConceptionEntityValue currentConceptionEntityValue:conceptionEntityValueList){
+                    ConceptionEntity resultEntity = conceptionKind.newEntity(currentConceptionEntityValue,false);
+                    if(resultEntity != null){
+                        successfulCount ++;
+                    }
+                }
+            }else{
+                List<List<ConceptionEntityValue>> cutSubLists = Lists.partition(conceptionEntityValueList, 100);
+                for(List<ConceptionEntityValue> currentCutList:cutSubLists){
+                    EntitiesOperationResult entitiesOperationResult = conceptionKind.newEntities(currentCutList,false);
+                    successfulCount = successfulCount + entitiesOperationResult.getOperationStatistics().getSuccessItemsCount();
                 }
             }
+
             coreRealm.closeGlobalSession();
             threadReturnDataMap.put(currentThreadName,successfulCount);
         }
