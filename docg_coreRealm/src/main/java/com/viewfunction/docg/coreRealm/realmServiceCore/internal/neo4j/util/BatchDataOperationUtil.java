@@ -301,14 +301,38 @@ public class BatchDataOperationUtil {
                     GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
                     GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
                             (this.relationKindName,graphOperationExecutor);
-                    for(RelationEntityValue currentRelationEntityValue:this.relationEntityValueList){
-                        String sourceEntityUID = currentRelationEntityValue.getFromConceptionEntityUID();
-                        String targetEntityUID = currentRelationEntityValue.getToConceptionEntityUID();
-                        Map<String, Object> relationPropertiesValue = currentRelationEntityValue.getEntityAttributesValue();
-                        String attachRelationCQL = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(sourceEntityUID),Long.parseLong(targetEntityUID),this.relationKindName,relationPropertiesValue);
-                        Object returnObj = graphOperationExecutor.executeWrite(getSingleRelationEntityTransformer,attachRelationCQL);
-                        if(returnObj != null){
-                            successfulCount++;
+                    int singleBatchLoopInsertCount = 1000;
+
+                    if(this.relationEntityValueList.size() <= singleBatchLoopInsertCount){
+                        for(RelationEntityValue currentRelationEntityValue:this.relationEntityValueList){
+                            String sourceEntityUID = currentRelationEntityValue.getFromConceptionEntityUID();
+                            String targetEntityUID = currentRelationEntityValue.getToConceptionEntityUID();
+                            Map<String, Object> relationPropertiesValue = currentRelationEntityValue.getEntityAttributesValue();
+                            String attachRelationCQL = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(sourceEntityUID),Long.parseLong(targetEntityUID),this.relationKindName,relationPropertiesValue);
+                            Object returnObj = graphOperationExecutor.executeWrite(getSingleRelationEntityTransformer,attachRelationCQL);
+                            if(returnObj != null){
+                                successfulCount++;
+                            }
+                        }
+                    }else{
+                        List<List<RelationEntityValue>> cutSubLists = Lists.partition(relationEntityValueList, 1000);
+                        for(List<RelationEntityValue> currentCutList:cutSubLists){
+                            List<List<String>> relationParas = new ArrayList<>();
+                            for(RelationEntityValue currentRelationEntityValue:currentCutList){
+                                String sourceEntityUID = currentRelationEntityValue.getFromConceptionEntityUID();
+                                String targetEntityUID = currentRelationEntityValue.getToConceptionEntityUID();
+                                //Map<String, Object> relationPropertiesValue = currentRelationEntityValue.getEntityAttributesValue();
+                                //String propertiesCQLPart = CypherBuilder.createRelationProperties(relationPropertiesValue);
+                                List<String> currentPairList = new ArrayList<>();
+                                currentPairList.add(sourceEntityUID);
+                                currentPairList.add(targetEntityUID);
+                                //currentPairList.add(propertiesCQLPart);
+                                relationParas.add(currentPairList);
+                            }
+                            String cql = "UNWIND  "+relationParas +" AS relationPair"+"\n "+
+                            "MATCH (sourceNode), (targetNode) WHERE (id(sourceNode) = relationPair[0] AND id(targetNode) = relationPair[1]) CREATE (sourceNode)-[operationResult:`"+this.relationKindName+"`]->(targetNode)";
+                            graphOperationExecutor.executeWrite(getSingleRelationEntityTransformer,cql);
+                            successfulCount = relationEntityValueList.size();
                         }
                     }
                     graphOperationExecutor.close();

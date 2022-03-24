@@ -1,8 +1,14 @@
 package specialPurposeTestCase;
 
+import com.google.common.collect.Lists;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
@@ -14,10 +20,13 @@ import java.util.Map;
 
 public class BatchDataOperationUtilPerformanceTest {
 
-    public static void main(String[] args) throws CoreRealmServiceRuntimeException {
+    public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        //batchAddNewEntitiesTest();
+        batchAttachNewRelations();
+    }
+
+    public static void batchAddNewEntitiesTest() throws CoreRealmServiceRuntimeException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
-
-
         ConceptionKind _operationType = coreRealm.getConceptionKind("BatchInsertOpType");
         if(_operationType != null){
             _operationType.purgeAllEntities();
@@ -43,8 +52,35 @@ public class BatchDataOperationUtilPerformanceTest {
 
 
         Map<String,Object> batchAddResult = BatchDataOperationUtil.batchAddNewEntities("BatchInsertOpType",conceptionEntityValuesList,18);
-
         System.out.println(batchAddResult);
+    }
 
+    public static void batchAttachNewRelations() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        ConceptionKind _operationType = coreRealm.getConceptionKind("BatchInsertOpType");
+
+        QueryParameters _QueryParameters = new QueryParameters();
+        _QueryParameters.setResultNumber(1000300);
+
+        ConceptionEntitiesRetrieveResult conceptionEntitiesRetrieveResult = _operationType.getEntities(_QueryParameters);
+        System.out.println(conceptionEntitiesRetrieveResult.getOperationStatistics().getResultEntitiesCount());
+        List<ConceptionEntity> conceptionEntityList = conceptionEntitiesRetrieveResult.getConceptionEntities();
+        List<List<ConceptionEntity>> rsList = Lists.partition(conceptionEntityList, conceptionEntityList.size()/2);
+        List<ConceptionEntity> fromList = rsList.get(0);
+        List<ConceptionEntity> toList = rsList.get(1);
+        List<RelationEntityValue> relationEntityValueList = new ArrayList<>();
+
+        for(int i=0;i<fromList.size();i++){
+            Map<String,Object> relationPropertiesMap = new HashMap<>();
+            relationPropertiesMap.put("text01","text01");
+            relationPropertiesMap.put("int01",1000);
+            RelationEntityValue relationEntityValue = new RelationEntityValue();
+            relationEntityValue.setFromConceptionEntityUID(fromList.get(i).getConceptionEntityUID());
+            relationEntityValue.setToConceptionEntityUID(toList.get(i).getConceptionEntityUID());
+            relationEntityValue.setEntityAttributesValue(relationPropertiesMap);
+            relationEntityValueList.add(relationEntityValue);
+        }
+        Map<String,Object> batchOperationResult = BatchDataOperationUtil.batchAttachNewRelations(relationEntityValueList,"batchAttachRelType01",18);
+        System.out.println(batchOperationResult);
     }
 }

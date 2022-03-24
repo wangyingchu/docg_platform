@@ -2803,4 +2803,20 @@ public class CypherBuilder {
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
     }
+
+    public static String createRelationProperties(Map<String, Object> entityProperties) {
+        if (entityProperties != null && entityProperties.size() > 0) {
+            Node sourceNode = Cypher.anyNode().named(sourceNodeName);
+            Node targetNode = Cypher.anyNode().named(targetNodeName);
+            MapExpression targetMapExpression = Cypher.mapOf(CommonOperationUtil.generatePropertiesValueArray(entityProperties));
+            Relationship relation = sourceNode.relationshipTo(targetNode, "relationKind").named(operationResultName).withProperties(targetMapExpression);
+            Statement statement = Cypher.create(relation).build();
+            String rel = cypherRenderer.render(statement);
+            // rel = CREATE (sourceNode)-[operationResult:`relationKind` XXXXXXXXXXXXXXX]->(targetNode)
+            rel = rel.replace("CREATE (sourceNode)-[operationResult:`relationKind`","").replace("]->(targetNode)","");
+            return rel;
+        } else {
+            return "";
+        }
+    }
 }
