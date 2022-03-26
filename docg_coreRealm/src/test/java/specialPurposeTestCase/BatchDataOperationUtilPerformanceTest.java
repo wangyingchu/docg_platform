@@ -72,8 +72,8 @@ public class BatchDataOperationUtilPerformanceTest {
 
         for(int i=0;i<fromList.size();i++){
             Map<String,Object> relationPropertiesMap = new HashMap<>();
-            relationPropertiesMap.put("text01","text01");
-            relationPropertiesMap.put("int01",1000);
+            relationPropertiesMap.put("text01","text01"+i);
+            relationPropertiesMap.put("int01",1000+i);
             RelationEntityValue relationEntityValue = new RelationEntityValue();
             relationEntityValue.setFromConceptionEntityUID(fromList.get(i).getConceptionEntityUID());
             relationEntityValue.setToConceptionEntityUID(toList.get(i).getConceptionEntityUID());

@@ -321,16 +321,17 @@ public class BatchDataOperationUtil {
                             for(RelationEntityValue currentRelationEntityValue:currentCutList){
                                 String sourceEntityUID = currentRelationEntityValue.getFromConceptionEntityUID();
                                 String targetEntityUID = currentRelationEntityValue.getToConceptionEntityUID();
-                                //Map<String, Object> relationPropertiesValue = currentRelationEntityValue.getEntityAttributesValue();
-                                //String propertiesCQLPart = CypherBuilder.createRelationProperties(relationPropertiesValue);
+                                Map<String, Object> relationPropertiesValue = currentRelationEntityValue.getEntityAttributesValue();
+                                String propertiesCQLPart = CypherBuilder.createRelationProperties(relationPropertiesValue);
                                 List<String> currentPairList = new ArrayList<>();
                                 currentPairList.add(sourceEntityUID);
                                 currentPairList.add(targetEntityUID);
-                                //currentPairList.add(propertiesCQLPart);
+                                currentPairList.add(propertiesCQLPart);
                                 relationParas.add(currentPairList);
                             }
                             String cql = "UNWIND  "+relationParas +" AS relationPair"+"\n "+
-                            "MATCH (sourceNode), (targetNode) WHERE (id(sourceNode) = relationPair[0] AND id(targetNode) = relationPair[1]) CREATE (sourceNode)-[operationResult:`"+this.relationKindName+"`]->(targetNode)";
+                            "MATCH (sourceNode), (targetNode) WHERE (id(sourceNode) = relationPair[0] AND id(targetNode) = relationPair[1]) CREATE (sourceNode)-[operationResult:`"+this.relationKindName+"`]->(targetNode)"+" \n "+
+                                    "SET operationResult = relationPair[2]";
                             graphOperationExecutor.executeWrite(getSingleRelationEntityTransformer,cql);
                             successfulCount = relationEntityValueList.size();
                         }

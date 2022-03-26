@@ -2816,7 +2816,7 @@ public class CypherBuilder {
             rel = rel.replace("CREATE (sourceNode)-[operationResult:`relationKind`","").replace("]->(targetNode)","");
             return rel;
         } else {
-            return "";
+            return "{}";
         }
     }
 }
