@@ -15,7 +15,6 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeScaleEntityImpl;
@@ -72,27 +71,40 @@ public class BatchDataOperationUtil {
         public void run(){
             String currentThreadName = Thread.currentThread().getName();
             CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
-            coreRealm.openGlobalSession();
             long successfulCount = 0;
             ConceptionKind conceptionKind = coreRealm.getConceptionKind(conceptionKindName);
             int singleBatchLoopInsertCount = 1000;
-
             if(conceptionEntityValueList.size() <= singleBatchLoopInsertCount){
+                coreRealm.openGlobalSession();
                 for(ConceptionEntityValue currentConceptionEntityValue:conceptionEntityValueList){
                     ConceptionEntity resultEntity = conceptionKind.newEntity(currentConceptionEntityValue,false);
                     if(resultEntity != null){
                         successfulCount ++;
                     }
                 }
+                coreRealm.closeGlobalSession();
             }else{
+                GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
+                GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                        new GetSingleConceptionEntityTransformer(this.conceptionKindName, graphOperationExecutor);
                 List<List<ConceptionEntityValue>> cutSubLists = Lists.partition(conceptionEntityValueList, 100);
+                ZonedDateTime currentDateTime = ZonedDateTime.now();
                 for(List<ConceptionEntityValue> currentCutList:cutSubLists){
-                    EntitiesOperationResult entitiesOperationResult = conceptionKind.newEntities(currentCutList,false);
-                    successfulCount = successfulCount + entitiesOperationResult.getOperationStatistics().getSuccessItemsCount();
+                    List<String> entityParas = new ArrayList<>();
+                    for(ConceptionEntityValue currentConceptionEntityValue:currentCutList){
+                        Map<String, Object> relationPropertiesValue = currentConceptionEntityValue.getEntityAttributesValue();
+                        CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesValue,currentDateTime);
+                        String propertiesCQLPart = CypherBuilder.createEntityProperties(relationPropertiesValue);
+                        entityParas.add(propertiesCQLPart);
+                    }
+                    String cql = "UNWIND  " + entityParas +" AS entityParas"+"\n "+
+                            "CREATE (operationResult:`"+this.conceptionKindName+"`)"
+                            +"SET operationResult = entityParas";
+                    graphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,cql);
+                    successfulCount = conceptionEntityValueList.size();
                 }
+                graphOperationExecutor.close();
             }
-
-            coreRealm.closeGlobalSession();
             threadReturnDataMap.put(currentThreadName,successfulCount);
         }
     }
@@ -315,14 +327,14 @@ public class BatchDataOperationUtil {
                             }
                         }
                     }else{
-                        List<List<RelationEntityValue>> cutSubLists = Lists.partition(relationEntityValueList, 1000);
+                        List<List<RelationEntityValue>> cutSubLists = Lists.partition(relationEntityValueList, 100);
                         for(List<RelationEntityValue> currentCutList:cutSubLists){
                             List<List<String>> relationParas = new ArrayList<>();
                             for(RelationEntityValue currentRelationEntityValue:currentCutList){
                                 String sourceEntityUID = currentRelationEntityValue.getFromConceptionEntityUID();
                                 String targetEntityUID = currentRelationEntityValue.getToConceptionEntityUID();
                                 Map<String, Object> relationPropertiesValue = currentRelationEntityValue.getEntityAttributesValue();
-                                String propertiesCQLPart = CypherBuilder.createRelationProperties(relationPropertiesValue);
+                                String propertiesCQLPart = CypherBuilder.createEntityProperties(relationPropertiesValue);
                                 List<String> currentPairList = new ArrayList<>();
                                 currentPairList.add(sourceEntityUID);
                                 currentPairList.add(targetEntityUID);

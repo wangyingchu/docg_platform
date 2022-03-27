@@ -2804,7 +2804,7 @@ public class CypherBuilder {
         return rel;
     }
 
-    public static String createRelationProperties(Map<String, Object> entityProperties) {
+    public static String createEntityProperties(Map<String, Object> entityProperties) {
         if (entityProperties != null && entityProperties.size() > 0) {
             Node sourceNode = Cypher.anyNode().named(sourceNodeName);
             Node targetNode = Cypher.anyNode().named(targetNodeName);

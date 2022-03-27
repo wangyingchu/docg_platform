@@ -46,11 +46,12 @@ public class BatchDataOperationUtilPerformanceTest {
             attributeMap.put("pAtter05","pAtter05Value"+i);
             attributeMap.put("pAtter06","pAtter06Value"+i);
             attributeMap.put("parentElementId",parentElementId);
+            attributeMap.put("pAtter07","07Value");
+            attributeMap.put("pAtter08","08Value");
+            attributeMap.put("pAtter09","09Value");
             currentConceptionEntityValue.setEntityAttributesValue(attributeMap);
             conceptionEntityValuesList.add(currentConceptionEntityValue);
         }
-
-
         Map<String,Object> batchAddResult = BatchDataOperationUtil.batchAddNewEntities("BatchInsertOpType",conceptionEntityValuesList,18);
         System.out.println(batchAddResult);
     }
