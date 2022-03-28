@@ -26,7 +26,9 @@ public class GetSingleRelationEntityTransformer implements DataTransformer<Relat
                 Relationship resultRelationship = nodeRecord.get(CypherBuilder.operationResultName).asRelationship();
                 String relationType = resultRelationship.type();
                 boolean isMatchedKind;
-                if(this.targetRelationKindName == null){
+                //if the relationEntity is come from a DELETE relation operation,the relationType will be empty string,
+                // make isMatchedKind to be true at this case
+                if(this.targetRelationKindName == null || relationType.equals("")){
                     isMatchedKind = true;
                 }else{
                     isMatchedKind = relationType.equals(targetRelationKindName)? true : false;
