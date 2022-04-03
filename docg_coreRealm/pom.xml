@@ -11,7 +11,7 @@
     <properties>
         <neo4j.version>4.4.5</neo4j.version>
         <neo4j-cypher-dsl.version>2022.2.0</neo4j-cypher-dsl.version>
-        <geotools.version>23.2</geotools.version>
+        <geotools.version>27-SNAPSHOT</geotools.version>
     </properties>
 
     <dependencies>
