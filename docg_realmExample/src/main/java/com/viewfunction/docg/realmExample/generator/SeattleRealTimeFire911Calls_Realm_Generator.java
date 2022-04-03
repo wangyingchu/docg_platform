@@ -32,8 +32,8 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
     private static final String IncidentNumber = "incidentNumber";
 
     public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
-        //createData();
-        linkData();
+        createData();
+        //linkData();
     }
 
     public static void createData() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
