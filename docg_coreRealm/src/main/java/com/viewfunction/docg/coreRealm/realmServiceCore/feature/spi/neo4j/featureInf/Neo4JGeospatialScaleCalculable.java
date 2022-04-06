@@ -22,15 +22,10 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
         if(this.getEntityUID() != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try{
-                if(!checkGeospatialScaleContentExist(workingGraphOperationExecutor,spatialScaleLevel)){
-                    logger.error("ConceptionEntity with UID {} doesn't have {} level SpatialScale.", this.getEntityUID(),spatialScaleLevel);
-                    CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
-                    exception.setCauseMessage("ConceptionEntity with UID "+this.getEntityUID()+" doesn't have "+spatialScaleLevel+" level SpatialScale.");
-                    throw exception;
-                }else{
+                validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
 
 
-                }
+
             }finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }
@@ -41,12 +36,43 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
     default public List<ConceptionEntity> getSpatialBufferMatchedConceptionEntities(
             List<String> targetConceptionKinds, double bufferDistanceValue,
             SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
+        if(this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
+
+
+
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
 
     default public boolean isSpatialPredicateMatchedWith(
             String targetConceptionEntityUID, SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
+        if(this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
+
+
+
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return false;
+    }
+
+    private void validateSpatialScaleLevel(GraphOperationExecutor workingGraphOperationExecutor,SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException {
+        if(!checkGeospatialScaleContentExist(workingGraphOperationExecutor,spatialScaleLevel)){
+            logger.error("ConceptionEntity with UID {} doesn't have {} level SpatialScale.", this.getEntityUID(),spatialScaleLevel);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("ConceptionEntity with UID "+this.getEntityUID()+" doesn't have "+spatialScaleLevel+" level SpatialScale.");
+            throw exception;
+        }
     }
 
     private boolean checkGeospatialScaleContentExist(GraphOperationExecutor workingGraphOperationExecutor,SpatialScaleLevel spatialScaleLevel){
