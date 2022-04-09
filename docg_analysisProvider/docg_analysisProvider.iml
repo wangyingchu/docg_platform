@@ -30,9 +30,12 @@
     <orderEntry type="library" name="Maven: com.google.j2objc:j2objc-annotations:1.3" level="project" />
     <orderEntry type="library" name="Maven: org.ehcache:ehcache:3.8.1" level="project" />
     <orderEntry type="library" name="Maven: org.ehcache:ehcache-clustered:3.8.1" level="project" />
+    <orderEntry type="library" name="Maven: org.geotools:gt-main:27-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.geotools:gt-http:27-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.13.2" level="project" />
+    <orderEntry type="library" name="Maven: com.google.re2j:re2j:1.6" level="project" />
     <orderEntry type="library" name="Maven: org.apache.spark:spark-core_2.12:3.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.avro:avro:1.10.2" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.12.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-compress:1.20" level="project" />
     <orderEntry type="library" name="Maven: org.apache.avro:avro-mapred:1.10.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.avro:avro-ipc:1.10.2" level="project" />
@@ -223,7 +226,6 @@
     <orderEntry type="library" name="Maven: javax.activation:javax.activation-api:1.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.datasyslab:geotools-wrapper:geotools-24.1" level="project" />
     <orderEntry type="library" name="Maven: org.geotools:gt-shapefile:24.0" level="project" />
-    <orderEntry type="library" name="Maven: org.geotools:gt-main:24.0" level="project" />
     <orderEntry type="library" name="Maven: javax.media:jai_core:1.1.3" level="project" />
     <orderEntry type="library" name="Maven: org.geotools:gt-metadata:24.0" level="project" />
     <orderEntry type="library" name="Maven: org.geotools:gt-opengis:24.0" level="project" />

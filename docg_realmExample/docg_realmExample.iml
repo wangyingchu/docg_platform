@@ -35,11 +35,6 @@
     <orderEntry type="library" name="Maven: javax.activation:javax.activation-api:1.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.ehcache:ehcache-clustered:3.8.1" level="project" />
     <orderEntry type="library" name="Maven: org.geotools:gt-shapefile:27-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: org.geotools:gt-main:27-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: org.geotools:gt-http:27-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: org.locationtech.jts:jts-core:1.18.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.commons:commons-text:1.6" level="project" />
-    <orderEntry type="library" name="Maven: com.google.re2j:re2j:1.6" level="project" />
     <orderEntry type="library" name="Maven: org.geotools:gt-metadata:27-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.geotools:gt-opengis:27-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: systems.uom:systems-common:2.0.2" level="project" />
@@ -56,6 +51,12 @@
     <orderEntry type="library" name="Maven: org.eclipse.emf:org.eclipse.emf.common:2.15.0" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.emf:org.eclipse.emf.ecore:2.15.0" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.15.0" level="project" />
+    <orderEntry type="library" name="Maven: org.geotools:gt-main:27-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.geotools:gt-http:27-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.locationtech.jts:jts-core:1.18.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-text:1.6" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.13.2" level="project" />
+    <orderEntry type="library" name="Maven: com.google.re2j:re2j:1.6" level="project" />
     <orderEntry type="library" name="Maven: org.geotools:gt-epsg-hsql:27-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.geotools:gt-referencing:27-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.ejml:ejml-ddense:0.34" level="project" />
@@ -234,7 +235,6 @@
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-util:9.4.39.v20210325" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-xml:9.4.39.v20210325" level="project" />
     <orderEntry type="library" name="Maven: javax.servlet:javax.servlet-api:3.1.0" level="project" />
-    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.12.4" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.12.4" level="project" />
     <orderEntry type="library" name="Maven: org.jooq:jooq:3.14.7" level="project" />
     <orderEntry type="library" name="Maven: javax.xml.bind:jaxb-api:2.3.1" level="project" />
