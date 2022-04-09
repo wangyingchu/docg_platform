@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface GeospatialScaleCalculable {
 
-    public enum SpatialPredicateType {Contains,Intersects,Within,Equals,Crosses,Touches,Overlaps}
+    public enum SpatialPredicateType {Contains,Intersects,Within,Equals,Crosses,Touches,Overlaps,Disjoint,Cover,CoveredBy}
 
     public enum SpatialScaleLevel {Global,Country,Local}
 
