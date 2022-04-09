@@ -20,6 +20,7 @@ public class GeospatialCalculateUtil {
             _WKTReader = new WKTReader(geometryFactory);
         }
         try {
+            // https://docs.geotools.org/latest/userguide/library/jts/geometry.html
             Geometry fromGeometry = _WKTReader.read(fromGeometryWKT);
             Geometry toGeometry = _WKTReader.read(toGeometryWKT);
             boolean calculateResult = false;
