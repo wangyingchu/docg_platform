@@ -19,6 +19,7 @@ public interface GeospatialScaleCalculable {
                                                                             double bufferDistanceValue,
                                                                             SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException;
 
-    public boolean isSpatialPredicateMatchedWith(String targetConceptionEntityUID,SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException;
+    public boolean isSpatialPredicateMatchedWith(SpatialPredicateType spatialPredicateType,String targetConceptionEntityUID,
+                                                 SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException;
 
 }
