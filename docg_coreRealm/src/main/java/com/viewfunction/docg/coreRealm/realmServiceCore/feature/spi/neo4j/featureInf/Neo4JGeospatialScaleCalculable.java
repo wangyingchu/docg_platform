@@ -41,7 +41,7 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
     }
 
     default public List<ConceptionEntity> getSpatialBufferMatchedConceptionEntities(
-            List<String> targetConceptionKinds, double bufferDistanceValue,
+            List<String> targetConceptionKinds, double bufferDistanceValue,SpatialPredicateType spatialPredicateType,
             SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
         if(this.getEntityUID() != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();

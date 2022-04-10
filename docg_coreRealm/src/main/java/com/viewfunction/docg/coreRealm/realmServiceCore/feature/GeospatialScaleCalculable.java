@@ -17,6 +17,7 @@ public interface GeospatialScaleCalculable {
 
     public List<ConceptionEntity> getSpatialBufferMatchedConceptionEntities(List<String> targetConceptionKinds,
                                                                             double bufferDistanceValue,
+                                                                            SpatialPredicateType spatialPredicateType,
                                                                             SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException;
 
     public boolean isSpatialPredicateMatchedWith(SpatialPredicateType spatialPredicateType,String targetConceptionEntityUID,
