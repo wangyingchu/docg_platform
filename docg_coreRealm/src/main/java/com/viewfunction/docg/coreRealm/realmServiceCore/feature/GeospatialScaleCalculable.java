@@ -23,4 +23,6 @@ public interface GeospatialScaleCalculable {
     public boolean isSpatialPredicateMatchedWith(SpatialPredicateType spatialPredicateType,String targetConceptionEntityUID,
                                                  SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException;
 
+    public GeospatialScaleFeatureSupportable.WKTGeometryType getEntityGeometryType(SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException;
+
 }
