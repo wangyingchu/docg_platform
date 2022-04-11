@@ -80,5 +80,8 @@ public class GeospatialScaleCalculableTest {
         _LocationConceptionEntity1.addOrUpdateLLGeometryContent(smallArea);
         spatialPredicateMatchedCheckResult = _AreaConceptionEntity.isSpatialPredicateMatchedWith(GeospatialScaleCalculable.SpatialPredicateType.Contains,_LocationConceptionEntity1.getConceptionEntityUID(), GeospatialScaleCalculable.SpatialScaleLevel.Local);
         Assert.assertTrue(spatialPredicateMatchedCheckResult);
+
+        spatialPredicateMatchedCheckResult = _LocationConceptionEntity1.isSpatialPredicateMatchedWith(GeospatialScaleCalculable.SpatialPredicateType.Within,_AreaConceptionEntity.getConceptionEntityUID(), GeospatialScaleCalculable.SpatialScaleLevel.Local);
+        Assert.assertTrue(spatialPredicateMatchedCheckResult);
     }
 }
