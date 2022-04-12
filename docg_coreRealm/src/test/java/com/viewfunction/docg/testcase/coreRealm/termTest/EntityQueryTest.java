@@ -269,6 +269,10 @@ public class EntityQueryTest {
         attributesNameList2.add("prop21");
 
         QueryParameters queryParameters2 = new QueryParameters();
+        UIDMatchFilteringItem _UIDMatchFilteringItem = new UIDMatchFilteringItem("12345678");
+        _UIDMatchFilteringItem.reverseCondition();
+        queryParameters2.setDefaultFilteringItem(_UIDMatchFilteringItem);
+
         ConceptionEntitiesAttributesRetrieveResult entitiesAttributesRetrieveResult3 = _ConceptionKind02.getSingleValueEntityAttributesByAttributeNames(attributesNameList2,queryParameters2);
         List<ConceptionEntityValue> resultConceptionEntityValueList = entitiesAttributesRetrieveResult3.getConceptionEntityValues();
         Assert.assertNotNull(resultConceptionEntityValueList);

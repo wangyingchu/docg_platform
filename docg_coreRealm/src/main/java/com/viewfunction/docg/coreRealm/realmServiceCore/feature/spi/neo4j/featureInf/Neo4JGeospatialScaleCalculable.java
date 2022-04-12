@@ -91,6 +91,7 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
 
 
 
+
         return null;
     }
 

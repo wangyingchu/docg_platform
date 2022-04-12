@@ -735,6 +735,25 @@ public class CommonOperationUtil {
                 }
             }
         }
+        else if(filteringItem instanceof UIDMatchFilteringItem){
+            UIDMatchFilteringItem currentFilteringItem = (UIDMatchFilteringItem)filteringItem;
+            String uidValue = currentFilteringItem.getUidValue();
+            if(filteringItem.isReversedCondition()){
+                if(targetPropertyContainer instanceof Node){
+                    return Functions.id((Node)targetPropertyContainer).isNotEqualTo(Cypher.literalOf(Long.parseLong(uidValue)));
+                }
+                if(targetPropertyContainer instanceof Relationship){
+                    return Functions.id((Relationship)targetPropertyContainer).isNotEqualTo(Cypher.literalOf(Long.parseLong(uidValue)));
+                }
+            }else{
+                if(targetPropertyContainer instanceof Node){
+                    return Functions.id((Node)targetPropertyContainer).isEqualTo(Cypher.literalOf(Long.parseLong(uidValue)));
+                }
+                if(targetPropertyContainer instanceof Relationship){
+                    return Functions.id((Relationship)targetPropertyContainer).isEqualTo(Cypher.literalOf(Long.parseLong(uidValue)));
+                }
+            }
+        }
         return null;
     }
 
