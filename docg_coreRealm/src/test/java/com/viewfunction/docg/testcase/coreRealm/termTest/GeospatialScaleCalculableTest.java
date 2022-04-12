@@ -3,6 +3,7 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleCalculable;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
@@ -122,6 +123,10 @@ public class GeospatialScaleCalculableTest {
 
         spatialPredicateMatchedCheckResult = _hugeAreaConceptionEntity.isSpatialPredicateMatchedWith(GeospatialScaleCalculable.SpatialPredicateType.Disjoint,_LocationInSmallAreaConceptionEntity3.getConceptionEntityUID(), GeospatialScaleCalculable.SpatialScaleLevel.Local);
         Assert.assertTrue(spatialPredicateMatchedCheckResult);
+
+        Assert.assertEquals(_hugeAreaConceptionEntity.getEntityGeometryType(GeospatialScaleCalculable.SpatialScaleLevel.Local), GeospatialScaleFeatureSupportable.WKTGeometryType.POLYGON);
+        Assert.assertEquals(_smallAreaConceptionEntity.getEntityGeometryType(GeospatialScaleCalculable.SpatialScaleLevel.Local), GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+        Assert.assertEquals(_LocationInSmallAreaConceptionEntity3.getEntityGeometryType(GeospatialScaleCalculable.SpatialScaleLevel.Local), GeospatialScaleFeatureSupportable.WKTGeometryType.POINT);
 
         coreRealm.closeGlobalSession();
     }

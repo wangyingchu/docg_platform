@@ -2,6 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.util.geospatial;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleCalculable.SpatialPredicateType;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleFeatureSupportable;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -63,5 +64,37 @@ public class GeospatialCalculateUtil {
             runtimeException.setCauseMessage("Geometry WKT Parse error");
             throw runtimeException;
         }
+    }
+
+    public static GeospatialScaleFeatureSupportable.WKTGeometryType getGeometryWKTType(String geometryWKT) throws CoreRealmServiceRuntimeException{
+        if(geometryFactory == null){
+            geometryFactory = JTSFactoryFinder.getGeometryFactory();
+            _WKTReader = new WKTReader(geometryFactory);
+        }
+        try {
+            Geometry targetGeometry = _WKTReader.read(geometryWKT);
+            String geometryTypeStr = targetGeometry.getGeometryType();
+            if(Geometry.TYPENAME_POLYGON.equals(geometryTypeStr)){
+                return GeospatialScaleFeatureSupportable.WKTGeometryType.POLYGON;
+            }else if(Geometry.TYPENAME_POINT.equals(geometryTypeStr)){
+                return GeospatialScaleFeatureSupportable.WKTGeometryType.POINT;
+            }else if(Geometry.TYPENAME_MULTIPOINT.equals(geometryTypeStr)){
+                return GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOINT;
+            }else if(Geometry.TYPENAME_LINESTRING.equals(geometryTypeStr)){
+                return GeospatialScaleFeatureSupportable.WKTGeometryType.LINESTRING;
+            }else if(Geometry.TYPENAME_MULTILINESTRING.equals(geometryTypeStr)){
+                return GeospatialScaleFeatureSupportable.WKTGeometryType.MULTILINESTRING;
+            }else if(Geometry.TYPENAME_MULTIPOLYGON.equals(geometryTypeStr)){
+                return GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON;
+            }else if(Geometry.TYPENAME_GEOMETRYCOLLECTION.equals(geometryTypeStr)){
+                return GeospatialScaleFeatureSupportable.WKTGeometryType.GEOMETRYCOLLECTION;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            CoreRealmServiceRuntimeException runtimeException = new CoreRealmServiceRuntimeException();
+            runtimeException.setCauseMessage("Geometry WKT Parse error");
+            throw runtimeException;
+        }
+        return null;
     }
 }

@@ -70,8 +70,13 @@
             <class name="com.viewfunction.docg.testcase.coreRealm.termTest.CrossKindDataOperatorTest"/>
         </classes>
     </test>
+    <test verbose="15" name="GeospatialScaleCalculableTest">
+        <classes>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.GeospatialScaleCalculableTest"/>
+        </classes>
+    </test>
     <!-- KindCacheableTest must be the last test case at anytime-->
-    <test verbose="15" name="KindCacheableTest">
+    <test verbose="16" name="KindCacheableTest">
         <classes>
             <class name="com.viewfunction.docg.testcase.coreRealm.termTest.KindCacheableTest"/>
         </classes>
