@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 
 public class BatchDataOperationUtil {
 
+    public enum CPUUsageRate {Low, Middle, High}
     private static Logger logger = LoggerFactory.getLogger(BatchDataOperationUtil.class);
     private static ZoneId zone = ZoneId.systemDefault();
 
@@ -652,5 +653,17 @@ public class BatchDataOperationUtil {
             }
             threadReturnDataMap.put(currentThreadName,successfulCount);
         }
+    }
+
+    private static int calculateRuntimeCPUCoresByUsageRate(CPUUsageRate _CPUUsageRate){
+        int availableCoreNumber = Runtime.getRuntime().availableProcessors();
+        if(availableCoreNumber<=4){
+            return 4;
+        }else{
+
+
+
+        }
+        return 0;
     }
 }
