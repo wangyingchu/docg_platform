@@ -657,13 +657,21 @@ public class BatchDataOperationUtil {
 
     private static int calculateRuntimeCPUCoresByUsageRate(CPUUsageRate _CPUUsageRate){
         int availableCoreNumber = Runtime.getRuntime().availableProcessors();
+        int middleCoreNumber = availableCoreNumber/2;
+        int lowCoreNumber = availableCoreNumber/4;
+        int highCoreNumber = availableCoreNumber -4;
         if(availableCoreNumber<=4){
             return 4;
         }else{
-
-
-
+            switch(_CPUUsageRate){
+                case Low:
+                    return lowCoreNumber > 4 ? lowCoreNumber:4;
+                case High:
+                    return highCoreNumber >8 ? highCoreNumber-4:4;
+                case Middle:
+                    return middleCoreNumber > 4 ? middleCoreNumber:4;
+            }
         }
-        return 0;
+        return 4;
     }
 }
