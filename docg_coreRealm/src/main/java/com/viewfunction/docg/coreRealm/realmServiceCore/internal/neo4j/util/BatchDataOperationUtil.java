@@ -37,6 +37,11 @@ public class BatchDataOperationUtil {
     private static Logger logger = LoggerFactory.getLogger(BatchDataOperationUtil.class);
     private static ZoneId zone = ZoneId.systemDefault();
 
+    public static Map<String,Object> batchAddNewEntities(String targetConceptionTypeName,List<ConceptionEntityValue> conceptionEntityValuesList,CPUUsageRate _CPUUsageRate){
+        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
+        return batchAddNewEntities(targetConceptionTypeName,conceptionEntityValuesList,degreeOfParallelism);
+    }
+
     public static Map<String,Object> batchAddNewEntities(String targetConceptionTypeName,List<ConceptionEntityValue> conceptionEntityValuesList,int degreeOfParallelism){
         int singlePartitionSize = (conceptionEntityValuesList.size()/degreeOfParallelism)+1;
         List<List<ConceptionEntityValue>> rsList = Lists.partition(conceptionEntityValuesList, singlePartitionSize);
@@ -108,6 +113,12 @@ public class BatchDataOperationUtil {
             }
             threadReturnDataMap.put(currentThreadName,successfulCount);
         }
+    }
+
+    public static Map<String,Object> batchAttachTimeScaleEvents(List<ConceptionEntityValue> conceptionEntityValueList, String timeEventAttributeName,String eventComment,
+                                                                Map<String,Object> globalEventData, TimeFlow.TimeScaleGrade timeScaleGrade,CPUUsageRate _CPUUsageRate){
+        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
+        return batchAttachTimeScaleEvents(conceptionEntityValueList,timeEventAttributeName,eventComment,globalEventData,timeScaleGrade,degreeOfParallelism);
     }
 
     public static Map<String,Object> batchAttachTimeScaleEvents(List<ConceptionEntityValue> conceptionEntityValueList, String timeEventAttributeName,String eventComment,
@@ -273,6 +284,11 @@ public class BatchDataOperationUtil {
         return null;
     }
 
+    public static Map<String,Object> batchAttachNewRelations(List<RelationEntityValue> relationEntityValueList, String relationKindName,CPUUsageRate _CPUUsageRate){
+        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
+        return batchAttachNewRelations(relationEntityValueList,relationKindName,degreeOfParallelism);
+    }
+
     public static Map<String,Object> batchAttachNewRelations(List<RelationEntityValue> relationEntityValueList, String relationKindName, int degreeOfParallelism){
         int singlePartitionSize = (relationEntityValueList.size()/degreeOfParallelism)+1;
         List<List<RelationEntityValue>> rsList = Lists.partition(relationEntityValueList, singlePartitionSize);
@@ -359,6 +375,15 @@ public class BatchDataOperationUtil {
     public static Map<String,Object> batchAttachNewRelationsWithSinglePropertyValueMatch(
             String fromConceptionKindName,QueryParameters fromExploreParameters,String fromAttributeName,
             String toConceptionKindName, QueryParameters toExploreParameters,String toAttributeName,
+            String relationKindName,CPUUsageRate _CPUUsageRate){
+        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
+        return batchAttachNewRelationsWithSinglePropertyValueMatch(fromConceptionKindName,fromExploreParameters,
+                fromAttributeName,toConceptionKindName,toExploreParameters,toAttributeName,relationKindName,degreeOfParallelism);
+    }
+
+    public static Map<String,Object> batchAttachNewRelationsWithSinglePropertyValueMatch(
+            String fromConceptionKindName,QueryParameters fromExploreParameters,String fromAttributeName,
+            String toConceptionKindName, QueryParameters toExploreParameters,String toAttributeName,
             String relationKindName,int degreeOfParallelism){
         LocalDateTime wholeStartDateTime = LocalDateTime.now();
         List<RelationEntityValue> relationEntityValueList = new ArrayList<>();
@@ -427,6 +452,11 @@ public class BatchDataOperationUtil {
         }
     }
 
+    public static Map<String,Object> batchDeleteEntities(List<String> conceptionEntityUIDs,CPUUsageRate _CPUUsageRate){
+        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
+        return batchDeleteEntities(conceptionEntityUIDs,degreeOfParallelism);
+    }
+
     public static Map<String,Object> batchDeleteEntities(List<String> conceptionEntityUIDs,int degreeOfParallelism){
         int singlePartitionSize = (conceptionEntityUIDs.size()/degreeOfParallelism)+1;
         List<List<String>> rsList = Lists.partition(conceptionEntityUIDs, singlePartitionSize);
@@ -487,6 +517,11 @@ public class BatchDataOperationUtil {
                 }
             }
         }
+    }
+
+    public static Map<String,Object> batchAddNewOrUpdateEntityAttributes(String conceptionEntityUIDKeyName,List<Map<String,Object>> entityPropertiesValueList,CPUUsageRate _CPUUsageRate){
+        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
+        return batchAddNewOrUpdateEntityAttributes(conceptionEntityUIDKeyName,entityPropertiesValueList,degreeOfParallelism);
     }
 
     public static Map<String,Object> batchAddNewOrUpdateEntityAttributes(String conceptionEntityUIDKeyName,List<Map<String,Object>> entityPropertiesValueList,int degreeOfParallelism){
@@ -564,6 +599,12 @@ public class BatchDataOperationUtil {
                 }
             }
         }
+    }
+
+    public static Map<String,Object> batchAttachGeospatialScaleEvents(List<RelationEntityValue> relationEntityValueList,String eventComment,Map<String,Object> globalEventData,
+                                                                      GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade, CPUUsageRate _CPUUsageRate){
+        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
+        return batchAttachGeospatialScaleEvents(relationEntityValueList,eventComment,globalEventData,geospatialScaleGrade,degreeOfParallelism);
     }
 
     public static Map<String,Object> batchAttachGeospatialScaleEvents(List<RelationEntityValue> relationEntityValueList,String eventComment,Map<String,Object> globalEventData,
