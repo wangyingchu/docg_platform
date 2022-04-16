@@ -128,6 +128,9 @@ public class GeospatialScaleCalculableTest {
         Assert.assertEquals(_smallAreaConceptionEntity.getEntityGeometryType(GeospatialScaleCalculable.SpatialScaleLevel.Local), GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
         Assert.assertEquals(_LocationInSmallAreaConceptionEntity3.getEntityGeometryType(GeospatialScaleCalculable.SpatialScaleLevel.Local), GeospatialScaleFeatureSupportable.WKTGeometryType.POINT);
 
+        double entitiesDistance =_LocationInSmallAreaConceptionEntity1.getEntitiesSpatialDistance(_LocationInSmallAreaConceptionEntity2.getConceptionEntityUID(),GeospatialScaleCalculable.SpatialScaleLevel.Local);
+        Assert.assertTrue(entitiesDistance>0);
+
         coreRealm.closeGlobalSession();
     }
 }

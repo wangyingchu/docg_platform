@@ -97,4 +97,21 @@ public class GeospatialCalculateUtil {
         }
         return null;
     }
+
+    public static double getGeometriesDistance(String fromGeometryWKT,String toGeometryWKT) throws CoreRealmServiceRuntimeException{
+        if(geometryFactory == null){
+            geometryFactory = JTSFactoryFinder.getGeometryFactory();
+            _WKTReader = new WKTReader(geometryFactory);
+        }
+        try {
+            Geometry fromGeometry = _WKTReader.read(fromGeometryWKT);
+            Geometry toGeometry = _WKTReader.read(toGeometryWKT);
+            return fromGeometry.distance(toGeometry);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            CoreRealmServiceRuntimeException runtimeException = new CoreRealmServiceRuntimeException();
+            runtimeException.setCauseMessage("Geometry WKT Parse error");
+            throw runtimeException;
+        }
+    }
 }
