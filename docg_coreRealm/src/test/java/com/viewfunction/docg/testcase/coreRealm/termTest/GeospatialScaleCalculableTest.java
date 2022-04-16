@@ -136,6 +136,9 @@ public class GeospatialScaleCalculableTest {
         Assert.assertFalse(_LocationInSmallAreaConceptionEntity1.isEntitiesWithinSpatialDistance(_LocationInSmallAreaConceptionEntity2.getConceptionEntityUID(),entitiesDistance-0.01,GeospatialScaleCalculable.SpatialScaleLevel.Local)
         );
 
+        String bufferedWKTContent = _LocationInSmallAreaConceptionEntity1.getEntitySpatialBufferWKTGeometryContent(0.1,GeospatialScaleCalculable.SpatialScaleLevel.Local);
+        Assert.assertTrue(bufferedWKTContent.startsWith("POLYGON"));
+
         coreRealm.closeGlobalSession();
     }
 }
