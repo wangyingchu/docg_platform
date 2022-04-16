@@ -29,5 +29,5 @@ public interface GeospatialScaleCalculable {
 
     public boolean isEntitiesWithinSpatialDistance(String targetConceptionEntityUID, double distanceValue, SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException;
 
-    public String getEntitySpatialBufferWKTGeometryContent(double bufferValue,SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException;
+    public String getEntitySpatialBufferWKTGeometryContent(double bufferDistanceValue,SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException;
 }

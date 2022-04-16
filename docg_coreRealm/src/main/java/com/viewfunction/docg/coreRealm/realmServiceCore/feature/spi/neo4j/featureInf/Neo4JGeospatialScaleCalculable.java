@@ -148,7 +148,7 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
         return false;
     }
 
-    default public String getEntitySpatialBufferWKTGeometryContent(double bufferValue,SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
+    default public String getEntitySpatialBufferWKTGeometryContent(double bufferDistanceValue,SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
         if(this.getEntityUID() != null) {
 
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
@@ -158,7 +158,7 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
                 entityUIDList.add(this.getEntityUID());
                 Map<String,String> getGeospatialScaleContentMap = getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,entityUIDList);
                 if(getGeospatialScaleContentMap.size() == 1){
-                    return GeospatialCalculateUtil.getGeometryBufferWKTContent(getGeospatialScaleContentMap.get(this.getEntityUID()),bufferValue);
+                    return GeospatialCalculateUtil.getGeometryBufferWKTContent(getGeospatialScaleContentMap.get(this.getEntityUID()),bufferDistanceValue);
                 }
             }finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
