@@ -128,11 +128,40 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
         return Double.NaN;
     }
 
+    default public boolean isEntitiesWithinSpatialDistance(String targetConceptionEntityUID, double distanceValue,SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
+        if(this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
+                validateSpatialScaleLevel(workingGraphOperationExecutor,targetConceptionEntityUID,spatialScaleLevel);
+                List<String> entityUIDList = new ArrayList<>();
+                entityUIDList.add(this.getEntityUID());
+                entityUIDList.add(targetConceptionEntityUID);
+                Map<String,String> getGeospatialScaleContentMap = getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,entityUIDList);
+                if(getGeospatialScaleContentMap.size() == 2){
+                    return GeospatialCalculateUtil.isGeometriesInDistance(getGeospatialScaleContentMap.get(this.getEntityUID()),getGeospatialScaleContentMap.get(targetConceptionEntityUID),distanceValue);
+                }
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return false;
+    }
+
     private void validateSpatialScaleLevel(GraphOperationExecutor workingGraphOperationExecutor,SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException {
         if(!checkGeospatialScaleContentExist(workingGraphOperationExecutor,spatialScaleLevel,this.getEntityUID())){
             logger.error("ConceptionEntity with UID {} doesn't have {} level SpatialScale.", this.getEntityUID(),spatialScaleLevel);
             CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
             exception.setCauseMessage("ConceptionEntity with UID "+this.getEntityUID()+" doesn't have "+spatialScaleLevel+" level SpatialScale.");
+            throw exception;
+        }
+    }
+
+    private void validateSpatialScaleLevel(GraphOperationExecutor workingGraphOperationExecutor,String entityUID,SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException {
+        if(!checkGeospatialScaleContentExist(workingGraphOperationExecutor,spatialScaleLevel,entityUID)){
+            logger.error("ConceptionEntity with UID {} doesn't have {} level SpatialScale.", entityUID,spatialScaleLevel);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("ConceptionEntity with UID "+entityUID+" doesn't have "+spatialScaleLevel+" level SpatialScale.");
             throw exception;
         }
     }
