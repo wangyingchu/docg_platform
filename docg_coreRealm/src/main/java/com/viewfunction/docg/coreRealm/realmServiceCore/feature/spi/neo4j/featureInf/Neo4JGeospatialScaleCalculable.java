@@ -15,10 +15,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.util.geospatial.Geospati
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculable,Neo4JKeyResourcesRetrievable {
 
@@ -60,7 +57,7 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
 
     default public boolean isSpatialPredicateMatchedWith(SpatialPredicateType spatialPredicateType,
             String targetConceptionEntityUID, SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
-        if(this.getEntityUID() != null) {
+        if(this.getEntityUID() != null && targetConceptionEntityUID != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try{
                 validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
@@ -86,6 +83,36 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
         return false;
     }
 
+    default public boolean isSpatialPredicateMatchedWith(SpatialPredicateType spatialPredicateType,
+                                                         Set<String> targetConceptionEntityUIDsSet, SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
+        /*
+        if(this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
+                boolean isTargetEntityContentValidate=checkGeospatialScaleContentExist(workingGraphOperationExecutor,spatialScaleLevel,targetConceptionEntityUID);
+                if(!isTargetEntityContentValidate){
+                    return false;
+                }else{
+                    List<String> entityUIDList = new ArrayList<>();
+                    entityUIDList.add(this.getEntityUID());
+                    entityUIDList.add(targetConceptionEntityUID);
+
+                    Map<String,String> getGeospatialScaleContentMap = getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,entityUIDList);
+                    if(getGeospatialScaleContentMap.size() == 2){
+                        return GeospatialCalculateUtil.spatialPredicateWKTCalculate(getGeospatialScaleContentMap.get(this.getEntityUID()),
+                                spatialPredicateType,
+                                getGeospatialScaleContentMap.get(targetConceptionEntityUID));
+                    }
+                }
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        */
+        return false;
+    }
+
     default public GeospatialScaleFeatureSupportable.WKTGeometryType getEntityGeometryType(SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
         if(this.getEntityUID() != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
@@ -105,7 +132,7 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
     }
 
     default public double getEntitiesSpatialDistance(String targetConceptionEntityUID, SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
-        if(this.getEntityUID() != null) {
+        if(this.getEntityUID() != null && targetConceptionEntityUID != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try{
                 validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
@@ -129,7 +156,7 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
     }
 
     default public boolean isEntitiesWithinSpatialDistance(String targetConceptionEntityUID, double distanceValue,SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
-        if(this.getEntityUID() != null) {
+        if(this.getEntityUID() != null && targetConceptionEntityUID != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try{
                 validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
@@ -145,6 +172,11 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }
         }
+        return false;
+    }
+
+    default public boolean isEntitiesWithinSpatialDistance(Set<String> targetConceptionEntityUIDsSet, double distanceValue, SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
+
         return false;
     }
 
@@ -164,6 +196,18 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }
         }
+        return null;
+    }
+
+    default public String getEntitySpatialEnvelopeWKTGeometryContent(SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
+        return null;
+    }
+
+    default public String getEntitySpatialCentroidPointWKTGeometryContent(SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
+        return null;
+    }
+
+    default public String getEntitySpatialInteriorPointWKTGeometryContent(SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
         return null;
     }
 
