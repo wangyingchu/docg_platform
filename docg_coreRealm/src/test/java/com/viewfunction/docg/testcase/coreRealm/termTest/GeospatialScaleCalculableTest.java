@@ -139,6 +139,18 @@ public class GeospatialScaleCalculableTest {
         String bufferedWKTContent = _LocationInSmallAreaConceptionEntity1.getEntitySpatialBufferWKTGeometryContent(0.1,GeospatialScaleCalculable.SpatialScaleLevel.Local);
         Assert.assertTrue(bufferedWKTContent.startsWith("POLYGON"));
 
+        String envelopeWKTContent = _hugeAreaConceptionEntity.getEntitySpatialEnvelopeWKTGeometryContent(GeospatialScaleCalculable.SpatialScaleLevel.Local);
+        Assert.assertTrue(envelopeWKTContent.startsWith("POLYGON"));
+
+        envelopeWKTContent = _LocationInSmallAreaConceptionEntity1.getEntitySpatialEnvelopeWKTGeometryContent(GeospatialScaleCalculable.SpatialScaleLevel.Local);
+        Assert.assertTrue(envelopeWKTContent.startsWith("POINT"));
+
+        String centroidWKTContent = _LocationInSmallAreaConceptionEntity1.getEntitySpatialCentroidPointWKTGeometryContent(GeospatialScaleCalculable.SpatialScaleLevel.Local);
+        Assert.assertTrue(centroidWKTContent.startsWith("POINT"));
+
+        String interiorWKTContent = _LocationInSmallAreaConceptionEntity1.getEntitySpatialInteriorPointWKTGeometryContent(GeospatialScaleCalculable.SpatialScaleLevel.Local);
+        Assert.assertTrue(interiorWKTContent.startsWith("POINT"));
+
         coreRealm.closeGlobalSession();
     }
 }
