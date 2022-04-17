@@ -131,6 +131,37 @@ public class GeospatialCalculateUtil {
         }
     }
 
+    public static boolean isGeometriesInDistance(String fromGeometryWKT,Set<String> toGeometryWKTSet,double distanceValue) throws CoreRealmServiceRuntimeException{
+        if(geometryFactory == null){
+            geometryFactory = JTSFactoryFinder.getGeometryFactory();
+            _WKTReader = new WKTReader(geometryFactory);
+        }
+        try {
+            Geometry fromGeometry = _WKTReader.read(fromGeometryWKT);
+            Geometry toGeometries = null;
+            for(String currentWTK:toGeometryWKTSet){
+                if(currentWTK != null){
+                    Geometry currentToGeometry = _WKTReader.read(currentWTK);
+                    if(toGeometries == null){
+                        toGeometries = currentToGeometry;
+                    }else{
+                        toGeometries = toGeometries.union(currentToGeometry);
+                    }
+                }
+            }
+            if(toGeometries != null){
+                return fromGeometry.isWithinDistance(toGeometries,distanceValue);
+            }else{
+                return false;
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            CoreRealmServiceRuntimeException runtimeException = new CoreRealmServiceRuntimeException();
+            runtimeException.setCauseMessage("Geometry WKT Parse error");
+            throw runtimeException;
+        }
+    }
+
     public static String getGeometryBufferWKTContent(String fromGeometryWKT,double distanceValue) throws CoreRealmServiceRuntimeException{
         if(geometryFactory == null){
             geometryFactory = JTSFactoryFinder.getGeometryFactory();

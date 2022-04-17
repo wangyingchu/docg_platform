@@ -173,7 +173,27 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
     }
 
     default public boolean isEntitiesWithinSpatialDistance(Set<String> targetConceptionEntityUIDsSet, double distanceValue, SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
+        if(this.getEntityUID() != null && targetConceptionEntityUIDsSet != null && targetConceptionEntityUIDsSet.size()>0) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
+                List<String> entityUIDList = new ArrayList<>();
+                entityUIDList.add(this.getEntityUID());
+                entityUIDList.addAll(targetConceptionEntityUIDsSet);
+                Map<String,String> getGeospatialScaleContentMap = getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,entityUIDList);
 
+                String fromGeometryWKT = getGeospatialScaleContentMap.get(this.getEntityUID());
+                Set<String> targetGeometryWKTs = new HashSet<>();
+                for(String currentEntityUID:getGeospatialScaleContentMap.keySet()){
+                    if(!currentEntityUID.equals(this.getEntityUID())){
+                        targetGeometryWKTs.add(getGeospatialScaleContentMap.get(currentEntityUID));
+                    }
+                }
+                return GeospatialCalculateUtil.isGeometriesInDistance(fromGeometryWKT,targetGeometryWKTs,distanceValue);
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return false;
     }
 
