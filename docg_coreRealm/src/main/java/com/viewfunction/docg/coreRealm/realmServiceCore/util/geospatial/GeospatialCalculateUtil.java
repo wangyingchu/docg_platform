@@ -66,33 +66,22 @@ public class GeospatialCalculateUtil {
     }
 
     public static GeospatialScaleFeatureSupportable.WKTGeometryType getGeometryWKTType(String geometryWKT) throws CoreRealmServiceRuntimeException{
-        if(geometryFactory == null){
-            geometryFactory = JTSFactoryFinder.getGeometryFactory();
-            _WKTReader = new WKTReader(geometryFactory);
-        }
-        try {
-            Geometry targetGeometry = _WKTReader.read(geometryWKT);
-            String geometryTypeStr = targetGeometry.getGeometryType();
-            if(Geometry.TYPENAME_POLYGON.equals(geometryTypeStr)){
-                return GeospatialScaleFeatureSupportable.WKTGeometryType.POLYGON;
-            }else if(Geometry.TYPENAME_POINT.equals(geometryTypeStr)){
-                return GeospatialScaleFeatureSupportable.WKTGeometryType.POINT;
-            }else if(Geometry.TYPENAME_MULTIPOINT.equals(geometryTypeStr)){
-                return GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOINT;
-            }else if(Geometry.TYPENAME_LINESTRING.equals(geometryTypeStr)){
-                return GeospatialScaleFeatureSupportable.WKTGeometryType.LINESTRING;
-            }else if(Geometry.TYPENAME_MULTILINESTRING.equals(geometryTypeStr)){
-                return GeospatialScaleFeatureSupportable.WKTGeometryType.MULTILINESTRING;
-            }else if(Geometry.TYPENAME_MULTIPOLYGON.equals(geometryTypeStr)){
-                return GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON;
-            }else if(Geometry.TYPENAME_GEOMETRYCOLLECTION.equals(geometryTypeStr)){
-                return GeospatialScaleFeatureSupportable.WKTGeometryType.GEOMETRYCOLLECTION;
-            }
-        } catch (ParseException e) {
-            e.printStackTrace();
-            CoreRealmServiceRuntimeException runtimeException = new CoreRealmServiceRuntimeException();
-            runtimeException.setCauseMessage("Geometry WKT Parse error");
-            throw runtimeException;
+        Geometry targetGeometry = getGeometryFromWKT(geometryWKT);
+        String geometryTypeStr = targetGeometry.getGeometryType();
+        if(Geometry.TYPENAME_POLYGON.equals(geometryTypeStr)){
+            return GeospatialScaleFeatureSupportable.WKTGeometryType.POLYGON;
+        }else if(Geometry.TYPENAME_POINT.equals(geometryTypeStr)){
+            return GeospatialScaleFeatureSupportable.WKTGeometryType.POINT;
+        }else if(Geometry.TYPENAME_MULTIPOINT.equals(geometryTypeStr)){
+            return GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOINT;
+        }else if(Geometry.TYPENAME_LINESTRING.equals(geometryTypeStr)){
+            return GeospatialScaleFeatureSupportable.WKTGeometryType.LINESTRING;
+        }else if(Geometry.TYPENAME_MULTILINESTRING.equals(geometryTypeStr)){
+            return GeospatialScaleFeatureSupportable.WKTGeometryType.MULTILINESTRING;
+        }else if(Geometry.TYPENAME_MULTIPOLYGON.equals(geometryTypeStr)){
+            return GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON;
+        }else if(Geometry.TYPENAME_GEOMETRYCOLLECTION.equals(geometryTypeStr)){
+            return GeospatialScaleFeatureSupportable.WKTGeometryType.GEOMETRYCOLLECTION;
         }
         return null;
     }
@@ -163,14 +152,33 @@ public class GeospatialCalculateUtil {
     }
 
     public static String getGeometryBufferWKTContent(String fromGeometryWKT,double distanceValue) throws CoreRealmServiceRuntimeException{
+        Geometry bufferedGeometry = getGeometryFromWKT(fromGeometryWKT).buffer(distanceValue);
+        return bufferedGeometry.toText();
+    }
+
+    public static String getGeometryEnvelopeWKTContent(String fromGeometryWKT) throws CoreRealmServiceRuntimeException{
+        Geometry envelopeGeometry = getGeometryFromWKT(fromGeometryWKT).getEnvelope();
+        return envelopeGeometry.toText();
+    }
+
+    public static String getGeometryCentroidPointWKTContent(String fromGeometryWKT) throws CoreRealmServiceRuntimeException{
+        Geometry centroidGeometry = getGeometryFromWKT(fromGeometryWKT).getCentroid();
+        return centroidGeometry.toText();
+    }
+
+    public static String getGeometryInteriorPointWKTContent(String fromGeometryWKT) throws CoreRealmServiceRuntimeException{
+        Geometry interiorGeometry = getGeometryFromWKT(fromGeometryWKT).getInteriorPoint();
+        return interiorGeometry.toText();
+    }
+
+    private static Geometry getGeometryFromWKT(String wktValue)throws CoreRealmServiceRuntimeException{
         if(geometryFactory == null){
             geometryFactory = JTSFactoryFinder.getGeometryFactory();
             _WKTReader = new WKTReader(geometryFactory);
         }
         try {
-            Geometry fromGeometry = _WKTReader.read(fromGeometryWKT);
-            Geometry bufferedGeometry = fromGeometry.buffer(distanceValue);
-            return bufferedGeometry.toText();
+            Geometry geometry = _WKTReader.read(wktValue);
+            return geometry;
         } catch (ParseException e) {
             e.printStackTrace();
             CoreRealmServiceRuntimeException runtimeException = new CoreRealmServiceRuntimeException();

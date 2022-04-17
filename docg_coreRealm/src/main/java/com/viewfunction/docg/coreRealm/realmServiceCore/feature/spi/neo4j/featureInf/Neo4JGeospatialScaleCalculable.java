@@ -199,7 +199,6 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
 
     default public String getEntitySpatialBufferWKTGeometryContent(double bufferDistanceValue,SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
         if(this.getEntityUID() != null) {
-
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try{
                 validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
@@ -217,14 +216,56 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
     }
 
     default public String getEntitySpatialEnvelopeWKTGeometryContent(SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
+        if(this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
+                List<String> entityUIDList = new ArrayList<>();
+                entityUIDList.add(this.getEntityUID());
+                Map<String,String> getGeospatialScaleContentMap = getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,entityUIDList);
+                if(getGeospatialScaleContentMap.size() == 1){
+                    return GeospatialCalculateUtil.getGeometryEnvelopeWKTContent(getGeospatialScaleContentMap.get(this.getEntityUID()));
+                }
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
 
     default public String getEntitySpatialCentroidPointWKTGeometryContent(SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
+        if(this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
+                List<String> entityUIDList = new ArrayList<>();
+                entityUIDList.add(this.getEntityUID());
+                Map<String,String> getGeospatialScaleContentMap = getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,entityUIDList);
+                if(getGeospatialScaleContentMap.size() == 1){
+                    return GeospatialCalculateUtil.getGeometryCentroidPointWKTContent(getGeospatialScaleContentMap.get(this.getEntityUID()));
+                }
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
 
     default public String getEntitySpatialInteriorPointWKTGeometryContent(SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
+        if(this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
+                List<String> entityUIDList = new ArrayList<>();
+                entityUIDList.add(this.getEntityUID());
+                Map<String,String> getGeospatialScaleContentMap = getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,entityUIDList);
+                if(getGeospatialScaleContentMap.size() == 1){
+                    return GeospatialCalculateUtil.getGeometryInteriorPointWKTContent(getGeospatialScaleContentMap.get(this.getEntityUID()));
+                }
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
 
