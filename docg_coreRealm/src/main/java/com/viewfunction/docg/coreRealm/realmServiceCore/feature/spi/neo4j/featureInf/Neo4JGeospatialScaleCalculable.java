@@ -152,7 +152,7 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
         return Double.NaN;
     }
 
-    default public boolean isEntitiesWithinSpatialDistance(String targetConceptionEntityUID, double distanceValue,SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
+    default public boolean isSpatialDistanceWithinEntity(String targetConceptionEntityUID, double distanceValue, SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
         if(this.getEntityUID() != null && targetConceptionEntityUID != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try{
@@ -172,7 +172,7 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
         return false;
     }
 
-    default public boolean isEntitiesWithinSpatialDistance(Set<String> targetConceptionEntityUIDsSet, double distanceValue, SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
+    default public boolean isSpatialDistanceWithinEntities(Set<String> targetConceptionEntityUIDsSet, double distanceValue, SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
         if(this.getEntityUID() != null && targetConceptionEntityUIDsSet != null && targetConceptionEntityUIDsSet.size()>0) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try{

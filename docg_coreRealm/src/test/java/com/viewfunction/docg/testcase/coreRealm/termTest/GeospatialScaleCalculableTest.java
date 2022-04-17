@@ -131,9 +131,9 @@ public class GeospatialScaleCalculableTest {
         double entitiesDistance =_LocationInSmallAreaConceptionEntity1.getEntitiesSpatialDistance(_LocationInSmallAreaConceptionEntity2.getConceptionEntityUID(),GeospatialScaleCalculable.SpatialScaleLevel.Local);
         Assert.assertTrue(entitiesDistance>0);
 
-        Assert.assertTrue(_LocationInSmallAreaConceptionEntity1.isEntitiesWithinSpatialDistance(_LocationInSmallAreaConceptionEntity2.getConceptionEntityUID(),entitiesDistance+1,GeospatialScaleCalculable.SpatialScaleLevel.Local)
+        Assert.assertTrue(_LocationInSmallAreaConceptionEntity1.isSpatialDistanceWithinEntity(_LocationInSmallAreaConceptionEntity2.getConceptionEntityUID(),entitiesDistance+1,GeospatialScaleCalculable.SpatialScaleLevel.Local)
         );
-        Assert.assertFalse(_LocationInSmallAreaConceptionEntity1.isEntitiesWithinSpatialDistance(_LocationInSmallAreaConceptionEntity2.getConceptionEntityUID(),entitiesDistance-0.01,GeospatialScaleCalculable.SpatialScaleLevel.Local)
+        Assert.assertFalse(_LocationInSmallAreaConceptionEntity1.isSpatialDistanceWithinEntity(_LocationInSmallAreaConceptionEntity2.getConceptionEntityUID(),entitiesDistance-0.01,GeospatialScaleCalculable.SpatialScaleLevel.Local)
         );
 
         String bufferedWKTContent = _LocationInSmallAreaConceptionEntity1.getEntitySpatialBufferWKTGeometryContent(0.1,GeospatialScaleCalculable.SpatialScaleLevel.Local);
