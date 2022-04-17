@@ -9,6 +9,8 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
+import java.util.Set;
+
 public class GeospatialCalculateUtil {
 
     private static GeometryFactory geometryFactory = null;
@@ -21,49 +23,46 @@ public class GeospatialCalculateUtil {
             _WKTReader = new WKTReader(geometryFactory);
         }
         try {
-            // https://docs.geotools.org/latest/userguide/library/jts/geometry.html
             Geometry fromGeometry = _WKTReader.read(fromGeometryWKT);
             Geometry toGeometry = _WKTReader.read(toGeometryWKT);
-            boolean calculateResult = false;
-            switch (spatialPredicateType){
-                case Equals:
-                    calculateResult = fromGeometry.equals(toGeometry);
-                    break;
-                case Within:
-                    calculateResult = fromGeometry.within(toGeometry);
-                    break;
-                case Crosses:
-                    calculateResult = fromGeometry.crosses(toGeometry);
-                    break;
-                case Touches:
-                    calculateResult = fromGeometry.touches(toGeometry);
-                    break;
-                case Contains:
-                    calculateResult = fromGeometry.contains(toGeometry);
-                    break;
-                case Overlaps:
-                    calculateResult = fromGeometry.overlaps(toGeometry);
-                    break;
-                case Intersects:
-                    calculateResult = fromGeometry.intersects(toGeometry);
-                    break;
-                case Disjoint:
-                    calculateResult = fromGeometry.disjoint(toGeometry);
-                    break;
-                case Cover:
-                    calculateResult = fromGeometry.covers(toGeometry);
-                    break;
-                case CoveredBy:
-                    calculateResult = fromGeometry.coveredBy(toGeometry);
-                    break;
-            }
-            return calculateResult;
+            return spatialPredicateWKTCalculate(fromGeometry,spatialPredicateType,toGeometry);
         } catch (ParseException e) {
             e.printStackTrace();
             CoreRealmServiceRuntimeException runtimeException = new CoreRealmServiceRuntimeException();
             runtimeException.setCauseMessage("Geometry WKT Parse error");
             throw runtimeException;
         }
+    }
+
+    public static boolean spatialPredicateWKTCalculate(String fromGeometryWKT,
+                          SpatialPredicateType spatialPredicateType, Set<String> toGeometryWKTSet) throws CoreRealmServiceRuntimeException {
+        if(geometryFactory == null){
+            geometryFactory = JTSFactoryFinder.getGeometryFactory();
+            _WKTReader = new WKTReader(geometryFactory);
+        }
+        try {
+            Geometry fromGeometry = _WKTReader.read(fromGeometryWKT);
+            Geometry toGeometries = null;
+            for(String currentWTK:toGeometryWKTSet){
+                if(currentWTK != null){
+                    Geometry currentToGeometry = _WKTReader.read(currentWTK);
+                    if(toGeometries == null){
+                        toGeometries = currentToGeometry;
+                    }else{
+                        toGeometries = toGeometries.union(currentToGeometry);
+                    }
+                }
+            }
+            if(toGeometries != null){
+                return spatialPredicateWKTCalculate(fromGeometry,spatialPredicateType,toGeometries);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            CoreRealmServiceRuntimeException runtimeException = new CoreRealmServiceRuntimeException();
+            runtimeException.setCauseMessage("Geometry WKT Parse error");
+            throw runtimeException;
+        }
+        return false;
     }
 
     public static GeospatialScaleFeatureSupportable.WKTGeometryType getGeometryWKTType(String geometryWKT) throws CoreRealmServiceRuntimeException{
@@ -147,5 +146,44 @@ public class GeospatialCalculateUtil {
             runtimeException.setCauseMessage("Geometry WKT Parse error");
             throw runtimeException;
         }
+    }
+
+    private static boolean spatialPredicateWKTCalculate(Geometry fromGeometry,
+                                                        SpatialPredicateType spatialPredicateType, Geometry toGeometry){
+        // https://docs.geotools.org/latest/userguide/library/jts/geometry.html
+        boolean calculateResult = false;
+        switch (spatialPredicateType){
+            case Equals:
+                calculateResult = fromGeometry.equals(toGeometry);
+                break;
+            case Within:
+                calculateResult = fromGeometry.within(toGeometry);
+                break;
+            case Crosses:
+                calculateResult = fromGeometry.crosses(toGeometry);
+                break;
+            case Touches:
+                calculateResult = fromGeometry.touches(toGeometry);
+                break;
+            case Contains:
+                calculateResult = fromGeometry.contains(toGeometry);
+                break;
+            case Overlaps:
+                calculateResult = fromGeometry.overlaps(toGeometry);
+                break;
+            case Intersects:
+                calculateResult = fromGeometry.intersects(toGeometry);
+                break;
+            case Disjoint:
+                calculateResult = fromGeometry.disjoint(toGeometry);
+                break;
+            case Cover:
+                calculateResult = fromGeometry.covers(toGeometry);
+                break;
+            case CoveredBy:
+                calculateResult = fromGeometry.coveredBy(toGeometry);
+                break;
+        }
+        return calculateResult;
     }
 }

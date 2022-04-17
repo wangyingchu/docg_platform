@@ -85,31 +85,28 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
 
     default public boolean isSpatialPredicateMatchedWith(SpatialPredicateType spatialPredicateType,
                                                          Set<String> targetConceptionEntityUIDsSet, SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
-        /*
-        if(this.getEntityUID() != null) {
+        if(this.getEntityUID() != null && targetConceptionEntityUIDsSet != null && targetConceptionEntityUIDsSet.size()>0) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try{
                 validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
-                boolean isTargetEntityContentValidate=checkGeospatialScaleContentExist(workingGraphOperationExecutor,spatialScaleLevel,targetConceptionEntityUID);
-                if(!isTargetEntityContentValidate){
-                    return false;
-                }else{
                     List<String> entityUIDList = new ArrayList<>();
                     entityUIDList.add(this.getEntityUID());
-                    entityUIDList.add(targetConceptionEntityUID);
-
+                    entityUIDList.addAll(targetConceptionEntityUIDsSet);
                     Map<String,String> getGeospatialScaleContentMap = getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,entityUIDList);
-                    if(getGeospatialScaleContentMap.size() == 2){
-                        return GeospatialCalculateUtil.spatialPredicateWKTCalculate(getGeospatialScaleContentMap.get(this.getEntityUID()),
-                                spatialPredicateType,
-                                getGeospatialScaleContentMap.get(targetConceptionEntityUID));
+
+                    String fromGeometryWKT = getGeospatialScaleContentMap.get(this.getEntityUID());
+                    Set<String> targetGeometryWKTs = new HashSet<>();
+                    for(String currentEntityUID:getGeospatialScaleContentMap.keySet()){
+                        if(!currentEntityUID.equals(this.getEntityUID())){
+                            targetGeometryWKTs.add(getGeospatialScaleContentMap.get(currentEntityUID));
+                        }
                     }
-                }
+                    return GeospatialCalculateUtil.spatialPredicateWKTCalculate(fromGeometryWKT,spatialPredicateType,
+                                targetGeometryWKTs);
             }finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }
         }
-        */
         return false;
     }
 
