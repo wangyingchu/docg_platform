@@ -13,12 +13,12 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationAttachKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JRelationAttachKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.config.PropertiesHandler;
-
 import org.neo4j.cypherdsl.core.*;
 import org.neo4j.driver.Result;
 
 import java.math.BigDecimal;
 import java.time.*;
+import java.util.Set;
 import java.util.*;
 
 public class CommonOperationUtil {
@@ -752,6 +752,20 @@ public class CommonOperationUtil {
                 if(targetPropertyContainer instanceof Relationship){
                     return Functions.id((Relationship)targetPropertyContainer).isEqualTo(Cypher.literalOf(Long.parseLong(uidValue)));
                 }
+            }
+        }
+        else if(filteringItem instanceof UIDInValueFilteringItem){
+            UIDInValueFilteringItem currentFilteringItem = (UIDInValueFilteringItem)filteringItem;
+            Set<String> uidValuesSet = currentFilteringItem.getUidValues();
+            List<Object> uidsValueList = new ArrayList<>();
+            for(String currentUidStr:uidValuesSet){
+                uidsValueList.add(Long.parseLong(currentUidStr));
+            }
+            Literal[] listLiteralValue = generateListLiteralValue(uidsValueList);
+            if(filteringItem.isReversedCondition()){
+                return Functions.id((Node)targetPropertyContainer).in(Cypher.listOf(listLiteralValue)).not();
+            }else{
+                return Functions.id((Node)targetPropertyContainer).in(Cypher.listOf(listLiteralValue));
             }
         }
         return null;

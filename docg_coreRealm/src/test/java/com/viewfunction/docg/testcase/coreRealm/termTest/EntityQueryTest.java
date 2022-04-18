@@ -278,6 +278,17 @@ public class EntityQueryTest {
         Assert.assertNotNull(resultConceptionEntityValueList);
         Assert.assertEquals(resultConceptionEntityValueList.size(),1);
 
+        Set<String> _UIDValuesSet = new HashSet<>();
+        _UIDValuesSet.add("12345678");
+        _UIDValuesSet.add("23456789");
+        UIDInValueFilteringItem _UIDInValueFilteringItem= new UIDInValueFilteringItem(_UIDValuesSet);
+        _UIDInValueFilteringItem.reverseCondition();
+        queryParameters2.setDefaultFilteringItem(_UIDInValueFilteringItem);
+        entitiesAttributesRetrieveResult3 = _ConceptionKind02.getSingleValueEntityAttributesByAttributeNames(attributesNameList2,queryParameters2);
+        resultConceptionEntityValueList = entitiesAttributesRetrieveResult3.getConceptionEntityValues();
+        Assert.assertNotNull(resultConceptionEntityValueList);
+        Assert.assertEquals(resultConceptionEntityValueList.size(),1);
+
         ConceptionEntityValue targetConceptionEntityValue = resultConceptionEntityValueList.get(0);
         Map<String,Object> attributesValueMap = targetConceptionEntityValue.getEntityAttributesValue();
         Assert.assertNotNull(targetConceptionEntityValue.getConceptionEntityUID());
