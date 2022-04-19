@@ -8,6 +8,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOp
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
@@ -312,6 +314,12 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
+        return null;
+    }
+
+    @Override
+    public EntitiesOperationResult fuseConceptionKindsAttributes(String fuseSourceKindName, String sourceKindMatchAttributeName,
+                  Set<String> attributesForFusion, String fuseTargetKindName, String targetKindMatchAttributeName) throws CoreRealmServiceEntityExploreException {
         return null;
     }
 
