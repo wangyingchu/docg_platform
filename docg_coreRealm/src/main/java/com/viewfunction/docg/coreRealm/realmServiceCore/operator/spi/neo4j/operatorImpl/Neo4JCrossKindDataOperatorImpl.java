@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl;
 
+import com.google.common.collect.HashMultimap;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
@@ -21,9 +22,7 @@ import org.neo4j.driver.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
@@ -336,16 +335,27 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         targetKindMatchAttList.add(targetKindMatchAttributeName);
         ConceptionEntitiesAttributesRetrieveResult targetRetrieveResult = targetNeo4JConceptionKindImpl.getSingleValueEntityAttributesByAttributeNames(targetKindMatchAttList,recordNumberSettingQueryParameters);
 
+        List<ConceptionEntityValue> targetEntityValues = targetRetrieveResult.getConceptionEntityValues();
+        HashMultimap<Object,String> targetEntitiesValueMap = HashMultimap.create();
+        for(ConceptionEntityValue currentConceptionEntityValue : targetEntityValues){
+            Map<String, Object> attributesValueMap = currentConceptionEntityValue.getEntityAttributesValue();
+            String entityUID = currentConceptionEntityValue.getConceptionEntityUID();
+            if(attributesValueMap.containsKey(targetKindMatchAttributeName)){
+                targetEntitiesValueMap.put(attributesValueMap.get(targetKindMatchAttributeName),entityUID);
+            }
+        }
+
+        Map<String,Map<String,Object>> targetConceptionKindUpdateData = new HashMap<>();
 
         List<ConceptionEntityValue> sourceEntityValues = sourceRetrieveResult.getConceptionEntityValues();
 
-        List<ConceptionEntityValue> targetEntityValues = targetRetrieveResult.getConceptionEntityValues();
-
-
-
-
         for(ConceptionEntityValue currentConceptionEntityValue:sourceEntityValues){
             Map<String, Object> attributesValue = currentConceptionEntityValue.getEntityAttributesValue();
+            if(attributesValue.containsKey(sourceKindMatchAttributeName)){
+                Object matchValue = attributesValue.get(sourceKindMatchAttributeName);
+                Set<String> targetConceptionEntityUIDs = targetEntitiesValueMap.get(matchValue);
+
+            }
 
 
 
