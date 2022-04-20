@@ -365,7 +365,6 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                         currentEntityAttributesMap.putAll(attributesValue);
                         currentEntityAttributesMap.put(targetConceptionEntityUIDKey,currentTargetEntityUID);
                         targetConceptionKindUpdateDataList.add(attributesValue);
-
                         commonEntitiesOperationResultImpl.getSuccessEntityUIDs().add(currentTargetEntityUID);
                     }
                 }
