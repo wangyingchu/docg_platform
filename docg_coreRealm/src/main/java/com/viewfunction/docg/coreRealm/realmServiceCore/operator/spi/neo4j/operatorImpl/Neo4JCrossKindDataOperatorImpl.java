@@ -7,12 +7,14 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
@@ -323,6 +325,8 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     @Override
     public EntitiesOperationResult fuseConceptionKindsAttributes(String fuseSourceKindName, String sourceKindMatchAttributeName,
                   List<String> attributesForFusion, String fuseTargetKindName, String targetKindMatchAttributeName) throws CoreRealmServiceEntityExploreException {
+        CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
+
         QueryParameters recordNumberSettingQueryParameters = new QueryParameters();
         recordNumberSettingQueryParameters.setResultNumber(100000000);
 
@@ -345,7 +349,8 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             }
         }
 
-        Map<String,Map<String,Object>> targetConceptionKindUpdateData = new HashMap<>();
+        List<Map<String,Object>> targetConceptionKindUpdateDataList = new ArrayList<>();
+        String targetConceptionEntityUIDKey = "DOCG_CONCEPTION_ENTITY_UID";
 
         List<ConceptionEntityValue> sourceEntityValues = sourceRetrieveResult.getConceptionEntityValues();
         for(ConceptionEntityValue currentConceptionEntityValue:sourceEntityValues){
@@ -356,66 +361,33 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                 if(targetConceptionEntityUIDs != null && targetConceptionEntityUIDs.size()>0){
                     attributesValue.remove(sourceKindMatchAttributeName);
                     for(String currentTargetEntityUID:targetConceptionEntityUIDs){
-                        targetConceptionKindUpdateData.put(currentTargetEntityUID,attributesValue);
+                        Map<String,Object> currentEntityAttributesMap = new HashMap<>();
+                        currentEntityAttributesMap.putAll(attributesValue);
+                        currentEntityAttributesMap.put(targetConceptionEntityUIDKey,currentTargetEntityUID);
+                        targetConceptionKindUpdateDataList.add(attributesValue);
+
+                        commonEntitiesOperationResultImpl.getSuccessEntityUIDs().add(currentTargetEntityUID);
                     }
                 }
             }
         }
 
+        Map<String,Object> updateResult = BatchDataOperationUtil.batchAddNewOrUpdateEntityAttributes
+                (targetConceptionEntityUIDKey,targetConceptionKindUpdateDataList, BatchDataOperationUtil.CPUUsageRate.Middle);
 
-
-
-
-
-
-
-
-
-
-        /*
-        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-        try {
-            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(this.conceptionKindName,exploreParameters,attributeNames);
-            List<AttributeKind> containsAttributesKinds = getContainsSingleValueAttributeKinds(workingGraphOperationExecutor);
-            GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer =
-                    new GetListConceptionEntityValueTransformer(attributeNames,containsAttributesKinds);
-            Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
-            if(resEntityRes != null){
-                List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
-                commonConceptionEntitiesAttributesRetrieveResultImpl.addConceptionEntitiesAttributes(resultEntitiesValues);
-                commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultEntitiesValues.size());
+        long totalSuccessCount = 0;
+        Set<String> resultKeySet = updateResult.keySet();
+        for(String currentKey:resultKeySet){
+            if(!currentKey.equals("StartTime")&!currentKey.equals("FinishTime")){
+                long currentSuccessfulCount = (Long)updateResult.get(currentKey);
+                totalSuccessCount = totalSuccessCount + currentSuccessfulCount;
             }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        }finally {
-            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
-        */
-
-
-
-
-
-
-
-
-
-        return null;
+        commonEntitiesOperationResultImpl.getOperationStatistics().setSuccessItemsCount(totalSuccessCount);
+        commonEntitiesOperationResultImpl.getOperationStatistics().
+                setOperationSummary("fuseConceptionKindsAttributes operation for conceptionKind "+fuseTargetKindName+" success.");
+        commonEntitiesOperationResultImpl.finishEntitiesOperation();
+        return commonEntitiesOperationResultImpl;
     }
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
