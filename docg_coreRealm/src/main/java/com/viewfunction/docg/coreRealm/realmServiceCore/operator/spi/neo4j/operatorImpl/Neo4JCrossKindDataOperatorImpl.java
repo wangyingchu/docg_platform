@@ -348,17 +348,18 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         Map<String,Map<String,Object>> targetConceptionKindUpdateData = new HashMap<>();
 
         List<ConceptionEntityValue> sourceEntityValues = sourceRetrieveResult.getConceptionEntityValues();
-
         for(ConceptionEntityValue currentConceptionEntityValue:sourceEntityValues){
             Map<String, Object> attributesValue = currentConceptionEntityValue.getEntityAttributesValue();
             if(attributesValue.containsKey(sourceKindMatchAttributeName)){
                 Object matchValue = attributesValue.get(sourceKindMatchAttributeName);
                 Set<String> targetConceptionEntityUIDs = targetEntitiesValueMap.get(matchValue);
-
+                if(targetConceptionEntityUIDs != null && targetConceptionEntityUIDs.size()>0){
+                    attributesValue.remove(sourceKindMatchAttributeName);
+                    for(String currentTargetEntityUID:targetConceptionEntityUIDs){
+                        targetConceptionKindUpdateData.put(currentTargetEntityUID,attributesValue);
+                    }
+                }
             }
-
-
-
         }
 
 
