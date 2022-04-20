@@ -1,17 +1,21 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
-import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionKindImpl;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.slf4j.Logger;
@@ -19,7 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
@@ -319,7 +323,87 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
     @Override
     public EntitiesOperationResult fuseConceptionKindsAttributes(String fuseSourceKindName, String sourceKindMatchAttributeName,
-                  Set<String> attributesForFusion, String fuseTargetKindName, String targetKindMatchAttributeName) throws CoreRealmServiceEntityExploreException {
+                  List<String> attributesForFusion, String fuseTargetKindName, String targetKindMatchAttributeName) throws CoreRealmServiceEntityExploreException {
+        QueryParameters recordNumberSettingQueryParameters = new QueryParameters();
+        recordNumberSettingQueryParameters.setResultNumber(100000000);
+
+        ConceptionKind sourceNeo4JConceptionKindImpl = new Neo4JConceptionKindImpl(null,fuseSourceKindName,null,null);
+        attributesForFusion.add(sourceKindMatchAttributeName);
+        ConceptionEntitiesAttributesRetrieveResult sourceRetrieveResult = sourceNeo4JConceptionKindImpl.getSingleValueEntityAttributesByAttributeNames(attributesForFusion,recordNumberSettingQueryParameters);
+
+        ConceptionKind targetNeo4JConceptionKindImpl = new Neo4JConceptionKindImpl(null,fuseTargetKindName,null,null);
+        List<String> targetKindMatchAttList = new ArrayList<>();
+        targetKindMatchAttList.add(targetKindMatchAttributeName);
+        ConceptionEntitiesAttributesRetrieveResult targetRetrieveResult = targetNeo4JConceptionKindImpl.getSingleValueEntityAttributesByAttributeNames(targetKindMatchAttList,recordNumberSettingQueryParameters);
+
+
+        List<ConceptionEntityValue> sourceEntityValues = sourceRetrieveResult.getConceptionEntityValues();
+
+        List<ConceptionEntityValue> targetEntityValues = targetRetrieveResult.getConceptionEntityValues();
+
+
+
+
+        for(ConceptionEntityValue currentConceptionEntityValue:sourceEntityValues){
+            Map<String, Object> attributesValue = currentConceptionEntityValue.getEntityAttributesValue();
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+        /*
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(this.conceptionKindName,exploreParameters,attributeNames);
+            List<AttributeKind> containsAttributesKinds = getContainsSingleValueAttributeKinds(workingGraphOperationExecutor);
+            GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer =
+                    new GetListConceptionEntityValueTransformer(attributeNames,containsAttributesKinds);
+            Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
+            if(resEntityRes != null){
+                List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
+                commonConceptionEntitiesAttributesRetrieveResultImpl.addConceptionEntitiesAttributes(resultEntitiesValues);
+                commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultEntitiesValues.size());
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        */
+
+
+
+
+
+
+
+
+
         return null;
     }
 
