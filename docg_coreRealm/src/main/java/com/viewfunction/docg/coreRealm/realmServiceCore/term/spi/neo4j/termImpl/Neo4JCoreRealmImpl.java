@@ -1175,7 +1175,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
     @Override
     public CrossKindDataOperator getCrossKindDataOperator() {
-        Neo4JCrossKindDataOperatorImpl crossKindDataOperator= new Neo4JCrossKindDataOperatorImpl(coreRealmName);
+        Neo4JCrossKindDataOperatorImpl crossKindDataOperator= new Neo4JCrossKindDataOperatorImpl(this);
         crossKindDataOperator.setGlobalGraphOperationExecutor(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
         return crossKindDataOperator;
     }

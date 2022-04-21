@@ -577,8 +577,12 @@ public class Neo4JAttributesMeasurableImpl implements AttributesMeasurable {
         List<String> successAttributeNamesList = new ArrayList<>();
         List<String> updSuccessList = updateAttributes(properties);
         List<String> addSuccessList = addAttributes(propertiesForAddMap);
-        successAttributeNamesList.addAll(addSuccessList);
-        successAttributeNamesList.addAll(updSuccessList);
+        if(addSuccessList != null){
+            successAttributeNamesList.addAll(addSuccessList);
+        }
+        if(updSuccessList != null){
+            successAttributeNamesList.addAll(updSuccessList);
+        }
         return successAttributeNamesList;
     }
 

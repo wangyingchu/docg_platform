@@ -17,8 +17,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityVa
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionKindImpl;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.slf4j.Logger;
@@ -28,12 +28,12 @@ import java.util.*;
 
 public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
-    private String coreRealmName;
+    private CoreRealm coreRealm;
     private GraphOperationExecutorHelper graphOperationExecutorHelper;
     private static Logger logger = LoggerFactory.getLogger(CrossKindDataOperator.class);
 
-    public Neo4JCrossKindDataOperatorImpl(String coreRealmName){
-        this.coreRealmName = coreRealmName;
+    public Neo4JCrossKindDataOperatorImpl(CoreRealm coreRealm){
+        this.coreRealm = coreRealm;
         this.graphOperationExecutorHelper = new GraphOperationExecutorHelper();
     }
 
@@ -330,11 +330,13 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         QueryParameters recordNumberSettingQueryParameters = new QueryParameters();
         recordNumberSettingQueryParameters.setResultNumber(100000000);
 
-        ConceptionKind sourceNeo4JConceptionKindImpl = new Neo4JConceptionKindImpl(null,fuseSourceKindName,null,null);
+        ConceptionKind sourceNeo4JConceptionKindImpl = this.coreRealm.getConceptionKind(fuseSourceKindName);
+                //new Neo4JConceptionKindImpl(null,fuseSourceKindName,null,"633327");
         attributesForFusion.add(sourceKindMatchAttributeName);
         ConceptionEntitiesAttributesRetrieveResult sourceRetrieveResult = sourceNeo4JConceptionKindImpl.getSingleValueEntityAttributesByAttributeNames(attributesForFusion,recordNumberSettingQueryParameters);
 
-        ConceptionKind targetNeo4JConceptionKindImpl = new Neo4JConceptionKindImpl(null,fuseTargetKindName,null,null);
+        ConceptionKind targetNeo4JConceptionKindImpl = this.coreRealm.getConceptionKind(fuseTargetKindName);
+                //new Neo4JConceptionKindImpl(null,fuseTargetKindName,null,"633326");
         List<String> targetKindMatchAttList = new ArrayList<>();
         targetKindMatchAttList.add(targetKindMatchAttributeName);
         ConceptionEntitiesAttributesRetrieveResult targetRetrieveResult = targetNeo4JConceptionKindImpl.getSingleValueEntityAttributesByAttributeNames(targetKindMatchAttList,recordNumberSettingQueryParameters);
@@ -364,7 +366,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                         Map<String,Object> currentEntityAttributesMap = new HashMap<>();
                         currentEntityAttributesMap.putAll(attributesValue);
                         currentEntityAttributesMap.put(targetConceptionEntityUIDKey,currentTargetEntityUID);
-                        targetConceptionKindUpdateDataList.add(attributesValue);
+                        targetConceptionKindUpdateDataList.add(currentEntityAttributesMap);
                         commonEntitiesOperationResultImpl.getSuccessEntityUIDs().add(currentTargetEntityUID);
                     }
                 }
@@ -373,7 +375,6 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
         Map<String,Object> updateResult = BatchDataOperationUtil.batchAddNewOrUpdateEntityAttributes
                 (targetConceptionEntityUIDKey,targetConceptionKindUpdateDataList, BatchDataOperationUtil.CPUUsageRate.Middle);
-
         long totalSuccessCount = 0;
         Set<String> resultKeySet = updateResult.keySet();
         for(String currentKey:resultKeySet){
