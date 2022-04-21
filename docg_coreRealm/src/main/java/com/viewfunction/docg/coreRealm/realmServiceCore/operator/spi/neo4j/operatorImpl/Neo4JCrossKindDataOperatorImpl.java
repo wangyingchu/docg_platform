@@ -331,12 +331,10 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         recordNumberSettingQueryParameters.setResultNumber(100000000);
 
         ConceptionKind sourceNeo4JConceptionKindImpl = this.coreRealm.getConceptionKind(fuseSourceKindName);
-                //new Neo4JConceptionKindImpl(null,fuseSourceKindName,null,"633327");
         attributesForFusion.add(sourceKindMatchAttributeName);
         ConceptionEntitiesAttributesRetrieveResult sourceRetrieveResult = sourceNeo4JConceptionKindImpl.getSingleValueEntityAttributesByAttributeNames(attributesForFusion,recordNumberSettingQueryParameters);
 
         ConceptionKind targetNeo4JConceptionKindImpl = this.coreRealm.getConceptionKind(fuseTargetKindName);
-                //new Neo4JConceptionKindImpl(null,fuseTargetKindName,null,"633326");
         List<String> targetKindMatchAttList = new ArrayList<>();
         targetKindMatchAttList.add(targetKindMatchAttributeName);
         ConceptionEntitiesAttributesRetrieveResult targetRetrieveResult = targetNeo4JConceptionKindImpl.getSingleValueEntityAttributesByAttributeNames(targetKindMatchAttList,recordNumberSettingQueryParameters);
