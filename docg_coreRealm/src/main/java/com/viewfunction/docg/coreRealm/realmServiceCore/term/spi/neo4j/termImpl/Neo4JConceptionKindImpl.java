@@ -290,6 +290,9 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
     @Override
     public EntitiesOperationResult deleteEntities(List<String> conceptionEntityUIDs) {
+
+        // NEED MODIFY TO IMPROVE PERFORMANCE
+        
         if(conceptionEntityUIDs != null && conceptionEntityUIDs.size()>0){
             CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
             boolean countFail = false;
