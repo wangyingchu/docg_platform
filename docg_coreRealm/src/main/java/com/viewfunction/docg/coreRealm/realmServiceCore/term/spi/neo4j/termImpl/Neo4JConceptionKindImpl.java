@@ -290,11 +290,6 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
     @Override
     public EntitiesOperationResult deleteEntities(List<String> conceptionEntityUIDs) {
-
-        // NEED MODIFY TO IMPROVE PERFORMANCE
-        //https://neo4j.com/developer/kb/how-to-bulk-delete-dense-nodes/
-        //https://www.freesion.com/article/24571268014/
-
         if(conceptionEntityUIDs != null && conceptionEntityUIDs.size()>0){
             CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
             boolean countFail = false;
@@ -333,7 +328,11 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public EntitiesOperationResult purgeAllEntities() throws CoreRealmServiceRuntimeException{
+    public EntitiesOperationResult purgeAllEntities() throws CoreRealmServiceRuntimeException {
+        // NEED consider below solution for improving performance or execute operation success
+        //https://neo4j.com/developer/kb/how-to-bulk-delete-dense-nodes/
+        //https://www.freesion.com/article/24571268014/
+
         CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
