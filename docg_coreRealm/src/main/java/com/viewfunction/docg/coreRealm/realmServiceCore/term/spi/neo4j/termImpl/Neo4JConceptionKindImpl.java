@@ -292,6 +292,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     public EntitiesOperationResult deleteEntities(List<String> conceptionEntityUIDs) {
 
         // NEED MODIFY TO IMPROVE PERFORMANCE
+        //https://neo4j.com/developer/kb/how-to-bulk-delete-dense-nodes/
 
         if(conceptionEntityUIDs != null && conceptionEntityUIDs.size()>0){
             CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
