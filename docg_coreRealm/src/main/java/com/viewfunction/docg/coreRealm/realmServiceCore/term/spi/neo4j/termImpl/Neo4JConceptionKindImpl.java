@@ -292,7 +292,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     public EntitiesOperationResult deleteEntities(List<String> conceptionEntityUIDs) {
 
         // NEED MODIFY TO IMPROVE PERFORMANCE
-        
+
         if(conceptionEntityUIDs != null && conceptionEntityUIDs.size()>0){
             CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
             boolean countFail = false;
@@ -332,6 +332,11 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
     @Override
     public EntitiesOperationResult purgeAllEntities() throws CoreRealmServiceRuntimeException{
+
+        // NEED MODIFY TO IMPROVE PERFORMANCE
+        //CALL apoc.periodic.commit("MATCH (n:DOCG_TimeScaleEvent) WITH n LIMIT $limit DETACH DELETE n RETURN count(*)",{limit: 10000}) YIELD updates, executions, runtime, batches RETURN updates, executions, runtime, batches
+
+
         CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
