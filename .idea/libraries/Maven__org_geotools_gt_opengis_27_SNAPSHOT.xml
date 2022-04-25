@@ -1,13 +1,13 @@
 <component name="libraryTable">
   <library name="Maven: org.geotools:gt-opengis:27-SNAPSHOT">
     <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/org/geotools/gt-opengis/27-SNAPSHOT/gt-opengis-27-20220414.222748-118.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/geotools/gt-opengis/27-SNAPSHOT/gt-opengis-27-20220422.154553-124.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$MAVEN_REPOSITORY$/org/geotools/gt-opengis/27-SNAPSHOT/gt-opengis-27-20220414.222748-118-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/geotools/gt-opengis/27-SNAPSHOT/gt-opengis-27-20220422.154553-124-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$MAVEN_REPOSITORY$/org/geotools/gt-opengis/27-SNAPSHOT/gt-opengis-27-20220414.222748-118-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/geotools/gt-opengis/27-SNAPSHOT/gt-opengis-27-20220422.154553-124-sources.jar!/" />
     </SOURCES>
   </library>
 </component>
