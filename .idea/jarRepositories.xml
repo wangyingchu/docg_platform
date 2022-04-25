@@ -37,6 +37,11 @@
       <option name="url" value="https://repo.osgeo.org/repository/snapshot/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="SparkPackagesRepo" />
+      <option name="name" value="SparkPackagesRepo" />
+      <option name="url" value="https://repos.spark-packages.org/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="osgeo" />
       <option name="name" value="OSGeo Release Repository" />
       <option name="url" value="https://repo.osgeo.org/repository/release/" />

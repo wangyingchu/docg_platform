@@ -215,6 +215,11 @@
             <artifactId>sparkling-graph-operators_2.11</artifactId>
             <version>0.0.7</version>
         </dependency>
+        <dependency>
+            <groupId>graphframes</groupId>
+            <artifactId>graphframes</artifactId>
+            <version>0.8.2-spark3.2-s_2.12</version>
+        </dependency>
     </dependencies>
 
     <repositories>
@@ -231,6 +236,10 @@
             <url>https://repo.osgeo.org/repository/snapshot/</url>
             <snapshots><enabled>true</enabled></snapshots>
             <releases><enabled>false</enabled></releases>
+        </repository>
+        <repository>
+            <id>SparkPackagesRepo</id>
+            <url>https://repos.spark-packages.org/</url>
         </repository>
     </repositories>
 </project>
