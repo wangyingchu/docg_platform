@@ -1,5 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.feature;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 
@@ -12,14 +14,14 @@ public interface GeospatialScaleCalculable {
 
     public enum SpatialScaleLevel {Global,Country,Local}
 
-    public List<ConceptionEntity> getSpatialPredicateMatchedConceptionEntities(List<String> targetConceptionKinds,
+    public List<ConceptionEntity> getSpatialPredicateMatchedConceptionEntities(String targetConceptionKind, AttributesParameters attributesParameters,
                                                                                SpatialPredicateType spatialPredicateType,
-                                                                               SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException;
+                                                                               SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException;
 
-    public List<ConceptionEntity> getSpatialBufferMatchedConceptionEntities(List<String> targetConceptionKinds,
+    public List<ConceptionEntity> getSpatialBufferMatchedConceptionEntities(String targetConceptionKind, AttributesParameters attributesParameters,
                                                                             double bufferDistanceValue,
                                                                             SpatialPredicateType spatialPredicateType,
-                                                                            SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException;
+                                                                            SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException;
 
     public boolean isSpatialPredicateMatchedWith(SpatialPredicateType spatialPredicateType,String targetConceptionEntityUID,
                                                  SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException;

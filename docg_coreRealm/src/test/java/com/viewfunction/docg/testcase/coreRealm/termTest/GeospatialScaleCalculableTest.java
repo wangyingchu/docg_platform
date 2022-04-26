@@ -51,7 +51,7 @@ public class GeospatialScaleCalculableTest {
         List<String> targetKind = new ArrayList<>();
         targetKind.add("TargetKind1");
         try {
-            _hugeAreaConceptionEntity.getSpatialPredicateMatchedConceptionEntities(targetKind, GeospatialScaleCalculable.SpatialPredicateType.Contains,
+            _hugeAreaConceptionEntity.getSpatialPredicateMatchedConceptionEntities("TargetKind1",null, GeospatialScaleCalculable.SpatialPredicateType.Contains,
                     GeospatialScaleCalculable.SpatialScaleLevel.Country);
         }catch (CoreRealmServiceException e){
             exceptionShouldHappen = true;
