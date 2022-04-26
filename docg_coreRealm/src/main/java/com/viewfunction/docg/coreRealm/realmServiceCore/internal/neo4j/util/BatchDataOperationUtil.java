@@ -696,7 +696,7 @@ public class BatchDataOperationUtil {
         }
     }
 
-    private static int calculateRuntimeCPUCoresByUsageRate(CPUUsageRate _CPUUsageRate){
+    public static int calculateRuntimeCPUCoresByUsageRate(CPUUsageRate _CPUUsageRate){
         int availableCoreNumber = Runtime.getRuntime().availableProcessors();
         if(availableCoreNumber<=4){
             return 4;

@@ -37,6 +37,17 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
                 validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
                 Map<String,String> entitiesSpatialContentDataMap = getEntitiesGeospatialScaleContentMap(workingGraphOperationExecutor,targetConceptionKind,attributesParameters,spatialScaleLevel);
 
+                List<String> entityUIDList = new ArrayList<>();
+                entityUIDList.add(this.getEntityUID());
+                Map<String,String> getGeospatialScaleContentMap = getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,entityUIDList);
+                Set<String> matchedEntityUIDSet = GeospatialCalculateUtil.spatialPredicateFilterWKTsCalculate(
+                        getGeospatialScaleContentMap.get(this.getEntityUID()),spatialPredicateType,getGeospatialScaleContentMap);
+
+
+
+
+
+
 
             }finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
