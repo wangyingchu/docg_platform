@@ -32,7 +32,7 @@ import java.util.Map;
 
 public class GeospatialOperationUtil {
 
-    public static void importSHPDataDirectlyToConceptionKind(String conceptionKindName, boolean removeExistData, File shpFile, String fileEncode) throws IOException, FactoryException, CoreRealmServiceRuntimeException {
+    public static void importSHPDataDirectlyToConceptionKind(String conceptionKindName, boolean removeExistData, File shpFile, String fileEncode) throws IOException, CoreRealmServiceRuntimeException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         String charsetEncode = fileEncode != null ?  fileEncode : "UTF-8";
         // 读取到数据存储中
@@ -54,7 +54,14 @@ public class GeospatialOperationUtil {
             _CRS_Range = "CountryLevel";
         }else{
             _CRS_Range = "LocalLevel";
-            Integer _EpsgCodeValue = CRS.lookupEpsgCode(simpleFeatureType.getCoordinateReferenceSystem(),true);
+            Integer _EpsgCodeValue = null;
+            try {
+                _EpsgCodeValue = CRS.lookupEpsgCode(simpleFeatureType.getCoordinateReferenceSystem(),true);
+            } catch (FactoryException e) {
+                CoreRealmServiceRuntimeException coreRealmServiceRuntimeException = new CoreRealmServiceRuntimeException();
+                coreRealmServiceRuntimeException.setCauseMessage(e.getMessage());
+                throw coreRealmServiceRuntimeException;
+            }
             if(_EpsgCodeValue != null){
                 entityCRSAID= "EPSG:"+_EpsgCodeValue.intValue();
             }
@@ -135,7 +142,6 @@ public class GeospatialOperationUtil {
             coreRealm.createConceptionKind(conceptionKindNameValue,"-");
         }
         BatchDataOperationUtil.batchAddNewEntities(conceptionKindNameValue,_targetConceptionEntityValueList, BatchDataOperationUtil.CPUUsageRate.High);
-        //featureIterator.close();
     }
 
     private static boolean validatePropertyValue(CoreRealm coreRealm,Object propertyValue){

@@ -36,21 +36,15 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
             try{
                 validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
                 Map<String,String> entitiesSpatialContentDataMap = getEntitiesGeospatialScaleContentMap(workingGraphOperationExecutor,targetConceptionKind,attributesParameters,spatialScaleLevel);
+                if(entitiesSpatialContentDataMap != null){
+                    List<String> entityUIDList = new ArrayList<>();
+                    entityUIDList.add(this.getEntityUID());
+                    Map<String,String> getGeospatialScaleContentMap = getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,entityUIDList);
+                    Set<String> matchedEntityUIDSet = GeospatialCalculateUtil.spatialPredicateFilterWKTsCalculate(
+                            getGeospatialScaleContentMap.get(this.getEntityUID()),spatialPredicateType,entitiesSpatialContentDataMap);
 
-                List<String> entityUIDList = new ArrayList<>();
-                entityUIDList.add(this.getEntityUID());
-                Map<String,String> getGeospatialScaleContentMap = getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,entityUIDList);
-                Set<String> matchedEntityUIDSet = GeospatialCalculateUtil.spatialPredicateFilterWKTsCalculate(
-                        getGeospatialScaleContentMap.get(this.getEntityUID()),spatialPredicateType,entitiesSpatialContentDataMap);
-
-                String cypherProcedureString = "MATCH (targetNodes) WHERE id(targetNodes) IN " + matchedEntityUIDSet.toString()+"\n"+
-                        "RETURN DISTINCT targetNodes as operationResult";
-                logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
-
-                GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(null,
-                        getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
-                Object conceptionEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,cypherProcedureString);
-                return conceptionEntityList != null ? (List<ConceptionEntity>)conceptionEntityList : null;
+                    return getConceptionEntitiesByUIDs(workingGraphOperationExecutor,matchedEntityUIDSet);
+                }
             }finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }
@@ -411,5 +405,19 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
         workingGraphOperationExecutor.executeRead(spatialScalePropertyHandelTransformer, queryCql);
 
         return entitiesSpatialContentDataMap;
+    }
+
+    private List<ConceptionEntity> getConceptionEntitiesByUIDs(GraphOperationExecutor workingGraphOperationExecutor,Set<String> matchedEntityUIDSet){
+
+        if(matchedEntityUIDSet!= null){
+            String cypherProcedureString = "MATCH (targetNodes) WHERE id(targetNodes) IN " + matchedEntityUIDSet.toString()+"\n"+
+                    "RETURN DISTINCT targetNodes as operationResult";
+            logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+            GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(null,
+                    getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
+            Object conceptionEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,cypherProcedureString);
+            return conceptionEntityList != null ? (List<ConceptionEntity>)conceptionEntityList : null;
+        }
+        return null;
     }
 }
