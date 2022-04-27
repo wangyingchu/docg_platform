@@ -19,7 +19,6 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.geospatial.GeospatialCalculateUtil;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
-import org.neo4j.driver.types.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -367,11 +366,10 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
 
     private Map<String,String> getEntitiesGeospatialScaleContentMap(GraphOperationExecutor workingGraphOperationExecutor,
                  String targetConceptionKind,AttributesParameters attributesParameters,SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceEntityExploreException {
-        QueryParameters queryParameters = null;
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setDistinctMode(true);
+        queryParameters.setResultNumber(100000000);
         if (attributesParameters != null) {
-            queryParameters = new QueryParameters();
-            queryParameters.setDistinctMode(true);
-            queryParameters.setResultNumber(100000000);
             queryParameters.setDefaultFilteringItem(attributesParameters.getDefaultFilteringItem());
             if (attributesParameters.getAndFilteringItemsList() != null) {
                 for (FilteringItem currentFilteringItem : attributesParameters.getAndFilteringItemsList()) {
@@ -397,13 +395,12 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
             public Object transformResult(Result result) {
                 while(result.hasNext()){
                     Record nodeRecord = result.next();
-                    Node resultNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
-                    long nodeUID = resultNode.id();
+                    long nodeUID = nodeRecord.get("id("+CypherBuilder.operationResultName+")").asInt();
                     String conceptionEntityUID = ""+nodeUID;
-                    Map<String,Object> valueMap = resultNode.asMap();
-
-                    String spatialScalePropertyValue = valueMap.get(spatialScalePropertyName) != null ?
-                            valueMap.get(spatialScalePropertyName).toString() : null;
+                    String spatialScalePropertyValue = null;
+                    if(nodeRecord.containsKey("operationResult."+spatialScalePropertyName)){
+                        spatialScalePropertyValue = nodeRecord.get("operationResult."+spatialScalePropertyName).asString();
+                    }
                     if(spatialScalePropertyValue != null){
                         entitiesSpatialContentDataMap.put(conceptionEntityUID,spatialScalePropertyValue);
                     }

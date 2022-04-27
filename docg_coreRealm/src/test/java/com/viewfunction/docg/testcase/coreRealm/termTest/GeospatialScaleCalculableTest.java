@@ -1,5 +1,6 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleCalculable;
@@ -31,7 +32,7 @@ public class GeospatialScaleCalculableTest {
     }
 
     @Test
-    public void testGeospatialScaleCalculableFunction() throws CoreRealmServiceRuntimeException{
+    public void testGeospatialScaleCalculableFunction() throws CoreRealmServiceRuntimeException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         coreRealm.openGlobalSession();
 
@@ -152,5 +153,38 @@ public class GeospatialScaleCalculableTest {
         Assert.assertTrue(interiorWKTContent.startsWith("POINT"));
 
         coreRealm.closeGlobalSession();
+
+/*
+        //Prepare data for mass WKT computation
+        String filePath =
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+"geospatialData"+"/ChinaData/China_Township_shp/"+"我国乡镇行政区划.shp";
+        try {
+            GeospatialOperationUtil.importSHPDataDirectlyToConceptionKind("TestWKTConceptionKind",true,new File(filePath),null);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (FactoryException e) {
+            throw new RuntimeException(e);
+        }
+*/
+        String spaceLocationPoint = "Point(104.4860 36.9892)";
+        locationConceptionKind = coreRealm.getConceptionKind("LocationForGeospatialScaleCalculable");
+        newLocationEntityValue= new HashMap<>();
+        ConceptionEntityValue conceptionEntityValueForLocationCompute = new ConceptionEntityValue(newLocationEntityValue);
+        ConceptionEntity conceptionEntityValueForLocationComputeEntity = locationConceptionKind.newEntity(conceptionEntityValueForLocationCompute,false);
+        conceptionEntityValueForLocationComputeEntity.addOrUpdateGLGeometryContent(spaceLocationPoint);
+
+
+        try {
+            List<ConceptionEntity> resultEntityList = conceptionEntityValueForLocationComputeEntity.getSpatialPredicateMatchedConceptionEntities("TestWKTConceptionKind",null, GeospatialScaleCalculable.SpatialPredicateType.Within, GeospatialScaleCalculable.SpatialScaleLevel.Global);
+
+System.out.println(resultEntityList);
+
+
+
+
+        } catch (CoreRealmServiceEntityExploreException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
