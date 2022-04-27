@@ -15,6 +15,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTre
 import java.util.List;
 
 public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAttributeFeatureSupportable, ClassificationAttachable, StatisticalAndEvaluable {
+    //东风夜放花千树，更吹落，星如雨
     /**
      * 获取当前概念类型对象名称
      *
