@@ -18,7 +18,7 @@
     <bytecodeTargetLevel>
       <module name="docg_analysisProvider" target="11" />
       <module name="docg_coreRealm" target="11" />
-      <module name="docg_dataAnalyze" target="8" />
+      <module name="docg_dataAnalyze" target="1.8" />
       <module name="docg_dataCollector" target="11" />
       <module name="docg_dataCompute" target="11" />
       <module name="docg_platform" target="11" />

@@ -14,7 +14,8 @@
         <ignite.version>2.12.0</ignite.version>
         <ignite.geospatial.version>2.7.2</ignite.geospatial.version>
         <spark.version>3.2.0</spark.version>
-        <geotools.version>geotools-24.1</geotools.version>
+        <datasyslab.geotools.version>geotools-24.1</datasyslab.geotools.version>
+        <geotools.version>26.4</geotools.version>
         <sedona.version>1.1.1-incubating</sedona.version>
         <akka.version>2.6.18</akka.version>
     </properties>
@@ -184,27 +185,27 @@
         <dependency>
             <groupId>org.datasyslab</groupId>
             <artifactId>geotools-wrapper</artifactId>
-            <version>${geotools.version}</version>
+            <version>${datasyslab.geotools.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-shapefile</artifactId>
-            <version>24.0</version>
+            <version>${geotools.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-metadata</artifactId>
-            <version>24.0</version>
+            <version>${geotools.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-epsg-hsql</artifactId>
-            <version>24.0</version>
+            <version>${geotools.version}</version>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-epsg-extension</artifactId>
-            <version>24.0</version>
+            <version>${geotools.version}</version>
         </dependency>
         <!--使用 SparklingGraph v0.0.7 http://sparkling-graph.github.io/ 技术执行部分图分析计算，mvn repository 只包含
         scala 2.11的实现，与spark v3的要求冲突，故使用源代码的形式支持相关功能(代码支持 scala 2.11与 2.12)，
