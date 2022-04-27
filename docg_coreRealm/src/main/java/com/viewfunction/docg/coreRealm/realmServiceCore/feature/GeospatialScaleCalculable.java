@@ -10,6 +10,16 @@ import java.util.Set;
 
 public interface GeospatialScaleCalculable {
 
+    /*
+        相等(Equals)：几何形状拓扑上相等。
+        脱节(Disjoint)：几何形状没有共有的点。
+        相交(Intersects)：几何形状至少有一个共有点（区别于脱节）
+        接触(Touches)：几何形状有至少一个公共的边界点，但是没有内部点。
+        交叉(Crosses)：几何形状共享一些但不是所有的内部点。
+        内含(Within)：几何形状A的线都在几何形状B内部。
+        包含(Contains)：几何形状B的线都在几何形状A内部（区别于内含）
+        重叠(Overlaps)：几何形状共享一部分但不是所有的公共点，而且相交处有他们自己相同的区域。
+    */
     public enum SpatialPredicateType {Contains,Intersects,Within,Equals,Crosses,Touches,Overlaps,Disjoint,Cover,CoveredBy}
 
     public enum SpatialScaleLevel {Global,Country,Local}

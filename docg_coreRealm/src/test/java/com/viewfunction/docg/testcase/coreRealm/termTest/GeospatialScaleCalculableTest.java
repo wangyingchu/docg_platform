@@ -168,6 +168,7 @@ public class GeospatialScaleCalculableTest {
 
         String spaceLocationPoint = "Point(104.4860 36.9892)";
         locationConceptionKind = coreRealm.getConceptionKind("LocationForGeospatialScaleCalculable");
+        coreRealm.openGlobalSession();
         newLocationEntityValue= new HashMap<>();
         ConceptionEntityValue conceptionEntityValueForLocationCompute = new ConceptionEntityValue(newLocationEntityValue);
         ConceptionEntity conceptionEntityValueForLocationComputeEntity = locationConceptionKind.newEntity(conceptionEntityValueForLocationCompute,false);
@@ -180,9 +181,15 @@ public class GeospatialScaleCalculableTest {
             Assert.assertEquals(resultEntityList.get(0).getAttribute("市").getAttributeValue(),"白银市");
             Assert.assertEquals(resultEntityList.get(0).getAttribute("县").getAttributeValue(),"靖远县");
             Assert.assertEquals(resultEntityList.get(0).getAttribute("乡").getAttributeValue(),"石门乡");
+
+            resultEntityList = conceptionEntityValueForLocationComputeEntity.getSpatialBufferMatchedConceptionEntities("TestWKTConceptionKind",null, 0.5,GeospatialScaleCalculable.SpatialPredicateType.Contains, GeospatialScaleCalculable.SpatialScaleLevel.Global);
+            Assert.assertEquals(resultEntityList.size(),13);
+            for(ConceptionEntity currentConceptionEntity:resultEntityList){
+                Assert.assertEquals(currentConceptionEntity.getAttribute("市").getAttributeValue(),"白银市");
+            }
         } catch (CoreRealmServiceEntityExploreException e) {
             throw new RuntimeException(e);
         }
-
+        coreRealm.closeGlobalSession();
     }
 }

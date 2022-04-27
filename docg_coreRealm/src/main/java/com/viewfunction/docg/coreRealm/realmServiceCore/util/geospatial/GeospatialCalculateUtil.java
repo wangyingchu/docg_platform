@@ -70,6 +70,24 @@ public class GeospatialCalculateUtil {
         return false;
     }
 
+    public static Set<String> spatialBufferPredicateFilterWKTsCalculate(String fromGeometryWKT,double bufferDistanceValue,
+                                                                  SpatialPredicateType spatialPredicateType, Map<String,String> entitiesSpatialContentDataMap) throws CoreRealmServiceRuntimeException {
+        if(geometryFactory == null){
+            geometryFactory = JTSFactoryFinder.getGeometryFactory();
+            _WKTReader = new WKTReader(geometryFactory);
+        }
+        try {
+            Geometry fromGeometry = _WKTReader.read(fromGeometryWKT);
+            Geometry bufferedFromGeometry = fromGeometry.buffer(bufferDistanceValue);
+            return spatialPredicateFilterWKTsCalculate(bufferedFromGeometry.toText(),spatialPredicateType,entitiesSpatialContentDataMap);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            CoreRealmServiceRuntimeException runtimeException = new CoreRealmServiceRuntimeException();
+            runtimeException.setCauseMessage("Geometry WKT Parse error");
+            throw runtimeException;
+        }
+    }
+
     public static Set<String> spatialPredicateFilterWKTsCalculate(String fromGeometryWKT,
                                                             SpatialPredicateType spatialPredicateType, Map<String,String> entitiesSpatialContentDataMap) throws CoreRealmServiceRuntimeException {
         if(entitiesSpatialContentDataMap != null && entitiesSpatialContentDataMap.size()>0){
