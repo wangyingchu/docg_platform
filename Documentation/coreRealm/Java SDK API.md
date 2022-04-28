@@ -2892,7 +2892,15 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public List<GeospatialScaleDataPair> getAttachedGeospatialScaleDataPairs();
 ```
 
+###### ↳ GeospatialScaleCalculable
+---
+
+```java
+
+```
+
 ###### ↳ PathTravelable
+
 ---
 
 ```java
