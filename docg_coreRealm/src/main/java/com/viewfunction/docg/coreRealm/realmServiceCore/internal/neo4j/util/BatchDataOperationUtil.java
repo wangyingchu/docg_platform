@@ -21,6 +21,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
+import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -694,6 +695,59 @@ public class BatchDataOperationUtil {
             }
             threadReturnDataMap.put(currentThreadName,successfulCount);
         }
+    }
+
+
+    public static Map<String,Object> batchAttachGeospatialScaleEventsByGeospatialCode(Map<String,String> entityUIDAndGeospatialCodeMap,
+                                                    String eventComment,Map<String,Object> globalEventData,GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade, CPUUsageRate _CPUUsageRate){
+        Map<String,String> geospatialScaleEntityUIDAndCodeMap = new HashMap<>();
+        GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
+        try{
+            QueryParameters geospatialScaleEntityQueryParameters = new QueryParameters();
+            geospatialScaleEntityQueryParameters.setResultNumber(10000000);
+            List<String> attributeNamesList = new ArrayList<>();
+            attributeNamesList.add(RealmConstant.GeospatialCodeProperty);
+            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(RealmConstant.GeospatialScaleEntityClass,geospatialScaleEntityQueryParameters,attributeNamesList);
+            DataTransformer geospatialCodeSearchDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    while(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        Map<String,Object> valueMap = nodeRecord.asMap();
+                        String idKey = "id("+CypherBuilder.operationResultName+")";
+                        Long uidValue = (Long)valueMap.get(idKey);
+                        String geospatialScaleEntityUID = ""+uidValue.longValue();
+                        String geospatialCodeKey = CypherBuilder.operationResultName+"."+RealmConstant.GeospatialCodeProperty;
+                        String geospatialCodeValue = valueMap.get(geospatialCodeKey).toString();
+                        geospatialScaleEntityUIDAndCodeMap.put(geospatialCodeValue,geospatialScaleEntityUID);
+                    }
+                    return null;
+                }
+            };
+            graphOperationExecutor.executeRead(geospatialCodeSearchDataTransformer, queryCql);
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }finally {
+            graphOperationExecutor.close();
+        }
+        List<RelationEntityValue> attachEntityMetaDataList = new ArrayList<>();
+        Iterator<Map.Entry<String, String>> entries = entityUIDAndGeospatialCodeMap.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry<String, String> entry = entries.next();
+            String conceptionEntityUID = entry.getKey();
+            String targetGeospatialCode = entry.getValue();
+
+            if(geospatialScaleEntityUIDAndCodeMap.containsKey(targetGeospatialCode)) {
+                RelationEntityValue relationEntityValue = new RelationEntityValue();
+                relationEntityValue.setFromConceptionEntityUID(conceptionEntityUID);
+                relationEntityValue.setToConceptionEntityUID(geospatialScaleEntityUIDAndCodeMap.get(targetGeospatialCode));
+                Map<String,Object> geospatialCodePropertyDataMap = new HashMap<>();
+                geospatialCodePropertyDataMap.put(RealmConstant.GeospatialCodeProperty,targetGeospatialCode);
+                relationEntityValue.setEntityAttributesValue(geospatialCodePropertyDataMap);
+                attachEntityMetaDataList.add(relationEntityValue);
+            }
+        }
+        return batchAttachGeospatialScaleEvents(attachEntityMetaDataList,eventComment,globalEventData,geospatialScaleGrade,_CPUUsageRate);
     }
 
     public static int calculateRuntimeCPUCoresByUsageRate(CPUUsageRate _CPUUsageRate){
