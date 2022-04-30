@@ -697,7 +697,6 @@ public class BatchDataOperationUtil {
         }
     }
 
-
     public static Map<String,Object> batchAttachGeospatialScaleEventsByGeospatialCode(Map<String,String> entityUIDAndGeospatialCodeMap,
                                                     String eventComment,Map<String,Object> globalEventData,GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade, CPUUsageRate _CPUUsageRate){
         Map<String,String> geospatialScaleEntityUIDAndCodeMap = new HashMap<>();
