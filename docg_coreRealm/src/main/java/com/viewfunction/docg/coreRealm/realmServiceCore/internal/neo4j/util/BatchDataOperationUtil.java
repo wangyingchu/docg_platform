@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -261,34 +262,39 @@ public class BatchDataOperationUtil {
         }
         CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
         TimeFlow.TimeScaleGrade referTimeScaleGrade = timeScaleGrade;
-        LocalDateTime eventReferTime = LocalDateTime.parse(dateTime.toString(),formatter);
+        try {
+            LocalDateTime eventReferTime = LocalDateTime.parse(dateTime.toString(), formatter);
 
-        propertiesMap.put(RealmConstant._TimeScaleEventReferTime,eventReferTime);
-        propertiesMap.put(RealmConstant._TimeScaleEventComment,eventComment);
-        propertiesMap.put(RealmConstant._TimeScaleEventScaleGrade,""+referTimeScaleGrade);
-        propertiesMap.put(RealmConstant._TimeScaleEventTimeFlow,RealmConstant._defaultTimeFlowName);
+            propertiesMap.put(RealmConstant._TimeScaleEventReferTime, eventReferTime);
+            propertiesMap.put(RealmConstant._TimeScaleEventComment,eventComment);
+            propertiesMap.put(RealmConstant._TimeScaleEventScaleGrade,""+referTimeScaleGrade);
+            propertiesMap.put(RealmConstant._TimeScaleEventTimeFlow,RealmConstant._defaultTimeFlowName);
 
-        String createEventCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.TimeScaleEventClass}, propertiesMap);
-        GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
-                new GetSingleConceptionEntityTransformer(RealmConstant.TimeScaleEventClass, workingGraphOperationExecutor);
-        Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer, createEventCql);
-        if(newEntityRes != null) {
-            String timeEventUID = ((ConceptionEntity)newEntityRes).getConceptionEntityUID();
-            Map<String,Object> relationPropertiesMap = new HashMap<>();
-            CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
-            String createCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(conceptionEntityUID),Long.parseLong(timeEventUID), RealmConstant.TimeScale_AttachToRelationClass,relationPropertiesMap);
-            GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
-                    (RealmConstant.TimeScale_AttachToRelationClass,workingGraphOperationExecutor);
-            Object newRelationEntityRes = workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, createCql);
-            if(newRelationEntityRes != null){
-                String timeScaleEntityUID = getTimeScaleEntityUID(timeScaleEntitiesMetaInfoMapping,eventReferTime,RealmConstant._defaultTimeFlowName, referTimeScaleGrade, workingGraphOperationExecutor);
-                if(timeScaleEntityUID != null){
-                    String linkToTimeScaleEntityCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(timeScaleEntityUID),Long.parseLong(timeEventUID),RealmConstant.TimeScale_TimeReferToRelationClass,relationPropertiesMap);
-                    workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, linkToTimeScaleEntityCql);
+            String createEventCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.TimeScaleEventClass}, propertiesMap);
+            GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                    new GetSingleConceptionEntityTransformer(RealmConstant.TimeScaleEventClass, workingGraphOperationExecutor);
+            Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer, createEventCql);
+            if(newEntityRes != null) {
+                String timeEventUID = ((ConceptionEntity)newEntityRes).getConceptionEntityUID();
+                Map<String,Object> relationPropertiesMap = new HashMap<>();
+                CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
+                String createCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(conceptionEntityUID),Long.parseLong(timeEventUID), RealmConstant.TimeScale_AttachToRelationClass,relationPropertiesMap);
+                GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
+                        (RealmConstant.TimeScale_AttachToRelationClass,workingGraphOperationExecutor);
+                Object newRelationEntityRes = workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, createCql);
+                if(newRelationEntityRes != null){
+                    String timeScaleEntityUID = getTimeScaleEntityUID(timeScaleEntitiesMetaInfoMapping,eventReferTime,RealmConstant._defaultTimeFlowName, referTimeScaleGrade, workingGraphOperationExecutor);
+                    if(timeScaleEntityUID != null){
+                        String linkToTimeScaleEntityCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(timeScaleEntityUID),Long.parseLong(timeEventUID),RealmConstant.TimeScale_TimeReferToRelationClass,relationPropertiesMap);
+                        workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, linkToTimeScaleEntityCql);
+                    }
                 }
             }
+            return true;
+        }catch(DateTimeParseException e){
+            e.printStackTrace();
         }
-        return true;
+        return false;
     }
 
     public static Map<String,Object> batchAttachTimeScaleEventsWithStringDateAttributeValue(List<ConceptionEntityValue> conceptionEntityValueList, String timeEventAttributeName,String eventComment,
