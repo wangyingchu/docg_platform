@@ -841,6 +841,123 @@ public class BatchDataOperationUtil {
         return batchAttachGeospatialScaleEvents(attachEntityMetaDataList,eventComment,globalEventData,geospatialScaleGrade,_CPUUsageRate);
     }
 
+    public static Map<String,Object> batchAttachGeospatialScaleEventsByChineseNames(Map<String,String> entityUIDAndGeospatialChinaNamesMap,
+                                                                                      String eventComment,Map<String,Object> globalEventData,GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade, CPUUsageRate _CPUUsageRate){
+        Map<String,String> geospatialScaleEntityUIDAndChinaNamesMap = new HashMap<>();
+        Map<String,String> geospatialScaleEntityUIDAndCodeMap = new HashMap<>();
+        GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
+        try{
+            QueryParameters geospatialScaleEntityQueryParameters = new QueryParameters();
+            geospatialScaleEntityQueryParameters.setResultNumber(10000000);
+            List<String> attributeNamesList = new ArrayList<>();
+            attributeNamesList.add(RealmConstant.GeospatialChineseNameProperty);
+            attributeNamesList.add(RealmConstant.GeospatialCodeProperty);
+
+            String _GeospatialScaleEntityClassName = RealmConstant.GeospatialScaleEntityClass;
+            switch(geospatialScaleGrade){
+                case PROVINCE: _GeospatialScaleEntityClassName = RealmConstant.GeospatialScaleProvinceEntityClass;
+                    break;
+                case PREFECTURE:_GeospatialScaleEntityClassName = RealmConstant.GeospatialScalePrefectureEntityClass;
+                    attributeNamesList.add("ChinaProvinceName");
+                    break;
+                case COUNTY:_GeospatialScaleEntityClassName = RealmConstant.GeospatialScaleCountyEntityClass;
+                    attributeNamesList.add("ChinaProvinceName");
+                    attributeNamesList.add("ChinaPrefectureName");
+                    break;
+                case TOWNSHIP:_GeospatialScaleEntityClassName = RealmConstant.GeospatialScaleTownshipEntityClass;
+                    attributeNamesList.add("ChinaProvinceName");
+                    attributeNamesList.add("ChinaPrefectureName");
+                    attributeNamesList.add("ChinaCountyName");
+                    break;
+                case VILLAGE:_GeospatialScaleEntityClassName = RealmConstant.GeospatialScaleVillageEntityClass;
+                    attributeNamesList.add("ChinaProvinceName");
+                    attributeNamesList.add("ChinaPrefectureName");
+                    attributeNamesList.add("ChinaCountyName");
+                    attributeNamesList.add("ChinaTownshipName");
+                    break;
+            }
+
+            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(_GeospatialScaleEntityClassName,geospatialScaleEntityQueryParameters,attributeNamesList);
+            DataTransformer geospatialCodeSearchDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    while(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        Map<String,Object> valueMap = nodeRecord.asMap();
+                        String idKey = "id("+CypherBuilder.operationResultName+")";
+                        Long uidValue = (Long)valueMap.get(idKey);
+                        String geospatialScaleEntityUID = ""+uidValue.longValue();
+                        String geospatialScaleEntityCode = CypherBuilder.operationResultName+"."+RealmConstant.GeospatialCodeProperty;
+                        String geospatialChinaProvinceKey = CypherBuilder.operationResultName+"."+"ChinaProvinceName";
+                        String geospatialChinaPrefectureKey = CypherBuilder.operationResultName+"."+"ChinaPrefectureName";
+                        String geospatialChinaCountyKey = CypherBuilder.operationResultName+"."+"ChinaCountyName";
+                        String geospatialChinaTownKey = CypherBuilder.operationResultName+"."+"ChinaTownshipName";
+                        String geospatialEntitySelfKey = CypherBuilder.operationResultName+"."+RealmConstant.GeospatialChineseNameProperty;
+
+                        String geospatialChinaNameValue = "";
+                        switch(geospatialScaleGrade){
+                            case PROVINCE:
+                                geospatialChinaNameValue = valueMap.get(geospatialEntitySelfKey).toString();
+                                break;
+                            case PREFECTURE:
+                                geospatialChinaNameValue = valueMap.get(geospatialChinaProvinceKey)+"-"+
+                                        valueMap.get(geospatialEntitySelfKey).toString();
+                                break;
+                            case COUNTY:
+                                geospatialChinaNameValue = valueMap.get(geospatialChinaProvinceKey)+"-"+
+                                        valueMap.get(geospatialChinaPrefectureKey).toString()+"-"+
+                                        valueMap.get(geospatialEntitySelfKey).toString();
+                                break;
+                            case TOWNSHIP:
+                                geospatialChinaNameValue = valueMap.get(geospatialChinaProvinceKey)+"-"+
+                                        valueMap.get(geospatialChinaPrefectureKey).toString()+"-"+
+                                        valueMap.get(geospatialChinaCountyKey).toString()+"-"+
+                                        valueMap.get(geospatialEntitySelfKey).toString();
+                                break;
+                            case VILLAGE:
+                                geospatialChinaNameValue = valueMap.get(geospatialChinaProvinceKey)+"-"+
+                                        valueMap.get(geospatialChinaPrefectureKey).toString()+"-"+
+                                        valueMap.get(geospatialChinaCountyKey).toString()+"-"+
+                                        valueMap.get(geospatialChinaTownKey).toString()+"-"+
+                                        valueMap.get(geospatialEntitySelfKey).toString();
+                                break;
+                        }
+                        geospatialScaleEntityUIDAndChinaNamesMap.put(geospatialChinaNameValue,geospatialScaleEntityUID);
+                        String entityGeoCode =
+                                valueMap.containsKey(geospatialScaleEntityCode) ? valueMap.get(geospatialScaleEntityCode).toString():"-";
+                        geospatialScaleEntityUIDAndCodeMap.put(geospatialScaleEntityUID,entityGeoCode);
+                    }
+                    return null;
+                }
+            };
+            graphOperationExecutor.executeRead(geospatialCodeSearchDataTransformer, queryCql);
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }finally {
+            graphOperationExecutor.close();
+        }
+        List<RelationEntityValue> attachEntityMetaDataList = new ArrayList<>();
+        Iterator<Map.Entry<String, String>> entries = entityUIDAndGeospatialChinaNamesMap.entrySet().iterator();
+        while (entries.hasNext()) {
+            Map.Entry<String, String> entry = entries.next();
+            String conceptionEntityUID = entry.getKey();
+            String targetGeospatialChinaNames = entry.getValue();
+
+            if(geospatialScaleEntityUIDAndChinaNamesMap.containsKey(targetGeospatialChinaNames)) {
+                RelationEntityValue relationEntityValue = new RelationEntityValue();
+                relationEntityValue.setFromConceptionEntityUID(conceptionEntityUID);
+                relationEntityValue.setToConceptionEntityUID(geospatialScaleEntityUIDAndChinaNamesMap.get(targetGeospatialChinaNames));
+                Map<String,Object> geospatialCodePropertyDataMap = new HashMap<>();
+                geospatialCodePropertyDataMap.put("GeospatialChinaNames",targetGeospatialChinaNames);
+                geospatialCodePropertyDataMap.put(RealmConstant.GeospatialCodeProperty,
+                        geospatialScaleEntityUIDAndCodeMap.get(geospatialScaleEntityUIDAndChinaNamesMap.get(targetGeospatialChinaNames)));
+                relationEntityValue.setEntityAttributesValue(geospatialCodePropertyDataMap);
+                attachEntityMetaDataList.add(relationEntityValue);
+            }
+        }
+        return batchAttachGeospatialScaleEvents(attachEntityMetaDataList,eventComment,globalEventData,geospatialScaleGrade,_CPUUsageRate);
+    }
+
     public static int calculateRuntimeCPUCoresByUsageRate(CPUUsageRate _CPUUsageRate){
         int availableCoreNumber = Runtime.getRuntime().availableProcessors();
         if(availableCoreNumber<=4){
