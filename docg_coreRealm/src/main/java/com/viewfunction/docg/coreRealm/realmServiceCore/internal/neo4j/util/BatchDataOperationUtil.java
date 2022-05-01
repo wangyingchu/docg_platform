@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -153,10 +154,10 @@ public class BatchDataOperationUtil {
         private List<ConceptionEntityValue> conceptionEntityValueList;
         private Map<String,String> timeScaleEntitiesMetaInfoMapping;
         private Map<String,Object> threadReturnDataMap;
+        private DateTimeFormatter formatter;
         public LinkTimeScaleEventThread(String timeEventAttributeName,String eventComment,Map<String,Object> globalEventData,
                                         TimeFlow.TimeScaleGrade timeScaleGrade,List<ConceptionEntityValue> conceptionEntityValueList,
-                                        Map<String,String> timeScaleEntitiesMetaInfoMapping,Map<String,Object> threadReturnDataMap
-                                         ){
+                                        Map<String,String> timeScaleEntitiesMetaInfoMapping,Map<String,Object> threadReturnDataMap){
             this.timeEventAttributeName = timeEventAttributeName;
             this.eventComment = eventComment;
             this.globalEventData = globalEventData;
@@ -164,6 +165,19 @@ public class BatchDataOperationUtil {
             this.conceptionEntityValueList = conceptionEntityValueList;
             this.timeScaleEntitiesMetaInfoMapping = timeScaleEntitiesMetaInfoMapping;
             this.threadReturnDataMap = threadReturnDataMap;
+        }
+
+        public LinkTimeScaleEventThread(String timeEventAttributeName,DateTimeFormatter formatter,String eventComment,Map<String,Object> globalEventData,
+                                        TimeFlow.TimeScaleGrade timeScaleGrade,List<ConceptionEntityValue> conceptionEntityValueList,
+                                        Map<String,String> timeScaleEntitiesMetaInfoMapping,Map<String,Object> threadReturnDataMap){
+            this.timeEventAttributeName = timeEventAttributeName;
+            this.eventComment = eventComment;
+            this.globalEventData = globalEventData;
+            this.timeScaleGrade = timeScaleGrade;
+            this.conceptionEntityValueList = conceptionEntityValueList;
+            this.timeScaleEntitiesMetaInfoMapping = timeScaleEntitiesMetaInfoMapping;
+            this.threadReturnDataMap = threadReturnDataMap;
+            this.formatter = formatter;
         }
 
         @Override
@@ -174,8 +188,14 @@ public class BatchDataOperationUtil {
             for(ConceptionEntityValue currentConceptionEntityValue:conceptionEntityValueList){
                 if(currentConceptionEntityValue.getEntityAttributesValue().get(timeEventAttributeName) != null){
                     Object targetDateValue = currentConceptionEntityValue.getEntityAttributesValue().get(timeEventAttributeName);
-                    boolean attachResult = attachTimeScaleEventLogic(timeScaleEntitiesMetaInfoMapping,currentConceptionEntityValue.getConceptionEntityUID(),targetDateValue,
+                    boolean attachResult;
+                    if(formatter != null){
+                        attachResult = attachTimeScaleEventLogic(timeScaleEntitiesMetaInfoMapping,currentConceptionEntityValue.getConceptionEntityUID(),targetDateValue,formatter,
                             eventComment,globalEventData,timeScaleGrade,graphOperationExecutor);
+                    }else{
+                        attachResult = attachTimeScaleEventLogic(timeScaleEntitiesMetaInfoMapping,currentConceptionEntityValue.getConceptionEntityUID(),targetDateValue,
+                                eventComment,globalEventData,timeScaleGrade,graphOperationExecutor);
+                    }
                     if(attachResult){
                         successfulCount++;
                     }
@@ -187,8 +207,7 @@ public class BatchDataOperationUtil {
     }
 
     private static boolean attachTimeScaleEventLogic(Map<String,String> timeScaleEntitiesMetaInfoMapping,String conceptionEntityUID,Object dateTime,String eventComment,
-                                                 Map<String,Object> globalEventData,TimeFlow.TimeScaleGrade timeScaleGrade,
-                                                  GraphOperationExecutor workingGraphOperationExecutor){
+                                                 Map<String,Object> globalEventData,TimeFlow.TimeScaleGrade timeScaleGrade,GraphOperationExecutor workingGraphOperationExecutor){
         Map<String, Object> propertiesMap = new HashMap<>();
         if(globalEventData != null){
             propertiesMap.putAll(globalEventData);
@@ -232,6 +251,73 @@ public class BatchDataOperationUtil {
             }
         }
         return true;
+    }
+
+    private static boolean attachTimeScaleEventLogic(Map<String,String> timeScaleEntitiesMetaInfoMapping,String conceptionEntityUID,Object dateTime,DateTimeFormatter formatter,String eventComment,
+                                                     Map<String,Object> globalEventData,TimeFlow.TimeScaleGrade timeScaleGrade,GraphOperationExecutor workingGraphOperationExecutor){
+        Map<String, Object> propertiesMap = new HashMap<>();
+        if(globalEventData != null){
+            propertiesMap.putAll(globalEventData);
+        }
+        CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
+        TimeFlow.TimeScaleGrade referTimeScaleGrade = timeScaleGrade;
+        LocalDateTime eventReferTime = LocalDateTime.parse(dateTime.toString(),formatter);
+
+        propertiesMap.put(RealmConstant._TimeScaleEventReferTime,eventReferTime);
+        propertiesMap.put(RealmConstant._TimeScaleEventComment,eventComment);
+        propertiesMap.put(RealmConstant._TimeScaleEventScaleGrade,""+referTimeScaleGrade);
+        propertiesMap.put(RealmConstant._TimeScaleEventTimeFlow,RealmConstant._defaultTimeFlowName);
+
+        String createEventCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.TimeScaleEventClass}, propertiesMap);
+        GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                new GetSingleConceptionEntityTransformer(RealmConstant.TimeScaleEventClass, workingGraphOperationExecutor);
+        Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer, createEventCql);
+        if(newEntityRes != null) {
+            String timeEventUID = ((ConceptionEntity)newEntityRes).getConceptionEntityUID();
+            Map<String,Object> relationPropertiesMap = new HashMap<>();
+            CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
+            String createCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(conceptionEntityUID),Long.parseLong(timeEventUID), RealmConstant.TimeScale_AttachToRelationClass,relationPropertiesMap);
+            GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
+                    (RealmConstant.TimeScale_AttachToRelationClass,workingGraphOperationExecutor);
+            Object newRelationEntityRes = workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, createCql);
+            if(newRelationEntityRes != null){
+                String timeScaleEntityUID = getTimeScaleEntityUID(timeScaleEntitiesMetaInfoMapping,eventReferTime,RealmConstant._defaultTimeFlowName, referTimeScaleGrade, workingGraphOperationExecutor);
+                if(timeScaleEntityUID != null){
+                    String linkToTimeScaleEntityCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(timeScaleEntityUID),Long.parseLong(timeEventUID),RealmConstant.TimeScale_TimeReferToRelationClass,relationPropertiesMap);
+                    workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, linkToTimeScaleEntityCql);
+                }
+            }
+        }
+        return true;
+    }
+
+    public static Map<String,Object> batchAttachTimeScaleEventsWithStringDateAttributeValue(List<ConceptionEntityValue> conceptionEntityValueList, String timeEventAttributeName,String eventComment,
+                                       DateTimeFormatter formatter,Map<String,Object> globalEventData, TimeFlow.TimeScaleGrade timeScaleGrade,CPUUsageRate _CPUUsageRate){
+        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
+        return batchAttachTimeScaleEvents(conceptionEntityValueList,timeEventAttributeName,eventComment,formatter,globalEventData,timeScaleGrade,degreeOfParallelism);
+    }
+
+    public static Map<String,Object> batchAttachTimeScaleEvents(List<ConceptionEntityValue> conceptionEntityValueList, String timeEventAttributeName,String eventComment,
+                                        DateTimeFormatter formatter,Map<String,Object> globalEventData, TimeFlow.TimeScaleGrade timeScaleGrade,int degreeOfParallelism){
+        int singlePartitionSize = (conceptionEntityValueList.size()/degreeOfParallelism)+1;
+        List<List<ConceptionEntityValue>> rsList = Lists.partition(conceptionEntityValueList, singlePartitionSize);
+        Map<String,String> timeScaleEntitiesMetaInfoMapping = new HashMap<>();
+        Map<String,Object> threadReturnDataMap = new Hashtable<>();
+        threadReturnDataMap.put("StartTime", LocalDateTime.now());
+        ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+        for(List<ConceptionEntityValue> currentConceptionEntityValueList:rsList){
+            LinkTimeScaleEventThread linkTimeScaleEventThread = new LinkTimeScaleEventThread(timeEventAttributeName,formatter,
+                    eventComment,globalEventData,timeScaleGrade,currentConceptionEntityValueList,timeScaleEntitiesMetaInfoMapping,threadReturnDataMap);
+            executor.execute(linkTimeScaleEventThread);
+        }
+        executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        threadReturnDataMap.put("FinishTime", LocalDateTime.now());
+        return threadReturnDataMap;
     }
 
     private static String getTimeScaleEntityUID(Map<String,String> timeScaleEntitiesMetaInfoMapping,LocalDateTime eventReferTime, String timeFlowName, TimeFlow.TimeScaleGrade timeScaleGrade,GraphOperationExecutor workingGraphOperationExecutor){
