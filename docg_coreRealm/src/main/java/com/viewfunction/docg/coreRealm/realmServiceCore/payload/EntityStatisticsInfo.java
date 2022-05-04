@@ -1,9 +1,8 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.payload;
 
-import java.util.Date;
+import java.time.ZonedDateTime;
 
 public class EntityStatisticsInfo {
-
 
     public enum kindType {ConceptionKind,RelationKind}
 
@@ -13,8 +12,8 @@ public class EntityStatisticsInfo {
     private boolean isSystemKind;
     private String entityKindDesc;
     private String entityKindUID;
-    private Date createDateTime;
-    private Date lastModifyDateTime;
+    private ZonedDateTime createDateTime;
+    private ZonedDateTime lastModifyDateTime;
     private String creatorId;
     private String dataOrigin;
 
@@ -26,7 +25,7 @@ public class EntityStatisticsInfo {
     }
 
     public EntityStatisticsInfo(String entityKindName,kindType entityKindType,boolean isSystemKind,long entitiesCount,
-                                String entityKindDesc,String entityKindUID,Date createDateTime,Date lastModifyDateTime,
+                                String entityKindDesc,String entityKindUID,ZonedDateTime createDateTime,ZonedDateTime lastModifyDateTime,
                                 String creatorId,String dataOrigin){
         this.entityKindName = entityKindName;
         this.entitiesCount = entitiesCount;
@@ -64,11 +63,11 @@ public class EntityStatisticsInfo {
         return entityKindUID;
     }
 
-    public Date getCreateDateTime() {
+    public ZonedDateTime getCreateDateTime() {
         return createDateTime;
     }
 
-    public Date getLastModifyDateTime() {
+    public ZonedDateTime getLastModifyDateTime() {
         return lastModifyDateTime;
     }
 

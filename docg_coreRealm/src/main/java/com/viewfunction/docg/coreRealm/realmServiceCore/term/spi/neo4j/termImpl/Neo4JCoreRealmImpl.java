@@ -5,15 +5,15 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filtering
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
-import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
-import com.viewfunction.docg.coreRealm.realmServiceCore.operator.SystemMaintenanceOperator;
-import com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl.Neo4JCrossKindDataOperatorImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.SystemMaintenanceOperator;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl.Neo4JCrossKindDataOperatorImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl.Neo4JDataScienceOperatorImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl.Neo4JSystemMaintenanceOperatorImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
@@ -1063,51 +1063,43 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             "ORDER BY label";
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
-
-
             List<String> attributesNameList = new ArrayList<>();
+            Map<String,HashMap<String,Object>> conceptionKindMetaDataMap = new HashMap<>();
             attributesNameList.add(RealmConstant._NameProperty);
             attributesNameList.add(RealmConstant._DescProperty);
             attributesNameList.add(RealmConstant._createDateProperty);
             attributesNameList.add(RealmConstant._lastModifyDateProperty);
-
             attributesNameList.add(RealmConstant._creatorIdProperty);
             attributesNameList.add(RealmConstant._dataOriginProperty);
-
-
-
             String queryCql = CypherBuilder.matchAttributesWithQueryParameters(RealmConstant.ConceptionKindClass,null,attributesNameList);
-
-
             DataTransformer conceptionKindInfoDataTransformer = new DataTransformer() {
                 @Override
                 public Object transformResult(Result result) {
-
-                    System.out.println(result);
-                    System.out.println(result);
-                    System.out.println(result);
-
-                    if(result.hasNext()){
+                    while(result.hasNext()){
                         Record nodeRecord = result.next();
-                        System.out.println(nodeRecord.asMap());
+                        String conceptionKindName = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._NameProperty).asString();
+                        String conceptionKindDesc = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._DescProperty).asString();
+                        ZonedDateTime createDate = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._createDateProperty).asZonedDateTime();
+                        ZonedDateTime lastModifyDate = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._lastModifyDateProperty).asZonedDateTime();
+                        String dataOrigin = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._dataOriginProperty).asString();
+                        long conceptionKindUID = nodeRecord.get("id("+CypherBuilder.operationResultName+")").asLong();
+                        String creatorId = nodeRecord.containsKey(CypherBuilder.operationResultName+"."+RealmConstant._creatorIdProperty) ?
+                                nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._creatorIdProperty).asString():null;
 
-
-
-
-
+                        HashMap<String,Object> metaDataMap = new HashMap<>();
+                        metaDataMap.put(RealmConstant._NameProperty,conceptionKindName);
+                        metaDataMap.put(RealmConstant._DescProperty,conceptionKindDesc);
+                        metaDataMap.put(RealmConstant._createDateProperty,createDate);
+                        metaDataMap.put(RealmConstant._lastModifyDateProperty,lastModifyDate);
+                        metaDataMap.put(RealmConstant._creatorIdProperty,creatorId);
+                        metaDataMap.put(RealmConstant._dataOriginProperty,dataOrigin);
+                        metaDataMap.put("ConceptionKindUID",""+conceptionKindUID);
+                        conceptionKindMetaDataMap.put(conceptionKindName,metaDataMap);
                     }
-
-
-
-
-
                     return null;
                 }
             };
             workingGraphOperationExecutor.executeRead(conceptionKindInfoDataTransformer,queryCql);
-
-
-
 
             DataTransformer queryResultDataTransformer = new DataTransformer() {
                 @Override
@@ -1122,8 +1114,20 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                             currentEntityStatisticsInfo = new EntityStatisticsInfo(
                                     entityKind, EntityStatisticsInfo.kindType.ConceptionKind, true, entityCount);
                         }else{
-                            currentEntityStatisticsInfo = new EntityStatisticsInfo(
-                                    entityKind, EntityStatisticsInfo.kindType.ConceptionKind, false, entityCount);
+                            if(conceptionKindMetaDataMap.containsKey(entityKind)){
+                                currentEntityStatisticsInfo = new EntityStatisticsInfo(
+                                        entityKind, EntityStatisticsInfo.kindType.ConceptionKind, false, entityCount,
+                                        conceptionKindMetaDataMap.get(entityKind).get(RealmConstant._DescProperty).toString(),
+                                        conceptionKindMetaDataMap.get(entityKind).get("ConceptionKindUID").toString(),
+                                        (ZonedDateTime) (conceptionKindMetaDataMap.get(entityKind).get(RealmConstant._createDateProperty)),
+                                        (ZonedDateTime) (conceptionKindMetaDataMap.get(entityKind).get(RealmConstant._lastModifyDateProperty)),
+                                        conceptionKindMetaDataMap.get(entityKind).get(RealmConstant._creatorIdProperty).toString(),
+                                        conceptionKindMetaDataMap.get(entityKind).get(RealmConstant._dataOriginProperty).toString()
+                                );
+                            }else{
+                                currentEntityStatisticsInfo = new EntityStatisticsInfo(
+                                        entityKind, EntityStatisticsInfo.kindType.ConceptionKind, false, entityCount);
+                            }
                         }
                         entityStatisticsInfoList.add(currentEntityStatisticsInfo);
                     }
