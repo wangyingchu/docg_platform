@@ -1053,7 +1053,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
-    public List<EntityStatisticsInfo> getConceptionEntitiesStatistics() {
+    public List<EntityStatisticsInfo> getConceptionEntitiesStatistics() throws CoreRealmServiceEntityExploreException {
         List<EntityStatisticsInfo> entityStatisticsInfoList = new ArrayList<>();
         String cypherProcedureString = "CALL db.labels()\n" +
             "YIELD label\n" +
@@ -1063,6 +1063,28 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             "ORDER BY label";
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
+
+
+            List<String> attributesNameList = new ArrayList<>();
+            attributesNameList.add(RealmConstant._NameProperty);
+            attributesNameList.add(RealmConstant._DescProperty);
+            attributesNameList.add(RealmConstant._createDateProperty);
+            attributesNameList.add(RealmConstant._lastModifyDateProperty);
+
+            attributesNameList.add(RealmConstant._creatorIdProperty);
+            attributesNameList.add(RealmConstant._dataOriginProperty);
+
+
+
+            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(RealmConstant.ConceptionKindClass,null,attributesNameList);
+
+
+
+
+
+
+
+
             DataTransformer queryResultDataTransformer = new DataTransformer() {
                 @Override
                 public Object transformResult(Result result) {
