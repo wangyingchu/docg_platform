@@ -1079,8 +1079,32 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             String queryCql = CypherBuilder.matchAttributesWithQueryParameters(RealmConstant.ConceptionKindClass,null,attributesNameList);
 
 
+            DataTransformer conceptionKindInfoDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+
+                    System.out.println(result);
+                    System.out.println(result);
+                    System.out.println(result);
+
+                    if(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        System.out.println(nodeRecord.asMap());
 
 
+
+
+
+                    }
+
+
+
+
+
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeRead(conceptionKindInfoDataTransformer,queryCql);
 
 
 
