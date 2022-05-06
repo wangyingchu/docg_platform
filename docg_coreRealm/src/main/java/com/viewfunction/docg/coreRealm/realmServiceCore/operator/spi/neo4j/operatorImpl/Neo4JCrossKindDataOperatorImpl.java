@@ -1,6 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl;
 
 import com.google.common.collect.HashMultimap;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
@@ -386,6 +387,16 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                 setOperationSummary("fuseConceptionKindsAttributes operation for conceptionKind "+fuseTargetKindName+" success.");
         commonEntitiesOperationResultImpl.finishEntitiesOperation();
         return commonEntitiesOperationResultImpl;
+    }
+
+    @Override
+    public EntitiesOperationResult joinEntitiesToConceptionKinds(String sourceKindName, AttributesParameters attributesParameters, String[] newKindNames) throws CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
+    @Override
+    public EntitiesOperationResult retreatEntitiesFromConceptionKind(String sourceKindName, AttributesParameters attributesParameters, String kindNames) throws CoreRealmServiceEntityExploreException {
+        return null;
     }
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {

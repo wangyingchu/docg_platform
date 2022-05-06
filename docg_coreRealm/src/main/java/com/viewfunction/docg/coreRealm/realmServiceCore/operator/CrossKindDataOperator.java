@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
@@ -115,5 +116,9 @@ public interface CrossKindDataOperator {
      * @return 属性融合操作的执行结果统计
      */
     public EntitiesOperationResult fuseConceptionKindsAttributes(String fuseSourceKindName, String sourceKindMatchAttributeName, List<String> attributesForFusion,String fuseTargetKindName, String targetKindMatchAttributeName) throws CoreRealmServiceEntityExploreException;
+
+    public EntitiesOperationResult joinEntitiesToConceptionKinds(String sourceKindName, AttributesParameters attributesParameters,String[] newKindNames) throws CoreRealmServiceEntityExploreException;
+
+    public EntitiesOperationResult retreatEntitiesFromConceptionKind(String sourceKindName,AttributesParameters attributesParameters,String kindNames) throws CoreRealmServiceEntityExploreException;
 
 }
