@@ -103,6 +103,17 @@ public interface CrossKindDataOperator {
      */
     public List<RelationEntityValue> getSingleValueRelationEntityAttributesByUIDs(List<String> relationEntityUIDs, List<String> attributeNames) throws CoreRealmServiceEntityExploreException;
 
+    /**
+     * 融合两个概念类型中的属性，通过源概念类型与目标概念类型的属性值相等匹配，将匹配成功的源概念实例中的指定属性复制到对应的目标概念实例中
+     *
+     * @param fuseSourceKindName String 融合源概念类型名称
+     * @param sourceKindMatchAttributeName String 源概念类型中执行匹配的属性名称
+     * @param attributesForFusion List<String> 源概念类型中需要执行复制的属性名称列表
+     * @param fuseTargetKindName String 融合目标概念类型名称
+     * @param targetKindMatchAttributeName String 目标概念类型中执行匹配的属性名称
+     *
+     * @return 属性融合操作的执行结果统计
+     */
     public EntitiesOperationResult fuseConceptionKindsAttributes(String fuseSourceKindName, String sourceKindMatchAttributeName, List<String> attributesForFusion,String fuseTargetKindName, String targetKindMatchAttributeName) throws CoreRealmServiceEntityExploreException;
 
 }
