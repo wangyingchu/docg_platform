@@ -411,13 +411,13 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         }
 
         String entityQueryCQL = CypherBuilder.matchNodesWithQueryParameters(sourceKindName,queryParameters, CypherBuilder.CypherFunctionType.ID);
-        entityQueryCQL = entityQueryCQL.replace("RETURN id(operationResult) LIMIT 100","");
+        entityQueryCQL = entityQueryCQL.replace("RETURN id("+CypherBuilder.operationResultName+") LIMIT 100","");
 
-        String labelModifyText = "operationResult";
+        String labelModifyText = CypherBuilder.operationResultName;
         for(String currentLabel:newKindNames){
             labelModifyText = labelModifyText+ ":"+currentLabel;
         }
-        entityQueryCQL= entityQueryCQL+ "SET "+labelModifyText+" RETURN id(operationResult)";
+        entityQueryCQL= entityQueryCQL+ "SET "+labelModifyText+" RETURN id("+CypherBuilder.operationResultName+")";
         logger.debug("Generated Cypher Statement: {}", entityQueryCQL);
 
         List<String> resultEntityUIDsList = null;
@@ -442,7 +442,48 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
     @Override
     public EntitiesOperationResult retreatEntitiesFromConceptionKind(String sourceKindName, AttributesParameters attributesParameters, String kindNames) throws CoreRealmServiceEntityExploreException {
-        return null;
+        CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setDistinctMode(false);
+        queryParameters.setResultNumber(100);
+        if (attributesParameters != null) {
+            queryParameters.setDefaultFilteringItem(attributesParameters.getDefaultFilteringItem());
+            if (attributesParameters.getAndFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getAndFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.AND);
+                }
+            }
+            if (attributesParameters.getOrFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getOrFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.OR);
+                }
+            }
+        }
+
+        String entityQueryCQL = CypherBuilder.matchNodesWithQueryParameters(sourceKindName,queryParameters, CypherBuilder.CypherFunctionType.ID);
+        entityQueryCQL = entityQueryCQL.replace("RETURN id("+CypherBuilder.operationResultName+") LIMIT 100","");
+
+        entityQueryCQL= entityQueryCQL+ "REMOVE "+CypherBuilder.operationResultName+":"+kindNames+" RETURN id("+CypherBuilder.operationResultName+")";
+        logger.debug("Generated Cypher Statement: {}", entityQueryCQL);
+
+        List<String> resultEntityUIDsList = null;
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListEntityUIDTransformer getListEntityUIDTransformer = new GetListEntityUIDTransformer();
+            Object queryRes = workingGraphOperationExecutor.executeWrite(getListEntityUIDTransformer,entityQueryCQL);
+            if(queryRes != null){
+                resultEntityUIDsList = (List<String>)queryRes;
+                commonEntitiesOperationResultImpl.getSuccessEntityUIDs().addAll(resultEntityUIDsList);
+                commonEntitiesOperationResultImpl.getOperationStatistics().setSuccessItemsCount(resultEntityUIDsList.size());
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+
+        commonEntitiesOperationResultImpl.getOperationStatistics().
+                setOperationSummary("retreatEntitiesFromConceptionKind operation for conceptionKind "+sourceKindName+" success.");
+        commonEntitiesOperationResultImpl.finishEntitiesOperation();
+        return commonEntitiesOperationResultImpl;
     }
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
