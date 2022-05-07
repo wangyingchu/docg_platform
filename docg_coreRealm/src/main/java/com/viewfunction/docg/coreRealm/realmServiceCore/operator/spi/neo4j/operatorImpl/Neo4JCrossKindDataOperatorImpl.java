@@ -3,6 +3,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.oper
 import com.google.common.collect.HashMultimap;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
@@ -391,7 +392,52 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
     @Override
     public EntitiesOperationResult joinEntitiesToConceptionKinds(String sourceKindName, AttributesParameters attributesParameters, String[] newKindNames) throws CoreRealmServiceEntityExploreException {
-        return null;
+        CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setDistinctMode(false);
+        queryParameters.setResultNumber(100);
+        if (attributesParameters != null) {
+            queryParameters.setDefaultFilteringItem(attributesParameters.getDefaultFilteringItem());
+            if (attributesParameters.getAndFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getAndFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.AND);
+                }
+            }
+            if (attributesParameters.getOrFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getOrFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.OR);
+                }
+            }
+        }
+
+        String entityQueryCQL = CypherBuilder.matchNodesWithQueryParameters(sourceKindName,queryParameters, CypherBuilder.CypherFunctionType.ID);
+        entityQueryCQL = entityQueryCQL.replace("RETURN id(operationResult) LIMIT 100","");
+
+        String labelModifyText = "operationResult";
+        for(String currentLabel:newKindNames){
+            labelModifyText = labelModifyText+ ":"+currentLabel;
+        }
+        entityQueryCQL= entityQueryCQL+ "SET "+labelModifyText+" RETURN id(operationResult)";
+        logger.debug("Generated Cypher Statement: {}", entityQueryCQL);
+
+        List<String> resultEntityUIDsList = null;
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListEntityUIDTransformer getListEntityUIDTransformer = new GetListEntityUIDTransformer();
+            Object queryRes = workingGraphOperationExecutor.executeWrite(getListEntityUIDTransformer,entityQueryCQL);
+            if(queryRes != null){
+                resultEntityUIDsList = (List<String>)queryRes;
+                commonEntitiesOperationResultImpl.getSuccessEntityUIDs().addAll(resultEntityUIDsList);
+                commonEntitiesOperationResultImpl.getOperationStatistics().setSuccessItemsCount(resultEntityUIDsList.size());
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+
+        commonEntitiesOperationResultImpl.getOperationStatistics().
+                setOperationSummary("joinEntitiesToConceptionKinds operation for conceptionKind "+sourceKindName+" success.");
+        commonEntitiesOperationResultImpl.finishEntitiesOperation();
+        return commonEntitiesOperationResultImpl;
     }
 
     @Override
