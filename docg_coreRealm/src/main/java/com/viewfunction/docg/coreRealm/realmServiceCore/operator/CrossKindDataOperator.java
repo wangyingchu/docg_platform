@@ -117,8 +117,26 @@ public interface CrossKindDataOperator {
      */
     public EntitiesOperationResult fuseConceptionKindsAttributes(String fuseSourceKindName, String sourceKindMatchAttributeName, List<String> attributesForFusion,String fuseTargetKindName, String targetKindMatchAttributeName) throws CoreRealmServiceEntityExploreException;
 
+    /**
+     * 通过源概念类型名称与查询条件选择一组概念实体，将该组概念实体添加入额外的概念类型中
+     *
+     * @param sourceKindName String 源概念类型名称
+     * @param attributesParameters AttributesParameters 源概念实体的查询条件
+     * @param newKindNames String[] 需要加入的新概念类型名称列表
+     *
+     * @return 加入新概念类型操作的执行结果统计
+     */
     public EntitiesOperationResult joinEntitiesToConceptionKinds(String sourceKindName, AttributesParameters attributesParameters,String[] newKindNames) throws CoreRealmServiceEntityExploreException;
 
-    public EntitiesOperationResult retreatEntitiesFromConceptionKind(String sourceKindName,AttributesParameters attributesParameters,String kindNames) throws CoreRealmServiceEntityExploreException;
+    /**
+     * 通过源概念类型名称与查询条件选择一组概念实体，将该组概念实体从指定的概念类型中移除
+     *
+     * @param sourceKindName String 源概念类型名称
+     * @param attributesParameters AttributesParameters 源概念实体的查询条件
+     * @param kindName String 需要从中移除的概念类型名称
+     *
+     * @return 移除概念类型操作的执行结果统计
+     */
+    public EntitiesOperationResult retreatEntitiesFromConceptionKind(String sourceKindName,AttributesParameters attributesParameters,String kindName) throws CoreRealmServiceEntityExploreException;
 
 }

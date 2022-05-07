@@ -2591,7 +2591,6 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 属性值分布信息对象
      */
     public AttributeValueDistributionInfo statisticAttributeValueDistribution(AttributesParameters queryParameters,String attributeName) throws CoreRealmServiceEntityExploreException;
-
 ```
 
 ###### ↳ TimeScaleFeatureSupportable
@@ -3062,7 +3061,6 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 符合条件的实体路径列表
      */
     public List<EntitiesPath> getLongestPathsBetweenEntity(String targetEntityUID,List<RelationKindMatchLogic> relationKindMatchLogics,RelationDirection defaultDirectionForNoneRelationKindMatch,int maxJump,int maxPathNumber,PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterParameters conceptionPathEntityFilterParameters) throws CoreRealmServiceEntityExploreException;
-
 ```
 
 ###### *时间分析类特性*
@@ -3739,7 +3737,6 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 目标地理空间刻度实体对象
      */
     public GeospatialScaleEntity getVillageEntity(GeospatialProperty geospatialProperty,String countryValue, String provinceValue, String prefectureValue, String countyValue,String townshipValue,String villageValue) throws CoreRealmServiceRuntimeException;
-
 ```
 ###### ↳ GeospatialScaleEntity
 
@@ -3862,7 +3859,6 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 概念实体返回结果集
      */
     public ConceptionEntitiesRetrieveResult getAttachedConceptionEntities(String conceptionKindName, QueryParameters queryParameters, GeospatialScaleLevel geospatialScaleLevel);
-
 ```
 
 ###### ↳ GeospatialScaleEvent
@@ -4029,6 +4025,27 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      */
     public EntitiesOperationResult fuseConceptionKindsAttributes(String fuseSourceKindName, String sourceKindMatchAttributeName, List<String> attributesForFusion,String fuseTargetKindName, String targetKindMatchAttributeName) throws CoreRealmServiceEntityExploreException;
 
+    /**
+     * 通过源概念类型名称与查询条件选择一组概念实体，将该组概念实体添加入额外的概念类型中
+     *
+     * @param sourceKindName String 源概念类型名称
+     * @param attributesParameters AttributesParameters 源概念实体的查询条件
+     * @param newKindNames String[] 需要加入的新概念类型名称列表
+     *
+     * @return 加入新概念类型操作的执行结果统计
+     */
+    public EntitiesOperationResult joinEntitiesToConceptionKinds(String sourceKindName, AttributesParameters attributesParameters,String[] newKindNames) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 通过源概念类型名称与查询条件选择一组概念实体，将该组概念实体从指定的概念类型中移除
+     *
+     * @param sourceKindName String 源概念类型名称
+     * @param attributesParameters AttributesParameters 源概念实体的查询条件
+     * @param kindName String 需要从中移除的概念类型名称
+     *
+     * @return 移除概念类型操作的执行结果统计
+     */
+    public EntitiesOperationResult retreatEntitiesFromConceptionKind(String sourceKindName,AttributesParameters attributesParameters,String kindName) throws CoreRealmServiceEntityExploreException;
 ```
 
 ###### ↳ SystemMaintenanceOperator
@@ -4128,7 +4145,6 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 如删除索引成功返回 true
      */
     public boolean removeRelationKindSearchIndex(String indexName) throws CoreRealmServiceRuntimeException;
-
 ```
 
 ###### ↳ DataScienceOperator
@@ -4592,6 +4608,5 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return Depth First Search (DFS)算法计算结果集
      */
     public DepthFirstSearchAlgorithmResult executeDepthFirstSearchAlgorithm(String graphName, DepthFirstSearchAlgorithmConfig depthFirstSearchAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
-
 ```
 

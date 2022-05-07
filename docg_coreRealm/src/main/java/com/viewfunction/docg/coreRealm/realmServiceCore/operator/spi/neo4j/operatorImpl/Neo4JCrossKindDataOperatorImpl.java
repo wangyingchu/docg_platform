@@ -441,7 +441,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public EntitiesOperationResult retreatEntitiesFromConceptionKind(String sourceKindName, AttributesParameters attributesParameters, String kindNames) throws CoreRealmServiceEntityExploreException {
+    public EntitiesOperationResult retreatEntitiesFromConceptionKind(String sourceKindName, AttributesParameters attributesParameters, String kindName) throws CoreRealmServiceEntityExploreException {
         CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
         QueryParameters queryParameters = new QueryParameters();
         queryParameters.setDistinctMode(false);
@@ -463,7 +463,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         String entityQueryCQL = CypherBuilder.matchNodesWithQueryParameters(sourceKindName,queryParameters, CypherBuilder.CypherFunctionType.ID);
         entityQueryCQL = entityQueryCQL.replace("RETURN id("+CypherBuilder.operationResultName+") LIMIT 100","");
 
-        entityQueryCQL= entityQueryCQL+ "REMOVE "+CypherBuilder.operationResultName+":"+kindNames+" RETURN id("+CypherBuilder.operationResultName+")";
+        entityQueryCQL= entityQueryCQL+ "REMOVE "+CypherBuilder.operationResultName+":"+kindName+" RETURN id("+CypherBuilder.operationResultName+")";
         logger.debug("Generated Cypher Statement: {}", entityQueryCQL);
 
         List<String> resultEntityUIDsList = null;
