@@ -1109,7 +1109,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                         Record currentRecord = result.next();
                         String entityKind = currentRecord.get("label").asString();
                         long entityCount = currentRecord.get("count").asLong();
-                        EntityStatisticsInfo currentEntityStatisticsInfo;
+                        EntityStatisticsInfo currentEntityStatisticsInfo = null;
                         if(entityKind.startsWith("DOCG_")){
                             currentEntityStatisticsInfo = new EntityStatisticsInfo(
                                     entityKind, EntityStatisticsInfo.kindType.ConceptionKind, true, entityCount);
@@ -1124,12 +1124,11 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                                         conceptionKindMetaDataMap.get(entityKind).get(RealmConstant._creatorIdProperty).toString(),
                                         conceptionKindMetaDataMap.get(entityKind).get(RealmConstant._dataOriginProperty).toString()
                                 );
-                            }else{
-                                currentEntityStatisticsInfo = new EntityStatisticsInfo(
-                                        entityKind, EntityStatisticsInfo.kindType.ConceptionKind, false, entityCount);
                             }
                         }
-                        entityStatisticsInfoList.add(currentEntityStatisticsInfo);
+                        if(currentEntityStatisticsInfo != null){
+                            entityStatisticsInfoList.add(currentEntityStatisticsInfo);
+                        }
                     }
                     return null;
                     }
