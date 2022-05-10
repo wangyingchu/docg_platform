@@ -12,15 +12,15 @@ public class KindMetaInfo {
         this.kindUID = kindUID;
     }
 
-    public void setKindName(String kindName) {
-        this.kindName = kindName;
+    public String getKindName() {
+        return this.kindName;
     }
 
-    public void setKindDesc(String kindDesc) {
-        this.kindDesc = kindDesc;
+    public String getKindDesc() {
+        return this.kindDesc;
     }
 
-    public void setKindUID(String kindUID) {
-        this.kindUID = kindUID;
+    public String getKindUID() {
+        return this.kindUID;
     }
 }
