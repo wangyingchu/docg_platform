@@ -455,28 +455,28 @@ public interface CoreRealm {
      *
      * @return 当前领域的全部概念类型元数据信息列表
      */
-    public List<KindMetaInfo> getConceptionKindsMetaInfo();
+    public List<KindMetaInfo> getConceptionKindsMetaInfo() throws CoreRealmServiceEntityExploreException;
 
     /**
      * 获取当前领域的全部关系类型元数据信息
      *
      * @return 当前领域的全部关系类型元数据信息列表
      */
-    public List<KindMetaInfo> getRelationKindsMetaInfo();
+    public List<KindMetaInfo> getRelationKindsMetaInfo() throws CoreRealmServiceEntityExploreException;
 
     /**
      * 获取当前领域的全部属性类型元数据信息
      *
      * @return 当前领域的全部属性类型元数据信息列表
      */
-    public List<KindMetaInfo> getAttributeKindsMetaInfo();
+    public List<KindMetaInfo> getAttributeKindsMetaInfo() throws CoreRealmServiceEntityExploreException;
 
     /**
      * 获取当前领域的全部属性视图类型元数据信息
      *
      * @return 当前领域的全部属性视图类型元数据信息列表
      */
-    public List<KindMetaInfo> getAttributesViewKindsMetaInfo();
+    public List<KindMetaInfo> getAttributesViewKindsMetaInfo() throws CoreRealmServiceEntityExploreException;
 
     /**
      * 开启全局会话，此操作会创建一个持久化的后端数据库连接，执行该操作后由当前 CoreRealm 所创建的所有对象（以及这些对象创建的后续对象）将继承性的共享该持久化后端数据库连接。

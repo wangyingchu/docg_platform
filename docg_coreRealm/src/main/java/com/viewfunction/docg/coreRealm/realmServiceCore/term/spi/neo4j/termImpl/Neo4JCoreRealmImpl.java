@@ -1244,23 +1244,23 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
-    public List<KindMetaInfo> getConceptionKindsMetaInfo() {
-        return null;
+    public List<KindMetaInfo> getConceptionKindsMetaInfo() throws CoreRealmServiceEntityExploreException {
+        return getKindsMetaInfo(RealmConstant.ConceptionKindClass);
     }
 
     @Override
-    public List<KindMetaInfo> getRelationKindsMetaInfo() {
-        return null;
+    public List<KindMetaInfo> getRelationKindsMetaInfo() throws CoreRealmServiceEntityExploreException{
+        return getKindsMetaInfo(RealmConstant.RelationKindClass);
     }
 
     @Override
-    public List<KindMetaInfo> getAttributeKindsMetaInfo() {
-        return null;
+    public List<KindMetaInfo> getAttributeKindsMetaInfo() throws CoreRealmServiceEntityExploreException{
+        return getKindsMetaInfo(RealmConstant.AttributeKindClass);
     }
 
     @Override
-    public List<KindMetaInfo> getAttributesViewKindsMetaInfo() {
-        return null;
+    public List<KindMetaInfo> getAttributesViewKindsMetaInfo() throws CoreRealmServiceEntityExploreException{
+        return getKindsMetaInfo(RealmConstant.AttributesViewKindClass);
     }
 
     @Override
@@ -1274,6 +1274,26 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         if(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor() != null){
             this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor().close();
             this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(null);
+        }
+    }
+
+    private List<KindMetaInfo> getKindsMetaInfo(String kindClassName) throws CoreRealmServiceEntityExploreException {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            List<String> attributesNameList = new ArrayList<>();
+            attributesNameList.add(RealmConstant._NameProperty);
+            attributesNameList.add(RealmConstant._DescProperty);
+            attributesNameList.add(RealmConstant._createDateProperty);
+            attributesNameList.add(RealmConstant._lastModifyDateProperty);
+            attributesNameList.add(RealmConstant._creatorIdProperty);
+            attributesNameList.add(RealmConstant._dataOriginProperty);
+            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(kindClassName,null,attributesNameList);
+
+            GetListKindMetaInfoTransformer getListKindMetaInfoTransformer = new GetListKindMetaInfoTransformer();
+            Object kindMetaInfoListRes = workingGraphOperationExecutor.executeRead(getListKindMetaInfoTransformer,queryCql);
+            return kindMetaInfoListRes != null ? (List<KindMetaInfo>) kindMetaInfoListRes : null;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
     }
 

@@ -5,6 +5,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionKindCorrelationInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntityStatisticsInfo;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.KindMetaInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeFlowImpl;
@@ -392,5 +393,18 @@ public class CoreRealmTest {
 
         List<ConceptionKindCorrelationInfo> correlationInfo = coreRealm.getConceptionKindsCorrelation();
         Assert.assertNotNull(correlationInfo);
+
+        List<KindMetaInfo> kindMetaInfoList = coreRealm.getConceptionKindsMetaInfo();
+        Assert.assertNotNull(statisticsInfosList);
+        Assert.assertTrue(statisticsInfosList.size()>0);
+        kindMetaInfoList = coreRealm.getRelationKindsMetaInfo();
+        Assert.assertNotNull(statisticsInfosList);
+        Assert.assertTrue(statisticsInfosList.size()>0);
+        kindMetaInfoList = coreRealm.getAttributeKindsMetaInfo();
+        Assert.assertNotNull(statisticsInfosList);
+        Assert.assertTrue(statisticsInfosList.size()>0);
+        kindMetaInfoList = coreRealm.getAttributesViewKindsMetaInfo();
+        Assert.assertNotNull(statisticsInfosList);
+        Assert.assertTrue(statisticsInfosList.size()>0);
     }
 }
