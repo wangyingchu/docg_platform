@@ -1244,6 +1244,26 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
+    public List<KindMetaInfo> getConceptionKindsMetaInfo() {
+        return null;
+    }
+
+    @Override
+    public List<KindMetaInfo> getRelationKindsMetaInfo() {
+        return null;
+    }
+
+    @Override
+    public List<KindMetaInfo> getAttributeKindsMetaInfo() {
+        return null;
+    }
+
+    @Override
+    public List<KindMetaInfo> getAttributesViewKindsMetaInfo() {
+        return null;
+    }
+
+    @Override
     public void openGlobalSession() {
         GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
         this.setGlobalGraphOperationExecutor(graphOperationExecutor);

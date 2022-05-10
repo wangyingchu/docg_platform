@@ -6,10 +6,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.SystemMaintenanceOperator;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionKindCorrelationInfo;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntityStatisticsInfo;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 
 import java.util.List;
@@ -452,6 +449,34 @@ public interface CoreRealm {
      * @return 当前领域的数据科学操作器
      */
     public DataScienceOperator getDataScienceOperator();
+
+    /**
+     * 获取当前领域的全部概念类型元数据信息
+     *
+     * @return 当前领域的全部概念类型元数据信息列表
+     */
+    public List<KindMetaInfo> getConceptionKindsMetaInfo();
+
+    /**
+     * 获取当前领域的全部关系类型元数据信息
+     *
+     * @return 当前领域的全部关系类型元数据信息列表
+     */
+    public List<KindMetaInfo> getRelationKindsMetaInfo();
+
+    /**
+     * 获取当前领域的全部属性类型元数据信息
+     *
+     * @return 当前领域的全部属性类型元数据信息列表
+     */
+    public List<KindMetaInfo> getAttributeKindsMetaInfo();
+
+    /**
+     * 获取当前领域的全部属性视图类型元数据信息
+     *
+     * @return 当前领域的全部属性视图类型元数据信息列表
+     */
+    public List<KindMetaInfo> getAttributesViewKindsMetaInfo();
 
     /**
      * 开启全局会话，此操作会创建一个持久化的后端数据库连接，执行该操作后由当前 CoreRealm 所创建的所有对象（以及这些对象创建的后续对象）将继承性的共享该持久化后端数据库连接。
