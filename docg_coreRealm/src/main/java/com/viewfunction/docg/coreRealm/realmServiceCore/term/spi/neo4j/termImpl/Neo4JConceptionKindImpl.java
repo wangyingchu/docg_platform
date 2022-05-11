@@ -788,6 +788,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
                 "        min(size( (n)-[]-() ) ) as Min_RelationshipCount,\n" +
                 "        max(size( (n)-[]-() ) ) as Max_RelationshipCount,\n" +
                 "        percentileDisc(size( (n)-[]-() ), 0.5) as Middle_RelationshipCount";
+        logger.debug("Generated Cypher Statement: {}", cql);
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
