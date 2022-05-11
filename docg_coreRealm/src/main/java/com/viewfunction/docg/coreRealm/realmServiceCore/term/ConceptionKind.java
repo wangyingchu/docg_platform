@@ -9,10 +9,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationAt
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaAttributeFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaConfigItemFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.StatisticalAndEvaluable;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 
 import java.util.List;
@@ -292,9 +289,9 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
     public ConceptionEntitiesRetrieveResult getEntitiesByDirectRelations(String relationKind,RelationDirection
             relationDirection,String aimConceptionKind,QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
 
-    public Set<String> getKindRuntimeAttributesDistribution(double sampleSize) throws CoreRealmServiceRuntimeException;
+    public Set<String> getKindRuntimeAttributesDistribution(double sampleRatio) throws CoreRealmServiceRuntimeException;
 
-    public void statisticKindRuntimeDataDistribution(double sampleSize) throws CoreRealmServiceRuntimeException;
+    public Set<KindDataDistributionInfo> statisticKindRuntimeDataDistribution(double sampleRatio) throws CoreRealmServiceRuntimeException;
 
     public void statisticKindRuntimeRelationDistribution();
 }

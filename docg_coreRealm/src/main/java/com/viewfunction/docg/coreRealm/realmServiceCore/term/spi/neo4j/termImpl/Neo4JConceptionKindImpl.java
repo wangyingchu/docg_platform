@@ -11,10 +11,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOper
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonConceptionEntitiesAttributesRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonConceptionEntitiesRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
@@ -751,7 +748,13 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public Set<String> getKindRuntimeAttributesDistribution(double sampleSize) throws CoreRealmServiceRuntimeException {
+    public Set<String> getKindRuntimeAttributesDistribution(double sampleRatio) throws CoreRealmServiceRuntimeException {
+        if(sampleRatio >1 || sampleRatio<=0){
+            logger.error("Sample Ratio should between (0,1] .");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("Sample Ratio should between (0,1] .");
+            throw exception;
+        }
         /*
         // What kind of nodes exist
         // Sample some nodes, reporting on property and relationship counts per node.
@@ -766,21 +769,66 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public void statisticKindRuntimeDataDistribution(double sampleSize) throws CoreRealmServiceRuntimeException {
-        /*
-        // What kind of nodes exist
-        // Sample some nodes, reporting on property and relationship counts per node.
-        MATCH (n:Firm) WHERE rand() <= 0.05
-        RETURN
-        DISTINCT labels(n),
-        count(*) AS SampleSize,
-        avg(size(keys(n))) as Avg_PropertyCount,
-        min(size(keys(n))) as Min_PropertyCount,
-        max(size(keys(n))) as Max_PropertyCount,
-        avg(size( (n)-[]-() ) ) as Avg_RelationshipCount,
-        min(size( (n)-[]-() ) ) as Min_RelationshipCount,
-        max(size( (n)-[]-() ) ) as Max_RelationshipCount
-        * */
+    public Set<KindDataDistributionInfo> statisticKindRuntimeDataDistribution(double sampleRatio) throws CoreRealmServiceRuntimeException {
+        if(sampleRatio >1 || sampleRatio<=0){
+            logger.error("Sample Ratio should between (0,1] .");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("Sample Ratio should between (0,1] .");
+            throw exception;
+        }
+        String cql = "MATCH (n:"+this.conceptionKindName+") WHERE rand() <= "+sampleRatio+"\n" +
+                "        RETURN\n" +
+                "        DISTINCT labels(n),\n" +
+                "        count(*) AS SampleSize,\n" +
+                "        avg(size(keys(n))) as Avg_PropertyCount,\n" +
+                "        min(size(keys(n))) as Min_PropertyCount,\n" +
+                "        max(size(keys(n))) as Max_PropertyCount,\n" +
+                "        percentileDisc(size(keys(n)),0.5) as Middle_PropertyCount,\n" +
+                "        avg(size( (n)-[]-() ) ) as Avg_RelationshipCount,\n" +
+                "        min(size( (n)-[]-() ) ) as Min_RelationshipCount,\n" +
+                "        max(size( (n)-[]-() ) ) as Max_RelationshipCount,\n" +
+                "        percentileDisc(size( (n)-[]-() ), 0.5) as Middle_RelationshipCount";
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            DataTransformer<Set<KindDataDistributionInfo>> aimConceptionKindEntityUIDListDataTransformer = new DataTransformer<Set<KindDataDistributionInfo>>() {
+                @Override
+                public Set<KindDataDistributionInfo> transformResult(Result result) {
+                    Set<KindDataDistributionInfo> resultSet = new HashSet<>();
+                    while(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        List<Object> kindNames = nodeRecord.get("labels(n)").asList();
+                        long entitySampleSize = nodeRecord.get("SampleSize").asLong();
+                        double avgAttributeCount = nodeRecord.get("Avg_PropertyCount").asDouble();
+                        int minAttributeCount = nodeRecord.get("Min_PropertyCount").asInt();
+                        int maxAttributeCount = nodeRecord.get("Max_PropertyCount").asInt();
+                        int medianAttributeCount = nodeRecord.get("Middle_PropertyCount").asInt();
+                        double avgRelationCount = nodeRecord.get("Avg_RelationshipCount").asDouble();
+                        int minRelationCount = nodeRecord.get("Min_RelationshipCount").asInt();
+                        int maxRelationCount = nodeRecord.get("Max_RelationshipCount").asInt();
+                        int medianRelationCount = nodeRecord.get("Middle_RelationshipCount").asInt();
+
+                        String[] kindNamesArray = new String[kindNames.size()];
+                        for(int i=0;i<kindNamesArray.length;i++){
+                            kindNamesArray[i] = kindNames.get(i).toString();
+                        }
+                        KindDataDistributionInfo currentKindDataDistributionInfo = new KindDataDistributionInfo(kindNamesArray,entitySampleSize,
+                                avgAttributeCount,minAttributeCount,maxAttributeCount,medianAttributeCount,
+                                avgRelationCount,minRelationCount,maxRelationCount,medianRelationCount);
+
+                        resultSet.add(currentKindDataDistributionInfo);
+                    }
+                    return resultSet;
+                }
+            };
+            Object queryRes = workingGraphOperationExecutor.executeRead(aimConceptionKindEntityUIDListDataTransformer,cql);
+            if(queryRes != null){
+                return (Set<KindDataDistributionInfo>)queryRes;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return null;
     }
 
     @Override
