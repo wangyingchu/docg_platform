@@ -56,6 +56,8 @@ public class KindEntityAttributeRuntimeStatistics {
             attributeDataType = AttributeDataType.TIMESTAMP_ARRAY;
         }else if(attributeDataTypeValue.equalsIgnoreCase("CharArray")){
             attributeDataType = AttributeDataType.STRING_ARRAY;
+        }else if(attributeDataTypeValue.equalsIgnoreCase("Date")){
+            attributeDataType = AttributeDataType.DATE;
         }
     }
 
