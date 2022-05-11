@@ -757,7 +757,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         }
         String cql = "MATCH (n:"+this.conceptionKindName+") WHERE rand() <= "+sampleRatio+"\n" +
                 "RETURN\n" +
-                "DISTINCT labels(n),max(keys(n)) as PropertyList,count(*) AS SampleSize ORDER BY PropertyList DESC";
+                "DISTINCT labels(n),max(keys(n)) as PropertyList,count(*) AS SampleSize";
         logger.debug("Generated Cypher Statement: {}", cql);
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
