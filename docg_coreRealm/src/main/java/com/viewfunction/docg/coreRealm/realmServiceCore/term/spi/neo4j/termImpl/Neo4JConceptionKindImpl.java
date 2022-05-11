@@ -748,28 +748,56 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public Set<String> getKindRuntimeAttributesDistribution(double sampleRatio) throws CoreRealmServiceRuntimeException {
+    public Set<KindAttributeDistributionInfo> getKindAttributesDistributionStatistics(double sampleRatio) throws CoreRealmServiceRuntimeException {
         if(sampleRatio >1 || sampleRatio<=0){
             logger.error("Sample Ratio should between (0,1] .");
             CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
             exception.setCauseMessage("Sample Ratio should between (0,1] .");
             throw exception;
         }
-        /*
-        // What kind of nodes exist
-        // Sample some nodes, reporting on property and relationship counts per node.
-       // What kind of nodes exist
-        // Sample some nodes, reporting on property and relationship counts per node.
-        MATCH (n:Person) WHERE rand() <= 0.01
-        RETURN
-        DISTINCT labels(n),max(keys(n)) as Avg_PropertyCount,count(*) AS SampleSize ORDER BY Avg_PropertyCount DESC
+        String cql = "MATCH (n:"+this.conceptionKindName+") WHERE rand() <= "+sampleRatio+"\n" +
+                "RETURN\n" +
+                "DISTINCT labels(n),max(keys(n)) as PropertyList,count(*) AS SampleSize ORDER BY PropertyList DESC";
+        logger.debug("Generated Cypher Statement: {}", cql);
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            DataTransformer<Set<KindAttributeDistributionInfo>> aimConceptionKindEntityUIDListDataTransformer = new DataTransformer<Set<KindAttributeDistributionInfo>>() {
+                @Override
+                public Set<KindAttributeDistributionInfo> transformResult(Result result) {
+                    Set<KindAttributeDistributionInfo> resultSet = new HashSet<>();
+                    while(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        List<Object> kindNames = nodeRecord.get("labels(n)").asList();
+                        List<Object> attributesNames = nodeRecord.get("PropertyList").asList();
 
-        */
+                        String[] kindNamesArray = new String[kindNames.size()];
+                        for(int i=0;i<kindNamesArray.length;i++){
+                            kindNamesArray[i] = kindNames.get(i).toString();
+                        }
+                        String[] attributeNamesArray = new String[attributesNames.size()];
+                        for(int i=0;i<attributeNamesArray.length;i++){
+                            attributeNamesArray[i] = attributesNames.get(i).toString();
+                        }
+                        KindAttributeDistributionInfo currentKindAttributeDistributionInfo =
+                                new KindAttributeDistributionInfo(kindNamesArray,attributeNamesArray);
+
+                        resultSet.add(currentKindAttributeDistributionInfo);
+                    }
+                    return resultSet;
+                }
+            };
+            Object queryRes = workingGraphOperationExecutor.executeRead(aimConceptionKindEntityUIDListDataTransformer,cql);
+            if(queryRes != null){
+                return (Set<KindAttributeDistributionInfo>)queryRes;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
         return null;
     }
 
     @Override
-    public Set<KindDataDistributionInfo> statisticKindRuntimeDataDistribution(double sampleRatio) throws CoreRealmServiceRuntimeException {
+    public Set<KindDataDistributionInfo> getKindDataDistributionStatistics(double sampleRatio) throws CoreRealmServiceRuntimeException {
         if(sampleRatio >1 || sampleRatio<=0){
             logger.error("Sample Ratio should between (0,1] .");
             CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
@@ -833,7 +861,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public void statisticKindRuntimeRelationDistribution() {
+    public void getKindRelationDistributionStatistics() {
         /*
          // What is related, and how
             CALL db.schema.visualization()

@@ -289,9 +289,9 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
     public ConceptionEntitiesRetrieveResult getEntitiesByDirectRelations(String relationKind,RelationDirection
             relationDirection,String aimConceptionKind,QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
 
-    public Set<String> getKindRuntimeAttributesDistribution(double sampleRatio) throws CoreRealmServiceRuntimeException;
+    public Set<KindAttributeDistributionInfo> getKindAttributesDistributionStatistics(double sampleRatio) throws CoreRealmServiceRuntimeException;
 
-    public Set<KindDataDistributionInfo> statisticKindRuntimeDataDistribution(double sampleRatio) throws CoreRealmServiceRuntimeException;
+    public Set<KindDataDistributionInfo> getKindDataDistributionStatistics(double sampleRatio) throws CoreRealmServiceRuntimeException;
 
-    public void statisticKindRuntimeRelationDistribution();
+    public void getKindRelationDistributionStatistics();
 }
