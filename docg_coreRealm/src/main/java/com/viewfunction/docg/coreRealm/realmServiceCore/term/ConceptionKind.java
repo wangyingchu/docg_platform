@@ -292,7 +292,7 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
     public ConceptionEntitiesRetrieveResult getEntitiesByDirectRelations(String relationKind,RelationDirection
             relationDirection,String aimConceptionKind,QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
 
-    public Set<String> getKindRuntimeAttributes(double sampleSize) throws CoreRealmServiceRuntimeException;
+    public Set<String> getKindRuntimeAttributesDistribution(double sampleSize) throws CoreRealmServiceRuntimeException;
 
     public void statisticKindRuntimeDataDistribution(double sampleSize) throws CoreRealmServiceRuntimeException;
 

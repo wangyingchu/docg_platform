@@ -751,13 +751,16 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public Set<String> getKindRuntimeAttributes(double sampleSize) throws CoreRealmServiceRuntimeException {
+    public Set<String> getKindRuntimeAttributesDistribution(double sampleSize) throws CoreRealmServiceRuntimeException {
         /*
         // What kind of nodes exist
         // Sample some nodes, reporting on property and relationship counts per node.
-        MATCH (n:Firm) WHERE rand() <= 0.1
+       // What kind of nodes exist
+        // Sample some nodes, reporting on property and relationship counts per node.
+        MATCH (n:Person) WHERE rand() <= 0.01
         RETURN
-        DISTINCT labels(n),keys(n) as Avg_PropertyCount,count(*) AS SampleSize ORDER BY SampleSize DESC LIMIT 1
+        DISTINCT labels(n),max(keys(n)) as Avg_PropertyCount,count(*) AS SampleSize ORDER BY Avg_PropertyCount DESC
+
         */
         return null;
     }
