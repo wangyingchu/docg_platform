@@ -9,10 +9,14 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationAt
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaAttributeFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaConfigItemFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.StatisticalAndEvaluable;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 
 import java.util.List;
+import java.util.Set;
 
 public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAttributeFeatureSupportable, ClassificationAttachable, StatisticalAndEvaluable {
     //东风夜放花千树，更吹落，星如雨
@@ -287,4 +291,10 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      */
     public ConceptionEntitiesRetrieveResult getEntitiesByDirectRelations(String relationKind,RelationDirection
             relationDirection,String aimConceptionKind,QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
+
+    public Set<String> getKindRuntimeAttributes(double sampleSize) throws CoreRealmServiceRuntimeException;
+
+    public void statisticKindRuntimeDataDistribution(double sampleSize) throws CoreRealmServiceRuntimeException;
+
+    public void statisticKindRuntimeRelationDistribution();
 }

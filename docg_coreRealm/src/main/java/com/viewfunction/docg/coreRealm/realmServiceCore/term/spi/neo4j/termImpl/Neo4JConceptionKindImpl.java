@@ -750,6 +750,45 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         return commonConceptionEntitiesRetrieveResultImpl;
     }
 
+    @Override
+    public Set<String> getKindRuntimeAttributes(double sampleSize) throws CoreRealmServiceRuntimeException {
+        /*
+        // What kind of nodes exist
+        // Sample some nodes, reporting on property and relationship counts per node.
+        MATCH (n:Firm) WHERE rand() <= 0.1
+        RETURN
+        DISTINCT labels(n),keys(n) as Avg_PropertyCount,count(*) AS SampleSize ORDER BY SampleSize DESC LIMIT 1
+        */
+        return null;
+    }
+
+    @Override
+    public void statisticKindRuntimeDataDistribution(double sampleSize) throws CoreRealmServiceRuntimeException {
+        /*
+        // What kind of nodes exist
+        // Sample some nodes, reporting on property and relationship counts per node.
+        MATCH (n:Firm) WHERE rand() <= 0.05
+        RETURN
+        DISTINCT labels(n),
+        count(*) AS SampleSize,
+        avg(size(keys(n))) as Avg_PropertyCount,
+        min(size(keys(n))) as Min_PropertyCount,
+        max(size(keys(n))) as Max_PropertyCount,
+        avg(size( (n)-[]-() ) ) as Avg_RelationshipCount,
+        min(size( (n)-[]-() ) ) as Min_RelationshipCount,
+        max(size( (n)-[]-() ) ) as Max_RelationshipCount
+        * */
+    }
+
+    @Override
+    public void statisticKindRuntimeRelationDistribution() {
+        /*
+         // What is related, and how
+            CALL db.schema.visualization()
+
+        * */
+    }
+
     private List<AttributeKind> getContainsSingleValueAttributeKinds(GraphOperationExecutor workingGraphOperationExecutor) {
         return getSingleValueAttributeKinds(null,workingGraphOperationExecutor);
     }
