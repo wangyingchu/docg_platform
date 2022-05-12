@@ -420,5 +420,13 @@ public class ConceptionKindTest {
         startEntityUIDS.add(relationQueryTest01.getConceptionEntityUID());
         conceptionEntitiesRetrieveResult =_ConceptionKind01.getKindDirectRelatedEntities(startEntityUIDS,"queryTestRelation01",RelationDirection.FROM,null,queryParameters);
         Assert.assertEquals(conceptionEntitiesRetrieveResult.getConceptionEntities().size(),0);
+
+        Set<KindDataDistributionInfo> dsset = _ConceptionKind01.getKindDataDistributionStatistics(0.9);
+        Assert.assertTrue(dsset != null);
+        Assert.assertTrue(dsset.size()>0);
+
+        Set<KindAttributeDistributionInfo> deset2 = _ConceptionKind01.getKindAttributesDistributionStatistics(0.9);
+        Assert.assertTrue(deset2 != null);
+        Assert.assertTrue(deset2.size()>0);
     }
 }
