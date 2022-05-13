@@ -288,7 +288,13 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      */
     public ConceptionEntitiesRetrieveResult getEntitiesByDirectRelations(String relationKind,RelationDirection
             relationDirection,String aimConceptionKind,QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
-
+    /**
+     * 根据采样率获取部分概念实体数据并统计其中包含的属性分布统计信息
+     *
+     * @param sampleRatio double 采样率，介于0到1之间的小数，代表当前概念类型中需要采样数据的百分比
+     *
+     * @return 属性分布统计的结果信息
+     */
     public Set<KindAttributeDistributionInfo> getKindAttributesDistributionStatistics(double sampleRatio) throws CoreRealmServiceRuntimeException;
 
     public Set<KindDataDistributionInfo> getKindDataDistributionStatistics(double sampleRatio) throws CoreRealmServiceRuntimeException;
