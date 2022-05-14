@@ -818,6 +818,14 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      */
     public Set<KindAttributeDistributionInfo> getKindAttributesDistributionStatistics(double sampleRatio) throws CoreRealmServiceRuntimeException;
 
+    /**
+     * 根据采样率获取部分概念实体数据并统计其中包含的属性与关联关系数据的分布统计信息
+     *
+     * @param sampleRatio double 采样率，介于0到1之间的小数，代表当前概念类型中需要采样数据的百分比
+     *
+     * @return 属性与关联关系数据分布统计的结果信息
+     */
+    public Set<KindDataDistributionInfo> getKindDataDistributionStatistics(double sampleRatio) throws CoreRealmServiceRuntimeException;
 ```
 ###### ↳ RelationKind
 
