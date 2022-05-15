@@ -995,4 +995,10 @@ public class BatchDataOperationUtil {
         }
         return 4;
     }
+
+    public static long importConceptionEntitiesFromCSV(){
+
+
+        return 0;
+    }
 }
