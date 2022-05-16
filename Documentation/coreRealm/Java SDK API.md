@@ -4236,6 +4236,18 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 移除概念类型操作的执行结果统计
      */
     public EntitiesOperationResult retreatEntitiesFromConceptionKind(String sourceKindName,AttributesParameters attributesParameters,String kindName) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 将源概念类型中具有指定类型的关联关系的概念实体合并到目标概念类型的相关实体中，合并后源概念实体中的属性全部复制到目标概念实体中，源概念实体中的除本方法中指定类型的关联关系全部在目标概念实体中重建。最后删除所有的源概念实体，所有的目标概念实体加入源概念类型中
+     *
+     * @param sourceKindName String 源概念类型名称
+     * @param attributesParameters AttributesParameters 源概念实体的查询条件
+     * @param relationKindName String 概念实体关联关系类型
+     * @param targetKindName String 目标概念类型
+     *
+     * @return 合并概念类型操作的执行结果统计
+     */
+    public EntitiesOperationResult mergeEntitiesToConceptionKind(String sourceKindName,AttributesParameters attributesParameters, String relationKindName,String targetKindName) throws CoreRealmServiceEntityExploreException;
 ```
 
 ###### ↳ SystemMaintenanceOperator

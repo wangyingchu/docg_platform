@@ -487,7 +487,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public EntitiesOperationResult mergeEntitiesToConceptionKind(String sourceKindName, String relationKindName, String targetKindName) throws CoreRealmServiceEntityExploreException {
+    public EntitiesOperationResult mergeEntitiesToConceptionKind(String sourceKindName,AttributesParameters attributesParameters, String relationKindName, String targetKindName) throws CoreRealmServiceEntityExploreException {
         return null;
     }
 
