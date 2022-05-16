@@ -139,4 +139,9 @@ public interface CrossKindDataOperator {
      */
     public EntitiesOperationResult retreatEntitiesFromConceptionKind(String sourceKindName,AttributesParameters attributesParameters,String kindName) throws CoreRealmServiceEntityExploreException;
 
+
+    public EntitiesOperationResult mergeEntitiesToConceptionKind(String sourceKindName, String relationKindName,String targetKindName) throws CoreRealmServiceEntityExploreException;
+
+
+
 }

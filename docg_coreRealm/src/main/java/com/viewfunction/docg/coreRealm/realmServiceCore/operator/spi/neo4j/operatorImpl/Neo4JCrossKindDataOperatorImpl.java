@@ -486,6 +486,11 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         return commonEntitiesOperationResultImpl;
     }
 
+    @Override
+    public EntitiesOperationResult mergeEntitiesToConceptionKind(String sourceKindName, String relationKindName, String targetKindName) throws CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }
