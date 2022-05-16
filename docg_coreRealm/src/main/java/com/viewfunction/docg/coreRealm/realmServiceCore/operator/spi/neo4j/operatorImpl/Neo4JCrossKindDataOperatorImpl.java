@@ -584,7 +584,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public List<RelationEntityValue> getRelationEntityAttributesByRelatedRelationKind(List<String> conceptionEntityUIDs, String relationKind, List<String> returnedAttributeList,RelationDirection relationDirection, String targetConceptionKindName) throws CoreRealmServiceEntityExploreException {
+    public List<RelationEntityValue> getRelationAttributesByEntitiesRelation(List<String> conceptionEntityUIDs, String relationKind, List<String> returnedAttributeList,RelationDirection relationDirection, String targetConceptionKindName) throws CoreRealmServiceEntityExploreException {
         if(conceptionEntityUIDs == null || conceptionEntityUIDs.size() < 1){
             logger.error("At least one conception entity UID is required");
             CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
