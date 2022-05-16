@@ -489,6 +489,12 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
     @Override
     public EntitiesOperationResult mergeEntitiesToConceptionKind(String sourceKindName, AttributesParameters attributesParameters, String relationKindName, RelationDirection relationDirection, String targetConceptionKindName) throws CoreRealmServiceEntityExploreException {
+        if(relationDirection == null || RelationDirection.TWO_WAY.equals(relationDirection)){
+            logger.error("relationDirection must set and can't be TWO_WAY.");
+            CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+            exception.setCauseMessage("relationDirection must set and can't be TWO_WAY.");
+            throw exception;
+        }
         CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
         QueryParameters queryParameters = new QueryParameters();
         queryParameters.setDistinctMode(false);
@@ -523,7 +529,6 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         }
         String targetKindMatchingStr = targetConceptionKindName != null ? "target:"+targetConceptionKindName : "target";
         String cypherProcedureString = "MATCH (source)"+relationPathMatchingStr+"("+targetKindMatchingStr+") WHERE id(source) IN sourceUIDs RETURN r AS "+CypherBuilder.operationResultName;
-
         entityQueryCQL = entityQueryCQL+" \n"+
                 "WITH collect(id("+CypherBuilder.operationResultName+")) AS sourceUIDs"+" \n"+
                 cypherProcedureString;
@@ -542,8 +547,6 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         }
 
         int degreeOfParallelism = BatchDataOperationUtil.calculateRuntimeCPUCoresByUsageRate(BatchDataOperationUtil.CPUUsageRate.High);
-
-
         int singlePartitionSize = (resultEntitiesValues.size()/degreeOfParallelism)+1;
         List<List<RelationEntityValue>> rsList = Lists.partition(resultEntitiesValues, singlePartitionSize);
         Map<String,Object> threadReturnDataMap = new Hashtable<>();
@@ -559,12 +562,6 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-
-
-
-
-
         return null;
     }
 
@@ -619,7 +616,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
         @Override
         public void run() {
-            System.out.println(this.relationEntityValueList);
+            //System.out.println(this.relationEntityValueList);
         }
     }
 }
