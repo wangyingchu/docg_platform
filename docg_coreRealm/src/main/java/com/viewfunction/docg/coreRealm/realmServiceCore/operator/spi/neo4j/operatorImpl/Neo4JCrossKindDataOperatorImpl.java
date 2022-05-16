@@ -553,7 +553,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
         ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
         for(List<RelationEntityValue> currentRelationEntityValueList:rsList){
-            MergeEntitiesToConceptionKindThread mergeEntitiesToConceptionKindThread =  new MergeEntitiesToConceptionKindThread(currentRelationEntityValueList,threadReturnDataMap);
+            MergeEntitiesToConceptionKindThread mergeEntitiesToConceptionKindThread =  new MergeEntitiesToConceptionKindThread(currentRelationEntityValueList,relationDirection,threadReturnDataMap);
             executor.execute(mergeEntitiesToConceptionKindThread);
         }
         executor.shutdown();
@@ -609,14 +609,44 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     private class MergeEntitiesToConceptionKindThread implements Runnable {
         private List<RelationEntityValue> relationEntityValueList;
         private Map<String,Object> threadReturnDataMap;
-        public MergeEntitiesToConceptionKindThread(List<RelationEntityValue> relationEntityValueList,Map<String,Object> threadReturnDataMap){
+        private RelationDirection relationDirection;
+        public MergeEntitiesToConceptionKindThread(List<RelationEntityValue> relationEntityValueList,RelationDirection relationDirection,Map<String,Object> threadReturnDataMap){
             this.relationEntityValueList = relationEntityValueList;
+            this.relationDirection = relationDirection;
             this.threadReturnDataMap = threadReturnDataMap;
         }
 
         @Override
         public void run() {
-            //System.out.println(this.relationEntityValueList);
+            GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
+            System.out.println(this.relationEntityValueList);
+            for(RelationEntityValue currentRelationEntityValue : this.relationEntityValueList){
+                String fromEntityUID = currentRelationEntityValue.getFromConceptionEntityUID();
+                String toEntityUID = currentRelationEntityValue.getToConceptionEntityUID();
+                String removedEntityUID = "";
+                String remainedEntityUID = "";
+                switch(this.relationDirection){
+                    case FROM:
+                        remainedEntityUID = toEntityUID;
+                        removedEntityUID = fromEntityUID;
+                        break;
+                    case TO:
+                        removedEntityUID = toEntityUID;
+                        remainedEntityUID = fromEntityUID;
+                }
+
+                String cypherProcedureString = "MATCH (nodeA) WHERE id(nodeA)= " + remainedEntityUID+"\n" +
+                        "MATCH (nodeB) WHERE id(nodeB)= " + removedEntityUID+"\n" +
+                        "WITH head(collect([nodeA,nodeB])) as nodes\n" +
+                        "CALL apoc.refactor.mergeNodes(nodes,{\n" +
+                        "    properties:\"combine\",\n" +
+                        "    mergeRels:true\n" +
+                        "})\n" +
+                        "YIELD node\n" +
+                        "RETURN count(*)";
+                System.out.println(cypherProcedureString);
+            }
+            graphOperationExecutor.close();
         }
     }
 }
