@@ -562,7 +562,25 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return null;
+        long wholeSuccessCount = 0;
+        for (Map.Entry<String, Object> entry : threadReturnDataMap.entrySet()) {
+
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            if(key.startsWith("SUCCESSCOUNT_")){
+                Integer threadSuccessCount = (Integer)value;
+                wholeSuccessCount = wholeSuccessCount +threadSuccessCount.longValue();
+            }
+            if(key.startsWith("SUCCESSUIDS_")){
+                List<String> successUIDs = (List<String>)value;
+                commonEntitiesOperationResultImpl.getSuccessEntityUIDs().addAll(successUIDs);
+            }
+        }
+        commonEntitiesOperationResultImpl.getOperationStatistics().setSuccessItemsCount(wholeSuccessCount);
+        commonEntitiesOperationResultImpl.getOperationStatistics().
+                setOperationSummary("mergeEntitiesToConceptionKind operation success.");
+        commonEntitiesOperationResultImpl.finishEntitiesOperation();
+        return commonEntitiesOperationResultImpl;
     }
 
     @Override
@@ -618,8 +636,22 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
         @Override
         public void run() {
+            String currentThreadName = Thread.currentThread().getName();
             GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
-            System.out.println(this.relationEntityValueList);
+            DataTransformer<Integer> resultDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()){
+                        Record record = result.next();
+                        if(record.containsKey("count(*)")){
+                            return record.get("count(*)").asInt();
+                        }
+                    }
+                    return null;
+                }
+            };
+            int successCount = 0;
+            List<String> remainEntityUIDList = new ArrayList<>();
             for(RelationEntityValue currentRelationEntityValue : this.relationEntityValueList){
                 String fromEntityUID = currentRelationEntityValue.getFromConceptionEntityUID();
                 String toEntityUID = currentRelationEntityValue.getToConceptionEntityUID();
@@ -640,12 +672,20 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                         "WITH head(collect([nodeA,nodeB])) as nodes\n" +
                         "CALL apoc.refactor.mergeNodes(nodes,{\n" +
                         "    properties:\"combine\",\n" +
-                        "    mergeRels:true\n" +
+                        "    mergeRels:true,\n" +
+                        "    produceSelfRel:false\n" +
                         "})\n" +
                         "YIELD node\n" +
                         "RETURN count(*)";
-                System.out.println(cypherProcedureString);
+                Object queryRes = graphOperationExecutor.executeWrite(resultDataTransformer,cypherProcedureString);
+                if(queryRes != null){
+                    int resultNo = (Integer)queryRes;
+                    successCount = successCount + resultNo;
+                    remainEntityUIDList.add(remainedEntityUID);
+                }
             }
+            threadReturnDataMap.put("SUCCESSCOUNT_"+currentThreadName,successCount);
+            threadReturnDataMap.put("SUCCESSUIDS_"+currentThreadName,remainEntityUIDList);
             graphOperationExecutor.close();
         }
     }
