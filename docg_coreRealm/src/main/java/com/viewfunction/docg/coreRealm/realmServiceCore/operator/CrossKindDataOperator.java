@@ -146,7 +146,7 @@ public interface CrossKindDataOperator {
      * @param sourceKindName String 源概念类型名称
      * @param attributesParameters AttributesParameters 源概念实体的查询条件
      * @param relationKindName String 概念实体关联关系类型
-     * @param relationDirection RelationDirection 实体间关联关系的关系放向,如输入null值则为 TWO_WAY 方向
+     * @param relationDirection RelationDirection 实体间关联关系的关系方向,如输入null值则为 TWO_WAY 方向
      * @param targetKindName String 目标概念类型
      *
      * @return 合并概念类型操作的执行结果统计
@@ -159,7 +159,7 @@ public interface CrossKindDataOperator {
      * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
      * @param relationKind String 实体间关联关系的关系类型,如输入null值则忽略类型
      * @param returnedAttributeList List<String> 需要返回的关系实体上的属性值名称列表
-     * @param relationDirection RelationDirection 实体间关联关系的关系放向,如输入null值则为 TWO_WAY 方向
+     * @param relationDirection RelationDirection 实体间关联关系的关系方向,如输入null值则为 TWO_WAY 方向
      * @param targetConceptionKindName String 实体间关联关系的目标概念类型,如输入null值则忽略类型
      *
      * @return 匹配的关系实体对象的属性值列表

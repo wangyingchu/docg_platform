@@ -1,6 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
@@ -24,6 +25,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
@@ -537,12 +541,24 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
 
-        System.out.println(resultEntitiesValues.size());
-        System.out.println(resultEntitiesValues.size());
-        System.out.println(resultEntitiesValues.size());
+        int degreeOfParallelism = BatchDataOperationUtil.calculateRuntimeCPUCoresByUsageRate(BatchDataOperationUtil.CPUUsageRate.High);
 
 
+        int singlePartitionSize = (resultEntitiesValues.size()/degreeOfParallelism)+1;
+        List<List<RelationEntityValue>> rsList = Lists.partition(resultEntitiesValues, singlePartitionSize);
+        Map<String,Object> threadReturnDataMap = new Hashtable<>();
 
+        ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+        for(List<RelationEntityValue> currentRelationEntityValueList:rsList){
+            MergeEntitiesToConceptionKindThread mergeEntitiesToConceptionKindThread =  new MergeEntitiesToConceptionKindThread(currentRelationEntityValueList,threadReturnDataMap);
+            executor.execute(mergeEntitiesToConceptionKindThread);
+        }
+        executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
 
 
@@ -591,5 +607,19 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
+    }
+
+    private class MergeEntitiesToConceptionKindThread implements Runnable {
+        private List<RelationEntityValue> relationEntityValueList;
+        private Map<String,Object> threadReturnDataMap;
+        public MergeEntitiesToConceptionKindThread(List<RelationEntityValue> relationEntityValueList,Map<String,Object> threadReturnDataMap){
+            this.relationEntityValueList = relationEntityValueList;
+            this.threadReturnDataMap = threadReturnDataMap;
+        }
+
+        @Override
+        public void run() {
+            System.out.println(this.relationEntityValueList);
+        }
     }
 }
