@@ -4243,11 +4243,24 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @param sourceKindName String 源概念类型名称
      * @param attributesParameters AttributesParameters 源概念实体的查询条件
      * @param relationKindName String 概念实体关联关系类型
+     * @param relationDirection RelationDirection 实体间关联关系的关系放向,如输入null值则为TWO_WAY方向
      * @param targetKindName String 目标概念类型
      *
      * @return 合并概念类型操作的执行结果统计
      */
-    public EntitiesOperationResult mergeEntitiesToConceptionKind(String sourceKindName,AttributesParameters attributesParameters, String relationKindName,String targetKindName) throws CoreRealmServiceEntityExploreException;
+    public EntitiesOperationResult mergeEntitiesToConceptionKind(String sourceKindName,AttributesParameters attributesParameters,String relationKindName,RelationDirection relationDirection,String targetKindName) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 输入一组概念实体的唯一值ID，查询并返回具有指定关系类型的联接的所有概念实体两两间的关系实体数据
+     *
+     * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
+     * @param relationKind String 实体间关联关系的关系类型,如输入null值则忽略类型
+     * @param relationDirection RelationDirection 实体间关联关系的关系放向,如输入null值则为TWO_WAY方向
+     * @param targetConceptionKindName String 实体间关联关系的目标概念类型,如输入null值则忽略类型
+     *
+     * @return 匹配的关系实体对象的属性值列表
+     */
+    public List<RelationEntityValue> getRelationEntityAttributesByRelatedRelationKind(List<String> conceptionEntityUIDs, String relationKind,RelationDirection relationDirection,String targetConceptionKindName) throws CoreRealmServiceEntityExploreException;
 ```
 
 ###### ↳ SystemMaintenanceOperator

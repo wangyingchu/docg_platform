@@ -17,10 +17,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntity
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.slf4j.Logger;
@@ -487,7 +484,12 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public EntitiesOperationResult mergeEntitiesToConceptionKind(String sourceKindName,AttributesParameters attributesParameters, String relationKindName, String targetKindName) throws CoreRealmServiceEntityExploreException {
+    public EntitiesOperationResult mergeEntitiesToConceptionKind(String sourceKindName, AttributesParameters attributesParameters, String relationKindName, RelationDirection relationDirection, String targetKindName) throws CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
+    @Override
+    public List<RelationEntityValue> getRelationEntityAttributesByRelatedRelationKind(List<String> conceptionEntityUIDs, String relationKind, RelationDirection relationDirection, String targetConceptionKindName) throws CoreRealmServiceEntityExploreException {
         return null;
     }
 
