@@ -489,7 +489,39 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public List<RelationEntityValue> getRelationEntityAttributesByRelatedRelationKind(List<String> conceptionEntityUIDs, String relationKind, RelationDirection relationDirection, String targetConceptionKindName) throws CoreRealmServiceEntityExploreException {
+    public List<RelationEntityValue> getRelationEntityAttributesByRelatedRelationKind(List<String> conceptionEntityUIDs, String relationKind, List<String> returnedAttributeList,RelationDirection relationDirection, String targetConceptionKindName) throws CoreRealmServiceEntityExploreException {
+        if(conceptionEntityUIDs == null || conceptionEntityUIDs.size() < 1){
+            logger.error("At least one conception entity UID is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("At least one conception entity UID is required");
+            throw e;
+        }
+        String relationTypeMatchingStr = relationKind != null ? "r:"+relationKind:"r";
+        String relationPathMatchingStr = "-[r]-";
+        if(relationDirection == null){
+            relationPathMatchingStr = "-["+relationTypeMatchingStr+"]-";
+        }else{
+            switch(relationDirection){
+                case FROM: relationPathMatchingStr = "-["+relationTypeMatchingStr+"]->"; break;
+                case TO: relationPathMatchingStr = "<-["+relationTypeMatchingStr+"]-"; break;
+                case TWO_WAY: relationPathMatchingStr = "-["+relationTypeMatchingStr+"]-";
+            }
+        }
+        String targetKindMatchingStr = targetConceptionKindName != null ? "target:"+targetConceptionKindName : "target";
+        String cypherProcedureString = "MATCH (source)"+relationPathMatchingStr+"("+targetKindMatchingStr+") WHERE id(source) IN "+ conceptionEntityUIDs.toString()+" RETURN r AS "+CypherBuilder.operationResultName;
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListRelationEntityValueTransformer getListRelationEntityValueTransformer =
+                    new GetListRelationEntityValueTransformer(relationKind,returnedAttributeList);
+            Object queryRes = workingGraphOperationExecutor.executeRead(getListRelationEntityValueTransformer,cypherProcedureString);
+            if(queryRes != null){
+                List<RelationEntityValue> resultEntitiesValues = (List<RelationEntityValue>)queryRes;
+                return resultEntitiesValues;
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
         return null;
     }
 

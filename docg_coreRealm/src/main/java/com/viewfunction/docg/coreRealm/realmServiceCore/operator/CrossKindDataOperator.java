@@ -158,11 +158,12 @@ public interface CrossKindDataOperator {
      *
      * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
      * @param relationKind String 实体间关联关系的关系类型,如输入null值则忽略类型
-     * @param relationDirection RelationDirection 实体间关联关系的关系放向,如输入null值则为TWO_WAY方向
+     * @param returnedAttributeList List<String> 需要返回的关系实体上的属性值名称列表
+     * @param relationDirection RelationDirection 实体间关联关系的关系放向,如输入null值则为 TWO_WAY 方向
      * @param targetConceptionKindName String 实体间关联关系的目标概念类型,如输入null值则忽略类型
      *
      * @return 匹配的关系实体对象的属性值列表
      */
-    public List<RelationEntityValue> getRelationEntityAttributesByRelatedRelationKind(List<String> conceptionEntityUIDs, String relationKind,RelationDirection relationDirection,String targetConceptionKindName) throws CoreRealmServiceEntityExploreException;
+    public List<RelationEntityValue> getRelationEntityAttributesByRelatedRelationKind(List<String> conceptionEntityUIDs, String relationKind,List<String> returnedAttributeList,RelationDirection relationDirection,String targetConceptionKindName) throws CoreRealmServiceEntityExploreException;
 
 }
