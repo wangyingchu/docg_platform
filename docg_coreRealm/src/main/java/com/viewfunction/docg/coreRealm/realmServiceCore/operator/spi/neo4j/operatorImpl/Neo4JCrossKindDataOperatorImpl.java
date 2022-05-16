@@ -484,7 +484,71 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public EntitiesOperationResult mergeEntitiesToConceptionKind(String sourceKindName, AttributesParameters attributesParameters, String relationKindName, RelationDirection relationDirection, String targetKindName) throws CoreRealmServiceEntityExploreException {
+    public EntitiesOperationResult mergeEntitiesToConceptionKind(String sourceKindName, AttributesParameters attributesParameters, String relationKindName, RelationDirection relationDirection, String targetConceptionKindName) throws CoreRealmServiceEntityExploreException {
+        CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setDistinctMode(false);
+        queryParameters.setResultNumber(100);
+        if (attributesParameters != null) {
+            queryParameters.setDefaultFilteringItem(attributesParameters.getDefaultFilteringItem());
+            if (attributesParameters.getAndFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getAndFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.AND);
+                }
+            }
+            if (attributesParameters.getOrFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getOrFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.OR);
+                }
+            }
+        }
+
+        String entityQueryCQL = CypherBuilder.matchNodesWithQueryParameters(sourceKindName,queryParameters, CypherBuilder.CypherFunctionType.ID);
+        entityQueryCQL = entityQueryCQL.replace("RETURN id("+CypherBuilder.operationResultName+") LIMIT 100","");
+
+        String relationTypeMatchingStr = relationKindName != null ? "r:"+relationKindName:"r";
+        String relationPathMatchingStr = "-[r]-";
+        if(relationDirection == null){
+            relationPathMatchingStr = "-["+relationTypeMatchingStr+"]-";
+        }else{
+            switch(relationDirection){
+                case FROM: relationPathMatchingStr = "-["+relationTypeMatchingStr+"]->"; break;
+                case TO: relationPathMatchingStr = "<-["+relationTypeMatchingStr+"]-"; break;
+                case TWO_WAY: relationPathMatchingStr = "-["+relationTypeMatchingStr+"]-";
+            }
+        }
+        String targetKindMatchingStr = targetConceptionKindName != null ? "target:"+targetConceptionKindName : "target";
+        String cypherProcedureString = "MATCH (source)"+relationPathMatchingStr+"("+targetKindMatchingStr+") WHERE id(source) IN sourceUIDs RETURN r AS "+CypherBuilder.operationResultName;
+
+        entityQueryCQL = entityQueryCQL+" \n"+
+                "WITH collect(id("+CypherBuilder.operationResultName+")) AS sourceUIDs"+" \n"+
+                cypherProcedureString;
+        logger.debug("Generated Cypher Statement: {}", entityQueryCQL);
+        List<RelationEntityValue> resultEntitiesValues = null;
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListRelationEntityValueTransformer getListRelationEntityValueTransformer =
+                    new GetListRelationEntityValueTransformer(relationKindName,null);
+            Object queryRes = workingGraphOperationExecutor.executeRead(getListRelationEntityValueTransformer,entityQueryCQL);
+            if(queryRes != null){
+                resultEntitiesValues = (List<RelationEntityValue>)queryRes;
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+
+        System.out.println(resultEntitiesValues.size());
+        System.out.println(resultEntitiesValues.size());
+        System.out.println(resultEntitiesValues.size());
+
+
+
+
+
+
+
+
+
         return null;
     }
 

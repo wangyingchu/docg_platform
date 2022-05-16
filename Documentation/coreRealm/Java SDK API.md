@@ -4243,7 +4243,7 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @param sourceKindName String 源概念类型名称
      * @param attributesParameters AttributesParameters 源概念实体的查询条件
      * @param relationKindName String 概念实体关联关系类型
-     * @param relationDirection RelationDirection 实体间关联关系的关系放向,如输入null值则为TWO_WAY方向
+     * @param relationDirection RelationDirection 实体间关联关系的关系放向,如输入null值则为 TWO_WAY 方向
      * @param targetKindName String 目标概念类型
      *
      * @return 合并概念类型操作的执行结果统计
