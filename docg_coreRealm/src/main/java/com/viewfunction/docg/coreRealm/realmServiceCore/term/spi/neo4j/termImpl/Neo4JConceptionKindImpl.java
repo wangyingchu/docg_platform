@@ -22,6 +22,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
+import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -870,9 +871,37 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
             DataTransformer statisticsDataTransformer = new DataTransformer(){
                 @Override
                 public Object transformResult(Result result) {
+                    Record currentRecord = result.next();
+                    List<Object> nodesList = currentRecord.get("nodes").asList();
+                    List<Object> relationshipsList = currentRecord.get("relationships").asList();
+
+                    for(Object currentNodeObj:nodesList){
+                        Node currentNode = (Node)currentNodeObj;
+                        long currentNodeId = currentNode.id();
+                        String currentConceptionKindName = currentNode.labels().iterator().next();
+                        System.out.println(currentNodeId);
+                        System.out.println(currentConceptionKindName);
+                    }
+
+                    for(Object currentRelationshipObj:relationshipsList){
+                        Relationship currentRelationship = (Relationship)currentRelationshipObj;
+                        long relationshipId = currentRelationship.id();
+                        String relationshipType = currentRelationship.type();
+                        long startConceptionKindId = currentRelationship.startNodeId();
+                        long endConceptionKindId = currentRelationship.endNodeId();
+
+                        System.out.println(relationshipId);
+                        System.out.println(relationshipType);
+                        System.out.println(startConceptionKindId);
+                        System.out.println(endConceptionKindId);
+                    }
 
 
-                    System.out.println(result);
+
+
+                    //System.out.println(currentRecord.asMap());
+                    //System.out.println(nodesList);
+                    //System.out.println(relationshipsList);
 
                     return null;
                 }
