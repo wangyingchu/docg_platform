@@ -867,46 +867,48 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         logger.debug("Generated Cypher Statement: {}", cql);
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
-
-            DataTransformer statisticsDataTransformer = new DataTransformer(){
+            DataTransformer<Set<ConceptionKindCorrelationInfo>> statisticsDataTransformer = new DataTransformer(){
                 @Override
-                public Object transformResult(Result result) {
+                public Set<ConceptionKindCorrelationInfo> transformResult(Result result) {
                     Record currentRecord = result.next();
                     List<Object> nodesList = currentRecord.get("nodes").asList();
                     List<Object> relationshipsList = currentRecord.get("relationships").asList();
 
+                    Set<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet = new HashSet<>();
+                    String currentConceptionKindID = null;
+                    Map<String,String> conceptionKindId_nameMapping = new HashMap<>();
                     for(Object currentNodeObj:nodesList){
                         Node currentNode = (Node)currentNodeObj;
                         long currentNodeId = currentNode.id();
                         String currentConceptionKindName = currentNode.labels().iterator().next();
-                        System.out.println(currentNodeId);
-                        System.out.println(currentConceptionKindName);
+                        if(conceptionKindName.equals(currentConceptionKindName)){
+                            currentConceptionKindID = ""+currentNodeId;
+                        }
+                        conceptionKindId_nameMapping.put(""+currentNodeId,currentConceptionKindName);
                     }
 
                     for(Object currentRelationshipObj:relationshipsList){
                         Relationship currentRelationship = (Relationship)currentRelationshipObj;
-                        long relationshipId = currentRelationship.id();
+                        //long relationshipId = currentRelationship.id();
                         String relationshipType = currentRelationship.type();
-                        long startConceptionKindId = currentRelationship.startNodeId();
-                        long endConceptionKindId = currentRelationship.endNodeId();
-
-                        System.out.println(relationshipId);
-                        System.out.println(relationshipType);
-                        System.out.println(startConceptionKindId);
-                        System.out.println(endConceptionKindId);
+                        String startConceptionKindId = ""+currentRelationship.startNodeId();
+                        String endConceptionKindId = ""+currentRelationship.endNodeId();
+                        if(currentConceptionKindID.equals(startConceptionKindId)||
+                                currentConceptionKindID.equals(""+endConceptionKindId)){
+                            ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
+                                    new ConceptionKindCorrelationInfo(
+                                            conceptionKindId_nameMapping.get(startConceptionKindId),
+                                            conceptionKindId_nameMapping.get(endConceptionKindId),
+                                            relationshipType,1);
+                            conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
+                        }
                     }
-
-
-
-
-
-
-                    return null;
+                    return conceptionKindCorrelationInfoSet;
                 }
             };
             Object queryRes = workingGraphOperationExecutor.executeRead(statisticsDataTransformer,cql);
             if(queryRes != null){
-                return null;
+                return (Set<ConceptionKindCorrelationInfo>)queryRes;
             }
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
