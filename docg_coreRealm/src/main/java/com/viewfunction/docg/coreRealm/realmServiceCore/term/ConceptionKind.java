@@ -306,5 +306,5 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      */
     public Set<KindDataDistributionInfo> getKindDataDistributionStatistics(double sampleRatio) throws CoreRealmServiceRuntimeException;
 
-    public void getKindRelationDistributionStatistics();
+    public Set<ConceptionKindCorrelationInfo> getKindRelationDistributionStatistics();
 }

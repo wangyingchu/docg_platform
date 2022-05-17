@@ -862,7 +862,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public void getKindRelationDistributionStatistics() {
+    public Set<ConceptionKindCorrelationInfo> getKindRelationDistributionStatistics() {
         String cql ="CALL db.schema.visualization()";
         logger.debug("Generated Cypher Statement: {}", cql);
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
@@ -899,20 +899,19 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
 
 
-                    //System.out.println(currentRecord.asMap());
-                    //System.out.println(nodesList);
-                    //System.out.println(relationshipsList);
+
 
                     return null;
                 }
             };
             Object queryRes = workingGraphOperationExecutor.executeRead(statisticsDataTransformer,cql);
             if(queryRes != null){
-                return;
+                return null;
             }
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
+        return null;
     }
 
     private List<AttributeKind> getContainsSingleValueAttributeKinds(GraphOperationExecutor workingGraphOperationExecutor) {
