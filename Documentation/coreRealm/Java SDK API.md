@@ -826,6 +826,13 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 属性与关联关系数据分布统计的结果信息
      */
     public Set<KindDataDistributionInfo> getKindDataDistributionStatistics(double sampleRatio) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 统计当前概念类型实体与其他概念类型实体之间的实时关联关系信息
+     *
+     * @return 当前概念类型与其他概念类型之间的关联关系信息集合
+     */
+    public Set<ConceptionKindCorrelationInfo> getKindRelationDistributionStatistics();
 ```
 ###### ↳ RelationKind
 
