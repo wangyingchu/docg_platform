@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
+import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
@@ -21,6 +22,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.N
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
+import org.neo4j.driver.Value;
 import org.neo4j.driver.types.Node;
 import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
@@ -909,6 +911,60 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
             Object queryRes = workingGraphOperationExecutor.executeRead(statisticsDataTransformer,cql);
             if(queryRes != null){
                 return (Set<ConceptionKindCorrelationInfo>)queryRes;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return null;
+    }
+
+    @Override
+    public Set<ConceptionEntity> getRandomEntities(int entitiesCount) throws CoreRealmServiceEntityExploreException {
+        if(entitiesCount < 1){
+            logger.error("entitiesCount must equal or great then 1.");
+            CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+            exception.setCauseMessage("entitiesCount must equal or great then 1.");
+            throw exception;
+        }
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = "MATCH (n:"+this.conceptionKindName+") RETURN apoc.coll.randomItems(COLLECT(n),"+entitiesCount+") AS " +CypherBuilder.operationResultName;
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            DataTransformer<Set<ConceptionEntity>> getConceptionEntityTransformer = new DataTransformer<Set<ConceptionEntity>>() {
+                @Override
+                public Set<ConceptionEntity> transformResult(Result result) {
+                    Set<ConceptionEntity> conceptionEntitySet = new HashSet<>();
+                    if(result.hasNext()){
+                        List<Value> resultList = result.next().values();
+                        if(resultList.size() > 0){
+                            List<Object> nodeObjList = resultList.get(0).asList();
+                            for(Object currentNodeObj : nodeObjList){
+                                Node resultNode = (Node)currentNodeObj;
+                                List<String> allConceptionKindNames = Lists.newArrayList(resultNode.labels());
+                                boolean isMatchedConceptionKind = true;
+                                if(allConceptionKindNames.size()>0){
+                                    isMatchedConceptionKind = allConceptionKindNames.contains(conceptionKindName);
+                                }
+                                if(isMatchedConceptionKind){
+                                    long nodeUID = resultNode.id();
+                                    String conceptionEntityUID = ""+nodeUID;
+                                    String resultConceptionKindName = conceptionKindName;
+                                    Neo4JConceptionEntityImpl neo4jConceptionEntityImpl =
+                                            new Neo4JConceptionEntityImpl(resultConceptionKindName,conceptionEntityUID);
+                                    neo4jConceptionEntityImpl.setAllConceptionKindNames(allConceptionKindNames);
+                                    neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+                                    conceptionEntitySet.add(neo4jConceptionEntityImpl);
+                                }
+                            }
+                        }
+                    }
+                    return conceptionEntitySet;
+                }
+            };
+            Object queryRes = workingGraphOperationExecutor.executeRead(getConceptionEntityTransformer,queryCql);
+            if(queryRes != null){
+                Set<ConceptionEntity> resultConceptionEntityList = (Set<ConceptionEntity>)queryRes;
+                return resultConceptionEntityList;
             }
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();

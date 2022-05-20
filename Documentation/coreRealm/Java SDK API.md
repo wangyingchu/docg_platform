@@ -833,6 +833,15 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 当前概念类型与其他概念类型之间的关联关系信息集合
      */
     public Set<ConceptionKindCorrelationInfo> getKindRelationDistributionStatistics();
+
+    /**
+     * 随机获取若干当前概念类型下的概念实体
+     *
+     * @param entitiesCount int 需要获取的概念实体数量
+     *
+     * @return 概念实体集合
+     */
+    public Set<ConceptionEntity>  getRandomEntities(int entitiesCount) throws CoreRealmServiceEntityExploreException;
 ```
 ###### ↳ RelationKind
 

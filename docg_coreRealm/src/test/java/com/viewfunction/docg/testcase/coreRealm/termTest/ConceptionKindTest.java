@@ -428,5 +428,13 @@ public class ConceptionKindTest {
         Set<KindAttributeDistributionInfo> deset2 = _ConceptionKind01.getKindAttributesDistributionStatistics(0.9);
         Assert.assertTrue(deset2 != null);
         Assert.assertTrue(deset2.size()>0);
+
+        Set<ConceptionEntity> randomEntityList = _ConceptionKind01.getRandomEntities(2);
+        Assert.assertNotNull(randomEntityList);
+        Assert.assertEquals(randomEntityList.size(),2);
+        for(ConceptionEntity currentEntity:randomEntityList){
+            Assert.assertEquals(currentEntity.getConceptionKindName(),testConceptionKindName);
+            Assert.assertNotNull(currentEntity.getConceptionEntityUID());
+        }
     }
 }
