@@ -1,5 +1,6 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.GreaterThanFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
@@ -436,5 +437,8 @@ public class ConceptionKindTest {
             Assert.assertEquals(currentEntity.getConceptionKindName(),testConceptionKindName);
             Assert.assertNotNull(currentEntity.getConceptionEntityUID());
         }
+
+        AttributesParameters attributesParameters = new AttributesParameters();
+        randomEntityList = _ConceptionKind01.getRandomEntities(attributesParameters,false,2);
     }
 }
