@@ -19,13 +19,16 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JRelationKind;
-
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
+import org.neo4j.driver.Value;
+import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Neo4JRelationKindImpl implements Neo4JRelationKind {
 
@@ -292,6 +295,56 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
+    }
+
+    @Override
+    public Set<RelationEntity> getRandomEntities(int entitiesCount) throws CoreRealmServiceEntityExploreException {
+        if(entitiesCount < 1){
+            logger.error("entitiesCount must equal or great then 1.");
+            CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+            exception.setCauseMessage("entitiesCount must equal or great then 1.");
+            throw exception;
+        }
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = "MATCH p=()-[r:"+this.relationKindName+"]->() RETURN apoc.coll.randomItems(COLLECT(r),"+entitiesCount+") AS "+CypherBuilder.operationResultName;
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            DataTransformer<Set<RelationEntity>> getRelationEntityTransformer = new DataTransformer<Set<RelationEntity>>() {
+                @Override
+                public Set<RelationEntity> transformResult(Result result) {
+                    Set<RelationEntity> relationEntitySet = new HashSet<>();
+                    if(result.hasNext()){
+                        List<Value> resultList = result.next().values();
+                        if(resultList.size() > 0){
+                            List<Object> nodeObjList = resultList.get(0).asList();
+                            for(Object currentNodeObj : nodeObjList){
+                                Relationship resultRelationship = (Relationship)currentNodeObj;
+                                boolean isMatchedRelationKind = relationKindName.equals(resultRelationship.type());
+                                if(isMatchedRelationKind){
+                                    long relationUID = resultRelationship.id();
+                                    String relationEntityUID = ""+relationUID;
+                                    String fromEntityUID = ""+resultRelationship.startNodeId();
+                                    String toEntityUID = ""+resultRelationship.endNodeId();
+                                    Neo4JRelationEntityImpl neo4jRelationEntityImpl =
+                                            new Neo4JRelationEntityImpl(relationKindName,relationEntityUID,fromEntityUID,toEntityUID);
+                                    neo4jRelationEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+                                    relationEntitySet.add(neo4jRelationEntityImpl);
+                                }
+                            }
+                        }
+                    }
+                    return relationEntitySet;
+                }
+            };
+            Object queryRes = workingGraphOperationExecutor.executeRead(getRelationEntityTransformer,queryCql);
+            if(queryRes != null){
+                Set<RelationEntity> resultRelationEntityList = (Set<RelationEntity>)queryRes;
+                return resultRelationEntityList;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return null;
     }
 
     //internal graphOperationExecutor management logic

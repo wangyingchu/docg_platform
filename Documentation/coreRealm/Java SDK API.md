@@ -948,6 +948,15 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 关系实体度分布信息对象
      */
     public RelationDegreeDistributionInfo computeRelationDegreeDistribution(RelationDirection relationDirection);
+
+    /**
+     * 随机获取若干当前关系类型下的关系实体
+     *
+     * @param entitiesCount int 需要获取的关系实体数量
+     *
+     * @return 关系实体集合
+     */
+    public Set<RelationEntity> getRandomEntities(int entitiesCount) throws CoreRealmServiceEntityExploreException;
 ```
 ###### ↳ AttributesViewKind
 ---

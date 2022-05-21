@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class RelationKindTest {
 
@@ -128,6 +129,14 @@ public class RelationKindTest {
         Assert.assertEquals(res1,entityCount.longValue());
 
         Assert.assertEquals(_RelationKind01.countRelationEntities(),new Long(10));
+
+        Set<RelationEntity> relationEntitySet = _RelationKind01.getRandomEntities(5);
+        Assert.assertNotNull(relationEntitySet);
+        Assert.assertEquals(relationEntitySet.size(),5);
+        for(RelationEntity currentEntity:relationEntitySet){
+            Assert.assertEquals(currentEntity.getRelationKindName(),"RelationKind0001ForTest");
+            Assert.assertNotNull(currentEntity.getRelationEntityUID());
+        }
 
         EntitiesOperationResult purgeAllOperationResult = _RelationKind01.purgeAllRelationEntities();
         Assert.assertNotNull(purgeAllOperationResult);

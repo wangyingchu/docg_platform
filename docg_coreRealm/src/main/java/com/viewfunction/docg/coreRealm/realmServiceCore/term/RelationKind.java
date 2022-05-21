@@ -12,10 +12,11 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.StatisticalAndEv
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationDegreeDistributionInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntitiesAttributesRetrieveResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntitiesRetrieveResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 
 import java.util.List;
+import java.util.Set;
 
 public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttributeFeatureSupportable, ClassificationAttachable, StatisticalAndEvaluable {
     /**
@@ -120,4 +121,13 @@ public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttr
      * @return 关系实体度分布信息对象
      */
     public RelationDegreeDistributionInfo computeRelationDegreeDistribution(RelationDirection relationDirection);
+
+    /**
+     * 随机获取若干当前关系类型下的关系实体
+     *
+     * @param entitiesCount int 需要获取的关系实体数量
+     *
+     * @return 关系实体集合
+     */
+    public Set<RelationEntity> getRandomEntities(int entitiesCount) throws CoreRealmServiceEntityExploreException;
 }
