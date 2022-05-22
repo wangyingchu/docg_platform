@@ -930,38 +930,9 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         try{
             String queryCql = "MATCH (n:"+this.conceptionKindName+") RETURN apoc.coll.randomItems(COLLECT(n),"+entitiesCount+") AS " +CypherBuilder.operationResultName;
             logger.debug("Generated Cypher Statement: {}", queryCql);
-            DataTransformer<Set<ConceptionEntity>> getConceptionEntityTransformer = new DataTransformer<Set<ConceptionEntity>>() {
-                @Override
-                public Set<ConceptionEntity> transformResult(Result result) {
-                    Set<ConceptionEntity> conceptionEntitySet = new HashSet<>();
-                    if(result.hasNext()){
-                        List<Value> resultList = result.next().values();
-                        if(resultList.size() > 0){
-                            List<Object> nodeObjList = resultList.get(0).asList();
-                            for(Object currentNodeObj : nodeObjList){
-                                Node resultNode = (Node)currentNodeObj;
-                                List<String> allConceptionKindNames = Lists.newArrayList(resultNode.labels());
-                                boolean isMatchedConceptionKind = true;
-                                if(allConceptionKindNames.size()>0){
-                                    isMatchedConceptionKind = allConceptionKindNames.contains(conceptionKindName);
-                                }
-                                if(isMatchedConceptionKind){
-                                    long nodeUID = resultNode.id();
-                                    String conceptionEntityUID = ""+nodeUID;
-                                    String resultConceptionKindName = conceptionKindName;
-                                    Neo4JConceptionEntityImpl neo4jConceptionEntityImpl =
-                                            new Neo4JConceptionEntityImpl(resultConceptionKindName,conceptionEntityUID);
-                                    neo4jConceptionEntityImpl.setAllConceptionKindNames(allConceptionKindNames);
-                                    neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
-                                    conceptionEntitySet.add(neo4jConceptionEntityImpl);
-                                }
-                            }
-                        }
-                    }
-                    return conceptionEntitySet;
-                }
-            };
-            Object queryRes = workingGraphOperationExecutor.executeRead(getConceptionEntityTransformer,queryCql);
+            RandomItemsConceptionEntitySetDataTransformer randomItemsConceptionEntitySetDataTransformer =
+                    new RandomItemsConceptionEntitySetDataTransformer(workingGraphOperationExecutor);
+            Object queryRes = workingGraphOperationExecutor.executeRead(randomItemsConceptionEntitySetDataTransformer,queryCql);
             if(queryRes != null){
                 Set<ConceptionEntity> resultConceptionEntityList = (Set<ConceptionEntity>)queryRes;
                 return resultConceptionEntityList;
@@ -1004,17 +975,13 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
                         "RETURN apoc.coll.randomItems(COLLECT("+CypherBuilder.operationResultName+"),"+entitiesCount+",true) AS " +CypherBuilder.operationResultName;
                 queryCql = queryCql.replace(replaceContent,newContent);
                 logger.debug("Generated Cypher Statement: {}", queryCql);
-
-
-                /*
-                GetLongFormatAggregatedReturnValueTransformer GetLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
-                Object queryRes = workingGraphOperationExecutor.executeRead(GetLongFormatAggregatedReturnValueTransformer,queryCql);
+                RandomItemsConceptionEntitySetDataTransformer randomItemsConceptionEntitySetDataTransformer =
+                        new RandomItemsConceptionEntitySetDataTransformer(workingGraphOperationExecutor);
+                Object queryRes = workingGraphOperationExecutor.executeRead(randomItemsConceptionEntitySetDataTransformer,queryCql);
                 if(queryRes != null){
-                    //return (Long)queryRes;
+                    Set<ConceptionEntity> resultConceptionEntityList = (Set<ConceptionEntity>)queryRes;
+                    return resultConceptionEntityList;
                 }
-                */
-
-
             }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
@@ -1022,6 +989,42 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
         }else{
             return getRandomEntities(entitiesCount);
+        }
+    }
+
+    private class RandomItemsConceptionEntitySetDataTransformer implements DataTransformer<Set<ConceptionEntity>>{
+        GraphOperationExecutor workingGraphOperationExecutor;
+        public RandomItemsConceptionEntitySetDataTransformer(GraphOperationExecutor workingGraphOperationExecutor){
+            this.workingGraphOperationExecutor = workingGraphOperationExecutor;
+        }
+        @Override
+        public Set<ConceptionEntity> transformResult(Result result) {
+            Set<ConceptionEntity> conceptionEntitySet = new HashSet<>();
+            if(result.hasNext()){
+                List<Value> resultList = result.next().values();
+                if(resultList.size() > 0){
+                    List<Object> nodeObjList = resultList.get(0).asList();
+                    for(Object currentNodeObj : nodeObjList){
+                        Node resultNode = (Node)currentNodeObj;
+                        List<String> allConceptionKindNames = Lists.newArrayList(resultNode.labels());
+                        boolean isMatchedConceptionKind = true;
+                        if(allConceptionKindNames.size()>0){
+                            isMatchedConceptionKind = allConceptionKindNames.contains(conceptionKindName);
+                        }
+                        if(isMatchedConceptionKind){
+                            long nodeUID = resultNode.id();
+                            String conceptionEntityUID = ""+nodeUID;
+                            String resultConceptionKindName = conceptionKindName;
+                            Neo4JConceptionEntityImpl neo4jConceptionEntityImpl =
+                                    new Neo4JConceptionEntityImpl(resultConceptionKindName,conceptionEntityUID);
+                            neo4jConceptionEntityImpl.setAllConceptionKindNames(allConceptionKindNames);
+                            neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+                            conceptionEntitySet.add(neo4jConceptionEntityImpl);
+                        }
+                    }
+                }
+            }
+            return conceptionEntitySet;
         }
     }
 

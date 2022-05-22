@@ -3,6 +3,7 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.GreaterThanFilteringItem;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.NullValueFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
@@ -439,6 +440,13 @@ public class ConceptionKindTest {
         }
 
         AttributesParameters attributesParameters = new AttributesParameters();
-        randomEntityList = _ConceptionKind01.getRandomEntities(attributesParameters,false,2);
+        attributesParameters.setDefaultFilteringItem(new NullValueFilteringItem("mustNotExistAttr"));
+        randomEntityList = _ConceptionKind01.getRandomEntities(attributesParameters,true,2);
+        Assert.assertNotNull(randomEntityList);
+        Assert.assertEquals(randomEntityList.size(),2);
+        for(ConceptionEntity currentEntity:randomEntityList){
+            Assert.assertEquals(currentEntity.getConceptionKindName(),testConceptionKindName);
+            Assert.assertNotNull(currentEntity.getConceptionEntityUID());
+        }
     }
 }
