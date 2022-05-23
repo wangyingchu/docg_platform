@@ -130,4 +130,15 @@ public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttr
      * @return 关系实体集合
      */
     public Set<RelationEntity> getRandomEntities(int entitiesCount) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 随机获取若干符合过滤条件的当前关系类型的关系实体
+     *
+     * @param attributesParameters AttributesParameters 查询过滤条件
+     * @param isDistinctMode boolean 是否不允许重复数据
+     * @param entitiesCount int 需要获取的关系实体数量
+     *
+     * @return 关系实体集合
+     */
+    public Set<RelationEntity> getRandomEntities(AttributesParameters attributesParameters,boolean isDistinctMode,int entitiesCount) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
 }

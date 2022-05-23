@@ -327,6 +327,7 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      *
      * @param attributesParameters AttributesParameters 查询过滤条件
      * @param isDistinctMode boolean 是否不允许重复数据
+     * @param entitiesCount int 需要获取的概念实体数量
      *
      * @return 概念实体集合
      */

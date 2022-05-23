@@ -347,6 +347,60 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
         return null;
     }
 
+    @Override
+    public Set<RelationEntity> getRandomEntities(AttributesParameters attributesParameters, boolean isDistinctMode, int entitiesCount) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+        if(entitiesCount < 1){
+            logger.error("entitiesCount must equal or great then 1.");
+            CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+            exception.setCauseMessage("entitiesCount must equal or great then 1.");
+            throw exception;
+        }
+        if (attributesParameters != null) {
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setDistinctMode(isDistinctMode);
+            queryParameters.setResultNumber(100000000);
+            queryParameters.setDefaultFilteringItem(attributesParameters.getDefaultFilteringItem());
+            if (attributesParameters.getAndFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getAndFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.AND);
+                }
+            }
+            if (attributesParameters.getOrFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getOrFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.OR);
+                }
+            }
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                queryParameters.setEntityKind(this.relationKindName);
+                String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,
+                        null,null,true,queryParameters, CypherBuilder.CypherFunctionType.COUNT);
+
+
+
+
+
+                /*
+                GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer =
+                        queryParameters.isDistinctMode() ?
+                                new GetLongFormatAggregatedReturnValueTransformer("count","DISTINCT"):
+                                new GetLongFormatAggregatedReturnValueTransformer("count");
+                Object queryRes = workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer,queryCql);
+
+                if (queryRes != null) {
+                    //return (Long) queryRes;
+                }
+                */
+
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            return null;
+        }else{
+            return getRandomEntities(entitiesCount);
+        }
+    }
+
     //internal graphOperationExecutor management logic
     private GraphOperationExecutorHelper graphOperationExecutorHelper;
 
