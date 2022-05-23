@@ -848,6 +848,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @param attributesParameters AttributesParameters 查询过滤条件
      * @param isDistinctMode boolean 是否不允许重复数据
+     * @param entitiesCount int 需要获取的概念实体数量
      *
      * @return 概念实体集合
      */
