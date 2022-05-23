@@ -309,34 +309,8 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
         try{
             String queryCql = "MATCH p=()-[r:"+this.relationKindName+"]->() RETURN apoc.coll.randomItems(COLLECT(r),"+entitiesCount+") AS "+CypherBuilder.operationResultName;
             logger.debug("Generated Cypher Statement: {}", queryCql);
-            DataTransformer<Set<RelationEntity>> getRelationEntityTransformer = new DataTransformer<Set<RelationEntity>>() {
-                @Override
-                public Set<RelationEntity> transformResult(Result result) {
-                    Set<RelationEntity> relationEntitySet = new HashSet<>();
-                    if(result.hasNext()){
-                        List<Value> resultList = result.next().values();
-                        if(resultList.size() > 0){
-                            List<Object> nodeObjList = resultList.get(0).asList();
-                            for(Object currentNodeObj : nodeObjList){
-                                Relationship resultRelationship = (Relationship)currentNodeObj;
-                                boolean isMatchedRelationKind = relationKindName.equals(resultRelationship.type());
-                                if(isMatchedRelationKind){
-                                    long relationUID = resultRelationship.id();
-                                    String relationEntityUID = ""+relationUID;
-                                    String fromEntityUID = ""+resultRelationship.startNodeId();
-                                    String toEntityUID = ""+resultRelationship.endNodeId();
-                                    Neo4JRelationEntityImpl neo4jRelationEntityImpl =
-                                            new Neo4JRelationEntityImpl(relationKindName,relationEntityUID,fromEntityUID,toEntityUID);
-                                    neo4jRelationEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
-                                    relationEntitySet.add(neo4jRelationEntityImpl);
-                                }
-                            }
-                        }
-                    }
-                    return relationEntitySet;
-                }
-            };
-            Object queryRes = workingGraphOperationExecutor.executeRead(getRelationEntityTransformer,queryCql);
+            RandomItemsRelationEntitySetDataTransformer randomItemsRelationEntitySetDataTransformer = new RandomItemsRelationEntitySetDataTransformer(workingGraphOperationExecutor);
+            Object queryRes = workingGraphOperationExecutor.executeRead(randomItemsRelationEntitySetDataTransformer,queryCql);
             if(queryRes != null){
                 Set<RelationEntity> resultRelationEntityList = (Set<RelationEntity>)queryRes;
                 return resultRelationEntityList;
@@ -375,29 +349,56 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
                 queryParameters.setEntityKind(this.relationKindName);
                 String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,
                         null,null,true,queryParameters, CypherBuilder.CypherFunctionType.COUNT);
-
-
-
-
-
-                /*
-                GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer =
-                        queryParameters.isDistinctMode() ?
-                                new GetLongFormatAggregatedReturnValueTransformer("count","DISTINCT"):
-                                new GetLongFormatAggregatedReturnValueTransformer("count");
-                Object queryRes = workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer,queryCql);
-
-                if (queryRes != null) {
-                    //return (Long) queryRes;
+                String replaceContent = isDistinctMode ? "RETURN count(DISTINCT "+CypherBuilder.operationResultName+") SKIP 0 LIMIT 100000000" :
+                        "RETURN count("+CypherBuilder.operationResultName+") SKIP 0 LIMIT 100000000";
+                String newContent = isDistinctMode ? "RETURN apoc.coll.randomItems(COLLECT("+CypherBuilder.operationResultName+"),"+entitiesCount+",false) AS " +CypherBuilder.operationResultName:
+                        "RETURN apoc.coll.randomItems(COLLECT("+CypherBuilder.operationResultName+"),"+entitiesCount+",true) AS " +CypherBuilder.operationResultName;
+                queryCql = queryCql.replace(replaceContent,newContent);
+                logger.debug("Generated Cypher Statement: {}", queryCql);
+                RandomItemsRelationEntitySetDataTransformer randomItemsRelationEntitySetDataTransformer = new RandomItemsRelationEntitySetDataTransformer(workingGraphOperationExecutor);
+                Object queryRes = workingGraphOperationExecutor.executeRead(randomItemsRelationEntitySetDataTransformer,queryCql);
+                if(queryRes != null){
+                    Set<RelationEntity> resultRelationEntityList = (Set<RelationEntity>)queryRes;
+                    return resultRelationEntityList;
                 }
-                */
-
             }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
             return null;
         }else{
             return getRandomEntities(entitiesCount);
+        }
+    }
+
+    private class RandomItemsRelationEntitySetDataTransformer implements DataTransformer<Set<RelationEntity>>{
+        GraphOperationExecutor workingGraphOperationExecutor;
+        public RandomItemsRelationEntitySetDataTransformer(GraphOperationExecutor workingGraphOperationExecutor){
+            this.workingGraphOperationExecutor = workingGraphOperationExecutor;
+        }
+        @Override
+        public Set<RelationEntity> transformResult(Result result) {
+            Set<RelationEntity> relationEntitySet = new HashSet<>();
+            if(result.hasNext()){
+                List<Value> resultList = result.next().values();
+                if(resultList.size() > 0){
+                    List<Object> nodeObjList = resultList.get(0).asList();
+                    for(Object currentNodeObj : nodeObjList){
+                        Relationship resultRelationship = (Relationship)currentNodeObj;
+                        boolean isMatchedRelationKind = relationKindName.equals(resultRelationship.type());
+                        if(isMatchedRelationKind){
+                            long relationUID = resultRelationship.id();
+                            String relationEntityUID = ""+relationUID;
+                            String fromEntityUID = ""+resultRelationship.startNodeId();
+                            String toEntityUID = ""+resultRelationship.endNodeId();
+                            Neo4JRelationEntityImpl neo4jRelationEntityImpl =
+                                    new Neo4JRelationEntityImpl(relationKindName,relationEntityUID,fromEntityUID,toEntityUID);
+                            neo4jRelationEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+                            relationEntitySet.add(neo4jRelationEntityImpl);
+                        }
+                    }
+                }
+            }
+            return relationEntitySet;
         }
     }
 

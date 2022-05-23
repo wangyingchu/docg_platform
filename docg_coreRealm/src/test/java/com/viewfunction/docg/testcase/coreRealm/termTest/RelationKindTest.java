@@ -2,7 +2,9 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.GreaterThanEqualFilteringItem;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.NullValueFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
@@ -137,6 +139,22 @@ public class RelationKindTest {
             Assert.assertEquals(currentEntity.getRelationKindName(),"RelationKind0001ForTest");
             Assert.assertNotNull(currentEntity.getRelationEntityUID());
         }
+
+        AttributesParameters attributesParameters2 = new AttributesParameters();
+        attributesParameters2.setDefaultFilteringItem(new NullValueFilteringItem("mustNotExistAttr"));
+        relationEntitySet = _RelationKind01.getRandomEntities(attributesParameters2,true,5);
+        Assert.assertNotNull(relationEntitySet);
+        Assert.assertEquals(relationEntitySet.size(),5);
+        for(RelationEntity currentEntity:relationEntitySet){
+            Assert.assertEquals(currentEntity.getRelationKindName(),"RelationKind0001ForTest");
+            Assert.assertNotNull(currentEntity.getRelationEntityUID());
+        }
+
+        attributesParameters2 = new AttributesParameters();
+        attributesParameters2.setDefaultFilteringItem(new EqualFilteringItem("mustNotExistAttr",1000));
+        relationEntitySet = _RelationKind01.getRandomEntities(attributesParameters2,false,5);
+        Assert.assertNotNull(relationEntitySet);
+        Assert.assertEquals(relationEntitySet.size(),0);
 
         EntitiesOperationResult purgeAllOperationResult = _RelationKind01.purgeAllRelationEntities();
         Assert.assertNotNull(purgeAllOperationResult);
