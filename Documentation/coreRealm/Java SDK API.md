@@ -4408,6 +4408,13 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 如删除索引成功返回 true
      */
     public boolean removeRelationKindSearchIndex(String indexName) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 统计系统中所有概念类型实体与其他概念类型实体之间的实时关联关系信息
+     *
+     * @return 所有概念类型之间的关联关系信息集合
+     */
+    public Set<ConceptionKindCorrelationInfo> getSystemConceptionKindsRelationDistributionStatistics();
 ```
 
 ###### ↳ DataScienceOperator

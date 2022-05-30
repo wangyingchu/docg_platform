@@ -11,6 +11,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
+import org.neo4j.driver.types.Node;
+import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -482,6 +484,58 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
             }
         }
         return true;
+    }
+
+    @Override
+    public Set<ConceptionKindCorrelationInfo> getSystemConceptionKindsRelationDistributionStatistics() {
+        String cql ="CALL db.schema.visualization()";
+        logger.debug("Generated Cypher Statement: {}", cql);
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            DataTransformer<Set<ConceptionKindCorrelationInfo>> statisticsDataTransformer = new DataTransformer(){
+                @Override
+                public Set<ConceptionKindCorrelationInfo> transformResult(Result result) {
+                    Record currentRecord = result.next();
+                    List<Object> nodesList = currentRecord.get("nodes").asList();
+                    List<Object> relationshipsList = currentRecord.get("relationships").asList();
+
+                    Set<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet = new HashSet<>();
+                    String currentConceptionKindID = null;
+                    Map<String,String> conceptionKindId_nameMapping = new HashMap<>();
+                    for(Object currentNodeObj:nodesList){
+                        Node currentNode = (Node)currentNodeObj;
+                        long currentNodeId = currentNode.id();
+                        String currentConceptionKindName = currentNode.labels().iterator().next();
+                        currentConceptionKindID = ""+currentNodeId;
+                        conceptionKindId_nameMapping.put(""+currentNodeId,currentConceptionKindName);
+                    }
+                    for(Object currentRelationshipObj:relationshipsList){
+                        Relationship currentRelationship = (Relationship)currentRelationshipObj;
+                        //long relationshipId = currentRelationship.id();
+                        String relationshipType = currentRelationship.type();
+                        String startConceptionKindId = ""+currentRelationship.startNodeId();
+                        String endConceptionKindId = ""+currentRelationship.endNodeId();
+                        if(currentConceptionKindID.equals(startConceptionKindId)||
+                                currentConceptionKindID.equals(""+endConceptionKindId)){
+                            ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
+                                    new ConceptionKindCorrelationInfo(
+                                            conceptionKindId_nameMapping.get(startConceptionKindId),
+                                            conceptionKindId_nameMapping.get(endConceptionKindId),
+                                            relationshipType,1);
+                            conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
+                        }
+                    }
+                    return conceptionKindCorrelationInfoSet;
+                }
+            };
+            Object queryRes = workingGraphOperationExecutor.executeRead(statisticsDataTransformer,cql);
+            if(queryRes != null){
+                return (Set<ConceptionKindCorrelationInfo>)queryRes;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return null;
     }
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {

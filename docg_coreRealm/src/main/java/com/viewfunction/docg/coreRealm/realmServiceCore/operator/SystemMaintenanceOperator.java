@@ -1,10 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeSystemInfo;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.DataStatusSnapshotInfo;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.SearchIndexInfo;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.SystemStatusSnapshotInfo;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 
 import java.util.List;
 import java.util.Set;
@@ -105,4 +102,10 @@ public interface SystemMaintenanceOperator {
      */
     public boolean removeRelationKindSearchIndex(String indexName) throws CoreRealmServiceRuntimeException;
 
+    /**
+     * 统计系统中所有概念类型实体与其他概念类型实体之间的实时关联关系信息
+     *
+     * @return 所有概念类型之间的关联关系信息集合
+     */
+    public Set<ConceptionKindCorrelationInfo> getSystemConceptionKindsRelationDistributionStatistics();
 }
