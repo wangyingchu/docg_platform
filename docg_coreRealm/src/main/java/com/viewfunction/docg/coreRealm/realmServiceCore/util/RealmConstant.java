@@ -1,6 +1,8 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.util;
 
 public interface RealmConstant {
+
+    public final String RealmInnerTypePerFix="DOCG_";
     public final String ConceptionKindClass="DOCG_ConceptionKind";
     public final String AttributesViewKindClass="DOCG_AttributesViewKind";
     public final String AttributeKindClass="DOCG_AttributeKind";
@@ -101,6 +103,4 @@ public interface RealmConstant {
     public final String _GeospatialGLGeometryBorder="DOCG_GS_GLGeometryBorder";
     public final String _GeospatialCLGeometryBorder="DOCG_GS_CLGeometryBorder";
     public final String _GeospatialLLGeometryBorder="DOCG_GS_LLGeometryBorder";
-
-
 }

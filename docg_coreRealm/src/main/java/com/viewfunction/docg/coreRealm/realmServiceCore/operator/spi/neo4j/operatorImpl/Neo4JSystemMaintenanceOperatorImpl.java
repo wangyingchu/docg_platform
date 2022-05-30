@@ -9,6 +9,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.operator.SystemMaintenan
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
@@ -500,23 +501,21 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                     List<Object> relationshipsList = currentRecord.get("relationships").asList();
 
                     Set<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet = new HashSet<>();
-                    String currentConceptionKindID = null;
                     Map<String,String> conceptionKindId_nameMapping = new HashMap<>();
                     for(Object currentNodeObj:nodesList){
                         Node currentNode = (Node)currentNodeObj;
                         long currentNodeId = currentNode.id();
                         String currentConceptionKindName = currentNode.labels().iterator().next();
-                        currentConceptionKindID = ""+currentNodeId;
                         conceptionKindId_nameMapping.put(""+currentNodeId,currentConceptionKindName);
                     }
                     for(Object currentRelationshipObj:relationshipsList){
                         Relationship currentRelationship = (Relationship)currentRelationshipObj;
-                        //long relationshipId = currentRelationship.id();
                         String relationshipType = currentRelationship.type();
                         String startConceptionKindId = ""+currentRelationship.startNodeId();
                         String endConceptionKindId = ""+currentRelationship.endNodeId();
-                        if(currentConceptionKindID.equals(startConceptionKindId)||
-                                currentConceptionKindID.equals(""+endConceptionKindId)){
+                        if(conceptionKindId_nameMapping.get(startConceptionKindId).startsWith(RealmConstant.RealmInnerTypePerFix) &
+                                conceptionKindId_nameMapping.get(endConceptionKindId).startsWith(RealmConstant.RealmInnerTypePerFix)){
+                        }else{
                             ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
                                     new ConceptionKindCorrelationInfo(
                                             conceptionKindId_nameMapping.get(startConceptionKindId),
