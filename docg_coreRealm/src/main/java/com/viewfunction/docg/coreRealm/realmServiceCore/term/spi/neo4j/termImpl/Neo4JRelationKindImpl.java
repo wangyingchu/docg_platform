@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Neo4JRelationKindImpl implements Neo4JRelationKind {
@@ -368,6 +369,11 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
         }else{
             return getRandomEntities(entitiesCount);
         }
+    }
+
+    @Override
+    public long setKindScopeAttributes(Map<String, Object> properties) {
+        return 0;
     }
 
     private class RandomItemsRelationEntitySetDataTransformer implements DataTransformer<Set<RelationEntity>>{

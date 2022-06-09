@@ -16,6 +16,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntities
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttributeFeatureSupportable, ClassificationAttachable, StatisticalAndEvaluable {
@@ -141,4 +142,6 @@ public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttr
      * @return 关系实体集合
      */
     public Set<RelationEntity> getRandomEntities(AttributesParameters attributesParameters,boolean isDistinctMode,int entitiesCount) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
+
+    public long setKindScopeAttributes(Map<String, Object> properties);
 }
