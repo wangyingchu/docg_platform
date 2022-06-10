@@ -1046,7 +1046,7 @@ public class BatchDataOperationUtil {
                 Map<String,String> attributesMapping=new HashMap<>();
                 String[] attributesArray = header.split(",");
                 for(String currentStr : attributesArray){
-                    attributesMapping.put(currentStr,currentStr);
+                    attributesMapping.put(currentStr.replaceAll("\"",""),currentStr.replaceAll("\"",""));
                 }
                 return attributesMapping;
             } catch (Exception e) {
