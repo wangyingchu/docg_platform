@@ -26,6 +26,8 @@ import org.neo4j.driver.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -997,7 +999,7 @@ public class BatchDataOperationUtil {
     }
 
     public static boolean importConceptionEntitiesFromCSV(String csvLocation,String conceptionKind,Map<String,String> attributesMapping){
-         if(csvLocation == null || conceptionKind == null || attributesMapping == null){
+        if(csvLocation == null || conceptionKind == null || attributesMapping == null){
             return false;
         }else{
             if(attributesMapping.size()>0){
@@ -1032,5 +1034,25 @@ public class BatchDataOperationUtil {
             }
         }
         return false;
+    }
+
+    public static Map<String,String>  getAttributesMappingFromHeaderCSV(String csvLocation){
+        if(csvLocation == null){
+            return null;
+        }else{
+            try {
+                BufferedReader reader = new BufferedReader(new FileReader(csvLocation));
+                String header = reader.readLine();
+                Map<String,String> attributesMapping=new HashMap<>();
+                String[] attributesArray = header.split(",");
+                for(String currentStr : attributesArray){
+                    attributesMapping.put(currentStr,currentStr);
+                }
+                return attributesMapping;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 }
