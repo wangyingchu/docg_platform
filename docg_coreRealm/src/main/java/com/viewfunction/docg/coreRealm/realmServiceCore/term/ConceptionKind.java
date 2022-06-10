@@ -13,6 +13,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAttributeFeatureSupportable, ClassificationAttachable, StatisticalAndEvaluable {
@@ -332,4 +333,6 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      * @return 概念实体集合
      */
     public Set<ConceptionEntity> getRandomEntities(AttributesParameters attributesParameters,boolean isDistinctMode,int entitiesCount) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
+
+    public long setKindScopeAttributes(Map<String, Object> properties);
 }

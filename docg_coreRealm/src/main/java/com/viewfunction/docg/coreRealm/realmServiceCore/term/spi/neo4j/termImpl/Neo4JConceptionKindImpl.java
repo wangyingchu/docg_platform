@@ -992,6 +992,11 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         }
     }
 
+    @Override
+    public long setKindScopeAttributes(Map<String, Object> properties) {
+        return 0;
+    }
+
     private class RandomItemsConceptionEntitySetDataTransformer implements DataTransformer<Set<ConceptionEntity>>{
         GraphOperationExecutor workingGraphOperationExecutor;
         public RandomItemsConceptionEntitySetDataTransformer(GraphOperationExecutor workingGraphOperationExecutor){
