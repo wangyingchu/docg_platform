@@ -373,6 +373,14 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
 
     @Override
     public long setKindScopeAttributes(Map<String, Object> properties) {
+
+
+        String cql= "MATCH p=()-[r:BelongsToChamberOfCommerce]->()\n" +
+                "SET r.DISPLAY_PROP = '隶属于商会'\n" +
+                "RETURN count(r)";
+
+
+
         return 0;
     }
 
