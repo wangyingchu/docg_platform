@@ -10,13 +10,13 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.cypherdsl.core.*;
 import org.neo4j.cypherdsl.core.renderer.Renderer;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
+import java.util.Set;
 import java.util.*;
 
 import static com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder.ReturnRelationableDataType.NODE;
@@ -2815,6 +2815,156 @@ public class CypherBuilder {
             // rel = CREATE (sourceNode)-[operationResult:`relationKind` XXXXXXXXXXXXXXX]->(targetNode)
             rel = rel.replace("CREATE (sourceNode)-[operationResult:`relationKind`","").replace("]->(targetNode)","");
             return rel;
+        } else {
+            return "{}";
+        }
+    }
+
+
+    public static String setRelationEntitiesProperties(String relationType,Map<String, Object> entityProperties){
+        if (relationType != null && entityProperties != null && entityProperties.size() > 0) {
+            Node sourceNode = Cypher.anyNode().named(sourceNodeName);
+            Node targetNode = Cypher.anyNode().named(targetNodeName);
+            Relationship targetRelationship = sourceNode.relationshipBetween(targetNode, relationType).named(operationResultName);
+
+
+
+            Map<String,Object> attributesMap = CommonOperationUtil.reformatPropertyValues(entityProperties);
+
+            System.out.println(attributesMap);
+            Operation[] propertyOperationArray = new Operation[attributesMap.size()];
+
+
+
+            Set<String> keySet = entityProperties.keySet();
+
+
+            Iterator<String> keyIterator = keySet.iterator();
+
+
+            int idx = 0;
+            while(keyIterator.hasNext()){
+                String currentKey = keyIterator.next();
+
+
+                Object currentValue = attributesMap.get(currentKey);
+
+                if(currentValue instanceof List){
+                    propertyOperationArray[idx] = targetRelationship.property(currentKey).to((Expression) attributesMap.get(currentKey));
+                }else{
+                    propertyOperationArray[idx] = targetRelationship.property(currentKey).to((Expression) attributesMap.get(currentKey));
+                }
+
+
+
+                idx ++;
+            }
+            Statement statement = Cypher.match(targetRelationship)
+                    .set(
+                            propertyOperationArray
+                    )
+                    .returning(Functions2.count(targetRelationship))
+                    .build();
+            String rel = cypherRenderer.render(statement);
+            logger.debug("Generated Cypher Statement: {}", rel);
+            return rel;
+        }else{
+            return "{}";
+        }
+    }
+
+
+
+    public static String setEntityProperties(Relationship targetRelationship,Map<String, Object> entityProperties) {
+        if (entityProperties != null && entityProperties.size() > 0) {
+            Node targetNodes = Cypher.node("Person").named("p");
+            // person = Cypher.node("Person").named("p");
+            Statement statementAAA = Cypher.match(targetRelationship)
+                            .set(
+                            targetNodes.property("name2").to(Cypher.literalOf("me")),
+                            targetNodes.property("name3").to(Cypher.literalOf("me"))
+                    )
+                    .returning(Functions.count(targetNodes))
+                    .build();
+
+
+
+            String xsssx =  cypherRenderer.render(statementAAA);
+
+
+
+
+            return "{}";
+
+        } else {
+            return "{}";
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public static String setEntityProperties(Map<String, Object> entityProperties) {
+        if (entityProperties != null && entityProperties.size() > 0) {
+            Node targetNodes = Cypher.node("Person").named("p");
+           // person = Cypher.node("Person").named("p");
+            Statement statementAAA = Cypher
+                    .match(Cypher.node("Person")).set(
+                            targetNodes.property("firstName").to(Cypher.parameter("firstName").withValue("Thomas")),
+                            targetNodes.property("name").to(Cypher.parameter("name", "Anderson"))
+                    ).set(
+                            targetNodes.property("name2").to(Cypher.literalOf("me")),
+                            targetNodes.property("name3").to(Cypher.literalOf("me"))
+                    )
+                    .returning(Functions.count(targetNodes))
+                    .build();
+
+
+
+           String xsssx =  cypherRenderer.render(statementAAA);
+
+
+System.out.println(xsssx);
+
+
+
+
+
+            Node sourceNode = Cypher.anyNode().named(sourceNodeName);
+            Node targetNode = Cypher.anyNode().named(targetNodeName);
+
+
+
+
+
+/*
+            MapExpression targetMapExpression = Cypher.mapOf(CommonOperationUtil.generatePropertiesValueArray(entityProperties));
+
+            Property property = Cypher.property(targetMapExpression);
+
+
+            Relationship relation = sourceNode.relationshipTo(targetNode, "relationKind").named(operationResultName).withProperties(targetMapExpression);
+            Statement statement = Cypher.create(relation).build();
+            String rel = cypherRenderer.render(statement);
+            // rel = CREATE (sourceNode)-[operationResult:`relationKind` XXXXXXXXXXXXXXX]->(targetNode)
+            rel = rel.replace("CREATE (sourceNode)-[operationResult:`relationKind`","").replace("]->(targetNode)","");
+            return rel;
+  */
+
+            return "{}";
+
         } else {
             return "{}";
         }

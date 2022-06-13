@@ -375,11 +375,40 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
     public long setKindScopeAttributes(Map<String, Object> properties) {
 
 
+
+
+        CypherBuilder.setRelationEntitiesProperties(this.relationKindName,properties);
+
+
+
+
+        /*
+
+        String createAttributesCql = CypherBuilder.createEntityProperties(properties);
+
+        System.out.println(createAttributesCql);
+
+        System.out.println( CommonOperationUtil.generatePropertiesValueArray(properties).length);
+
+        Map<String,Object> attributesMap = CommonOperationUtil.reformatPropertyValues(properties);
+
+
+
+
+        System.out.println(attributesMap.values());
+
+        for(Object value:CommonOperationUtil.generatePropertiesValueArray(properties)){
+            System.out.println(value);
+        }
+
+
         String cql= "MATCH p=()-[r:BelongsToChamberOfCommerce]->()\n" +
                 "SET r.DISPLAY_PROP = '隶属于商会'\n" +
                 "RETURN count(r)";
 
-
+        String xxxxx = CypherBuilder.setEntityProperties(properties);
+        System.out.println(xxxxx);
+        */
 
         return 0;
     }
