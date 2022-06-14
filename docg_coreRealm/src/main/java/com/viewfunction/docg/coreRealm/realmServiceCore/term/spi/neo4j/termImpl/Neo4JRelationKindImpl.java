@@ -372,10 +372,10 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
     }
 
     @Override
-    public long setKindScopeAttributes(Map<String, Object> properties) {
+    public long setKindScopeAttributes(Map<String, Object> attributes) {
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
-            String queryCql = CypherBuilder.setRelationKindProperties(this.relationKindName,properties);
+            String queryCql = CypherBuilder.setRelationKindProperties(this.relationKindName,attributes);
             GetLongFormatAggregatedReturnValueTransformer GetLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
             Object queryRes = workingGraphOperationExecutor.executeWrite(GetLongFormatAggregatedReturnValueTransformer,queryCql);
             if(queryRes != null) {

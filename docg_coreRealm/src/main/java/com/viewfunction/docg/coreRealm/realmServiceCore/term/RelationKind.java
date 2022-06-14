@@ -146,9 +146,9 @@ public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttr
     /**
      * 为当前关系类型的所有关系实体添加指定的属性，如属性已经存在，则用新的值覆盖原有属性
      *
-     * @param properties Map<String, Object> 需要添加的所有属性
+     * @param attributes Map<String, Object> 需要添加的所有属性
      *
      * @return 操作成功的数据总量
      */
-    public long setKindScopeAttributes(Map<String, Object> properties);
+    public long setKindScopeAttributes(Map<String, Object> attributes);
 }

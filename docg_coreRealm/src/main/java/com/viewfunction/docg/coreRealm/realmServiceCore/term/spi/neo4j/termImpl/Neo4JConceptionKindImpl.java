@@ -993,10 +993,10 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public long setKindScopeAttributes(Map<String, Object> properties) {
+    public long setKindScopeAttributes(Map<String, Object> attributes) {
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
-            String queryCql = CypherBuilder.setConceptionKindProperties(this.conceptionKindName,properties);
+            String queryCql = CypherBuilder.setConceptionKindProperties(this.conceptionKindName,attributes);
             GetLongFormatAggregatedReturnValueTransformer GetLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
             Object queryRes = workingGraphOperationExecutor.executeWrite(GetLongFormatAggregatedReturnValueTransformer,queryCql);
             if(queryRes != null) {

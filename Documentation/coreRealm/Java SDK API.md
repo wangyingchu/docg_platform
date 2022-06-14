@@ -853,6 +853,15 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 概念实体集合
      */
     public Set<ConceptionEntity> getRandomEntities(AttributesParameters attributesParameters,boolean isDistinctMode,int entitiesCount) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
+
+    /**
+     * 为当前概念类型的所有概念实体添加指定的属性，如属性已经存在，则用新的值覆盖原有属性
+     *
+     * @param attributes Map<String, Object> 需要添加的所有属性
+     *
+     * @return 操作成功的数据总量
+     */
+    public long setKindScopeAttributes(Map<String, Object> attributes);
 ```
 ###### ↳ RelationKind
 
@@ -979,6 +988,15 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 关系实体集合
      */
     public Set<RelationEntity> getRandomEntities(AttributesParameters attributesParameters,boolean isDistinctMode,int entitiesCount) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
+
+    /**
+     * 为当前关系类型的所有关系实体添加指定的属性，如属性已经存在，则用新的值覆盖原有属性
+     *
+     * @param attributes Map<String, Object> 需要添加的所有属性
+     *
+     * @return 操作成功的数据总量
+     */
+    public long setKindScopeAttributes(Map<String, Object> attributes);
 ```
 ###### ↳ AttributesViewKind
 ---
