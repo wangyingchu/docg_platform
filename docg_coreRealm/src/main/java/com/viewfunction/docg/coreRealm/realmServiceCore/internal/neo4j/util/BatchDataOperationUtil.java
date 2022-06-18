@@ -389,18 +389,20 @@ public class BatchDataOperationUtil {
         List<List<RelationEntityValue>> rsList = Lists.partition(relationEntityValueList, singlePartitionSize);
         Map<String,Object> threadReturnDataMap = new Hashtable<>();
         threadReturnDataMap.put("StartTime", LocalDateTime.now());
-        ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
-        for(List<RelationEntityValue> currentRelationEntityValueList:rsList){
-            AttachRelationThread attachRelationThread = new AttachRelationThread(currentRelationEntityValueList,relationKindName,threadReturnDataMap);
-            executor.execute(attachRelationThread);
+        if(rsList.size() > 0){
+            ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+            for(List<RelationEntityValue> currentRelationEntityValueList:rsList){
+                AttachRelationThread attachRelationThread = new AttachRelationThread(currentRelationEntityValueList,relationKindName,threadReturnDataMap);
+                executor.execute(attachRelationThread);
+            }
+            executor.shutdown();
+            try {
+                executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            threadReturnDataMap.put("FinishTime", LocalDateTime.now());
         }
-        executor.shutdown();
-        try {
-            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        threadReturnDataMap.put("FinishTime", LocalDateTime.now());
         return threadReturnDataMap;
     }
 
