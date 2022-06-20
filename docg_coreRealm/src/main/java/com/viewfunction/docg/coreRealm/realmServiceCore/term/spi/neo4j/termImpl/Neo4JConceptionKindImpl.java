@@ -895,8 +895,8 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
                         String relationshipType = currentRelationship.type();
                         String startConceptionKindId = ""+currentRelationship.startNodeId();
                         String endConceptionKindId = ""+currentRelationship.endNodeId();
-                        if(currentConceptionKindID.equals(startConceptionKindId)||
-                                currentConceptionKindID.equals(""+endConceptionKindId)){
+                        if(startConceptionKindId.equals(currentConceptionKindID)||
+                                endConceptionKindId.equals(currentConceptionKindID)){
                             ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
                                     new ConceptionKindCorrelationInfo(
                                             conceptionKindId_nameMapping.get(startConceptionKindId),
