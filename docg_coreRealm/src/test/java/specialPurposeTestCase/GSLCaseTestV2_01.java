@@ -20,7 +20,7 @@ import java.util.Map;
 public class GSLCaseTestV2_01 {
     public static void main(String[] args) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
         //createConceptionKind();
-        //loadCSVEntities("/media/wangychu/HSStorage/Local_Applications/Neo4j/neo4j-community-4.4.6_GSL_v5_DCOne/import/");
+        //loadCSVEntities("/media/wangychu/HSStorage/Local_Services/Neo4j/neo4j-community-4.4.5_GSLv6_DCone/import/");
         //linkFederationOfIndustryAndCommerce();
         //linkFederationOfIndustryAndCommerceAndChamberOfCommerce();
         //linkFederationOfIndustryAndMember();

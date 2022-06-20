@@ -1104,11 +1104,12 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             DataTransformer queryResultDataTransformer = new DataTransformer() {
                 @Override
                 public Object transformResult(Result result) {
-
+                    List<String> conceptionKindsNameWithDataList = new ArrayList<>();
                     while(result.hasNext()){
                         Record currentRecord = result.next();
                         String entityKind = currentRecord.get("label").asString();
                         long entityCount = currentRecord.get("count").asLong();
+                        conceptionKindsNameWithDataList.add(entityKind);
                         EntityStatisticsInfo currentEntityStatisticsInfo = null;
                         if(entityKind.startsWith("DOCG_")){
                             currentEntityStatisticsInfo = new EntityStatisticsInfo(
@@ -1127,6 +1128,24 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                             }
                         }
                         if(currentEntityStatisticsInfo != null){
+                            entityStatisticsInfoList.add(currentEntityStatisticsInfo);
+                        }
+                    }
+
+                    //如果 ConceptionKind 尚未有实体数据，则 CALL db.labels() 不会返回该 Kind 记录，需要从 ConceptionKind 列表反向查找
+                    Set<String> allConceptionKindNameSet = conceptionKindMetaDataMap.keySet();
+                    for(String currentKindName :allConceptionKindNameSet ){
+                        if(!conceptionKindsNameWithDataList.contains(currentKindName)){
+                            //当前 ConceptionKind 中无数据，需要手动添加信息
+                            EntityStatisticsInfo currentEntityStatisticsInfo = new EntityStatisticsInfo(
+                                    currentKindName, EntityStatisticsInfo.kindType.ConceptionKind, false, 0,
+                                    conceptionKindMetaDataMap.get(currentKindName).get(RealmConstant._DescProperty).toString(),
+                                    conceptionKindMetaDataMap.get(currentKindName).get("ConceptionKindUID").toString(),
+                                    (ZonedDateTime) (conceptionKindMetaDataMap.get(currentKindName).get(RealmConstant._createDateProperty)),
+                                    (ZonedDateTime) (conceptionKindMetaDataMap.get(currentKindName).get(RealmConstant._lastModifyDateProperty)),
+                                    conceptionKindMetaDataMap.get(currentKindName).get(RealmConstant._creatorIdProperty).toString(),
+                                    conceptionKindMetaDataMap.get(currentKindName).get(RealmConstant._dataOriginProperty).toString()
+                            );
                             entityStatisticsInfoList.add(currentEntityStatisticsInfo);
                         }
                     }
