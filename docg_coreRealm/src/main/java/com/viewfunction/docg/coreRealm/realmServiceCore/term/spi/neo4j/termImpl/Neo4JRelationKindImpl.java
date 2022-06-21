@@ -388,6 +388,11 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
         return 0;
     }
 
+    @Override
+    public long purgeSelfAttachedRelationEntities() {
+        return 0;
+    }
+
     private class RandomItemsRelationEntitySetDataTransformer implements DataTransformer<Set<RelationEntity>>{
         GraphOperationExecutor workingGraphOperationExecutor;
         public RandomItemsRelationEntitySetDataTransformer(GraphOperationExecutor workingGraphOperationExecutor){
