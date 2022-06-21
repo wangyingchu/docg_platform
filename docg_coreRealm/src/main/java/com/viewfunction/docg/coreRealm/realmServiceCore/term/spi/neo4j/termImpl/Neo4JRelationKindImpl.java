@@ -389,7 +389,20 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
     }
 
     @Override
-    public long purgeSelfAttachedRelationEntities() {
+    public long purgeRelationsOfSelfAttachedConceptionEntities() {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = "MATCH p=(n1)-[r:"+this.relationKindName+"]->(n2) WHERE id(n1) = id(n2) delete r return count(r) AS " + CypherBuilder.operationResultName;
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            GetLongFormatAggregatedReturnValueTransformer GetLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer();
+            Object queryRes = workingGraphOperationExecutor.executeWrite(GetLongFormatAggregatedReturnValueTransformer,queryCql);
+            if(queryRes != null) {
+                Long operationResult =(Long)queryRes;
+                return operationResult;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
         return 0;
     }
 

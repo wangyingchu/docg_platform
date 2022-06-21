@@ -169,6 +169,25 @@ public class RelationKindTest {
 
         Assert.assertEquals(_RelationKind01.countRelationEntities(),new Long(0));
 
+        long selfAttachedRemoveResult = _RelationKind01.purgeRelationsOfSelfAttachedConceptionEntities();
+        Assert.assertEquals(selfAttachedRemoveResult,0);
+
+        Map<String,Object> newEntityValue= new HashMap<>();
+        ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValue);
+        ConceptionEntity _ConceptionEntity_3 = _ConceptionKind01.newEntity(conceptionEntityValue,false);
+
+        for(int i=0;i<10;i++) {
+            _ConceptionEntity_3.attachFromRelation(_ConceptionEntity_3.getConceptionEntityUID(), "RelationKind0001ForTest", null, false);
+        }
+        selfAttachedRemoveResult = _RelationKind01.purgeRelationsOfSelfAttachedConceptionEntities();
+        Assert.assertEquals(selfAttachedRemoveResult,1);
+
+        for(int i=0;i<10;i++) {
+            _ConceptionEntity_3.attachFromRelation(_ConceptionEntity_3.getConceptionEntityUID(), "RelationKind0001ForTest", null, true);
+        }
+        selfAttachedRemoveResult = _RelationKind01.purgeRelationsOfSelfAttachedConceptionEntities();
+        Assert.assertEquals(selfAttachedRemoveResult,10);
+
         coreRealm.closeGlobalSession();
     }
 }
