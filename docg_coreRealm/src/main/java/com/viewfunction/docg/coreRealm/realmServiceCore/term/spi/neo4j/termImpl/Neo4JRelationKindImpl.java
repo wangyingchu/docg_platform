@@ -406,6 +406,11 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
         return 0;
     }
 
+    @Override
+    public boolean deleteEntity(String relationEntityUID) throws CoreRealmServiceRuntimeException {
+        return false;
+    }
+
     private class RandomItemsRelationEntitySetDataTransformer implements DataTransformer<Set<RelationEntity>>{
         GraphOperationExecutor workingGraphOperationExecutor;
         public RandomItemsRelationEntitySetDataTransformer(GraphOperationExecutor workingGraphOperationExecutor){
