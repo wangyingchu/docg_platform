@@ -20,7 +20,7 @@ import java.util.Map;
 public class GSLCaseTestV2_01 {
     public static void main(String[] args) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
         //createConceptionKind();
-        //loadCSVEntities("/media/wangychu/HSStorage/Local_Services/Neo4j/neo4j-community-4.4.5_GSLv6_DCone/import/");
+        //loadCSVEntities("/media/wangychu/HSStorage/Local_Applications/Neo4j/neo4j-community-4.4.6_GSL_v6_DCone_03/import/");
         //linkFederationOfIndustryAndCommerce();
         //linkFederationOfIndustryAndCommerceAndChamberOfCommerce();
         //linkFederationOfIndustryAndMember();
@@ -32,6 +32,7 @@ public class GSLCaseTestV2_01 {
         //linkSameExecutive();
         //need add  this logic MATCH p=(n1)-[r:IsSamePerson]->(n2) WHERE id(n1)=id(n2) delete r return count(r)
         //cleanSelfSamePersonLink();
+        //linkChamberOfCommerceAndLeader();
         //addLinkDisplayProperty();
 
 
@@ -67,6 +68,8 @@ public class GSLCaseTestV2_01 {
         coreRealm.createConceptionKind("ExecutiveEnterprise","执常委相关企业");
         coreRealm.createConceptionKind("ExecutiveFicElseDuty","执常委工商联职务");
         coreRealm.createConceptionKind("ExecutiveHonor","执常委荣誉");
+        coreRealm.createConceptionKind("ChamberOfCommerceLeader","商会领导");
+        coreRealm.createConceptionKind("ChamberOfCommerceLeaderDuty","商会领导职务");
     }
 
     private static void loadCSVEntities(String headerFileLocation){
@@ -103,6 +106,11 @@ public class GSLCaseTestV2_01 {
         attributesMapping = BatchDataOperationUtil.getAttributesMappingFromHeaderCSV(headerFileLocation+"DWS_JG_GSL_INFO_DTL.csv");
         BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///DWS_JG_GSL_INFO_DTL.csv","FIC_HistoricalChangeTerm",attributesMapping);
 
+        attributesMapping = BatchDataOperationUtil.getAttributesMappingFromHeaderCSV(headerFileLocation+"DWS_SH_LEADER.csv");
+        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///DWS_SH_LEADER.csv","ChamberOfCommerceLeader",attributesMapping);
+
+        attributesMapping = BatchDataOperationUtil.getAttributesMappingFromHeaderCSV(headerFileLocation+"DWS_SH_LEADER_DUTY.csv");
+        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///DWS_SH_LEADER_DUTY.csv","ChamberOfCommerceLeaderDuty",attributesMapping);
     }
 
     private static void linkFederationOfIndustryAndCommerce(){
@@ -197,6 +205,27 @@ public class GSLCaseTestV2_01 {
                 "BelongsToChamberOfCommerce", BatchDataOperationUtil.CPUUsageRate.High
         );
         System.out.println(operationResult);
+    }
+
+    private static void linkChamberOfCommerceAndLeader(){
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(10000000);
+        QueryParameters queryParameters2 = new QueryParameters();
+        queryParameters2.setResultNumber(10000000);
+
+        Map<String,Object> operationResult =null;
+        /*Link EnterpriseMember and ChamberOfCommerce*/
+        operationResult = BatchDataOperationUtil.batchAttachNewRelationsWithSinglePropertyValueMatch(
+                "ChamberOfCommerce",queryParameters,"SHID",
+                "ChamberOfCommerceLeader",queryParameters,"SHID",
+                "LeaderOfChamberOfCommerce", BatchDataOperationUtil.CPUUsageRate.High
+        );
+        System.out.println(operationResult);
+        operationResult = BatchDataOperationUtil.batchAttachNewRelationsWithSinglePropertyValueMatch(
+                "ChamberOfCommerceLeader",queryParameters,"ID",
+                "ChamberOfCommerceLeaderDuty",queryParameters,"LDID",
+                "HasLeaderCommonDuty", BatchDataOperationUtil.CPUUsageRate.High
+        );
     }
 
     private static void linkExecutiveRelations(){
@@ -390,6 +419,12 @@ public class GSLCaseTestV2_01 {
         System.out.println(targetRelationKind.setKindScopeAttributes(attrMap));
         targetRelationKind = coreRealm.createRelationKind("HistoricalChangeTermOfFIC","工商联历年界次");
         attrMap.put("DISPLAY_PROP","工商联历史换届");
+        System.out.println(targetRelationKind.setKindScopeAttributes(attrMap));
+        targetRelationKind = coreRealm.createRelationKind("LeaderOfChamberOfCommerce","商会领导");
+        attrMap.put("DISPLAY_PROP","商会领导");
+        System.out.println(targetRelationKind.setKindScopeAttributes(attrMap));
+        targetRelationKind = coreRealm.createRelationKind("HasLeaderCommonDuty","拥有的职务");
+        attrMap.put("DISPLAY_PROP","拥有的职务");
         System.out.println(targetRelationKind.setKindScopeAttributes(attrMap));
     }
 
