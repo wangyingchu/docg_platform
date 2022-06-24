@@ -1004,6 +1004,24 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 操作删除的关系实体数量
      */
     public long purgeRelationsOfSelfAttachedConceptionEntities();
+
+    /**
+     * 删除一个当前关系类型的关系实体对象
+     *
+     * @param relationEntityUID String 需要删除的关系实体的唯一ID
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean deleteEntity(String relationEntityUID) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 更新多个当前关系类型的关系实体对象
+     *
+     * @param relationEntityUIDs List<String> 需要删除的关系实体的唯一ID列表
+     *
+     * @return 删除实体对象操作返回结果
+     */
+    public EntitiesOperationResult deleteEntities(List<String> relationEntityUIDs) throws CoreRealmServiceRuntimeException;
 ```
 ###### ↳ AttributesViewKind
 ---
