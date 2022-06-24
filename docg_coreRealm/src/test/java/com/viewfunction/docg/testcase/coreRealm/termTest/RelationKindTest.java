@@ -6,6 +6,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filtering
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.GreaterThanEqualFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.NullValueFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
@@ -182,11 +183,24 @@ public class RelationKindTest {
         selfAttachedRemoveResult = _RelationKind01.purgeRelationsOfSelfAttachedConceptionEntities();
         Assert.assertEquals(selfAttachedRemoveResult,1);
 
+        RelationEntity lastRelationEntity = null;
         for(int i=0;i<10;i++) {
-            _ConceptionEntity_3.attachFromRelation(_ConceptionEntity_3.getConceptionEntityUID(), "RelationKind0001ForTest", null, true);
+            lastRelationEntity = _ConceptionEntity_3.attachFromRelation(_ConceptionEntity_3.getConceptionEntityUID(), "RelationKind0001ForTest", null, true);
         }
+
+        boolean exceptionShouldThrown = false;
+        try {
+            _RelationKind01.deleteEntity("12345");
+        }catch(CoreRealmServiceException e){
+            exceptionShouldThrown = true;
+        }
+        Assert.assertTrue(exceptionShouldThrown);
+
+        boolean  deleteSingleEntityResult = _RelationKind01.deleteEntity(lastRelationEntity.getRelationEntityUID());
+        Assert.assertTrue(deleteSingleEntityResult);
+
         selfAttachedRemoveResult = _RelationKind01.purgeRelationsOfSelfAttachedConceptionEntities();
-        Assert.assertEquals(selfAttachedRemoveResult,10);
+        Assert.assertEquals(selfAttachedRemoveResult,10-1);
 
         coreRealm.closeGlobalSession();
     }

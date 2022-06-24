@@ -408,6 +408,30 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
 
     @Override
     public boolean deleteEntity(String relationEntityUID) throws CoreRealmServiceRuntimeException {
+        if(relationEntityUID != null){
+            RelationEntity targetRelationEntity = this.getEntityByUID(relationEntityUID);
+            if(targetRelationEntity != null){
+                GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+                try{
+                    String deleteCql = CypherBuilder.deleteRelationWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(relationEntityUID),null,null);
+                    GetSingleRelationEntityTransformer getSingleRelationEntityTransformer =
+                            new GetSingleRelationEntityTransformer(this.relationKindName, this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    Object deletedEntityRes = workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, deleteCql);
+                    if(deletedEntityRes == null){
+                        throw new CoreRealmServiceRuntimeException();
+                    }else{
+                        return true;
+                    }
+                }finally {
+                    this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+                }
+            }else{
+                logger.error("RelationKind {} does not contains entity with UID {}.", this.relationKindName, relationEntityUID);
+                CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                exception.setCauseMessage("RelationKind " + this.relationKindName + " does not contains entity with UID " + relationEntityUID + ".");
+                throw exception;
+            }
+        }
         return false;
     }
 
