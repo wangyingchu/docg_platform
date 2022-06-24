@@ -20,9 +20,7 @@ import org.testng.annotations.Test;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class RelationKindTest {
 
@@ -183,9 +181,10 @@ public class RelationKindTest {
         selfAttachedRemoveResult = _RelationKind01.purgeRelationsOfSelfAttachedConceptionEntities();
         Assert.assertEquals(selfAttachedRemoveResult,1);
 
-        RelationEntity lastRelationEntity = null;
+        List<String> relationEntityUIDList = new ArrayList<>();
         for(int i=0;i<10;i++) {
-            lastRelationEntity = _ConceptionEntity_3.attachFromRelation(_ConceptionEntity_3.getConceptionEntityUID(), "RelationKind0001ForTest", null, true);
+            RelationEntity currentRelationEntity = _ConceptionEntity_3.attachFromRelation(_ConceptionEntity_3.getConceptionEntityUID(), "RelationKind0001ForTest", null, true);
+            relationEntityUIDList.add(currentRelationEntity.getRelationEntityUID());
         }
 
         boolean exceptionShouldThrown = false;
@@ -196,11 +195,19 @@ public class RelationKindTest {
         }
         Assert.assertTrue(exceptionShouldThrown);
 
-        boolean  deleteSingleEntityResult = _RelationKind01.deleteEntity(lastRelationEntity.getRelationEntityUID());
+        boolean  deleteSingleEntityResult = _RelationKind01.deleteEntity(relationEntityUIDList.get(0));
         Assert.assertTrue(deleteSingleEntityResult);
 
+        List<String> uidsForMultiDelete = new ArrayList<>();
+        uidsForMultiDelete.add(relationEntityUIDList.get(1));
+        uidsForMultiDelete.add(relationEntityUIDList.get(2));
+        uidsForMultiDelete.add("1234567890");
+        EntitiesOperationResult entitiesOperationResult = _RelationKind01.deleteEntities(uidsForMultiDelete);
+        Assert.assertEquals(entitiesOperationResult.getSuccessEntityUIDs().size(),2);
+        Assert.assertEquals(entitiesOperationResult.getOperationStatistics().getFailItemsCount(),1);
+
         selfAttachedRemoveResult = _RelationKind01.purgeRelationsOfSelfAttachedConceptionEntities();
-        Assert.assertEquals(selfAttachedRemoveResult,10-1);
+        Assert.assertEquals(selfAttachedRemoveResult,10-3);
 
         coreRealm.closeGlobalSession();
     }

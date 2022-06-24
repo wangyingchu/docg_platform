@@ -437,6 +437,40 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
 
     @Override
     public EntitiesOperationResult deleteEntities(List<String> relationEntityUIDs) throws CoreRealmServiceRuntimeException {
+        if(relationEntityUIDs != null && relationEntityUIDs.size()>0){
+            CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
+            boolean countFail = false;
+            for(String currentConceptionEntityUID:relationEntityUIDs) {
+                RelationEntity targetRelationEntity = this.getEntityByUID(currentConceptionEntityUID);
+                if(targetRelationEntity != null){
+                    try {
+                        boolean deleteCurrentEntityResult = deleteEntity(currentConceptionEntityUID);
+                        if(deleteCurrentEntityResult){
+                            commonEntitiesOperationResultImpl.getSuccessEntityUIDs().add(currentConceptionEntityUID);
+                            commonEntitiesOperationResultImpl.getOperationStatistics().increaseSuccessCount();
+                        }else{
+                            commonEntitiesOperationResultImpl.getOperationStatistics().getFailItemsCount();
+                        }
+                    } catch (CoreRealmServiceRuntimeException e) {
+                        e.printStackTrace();
+                        commonEntitiesOperationResultImpl.getOperationStatistics().getFailItemsCount();
+                        logger.error("Exception occurred during delete entity with UID {} of RelationKind {}.", currentConceptionEntityUID , this.relationKindName);
+                    }
+                }else{
+                    commonEntitiesOperationResultImpl.getOperationStatistics().increaseFailCount();
+                    countFail = true;
+                }
+            }
+            if(countFail){
+                commonEntitiesOperationResultImpl.getOperationStatistics().
+                        setOperationSummary("deleteEntities operation for relationKind "+this.relationKindName+" partial success.");
+            }else{
+                commonEntitiesOperationResultImpl.getOperationStatistics().
+                        setOperationSummary("deleteEntities operation for relationKind "+this.relationKindName+" success.");
+            }
+            commonEntitiesOperationResultImpl.finishEntitiesOperation();
+            return commonEntitiesOperationResultImpl;
+        }
         return null;
     }
 
