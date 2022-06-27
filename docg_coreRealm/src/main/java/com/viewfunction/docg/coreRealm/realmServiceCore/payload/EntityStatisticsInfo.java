@@ -19,7 +19,7 @@ public class EntityStatisticsInfo {
 
     public EntityStatisticsInfo(String entityKindName,kindType entityKindType,boolean isSystemKind,long entitiesCount){
         this.entityKindName = entityKindName;
-        this.entitiesCount = entitiesCount;
+        this.setEntitiesCount(entitiesCount);
         this.entityKindType = entityKindType;
         this.isSystemKind = isSystemKind;
     }
@@ -28,7 +28,7 @@ public class EntityStatisticsInfo {
                                 String entityKindDesc,String entityKindUID,ZonedDateTime createDateTime,ZonedDateTime lastModifyDateTime,
                                 String creatorId,String dataOrigin){
         this.entityKindName = entityKindName;
-        this.entitiesCount = entitiesCount;
+        this.setEntitiesCount(entitiesCount);
         this.entityKindType = entityKindType;
         this.isSystemKind = isSystemKind;
         this.entityKindDesc = entityKindDesc;
@@ -45,6 +45,10 @@ public class EntityStatisticsInfo {
 
     public long getEntitiesCount() {
         return entitiesCount;
+    }
+
+    public void setEntitiesCount(long entitiesCount) {
+        this.entitiesCount = entitiesCount;
     }
 
     public kindType getEntityKindType() {
