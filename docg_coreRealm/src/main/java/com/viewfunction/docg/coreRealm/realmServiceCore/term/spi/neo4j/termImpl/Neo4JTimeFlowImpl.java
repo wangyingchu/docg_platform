@@ -120,7 +120,7 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
                 }
             };
             Object resultRes = workingGraphOperationExecutor.executeWrite(dataTransformer,linkYearCql);
-            return (Boolean)resultRes;
+            return resultRes != null ? true : false;
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
