@@ -307,4 +307,11 @@ public interface EntityRelationable {
      * @return 目标关系类型名称与关系方向组合和检查结果的Map，如存在关系类型名称与关系方向组合描述的关系实体数据则返回true，反之返回false
      */
     public Map<RelationKindMatchLogic,Boolean> checkRelationKindAttachExistence(List<RelationKindMatchLogic> relationKindMatchLogics);
+
+    /**
+     * 获取当前实体对象的所有关联的关系类型以及对应的关系实体数量
+     *
+     * @return 关系类型名称+关系实体数量 Map
+     */
+    public Map<String,Long> countAttachedRelationKinds();
 }

@@ -700,6 +700,33 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
         return null;
     }
 
+    default public Map<String,Long> countAttachedRelationKinds(){
+        if(this.getEntityUID() != null) {
+            String queryCql ="MATCH (sourceNode)-[operationResult]-(targetNode) WHERE id(sourceNode) = "+this.getEntityUID()+" RETURN count(operationResult), type(operationResult)";
+            Map<String,Long> resultMap = new HashMap<>();
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                DataTransformer resultDataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        if(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            String relationKindName = nodeRecord.get("type(operationResult)").asString();
+                            Long relationCount = nodeRecord.get("type(operationResult)").asLong();
+                            resultMap.put(relationKindName,relationCount);
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(resultDataTransformer,queryCql);
+                return resultMap;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
+    }
+
     private String generateApocNeighborsQuery(NeighborsSearchUsage neighborsSearchUsage,List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch, JumpStopLogic jumpStopLogic, int jumpNumber,
                                               AttributesParameters conceptionAttributesParameters, ResultEntitiesParameters resultEntitiesParameters) throws CoreRealmServiceEntityExploreException {
         if(relationKindMatchLogics != null && relationKindMatchLogics.size() == 0){
