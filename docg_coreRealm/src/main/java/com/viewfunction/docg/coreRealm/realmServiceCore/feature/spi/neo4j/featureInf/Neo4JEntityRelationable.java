@@ -702,17 +702,18 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
 
     default public Map<String,Long> countAttachedRelationKinds(){
         if(this.getEntityUID() != null) {
-            String queryCql ="MATCH (sourceNode)-[operationResult]-(targetNode) WHERE id(sourceNode) = "+this.getEntityUID()+" RETURN count(operationResult), type(operationResult)";
+            String queryCql ="MATCH (sourceNode) - [operationResult] - (targetNode) WHERE id(sourceNode) = "+this.getEntityUID()+" RETURN count(operationResult), type(operationResult)";
+            logger.debug("Generated Cypher Statement: {}", queryCql);
             Map<String,Long> resultMap = new HashMap<>();
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try {
                 DataTransformer resultDataTransformer = new DataTransformer() {
                     @Override
                     public Object transformResult(Result result) {
-                        if(result.hasNext()){
+                        while(result.hasNext()){
                             Record nodeRecord = result.next();
                             String relationKindName = nodeRecord.get("type(operationResult)").asString();
-                            Long relationCount = nodeRecord.get("type(operationResult)").asLong();
+                            Long relationCount = nodeRecord.get("count(operationResult)").asLong();
                             resultMap.put(relationKindName,relationCount);
                         }
                         return null;

@@ -509,5 +509,10 @@ public class EntityRelationableTest {
         Assert.assertEquals(resultList.size(),4);
         checkResult = _ConceptionEntityA.getAllSpecifiedRelations("testAttachMultiToRelation",RelationDirection.TO);
         Assert.assertEquals(checkResult.size(),4);
+
+        Map<String,Long> relationKindCountMap = _ConceptionEntityA.countAttachedRelationKinds();
+        Assert.assertNotNull(relationKindCountMap);
+        Assert.assertEquals(relationKindCountMap.get("testAttachMultiFromRelation"),Long.valueOf(4));
+        Assert.assertEquals(relationKindCountMap.get("testAttachMultiToRelation"),Long.valueOf(4));
     }
 }
