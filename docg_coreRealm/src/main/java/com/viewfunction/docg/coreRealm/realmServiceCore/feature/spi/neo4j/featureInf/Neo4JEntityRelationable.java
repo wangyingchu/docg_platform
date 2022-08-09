@@ -54,7 +54,7 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try {
                 String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,getEntityUID(),null,true,null, null);
-                GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(null,workingGraphOperationExecutor);
+                GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(null,workingGraphOperationExecutor,true);
                 Object relationEntityList = workingGraphOperationExecutor.executeRead(getListRelationEntityTransformer,queryCql);
                 return relationEntityList != null ? (List<RelationEntity>)relationEntityList : null;
             } catch (CoreRealmServiceEntityExploreException e) {
@@ -97,7 +97,7 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
                     }
                 }
                 String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,sourceNodeProperty,targetNodeProperty,ignoreDirection,relationshipQueryParameters, null);
-                GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(null,workingGraphOperationExecutor);
+                GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(null,workingGraphOperationExecutor,relationshipQueryParameters.isDistinctMode());
                 Object relationEntityList = workingGraphOperationExecutor.executeRead(getListRelationEntityTransformer,queryCql);
                 return relationEntityList != null ? (List<RelationEntity>)relationEntityList : null;
             } catch (CoreRealmServiceEntityExploreException e) {
@@ -227,7 +227,7 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
                     }
                 }
                 String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,sourceNodeProperty,targetNodeProperty,ignoreDirection,exploreParameters,null);
-                GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(null,workingGraphOperationExecutor);
+                GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(null,workingGraphOperationExecutor,exploreParameters.isDistinctMode());
                 Object relationEntityList = workingGraphOperationExecutor.executeRead(getListRelationEntityTransformer,queryCql);
                 return relationEntityList != null ? (List<RelationEntity>)relationEntityList : null;
             } catch (CoreRealmServiceEntityExploreException e) {

@@ -1416,6 +1416,20 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 概念实体对象唯一ID
      */
     public String getToConceptionEntityUID();
+
+    /**
+     * 获取当前关系实体的来源概念实体所属概念类型
+     *
+     * @return 概念实体所属类型列表
+     */
+    public List<String> getFromConceptionEntityKinds();
+
+    /**
+     * 获取当前关系实体的目标概念实体所属概念类型
+     *
+     * @return 概念实体所属类型列表
+     */
+    public List<String> getToConceptionEntityKinds();
 ```
 ###### ↳ Classification
 

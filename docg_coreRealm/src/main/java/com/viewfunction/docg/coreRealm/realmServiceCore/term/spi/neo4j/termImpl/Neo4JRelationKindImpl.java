@@ -157,7 +157,7 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
                 String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,
                         null,null,true,queryParameters,null);
                 GetListRelationEntityTransformer getListRelationEntityTransformer =
-                        new GetListRelationEntityTransformer(this.relationKindName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                        new GetListRelationEntityTransformer(this.relationKindName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor(),queryParameters.isDistinctMode());
                 Object queryRes = workingGraphOperationExecutor.executeRead(getListRelationEntityTransformer,queryCql);
                 if(queryRes != null){
                     List<RelationEntity> resultConceptionEntityList = (List<RelationEntity>)queryRes;

@@ -63,7 +63,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
             GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(null,
-                    this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor(),true);
             Object relationEntityList = workingGraphOperationExecutor.executeRead(getListRelationEntityTransformer,cypherProcedureString);
             return relationEntityList != null ? (List<RelationEntity>)relationEntityList : null;
         } finally {
@@ -93,7 +93,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
             GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(null,
-                    this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor(),true);
             Object relationEntityList = workingGraphOperationExecutor.executeRead(getListRelationEntityTransformer,cypherProcedureString);
             if(relationEntityList != null){
                 List<RelationEntity> resultRelationEntities = (List<RelationEntity>)relationEntityList;
@@ -136,15 +136,15 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             throw e;
         }
 
-        String cypherProcedureString = "MATCH ()-[r]->()\n" +
+        String cypherProcedureString = "MATCH (source)-[r]->(target)\n" +
                 "WHERE id(r) IN "+relationEntityUIDs.toString()+"\n" +
-                "RETURN DISTINCT r as operationResult";
+                "RETURN DISTINCT r as operationResult,source as sourceNode, target as targetNode";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
             GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(null,
-                    this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor(),false);
             Object relationEntityList = workingGraphOperationExecutor.executeRead(getListRelationEntityTransformer,cypherProcedureString);
             return relationEntityList != null ? (List<RelationEntity>)relationEntityList : null;
         } finally {

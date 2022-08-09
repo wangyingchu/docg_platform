@@ -128,7 +128,6 @@ public class EntityRelationableTest {
         queryParameters1.setDistinctMode(true);
         relationEntityList2 = _ConceptionEntity1.getSpecifiedRelations(queryParameters1,RelationDirection.TWO_WAY);
         Assert.assertEquals(relationEntityList2.size(),2);
-        // need check count number defect
         countSpecifiedRelations = _ConceptionEntity1.countSpecifiedRelations(queryParameters1,RelationDirection.TWO_WAY);
         Assert.assertEquals(countSpecifiedRelations,new Long(2));
 
@@ -504,6 +503,9 @@ public class EntityRelationableTest {
         Assert.assertEquals(resultList.size(),4);
         List<RelationEntity> checkResult = _ConceptionEntityA.getAllSpecifiedRelations("testAttachMultiFromRelation",RelationDirection.FROM);
         Assert.assertEquals(checkResult.size(),4);
+
+        Assert.assertNotNull(checkResult.get(0).getFromConceptionEntityKinds());
+        Assert.assertNotNull(checkResult.get(0).getToConceptionEntityKinds());
 
         resultList = _ConceptionEntityA.attachToRelation(conceptionEntityUIDList,"testAttachMultiToRelation",null,true);
         Assert.assertEquals(resultList.size(),4);

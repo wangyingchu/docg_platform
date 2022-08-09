@@ -2169,15 +2169,15 @@ public class CypherBuilder {
             } else {
                 if (ongoingReadingWithWhere != null) {
                     if(isDistinct){
-                        activeOngoingReadingAndReturn = ongoingReadingWithWhere.returningDistinct(relations);
+                        activeOngoingReadingAndReturn = ongoingReadingWithWhere.returningDistinct(relations,sourceNode,targetNode);
                     }else{
-                        activeOngoingReadingAndReturn = ongoingReadingWithWhere.returning(relations);
+                        activeOngoingReadingAndReturn = ongoingReadingWithWhere.returning(relations,sourceNode,targetNode);
                     }
                 } else {
                     if(isDistinct){
-                        activeOngoingReadingAndReturn = ongoingReadingWithoutWhere.returningDistinct(relations);
+                        activeOngoingReadingAndReturn = ongoingReadingWithoutWhere.returningDistinct(relations,sourceNode,targetNode);
                     }else{
-                        activeOngoingReadingAndReturn = ongoingReadingWithoutWhere.returning(relations);
+                        activeOngoingReadingAndReturn = ongoingReadingWithoutWhere.returning(relations,sourceNode,targetNode);
                     }
                 }
             }
