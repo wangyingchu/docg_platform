@@ -505,7 +505,9 @@ public class EntityRelationableTest {
         Assert.assertEquals(checkResult.size(),4);
 
         Assert.assertNotNull(checkResult.get(0).getFromConceptionEntityKinds());
+        Assert.assertEquals(checkResult.get(0).getFromConceptionEntityKinds().get(0),testConceptionKindName+"A");
         Assert.assertNotNull(checkResult.get(0).getToConceptionEntityKinds());
+        Assert.assertNotEquals(checkResult.get(0).getToConceptionEntityKinds().get(0),testConceptionKindName+"A");
 
         resultList = _ConceptionEntityA.attachToRelation(conceptionEntityUIDList,"testAttachMultiToRelation",null,true);
         Assert.assertEquals(resultList.size(),4);
