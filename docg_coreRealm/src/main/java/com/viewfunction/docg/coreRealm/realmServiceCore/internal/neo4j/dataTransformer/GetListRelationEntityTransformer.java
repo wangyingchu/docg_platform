@@ -53,15 +53,25 @@ public class GetListRelationEntityTransformer implements DataTransformer<List<Re
                                 Neo4JRelationEntityImpl neo4jRelationEntityImpl =
                                         new Neo4JRelationEntityImpl(relationType,relationEntityUID,fromEntityUID,toEntityUID);
                                 neo4jRelationEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
-                                if(sourceNode!= null){
+                                if(sourceNode != null){
                                     Iterable<String> sourceNodeLabels = sourceNode.labels();
                                     List<String> sourceNodeLabelList = Lists.newArrayList(sourceNodeLabels);
-                                    neo4jRelationEntityImpl.setFromEntityConceptionKindList(sourceNodeLabelList);
+                                    String sourceNodeId = ""+sourceNode.id();
+                                    if(sourceNodeId.equals(fromEntityUID)){
+                                        neo4jRelationEntityImpl.setFromEntityConceptionKindList(sourceNodeLabelList);
+                                    }else{
+                                        neo4jRelationEntityImpl.setToEntityConceptionKindList(sourceNodeLabelList);
+                                    }
                                 }
-                                if(targetNode!= null){
+                                if(targetNode != null){
                                     Iterable<String> targetNodeLabels = targetNode.labels();
                                     List<String> targetNodeLabelList = Lists.newArrayList(targetNodeLabels);
-                                    neo4jRelationEntityImpl.setToEntityConceptionKindList(targetNodeLabelList);
+                                    String targetNodeId = ""+targetNode.id();
+                                    if(targetNodeId.equals(toEntityUID)){
+                                        neo4jRelationEntityImpl.setToEntityConceptionKindList(targetNodeLabelList);
+                                    }else{
+                                        neo4jRelationEntityImpl.setFromEntityConceptionKindList(targetNodeLabelList);
+                                    }
                                 }
                                 relationEntityList.add(neo4jRelationEntityImpl);
                                 alreadyExistRelationEntityUIDList.add(relationEntityUID);
@@ -70,15 +80,25 @@ public class GetListRelationEntityTransformer implements DataTransformer<List<Re
                             Neo4JRelationEntityImpl neo4jRelationEntityImpl =
                                     new Neo4JRelationEntityImpl(relationType,relationEntityUID,fromEntityUID,toEntityUID);
                             neo4jRelationEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
-                            if(sourceNode!= null){
+                            if(sourceNode != null){
                                 Iterable<String> sourceNodeLabels = sourceNode.labels();
                                 List<String> sourceNodeLabelList = Lists.newArrayList(sourceNodeLabels);
-                                neo4jRelationEntityImpl.setFromEntityConceptionKindList(sourceNodeLabelList);
+                                String sourceNodeId = ""+sourceNode.id();
+                                if(sourceNodeId.equals(fromEntityUID)){
+                                    neo4jRelationEntityImpl.setFromEntityConceptionKindList(sourceNodeLabelList);
+                                }else{
+                                    neo4jRelationEntityImpl.setToEntityConceptionKindList(sourceNodeLabelList);
+                                }
                             }
-                            if(targetNode!= null){
+                            if(targetNode != null){
                                 Iterable<String> targetNodeLabels = targetNode.labels();
                                 List<String> targetNodeLabelList = Lists.newArrayList(targetNodeLabels);
-                                neo4jRelationEntityImpl.setToEntityConceptionKindList(targetNodeLabelList);
+                                String targetNodeId = ""+targetNode.id();
+                                if(targetNodeId.equals(toEntityUID)){
+                                    neo4jRelationEntityImpl.setToEntityConceptionKindList(targetNodeLabelList);
+                                }else{
+                                    neo4jRelationEntityImpl.setFromEntityConceptionKindList(targetNodeLabelList);
+                                }
                             }
                             relationEntityList.add(neo4jRelationEntityImpl);
                         }
