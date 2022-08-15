@@ -730,10 +730,67 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
     }
 
     default public List<String> listAttachedConceptionKinds(){
+        if(this.getEntityUID() != null) {
+            String queryCql = "MATCH (targetNode) -[r]- (sourceNode) WHERE id(sourceNode)= "+this.getEntityUID()+" RETURN count(targetNode),apoc.node.labels(targetNode) AS operationResult";
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                List<String> conceptionKindsList = new ArrayList<>();
+                DataTransformer resultDataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        while(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            if(nodeRecord.containsKey("operationResult")){
+                                List<Object> conceptionKindNameList = nodeRecord.get("operationResult").asList();
+                                for(Object currentConceptionKindName : conceptionKindNameList){
+                                    conceptionKindsList.add(currentConceptionKindName.toString());
+                                }
+                            }
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(resultDataTransformer,queryCql);
+                return conceptionKindsList;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
 
     default Map<Set<String>,Long> countAttachedConceptionKinds(){
+        if(this.getEntityUID() != null) {
+            String queryCql = "MATCH (targetNode) -[r]- (sourceNode) WHERE id(sourceNode)= "+this.getEntityUID()+" RETURN count(DISTINCT targetNode),apoc.node.labels(targetNode) AS operationResult";
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                Map<Set<String>,Long> resultMap = new HashMap<>();
+                DataTransformer resultDataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        while(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            if(nodeRecord.containsKey("operationResult") && nodeRecord.containsKey("count(DISTINCT targetNode)")){
+                                List<Object> conceptionKindNameList = nodeRecord.get("operationResult").asList();
+                                Long conceptionEntityCount = nodeRecord.get("count(DISTINCT targetNode)").asLong();
+                                Set<String> conceptionKindNamesSet = new HashSet<>();
+                                for(Object currentConceptionKindName : conceptionKindNameList){
+                                    conceptionKindNamesSet.add(currentConceptionKindName.toString());
+                                }
+                                resultMap.put(conceptionKindNamesSet,conceptionEntityCount);
+                            }
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(resultDataTransformer,queryCql);
+                return resultMap;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
 

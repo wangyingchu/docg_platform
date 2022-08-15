@@ -20,10 +20,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class EntityRelationableTest {
 
@@ -518,5 +515,14 @@ public class EntityRelationableTest {
         Assert.assertNotNull(relationKindCountMap);
         Assert.assertEquals(relationKindCountMap.get("testAttachMultiFromRelation"),Long.valueOf(4));
         Assert.assertEquals(relationKindCountMap.get("testAttachMultiToRelation"),Long.valueOf(4));
+
+        List<String> attachedConceptionKinds = _ConceptionEntityA.listAttachedConceptionKinds();
+        Assert.assertNotNull(attachedConceptionKinds);
+        Assert.assertEquals(attachedConceptionKinds.size(),2);
+        Assert.assertTrue(attachedConceptionKinds.contains("TestConceptionKindForRelationableTestB"));
+        Assert.assertTrue(attachedConceptionKinds.contains("TestConceptionKindForRelationableTestC"));
+        Map<Set<String>,Long> attachedConceptionKindsCount = _ConceptionEntityA.countAttachedConceptionKinds();
+        Assert.assertNotNull(attachedConceptionKindsCount);
+        Assert.assertEquals(attachedConceptionKindsCount.size(),2);
     }
 }
