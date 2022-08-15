@@ -2561,6 +2561,20 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 关系类型名称+关系实体数量 Map
      */
     public Map<String,Long> countAttachedRelationKinds();
+
+    /**
+     * 获取当前实体对象的所有关联的概念类型
+     *
+     * @return 概念类型名称列表
+     */
+    public List<String> listAttachedConceptionKinds();
+
+    /**
+     * 获取当前实体对象的所有关联的概念类型以及对应的概念实体数量
+     *
+     * @return 概念类型名称集合 + 关系实体数量 Map
+     */
+    public Map<Set<String>,Long> countAttachedConceptionKinds();
 ```
 ###### ↳ MetaAttributeFeatureSupportable
 

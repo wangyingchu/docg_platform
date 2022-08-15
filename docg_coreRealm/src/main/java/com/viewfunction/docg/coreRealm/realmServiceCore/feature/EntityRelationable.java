@@ -13,6 +13,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface EntityRelationable {
     /**
@@ -311,7 +312,21 @@ public interface EntityRelationable {
     /**
      * 获取当前实体对象的所有关联的关系类型以及对应的关系实体数量
      *
-     * @return 关系类型名称+关系实体数量 Map
+     * @return 关系类型名称 + 关系实体数量 Map
      */
     public Map<String,Long> countAttachedRelationKinds();
+
+    /**
+     * 获取当前实体对象的所有关联的概念类型
+     *
+     * @return 概念类型名称列表
+     */
+    public List<String> listAttachedConceptionKinds();
+
+    /**
+     * 获取当前实体对象的所有关联的概念类型以及对应的概念实体数量
+     *
+     * @return 概念类型名称集合 + 关系实体数量 Map
+     */
+    public Map<Set<String>,Long> countAttachedConceptionKinds();
 }

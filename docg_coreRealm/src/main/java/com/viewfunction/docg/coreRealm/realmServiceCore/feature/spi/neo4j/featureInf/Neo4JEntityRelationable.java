@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.Set;
 
 public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyResourcesRetrievable {
 
@@ -725,6 +726,14 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
             }
         }
+        return null;
+    }
+
+    default public List<String> listAttachedConceptionKinds(){
+        return null;
+    }
+
+    default Map<Set<String>,Long> countAttachedConceptionKinds(){
         return null;
     }
 
