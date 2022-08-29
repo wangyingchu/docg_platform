@@ -201,6 +201,13 @@ public class RelationKindTest {
         }
         Assert.assertTrue(exceptionShouldThrown);
 
+        RelationEntity targetRelationEntity = _RelationKind01.getEntityByUID(relationEntityUIDList.get(0));
+        Assert.assertNotNull(targetRelationEntity);
+        Assert.assertNotNull(targetRelationEntity.getFromConceptionEntityKinds());
+        Assert.assertNotNull(targetRelationEntity.getToConceptionEntityKinds());
+        Assert.assertEquals(targetRelationEntity.getFromConceptionEntityKinds().get(0),testConceptionKindName);
+        Assert.assertEquals(targetRelationEntity.getToConceptionEntityKinds().get(0),testConceptionKindName);
+
         boolean  deleteSingleEntityResult = _RelationKind01.deleteEntity(relationEntityUIDList.get(0));
         Assert.assertTrue(deleteSingleEntityResult);
 

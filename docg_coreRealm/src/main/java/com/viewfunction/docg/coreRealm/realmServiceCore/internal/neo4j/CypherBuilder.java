@@ -1079,9 +1079,9 @@ public class CypherBuilder {
             }
         } else {
             if (ongoingReadingWithWhere != null) {
-                statement = ongoingReadingWithWhere.returningDistinct(relation).build();
+                statement = ongoingReadingWithWhere.returningDistinct(relation,sourceNode,targetNode).build();
             } else {
-                statement = ongoingReadingWithoutWhere.returningDistinct(relation).build();
+                statement = ongoingReadingWithoutWhere.returningDistinct(relation,sourceNode,targetNode).build();
             }
         }
         String rel = cypherRenderer.render(statement);
