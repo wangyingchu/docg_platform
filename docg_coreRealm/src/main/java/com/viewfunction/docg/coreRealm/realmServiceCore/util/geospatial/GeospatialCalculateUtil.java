@@ -11,6 +11,9 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
+import org.geotools.geojson.geom.GeometryJSON;
+
+import java.io.StringWriter;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -350,5 +353,20 @@ public class GeospatialCalculateUtil {
                 break;
         }
         return calculateResult;
+    }
+
+    public static String getGeoJsonFromWTK(String wktValue){
+        String json = null;
+        try {
+            WKTReader reader = new WKTReader();
+            Geometry geometry = reader.read(wktValue);
+            StringWriter writer = new StringWriter();
+            GeometryJSON g = new GeometryJSON(20);
+            g.write(geometry, writer);
+            json = writer.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return json;
     }
 }
