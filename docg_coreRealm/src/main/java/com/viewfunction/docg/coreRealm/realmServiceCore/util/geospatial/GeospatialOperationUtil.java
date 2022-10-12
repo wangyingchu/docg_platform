@@ -21,6 +21,7 @@ import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,8 +43,12 @@ public class GeospatialOperationUtil {
         SimpleFeatureSource simpleFeatureSource = dataStore.getFeatureSource();
         String conceptionKindNameValue = conceptionKindName != null ? conceptionKindName : simpleFeatureSource.getName().toString();
         SimpleFeatureType simpleFeatureType = dataStore.getSchema();
-        String _CRSName = simpleFeatureType.getCoordinateReferenceSystem().getName().getCode();
+        CoordinateReferenceSystem crs = simpleFeatureType.getCoordinateReferenceSystem();
 
+        String _CRSName = "";
+        if (crs != null) {
+            _CRSName = crs.getName().getCode();
+        }
         String entityCRSAID = null;
         String _CRS_Range = null;
         if("GCS_WGS_1984".equals(_CRSName)||_CRSName.contains("WGS84")){
@@ -56,7 +61,9 @@ public class GeospatialOperationUtil {
             _CRS_Range = "LocalLevel";
             Integer _EpsgCodeValue = null;
             try {
-                _EpsgCodeValue = CRS.lookupEpsgCode(simpleFeatureType.getCoordinateReferenceSystem(),true);
+                if (crs!=null) {
+                    _EpsgCodeValue = CRS.lookupEpsgCode(crs,true);
+                }
             } catch (FactoryException e) {
                 CoreRealmServiceRuntimeException coreRealmServiceRuntimeException = new CoreRealmServiceRuntimeException();
                 coreRealmServiceRuntimeException.setCauseMessage(e.getMessage());
@@ -71,6 +78,7 @@ public class GeospatialOperationUtil {
         List<ConceptionEntityValue> _targetConceptionEntityValueList = Lists.newArrayList();
         // 获取要素迭代器
         SimpleFeatureIterator featureIterator = simpleFeatureCollection.features();
+        int idx =0;
         while(featureIterator.hasNext()){
             Map<String,Object> newEntityValueMap = new HashMap<>();
             // 要素对象
