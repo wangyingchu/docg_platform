@@ -1,9 +1,12 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
+import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureImpl.Neo4JAttributesMeasurableImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf.Neo4JClassificationAttachable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf.Neo4JMultiConceptionKindsSupportable;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleGeospatialScaleEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
@@ -12,6 +15,9 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JGeospatialScaleEvent;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
+import org.neo4j.driver.Record;
+import org.neo4j.driver.Result;
+import org.neo4j.driver.types.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,6 +106,31 @@ public class Neo4JGeospatialScaleEventImpl extends Neo4JAttributesMeasurableImpl
 
     @Override
     public List<String> getAliasConceptionKindNames() {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String cypherProcedureString = "MATCH (targetNodes) WHERE id(targetNodes) = " + this.geospatialScaleEventUID+"\n"+
+                    "RETURN DISTINCT targetNodes as operationResult";
+            DataTransformer<List<String>> dataTransfer = new DataTransformer<List<String>>() {
+                @Override
+                public List<String> transformResult(Result result) {
+                    if(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        Node resultNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
+                        List<String> allConceptionKindNames = Lists.newArrayList(resultNode.labels());
+                        allConceptionKindNames.remove(RealmConstant.GeospatialScaleEventClass);
+                        return allConceptionKindNames;
+                    }
+                    return null;
+                }
+            };
+
+            Object conceptionEntityNameList = workingGraphOperationExecutor.executeRead(dataTransfer,cypherProcedureString);
+            if(conceptionEntityNameList != null){
+                return (List<String>)conceptionEntityNameList;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
         return null;
     }
 
