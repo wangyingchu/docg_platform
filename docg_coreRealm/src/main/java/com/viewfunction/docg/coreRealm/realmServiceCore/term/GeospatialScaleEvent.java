@@ -2,8 +2,11 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.AttributesMeasurable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationAttachable;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MultiConceptionKindsSupportable;
 
-public interface GeospatialScaleEvent  extends AttributesMeasurable, ClassificationAttachable {
+import java.util.List;
+
+public interface GeospatialScaleEvent  extends AttributesMeasurable, ClassificationAttachable, MultiConceptionKindsSupportable {
     /**
      * 获取当前地理空间刻度事件所属的地理空间区域名称
      *
@@ -52,4 +55,11 @@ public interface GeospatialScaleEvent  extends AttributesMeasurable, Classificat
      * @return 常规概念实体对象
      */
     public ConceptionEntity getAttachConceptionEntity();
+
+    /**
+     * 获取当前地理空间刻度事件的概念类型别名列表
+     *
+     * @return 概念类型别名列表
+     */
+    public List<String> getAliasConceptionKindNames();
 }

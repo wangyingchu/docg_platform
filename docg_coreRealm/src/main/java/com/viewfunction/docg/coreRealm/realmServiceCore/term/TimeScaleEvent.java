@@ -2,10 +2,12 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.AttributesMeasurable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationAttachable;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MultiConceptionKindsSupportable;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-public interface TimeScaleEvent extends AttributesMeasurable, ClassificationAttachable {
+public interface TimeScaleEvent extends AttributesMeasurable, ClassificationAttachable, MultiConceptionKindsSupportable {
     /**
      * 获取当前时间刻度事件所属的时间流名称
      *
@@ -54,4 +56,11 @@ public interface TimeScaleEvent extends AttributesMeasurable, ClassificationAtta
      * @return 常规概念实体对象
      */
     public ConceptionEntity getAttachConceptionEntity();
+
+    /**
+     * 获取当前时间刻度事件的概念类型别名列表
+     *
+     * @return 概念类型别名列表
+     */
+    public List<String> getAliasConceptionKindNames();
 }

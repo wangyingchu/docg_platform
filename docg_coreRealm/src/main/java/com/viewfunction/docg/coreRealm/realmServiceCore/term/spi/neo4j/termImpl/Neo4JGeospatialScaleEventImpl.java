@@ -2,6 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureImpl.Neo4JAttributesMeasurableImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf.Neo4JClassificationAttachable;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf.Neo4JMultiConceptionKindsSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleGeospatialScaleEntityTransformer;
@@ -14,7 +15,9 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Neo4JGeospatialScaleEventImpl extends Neo4JAttributesMeasurableImpl implements Neo4JClassificationAttachable, Neo4JGeospatialScaleEvent {
+import java.util.List;
+
+public class Neo4JGeospatialScaleEventImpl extends Neo4JAttributesMeasurableImpl implements Neo4JClassificationAttachable, Neo4JGeospatialScaleEvent, Neo4JMultiConceptionKindsSupportable {
 
     private static Logger logger = LoggerFactory.getLogger(Neo4JGeospatialScaleEventImpl.class);
     private String geospatialRegionName;
@@ -92,6 +95,11 @@ public class Neo4JGeospatialScaleEventImpl extends Neo4JAttributesMeasurableImpl
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
+        return null;
+    }
+
+    @Override
+    public List<String> getAliasConceptionKindNames() {
         return null;
     }
 

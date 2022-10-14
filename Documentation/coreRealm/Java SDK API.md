@@ -3835,6 +3835,13 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 常规概念实体对象
      */
     public ConceptionEntity getAttachConceptionEntity();
+
+    /**
+     * 获取当前时间刻度事件的概念类型别名列表
+     *
+     * @return 概念类型别名列表
+     */
+    public List<String> getAliasConceptionKindNames();
 ```
 ###### *地理空间分析类特性*
 
@@ -4229,6 +4236,13 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 常规概念实体对象
      */
     public ConceptionEntity getAttachConceptionEntity();
+
+    /**
+     * 获取当前地理空间刻度事件的概念类型别名列表
+     *
+     * @return 概念类型别名列表
+     */
+    public List<String> getAliasConceptionKindNames();
 ```
 
 
