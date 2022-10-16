@@ -403,7 +403,14 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 时间流对象
      */
     public TimeFlow getOrCreateTimeFlow(String timeFlowName);
-   
+
+    /**
+     * 删除默认时间流
+     *
+     * @return 如果操作成功返回 true
+     */
+    public boolean removeTimeFlow() throws CoreRealmServiceRuntimeException;
+
     /**
      * 删除用户自定义时间流
      *
@@ -435,6 +442,13 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 地理空间区域对象
      */
     public GeospatialRegion getOrCreateGeospatialRegion(String geospatialRegionName);
+
+    /**
+     * 删除默认地理空间区域
+     *
+     * @return 如果操作成功返回 true
+     */
+    public boolean removeGeospatialRegion() throws CoreRealmServiceRuntimeException;
 
     /**
      * 删除用户自定义地理空间区域

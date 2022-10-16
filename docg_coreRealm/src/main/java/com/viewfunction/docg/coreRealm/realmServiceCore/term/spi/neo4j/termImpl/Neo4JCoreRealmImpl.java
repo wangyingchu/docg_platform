@@ -955,6 +955,11 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
+    public boolean removeTimeFlow() throws CoreRealmServiceRuntimeException {
+        return false;
+    }
+
+    @Override
     public boolean removeTimeFlow(String timeFlowName) throws CoreRealmServiceRuntimeException {
         return false;
     }
@@ -1024,6 +1029,11 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
+    }
+
+    @Override
+    public boolean removeGeospatialRegion() throws CoreRealmServiceRuntimeException {
+        return false;
     }
 
     @Override
