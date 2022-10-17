@@ -405,20 +405,20 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public TimeFlow getOrCreateTimeFlow(String timeFlowName);
 
     /**
-     * 删除默认时间流
+     * 删除默认时间流以及所有包含其中的时间刻度实体
      *
-     * @return 如果操作成功返回 true
+     * @return 删除的时间流实例以及该时间流中包含的时间刻度实体数量的总和
      */
-    public boolean removeTimeFlow() throws CoreRealmServiceRuntimeException;
+    public long removeTimeFlowEntities() throws CoreRealmServiceRuntimeException;
 
     /**
-     * 删除用户自定义时间流
+     * 删除用户自定义时间流以及所有包含其中的时间刻度实体
      *
      * @param timeFlowName String 用户自定义时间流名称
      *
-     * @return 如果操作成功返回 true
+     * @return 删除的时间流实例以及该时间流中包含的时间刻度实体数量的总和
      */
-    public boolean removeTimeFlow(String timeFlowName) throws CoreRealmServiceRuntimeException;
+    public long removeTimeFlowEntities(String timeFlowName) throws CoreRealmServiceRuntimeException;
 
     /**
      * 获取领域所有时间流

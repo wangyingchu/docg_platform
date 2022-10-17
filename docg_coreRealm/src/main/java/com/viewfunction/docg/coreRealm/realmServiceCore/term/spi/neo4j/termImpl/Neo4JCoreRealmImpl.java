@@ -955,13 +955,13 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
-    public boolean removeTimeFlow() throws CoreRealmServiceRuntimeException {
-        return false;
+    public long removeTimeFlowWithEntities() throws CoreRealmServiceRuntimeException {
+        return removeTimeFlowWithEntitiesLogic(RealmConstant._defaultTimeFlowName);
     }
 
     @Override
-    public boolean removeTimeFlow(String timeFlowName) throws CoreRealmServiceRuntimeException {
-        return false;
+    public long removeTimeFlowWithEntities(String timeFlowName) throws CoreRealmServiceRuntimeException {
+        return removeTimeFlowWithEntitiesLogic(timeFlowName);
     }
 
     @Override
@@ -1407,6 +1407,38 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
+        }
+    }
+
+    private long removeTimeFlowWithEntitiesLogic(String timeFlowName) throws CoreRealmServiceRuntimeException {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            String deleteEntitiesCql = "CALL apoc.periodic.commit(\"MATCH (n:"+RealmConstant.TimeScaleEntityClass+") WHERE n.timeFlow='"+timeFlowName+"' WITH n LIMIT $limit DETACH DELETE n RETURN count(*)\",{limit: 10000}) YIELD updates, executions, runtime, batches RETURN updates, executions, runtime, batches";
+            logger.debug("Generated Cypher Statement: {}", deleteEntitiesCql);
+
+            DataTransformer<Long> deleteTransformer = new DataTransformer() {
+                @Override
+                public Long transformResult(Result result) {
+                    while(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        Long deletedTimeScaleEntitiesNumber =  nodeRecord.get("updates").asLong();
+                        return deletedTimeScaleEntitiesNumber;
+                    }
+                    return null;
+                }
+            };
+            Object deleteEntitiesRes = workingGraphOperationExecutor.executeWrite(deleteTransformer,deleteEntitiesCql);
+            long currentDeletedEntitiesCount = deleteEntitiesRes != null ? ((Long)deleteEntitiesRes).longValue():0;
+
+            String deleteTimeFlowCql = "MATCH (n:"+RealmConstant.TimeFlowClass+") WHERE n.name='"+timeFlowName+"' DETACH DELETE n RETURN COUNT(n) as "+CypherBuilder.operationResultName+"";
+            logger.debug("Generated Cypher Statement: {}", deleteTimeFlowCql);
+            GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer();
+            deleteEntitiesRes = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer,deleteTimeFlowCql);
+            long currentDeletedFlowsCount = deleteEntitiesRes != null ? ((Long)deleteEntitiesRes).longValue():0;
+
+            return currentDeletedEntitiesCount + currentDeletedFlowsCount;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
     }
 

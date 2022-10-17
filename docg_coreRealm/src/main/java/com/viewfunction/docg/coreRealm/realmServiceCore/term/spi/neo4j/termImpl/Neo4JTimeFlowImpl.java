@@ -81,7 +81,7 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
                     if(result.hasNext()){
                         Record nodeRecord = result.next();
                         int resultNumber = nodeRecord.get(CypherBuilder.operationResultName).asInt();
-                        return resultNumber == toYear-fromYear;
+                        return resultNumber == toYear-fromYear+1;
                     }
                     return false;
                 }

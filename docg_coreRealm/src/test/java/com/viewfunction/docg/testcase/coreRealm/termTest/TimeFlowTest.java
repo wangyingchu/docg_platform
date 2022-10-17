@@ -30,6 +30,30 @@ public class TimeFlowTest {
     }
 
     @Test
+    public void setupTimeFlowFunction() throws CoreRealmServiceRuntimeException{
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
+        long resultCount = coreRealm.removeTimeFlowWithEntities();
+
+        TimeFlow defaultTimeFlow = coreRealm.getOrCreateTimeFlow();
+        Assert.assertNotNull(defaultTimeFlow);
+        Assert.assertNotNull(((Neo4JTimeFlowImpl)defaultTimeFlow).getTimeFlowUID());
+        Assert.assertEquals(defaultTimeFlow.getTimeFlowName(), RealmConstant._defaultTimeFlowName);
+
+        List<Integer> availableTimeSpanYears = defaultTimeFlow.getAvailableTimeSpanYears();
+        Assert.assertEquals(availableTimeSpanYears.size(),0);
+
+        boolean addTimeSpanEntities = defaultTimeFlow.createTimeSpanEntities(2004,false);
+        Assert.assertTrue(addTimeSpanEntities);
+        boolean addTimeSpanEntities2 = defaultTimeFlow.createTimeSpanEntities(2001,2003,false);
+        Assert.assertTrue(addTimeSpanEntities2);
+        boolean addTimeSpanEntities3 = defaultTimeFlow.createTimeSpanEntities(1996,2000,false);
+        Assert.assertTrue(addTimeSpanEntities3);
+    }
+
+
+
+    //@Test
     public void testTimeFlowFunction() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
@@ -40,17 +64,7 @@ public class TimeFlowTest {
         Assert.assertNotNull(((Neo4JTimeFlowImpl)defaultTimeFlow).getTimeFlowUID());
         Assert.assertEquals(defaultTimeFlow.getTimeFlowName(), RealmConstant._defaultTimeFlowName);
 /*
-        List<Integer> availableTimeSpanYears = defaultTimeFlow.getAvailableTimeSpanYears();
-        System.out.println(availableTimeSpanYears);
 
-        //boolean addTimeSpanEntities = defaultTimeFlow.createTimeSpanEntities(2004);
-        //System.out.println(addTimeSpanEntities);
-
-        //boolean addTimeSpanEntities2 = defaultTimeFlow.createTimeSpanEntities(2001,2003);
-        //System.out.println(addTimeSpanEntities2);
-
-        //boolean addTimeSpanEntities3 = defaultTimeFlow.createTimeSpanEntities(1996,2000);
-        //System.out.println(addTimeSpanEntities3);
 
         availableTimeSpanYears = defaultTimeFlow.getAvailableTimeSpanYears();
         //System.out.println(availableTimeSpanYears);
