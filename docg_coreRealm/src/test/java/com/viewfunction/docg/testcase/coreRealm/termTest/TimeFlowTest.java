@@ -1,5 +1,7 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
@@ -13,6 +15,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class TimeFlowTest {
@@ -350,5 +353,43 @@ public class TimeFlowTest {
 
         boolean detachTimeScaleEventRes = _ConceptionEntity.detachTimeScaleEvent(attachedTimeScaleEventsList.get(0).getTimeScaleEventUID());
         Assert.assertTrue(detachTimeScaleEventRes);
+
+        AttributesParameters attributesParameters = new AttributesParameters();
+        TimeScaleEntity yearEntity = defaultTimeFlow.getYearEntity(2004);
+
+        //Assert.assertEquals(yearEntity.countAttachedTimeScaleEvents(attributesParameters,true,TimeScaleEntity.TimeScaleLevel.OFFSPRING).longValue(),Long.parseLong("0"));
+        //Assert.assertEquals(yearEntity.countAttachedTimeScaleEvents(attributesParameters,false,TimeScaleEntity.TimeScaleLevel.SELF).longValue(),Long.parseLong("0"));
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(10000000);
+        ConceptionKind _ConceptionKind = coreRealm.getConceptionKind("TimeFlowEventTest");
+        ConceptionEntity targetConceptionEntity = _ConceptionKind.getEntities(queryParameters).getConceptionEntities().get(0);
+        Assert.assertEquals(targetConceptionEntity.getAttachedTimeScaleEvents().size(),0);
+        LocalDateTime dt = LocalDateTime.parse("2004-06-28T08:41:00");
+        TimeScaleEvent resultTimeScaleEvent = targetConceptionEntity.attachTimeScaleEvent(dt,"comment",null, TimeFlow.TimeScaleGrade.MONTH);
+
+        //Assert.assertEquals(yearEntity.countAttachedTimeScaleEvents(attributesParameters,true,TimeScaleEntity.TimeScaleLevel.OFFSPRING).longValue(),Long.parseLong("1"));
+       // Assert.assertEquals(yearEntity.countAttachedTimeScaleEvents(attributesParameters,false,TimeScaleEntity.TimeScaleLevel.SELF).longValue(),Long.parseLong("0"));  //?
+
+        Assert.assertEquals(resultTimeScaleEvent.getAliasConceptionKindNames().size(),0);
+        resultTimeScaleEvent.joinConceptionKinds(new String[]{"conceptionKD01","conceptionKD02"});
+        Assert.assertEquals(resultTimeScaleEvent.getAliasConceptionKindNames().size(),2);
+        resultTimeScaleEvent.retreatFromConceptionKind("conceptionKD01");
+        Assert.assertEquals(resultTimeScaleEvent.getAliasConceptionKindNames().size(),1);
+
+        TimeScaleEventsRetrieveResult timeScaleEventsRetrieveResult = yearEntity.getAttachedTimeScaleEvents(queryParameters,TimeScaleEntity.TimeScaleLevel.OFFSPRING);
+        Assert.assertEquals(timeScaleEventsRetrieveResult.getTimeScaleEvents().size(),1);
+
+        for(TimeScaleEvent currentTimeScaleEvent:timeScaleEventsRetrieveResult.getTimeScaleEvents()){
+            Assert.assertNotNull(currentTimeScaleEvent.getTimeScaleEventUID());
+            Assert.assertEquals(currentTimeScaleEvent.getTimeScaleGrade(),TimeFlow.TimeScaleGrade.MONTH);
+            Assert.assertNotNull(currentTimeScaleEvent.getAttachConceptionEntity());
+            Assert.assertNotNull(currentTimeScaleEvent.getReferTimeScaleEntity());
+        }
+
+        Assert.assertNotNull(timeScaleEventsRetrieveResult.getOperationStatistics().getStartTime());
+        Assert.assertNotNull(timeScaleEventsRetrieveResult.getOperationStatistics().getFinishTime());
+        Assert.assertNotNull(timeScaleEventsRetrieveResult.getOperationStatistics().getResultEntitiesCount());
+        Assert.assertNotNull(timeScaleEventsRetrieveResult.getOperationStatistics().getQueryParameters());
     }
 }
