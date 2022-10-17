@@ -265,8 +265,6 @@ public class Neo4JTimeScaleEntityImpl implements Neo4JTimeScaleEntity {
     public Long countAttachedConceptionEntities(TimeScaleLevel timeScaleLevel) {
         String relationTravelLogic = "relationResult:`DOCG_TS_Contains`*1..3";
         switch (timeScaleLevel){
-            case SELF: relationTravelLogic = "relationResult:`DOCG_TS_Contains`";
-            break;
             case CHILD: relationTravelLogic = "relationResult:`DOCG_TS_Contains`*1";
             break;
             case OFFSPRING:
@@ -301,6 +299,10 @@ public class Neo4JTimeScaleEntityImpl implements Neo4JTimeScaleEntity {
         }
         String queryCql = "MATCH(currentEntity:DOCG_TimeScaleEntity)-["+relationTravelLogic+"]->(childEntities:`DOCG_TimeScaleEntity`) WHERE id(currentEntity) = "+this.getTimeScaleEntityUID()+" \n" +
                 "MATCH (childEntities)-[:`DOCG_TS_TimeReferTo`]->(relatedEvents:`DOCG_TimeScaleEvent`) RETURN count(relatedEvents) as operationResult";
+        if(timeScaleLevel.equals(TimeScaleLevel.SELF)){
+            queryCql = "MATCH(currentEntity:DOCG_TimeScaleEntity) WHERE id(currentEntity) = "+this.getTimeScaleEntityUID()+" \n" +
+                    "MATCH (currentEntity)-[:`DOCG_TS_TimeReferTo`]->(relatedEvents:`DOCG_TimeScaleEvent`) RETURN count(relatedEvents) as operationResult";
+        }
         logger.debug("Generated Cypher Statement: {}", queryCql);
 
         DataTransformer<Long> _DataTransformer = new DataTransformer<Long>() {
@@ -430,8 +432,6 @@ public class Neo4JTimeScaleEntityImpl implements Neo4JTimeScaleEntity {
     private String addTimeScaleGradeTravelLogic(TimeScaleLevel timeScaleLevel,String eventEntitiesQueryCql){
         String relationTravelLogic = "relationResult:`DOCG_TS_Contains`*1..3";
         switch (timeScaleLevel){
-            case SELF: relationTravelLogic = "relationResult:`DOCG_TS_Contains`";
-                break;
             case CHILD: relationTravelLogic = "relationResult:`DOCG_TS_Contains`*1";
                 break;
             case OFFSPRING:
@@ -455,6 +455,10 @@ public class Neo4JTimeScaleEntityImpl implements Neo4JTimeScaleEntity {
         }
         String queryCql = "MATCH(currentEntity:DOCG_TimeScaleEntity)-["+relationTravelLogic+"]->(childEntities:`DOCG_TimeScaleEntity`) WHERE id(currentEntity) = "+this.getTimeScaleEntityUID()+" \n" +
                 eventEntitiesQueryCql;
+        if(timeScaleLevel.equals(TimeScaleLevel.SELF)){
+            queryCql = "MATCH(childEntities:DOCG_TimeScaleEntity) WHERE id(childEntities) = "+this.getTimeScaleEntityUID()+" \n" +
+                    eventEntitiesQueryCql;
+        }
         return queryCql;
     }
 

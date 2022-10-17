@@ -368,8 +368,9 @@ public class TimeFlowTest {
         LocalDateTime dt = LocalDateTime.parse("2004-06-28T08:41:00");
         TimeScaleEvent resultTimeScaleEvent = targetConceptionEntity.attachTimeScaleEvent(dt,"comment",null, TimeFlow.TimeScaleGrade.MONTH);
 
-        Assert.assertEquals(yearEntity.countAttachedTimeScaleEvents(null,true,TimeScaleEntity.TimeScaleLevel.OFFSPRING).longValue(),Long.parseLong("1"));
-        Assert.assertEquals(yearEntity.countAttachedTimeScaleEvents(null,true,TimeScaleEntity.TimeScaleLevel.SELF).longValue(),Long.parseLong("0"));  //逻辑有bug
+        Assert.assertEquals(yearEntity.countAttachedTimeScaleEvents(attributesParameters,true,TimeScaleEntity.TimeScaleLevel.OFFSPRING).longValue(),Long.parseLong("1"));
+        Assert.assertEquals(yearEntity.countAttachedTimeScaleEvents(attributesParameters,true,TimeScaleEntity.TimeScaleLevel.SELF).longValue(),Long.parseLong("0"));
+        Assert.assertEquals(yearEntity.countAttachedTimeScaleEvents(null,true,TimeScaleEntity.TimeScaleLevel.SELF).longValue(),Long.parseLong("0"));
 
         Assert.assertEquals(resultTimeScaleEvent.getAliasConceptionKindNames().size(),0);
         resultTimeScaleEvent.joinConceptionKinds(new String[]{"conceptionKD01","conceptionKD02"});
