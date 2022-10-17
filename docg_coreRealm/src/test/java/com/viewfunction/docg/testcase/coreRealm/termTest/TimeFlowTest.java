@@ -369,8 +369,21 @@ public class TimeFlowTest {
         TimeScaleEvent resultTimeScaleEvent = targetConceptionEntity.attachTimeScaleEvent(dt,"comment",null, TimeFlow.TimeScaleGrade.MONTH);
 
         Assert.assertEquals(yearEntity.countAttachedTimeScaleEvents(attributesParameters,true,TimeScaleEntity.TimeScaleLevel.OFFSPRING).longValue(),Long.parseLong("1"));
+        Assert.assertEquals(yearEntity.countAttachedTimeScaleEvents(null,true,TimeScaleEntity.TimeScaleLevel.OFFSPRING).longValue(),Long.parseLong("1"));
+        Assert.assertEquals(yearEntity.countAttachedTimeScaleEvents(attributesParameters,true,TimeScaleEntity.TimeScaleLevel.CHILD).longValue(),Long.parseLong("1"));
+        Assert.assertEquals(yearEntity.countAttachedTimeScaleEvents(null,true,TimeScaleEntity.TimeScaleLevel.CHILD).longValue(),Long.parseLong("1"));
         Assert.assertEquals(yearEntity.countAttachedTimeScaleEvents(attributesParameters,true,TimeScaleEntity.TimeScaleLevel.SELF).longValue(),Long.parseLong("0"));
         Assert.assertEquals(yearEntity.countAttachedTimeScaleEvents(null,true,TimeScaleEntity.TimeScaleLevel.SELF).longValue(),Long.parseLong("0"));
+
+        TimeScaleEntity monthEntity = defaultTimeFlow.getMonthEntity(2004,6);
+        Assert.assertEquals(monthEntity.countAttachedTimeScaleEvents(attributesParameters,true,TimeScaleEntity.TimeScaleLevel.OFFSPRING).longValue(),Long.parseLong("0"));
+        Assert.assertEquals(monthEntity.countAttachedTimeScaleEvents(attributesParameters,true,TimeScaleEntity.TimeScaleLevel.SELF).longValue(),Long.parseLong("1"));
+        Assert.assertEquals(monthEntity.countAttachedTimeScaleEvents(null,true,TimeScaleEntity.TimeScaleLevel.SELF).longValue(),Long.parseLong("1"));
+
+        TimeScaleEntity dayEntity = defaultTimeFlow.getDayEntity(2004,6,28);
+        Assert.assertEquals(dayEntity.countAttachedTimeScaleEvents(attributesParameters,true,TimeScaleEntity.TimeScaleLevel.OFFSPRING).longValue(),Long.parseLong("0"));
+        Assert.assertEquals(dayEntity.countAttachedTimeScaleEvents(attributesParameters,true,TimeScaleEntity.TimeScaleLevel.SELF).longValue(),Long.parseLong("0"));
+        Assert.assertEquals(dayEntity.countAttachedTimeScaleEvents(null,true,TimeScaleEntity.TimeScaleLevel.SELF).longValue(),Long.parseLong("0"));
 
         Assert.assertEquals(resultTimeScaleEvent.getAliasConceptionKindNames().size(),0);
         resultTimeScaleEvent.joinConceptionKinds(new String[]{"conceptionKD01","conceptionKD02"});
