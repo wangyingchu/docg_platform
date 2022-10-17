@@ -75,8 +75,13 @@
             <class name="com.viewfunction.docg.testcase.coreRealm.termTest.GeospatialScaleCalculableTest"/>
         </classes>
     </test>
+    <test verbose="16" name="TimeFlowTest">
+        <classes>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.TimeFlowTest"/>
+        </classes>
+    </test>
     <!-- KindCacheableTest must be the last test case at anytime-->
-    <test verbose="16" name="KindCacheableTest">
+    <test verbose="17" name="KindCacheableTest">
         <classes>
             <class name="com.viewfunction.docg.testcase.coreRealm.termTest.KindCacheableTest"/>
         </classes>
