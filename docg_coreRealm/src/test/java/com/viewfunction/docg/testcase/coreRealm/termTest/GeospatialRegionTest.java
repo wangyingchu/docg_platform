@@ -39,10 +39,10 @@ public class GeospatialRegionTest {
     private void setupGeospatialRegionFunction(){
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
-        long resultCount = coreRealm.removeGeospatialRegionWithEntities();
+        //long resultCount = coreRealm.removeGeospatialRegionWithEntities();
         GeospatialRegion geospatialRegion = coreRealm.getOrCreateGeospatialRegion();
         List<GeospatialScaleEntity> entityList = geospatialRegion.listContinentEntities();
-        if(entityList.size() ==0){
+        if(entityList.size() == 0){
             geospatialRegion.createGeospatialScaleEntities();
         }
     }
