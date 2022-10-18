@@ -955,12 +955,12 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
-    public long removeTimeFlowWithEntities() throws CoreRealmServiceRuntimeException {
+    public long removeTimeFlowWithEntities() {
         return removeTimeFlowWithEntitiesLogic(RealmConstant._defaultTimeFlowName);
     }
 
     @Override
-    public long removeTimeFlowWithEntities(String timeFlowName) throws CoreRealmServiceRuntimeException {
+    public long removeTimeFlowWithEntities(String timeFlowName) {
         return removeTimeFlowWithEntitiesLogic(timeFlowName);
     }
 
@@ -1032,12 +1032,12 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
-    public long removeGeospatialRegionWithEntities() throws CoreRealmServiceRuntimeException {
+    public long removeGeospatialRegionWithEntities() {
         return removeGeospatialRegionWithEntitiesLogic(RealmConstant._defaultGeospatialRegionName);
     }
 
     @Override
-    public long removeGeospatialRegionWithEntities(String geospatialRegionName) throws CoreRealmServiceRuntimeException {
+    public long removeGeospatialRegionWithEntities(String geospatialRegionName) {
         return removeGeospatialRegionWithEntitiesLogic(geospatialRegionName);
     }
 

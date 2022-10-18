@@ -409,7 +409,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @return 删除的时间流实例以及该时间流中包含的时间刻度实体数量的总和
      */
-    public long removeTimeFlowEntities() throws CoreRealmServiceRuntimeException;
+    public long removeTimeFlowEntities();
 
     /**
      * 删除用户自定义时间流以及所有包含其中的时间刻度实体
@@ -418,7 +418,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @return 删除的时间流实例以及该时间流中包含的时间刻度实体数量的总和
      */
-    public long removeTimeFlowEntities(String timeFlowName) throws CoreRealmServiceRuntimeException;
+    public long removeTimeFlowEntities(String timeFlowName);
 
     /**
      * 获取领域所有时间流
@@ -448,7 +448,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @return 删除的地理空间区域实例以及该区域中包含的地理空间刻度实体数量的总和
      */
-    public long removeGeospatialRegionWithEntities() throws CoreRealmServiceRuntimeException;
+    public long removeGeospatialRegionWithEntities();
 
     /**
      * 删除用户自定义地理空间区域以及所有包含其中的地理空间刻度实体
@@ -457,7 +457,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @return 删除的地理空间区域实例以及该区域中包含的地理空间刻度实体数量的总和
      */
-    public long removeGeospatialRegionWithEntities(String geospatialRegionName) throws CoreRealmServiceRuntimeException;
+    public long removeGeospatialRegionWithEntities(String geospatialRegionName);
 
     /**
      * 获取领域所有地理空间区域
