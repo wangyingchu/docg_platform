@@ -303,9 +303,9 @@ public class TimeFlowTest {
         Assert.assertEquals(timeScaleEvent1.getEventComment(),"timeEventRelation");
         Assert.assertEquals(timeScaleEvent1.getTimeScaleGrade(),TimeFlow.TimeScaleGrade.MINUTE);
         Assert.assertEquals(timeScaleEvent1.getReferTime().getYear(),2004);
-        Assert.assertEquals(timeScaleEvent1.getReferTime().getMonthValue(),5);  //?
-        Assert.assertEquals(timeScaleEvent1.getReferTime().getDayOfMonth(),17);
-        Assert.assertEquals(timeScaleEvent1.getReferTime().getHour(),4);
+        Assert.assertEquals(timeScaleEvent1.getReferTime().getMonth().getValue(),5);
+        Assert.assertEquals(timeScaleEvent1.getReferTime().getDayOfMonth(),16);
+        Assert.assertEquals(timeScaleEvent1.getReferTime().getHour(),16);
         Assert.assertEquals(timeScaleEvent1.getReferTime().getMinute(),55);
 
         Assert.assertEquals(timeScaleEvent1.getTimeFlowName(),"DefaultTimeFlow");
