@@ -444,20 +444,20 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public GeospatialRegion getOrCreateGeospatialRegion(String geospatialRegionName);
 
     /**
-     * 删除默认地理空间区域
+     * 删除默认地理空间区域以及所有包含其中的地理空间刻度实体
      *
-     * @return 如果操作成功返回 true
+     * @return 删除的地理空间区域实例以及该区域中包含的地理空间刻度实体数量的总和
      */
-    public boolean removeGeospatialRegion() throws CoreRealmServiceRuntimeException;
+    public long removeGeospatialRegionWithEntities() throws CoreRealmServiceRuntimeException;
 
     /**
-     * 删除用户自定义地理空间区域
+     * 删除用户自定义地理空间区域以及所有包含其中的地理空间刻度实体
      *
      * @param geospatialRegionName String 用户自定义地理空间区域名称
      *
-     * @return 如果操作成功返回 true
+     * @return 删除的地理空间区域实例以及该区域中包含的地理空间刻度实体数量的总和
      */
-    public boolean removeGeospatialRegion(String geospatialRegionName) throws CoreRealmServiceRuntimeException;
+    public long removeGeospatialRegionWithEntities(String geospatialRegionName) throws CoreRealmServiceRuntimeException;
 
     /**
      * 获取领域所有地理空间区域

@@ -1032,13 +1032,13 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
-    public boolean removeGeospatialRegion() throws CoreRealmServiceRuntimeException {
-        return false;
+    public long removeGeospatialRegionWithEntities() throws CoreRealmServiceRuntimeException {
+        return 0;
     }
 
     @Override
-    public boolean removeGeospatialRegion(String geospatialRegionName) throws CoreRealmServiceRuntimeException {
-        return false;
+    public long removeGeospatialRegionWithEntities(String geospatialRegionName) throws CoreRealmServiceRuntimeException {
+        return 0;
     }
 
     @Override
