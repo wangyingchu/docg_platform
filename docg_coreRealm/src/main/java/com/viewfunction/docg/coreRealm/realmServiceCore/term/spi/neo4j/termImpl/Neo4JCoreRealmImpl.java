@@ -1033,12 +1033,12 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
     @Override
     public long removeGeospatialRegionWithEntities() throws CoreRealmServiceRuntimeException {
-        return 0;
+        return removeGeospatialRegionWithEntitiesLogic(RealmConstant._defaultGeospatialRegionName);
     }
 
     @Override
     public long removeGeospatialRegionWithEntities(String geospatialRegionName) throws CoreRealmServiceRuntimeException {
-        return 0;
+        return removeGeospatialRegionWithEntitiesLogic(geospatialRegionName);
     }
 
     @Override
@@ -1410,7 +1410,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         }
     }
 
-    private long removeTimeFlowWithEntitiesLogic(String timeFlowName) throws CoreRealmServiceRuntimeException {
+    private long removeTimeFlowWithEntitiesLogic(String timeFlowName){
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
             String deleteEntitiesCql = "CALL apoc.periodic.commit(\"MATCH (n:"+RealmConstant.TimeScaleEntityClass+") WHERE n.timeFlow='"+timeFlowName+"' WITH n LIMIT $limit DETACH DELETE n RETURN count(*)\",{limit: 10000}) YIELD updates, executions, runtime, batches RETURN updates, executions, runtime, batches";
@@ -1440,6 +1440,10 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
+    }
+
+    private long removeGeospatialRegionWithEntitiesLogic(String geospatialRegionName){
+        return 0;
     }
 
     //internal graphOperationExecutor management logic
