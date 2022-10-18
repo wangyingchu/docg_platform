@@ -34,8 +34,6 @@ public class GeospatialRegionTest {
         setupGeospatialRegionFunction();
     }
 
-
-
     private void setupGeospatialRegionFunction(){
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
@@ -49,7 +47,16 @@ public class GeospatialRegionTest {
 
 
     @Test
-    public void testGeospatialRegionFunction(){}
+    public void testGeospatialRegionFunction(){
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        coreRealm.openGlobalSession();
+        Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
+
+        List<GeospatialRegion> geospatialRegionList = coreRealm.getGeospatialRegions();
+        Assert.assertTrue(geospatialRegionList.size()>=1);
+
+        coreRealm.closeGlobalSession();
+    }
 
 
 
