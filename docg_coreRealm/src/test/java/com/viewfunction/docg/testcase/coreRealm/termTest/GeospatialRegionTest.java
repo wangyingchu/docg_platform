@@ -1,26 +1,18 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest;
 
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GeospatialScaleDataPair;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GeospatialScaleEventsRetrieveResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class GeospatialRegionTest {
 
@@ -55,6 +47,53 @@ public class GeospatialRegionTest {
         List<GeospatialRegion> geospatialRegionList = coreRealm.getGeospatialRegions();
         Assert.assertTrue(geospatialRegionList.size()>=1);
 
+        GeospatialRegion defaultGeospatialRegion = coreRealm.getOrCreateGeospatialRegion();
+        Assert.assertEquals(defaultGeospatialRegion.getGeospatialRegionName(), RealmConstant._defaultGeospatialRegionName);
+
+        GeospatialRegion geospatialRegion1 = coreRealm.getOrCreateGeospatialRegion("geospatialRegion1");
+        Assert.assertEquals(geospatialRegion1.getGeospatialRegionName(),"geospatialRegion1");
+
+        geospatialRegion1 = coreRealm.getOrCreateGeospatialRegion("geospatialRegion1");
+        Assert.assertEquals(geospatialRegion1.getGeospatialRegionName(),"geospatialRegion1");
+
+        GeospatialRegion geospatialRegion2 = coreRealm.getOrCreateGeospatialRegion("geospatialRegion2");
+        Assert.assertEquals(geospatialRegion2.getGeospatialRegionName(),"geospatialRegion2");
+
+        geospatialRegionList = coreRealm.getGeospatialRegions();
+        Assert.assertTrue(geospatialRegionList.size()>=3);
+        int orgCount = geospatialRegionList.size();
+        for(GeospatialRegion currentGeospatialRegion: geospatialRegionList){
+            boolean matchResult = currentGeospatialRegion.getGeospatialRegionName().equals(RealmConstant._defaultGeospatialRegionName)|
+                                    currentGeospatialRegion.getGeospatialRegionName().equals("geospatialRegion1")|
+                                    currentGeospatialRegion.getGeospatialRegionName().equals("geospatialRegion2");
+            Assert.assertTrue(matchResult);
+        }
+
+        long removeRegionEntitiesCount = coreRealm.removeGeospatialRegionWithEntities("geospatialRegion2");
+        Assert.assertEquals(removeRegionEntitiesCount,1l);
+        geospatialRegionList = coreRealm.getGeospatialRegions();
+        Assert.assertEquals(geospatialRegionList.size(),orgCount-1);
+
+        List<GeospatialScaleEntity> continentGeospatialScaleEntityList = defaultGeospatialRegion.listContinentEntities();
+        Assert.assertEquals(continentGeospatialScaleEntityList.size(),7);
+        for(GeospatialScaleEntity currentGeospatialScaleEntity:continentGeospatialScaleEntityList){
+            Assert.assertNotNull(currentGeospatialScaleEntity.getGeospatialCode());
+            Assert.assertNotNull(currentGeospatialScaleEntity.getGeospatialScaleGrade());
+            Assert.assertNotNull(currentGeospatialScaleEntity.getChineseName());
+            Assert.assertNotNull(currentGeospatialScaleEntity.getEnglishName());
+        }
+
+
+
+
+
+
+
+
+
+
+
+
         coreRealm.closeGlobalSession();
     }
 
@@ -67,39 +106,14 @@ public class GeospatialRegionTest {
 
         Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
 
-        List<GeospatialRegion> geospatialRegionList = coreRealm.getGeospatialRegions();
-        System.out.println(geospatialRegionList);
-
-        GeospatialRegion defaultGeospatialRegion = coreRealm.getOrCreateGeospatialRegion();
-        System.out.println(defaultGeospatialRegion.getGeospatialRegionName());
-
-        /*
-        GeospatialRegion geospatialRegion1 = coreRealm.getOrCreateGeospatialRegion("geospatialRegion1");
-        System.out.println(geospatialRegion1.getGeospatialRegionName());
-
-        geospatialRegion1 = coreRealm.getOrCreateGeospatialRegion("geospatialRegion1");
-        System.out.println(geospatialRegion1.getGeospatialRegionName());
-
-        GeospatialRegion geospatialRegion2 = coreRealm.getOrCreateGeospatialRegion("geospatialRegion2");
-        System.out.println(geospatialRegion2.getGeospatialRegionName());
-
-        geospatialRegionList = coreRealm.getGeospatialRegions();
-        for(GeospatialRegion currentGeospatialRegion: geospatialRegionList){
-            System.out.println(currentGeospatialRegion.getGeospatialRegionName());
-        }
-        */
-
-        //defaultGeospatialRegion.createGeospatialScaleEntities();
 
 
-        List<GeospatialScaleEntity> continentGeospatialScaleEntityList = defaultGeospatialRegion.listContinentEntities();
 
-        for(GeospatialScaleEntity currentGeospatialScaleEntity:continentGeospatialScaleEntityList){
-            System.out.println(currentGeospatialScaleEntity.getGeospatialCode());
-            System.out.println(currentGeospatialScaleEntity.getGeospatialScaleGrade());
-            System.out.println(currentGeospatialScaleEntity.getChineseName());
-            System.out.println(currentGeospatialScaleEntity.getEnglishName());
-        }
+
+
+
+/*
+
 
         GeospatialScaleEntity targetGeospatialScaleEntity1 = defaultGeospatialRegion.getEntityByGeospatialCode("640522406498");
         System.out.println(targetGeospatialScaleEntity1.getGeospatialCode());
@@ -380,7 +394,7 @@ public class GeospatialRegionTest {
                 countAttachedGeospatialScaleEvents(attributesParameters2,true,GeospatialScaleEntity.GeospatialScaleLevel.CHILD));
         System.out.println(targetGeospatialScaleEntity11.
                 countAttachedGeospatialScaleEvents(attributesParameters2,true,GeospatialScaleEntity.GeospatialScaleLevel.OFFSPRING));
-
+*/
         coreRealm.closeGlobalSession();
     }
 }
