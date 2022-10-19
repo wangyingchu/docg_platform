@@ -83,8 +83,23 @@ public class GeospatialRegionTest {
             Assert.assertNotNull(currentGeospatialScaleEntity.getEnglishName());
         }
 
+        GeospatialScaleEntity targetGeospatialScaleEntity1 = defaultGeospatialRegion.getEntityByGeospatialCode("640522406498");
+        System.out.println(targetGeospatialScaleEntity1.getGeospatialCode());
+        System.out.println(targetGeospatialScaleEntity1.getGeospatialScaleGrade());
+        System.out.println(targetGeospatialScaleEntity1.getChineseName());
+        System.out.println(targetGeospatialScaleEntity1.getEnglishName());
 
+        GeospatialScaleEntity targetGeospatialScaleEntity2 = defaultGeospatialRegion.getEntityByGeospatialCode("AD-07");
+        System.out.println(targetGeospatialScaleEntity2.getGeospatialCode());
+        System.out.println(targetGeospatialScaleEntity2.getGeospatialScaleGrade());
+        System.out.println(targetGeospatialScaleEntity2.getChineseName());
+        System.out.println(targetGeospatialScaleEntity2.getEnglishName());
 
+        GeospatialScaleEntity targetGeospatialScaleEntity3 = defaultGeospatialRegion.getContinentEntity(GeospatialRegion.GeospatialProperty.ChineseName,"北");
+        System.out.println(targetGeospatialScaleEntity3.getGeospatialCode());
+        System.out.println(targetGeospatialScaleEntity3.getGeospatialScaleGrade());
+        System.out.println(targetGeospatialScaleEntity3.getChineseName());
+        System.out.println(targetGeospatialScaleEntity3.getEnglishName());
 
 
 
@@ -115,23 +130,7 @@ public class GeospatialRegionTest {
 /*
 
 
-        GeospatialScaleEntity targetGeospatialScaleEntity1 = defaultGeospatialRegion.getEntityByGeospatialCode("640522406498");
-        System.out.println(targetGeospatialScaleEntity1.getGeospatialCode());
-        System.out.println(targetGeospatialScaleEntity1.getGeospatialScaleGrade());
-        System.out.println(targetGeospatialScaleEntity1.getChineseName());
-        System.out.println(targetGeospatialScaleEntity1.getEnglishName());
 
-        GeospatialScaleEntity targetGeospatialScaleEntity2 = defaultGeospatialRegion.getEntityByGeospatialCode("AD-07");
-        System.out.println(targetGeospatialScaleEntity2.getGeospatialCode());
-        System.out.println(targetGeospatialScaleEntity2.getGeospatialScaleGrade());
-        System.out.println(targetGeospatialScaleEntity2.getChineseName());
-        System.out.println(targetGeospatialScaleEntity2.getEnglishName());
-
-        GeospatialScaleEntity targetGeospatialScaleEntity3 = defaultGeospatialRegion.getContinentEntity(GeospatialRegion.GeospatialProperty.ChineseName,"北");
-        System.out.println(targetGeospatialScaleEntity3.getGeospatialCode());
-        System.out.println(targetGeospatialScaleEntity3.getGeospatialScaleGrade());
-        System.out.println(targetGeospatialScaleEntity3.getChineseName());
-        System.out.println(targetGeospatialScaleEntity3.getEnglishName());
 
         List<GeospatialScaleEntity> countryRegionGeospatialScaleEntityList2  = defaultGeospatialRegion.listCountryRegionEntities(GeospatialRegion.GeospatialProperty.GeospatialCode,"U");
         for(GeospatialScaleEntity currentGeospatialScaleEntity:countryRegionGeospatialScaleEntityList2){
