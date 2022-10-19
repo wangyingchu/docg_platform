@@ -290,7 +290,7 @@ public class TimeFlowTest {
         eventCalendar.set(Calendar.YEAR,2004);
         eventCalendar.set(Calendar.MONTH,4);
         eventCalendar.set(Calendar.DAY_OF_MONTH,16);
-        eventCalendar.set(Calendar.HOUR,23);
+        eventCalendar.set(Calendar.HOUR_OF_DAY,22);
         eventCalendar.set(Calendar.MINUTE,55);
 
         Map<String,Object> timeEventDataMap = new HashMap<>();
@@ -305,7 +305,7 @@ public class TimeFlowTest {
         Assert.assertEquals(timeScaleEvent1.getReferTime().getYear(),2004);
         Assert.assertEquals(timeScaleEvent1.getReferTime().getMonth().getValue(),5);
         Assert.assertEquals(timeScaleEvent1.getReferTime().getDayOfMonth(),16);
-        Assert.assertEquals(timeScaleEvent1.getReferTime().getHour(),23);
+        Assert.assertEquals(timeScaleEvent1.getReferTime().getHour(),22);
         Assert.assertEquals(timeScaleEvent1.getReferTime().getMinute(),55);
 
         Assert.assertEquals(timeScaleEvent1.getTimeFlowName(),"DefaultTimeFlow");
