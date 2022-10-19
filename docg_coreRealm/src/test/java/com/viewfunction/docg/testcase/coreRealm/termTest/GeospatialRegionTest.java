@@ -1,11 +1,16 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GeospatialScaleDataPair;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GeospatialScaleEventsRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
@@ -13,7 +18,10 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GeospatialRegionTest {
 
@@ -210,8 +218,179 @@ public class GeospatialRegionTest {
         Assert.assertEquals(geospatialScaleEntityTree.getNode(geospatialScaleEntityTree.getRootID()).getGeospatialCode(),"360900");
         Assert.assertEquals(geospatialScaleEntityTree.size(),3012);
 
+        ConceptionKind _ConceptionKind01 = coreRealm.getConceptionKind("GeospatialFeatureTestKind");
+        if(_ConceptionKind01 != null){
+            coreRealm.removeConceptionKind("GeospatialFeatureTestKind",true);
+        }
+        _ConceptionKind01 = coreRealm.getConceptionKind("GeospatialFeatureTestKind");
+        if(_ConceptionKind01 == null){
+            _ConceptionKind01 = coreRealm.createConceptionKind("GeospatialFeatureTestKind","-");
+        }
+
+        Map<String,Object> newEntityValue= new HashMap<>();
+        newEntityValue.put("prop1",10000l);
+
+        ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValue);
+        ConceptionEntity _ConceptionEntity01 = _ConceptionKind01.newEntity(conceptionEntityValue,false);
+
+        Map<String,Object> eventDataMap= new HashMap<>();
+        eventDataMap.put("data1","this is s data");
+        eventDataMap.put("data2",new Date());
+
+        GeospatialScaleEvent _GeospatialScaleEvent1 = _ConceptionEntity01.attachGeospatialScaleEvent("360902213200","eventAttachComment",eventDataMap);
+        Assert.assertNotNull(_GeospatialScaleEvent1.getGeospatialScaleEventUID());
+        Assert.assertEquals(_GeospatialScaleEvent1.getReferLocation(),"360902213200");
+        Assert.assertEquals(_GeospatialScaleEvent1.getGeospatialScaleGrade(),GeospatialRegion.GeospatialScaleGrade.VILLAGE);
+        Assert.assertEquals(_GeospatialScaleEvent1.getGeospatialRegionName(),RealmConstant._defaultGeospatialRegionName);
+        Assert.assertEquals(_GeospatialScaleEvent1.getEventComment(),"eventAttachComment");
+
+        GeospatialScaleEntity targetGeospatialScaleEntity = _GeospatialScaleEvent1.getReferGeospatialScaleEntity();
+        Assert.assertNull(targetGeospatialScaleEntity.getEnglishName());
+        Assert.assertEquals(targetGeospatialScaleEntity.getChineseName(),"殊桥村委会");
+        Assert.assertEquals(targetGeospatialScaleEntity.getGeospatialScaleGrade(),GeospatialRegion.GeospatialScaleGrade.VILLAGE);
+        Assert.assertEquals(targetGeospatialScaleEntity.getGeospatialCode(),"360902213200");
+        Assert.assertEquals(targetGeospatialScaleEntity.getParentEntity().getGeospatialCode(),"360902213");
+
+        ConceptionEntity targetConceptionEntity = _GeospatialScaleEvent1.getAttachConceptionEntity();
+        Assert.assertEquals(targetConceptionEntity.getConceptionKindName(),"GeospatialFeatureTestKind");
+        Assert.assertEquals(targetConceptionEntity.getConceptionEntityUID(),_ConceptionEntity01.getConceptionEntityUID());
+
+        GeospatialScaleEvent _GeospatialScaleEvent2 = _ConceptionEntity01.attachGeospatialScaleEvent("360902213209","eventAttachComment",eventDataMap);
+
+        List<GeospatialScaleEvent> targetGeospatialScaleEventList = _ConceptionEntity01.getAttachedGeospatialScaleEvents();
+        Assert.assertEquals(targetGeospatialScaleEventList.size(),2);
+        for(GeospatialScaleEvent currentGeospatialScaleEvent:targetGeospatialScaleEventList){
+            Assert.assertNotNull(currentGeospatialScaleEvent.getGeospatialScaleEventUID());
+            Assert.assertNotNull(currentGeospatialScaleEvent.getReferLocation());
+            Assert.assertEquals(currentGeospatialScaleEvent.getGeospatialScaleGrade(),GeospatialRegion.GeospatialScaleGrade.VILLAGE);
+            Assert.assertEquals(currentGeospatialScaleEvent.getGeospatialRegionName(),RealmConstant._defaultGeospatialRegionName);
+            Assert.assertNotNull(currentGeospatialScaleEvent.getEventComment());
+        }
+
+        List<GeospatialScaleEntity> targetGeospatialScaleEntityList = _ConceptionEntity01.getAttachedGeospatialScaleEntities();
+        Assert.assertEquals(targetGeospatialScaleEntityList.size(),2);
+        for(GeospatialScaleEntity currentGeospatialScaleEntity:targetGeospatialScaleEntityList){
+            Assert.assertNull(currentGeospatialScaleEntity.getEnglishName());
+            Assert.assertNotNull(currentGeospatialScaleEntity.getChineseName());
+            Assert.assertEquals(currentGeospatialScaleEntity.getGeospatialScaleGrade(),GeospatialRegion.GeospatialScaleGrade.VILLAGE);
+            Assert.assertTrue(currentGeospatialScaleEntity.getGeospatialCode().startsWith("360902213"));
+            Assert.assertEquals(currentGeospatialScaleEntity.getParentEntity().getGeospatialCode(),"360902213");
+        }
+
+        List<GeospatialScaleDataPair> targetGeospatialScaleDataPairList = _ConceptionEntity01.getAttachedGeospatialScaleDataPairs();
+        Assert.assertEquals(targetGeospatialScaleDataPairList.size(),2);
+        for(GeospatialScaleDataPair currentGeospatialScaleDataPair:targetGeospatialScaleDataPairList){
+            System.out.println("========================");
+            GeospatialScaleEntity currentGeospatialScaleEntity = currentGeospatialScaleDataPair.getGeospatialScaleEntity();
+            Assert.assertNull(currentGeospatialScaleEntity.getEnglishName());
+            Assert.assertNotNull(currentGeospatialScaleEntity.getChineseName());
+            Assert.assertEquals(currentGeospatialScaleEntity.getGeospatialScaleGrade(),GeospatialRegion.GeospatialScaleGrade.VILLAGE);
+            Assert.assertTrue(currentGeospatialScaleEntity.getGeospatialCode().startsWith("360902213"));
+            Assert.assertEquals(currentGeospatialScaleEntity.getParentEntity().getGeospatialCode(),"360902213");
+
+            GeospatialScaleEvent currentGeospatialScaleEvent = currentGeospatialScaleDataPair.getGeospatialScaleEvent();
+            Assert.assertNotNull(currentGeospatialScaleEvent.getGeospatialScaleEventUID());
+            Assert.assertNotNull(currentGeospatialScaleEvent.getReferLocation());
+            Assert.assertEquals(currentGeospatialScaleEvent.getGeospatialScaleGrade(),GeospatialRegion.GeospatialScaleGrade.VILLAGE);
+            Assert.assertEquals(currentGeospatialScaleEvent.getGeospatialRegionName(),RealmConstant._defaultGeospatialRegionName);
+            Assert.assertNotNull(currentGeospatialScaleEvent.getEventComment());
+        }
+
+        GeospatialScaleEvent _GeospatialScaleEventForDelete = _ConceptionEntity01.attachGeospatialScaleEvent("360902213","eventAttachComment",eventDataMap);
+        targetGeospatialScaleDataPairList = _ConceptionEntity01.getAttachedGeospatialScaleDataPairs();
+        Assert.assertEquals(targetGeospatialScaleDataPairList.size(),3);
+        boolean detachGeospatialScaleEventResult = _ConceptionEntity01.detachGeospatialScaleEvent(_GeospatialScaleEventForDelete.getGeospatialScaleEventUID());
+        Assert.assertTrue(detachGeospatialScaleEventResult);
+        targetGeospatialScaleDataPairList = _ConceptionEntity01.getAttachedGeospatialScaleDataPairs();
+        Assert.assertEquals(targetGeospatialScaleDataPairList.size(),2);
+
+        boolean exceptionShouldThrown = false;
+        try {
+            _ConceptionEntity01.detachGeospatialScaleEvent("12345678900000000");
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldThrown = true;
+        }
+        Assert.assertTrue(exceptionShouldThrown);
+
+        GeospatialScaleEntity targetGeospatialScaleEntity11 = defaultGeospatialRegion.getEntityByGeospatialCode("360902213200");
+        Assert.assertEquals(targetGeospatialScaleEntity11.countAttachedConceptionEntities(GeospatialScaleEntity.GeospatialScaleLevel.SELF),Long.valueOf("1"));
+        Assert.assertEquals(targetGeospatialScaleEntity11.countAttachedConceptionEntities(GeospatialScaleEntity.GeospatialScaleLevel.CHILD),Long.valueOf("0"));
+        Assert.assertEquals(targetGeospatialScaleEntity11.countAttachedConceptionEntities(GeospatialScaleEntity.GeospatialScaleLevel.OFFSPRING),Long.valueOf("0"));
+
+        targetGeospatialScaleEntity11 = defaultGeospatialRegion.getEntityByGeospatialCode("360902");
+        Assert.assertEquals(targetGeospatialScaleEntity11.countAttachedConceptionEntities(GeospatialScaleEntity.GeospatialScaleLevel.SELF),Long.valueOf("0"));
+        Assert.assertEquals(targetGeospatialScaleEntity11.countAttachedConceptionEntities(GeospatialScaleEntity.GeospatialScaleLevel.CHILD),Long.valueOf("0"));
+        Assert.assertEquals(targetGeospatialScaleEntity11.countAttachedConceptionEntities(GeospatialScaleEntity.GeospatialScaleLevel.OFFSPRING),Long.valueOf("2"));
+
+        targetGeospatialScaleEntity11 = defaultGeospatialRegion.getEntityByGeospatialCode("360902213");
+        Assert.assertEquals(targetGeospatialScaleEntity11.countAttachedConceptionEntities(GeospatialScaleEntity.GeospatialScaleLevel.SELF),Long.valueOf("0"));
+        Assert.assertEquals(targetGeospatialScaleEntity11.countAttachedConceptionEntities(GeospatialScaleEntity.GeospatialScaleLevel.CHILD),Long.valueOf("2"));
+        Assert.assertEquals(targetGeospatialScaleEntity11.countAttachedConceptionEntities(GeospatialScaleEntity.GeospatialScaleLevel.OFFSPRING),Long.valueOf("2"));
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(10000000);
+        queryParameters.setDistinctMode(true);
+        ConceptionEntitiesRetrieveResult conceptionEntitiesRetrieveResult = targetGeospatialScaleEntity11.getAttachedConceptionEntities("GeospatialFeatureTestKind",queryParameters,GeospatialScaleEntity.GeospatialScaleLevel.SELF);
+         Assert.assertEquals(conceptionEntitiesRetrieveResult.getConceptionEntities().size(),0);
+        ConceptionEntitiesRetrieveResult conceptionEntitiesRetrieveResult2 = targetGeospatialScaleEntity11.getAttachedConceptionEntities(null,queryParameters,GeospatialScaleEntity.GeospatialScaleLevel.CHILD);
+        Assert.assertEquals(conceptionEntitiesRetrieveResult2.getConceptionEntities().size(),1);
+        ConceptionEntitiesRetrieveResult conceptionEntitiesRetrieveResult3 = targetGeospatialScaleEntity11.getAttachedConceptionEntities(null,queryParameters,GeospatialScaleEntity.GeospatialScaleLevel.OFFSPRING);
+        Assert.assertEquals(conceptionEntitiesRetrieveResult3.getConceptionEntities().size(),1);
+        for(ConceptionEntity currentConceptionEntity:conceptionEntitiesRetrieveResult3.getConceptionEntities()){
+            Assert.assertNotNull(currentConceptionEntity.getConceptionEntityUID());
+            Assert.assertEquals(currentConceptionEntity.getConceptionKindName(),"GeospatialFeatureTestKind");
+        }
+
+        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
 
 
+        AttributesParameters attributesParameters = new AttributesParameters();
+        attributesParameters.setDefaultFilteringItem(new EqualFilteringItem("prop1",10000l));
+        System.out.println(targetGeospatialScaleEntity11.
+                countAttachedConceptionEntities(null,attributesParameters,true,GeospatialScaleEntity.GeospatialScaleLevel.SELF));
+        System.out.println(targetGeospatialScaleEntity11.
+                countAttachedConceptionEntities(null,attributesParameters,true,GeospatialScaleEntity.GeospatialScaleLevel.CHILD));
+        System.out.println(targetGeospatialScaleEntity11.
+                countAttachedConceptionEntities(null,attributesParameters,true,GeospatialScaleEntity.GeospatialScaleLevel.OFFSPRING));
+
+        GeospatialScaleEventsRetrieveResult geospatialScaleEventsRetrieveResult1 = targetGeospatialScaleEntity11.getAttachedGeospatialScaleEvents(queryParameters,GeospatialScaleEntity.GeospatialScaleLevel.SELF);
+        System.out.println(geospatialScaleEventsRetrieveResult1.getGeospatialScaleEvents().size());
+        GeospatialScaleEventsRetrieveResult geospatialScaleEventsRetrieveResult2 = targetGeospatialScaleEntity11.getAttachedGeospatialScaleEvents(queryParameters,GeospatialScaleEntity.GeospatialScaleLevel.CHILD);
+        System.out.println(geospatialScaleEventsRetrieveResult2.getGeospatialScaleEvents().size());
+        GeospatialScaleEventsRetrieveResult geospatialScaleEventsRetrieveResult3 = targetGeospatialScaleEntity11.getAttachedGeospatialScaleEvents(queryParameters,GeospatialScaleEntity.GeospatialScaleLevel.OFFSPRING);
+        System.out.println(geospatialScaleEventsRetrieveResult3.getGeospatialScaleEvents().size());
+        for(GeospatialScaleEvent currentGeospatialScaleEvent:geospatialScaleEventsRetrieveResult3.getGeospatialScaleEvents()){
+            System.out.println(currentGeospatialScaleEvent.getEventComment());
+            System.out.println(currentGeospatialScaleEvent.getGeospatialScaleEventUID());
+            System.out.println(currentGeospatialScaleEvent.getGeospatialScaleGrade());
+            System.out.println(currentGeospatialScaleEvent.getReferLocation());
+        }
+
+        AttributesParameters attributesParameters2 = new AttributesParameters();
+        attributesParameters2.setDefaultFilteringItem(new EqualFilteringItem("DOCG_GeospatialScaleEventComment","eventAttachComment"));
+        System.out.println(targetGeospatialScaleEntity11.
+                countAttachedGeospatialScaleEvents(attributesParameters2,true,GeospatialScaleEntity.GeospatialScaleLevel.SELF));
+        System.out.println(targetGeospatialScaleEntity11.
+                countAttachedGeospatialScaleEvents(attributesParameters2,true,GeospatialScaleEntity.GeospatialScaleLevel.CHILD));
+        System.out.println(targetGeospatialScaleEntity11.
+                countAttachedGeospatialScaleEvents(attributesParameters2,true,GeospatialScaleEntity.GeospatialScaleLevel.OFFSPRING));
+
+
+
+
+
+
+
+
+
+
+
+
+
+        boolean detachResult = _ConceptionEntity01.detachGeospatialScaleEvent(_GeospatialScaleEvent1.getGeospatialScaleEventUID());
+        Assert.assertTrue(detachResult);
+        detachResult = _ConceptionEntity01.detachGeospatialScaleEvent(_GeospatialScaleEvent2.getGeospatialScaleEventUID());
+        Assert.assertTrue(detachResult);
 
 
         coreRealm.closeGlobalSession();
@@ -244,108 +423,18 @@ public class GeospatialRegionTest {
 
 
 
-        ConceptionKind _ConceptionKind01 = coreRealm.getConceptionKind("GeospatialFeatureTestKind");
-        if(_ConceptionKind01 != null){
-            coreRealm.removeConceptionKind("GeospatialFeatureTestKind",true);
-        }
-        _ConceptionKind01 = coreRealm.getConceptionKind("GeospatialFeatureTestKind");
-        if(_ConceptionKind01 == null){
-            _ConceptionKind01 = coreRealm.createConceptionKind("GeospatialFeatureTestKind","-");
-        }
 
-        Map<String,Object> newEntityValue= new HashMap<>();
-        newEntityValue.put("prop1",10000l);
-
-        ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValue);
-        ConceptionEntity _ConceptionEntity01 = _ConceptionKind01.newEntity(conceptionEntityValue,false);
-
-        Map<String,Object> eventDataMap= new HashMap<>();
-        eventDataMap.put("data1","this is s data");
-        eventDataMap.put("data2",new Date());
-
-        GeospatialScaleEvent _GeospatialScaleEvent1 = _ConceptionEntity01.attachGeospatialScaleEvent("360902213200","eventAttachComment",eventDataMap);
-        System.out.println(_GeospatialScaleEvent1.getGeospatialScaleEventUID());
-        System.out.println(_GeospatialScaleEvent1.getReferLocation());
-        System.out.println(_GeospatialScaleEvent1.getGeospatialScaleGrade());
-        System.out.println(_GeospatialScaleEvent1.getGeospatialRegionName());
-        System.out.println(_GeospatialScaleEvent1.getEventComment());
 
         System.out.println("----------------------------------------------------");
-        GeospatialScaleEntity targetGeospatialScaleEntity = _GeospatialScaleEvent1.getReferGeospatialScaleEntity();
-        System.out.println(targetGeospatialScaleEntity.getEnglishName());
-        System.out.println(targetGeospatialScaleEntity.getChineseName());
-        System.out.println(targetGeospatialScaleEntity.getGeospatialScaleGrade());
-        System.out.println(targetGeospatialScaleEntity.getGeospatialCode());
-        System.out.println(targetGeospatialScaleEntity.getParentEntity().getGeospatialCode());
 
-        ConceptionEntity targetConceptionEntity = _GeospatialScaleEvent1.getAttachConceptionEntity();
-        System.out.println(targetConceptionEntity.getConceptionKindName());
-        System.out.println(targetConceptionEntity.getConceptionEntityUID());
         System.out.println("----------------------------------------------------");
 
-        _ConceptionEntity01.attachGeospatialScaleEvent("360902213209","eventAttachComment",eventDataMap);
-        GeospatialScaleEvent _GeospatialScaleEventForDelete = _ConceptionEntity01.attachGeospatialScaleEvent("360902213","eventAttachComment",eventDataMap);
-
-        List<GeospatialScaleEvent> targetGeospatialScaleEventList = _ConceptionEntity01.getAttachedGeospatialScaleEvents();
-
-        for(GeospatialScaleEvent currentGeospatialScaleEvent:targetGeospatialScaleEventList){
-            System.out.println(currentGeospatialScaleEvent.getGeospatialScaleEventUID());
-            System.out.println(currentGeospatialScaleEvent.getReferLocation());
-            System.out.println(currentGeospatialScaleEvent.getGeospatialScaleGrade());
-            System.out.println(currentGeospatialScaleEvent.getGeospatialRegionName());
-            System.out.println(currentGeospatialScaleEvent.getEventComment());
-        }
-        System.out.println(targetGeospatialScaleEventList.size());
-
-        List<GeospatialScaleEntity> targetGeospatialScaleEntityList = _ConceptionEntity01.getAttachedGeospatialScaleEntities();
-        for(GeospatialScaleEntity currentGeospatialScaleEntity:targetGeospatialScaleEntityList){
-            System.out.println(currentGeospatialScaleEntity.getEnglishName());
-            System.out.println(currentGeospatialScaleEntity.getChineseName());
-            System.out.println(currentGeospatialScaleEntity.getGeospatialScaleGrade());
-            System.out.println(currentGeospatialScaleEntity.getGeospatialCode());
-            System.out.println(currentGeospatialScaleEntity.getParentEntity().getGeospatialCode());
-        }
-        System.out.println(targetGeospatialScaleEntityList.size());
-
-        List<GeospatialScaleDataPair> targetGeospatialScaleDataPairList = _ConceptionEntity01.getAttachedGeospatialScaleDataPairs();
-        for(GeospatialScaleDataPair currentGeospatialScaleDataPair:targetGeospatialScaleDataPairList){
-            System.out.println("========================");
-            GeospatialScaleEntity currentGeospatialScaleEntity = currentGeospatialScaleDataPair.getGeospatialScaleEntity();
-            System.out.println(currentGeospatialScaleEntity.getEnglishName());
-            System.out.println(currentGeospatialScaleEntity.getChineseName());
-            System.out.println(currentGeospatialScaleEntity.getGeospatialScaleGrade());
-            System.out.println(currentGeospatialScaleEntity.getGeospatialCode());
-            System.out.println(currentGeospatialScaleEntity.getParentEntity().getGeospatialCode());
-
-            GeospatialScaleEvent currentGeospatialScaleEvent = currentGeospatialScaleDataPair.getGeospatialScaleEvent();
-            System.out.println(currentGeospatialScaleEvent.getGeospatialScaleEventUID());
-            System.out.println(currentGeospatialScaleEvent.getReferLocation());
-            System.out.println(currentGeospatialScaleEvent.getGeospatialScaleGrade());
-            System.out.println(currentGeospatialScaleEvent.getGeospatialRegionName());
-            System.out.println(currentGeospatialScaleEvent.getEventComment());
-        }
-        System.out.println(targetGeospatialScaleDataPairList.size());
-
-        boolean detachGeospatialScaleEventResult = _ConceptionEntity01.detachGeospatialScaleEvent(_GeospatialScaleEventForDelete.getGeospatialScaleEventUID());
-        System.out.println(detachGeospatialScaleEventResult);
-        targetGeospatialScaleDataPairList = _ConceptionEntity01.getAttachedGeospatialScaleDataPairs();
-        System.out.println(targetGeospatialScaleDataPairList.size());
-
-        //_ConceptionEntity01.detachGeospatialScaleEvent("12345678900000000");
 
 
-        //GeospatialScaleEntity targetGeospatialScaleEntity11 = defaultGeospatialRegion.getEntityByGeospatialCode("360000");
-        //GeospatialScaleEntity targetGeospatialScaleEntity11 = defaultGeospatialRegion.getEntityByGeospatialCode("360902");
-        //GeospatialScaleEntity targetGeospatialScaleEntity11 = defaultGeospatialRegion.getEntityByGeospatialCode("360902213");
-        GeospatialScaleEntity targetGeospatialScaleEntity11 = defaultGeospatialRegion.getEntityByGeospatialCode("360902213200");
 
-        System.out.println(targetGeospatialScaleEntity11.getGeospatialCode());
-        System.out.println(targetGeospatialScaleEntity11.getGeospatialScaleGrade());
-        System.out.println(targetGeospatialScaleEntity11.getChineseName());
 
-        System.out.println("SELF "+targetGeospatialScaleEntity11.countAttachedConceptionEntities(GeospatialScaleEntity.GeospatialScaleLevel.SELF));
-        System.out.println("CHILD "+targetGeospatialScaleEntity11.countAttachedConceptionEntities(GeospatialScaleEntity.GeospatialScaleLevel.CHILD));
-        System.out.println("OFFSPRING "+targetGeospatialScaleEntity11.countAttachedConceptionEntities(GeospatialScaleEntity.GeospatialScaleLevel.OFFSPRING));
+
+
 
         QueryParameters queryParameters = new QueryParameters();
         queryParameters.setResultNumber(10000000);
