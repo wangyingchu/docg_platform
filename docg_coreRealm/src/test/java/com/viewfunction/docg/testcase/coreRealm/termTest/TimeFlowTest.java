@@ -405,5 +405,8 @@ public class TimeFlowTest {
         Assert.assertNotNull(timeScaleEventsRetrieveResult.getOperationStatistics().getFinishTime());
         Assert.assertNotNull(timeScaleEventsRetrieveResult.getOperationStatistics().getResultEntitiesCount());
         Assert.assertNotNull(timeScaleEventsRetrieveResult.getOperationStatistics().getQueryParameters());
+
+        long removeRefersEventsResult = defaultTimeFlow.removeRefersTimeScaleEvents();
+        Assert.assertTrue(removeRefersEventsResult > 0);
     }
 }

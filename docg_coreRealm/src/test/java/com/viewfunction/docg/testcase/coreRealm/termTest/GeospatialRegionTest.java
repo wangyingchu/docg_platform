@@ -378,8 +378,17 @@ public class GeospatialRegionTest {
 
         boolean detachResult = _ConceptionEntity01.detachGeospatialScaleEvent(_GeospatialScaleEvent1.getGeospatialScaleEventUID());
         Assert.assertTrue(detachResult);
-        detachResult = _ConceptionEntity01.detachGeospatialScaleEvent(_GeospatialScaleEvent2.getGeospatialScaleEventUID());
-        Assert.assertTrue(detachResult);
+
+        long removeRefersEventsResult = defaultGeospatialRegion.removeRefersGeospatialScaleEvents();
+        Assert.assertTrue(removeRefersEventsResult > 0);
+
+        boolean exceptionShouldThrown2 = false;
+        try {
+            _ConceptionEntity01.detachGeospatialScaleEvent(_GeospatialScaleEvent2.getGeospatialScaleEventUID());
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldThrown2 = true;
+        }
+        Assert.assertTrue(exceptionShouldThrown2);
 
         coreRealm.closeGlobalSession();
     }

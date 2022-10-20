@@ -533,7 +533,27 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
 
     @Override
     public long removeRefersTimeScaleEvents() {
-        return 0;
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            String deleteEntitiesCql = "CALL apoc.periodic.commit(\"MATCH (n:"+RealmConstant.TimeScaleEventClass+") WHERE n."+RealmConstant._TimeScaleEventTimeFlow+"='"+this.timeFlowName+"' WITH n LIMIT $limit DETACH DELETE n RETURN count(*)\",{limit: 10000}) YIELD updates, executions, runtime, batches RETURN updates, executions, runtime, batches";
+            logger.debug("Generated Cypher Statement: {}", deleteEntitiesCql);
+            DataTransformer<Long> deleteTransformer = new DataTransformer() {
+                @Override
+                public Long transformResult(Result result) {
+                    while(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        Long deletedTimeScaleEntitiesNumber =  nodeRecord.get("updates").asLong();
+                        return deletedTimeScaleEntitiesNumber;
+                    }
+                    return null;
+                }
+            };
+            Object deleteEntitiesRes = workingGraphOperationExecutor.executeWrite(deleteTransformer,deleteEntitiesCql);
+            long currentDeletedEntitiesCount = deleteEntitiesRes != null ? ((Long)deleteEntitiesRes).longValue():0;
+            return currentDeletedEntitiesCount;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     private TimeScaleEntity getSpecialTimeScaleEntity(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade){
