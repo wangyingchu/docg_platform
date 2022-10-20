@@ -266,4 +266,10 @@ public interface TimeFlow {
      * @return 所有子集时间刻度实体对象的继承数
      */
     public InheritanceTree<TimeScaleEntity> getOffspringEntities(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade);
+
+    /**
+     * 删除当前时间流涉及的全部时间刻度事件
+     * @return 删除的时间刻度事件数量
+     */
+    public long removeRefersTimeScaleEvents();
 }

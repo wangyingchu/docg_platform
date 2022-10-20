@@ -399,6 +399,11 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
         }
     }
 
+    @Override
+    public long removeRefersGeospatialScaleEvents() {
+        return 0;
+    }
+
     private GeospatialScaleEntity getFullMatchedEntity(List<GeospatialScaleEntity> geospatialScaleEntitiesList,
                                                        GeospatialProperty geospatialProperty,String propertyValue){
         for(GeospatialScaleEntity currentChildEntity:geospatialScaleEntitiesList){

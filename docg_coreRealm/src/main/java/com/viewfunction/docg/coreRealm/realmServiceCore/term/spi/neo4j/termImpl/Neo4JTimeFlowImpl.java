@@ -531,6 +531,11 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
         return null;
     }
 
+    @Override
+    public long removeRefersTimeScaleEvents() {
+        return 0;
+    }
+
     private TimeScaleEntity getSpecialTimeScaleEntity(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade){
         int targetYear = timeScaleMoment.getYear();
         int targetMonth = timeScaleMoment.getMonth();

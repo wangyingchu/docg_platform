@@ -214,4 +214,10 @@ public interface GeospatialRegion {
      * @return 目标地理空间刻度实体对象
      */
     public GeospatialScaleEntity getVillageEntity(GeospatialProperty geospatialProperty,String countryValue, String provinceValue, String prefectureValue, String countyValue,String townshipValue,String villageValue) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 删除当前地理空间区域范围涉及的全部地理空间刻度事件
+     * @return 删除的地理空间刻度事件数量
+     */
+    public long removeRefersGeospatialScaleEvents();
 }
