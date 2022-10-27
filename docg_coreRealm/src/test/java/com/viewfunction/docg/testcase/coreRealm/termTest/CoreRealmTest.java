@@ -388,8 +388,26 @@ public class CoreRealmTest {
         Assert.assertNotNull(statisticsInfosList);
         Assert.assertTrue(statisticsInfosList.size()>1);
 
+        for(EntityStatisticsInfo currentEntityStatisticsInfo:statisticsInfosList){
+            if(!currentEntityStatisticsInfo.isSystemKind()){
+                Assert.assertNotNull(currentEntityStatisticsInfo.getEntityKindName());
+                Assert.assertNotNull(currentEntityStatisticsInfo.getEntityKindType());
+                Assert.assertNotNull(currentEntityStatisticsInfo.getEntityKindUID());
+                Assert.assertNotNull(currentEntityStatisticsInfo.getEntityKindDesc());
+            }
+        }
+
         statisticsInfosList = coreRealm.getRelationEntitiesStatistics();
         Assert.assertNotNull(statisticsInfosList);
+        Assert.assertTrue(statisticsInfosList.size()>0);
+        for(EntityStatisticsInfo currentEntityStatisticsInfo:statisticsInfosList){
+            if(!currentEntityStatisticsInfo.isSystemKind()){
+                Assert.assertNotNull(currentEntityStatisticsInfo.getEntityKindName());
+                Assert.assertNotNull(currentEntityStatisticsInfo.getEntityKindType());
+                Assert.assertNotNull(currentEntityStatisticsInfo.getEntityKindUID());
+                Assert.assertNotNull(currentEntityStatisticsInfo.getEntityKindDesc());
+            }
+        }
 
         List<ConceptionKindCorrelationInfo> correlationInfo = coreRealm.getConceptionKindsCorrelation();
         Assert.assertNotNull(correlationInfo);

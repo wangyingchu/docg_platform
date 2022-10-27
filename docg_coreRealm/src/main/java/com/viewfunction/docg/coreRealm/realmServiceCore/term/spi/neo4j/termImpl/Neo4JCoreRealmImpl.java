@@ -1181,29 +1181,97 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 "ORDER BY relationshipType";
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
+            List<String> attributesNameList = new ArrayList<>();
+            Map<String,HashMap<String,Object>> relationKindMetaDataMap = new HashMap<>();
+            attributesNameList.add(RealmConstant._NameProperty);
+            attributesNameList.add(RealmConstant._DescProperty);
+            attributesNameList.add(RealmConstant._createDateProperty);
+            attributesNameList.add(RealmConstant._lastModifyDateProperty);
+            attributesNameList.add(RealmConstant._creatorIdProperty);
+            attributesNameList.add(RealmConstant._dataOriginProperty);
+            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(RealmConstant.RelationKindClass,null,attributesNameList);
+            DataTransformer relationKindInfoDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    while(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        String relationKindName = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._NameProperty).asString();
+                        String relationKindDesc = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._DescProperty).asString();
+                        ZonedDateTime createDate = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._createDateProperty).asZonedDateTime();
+                        ZonedDateTime lastModifyDate = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._lastModifyDateProperty).asZonedDateTime();
+                        String dataOrigin = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._dataOriginProperty).asString();
+                        long conceptionKindUID = nodeRecord.get("id("+CypherBuilder.operationResultName+")").asLong();
+                        String creatorId = nodeRecord.containsKey(CypherBuilder.operationResultName+"."+RealmConstant._creatorIdProperty) ?
+                                nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._creatorIdProperty).asString():null;
+
+                        HashMap<String,Object> metaDataMap = new HashMap<>();
+                        metaDataMap.put(RealmConstant._NameProperty,relationKindName);
+                        metaDataMap.put(RealmConstant._DescProperty,relationKindDesc);
+                        metaDataMap.put(RealmConstant._createDateProperty,createDate);
+                        metaDataMap.put(RealmConstant._lastModifyDateProperty,lastModifyDate);
+                        metaDataMap.put(RealmConstant._creatorIdProperty,creatorId);
+                        metaDataMap.put(RealmConstant._dataOriginProperty,dataOrigin);
+                        metaDataMap.put("RelationKindUID",""+conceptionKindUID);
+                        relationKindMetaDataMap.put(relationKindName,metaDataMap);
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeRead(relationKindInfoDataTransformer,queryCql);
             DataTransformer queryResultDataTransformer = new DataTransformer() {
                 @Override
                 public Object transformResult(Result result) {
-
+                    List<String> conceptionKindsNameWithDataList = new ArrayList<>();
                     while(result.hasNext()){
                         Record currentRecord = result.next();
                         String entityKind = currentRecord.get("relationshipType").asString();
                         long entityCount = currentRecord.get("count").asLong();
-                        EntityStatisticsInfo currentEntityStatisticsInfo;
+                        conceptionKindsNameWithDataList.add(entityKind);
+                        EntityStatisticsInfo currentEntityStatisticsInfo = null;
                         if(entityKind.startsWith("DOCG_")){
                             currentEntityStatisticsInfo = new EntityStatisticsInfo(
                                     entityKind, EntityStatisticsInfo.kindType.RelationKind, true, entityCount);
                         }else{
-                            currentEntityStatisticsInfo = new EntityStatisticsInfo(
-                                    entityKind, EntityStatisticsInfo.kindType.RelationKind, false, entityCount);
+                            if(relationKindMetaDataMap.containsKey(entityKind)){
+                                currentEntityStatisticsInfo = new EntityStatisticsInfo(
+                                        entityKind, EntityStatisticsInfo.kindType.RelationKind, false, entityCount,
+                                        relationKindMetaDataMap.get(entityKind).get(RealmConstant._DescProperty).toString(),
+                                        relationKindMetaDataMap.get(entityKind).get("RelationKindUID").toString(),
+                                        (ZonedDateTime) (relationKindMetaDataMap.get(entityKind).get(RealmConstant._createDateProperty)),
+                                        (ZonedDateTime) (relationKindMetaDataMap.get(entityKind).get(RealmConstant._lastModifyDateProperty)),
+                                        relationKindMetaDataMap.get(entityKind).get(RealmConstant._creatorIdProperty).toString(),
+                                        relationKindMetaDataMap.get(entityKind).get(RealmConstant._dataOriginProperty).toString()
+                                );
+                            }
                         }
-                        entityStatisticsInfoList.add(currentEntityStatisticsInfo);
+                        if(currentEntityStatisticsInfo != null){
+                            entityStatisticsInfoList.add(currentEntityStatisticsInfo);
+                        }
+                    }
+                    //如果 ConceptionKind 尚未有实体数据，则 CALL db.relationshipTypes() 不会返回该 Kind 记录，需要从 ConceptionKind 列表反向查找
+                    Set<String> allConceptionKindNameSet = relationKindMetaDataMap.keySet();
+                    for(String currentKindName :allConceptionKindNameSet ){
+                        if(!conceptionKindsNameWithDataList.contains(currentKindName)){
+                            //当前 ConceptionKind 中无数据，需要手动添加信息
+                            EntityStatisticsInfo currentEntityStatisticsInfo = new EntityStatisticsInfo(
+                                    currentKindName, EntityStatisticsInfo.kindType.ConceptionKind, false, 0,
+                                    relationKindMetaDataMap.get(currentKindName).get(RealmConstant._DescProperty).toString(),
+                                    relationKindMetaDataMap.get(currentKindName).get("RelationKindUID").toString(),
+                                    (ZonedDateTime) (relationKindMetaDataMap.get(currentKindName).get(RealmConstant._createDateProperty)),
+                                    (ZonedDateTime) (relationKindMetaDataMap.get(currentKindName).get(RealmConstant._lastModifyDateProperty)),
+                                    relationKindMetaDataMap.get(currentKindName).get(RealmConstant._creatorIdProperty).toString(),
+                                    relationKindMetaDataMap.get(currentKindName).get(RealmConstant._dataOriginProperty).toString()
+                            );
+                            entityStatisticsInfoList.add(currentEntityStatisticsInfo);
+                        }
                     }
                     return null;
                 }
             };
             workingGraphOperationExecutor.executeRead(queryResultDataTransformer,cypherProcedureString);
-        }finally {
+        } catch (CoreRealmServiceEntityExploreException e) {
+            throw new RuntimeException(e);
+        } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
         return entityStatisticsInfoList;
