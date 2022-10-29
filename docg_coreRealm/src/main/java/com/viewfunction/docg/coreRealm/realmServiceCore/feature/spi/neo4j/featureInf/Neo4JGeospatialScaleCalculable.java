@@ -9,10 +9,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleC
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetBooleanFormatAggregatedReturnValueTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityValueTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
@@ -317,10 +314,8 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
         if(spatialScalePropertyName != null){
             String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,
                     Long.parseLong(entityUID), CypherBuilder.CypherFunctionType.EXISTS, spatialScalePropertyName);
-            GetBooleanFormatAggregatedReturnValueTransformer getBooleanFormatAggregatedReturnValueTransformer =
-                    new GetBooleanFormatAggregatedReturnValueTransformer("exists",spatialScalePropertyName);
-
-            Object resultRes = workingGraphOperationExecutor.executeRead(getBooleanFormatAggregatedReturnValueTransformer,queryCql);
+            GetBooleanFormatReturnValueTransformer getBooleanFormatReturnValueTransformer = new GetBooleanFormatReturnValueTransformer(CypherBuilder.operationResultName+"."+spatialScalePropertyName+" IS NOT NULL");
+            Object resultRes = workingGraphOperationExecutor.executeRead(getBooleanFormatReturnValueTransformer,queryCql);
             return resultRes != null ? (Boolean)resultRes : false;
         }
         return false;
