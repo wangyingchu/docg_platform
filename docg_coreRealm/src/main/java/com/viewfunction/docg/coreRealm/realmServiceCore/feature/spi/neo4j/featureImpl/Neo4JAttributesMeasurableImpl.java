@@ -47,8 +47,8 @@ public class Neo4JAttributesMeasurableImpl implements AttributesMeasurable {
                 }else{
                     queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(this.entityUID), CypherBuilder.CypherFunctionType.EXISTS, attributeName);
                 }
-                GetBooleanFormatAggregatedReturnValueTransformer getBooleanFormatAggregatedReturnValueTransformer = new GetBooleanFormatAggregatedReturnValueTransformer("exists", attributeName);
-                Object resultRes = workingGraphOperationExecutor.executeRead(getBooleanFormatAggregatedReturnValueTransformer, queryCql);
+                GetBooleanFormatReturnValueTransformer getBooleanFormatReturnValueTransformer = new GetBooleanFormatReturnValueTransformer(CypherBuilder.operationResultName+"."+attributeName+" IS NOT NULL");
+                Object resultRes = workingGraphOperationExecutor.executeRead(getBooleanFormatReturnValueTransformer,queryCql);
                 boolean existCheckKResult = resultRes != null ? ((Boolean) resultRes).booleanValue() : false;
                 if (!existCheckKResult) {
                     logger.error("Attribute {} of entity with UID {} does not exist.", attributeName, this.entityUID);
@@ -115,8 +115,8 @@ public class Neo4JAttributesMeasurableImpl implements AttributesMeasurable {
                 }else{
                     queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(this.entityUID), CypherBuilder.CypherFunctionType.EXISTS, attributeName);
                 }
-                GetBooleanFormatAggregatedReturnValueTransformer getBooleanFormatAggregatedReturnValueTransformer = new GetBooleanFormatAggregatedReturnValueTransformer("exists",attributeName);
-                Object resultRes = workingGraphOperationExecutor.executeRead(getBooleanFormatAggregatedReturnValueTransformer,queryCql);
+                GetBooleanFormatReturnValueTransformer getBooleanFormatReturnValueTransformer = new GetBooleanFormatReturnValueTransformer(CypherBuilder.operationResultName+"."+attributeName+" IS NOT NULL");
+                Object resultRes = workingGraphOperationExecutor.executeRead(getBooleanFormatReturnValueTransformer,queryCql);
                 return resultRes != null ? (Boolean)resultRes : false;
             }finally{
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
@@ -596,8 +596,8 @@ public class Neo4JAttributesMeasurableImpl implements AttributesMeasurable {
                 }else{
                     queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(this.entityUID), CypherBuilder.CypherFunctionType.EXISTS, attributeName);
                 }
-                GetBooleanFormatAggregatedReturnValueTransformer getBooleanFormatAggregatedReturnValueTransformer = new GetBooleanFormatAggregatedReturnValueTransformer("exists",attributeName);
-                Object checkExistResultRes = workingGraphOperationExecutor.executeRead(getBooleanFormatAggregatedReturnValueTransformer,queryCql);
+                GetBooleanFormatReturnValueTransformer getBooleanFormatReturnValueTransformer = new GetBooleanFormatReturnValueTransformer(CypherBuilder.operationResultName+"."+attributeName+" IS NOT NULL");
+                Object checkExistResultRes = workingGraphOperationExecutor.executeRead(getBooleanFormatReturnValueTransformer,queryCql);
                 boolean checkExistResult = checkExistResultRes != null? ((Boolean)checkExistResultRes).booleanValue() : false;
                 if(checkExistResult){
                     logger.error("Attribute {} of entity with UID {} already exist.", attributeName, this.entityUID);

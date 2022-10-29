@@ -19,6 +19,7 @@ import java.time.temporal.Temporal;
 import java.util.Set;
 import java.util.*;
 
+import static com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder.CypherFunctionType.EXISTS;
 import static com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder.ReturnRelationableDataType.NODE;
 import static com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder.ReturnRelationableDataType.RELATION;
 
@@ -304,6 +305,10 @@ public class CypherBuilder {
             }
         }
         String rel = cypherRenderer.render(statement);
+        //In neo4j version 5, exists(variable.property) is no longer supported. Need use `variable.property IS NOT NULL` instead.
+        if(EXISTS.equals(returnFunctionType)){
+            rel = rel.replace("exists("+operationResultName+"."+additionalPropertyName+")",""+operationResultName+"."+additionalPropertyName+" IS NOT NULL");
+        }
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
     }
@@ -350,6 +355,10 @@ public class CypherBuilder {
             }
         }
         String rel = cypherRenderer.render(statement);
+        //In neo4j version 5, exists(variable.property) is no longer supported. Need use `variable.property IS NOT NULL` instead.
+        if(EXISTS.equals(returnFunctionType)){
+            rel = rel.replace("exists("+operationResultName+"."+additionalPropertyName+")",""+operationResultName+"."+additionalPropertyName+" IS NOT NULL");
+        }
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
     }
@@ -1030,6 +1039,10 @@ public class CypherBuilder {
             }
         }
         String rel = cypherRenderer.render(statement);
+        //In neo4j version 5, exists(variable.property) is no longer supported. Need use `variable.property IS NOT NULL` instead.
+        if(EXISTS.equals(returnFunctionType)){
+            rel = rel.replace("exists("+operationResultName+"."+additionalPropertyName+")",""+operationResultName+"."+additionalPropertyName+" IS NOT NULL");
+        }
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
     }
@@ -1085,6 +1098,10 @@ public class CypherBuilder {
             }
         }
         String rel = cypherRenderer.render(statement);
+        //In neo4j version 5, exists(variable.property) is no longer supported. Need use `variable.property IS NOT NULL` instead.
+        if(EXISTS.equals(returnFunctionType)){
+            rel = rel.replace("exists("+operationResultName+"."+additionalPropertyName+")",""+operationResultName+"."+additionalPropertyName+" IS NOT NULL");
+        }
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
     }

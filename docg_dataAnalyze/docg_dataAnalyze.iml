@@ -30,8 +30,17 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="scala-sdk-2.11.12" level="application" />
     <orderEntry type="module" module-name="docg_coreRealm" />
-    <orderEntry type="library" name="Maven: org.neo4j.driver:neo4j-java-driver:4.4.9" level="project" />
-    <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams:1.0.3" level="project" />
+    <orderEntry type="library" name="Maven: org.neo4j.driver:neo4j-java-driver:5.1.0" level="project" />
+    <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams:1.0.4" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-handler:4.1.82.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-common:4.1.82.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-resolver:4.1.82.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-buffer:4.1.82.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-transport:4.1.82.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-transport-native-unix-common:4.1.82.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-codec:4.1.82.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.netty:netty-tcnative-classes:2.0.54.Final" level="project" />
+    <orderEntry type="library" name="Maven: io.projectreactor:reactor-core:3.4.23" level="project" />
     <orderEntry type="library" name="Maven: org.neo4j:neo4j-cypher-dsl:2022.7.2" level="project" />
     <orderEntry type="library" name="Maven: org.apiguardian:apiguardian-api:1.1.2" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.30" level="project" />
