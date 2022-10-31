@@ -815,10 +815,10 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
                 "        min(size(keys(n))) as Min_PropertyCount,\n" +
                 "        max(size(keys(n))) as Max_PropertyCount,\n" +
                 "        percentileDisc(size(keys(n)),0.5) as Middle_PropertyCount,\n" +
-                "        avg(size( (n)-[]-() ) ) as Avg_RelationshipCount,\n" +
-                "        min(size( (n)-[]-() ) ) as Min_RelationshipCount,\n" +
-                "        max(size( (n)-[]-() ) ) as Max_RelationshipCount,\n" +
-                "        percentileDisc(size( (n)-[]-() ), 0.5) as Middle_RelationshipCount";
+                "        avg(size([p=(n)-[]-() | p]) ) as Avg_RelationshipCount,\n" +
+                "        min(size([p=(n)-[]-() | p]) ) as Min_RelationshipCount,\n" +
+                "        max(size([p=(n)-[]-() | p]) ) as Max_RelationshipCount,\n" +
+                "        percentileDisc(size([p=(n)-[]-() | p]), 0.5) as Middle_RelationshipCount";
         logger.debug("Generated Cypher Statement: {}", cql);
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
