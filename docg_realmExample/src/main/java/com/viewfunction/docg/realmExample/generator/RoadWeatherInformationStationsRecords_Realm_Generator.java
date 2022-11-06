@@ -31,7 +31,7 @@ public class RoadWeatherInformationStationsRecords_Realm_Generator {
     private static final String AirTemperature = "airTemperature";
 
     public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
-        //createData();
+        createData();
         linkData();
     }
 

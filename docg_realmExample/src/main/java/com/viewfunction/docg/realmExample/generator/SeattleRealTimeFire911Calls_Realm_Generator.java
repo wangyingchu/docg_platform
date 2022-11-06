@@ -33,7 +33,7 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
 
     public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         createData();
-        //linkData();
+        linkData();
     }
 
     public static void createData() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
@@ -127,7 +127,7 @@ public class SeattleRealTimeFire911Calls_Realm_Generator {
             }
         }
 
-        BatchDataOperationUtil.batchAddNewEntities(Fire911CallConceptionType,_Fire911CallEntityValueList,10);
+        BatchDataOperationUtil.batchAddNewEntities(Fire911CallConceptionType,_Fire911CallEntityValueList,16);
     }
 
     public static void linkData() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException{
