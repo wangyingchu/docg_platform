@@ -63,19 +63,19 @@
             <artifactId>spark-mllib_2.12</artifactId>
             <version>${spark.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.sedona/sedona-core-2.4 -->
+        <!-- https://mvnrepository.com/artifact/org.apache.sedona/sedona-core-3.0 -->
         <dependency>
             <groupId>org.apache.sedona</groupId>
             <artifactId>sedona-core-3.0_2.12</artifactId>
             <version>${sedona.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.sedona/sedona-sql-2.4 -->
+        <!-- https://mvnrepository.com/artifact/org.apache.sedona/sedona-sql-3.0 -->
         <dependency>
             <groupId>org.apache.sedona</groupId>
             <artifactId>sedona-sql-3.0_2.12</artifactId>
             <version>${sedona.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.sedona/sedona-viz-2.4 -->
+        <!-- https://mvnrepository.com/artifact/org.apache.sedona/sedona-viz-3.0 -->
         <dependency>
             <groupId>org.apache.sedona</groupId>
             <artifactId>sedona-viz-3.0_2.12</artifactId>
