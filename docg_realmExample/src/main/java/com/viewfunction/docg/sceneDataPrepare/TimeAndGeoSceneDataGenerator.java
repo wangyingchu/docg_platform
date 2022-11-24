@@ -68,15 +68,21 @@ public interface TimeAndGeoSceneDataGenerator {
         if(_PaidParkingTransactionConceptionKind == null){
             _PaidParkingTransactionConceptionKind = coreRealm.createConceptionKind("PaidParkingTransaction","停车缴费交易");
         }
-        importConceptionEntitiesFromExternalCSV("realmExampleData/time_and_geo_scene_data/Paid_Parking_Transaction_Data.csv",_PaidParkingTransactionConceptionKind.getConceptionKindName(),null);
+
+        ConceptionEntityAttributesProcess conceptionEntityAttributesProcess = new ConceptionEntityAttributesProcess(){
+            @Override
+            public void doConceptionEntityAttributesProcess(Map<String, Object> entityValueMap) {
+
+            }
+        };
+        importConceptionEntitiesFromExternalCSV("realmExampleData/time_and_geo_scene_data/Paid_Parking_Transaction_Data.csv",_PaidParkingTransactionConceptionKind.getConceptionKindName(),conceptionEntityAttributesProcess);
     }
 
-    public interface ConnectionEntityAttributesProcess{
-
+    public interface ConceptionEntityAttributesProcess {
         void doConceptionEntityAttributesProcess(Map<String,Object> entityValueMap);
     }
 
-    public static boolean importConceptionEntitiesFromExternalCSV(String csvLocation,String conceptionKind,ConnectionEntityAttributesProcess connectionEntityAttributesProcess){
+    public static boolean importConceptionEntitiesFromExternalCSV(String csvLocation, String conceptionKind, ConceptionEntityAttributesProcess conceptionEntityAttributesProcess){
         if(csvLocation == null || conceptionKind == null){
             return false;
         }else{
@@ -105,8 +111,8 @@ public interface TimeAndGeoSceneDataGenerator {
                                 String attributeOriginalValue = dataItems[i];
                                 newEntityValueMap.put(attributeName, attributeOriginalValue);
                             }
-                            if(connectionEntityAttributesProcess != null){
-                                connectionEntityAttributesProcess.doConceptionEntityAttributesProcess(newEntityValueMap);
+                            if(conceptionEntityAttributesProcess != null){
+                                conceptionEntityAttributesProcess.doConceptionEntityAttributesProcess(newEntityValueMap);
                             }
                             ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValueMap);
                             conceptionEntityValue.setEntityAttributesValue(newEntityValueMap);
