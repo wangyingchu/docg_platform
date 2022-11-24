@@ -71,9 +71,12 @@ public interface TimeAndGeoSceneDataGenerator {
         importConceptionEntitiesFromExternalCSV("realmExampleData/time_and_geo_scene_data/Paid_Parking_Transaction_Data.csv",_PaidParkingTransactionConceptionKind.getConceptionKindName(),null);
     }
 
+    public interface ConnectionEntityAttributesProcess{
 
+        void doConceptionEntityAttributesProcess(Map<String,Object> entityValueMap);
+    }
 
-    public static boolean importConceptionEntitiesFromExternalCSV(String csvLocation,String conceptionKind,Map<String,String> attributesMapping){
+    public static boolean importConceptionEntitiesFromExternalCSV(String csvLocation,String conceptionKind,ConnectionEntityAttributesProcess connectionEntityAttributesProcess){
         if(csvLocation == null || conceptionKind == null){
             return false;
         }else{
@@ -101,6 +104,9 @@ public interface TimeAndGeoSceneDataGenerator {
                                 String attributeName = attributeNameList.get(i);
                                 String attributeOriginalValue = dataItems[i];
                                 newEntityValueMap.put(attributeName, attributeOriginalValue);
+                            }
+                            if(connectionEntityAttributesProcess != null){
+                                connectionEntityAttributesProcess.doConceptionEntityAttributesProcess(newEntityValueMap);
                             }
                             ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValueMap);
                             conceptionEntityValue.setEntityAttributesValue(newEntityValueMap);
