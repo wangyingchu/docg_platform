@@ -7,6 +7,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.Batc
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 
 import java.io.BufferedReader;
@@ -72,7 +73,12 @@ public interface TimeAndGeoSceneDataGenerator {
         ConceptionEntityAttributesProcess conceptionEntityAttributesProcess = new ConceptionEntityAttributesProcess(){
             @Override
             public void doConceptionEntityAttributesProcess(Map<String, Object> entityValueMap) {
-
+                if(entityValueMap != null && entityValueMap.containsKey("Latitude") && entityValueMap.containsKey("Longitude")){
+                    String locationPoint = "POINT ("+entityValueMap.get("Longitude")+" "+entityValueMap.get("Latitude")+")";
+                    entityValueMap.put(RealmConstant._GeospatialGLGeometryContent,locationPoint);
+                    entityValueMap.put(RealmConstant._GeospatialGeometryType,"POINT");
+                    entityValueMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326");
+                }
             }
         };
         importConceptionEntitiesFromExternalCSV("realmExampleData/time_and_geo_scene_data/Paid_Parking_Transaction_Data.csv",_PaidParkingTransactionConceptionKind.getConceptionKindName(),conceptionEntityAttributesProcess);
