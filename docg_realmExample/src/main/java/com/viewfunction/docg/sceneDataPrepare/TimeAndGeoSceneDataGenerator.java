@@ -25,8 +25,8 @@ public interface TimeAndGeoSceneDataGenerator {
         //load data
         //SeattleRealTimeFire911Calls_Realm_Generator.main(null);
         //RoadWeatherInformationStationsRecords_Realm_Generator.main(null);
-        //generateFileViolationsData();
-        //generateNoiseReportsData();
+        generateFileViolationsData();
+        generateNoiseReportsData();
         generatePaidParkingTransactionData();
     }
 
@@ -41,35 +41,42 @@ public interface TimeAndGeoSceneDataGenerator {
         if(_FireViolationConceptionKind == null){
             _FireViolationConceptionKind = coreRealm.createConceptionKind("FireViolation","消防违规");
         }
-        importConceptionEntitiesFromExternalCSV("realmExampleData/time_and_geo_scene_data/Fire_Violations.csv",_FireViolationConceptionKind.getConceptionKindName(),null);
+        ConceptionEntityAttributesProcess conceptionEntityAttributesProcess = new ConceptionEntityAttributesProcess(){
+            @Override
+            public void doConceptionEntityAttributesProcess(Map<String, Object> entityValueMap) {
+                if(entityValueMap != null && entityValueMap.containsKey("Location")){
+                    String locationPoint = entityValueMap.get("Location").toString();
+                    entityValueMap.put(RealmConstant._GeospatialGLGeometryContent,locationPoint);
+                    entityValueMap.put(RealmConstant._GeospatialGeometryType,"POINT");
+                    entityValueMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326");
+                }
+            }
+        };
+        importConceptionEntitiesFromExternalCSV("realmExampleData/time_and_geo_scene_data/Fire_Violations.csv",_FireViolationConceptionKind.getConceptionKindName(),conceptionEntityAttributesProcess);
     }
 
     private static void generateNoiseReportsData() throws CoreRealmServiceRuntimeException {
-        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
-
-        ConceptionKind _NoiseReportConceptionKind = coreRealm.getConceptionKind("NoiseReport");
-        if(_NoiseReportConceptionKind != null){
-            coreRealm.removeConceptionKind(_NoiseReportConceptionKind.getConceptionKindName(),true);
-        }
-        _NoiseReportConceptionKind = coreRealm.getConceptionKind("NoiseReport");
-        if(_NoiseReportConceptionKind == null){
-            _NoiseReportConceptionKind = coreRealm.createConceptionKind("NoiseReport","噪声报告");
-        }
-        importConceptionEntitiesFromExternalCSV("realmExampleData/time_and_geo_scene_data/Noise_Reports.csv",_NoiseReportConceptionKind.getConceptionKindName(),null);
+        initConceptionKind("NoiseReport","噪声报告");
+        ConceptionEntityAttributesProcess conceptionEntityAttributesProcess = new ConceptionEntityAttributesProcess(){
+            @Override
+            public void doConceptionEntityAttributesProcess(Map<String, Object> entityValueMap) {
+                if(entityValueMap != null && entityValueMap.containsKey("Point")&& entityValueMap.containsKey("Source")){
+                    String longitude = entityValueMap.get("Source").toString().replace(")\"","");
+                    String latitude = entityValueMap.get("Point").toString().replace("\"(","");
+                    String locationPoint = "POINT ("+longitude+" "+latitude+")";
+                    if(!locationPoint.equals("POINT ( 0.0 0.0)")){
+                        entityValueMap.put(RealmConstant._GeospatialGLGeometryContent, locationPoint);
+                        entityValueMap.put(RealmConstant._GeospatialGeometryType, "POINT");
+                        entityValueMap.put(RealmConstant._GeospatialGlobalCRSAID, "EPSG:4326");
+                    }
+                }
+            }
+        };
+        importConceptionEntitiesFromExternalCSV("realmExampleData/time_and_geo_scene_data/Noise_Reports.csv","NoiseReport",conceptionEntityAttributesProcess);
     }
 
     private static void generatePaidParkingTransactionData() throws CoreRealmServiceRuntimeException {
-        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
-
-        ConceptionKind _PaidParkingTransactionConceptionKind = coreRealm.getConceptionKind("PaidParkingTransaction");
-        if(_PaidParkingTransactionConceptionKind != null){
-            coreRealm.removeConceptionKind(_PaidParkingTransactionConceptionKind.getConceptionKindName(),true);
-        }
-        _PaidParkingTransactionConceptionKind = coreRealm.getConceptionKind("PaidParkingTransaction");
-        if(_PaidParkingTransactionConceptionKind == null){
-            _PaidParkingTransactionConceptionKind = coreRealm.createConceptionKind("PaidParkingTransaction","停车缴费交易");
-        }
-
+        initConceptionKind("PaidParkingTransaction","停车缴费交易");
         ConceptionEntityAttributesProcess conceptionEntityAttributesProcess = new ConceptionEntityAttributesProcess(){
             @Override
             public void doConceptionEntityAttributesProcess(Map<String, Object> entityValueMap) {
@@ -81,7 +88,20 @@ public interface TimeAndGeoSceneDataGenerator {
                 }
             }
         };
-        importConceptionEntitiesFromExternalCSV("realmExampleData/time_and_geo_scene_data/Paid_Parking_Transaction_Data.csv",_PaidParkingTransactionConceptionKind.getConceptionKindName(),conceptionEntityAttributesProcess);
+        importConceptionEntitiesFromExternalCSV("realmExampleData/time_and_geo_scene_data/Paid_Parking_Transaction_Data.csv","PaidParkingTransaction",conceptionEntityAttributesProcess);
+    }
+
+    private static void initConceptionKind(String conceptionKindName,String conceptionKindDesc) throws CoreRealmServiceRuntimeException {
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+
+        ConceptionKind targetConceptionKind = coreRealm.getConceptionKind(conceptionKindName);
+        if(targetConceptionKind != null){
+            coreRealm.removeConceptionKind(targetConceptionKind.getConceptionKindName(),true);
+        }
+        targetConceptionKind = coreRealm.getConceptionKind(conceptionKindName);
+        if(targetConceptionKind == null){
+            targetConceptionKind = coreRealm.createConceptionKind(conceptionKindName,conceptionKindDesc);
+        }
     }
 
     public interface ConceptionEntityAttributesProcess {
