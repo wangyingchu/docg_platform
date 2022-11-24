@@ -14,10 +14,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.util.*;
 
 public interface TimeAndGeoSceneDataGenerator {
 
@@ -26,8 +26,8 @@ public interface TimeAndGeoSceneDataGenerator {
         //SeattleRealTimeFire911Calls_Realm_Generator.main(null);
         //RoadWeatherInformationStationsRecords_Realm_Generator.main(null);
         generateFileViolationsData();
-        generateNoiseReportsData();
-        generatePaidParkingTransactionData();
+        //generateNoiseReportsData();
+        //generatePaidParkingTransactionData();
     }
 
     private static void generateFileViolationsData() throws CoreRealmServiceRuntimeException {
@@ -41,6 +41,8 @@ public interface TimeAndGeoSceneDataGenerator {
         if(_FireViolationConceptionKind == null){
             _FireViolationConceptionKind = coreRealm.createConceptionKind("FireViolation","消防违规");
         }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         ConceptionEntityAttributesProcess conceptionEntityAttributesProcess = new ConceptionEntityAttributesProcess(){
             @Override
             public void doConceptionEntityAttributesProcess(Map<String, Object> entityValueMap) {
@@ -49,6 +51,22 @@ public interface TimeAndGeoSceneDataGenerator {
                     entityValueMap.put(RealmConstant._GeospatialGLGeometryContent,locationPoint);
                     entityValueMap.put(RealmConstant._GeospatialGeometryType,"POINT");
                     entityValueMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326");
+                }
+                if(entityValueMap.containsKey("violation date") && !entityValueMap.get("violation date").toString().equals("")){
+                    try {
+                        Date date = sdf.parse(entityValueMap.get("violation date").toString());
+                        entityValueMap.put("violation date",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                if(entityValueMap.containsKey("close date") && !entityValueMap.get("close date").toString().equals("")){
+                    try {
+                        Date date = sdf.parse(entityValueMap.get("close date").toString());
+                        entityValueMap.put("close date",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         };
