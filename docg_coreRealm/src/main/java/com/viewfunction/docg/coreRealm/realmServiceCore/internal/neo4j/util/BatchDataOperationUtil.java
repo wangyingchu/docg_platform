@@ -27,7 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -1051,5 +1053,58 @@ public class BatchDataOperationUtil {
             }
         }
         return null;
+    }
+
+    public interface ConceptionEntityAttributesProcess {
+        void doConceptionEntityAttributesProcess(Map<String,Object> entityValueMap);
+    }
+
+    public static boolean importConceptionEntitiesFromExternalCSV(String csvLocation, String conceptionKind, ConceptionEntityAttributesProcess conceptionEntityAttributesProcess){
+        if(csvLocation == null || conceptionKind == null){
+            return false;
+        }else{
+            try{
+                List<ConceptionEntityValue> _conceptionEntityValueList = Lists.newArrayList();
+                BufferedReader reader = new BufferedReader(new FileReader(csvLocation));
+                String header = reader.readLine();
+                List<String> attributeNameList = new ArrayList<>();
+                String[] attributesArray = header.split(",");
+                for(String currentStr : attributesArray){
+                    attributeNameList.add(currentStr.replaceAll("\"",""));
+                }
+                reader.close();
+                File file = new File(csvLocation);
+                reader = new BufferedReader(new FileReader(file));
+                String tempStr;
+                int lineCount = 0;
+
+                while ((tempStr = reader.readLine()) != null) {
+                    if(lineCount > 0){
+                        Map<String,Object> newEntityValueMap = new HashMap<>();
+                        String[] dataItems = tempStr.split(",");
+                        if(dataItems.length == attributeNameList.size()) {
+                            for (int i = 0; i < dataItems.length; i++) {
+                                String attributeName = attributeNameList.get(i);
+                                String attributeOriginalValue = dataItems[i];
+                                newEntityValueMap.put(attributeName, attributeOriginalValue);
+                            }
+                            if(conceptionEntityAttributesProcess != null){
+                                conceptionEntityAttributesProcess.doConceptionEntityAttributesProcess(newEntityValueMap);
+                            }
+                            ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValueMap);
+                            conceptionEntityValue.setEntityAttributesValue(newEntityValueMap);
+                            _conceptionEntityValueList.add(conceptionEntityValue);
+                        }
+                    }
+                    lineCount ++;
+                }
+                reader.close();
+
+                BatchDataOperationUtil.batchAddNewEntities(conceptionKind,_conceptionEntityValueList, BatchDataOperationUtil.CPUUsageRate.High);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return true;
+        }
     }
 }
