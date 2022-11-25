@@ -20,7 +20,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public interface TimeAndGeoSceneDataGenerator {
+public class TimeAndGeoSceneDataGenerator {
+
+    private static boolean loadHugeDataset = false;
 
     public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         //load data
@@ -29,8 +31,9 @@ public interface TimeAndGeoSceneDataGenerator {
         //generateFileViolationsData();
         //generateNoiseReportsData();
         //generatePaidParkingTransactionData();
+        //generateSPDCrimeData();
 
-        generateSPDCrimeData();
+        generateFireDepartmentCallsForServiceData();
     }
 
     private static void generateFileViolationsData() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
@@ -187,11 +190,112 @@ public interface TimeAndGeoSceneDataGenerator {
                 }
             }
         };
+        if(loadHugeDataset){
+            BatchDataOperationUtil.importConceptionEntitiesFromExternalCSV("realmExampleData/spd_crime_data/SPD_Crime_Data__2008-Present_huge.csv","SPDCrimeReport",conceptionEntityAttributesProcess);
 
-        BatchDataOperationUtil.importConceptionEntitiesFromExternalCSV("realmExampleData/spd_crime_data/SPD_Crime_Data__2008-Present.csv","SPDCrimeReport",conceptionEntityAttributesProcess);
+        }else{
+            BatchDataOperationUtil.importConceptionEntitiesFromExternalCSV("realmExampleData/spd_crime_data/SPD_Crime_Data__2008-Present.csv","SPDCrimeReport",conceptionEntityAttributesProcess);
+        }
         linkDateAttribute("SPDCrimeReport","offenseEndDate","Offense ended at",null,TimeFlow.TimeScaleGrade.MINUTE);
         linkDateAttribute("SPDCrimeReport","offenseStartDate","Offense started at",null,TimeFlow.TimeScaleGrade.MINUTE);
         linkDateAttribute("SPDCrimeReport","crimeReportDate","Crime report at",null,TimeFlow.TimeScaleGrade.MINUTE);
+    }
+
+    private static void generateFireDepartmentCallsForServiceData() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        initConceptionKind("FireDepartmentCall","火灾报警记录");
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss aa");
+        SimpleDateFormat sdf2 = new SimpleDateFormat("MM/dd/yyyy");
+        BatchDataOperationUtil.ConceptionEntityAttributesProcess conceptionEntityAttributesProcess = new BatchDataOperationUtil.ConceptionEntityAttributesProcess(){
+            @Override
+            public void doConceptionEntityAttributesProcess(Map<String, Object> entityValueMap) {
+                if(entityValueMap.containsKey("Available DtTm") && !entityValueMap.get("Available DtTm").toString().equals("")){
+                    Date date = null;
+                    try {
+                        date = sdf.parse(entityValueMap.get("Available DtTm").toString());
+                        entityValueMap.put("availableDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(entityValueMap.containsKey("Dispatch DtTm") && !entityValueMap.get("Dispatch DtTm").toString().equals("")){
+                    Date date = null;
+                    try {
+                        date = sdf.parse(entityValueMap.get("Dispatch DtTm").toString());
+                        entityValueMap.put("dispatchDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(entityValueMap.containsKey("Entry DtTm") && !entityValueMap.get("Entry DtTm").toString().equals("")){
+                    Date date = null;
+                    try {
+                        date = sdf.parse(entityValueMap.get("Entry DtTm").toString());
+                        entityValueMap.put("entryDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(entityValueMap.containsKey("On Scene DtTm") && !entityValueMap.get("On Scene DtTm").toString().equals("")){
+                    Date date = null;
+                    try {
+                        date = sdf.parse(entityValueMap.get("On Scene DtTm").toString());
+                        entityValueMap.put("onSceneDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(entityValueMap.containsKey("Received DtTm") && !entityValueMap.get("Received DtTm").toString().equals("")){
+                    Date date = null;
+                    try {
+                        date = sdf.parse(entityValueMap.get("Received DtTm").toString());
+                        entityValueMap.put("receivedDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(entityValueMap.containsKey("Response DtTm") && !entityValueMap.get("Response DtTm").toString().equals("")){
+                    Date date = null;
+                    try {
+                        date = sdf.parse(entityValueMap.get("Response DtTm").toString());
+                        entityValueMap.put("responseDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(entityValueMap.containsKey("Call Date") && !entityValueMap.get("Call Date").toString().equals("")){
+                    Date date = null;
+                    try {
+                        date = sdf2.parse(entityValueMap.get("Call Date").toString());
+                        entityValueMap.put("callDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(entityValueMap.containsKey("Watch Date") && !entityValueMap.get("Watch Date").toString().equals("")){
+                    Date date = null;
+                    try {
+                        date = sdf2.parse(entityValueMap.get("Watch Date").toString());
+                        entityValueMap.put("watchDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        if(loadHugeDataset){
+            BatchDataOperationUtil.importConceptionEntitiesFromExternalCSV("realmExampleData/fire_department_calls_for_service/Fire_Department_Calls_For_Service__2016_huge.csv","FireDepartmentCall",conceptionEntityAttributesProcess);
+
+        }else{
+            BatchDataOperationUtil.importConceptionEntitiesFromExternalCSV("realmExampleData/fire_department_calls_for_service/Fire_Department_Calls_For_Service__2016.csv","FireDepartmentCall",conceptionEntityAttributesProcess);
+        }
+        linkDateAttribute("FireDepartmentCall","availableDate","Call available at",null,TimeFlow.TimeScaleGrade.MINUTE);
+        linkDateAttribute("FireDepartmentCall","dispatchDate","Call dispatch at",null,TimeFlow.TimeScaleGrade.MINUTE);
+        linkDateAttribute("FireDepartmentCall","entryDate","Call entry at",null,TimeFlow.TimeScaleGrade.MINUTE);
+        linkDateAttribute("FireDepartmentCall","onSceneDate","Call on scene at",null,TimeFlow.TimeScaleGrade.MINUTE);
+        linkDateAttribute("FireDepartmentCall","receivedDate","Call received at",null,TimeFlow.TimeScaleGrade.MINUTE);
+        linkDateAttribute("FireDepartmentCall","responseDate","Call response at",null,TimeFlow.TimeScaleGrade.MINUTE);
+        linkDateAttribute("FireDepartmentCall","callDate","Call at",null,TimeFlow.TimeScaleGrade.DAY);
+        linkDateAttribute("FireDepartmentCall","watchDate","Call watch at",null,TimeFlow.TimeScaleGrade.DAY);
     }
 
     private static void initConceptionKind(String conceptionKindName,String conceptionKindDesc) throws CoreRealmServiceRuntimeException {
