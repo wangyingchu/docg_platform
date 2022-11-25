@@ -32,8 +32,8 @@ public class TimeAndGeoSceneDataGenerator {
         //generateNoiseReportsData();
         //generatePaidParkingTransactionData();
         //generateSPDCrimeData();
-
-        generateFireDepartmentCallsForServiceData();
+        //generateFireDepartmentCallsForServiceData();
+        generatePoliceDepartmentIncidentReportsData();
     }
 
     private static void generateFileViolationsData() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
@@ -284,7 +284,6 @@ public class TimeAndGeoSceneDataGenerator {
         };
         if(loadHugeDataset){
             BatchDataOperationUtil.importConceptionEntitiesFromExternalCSV("realmExampleData/fire_department_calls_for_service/Fire_Department_Calls_For_Service__2016_huge.csv","FireDepartmentCall",conceptionEntityAttributesProcess);
-
         }else{
             BatchDataOperationUtil.importConceptionEntitiesFromExternalCSV("realmExampleData/fire_department_calls_for_service/Fire_Department_Calls_For_Service__2016.csv","FireDepartmentCall",conceptionEntityAttributesProcess);
         }
@@ -297,6 +296,58 @@ public class TimeAndGeoSceneDataGenerator {
         linkDateAttribute("FireDepartmentCall","callDate","Call at",null,TimeFlow.TimeScaleGrade.DAY);
         linkDateAttribute("FireDepartmentCall","watchDate","Call watch at",null,TimeFlow.TimeScaleGrade.DAY);
     }
+
+
+
+    private static void generatePoliceDepartmentIncidentReportsData() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        initConceptionKind("PoliceDepartmentIncidentReport","安全事件报警记录");
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss aa");
+        BatchDataOperationUtil.ConceptionEntityAttributesProcess conceptionEntityAttributesProcess1 = new BatchDataOperationUtil.ConceptionEntityAttributesProcess(){
+            @Override
+            public void doConceptionEntityAttributesProcess(Map<String, Object> entityValueMap) {
+                if(entityValueMap != null && entityValueMap.containsKey("Point")){
+                    String locationPoint = entityValueMap.get("Point").toString();
+                    entityValueMap.put(RealmConstant._GeospatialGLGeometryContent,locationPoint);
+                    entityValueMap.put(RealmConstant._GeospatialGeometryType,"POINT");
+                    entityValueMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326");
+                }
+                if(entityValueMap.containsKey("Incident Datetime") && !entityValueMap.get("Incident Datetime").toString().equals("")){
+                    Date date = null;
+                    try {
+                        date = sdf.parse(entityValueMap.get("Incident Datetime").toString());
+                        entityValueMap.put("incidentDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(entityValueMap.containsKey("Report Datetime") && !entityValueMap.get("Report Datetime").toString().equals("")){
+                    Date date = null;
+                    try {
+                        date = sdf.parse(entityValueMap.get("Report Datetime").toString());
+                        entityValueMap.put("reportDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        if(loadHugeDataset){
+            BatchDataOperationUtil.importConceptionEntitiesFromExternalCSV("realmExampleData/police_department_incident_reports/Police_Department_Incident_Reports__2018_to_Present_huge.csv","PoliceDepartmentIncidentReport",conceptionEntityAttributesProcess1);
+        }else{
+            BatchDataOperationUtil.importConceptionEntitiesFromExternalCSV("realmExampleData/police_department_incident_reports/Police_Department_Incident_Reports__2018_to_Present.csv","PoliceDepartmentIncidentReport",conceptionEntityAttributesProcess1);
+        }
+        linkDateAttribute("PoliceDepartmentIncidentReport","incidentDate","Incident occurred at",null,TimeFlow.TimeScaleGrade.MINUTE);
+        linkDateAttribute("PoliceDepartmentIncidentReport","reportDate","Incident reported at",null,TimeFlow.TimeScaleGrade.MINUTE);
+
+
+
+    }
+
+
+
+
+
+
 
     private static void initConceptionKind(String conceptionKindName,String conceptionKindDesc) throws CoreRealmServiceRuntimeException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
