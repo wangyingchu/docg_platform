@@ -1,12 +1,15 @@
 package com.viewfunction.docg.sceneDataPrepare;
 
 import com.google.common.collect.Lists;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 
@@ -30,7 +33,7 @@ public interface TimeAndGeoSceneDataGenerator {
         //generatePaidParkingTransactionData();
     }
 
-    private static void generateFileViolationsData() throws CoreRealmServiceRuntimeException {
+    private static void generateFileViolationsData() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
 
         ConceptionKind _FireViolationConceptionKind = coreRealm.getConceptionKind("FireViolation");
@@ -55,7 +58,7 @@ public interface TimeAndGeoSceneDataGenerator {
                 if(entityValueMap.containsKey("violation date") && !entityValueMap.get("violation date").toString().equals("")){
                     try {
                         Date date = sdf.parse(entityValueMap.get("violation date").toString());
-                        entityValueMap.put("violation date",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                        entityValueMap.put("violationDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
@@ -63,7 +66,7 @@ public interface TimeAndGeoSceneDataGenerator {
                 if(entityValueMap.containsKey("close date") && !entityValueMap.get("close date").toString().equals("")){
                     try {
                         Date date = sdf.parse(entityValueMap.get("close date").toString());
-                        entityValueMap.put("close date",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                        entityValueMap.put("closeDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
                     } catch (ParseException e) {
                         throw new RuntimeException(e);
                     }
@@ -71,6 +74,8 @@ public interface TimeAndGeoSceneDataGenerator {
             }
         };
         importConceptionEntitiesFromExternalCSV("realmExampleData/time_and_geo_scene_data/Fire_Violations.csv",_FireViolationConceptionKind.getConceptionKindName(),conceptionEntityAttributesProcess);
+        linkDateAttribute("FireViolation","violationDate","Fire Violation occurred at",null,TimeFlow.TimeScaleGrade.DAY);
+        linkDateAttribute("FireViolation","closeDate","Fire Violation closed at",null,TimeFlow.TimeScaleGrade.DAY);
     }
 
     private static void generateNoiseReportsData() throws CoreRealmServiceRuntimeException {
@@ -121,6 +126,21 @@ public interface TimeAndGeoSceneDataGenerator {
             targetConceptionKind = coreRealm.createConceptionKind(conceptionKindName,conceptionKindDesc);
         }
     }
+
+    public static void linkDateAttribute(String conceptionKindName,String dateAttributeName,String eventComment,Map<String,Object> globalEventData,TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException{
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        //Part 2 link to time
+        ConceptionKind conceptionKind = coreRealm.getConceptionKind(conceptionKindName);
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(10000000);
+        List<String> attributeNamesList = new ArrayList<>();
+        attributeNamesList.add(dateAttributeName);
+        ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributeResult =  conceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeNamesList,queryParameters);
+        List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
+        BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,dateAttributeName,eventComment,globalEventData, timeScaleGrade, BatchDataOperationUtil.CPUUsageRate.High);
+    }
+
+
 
     public interface ConceptionEntityAttributesProcess {
         void doConceptionEntityAttributesProcess(Map<String,Object> entityValueMap);
