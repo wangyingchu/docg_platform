@@ -26,9 +26,9 @@ public interface TimeAndGeoSceneDataGenerator {
         //load data
         //SeattleRealTimeFire911Calls_Realm_Generator.main(null);
         //RoadWeatherInformationStationsRecords_Realm_Generator.main(null);
-        //generateFileViolationsData();
+        generateFileViolationsData();
         generateNoiseReportsData();
-        //generatePaidParkingTransactionData();
+        generatePaidParkingTransactionData();
     }
 
     private static void generateFileViolationsData() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
@@ -86,7 +86,7 @@ public interface TimeAndGeoSceneDataGenerator {
                     Date date = null;
                     try {
                         date = sdf.parse(entityValueMap.get("Opened").toString());
-                        entityValueMap.put("OpenedDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                        entityValueMap.put("openedDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -95,7 +95,7 @@ public interface TimeAndGeoSceneDataGenerator {
                     Date date = null;
                     try {
                         date = sdf.parse(entityValueMap.get("Closed").toString());
-                        entityValueMap.put("ClosedDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                        entityValueMap.put("closedDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -104,7 +104,7 @@ public interface TimeAndGeoSceneDataGenerator {
                     Date date = null;
                     try {
                         date = sdf.parse(entityValueMap.get("Updated").toString());
-                        entityValueMap.put("UpdatedDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                        entityValueMap.put("updatedDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }
@@ -112,13 +112,14 @@ public interface TimeAndGeoSceneDataGenerator {
             }
         };
         BatchDataOperationUtil.importConceptionEntitiesFromExternalCSV("realmExampleData/time_and_geo_scene_data/Noise_Reports.csv","NoiseReport",conceptionEntityAttributesProcess);
-        linkDateAttribute("NoiseReport","OpenedDate","Noise Report opened at",null,TimeFlow.TimeScaleGrade.MINUTE);
-        linkDateAttribute("NoiseReport","ClosedDate","Noise Report closed at",null,TimeFlow.TimeScaleGrade.MINUTE);
-        linkDateAttribute("NoiseReport","Updated","Noise Report updated at",null,TimeFlow.TimeScaleGrade.MINUTE);
+        linkDateAttribute("NoiseReport","openedDate","Noise Report opened at",null,TimeFlow.TimeScaleGrade.MINUTE);
+        linkDateAttribute("NoiseReport","closedDate","Noise Report closed at",null,TimeFlow.TimeScaleGrade.MINUTE);
+        linkDateAttribute("NoiseReport","updatedDate","Noise Report updated at",null,TimeFlow.TimeScaleGrade.MINUTE);
     }
 
-    private static void generatePaidParkingTransactionData() throws CoreRealmServiceRuntimeException {
+    private static void generatePaidParkingTransactionData() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         initConceptionKind("PaidParkingTransaction","停车缴费交易");
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss aa");
         BatchDataOperationUtil.ConceptionEntityAttributesProcess conceptionEntityAttributesProcess = new BatchDataOperationUtil.ConceptionEntityAttributesProcess(){
             @Override
             public void doConceptionEntityAttributesProcess(Map<String, Object> entityValueMap) {
@@ -128,9 +129,19 @@ public interface TimeAndGeoSceneDataGenerator {
                     entityValueMap.put(RealmConstant._GeospatialGeometryType,"POINT");
                     entityValueMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326");
                 }
+                if(entityValueMap.containsKey("Transaction DateTime") && !entityValueMap.get("Transaction DateTime").toString().equals("")){
+                    Date date = null;
+                    try {
+                        date = sdf.parse(entityValueMap.get("Transaction DateTime").toString());
+                        entityValueMap.put("transactionDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         };
         BatchDataOperationUtil.importConceptionEntitiesFromExternalCSV("realmExampleData/time_and_geo_scene_data/Paid_Parking_Transaction_Data.csv","PaidParkingTransaction",conceptionEntityAttributesProcess);
+        linkDateAttribute("PaidParkingTransaction","transactionDate","Payment transaction occurred at",null,TimeFlow.TimeScaleGrade.MINUTE);
     }
 
     private static void initConceptionKind(String conceptionKindName,String conceptionKindDesc) throws CoreRealmServiceRuntimeException {
