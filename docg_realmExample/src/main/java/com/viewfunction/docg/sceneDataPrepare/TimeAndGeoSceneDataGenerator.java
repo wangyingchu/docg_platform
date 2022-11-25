@@ -32,17 +32,7 @@ public interface TimeAndGeoSceneDataGenerator {
     }
 
     private static void generateFileViolationsData() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
-        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
-
-        ConceptionKind _FireViolationConceptionKind = coreRealm.getConceptionKind("FireViolation");
-        if(_FireViolationConceptionKind != null){
-            coreRealm.removeConceptionKind(_FireViolationConceptionKind.getConceptionKindName(),true);
-        }
-        _FireViolationConceptionKind = coreRealm.getConceptionKind("FireViolation");
-        if(_FireViolationConceptionKind == null){
-            _FireViolationConceptionKind = coreRealm.createConceptionKind("FireViolation","消防违规");
-        }
-
+        initConceptionKind("FireViolation","消防违规");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         BatchDataOperationUtil.ConceptionEntityAttributesProcess conceptionEntityAttributesProcess = new BatchDataOperationUtil.ConceptionEntityAttributesProcess(){
             @Override
@@ -71,16 +61,17 @@ public interface TimeAndGeoSceneDataGenerator {
                 }
             }
         };
-        BatchDataOperationUtil.importConceptionEntitiesFromExternalCSV("realmExampleData/time_and_geo_scene_data/Fire_Violations.csv",_FireViolationConceptionKind.getConceptionKindName(),conceptionEntityAttributesProcess);
+        BatchDataOperationUtil.importConceptionEntitiesFromExternalCSV("realmExampleData/time_and_geo_scene_data/Fire_Violations.csv","FireViolation",conceptionEntityAttributesProcess);
         linkDateAttribute("FireViolation","violationDate","Fire Violation occurred at",null,TimeFlow.TimeScaleGrade.DAY);
         linkDateAttribute("FireViolation","closeDate","Fire Violation closed at",null,TimeFlow.TimeScaleGrade.DAY);
     }
 
-    private static void generateNoiseReportsData() throws CoreRealmServiceRuntimeException {
+    private static void generateNoiseReportsData() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         initConceptionKind("NoiseReport","噪声报告");
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss aa");
         BatchDataOperationUtil.ConceptionEntityAttributesProcess conceptionEntityAttributesProcess = new BatchDataOperationUtil.ConceptionEntityAttributesProcess(){
             @Override
-            public void doConceptionEntityAttributesProcess(Map<String, Object> entityValueMap) {
+            public void doConceptionEntityAttributesProcess(Map<String, Object> entityValueMap){
                 if(entityValueMap != null && entityValueMap.containsKey("Point")&& entityValueMap.containsKey("Source")){
                     String longitude = entityValueMap.get("Source").toString().replace(")\"","");
                     String latitude = entityValueMap.get("Point").toString().replace("\"(","");
@@ -91,9 +82,39 @@ public interface TimeAndGeoSceneDataGenerator {
                         entityValueMap.put(RealmConstant._GeospatialGlobalCRSAID, "EPSG:4326");
                     }
                 }
+                if(entityValueMap.containsKey("Opened") && !entityValueMap.get("Opened").toString().equals("")){
+                    Date date = null;
+                    try {
+                        date = sdf.parse(entityValueMap.get("Opened").toString());
+                        entityValueMap.put("OpenedDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(entityValueMap.containsKey("Closed") && !entityValueMap.get("Closed").toString().equals("")){
+                    Date date = null;
+                    try {
+                        date = sdf.parse(entityValueMap.get("Closed").toString());
+                        entityValueMap.put("ClosedDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(entityValueMap.containsKey("Updated") && !entityValueMap.get("Updated").toString().equals("")){
+                    Date date = null;
+                    try {
+                        date = sdf.parse(entityValueMap.get("Updated").toString());
+                        entityValueMap.put("UpdatedDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         };
         BatchDataOperationUtil.importConceptionEntitiesFromExternalCSV("realmExampleData/time_and_geo_scene_data/Noise_Reports.csv","NoiseReport",conceptionEntityAttributesProcess);
+        linkDateAttribute("NoiseReport","OpenedDate","Noise Report opened at",null,TimeFlow.TimeScaleGrade.MINUTE);
+        linkDateAttribute("NoiseReport","ClosedDate","Noise Report closed at",null,TimeFlow.TimeScaleGrade.MINUTE);
+        linkDateAttribute("NoiseReport","Updated","Noise Report updated at",null,TimeFlow.TimeScaleGrade.MINUTE);
     }
 
     private static void generatePaidParkingTransactionData() throws CoreRealmServiceRuntimeException {
