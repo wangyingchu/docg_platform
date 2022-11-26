@@ -22,9 +22,12 @@ import java.util.Map;
 
 public class TimeAndGeoSceneDataGenerator {
 
-    private static boolean loadHugeDataset = false;
+    private static boolean loadHugeDataset = true;
 
     public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        //initTimeline
+        //generateTimelineData();
+
         //load data
         //SeattleRealTimeFire911Calls_Realm_Generator.main(null);
         //RoadWeatherInformationStationsRecords_Realm_Generator.main(null);
@@ -33,7 +36,16 @@ public class TimeAndGeoSceneDataGenerator {
         //generatePaidParkingTransactionData();
         //generateSPDCrimeData();
         //generateFireDepartmentCallsForServiceData();
-        generatePoliceDepartmentIncidentReportsData();
+        //generatePoliceDepartmentIncidentReportsData();
+    }
+
+    private static void generateTimelineData() throws CoreRealmServiceRuntimeException {
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        TimeFlow defaultTimeFlow = coreRealm.getOrCreateTimeFlow();
+        defaultTimeFlow.createTimeSpanEntities(2000,2005,true);
+        defaultTimeFlow.createTimeSpanEntities(2006,2010,true);
+        defaultTimeFlow.createTimeSpanEntities(2011,2015,true);
+        defaultTimeFlow.createTimeSpanEntities(2016,2022,true);
     }
 
     private static void generateFileViolationsData() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
