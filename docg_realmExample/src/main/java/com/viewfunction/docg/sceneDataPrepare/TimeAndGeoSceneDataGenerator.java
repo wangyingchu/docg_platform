@@ -11,6 +11,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
+import com.viewfunction.docg.realmExample.generator.RoadWeatherInformationStationsRecords_Realm_Generator;
+import com.viewfunction.docg.realmExample.generator.SeattleRealTimeFire911Calls_Realm_Generator;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -26,17 +28,17 @@ public class TimeAndGeoSceneDataGenerator {
 
     public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         //initTimeline
-        //generateTimelineData();
+        generateTimelineData();
 
         //load data
-        //SeattleRealTimeFire911Calls_Realm_Generator.main(null);
-        //RoadWeatherInformationStationsRecords_Realm_Generator.main(null);
-        //generateFileViolationsData();
-        //generateNoiseReportsData();
-        //generatePaidParkingTransactionData();
-        //generateSPDCrimeData();
-        //generateFireDepartmentCallsForServiceData();
-        //generatePoliceDepartmentIncidentReportsData();
+        SeattleRealTimeFire911Calls_Realm_Generator.main(null);
+        RoadWeatherInformationStationsRecords_Realm_Generator.main(null);
+        generateFileViolationsData();
+        generateNoiseReportsData();
+        generatePaidParkingTransactionData();
+        generateSPDCrimeData();
+        generateFireDepartmentCallsForServiceData();
+        generatePoliceDepartmentIncidentReportsData();
     }
 
     private static void generateTimelineData() throws CoreRealmServiceRuntimeException {
