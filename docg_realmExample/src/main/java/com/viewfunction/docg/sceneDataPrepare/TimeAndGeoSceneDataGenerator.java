@@ -11,7 +11,10 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.geospatial.GeospatialOperationUtil;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
@@ -36,6 +39,7 @@ public class TimeAndGeoSceneDataGenerator {
         //generateSPDCrimeData();
         //generateFireDepartmentCallsForServiceData();
         //generatePoliceDepartmentIncidentReportsData();
+        generateFireIncidentsData();
     }
 
     private static void generateTimelineData() throws CoreRealmServiceRuntimeException {
@@ -377,6 +381,54 @@ public class TimeAndGeoSceneDataGenerator {
         linkDateAttribute("PoliceDepartmentIncidentReport","reportDate","Incident reported at",null,TimeFlow.TimeScaleGrade.MINUTE);
     }
 
+    private static void generateFireIncidentsData() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        initConceptionKind("FireIncidentRecord","火灾记录");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        GeospatialOperationUtil.ConceptionEntityAttributesProcess conceptionEntityAttributesProcess = new GeospatialOperationUtil.ConceptionEntityAttributesProcess(){
+            @Override
+            public void doConceptionEntityAttributesProcess(Map<String, Object> entityValueMap) {
+                if(entityValueMap.containsKey("alarm_dttm") && !entityValueMap.get("alarm_dttm").toString().equals("")){
+                    Date date = null;
+                    try {
+                        date = sdf.parse(entityValueMap.get("alarm_dttm").toString());
+                        entityValueMap.put("alarmDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(entityValueMap.containsKey("arrival_dt") && !entityValueMap.get("arrival_dt").toString().equals("")){
+                    Date date = null;
+                    try {
+                        date = sdf.parse(entityValueMap.get("arrival_dt").toString());
+                        entityValueMap.put("arrivalDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(entityValueMap.containsKey("close_dttm") && !entityValueMap.get("close_dttm").toString().equals("")){
+                    Date date = null;
+                    try {
+                        date = sdf.parse(entityValueMap.get("close_dttm").toString());
+                        entityValueMap.put("closeDate",date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+
+        try {
+            GeospatialOperationUtil.importSHPDataDirectlyToConceptionKind("FireIncidentRecord",true,
+                    new File("/home/wangychu/Desktop/timeAndGeo/fire_incidents/geo_export_9ada77e3-70c4-4b65-a9aa-c1f02359540f.shp"),null,conceptionEntityAttributesProcess);
+
+            linkDateAttribute("FireIncidentRecord","alarmDate","Incident alarmed at",null,TimeFlow.TimeScaleGrade.MINUTE);
+            linkDateAttribute("FireIncidentRecord","arrivalDate","Rescue arrived at",null,TimeFlow.TimeScaleGrade.MINUTE);
+            linkDateAttribute("FireIncidentRecord","closeDate","Incident closed at",null,TimeFlow.TimeScaleGrade.MINUTE);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private static void initConceptionKind(String conceptionKindName,String conceptionKindDesc) throws CoreRealmServiceRuntimeException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
 
@@ -390,7 +442,7 @@ public class TimeAndGeoSceneDataGenerator {
         }
     }
 
-    public static void linkDateAttribute(String conceptionKindName,String dateAttributeName,String eventComment,Map<String,Object> globalEventData,TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException{
+    private static void linkDateAttribute(String conceptionKindName,String dateAttributeName,String eventComment,Map<String,Object> globalEventData,TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException{
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         ConceptionKind conceptionKind = coreRealm.getConceptionKind(conceptionKindName);
         QueryParameters queryParameters = new QueryParameters();
