@@ -20,25 +20,28 @@ public class GraphOperationExecutor<T> implements AutoCloseable{
 
     public T executeWrite(DataTransformer<T> dataTransformer, String operationMessage, Object... keysAndValues){
         try (Session session = driver.session() ){
-            return session.writeTransaction( new TransactionWork<T>(){
+
+            return session.executeWrite(new TransactionCallback<T>() {
                 @Override
-                public T execute( Transaction tx ){
-                    Result result = tx.run(operationMessage,parameters(keysAndValues));
+                public T execute(TransactionContext transactionContext) {
+                    Query query = new Query(operationMessage, parameters(keysAndValues));
+                    Result result = transactionContext.run(query);
                     return dataTransformer.transformResult(result);
                 }
-            } );
+            });
         }
     }
 
     public T executeRead(DataTransformer<T> dataTransformer,String operationMessage,Object... keysAndValues){
         try (Session session = driver.session() ){
-            return session.readTransaction( new TransactionWork<T>(){
+            return session.executeRead(new TransactionCallback<T>() {
                 @Override
-                public T execute( Transaction tx ){
-                    Result result = tx.run(operationMessage,parameters(keysAndValues));
+                public T execute(TransactionContext transactionContext) {
+                    Query query = new Query(operationMessage, parameters(keysAndValues));
+                    Result result = transactionContext.run(query);
                     return dataTransformer.transformResult(result);
                 }
-            } );
+            });
         }
     }
 
