@@ -48,7 +48,13 @@ public class GraphOperationExecutor<T> implements AutoCloseable{
     @Override
     public void close(){
         //Need add this logic for neo4j v5 to close connection
-        driver.session().close();
+        try {
+            //if driver already closed,below method will throw exception
+            driver.session().close();
+        }catch(IllegalStateException e){
+            //java.lang.IllegalStateException: This driver instance has already been closed
+            e.printStackTrace();
+        }
         driver.close();
     }
 }
