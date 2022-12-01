@@ -329,13 +329,59 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
     @Override
     public EntitiesOperationResult purgeAllEntities() throws CoreRealmServiceRuntimeException {
-        // NEED consider below solution for improving performance or execute operation success
-        //https://neo4j.com/developer/kb/how-to-bulk-delete-dense-nodes/
-        //https://www.freesion.com/article/24571268014/
-
         CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
+            // Using below solution for improving performance or execute operation success
+            //https://neo4j.com/developer/kb/how-to-bulk-delete-dense-nodes/
+            //https://www.freesion.com/article/24571268014/
+            String bulkDeleteCql ="MATCH (n:"+this.conceptionKindName+")\n" +
+                    "WITH collect(n) AS nn\n" +
+                    "CALL apoc.periodic.commit(\"\n" +
+                    "  UNWIND $nodes AS n\n" +
+                    "  WITH sum(size([p=(n)-[]-() | p])) AS count_remaining,\n" +
+                    "       collect(n) AS nn\n" +
+                    "  UNWIND nn AS n\n" +
+                    "  OPTIONAL MATCH (n)-[r]-()\n" +
+                    "  WITH n, r, count_remaining\n" +
+                    "  LIMIT $limit\n" +
+                    "  DELETE r\n" +
+                    "  RETURN count_remaining\n" +
+                    "\",{limit:10000, nodes:nn}) yield updates, executions, runtime, batches, failedBatches, batchErrors, failedCommits, commitErrors\n" +
+                    "UNWIND nn AS n\n" +
+                    "DELETE n\n" +
+                    "RETURN updates, executions, runtime, batches";
+
+            String countQueryCql = CypherBuilder.matchLabelWithSinglePropertyValueAndFunction(getConceptionKindName(), CypherBuilder.CypherFunctionType.COUNT, null, null);
+            long beforeExecuteConceptionEntityCount = 0;
+            GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
+            Object countConceptionEntitiesRes = workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer, countQueryCql);
+            if (countConceptionEntitiesRes == null) {
+                throw new CoreRealmServiceRuntimeException();
+            } else {
+               beforeExecuteConceptionEntityCount = (Long) countConceptionEntitiesRes;
+            }
+
+            workingGraphOperationExecutor.executeWrite(new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    return null;
+                }
+            },bulkDeleteCql);
+
+            long afterExecuteConceptionEntityCount = 0;
+            countConceptionEntitiesRes = workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer, countQueryCql);
+            if (countConceptionEntitiesRes == null) {
+                throw new CoreRealmServiceRuntimeException();
+            } else {
+                afterExecuteConceptionEntityCount = (Long) countConceptionEntitiesRes;
+            }
+
+            commonEntitiesOperationResultImpl.getOperationStatistics().setSuccessItemsCount(beforeExecuteConceptionEntityCount-afterExecuteConceptionEntityCount);
+            commonEntitiesOperationResultImpl.getOperationStatistics().
+                    setOperationSummary("purgeAllEntities operation for conceptionKind "+this.conceptionKindName+" success.");
+
+            /*
             String deleteCql = CypherBuilder.deleteLabelWithSinglePropertyValueAndFunction(this.conceptionKindName,
                     CypherBuilder.CypherFunctionType.COUNT,null,null);
             GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer =
@@ -349,6 +395,8 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
                 commonEntitiesOperationResultImpl.getOperationStatistics().
                         setOperationSummary("purgeAllEntities operation for conceptionKind "+this.conceptionKindName+" success.");
             }
+            */
+
             commonEntitiesOperationResultImpl.finishEntitiesOperation();
             return commonEntitiesOperationResultImpl;
         }finally {
