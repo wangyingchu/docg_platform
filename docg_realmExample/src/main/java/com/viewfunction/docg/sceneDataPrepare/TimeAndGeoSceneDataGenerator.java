@@ -12,9 +12,9 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.geospatial.GeospatialOperationUtil;
+import com.viewfunction.docg.realmExample.generator.SeattleRealTimeFire911Calls_Realm_Generator;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
@@ -29,16 +29,16 @@ public class TimeAndGeoSceneDataGenerator {
 
     public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         //initTimeline
-        //generateTimelineData();
+        generateTimelineData();
 
         //load data
-        //SeattleRealTimeFire911Calls_Realm_Generator.main(null);
-        //generateFileViolationsData();
-        //generateNoiseReportsData();
-        //generatePaidParkingTransactionData();
-        //generateSPDCrimeData();
-        //generateFireDepartmentCallsForServiceData();
-        //generatePoliceDepartmentIncidentReportsData();
+        SeattleRealTimeFire911Calls_Realm_Generator.main(null);
+        generateFileViolationsData();
+        generateNoiseReportsData();
+        generatePaidParkingTransactionData();
+        generateSPDCrimeData();
+        generateFireDepartmentCallsForServiceData();
+        generatePoliceDepartmentIncidentReportsData();
         generateFireIncidentsData();
     }
 
@@ -382,7 +382,7 @@ public class TimeAndGeoSceneDataGenerator {
     }
 
     private static void generateFireIncidentsData() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
-        initConceptionKind("FireIncidentRecord","火灾记录");
+        //initConceptionKind("FireIncidentRecord","火灾记录");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         GeospatialOperationUtil.ConceptionEntityAttributesProcess conceptionEntityAttributesProcess = new GeospatialOperationUtil.ConceptionEntityAttributesProcess(){
             @Override
@@ -424,7 +424,7 @@ public class TimeAndGeoSceneDataGenerator {
             linkDateAttribute("FireIncidentRecord","alarmDate","Incident alarmed at",null,TimeFlow.TimeScaleGrade.MINUTE);
             linkDateAttribute("FireIncidentRecord","arrivalDate","Rescue arrived at",null,TimeFlow.TimeScaleGrade.MINUTE);
             linkDateAttribute("FireIncidentRecord","closeDate","Incident closed at",null,TimeFlow.TimeScaleGrade.MINUTE);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
