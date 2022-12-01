@@ -349,7 +349,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
                     "  RETURN count_remaining\n" +
                     "\",{limit:10000, nodes:nn}) yield updates, executions, runtime, batches, failedBatches, batchErrors, failedCommits, commitErrors\n" +
                     "UNWIND nn AS n\n" +
-                    "DELETE n\n" +
+                    "DETACH DELETE n\n" +
                     "RETURN updates, executions, runtime, batches";
 
             String countQueryCql = CypherBuilder.matchLabelWithSinglePropertyValueAndFunction(getConceptionKindName(), CypherBuilder.CypherFunctionType.COUNT, null, null);
@@ -362,6 +362,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
                beforeExecuteConceptionEntityCount = (Long) countConceptionEntitiesRes;
             }
 
+            logger.debug("Generated Cypher Statement: {}", bulkDeleteCql);
             workingGraphOperationExecutor.executeWrite(new DataTransformer() {
                 @Override
                 public Object transformResult(Result result) {
