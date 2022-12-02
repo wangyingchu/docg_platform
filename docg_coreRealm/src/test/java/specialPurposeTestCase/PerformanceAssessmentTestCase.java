@@ -147,7 +147,7 @@ public class PerformanceAssessmentTestCase {
         */
         Map<String,Object> batchLoadResultMap = BatchDataOperationUtil.batchAttachNewRelationsWithSinglePropertyValueMatch(
                 BuildingElementType,null,"elementId",ElementProperties,
-                null,"parentElementId",HasProperty,30);
+                null,"parentElementId",HasProperty, BatchDataOperationUtil.CPUUsageRate.High);
         System.out.println(batchLoadResultMap);
     }
 

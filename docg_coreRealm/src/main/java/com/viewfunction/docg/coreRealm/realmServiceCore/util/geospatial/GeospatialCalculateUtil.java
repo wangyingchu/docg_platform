@@ -118,7 +118,7 @@ public class GeospatialCalculateUtil {
                         String spatialContent = entry.getValue();
                         entitySpatialContentMapperList.add(new EntitySpatialContentMapper(entityUID,spatialContent));
                     }
-                    int degreeOfParallelism = BatchDataOperationUtil.calculateRuntimeCPUCoresByUsageRate(BatchDataOperationUtil.CPUUsageRate.High);
+                    int degreeOfParallelism = BatchDataOperationUtil.calculateRuntimeCPUCoresByUsageRate(entitySpatialContentMapperList.size(),BatchDataOperationUtil.CPUUsageRate.High);
                     int singlePartitionSize = (entitySpatialContentMapperList.size()/degreeOfParallelism)+1;
                     List<List<EntitySpatialContentMapper>> rsList = Lists.partition(entitySpatialContentMapperList, singlePartitionSize);
 
