@@ -17,11 +17,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.viewfunction</groupId>
-            <artifactId>docg_coreRealm</artifactId>
-            <version>0.5</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.ignite</groupId>
             <artifactId>ignite-log4j2</artifactId>
             <version>${ignite.version}</version>

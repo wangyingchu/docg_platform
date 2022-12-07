@@ -21,11 +21,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.viewfunction</groupId>
-            <artifactId>docg_coreRealm</artifactId>
-            <version>0.5</version>
-        </dependency>
         <!-- this dependency only needed during generate runtime ENV, will stop application launch in development ENV
         <dependency>
             <groupId>com.viewfunction</groupId>
