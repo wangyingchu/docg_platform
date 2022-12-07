@@ -21,13 +21,6 @@
     </properties>
 
     <dependencies>
-        <!-- this dependency only needed during generate runtime ENV, will stop application launch in development ENV
-        <dependency>
-            <groupId>com.viewfunction</groupId>
-            <artifactId>docg_dataCompute</artifactId>
-            <version>0.1.0</version>
-        </dependency>
-        -->
         <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-core -->
         <dependency>
             <groupId>org.apache.spark</groupId>
@@ -216,6 +209,14 @@
             <artifactId>graphframes</artifactId>
             <version>0.8.2-spark3.2-s_2.12</version>
         </dependency>
+
+        <!-- this dependency only needed during generate runtime ENV, will stop application launch in development ENV-->
+       <dependency>
+           <groupId>com.viewfunction</groupId>
+           <artifactId>docg_dataCompute</artifactId>
+           <version>0.1.0</version>
+       </dependency>
+
     </dependencies>
 
     <repositories>

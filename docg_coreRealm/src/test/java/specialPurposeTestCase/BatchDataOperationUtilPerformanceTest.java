@@ -13,6 +13,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,8 +22,15 @@ import java.util.Map;
 public class BatchDataOperationUtilPerformanceTest {
 
     public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
-        //batchAddNewEntitiesTest();
-        batchAttachNewRelations();
+        LocalDateTime localDateTime0 = LocalDateTime.now();
+        batchAddNewEntitiesTest();
+        //batchAttachNewRelations();
+        LocalDateTime localDateTime1 = LocalDateTime.now();
+
+        System.out.println("===============");
+        System.out.println(localDateTime0);
+        System.out.println(localDateTime1);
+        System.out.println("===============");
     }
 
     public static void batchAddNewEntitiesTest() throws CoreRealmServiceRuntimeException {
@@ -52,7 +60,7 @@ public class BatchDataOperationUtilPerformanceTest {
             currentConceptionEntityValue.setEntityAttributesValue(attributeMap);
             conceptionEntityValuesList.add(currentConceptionEntityValue);
         }
-        Map<String,Object> batchAddResult = BatchDataOperationUtil.batchAddNewEntities("BatchInsertOpType",conceptionEntityValuesList,18);
+        Map<String,Object> batchAddResult = BatchDataOperationUtil.batchAddNewEntities("BatchInsertOpType",conceptionEntityValuesList, BatchDataOperationUtil.CPUUsageRate.High);
         System.out.println(batchAddResult);
     }
 

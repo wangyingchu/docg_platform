@@ -951,6 +951,9 @@ public class BatchDataOperationUtil {
     }
 
     public static int calculateRuntimeCPUCoresByUsageRate(int entityVolume,CPUUsageRate _CPUUsageRate){
+        if(entityVolume <= 10000){
+            //return 16;
+        }
         int availableCoreNumber = Runtime.getRuntime().availableProcessors();
         if(availableCoreNumber<=4){
             return 4;
