@@ -11,7 +11,7 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <ignite.version>2.12.0</ignite.version>
+        <ignite.version>2.13.0</ignite.version>
         <geotools.version>26.4</geotools.version>
     </properties>
 

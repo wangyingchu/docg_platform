@@ -252,7 +252,7 @@
     <orderEntry type="library" name="Maven: it.unimi.dsi:fastutil:7.0.8" level="project" />
     <orderEntry type="library" name="Maven: graphframes:graphframes:0.8.2-spark3.2-s_2.12" level="project" />
     <orderEntry type="module" module-name="docg_dataCompute" />
-    <orderEntry type="library" name="Maven: org.apache.ignite:ignite-spark-2.4:2.12.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.ignite:ignite-spark-2.4:2.13.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.spark:spark-core_2.11:2.4.4" level="project" />
     <orderEntry type="library" name="Maven: org.apache.avro:avro-mapred:hadoop2:1.8.2" level="project" />
     <orderEntry type="library" name="Maven: org.codehaus.jackson:jackson-core-asl:1.9.13" level="project" />
@@ -299,14 +299,14 @@
     <orderEntry type="library" name="Maven: org.json4s:json4s-ast_2.11:3.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.json4s:json4s-scalap_2.11:3.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.scala-lang.modules:scala-xml_2.11:1.0.6" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.ignite:ignite-log4j:2.12.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.ignite:ignite-scalar:2.12.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.ignite:ignite-ml:2.12.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.ignite:ignite-log4j:2.13.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.ignite:ignite-scalar:2.13.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.ignite:ignite-ml:2.13.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-rng-core:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-rng-client-api:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-rng-simple:1.0" level="project" />
     <orderEntry type="library" name="Maven: com.zaxxer:SparseBitSet:1.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.ignite:ignite-rest-http:2.12.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.ignite:ignite-rest-http:2.13.0" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-continuation:9.4.39.v20210325" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-http:9.4.39.v20210325" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-io:9.4.39.v20210325" level="project" />
