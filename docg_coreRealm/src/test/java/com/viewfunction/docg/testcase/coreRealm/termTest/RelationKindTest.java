@@ -113,15 +113,14 @@ public class RelationKindTest {
         }
 
         queryParameters.setResultNumber(7);
-        queryParameters.setDistinctMode(false);
         _RelationEntitiesRetrieveResult = _RelationKind01.getRelationEntities(queryParameters);
         Assert.assertNotNull(_RelationEntitiesRetrieveResult);
         Assert.assertEquals(_RelationEntitiesRetrieveResult.getRelationEntities().size(),7);
 
-        queryParameters.setDistinctMode(true);
+        queryParameters.setResultNumber(20);
         _RelationEntitiesRetrieveResult = _RelationKind01.getRelationEntities(queryParameters);
         Assert.assertNotNull(_RelationEntitiesRetrieveResult);
-        Assert.assertEquals(_RelationEntitiesRetrieveResult.getRelationEntities().size(),4);
+        Assert.assertEquals(_RelationEntitiesRetrieveResult.getRelationEntities().size(),10);
 
         queryParameters.setResultNumber(500);
         queryParameters.setDefaultFilteringItem(new GreaterThanEqualFilteringItem("relProp1",500l));

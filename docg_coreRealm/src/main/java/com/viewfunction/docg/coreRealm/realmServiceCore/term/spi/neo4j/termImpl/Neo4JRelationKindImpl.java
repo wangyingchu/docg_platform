@@ -127,7 +127,7 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
             try{
                 queryParameters.setEntityKind(this.relationKindName);
                 String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,
-                        null,null,true,queryParameters, CypherBuilder.CypherFunctionType.COUNT);
+                        null,null,false,queryParameters, CypherBuilder.CypherFunctionType.COUNT);
 
                 GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer =
                         queryParameters.isDistinctMode() ?
@@ -155,7 +155,7 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
             try{
                 queryParameters.setEntityKind(this.relationKindName);
                 String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,
-                        null,null,true,queryParameters,null);
+                        null,null,false,queryParameters,null);
                 GetListRelationEntityTransformer getListRelationEntityTransformer =
                         new GetListRelationEntityTransformer(this.relationKindName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor(),queryParameters.isDistinctMode());
                 Object queryRes = workingGraphOperationExecutor.executeRead(getListRelationEntityTransformer,queryCql);
@@ -212,7 +212,7 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
                 queryParameters.setEntityKind(this.relationKindName);
                 queryParameters.setDistinctMode(true);
                 String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,
-                        null,null,true,queryParameters,null);
+                        null,null,false,queryParameters,null);
                 GetListRelationEntityValueTransformer getListRelationEntityValueTransformer =
                         new GetListRelationEntityValueTransformer(this.relationKindName,attributeNames);
                 Object queryRes = workingGraphOperationExecutor.executeRead(getListRelationEntityValueTransformer,queryCql);
