@@ -51,7 +51,6 @@ public class UnitdsCommandProcessor implements BaseCommandProcessor {
             String dataStoreMode="UNKNOWN";
             switch(currentStoreCacheMode){
                 case PARTITIONED:dataStoreMode="Grid Singleton";break;
-                case LOCAL:dataStoreMode="Unit Local";break;
                 case REPLICATED:dataStoreMode="Grid PerUnit";break;
             }
 

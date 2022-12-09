@@ -298,7 +298,6 @@ public class DataSlice {
         String dataStoreMode="UNKNOWN";
         switch(currentStoreCacheMode){
             case PARTITIONED:dataStoreMode="Grid";break;
-            case LOCAL:dataStoreMode="Unit Local";break;
             case REPLICATED:dataStoreMode="Grid PerUnit";break;
         }
         dataSliceMetaInfo.setDataStoreMode(dataStoreMode);
