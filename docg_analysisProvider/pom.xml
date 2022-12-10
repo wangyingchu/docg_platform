@@ -11,8 +11,6 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <ignite.version>2.14.0</ignite.version>
-        <ignite.geospatial.version>2.7.2</ignite.geospatial.version>
         <spark.version>3.2.0</spark.version>
         <datasyslab.geotools.version>geotools-24.1</datasyslab.geotools.version>
         <geotools.version>26.4</geotools.version>
@@ -180,13 +178,11 @@
             <version>0.8.2-spark3.2-s_2.12</version>
         </dependency>
 
-
-       <dependency>
+        <dependency>
            <groupId>com.viewfunction</groupId>
            <artifactId>docg_dataCompute</artifactId>
            <version>0.1.0</version>
        </dependency>
-
     </dependencies>
 
     <repositories>
