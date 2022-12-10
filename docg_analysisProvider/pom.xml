@@ -11,7 +11,7 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <ignite.version>2.12.0</ignite.version>
+        <ignite.version>2.14.0</ignite.version>
         <ignite.geospatial.version>2.7.2</ignite.geospatial.version>
         <spark.version>3.2.0</spark.version>
         <datasyslab.geotools.version>geotools-24.1</datasyslab.geotools.version>
@@ -90,36 +90,6 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.ignite/ignite-log4j2 -->
-        <dependency>
-            <groupId>org.apache.ignite</groupId>
-            <artifactId>ignite-log4j2</artifactId>
-            <version>${ignite.version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.ignite/ignite-core -->
-        <dependency>
-            <groupId>org.apache.ignite</groupId>
-            <artifactId>ignite-core</artifactId>
-            <version>${ignite.version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.ignite/ignite-spring -->
-        <dependency>
-            <groupId>org.apache.ignite</groupId>
-            <artifactId>ignite-spring</artifactId>
-            <version>${ignite.version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.ignite/ignite-indexing -->
-        <dependency>
-            <groupId>org.apache.ignite</groupId>
-            <artifactId>ignite-indexing</artifactId>
-            <version>${ignite.version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.ignite/ignite-clients -->
-        <dependency>
-            <groupId>org.apache.ignite</groupId>
-            <artifactId>ignite-clients</artifactId>
-            <version>${ignite.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.typesafe.akka/akka-actor -->
         <dependency>
@@ -210,7 +180,7 @@
             <version>0.8.2-spark3.2-s_2.12</version>
         </dependency>
 
-        <!-- this dependency only needed during generate runtime ENV, will stop application launch in development ENV-->
+
        <dependency>
            <groupId>com.viewfunction</groupId>
            <artifactId>docg_dataCompute</artifactId>
