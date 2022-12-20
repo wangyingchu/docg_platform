@@ -23,6 +23,11 @@ public class GetSingleAttributeValueTransformer implements DataTransformer<Attri
             Map<String,Object> returnValueMap = returnRecord.asMap();
             String attributeNameFullName= CypherBuilder.operationResultName+"."+this.attributeName;
             Object attributeValueObject = returnValueMap.get(attributeNameFullName);
+            if(attributeValueObject == null){
+                // check if the attribute name changed because of contains space
+                attributeNameFullName= CypherBuilder.operationResultName+".`"+this.attributeName+"`";
+                attributeValueObject = returnValueMap.get(attributeNameFullName);
+            }
             if(attributeValueObject!= null){
                 return CommonOperationUtil.getAttributeValue(this.attributeName,attributeValueObject);
             }

@@ -314,7 +314,7 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
         if(spatialScalePropertyName != null){
             String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,
                     Long.parseLong(entityUID), CypherBuilder.CypherFunctionType.EXISTS, spatialScalePropertyName);
-            GetBooleanFormatReturnValueTransformer getBooleanFormatReturnValueTransformer = new GetBooleanFormatReturnValueTransformer(CypherBuilder.operationResultName+"."+spatialScalePropertyName+" IS NOT NULL");
+            GetBooleanFormatReturnValueTransformer getBooleanFormatReturnValueTransformer = new GetBooleanFormatReturnValueTransformer();
             Object resultRes = workingGraphOperationExecutor.executeRead(getBooleanFormatReturnValueTransformer,queryCql);
             return resultRes != null ? (Boolean)resultRes : false;
         }

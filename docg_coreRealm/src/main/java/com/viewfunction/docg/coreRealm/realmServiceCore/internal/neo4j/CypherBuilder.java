@@ -309,9 +309,9 @@ public class CypherBuilder {
         if(EXISTS.equals(returnFunctionType)){
             //if attribute contains space for example : attribute a, will returned in `` such as .`attribute a`
             if(rel.contains("exists("+operationResultName+".`"+additionalPropertyName+"`)")){
-                rel = rel.replace("exists("+operationResultName+".`"+additionalPropertyName+"`)",""+operationResultName+".`"+additionalPropertyName+"` IS NOT NULL");
+                rel = rel.replace("exists("+operationResultName+".`"+additionalPropertyName+"`)",""+operationResultName+".`"+additionalPropertyName+"` IS NOT NULL AS "+operationResultName);
             }else{
-                rel = rel.replace("exists("+operationResultName+"."+additionalPropertyName+")",""+operationResultName+"."+additionalPropertyName+" IS NOT NULL");
+                rel = rel.replace("exists("+operationResultName+"."+additionalPropertyName+")",""+operationResultName+"."+additionalPropertyName+" IS NOT NULL AS "+operationResultName);
             }
         }
         logger.debug("Generated Cypher Statement: {}", rel);
@@ -364,9 +364,9 @@ public class CypherBuilder {
         if(EXISTS.equals(returnFunctionType)){
             //if attribute contains space for example : attribute a, will returned in `` such as .`attribute a`
             if(rel.contains("exists("+operationResultName+".`"+additionalPropertyName+"`)")){
-                rel = rel.replace("exists("+operationResultName+".`"+additionalPropertyName+"`)",""+operationResultName+".`"+additionalPropertyName+"` IS NOT NULL");
+                rel = rel.replace("exists("+operationResultName+".`"+additionalPropertyName+"`)",""+operationResultName+".`"+additionalPropertyName+"` IS NOT NULL AS "+operationResultName);
             }else{
-                rel = rel.replace("exists("+operationResultName+"."+additionalPropertyName+")",""+operationResultName+"."+additionalPropertyName+" IS NOT NULL");
+                rel = rel.replace("exists("+operationResultName+"."+additionalPropertyName+")",""+operationResultName+"."+additionalPropertyName+" IS NOT NULL AS "+operationResultName);
             }
         }
         logger.debug("Generated Cypher Statement: {}", rel);
@@ -1053,9 +1053,9 @@ public class CypherBuilder {
         if(EXISTS.equals(returnFunctionType)){
             //if attribute contains space for example : attribute a, will returned in `` such as .`attribute a`
             if(rel.contains("exists("+operationResultName+".`"+additionalPropertyName+"`)")){
-                rel = rel.replace("exists("+operationResultName+".`"+additionalPropertyName+"`)",""+operationResultName+".`"+additionalPropertyName+"` IS NOT NULL");
+                rel = rel.replace("exists("+operationResultName+".`"+additionalPropertyName+"`)",""+operationResultName+".`"+additionalPropertyName+"` IS NOT NULL AS "+operationResultName);
             }else{
-                rel = rel.replace("exists("+operationResultName+"."+additionalPropertyName+")",""+operationResultName+"."+additionalPropertyName+" IS NOT NULL");
+                rel = rel.replace("exists("+operationResultName+"."+additionalPropertyName+")",""+operationResultName+"."+additionalPropertyName+" IS NOT NULL AS "+operationResultName);
             }
         }
         logger.debug("Generated Cypher Statement: {}", rel);
@@ -1117,9 +1117,9 @@ public class CypherBuilder {
         if(EXISTS.equals(returnFunctionType)){
             //if attribute contains space for example : attribute a, will returned in `` such as .`attribute a`
             if(rel.contains("exists("+operationResultName+".`"+additionalPropertyName+"`)")){
-                rel = rel.replace("exists("+operationResultName+".`"+additionalPropertyName+"`)",""+operationResultName+".`"+additionalPropertyName+"` IS NOT NULL");
+                rel = rel.replace("exists("+operationResultName+".`"+additionalPropertyName+"`)",""+operationResultName+".`"+additionalPropertyName+"` IS NOT NULL AS "+operationResultName);
             }else{
-                rel = rel.replace("exists("+operationResultName+"."+additionalPropertyName+")",""+operationResultName+"."+additionalPropertyName+" IS NOT NULL");
+                rel = rel.replace("exists("+operationResultName+"."+additionalPropertyName+")",""+operationResultName+"."+additionalPropertyName+" IS NOT NULL AS "+operationResultName);
             }
         }
         logger.debug("Generated Cypher Statement: {}", rel);

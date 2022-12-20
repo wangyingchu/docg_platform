@@ -967,5 +967,26 @@ public class AttributesMeasurableTest {
         Assert.assertEquals(updatedResultDateTimeDate[0].getSecond(),44);
         Assert.assertEquals(updatedResultDateTimeDate[0].getYear(),2144);
 
+        AttributeValue spaceNameAttributeValue = _ConceptionEntity.addAttribute("attrwith space","iam stringwithspace");
+        Assert.assertEquals(spaceNameAttributeValue.getAttributeName(),"attrwith space");
+        Assert.assertEquals(spaceNameAttributeValue.getAttributeValue().toString(),"iam stringwithspace");
+
+        spaceNameAttributeValue = _ConceptionEntity.getAttribute("attrwith space");
+        Assert.assertEquals(spaceNameAttributeValue.getAttributeName(),"attrwith space");
+        Assert.assertEquals(spaceNameAttributeValue.getAttributeValue().toString(),"iam stringwithspace");
+
+        spaceNameAttributeValue = _ConceptionEntity.updateAttribute("attrwith space","iam stringwithspace2233");
+        Assert.assertEquals(spaceNameAttributeValue.getAttributeName(),"attrwith space");
+        Assert.assertEquals(spaceNameAttributeValue.getAttributeValue().toString(),"iam stringwithspace2233");
+
+        boolean removeSpaceAttributeResult = _ConceptionEntity.removeAttribute("attrwith space");
+        Assert.assertTrue(removeSpaceAttributeResult);
+        boolean shouldThrowException = false;
+        try {
+            removeSpaceAttributeResult = _ConceptionEntity.removeAttribute("attrwith space");
+        }catch (CoreRealmServiceRuntimeException e){
+            shouldThrowException = true;
+        }
+        Assert.assertTrue(shouldThrowException);
     }
 }
