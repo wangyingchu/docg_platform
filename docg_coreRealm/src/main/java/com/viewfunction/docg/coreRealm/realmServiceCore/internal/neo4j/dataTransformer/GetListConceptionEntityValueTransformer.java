@@ -70,6 +70,11 @@ public class GetListConceptionEntityValueTransformer implements DataTransformer<
                 for(String currentAttributeName:returnedAttributeList){
                     String entityAttributeName = CypherBuilder.operationResultName+"."+currentAttributeName;
                     Object objectValue = valueMap.get(entityAttributeName);
+                    if(objectValue == null){
+                        //if attribute contains space for example : attribute a, will returned in `` such as .`attribute a`
+                        entityAttributeName = CypherBuilder.operationResultName+".`"+currentAttributeName+"`";
+                        objectValue = valueMap.get(entityAttributeName);
+                    }
                     Object resultAttributeValue = getFormattedValue(currentAttributeName,objectValue);
                     if(resultAttributeValue != null){
                         entityAttributesValue.put(currentAttributeName,resultAttributeValue);
