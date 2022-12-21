@@ -58,6 +58,12 @@ public class KindEntityAttributeRuntimeStatistics {
             attributeDataType = AttributeDataType.STRING_ARRAY;
         }else if(attributeDataTypeValue.equalsIgnoreCase("Date")){
             attributeDataType = AttributeDataType.DATE;
+        }else if(attributeDataTypeValue.equalsIgnoreCase("LocalDateTime")){
+            attributeDataType = AttributeDataType.DATETIME;
+        }else if(attributeDataTypeValue.equalsIgnoreCase("LocalDate")){
+            attributeDataType = AttributeDataType.DATE;
+        }else if(attributeDataTypeValue.equalsIgnoreCase("LocalTime")){
+            attributeDataType = AttributeDataType.TIME;
         }
     }
 
