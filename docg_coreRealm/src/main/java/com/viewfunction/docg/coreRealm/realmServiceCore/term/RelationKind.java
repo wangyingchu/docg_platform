@@ -35,6 +35,15 @@ public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttr
     public String getRelationKindDesc();
 
     /**
+     * 更新当前关系类型对象描述
+     *
+     * @param kindDesc String 新的关系类型描述
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean updateRelationKindDesc(String kindDesc);
+
+    /**
      * 获取当前关系类型的父关系类型对象，该方法在 NEO4J 实现类型下无效
      *
      * @return 关系类型对象

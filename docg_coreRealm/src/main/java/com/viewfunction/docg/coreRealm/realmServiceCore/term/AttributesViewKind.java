@@ -40,6 +40,15 @@ public interface AttributesViewKind extends MetaConfigItemFeatureSupportable, Me
     public String getAttributesViewKindDesc();
 
     /**
+     * 更新当前属性视图类型对象描述
+     *
+     * @param kindDesc String 新的属性视图类型描述
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean updateAttributesViewKindDesc(String kindDesc);
+
+    /**
      * 判断当前属性视图类型是否是集合类属性视图
      *
      * @return 如果数据存储结构是 LIST_VALUE, RELATED_VALUE, EXTERNAL_VALUE 则返回 true

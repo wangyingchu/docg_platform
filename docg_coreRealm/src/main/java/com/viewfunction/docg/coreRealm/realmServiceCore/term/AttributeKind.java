@@ -29,6 +29,15 @@ public interface AttributeKind extends MetaConfigItemFeatureSupportable, MetaAtt
     public String getAttributeKindDesc();
 
     /**
+     * 更新当前属性类型对象描述
+     *
+     * @param kindDesc String 新的属性类型描述
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean updateAttributeKindDesc(String kindDesc);
+
+    /**
      * 获取当前属性类型对象数据类型,数据类型可能选项是：
      * BOOLEAN,INT,SHORT,LONG,FLOAT,DOUBLE,DATE,STRING,BYTE,DECIMAL,
      * BOOLEAN_ARRAY,INT_ARRAY,SHORT_ARRAY,LONG_ARRAY,FLOAT_ARRAY,DOUBLE_ARRAY,DATE_ARRAY,STRING_ARRAY,BYTE_ARRAY,DECIMAL_ARRAY,

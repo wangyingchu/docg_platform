@@ -565,6 +565,15 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public String getConceptionKindDesc();
 
     /**
+     * 更新当前概念类型对象描述
+     *
+     * @param kindDesc String 新的概念类型描述
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean updateConceptionKindDesc(String kindDesc);
+
+    /**
      * 计算当前概念类型的所有概念实体数量
      *
      * @return 概念实体数量
@@ -896,6 +905,15 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public String getRelationKindDesc();
 
     /**
+     * 更新当前关系类型对象描述
+     *
+     * @param kindDesc String 新的关系类型描述
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean updateRelationKindDesc(String kindDesc);
+
+    /**
      * 获取当前关系类型的父关系类型对象，该方法在 NEO4J 实现类型下无效
      *
      * @return 关系类型对象
@@ -1071,6 +1089,15 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public String getAttributesViewKindDesc();
 
     /**
+     * 更新当前属性视图类型对象描述
+     *
+     * @param kindDesc String 新的属性视图类型描述
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean updateAttributesViewKindDesc(String kindDesc);
+
+    /**
      * 判断当前属性视图类型是否是集合类属性视图
      *
      * @return 如果数据存储结构是 LIST_VALUE, RELATED_VALUE, EXTERNAL_VALUE 则返回 true
@@ -1189,6 +1216,15 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 属性类型对象描述
      */
     public String getAttributeKindDesc();
+
+    /**
+     * 更新当前属性类型对象描述
+     *
+     * @param kindDesc String 新的属性类型描述
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean updateAttributeKindDesc(String kindDesc);
 
     /**
      * 获取当前属性类型对象数据类型,数据类型可能选项是：
@@ -1463,6 +1499,15 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 分类描述
      */
     public String getClassificationDesc();
+
+    /**
+     * 更新当前分类描述
+     *
+     * @param classificationDesc String 新的分类描述
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean updateClassificationDesc(String classificationDesc);
 
     /**
      * 判断当前分类是否为根节点分类

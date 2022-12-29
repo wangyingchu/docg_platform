@@ -33,6 +33,15 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
     public String getConceptionKindDesc();
 
     /**
+     * 更新当前概念类型对象描述
+     *
+     * @param kindDesc String 新的概念类型描述
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean updateConceptionKindDesc(String kindDesc);
+
+    /**
      * 计算当前概念类型的所有概念实体数量
      *
      * @return 概念实体数量

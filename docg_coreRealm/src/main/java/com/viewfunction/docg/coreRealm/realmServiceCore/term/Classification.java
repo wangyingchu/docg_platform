@@ -25,6 +25,15 @@ public interface Classification extends MetaAttributeFeatureSupportable, Attribu
     public String getClassificationDesc();
 
     /**
+     * 更新当前分类描述
+     *
+     * @param classificationDesc String 新的分类描述
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean updateClassificationDesc(String classificationDesc);
+
+    /**
      * 判断当前分类是否为根节点分类
      *
      * @return 如果当前分类没有父分类则返回 true
