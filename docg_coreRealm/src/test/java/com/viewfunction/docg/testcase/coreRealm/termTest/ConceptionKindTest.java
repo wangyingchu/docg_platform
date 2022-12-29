@@ -448,5 +448,17 @@ public class ConceptionKindTest {
             Assert.assertEquals(currentEntity.getConceptionKindName(),testConceptionKindName);
             Assert.assertNotNull(currentEntity.getConceptionEntityUID());
         }
+
+        Assert.assertEquals(_ConceptionKind01.getConceptionKindDesc(),"TestConceptionKindADesc+中文描述");
+        boolean updateDescResult = _ConceptionKind01.updateConceptionKindDesc("TestConceptionKindADesc+中文描述UPD");
+        Assert.assertTrue(updateDescResult);
+        Assert.assertEquals(_ConceptionKind01.getConceptionKindDesc(),"TestConceptionKindADesc+中文描述UPD");
+        Assert.assertEquals(coreRealm.getConceptionKind(testConceptionKindName).getConceptionKindDesc(),"TestConceptionKindADesc+中文描述UPD");
+
+        Assert.assertEquals(attributeKind02.getAttributeKindDesc(),"attributeKind02Desc");
+        updateDescResult = attributeKind02.updateAttributeKindDesc("attributeKind02DescUPD");
+        Assert.assertTrue(updateDescResult);
+        Assert.assertEquals(attributeKind02.getAttributeKindDesc(),"attributeKind02DescUPD");
+        Assert.assertEquals(coreRealm.getAttributeKind(attributeKind02.getAttributeKindUID()).getAttributeKindDesc(),"attributeKind02DescUPD");
     }
 }

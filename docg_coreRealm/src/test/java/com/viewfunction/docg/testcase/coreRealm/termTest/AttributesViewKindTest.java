@@ -201,5 +201,11 @@ public class AttributesViewKindTest {
         Assert.assertTrue(metaInfoMap.containsKey(attributeKind03.getAttributeKindUID()));
         Assert.assertEquals(metaInfoMap.get(attributeKind02.getAttributeKindUID()),1l);
         Assert.assertEquals(metaInfoMap.get(attributeKind03.getAttributeKindUID()),2l);
+
+        Assert.assertEquals(targetAttributesViewKind.getAttributesViewKindDesc(),"targetAttributesViewKindADesc");
+        boolean updateDescResult = targetAttributesViewKind.updateAttributesViewKindDesc("targetAttributesViewKindADescUPD");
+        Assert.assertTrue(updateDescResult);
+        Assert.assertEquals(targetAttributesViewKind.getAttributesViewKindDesc(),"targetAttributesViewKindADescUPD");
+        Assert.assertEquals(coreRealm.getAttributesViewKind(targetAttributesViewKind.getAttributesViewKindUID()).getAttributesViewKindDesc(),"targetAttributesViewKindADescUPD");
     }
 }

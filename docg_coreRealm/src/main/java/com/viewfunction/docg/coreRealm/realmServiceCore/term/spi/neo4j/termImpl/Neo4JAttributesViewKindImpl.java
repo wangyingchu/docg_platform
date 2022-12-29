@@ -6,6 +6,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOper
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JAttributesViewKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
@@ -52,6 +53,28 @@ public class Neo4JAttributesViewKindImpl implements Neo4JAttributesViewKind {
     @Override
     public String getAttributesViewKindDesc() {
         return attributesViewKindDesc;
+    }
+
+    @Override
+    public boolean updateAttributesViewKindDesc(String kindDesc) {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            Map<String,Object> attributeDataMap = new HashMap<>();
+            attributeDataMap.put(RealmConstant._DescProperty, kindDesc);
+            String updateCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.attributesViewKindUID),attributeDataMap);
+            GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._DescProperty);
+            Object updateResultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,updateCql);
+            CommonOperationUtil.updateEntityMetaAttributes(workingGraphOperationExecutor,this.attributesViewKindUID,false);
+            AttributeValue resultAttributeValue =  updateResultRes != null ? (AttributeValue) updateResultRes : null;
+            if(resultAttributeValue != null && resultAttributeValue.getAttributeValue().toString().equals(kindDesc)){
+                this.attributesViewKindDesc = kindDesc;
+                return true;
+            }else{
+                return false;
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override

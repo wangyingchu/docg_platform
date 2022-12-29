@@ -221,6 +221,10 @@ public class RelationKindTest {
         selfAttachedRemoveResult = _RelationKind01.purgeRelationsOfSelfAttachedConceptionEntities();
         Assert.assertEquals(selfAttachedRemoveResult,10-3);
 
+        boolean updateDescResult = _RelationKind01.updateRelationKindDesc("TestRelationKindADesc+中文描述UPD");
+        Assert.assertTrue(updateDescResult);
+        Assert.assertEquals(_RelationKind01.getRelationKindDesc(),"TestRelationKindADesc+中文描述UPD");
+        Assert.assertEquals(coreRealm.getRelationKind("RelationKind0001ForTest").getRelationKindDesc(),"TestRelationKindADesc+中文描述UPD");
         coreRealm.closeGlobalSession();
     }
 }

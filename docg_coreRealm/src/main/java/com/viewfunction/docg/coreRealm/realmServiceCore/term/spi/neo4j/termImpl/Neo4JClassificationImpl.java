@@ -13,6 +13,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOper
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.spi.common.structureImpl.CommonInheritanceTreeImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
@@ -63,6 +64,28 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
     @Override
     public String getClassificationDesc() {
         return this.classificationDesc;
+    }
+
+    @Override
+    public boolean updateClassificationDesc(String classificationDesc) {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            Map<String,Object> attributeDataMap = new HashMap<>();
+            attributeDataMap.put(RealmConstant._DescProperty, classificationDesc);
+            String updateCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.classificationUID),attributeDataMap);
+            GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._DescProperty);
+            Object updateResultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,updateCql);
+            CommonOperationUtil.updateEntityMetaAttributes(workingGraphOperationExecutor,this.classificationUID,false);
+            AttributeValue resultAttributeValue =  updateResultRes != null ? (AttributeValue) updateResultRes : null;
+            if(resultAttributeValue != null && resultAttributeValue.getAttributeValue().toString().equals(classificationDesc)){
+                this.classificationDesc = classificationDesc;
+                return true;
+            }else{
+                return false;
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override

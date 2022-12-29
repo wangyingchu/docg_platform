@@ -665,6 +665,12 @@ public class ClassificationTest {
         relatedClassification.addAttribute("FireProtectionZoneDisplayColor","#CE0000");
         Assert.assertEquals(relatedClassification.getAttribute("FireProtectionZoneDisplayColor").getAttributeValue(),"#CE0000");
 
+        Assert.assertEquals(relatedClassification.getClassificationDesc(),"classification3Desc");
+        boolean updateDescResult = relatedClassification.updateClassificationDesc("classification3DescUPD");
+        Assert.assertTrue(updateDescResult);
+        Assert.assertEquals(relatedClassification.getClassificationDesc(),"classification3DescUPD");
+        Assert.assertEquals(coreRealm.getClassification(relatedClassification.getClassificationName()).getClassificationDesc(),"classification3DescUPD");
+
         coreRealm.closeGlobalSession();
     }
 }
