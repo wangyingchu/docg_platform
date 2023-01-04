@@ -188,19 +188,19 @@
     <orderEntry type="library" name="Maven: org.beryx:awt-color-factory:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.locationtech.jts:jts-core:1.18.0" level="project" />
     <orderEntry type="library" name="Maven: org.wololo:jts2geojson:0.14.3" level="project" />
-    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-actor_2.12:2.6.18" level="project" />
-    <orderEntry type="library" name="Maven: com.typesafe:config:1.4.0" level="project" />
+    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-actor_2.12:2.7.0" level="project" />
+    <orderEntry type="library" name="Maven: com.typesafe:config:1.4.2" level="project" />
     <orderEntry type="library" name="Maven: org.scala-lang.modules:scala-java8-compat_2.12:0.8.0" level="project" />
-    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-remote_2.12:2.6.18" level="project" />
-    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-stream_2.12:2.6.18" level="project" />
-    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-protobuf-v3_2.12:2.6.18" level="project" />
-    <orderEntry type="library" name="Maven: com.typesafe:ssl-config-core_2.12:0.4.2" level="project" />
-    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-pki_2.12:2.6.18" level="project" />
-    <orderEntry type="library" name="Maven: com.hierynomus:asn-one:0.5.0" level="project" />
-    <orderEntry type="library" name="Maven: org.agrona:agrona:1.14.0" level="project" />
-    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-cluster_2.12:2.6.18" level="project" />
-    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-coordination_2.12:2.6.18" level="project" />
-    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-cluster-tools_2.12:2.6.18" level="project" />
+    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-remote_2.12:2.7.0" level="project" />
+    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-stream_2.12:2.7.0" level="project" />
+    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-protobuf-v3_2.12:2.7.0" level="project" />
+    <orderEntry type="library" name="Maven: com.typesafe:ssl-config-core_2.12:0.4.3" level="project" />
+    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-pki_2.12:2.7.0" level="project" />
+    <orderEntry type="library" name="Maven: com.hierynomus:asn-one:0.6.0" level="project" />
+    <orderEntry type="library" name="Maven: org.agrona:agrona:1.16.0" level="project" />
+    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-cluster_2.12:2.7.0" level="project" />
+    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-coordination_2.12:2.7.0" level="project" />
+    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-cluster-tools_2.12:2.7.0" level="project" />
     <orderEntry type="library" name="Maven: com.twitter:chill-akka_2.12:0.10.0" level="project" />
     <orderEntry type="library" name="Maven: com.esotericsoftware:kryo-shaded:4.0.2" level="project" />
     <orderEntry type="library" name="Maven: com.esotericsoftware:minlog:1.3.0" level="project" />
