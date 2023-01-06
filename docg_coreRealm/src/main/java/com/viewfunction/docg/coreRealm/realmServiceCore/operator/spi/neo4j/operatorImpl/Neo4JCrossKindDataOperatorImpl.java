@@ -620,6 +620,11 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         return null;
     }
 
+    @Override
+    public List<RelationEntity> createRelationEntitiesFromBridgeConceptionEntities(String sourceKindName, String targetKindName, String bridgeKindName, AttributesParameters attributesParameters, String relationKindName) throws CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }
