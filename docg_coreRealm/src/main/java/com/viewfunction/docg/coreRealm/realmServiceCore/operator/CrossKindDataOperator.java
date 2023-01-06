@@ -165,4 +165,6 @@ public interface CrossKindDataOperator {
      * @return 匹配的关系实体对象的属性值列表
      */
     public List<RelationEntityValue> getRelationAttributesByEntitiesRelation(List<String> conceptionEntityUIDs, String relationKind,List<String> returnedAttributeList,RelationDirection relationDirection,String targetConceptionKindName) throws CoreRealmServiceEntityExploreException;
+
+    public List<RelationEntity> createRelationEntitiesFromBridgeConceptionEntities(String sourceKindName,String targetKindName, String bridgeKindName,AttributesParameters attributesParameters,String relationKindName) throws CoreRealmServiceEntityExploreException;
 }
