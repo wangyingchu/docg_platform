@@ -167,16 +167,17 @@ public interface CrossKindDataOperator {
     public List<RelationEntityValue> getRelationAttributesByEntitiesRelation(List<String> conceptionEntityUIDs, String relationKind,List<String> returnedAttributeList,RelationDirection relationDirection,String targetConceptionKindName) throws CoreRealmServiceEntityExploreException;
 
     /**
-     * 输入一对源概念类型与目标概念类型名称和一个桥接概念类型名称以及桥接概念类型的实体查询条件，查询所有符合条件的桥接概念实体，如果这些桥接概念实体具有与其相连的源概念类型与目标概念类型的概念实体，则在源概念类型实体与目标概念类型实体之间建立由源实体指向目标实体的关联关系，关系类型名称由参数 relationKindName 决定
+     * 输入一对源概念类型与目标概念类型名称和一个桥接概念类型名称以及桥接概念类型的实体查询条件，查询所有符合条件的桥接概念实体，如果这些桥接概念实体具有与其相连的源概念类型与目标概念类型的概念实体，则在源概念类型实体与目标概念类型实体之间建立由源实体指向目标实体的关联关系，关系类型名称由参数 sourceToTargetRelationKindName 决定
      *
-     * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
-     * @param relationKind String 实体间关联关系的关系类型,如输入null值则忽略类型
-     * @param returnedAttributeList List<String> 需要返回的关系实体上的属性值名称列表
-     * @param relationDirection RelationDirection 实体间关联关系的关系方向,如输入null值则为 TWO_WAY 方向
-     * @param targetConceptionKindName String 实体间关联关系的目标概念类型,如输入null值则忽略类型
+     * @param sourceKindName String 源概念类型名称
+     * @param targetKindName String 目标概念类型名称
+     * @param bridgeKindName String 桥接概念类型名称
+     * @param attributesParameters AttributesParameters 桥接概念类型实体查询条件
+     * @param sourceToBridgeRelationKindName String 源概念类型指向桥接概念类型的关系类型名称,如输入null值则忽略类型
+     * @param bridgeToTargetRelationKindName String 桥接概念类型指向目标概念类型的关系类型名称,如输入null值则忽略类型
+     * @param sourceToTargetRelationKindName String 新建的源概念类型指向目标概念类型的关系类型名称,该参数为必填项,不能为null值
      *
-     * @return 匹配的关系实体对象的属性值列表
+     * @return 新建的关系实体列表
      */
-    public List<RelationEntity> createRelationEntitiesFromBridgeConceptionEntities(String sourceKindName,String targetKindName, String bridgeKindName,AttributesParameters attributesParameters,String relationKindName) throws CoreRealmServiceEntityExploreException;
-
+    public List<RelationEntity> createRelationEntitiesFromBridgeConceptionEntities(String sourceKindName,String targetKindName, String bridgeKindName,AttributesParameters attributesParameters,String sourceToBridgeRelationKindName,String bridgeToTargetRelationKindName,String sourceToTargetRelationKindName) throws CoreRealmServiceEntityExploreException;
 }

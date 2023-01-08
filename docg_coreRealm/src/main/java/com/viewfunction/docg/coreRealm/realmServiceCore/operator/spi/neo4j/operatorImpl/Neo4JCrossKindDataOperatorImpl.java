@@ -621,7 +621,9 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public List<RelationEntity> createRelationEntitiesFromBridgeConceptionEntities(String sourceKindName, String targetKindName, String bridgeKindName, AttributesParameters attributesParameters, String relationKindName) throws CoreRealmServiceEntityExploreException {
+    public List<RelationEntity> createRelationEntitiesFromBridgeConceptionEntities(String sourceKindName,String targetKindName, String bridgeKindName,
+                 AttributesParameters attributesParameters,String sourceToBridgeRelationKindName,String bridgeToTargetRelationKindName,
+                                                                                   String sourceToTargetRelationKindName) throws CoreRealmServiceEntityExploreException {
         return null;
     }
 
