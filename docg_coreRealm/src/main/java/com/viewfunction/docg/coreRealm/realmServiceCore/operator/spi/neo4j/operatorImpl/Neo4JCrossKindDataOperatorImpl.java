@@ -662,7 +662,9 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                 String bridgeToTargetRelPart = bridgeToTargetRelationKindName == null ? "r2":"r2:"+bridgeToTargetRelationKindName;
 
                 String createRelAccordingToAllowRepeatPart = allowRepeat ?
-                        "CREATE (sourceNodes)-[sToTRel:"+sourceToTargetRelationKindName+"]->(targetNodes) RETURN sToTRel AS operationResult":
+                        "CREATE (sourceNodes)-[sToTRel:"+sourceToTargetRelationKindName+"]->(targetNodes)\n " +
+                                "WITH sourceNodes,targetNodes\n" +
+                                "MATCH (sourceNodes)-[sToTRel:"+sourceToTargetRelationKindName+"]->(targetNodes) RETURN sToTRel AS operationResult" :
                         "MERGE (sourceNodes)-[sToTRel:"+sourceToTargetRelationKindName+"]->(targetNodes) RETURN sToTRel AS operationResult";
                 String creatRelationCQL = "MATCH ("+sourceNodesPart+")-["+sourceToBridgeRelPart+"]->(middleNodes)-["+bridgeToTargetRelPart+"]->("+targetNodesPart+") WHERE id(middleNodes) IN "+resultEntityUIDsList.toString()+" \n" +
                         "WITH sourceNodes,targetNodes\n" +
