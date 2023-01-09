@@ -621,7 +621,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public List<RelationEntity> createRelationEntitiesFromBridgeConceptionEntities(String sourceKindName,String targetKindName, String bridgeKindName,
+    public List<RelationEntity> attachConceptionKindsFromBridgeConceptionEntities(String sourceKindName,String targetKindName, String bridgeKindName,
                  AttributesParameters attributesParameters,String sourceToBridgeRelationKindName,String bridgeToTargetRelationKindName,
                  String sourceToTargetRelationKindName,boolean allowRepeat) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         if(sourceToTargetRelationKindName == null){
@@ -661,11 +661,12 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                 String sourceToBridgeRelPart = sourceToBridgeRelationKindName == null ? "r1":"r1:"+sourceToBridgeRelationKindName;
                 String bridgeToTargetRelPart = bridgeToTargetRelationKindName == null ? "r2":"r2:"+bridgeToTargetRelationKindName;
 
-                String allowRepeatOperationType = allowRepeat ? "CREATE":"MERGE";
-
+                String createRelAccordingToAllowRepeatPart = allowRepeat ?
+                        "CREATE (sourceNodes)-[sToTRel:"+sourceToTargetRelationKindName+"]->(targetNodes) RETURN sToTRel AS operationResult":
+                        "MERGE (sourceNodes)-[sToTRel:"+sourceToTargetRelationKindName+"]->(targetNodes) RETURN sToTRel AS operationResult";
                 String creatRelationCQL = "MATCH ("+sourceNodesPart+")-["+sourceToBridgeRelPart+"]->(middleNodes)-["+bridgeToTargetRelPart+"]->("+targetNodesPart+") WHERE id(middleNodes) IN "+resultEntityUIDsList.toString()+" \n" +
                         "WITH sourceNodes,targetNodes\n" +
-                        allowRepeatOperationType+" (sourceNodes)-[sToTRel:"+sourceToTargetRelationKindName+"]->(targetNodes) RETURN sToTRel AS operationResult";
+                        createRelAccordingToAllowRepeatPart;
                 logger.debug("Generated Cypher Statement: {}", creatRelationCQL);
 
                 GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(sourceToTargetRelationKindName,workingGraphOperationExecutor,false);;

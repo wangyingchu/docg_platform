@@ -4485,9 +4485,9 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @param sourceToTargetRelationKindName String 新建的源概念类型指向目标概念类型的关系类型名称,该参数为必填项,不能为null值
      * @param allowRepeat boolean 在关系类型(sourceToTargetRelationKindName)的实体已经存在的情况下,是否允许重复建立关系实体
      *
-     * @return 新建的关系实体列表
+     * @return 本次操作执行涉及的所有桥接概念实体相关的源概念类型指向目标概念类型的 sourceToTargetRelationKindName 类型的关系实体列表
      */
-    public List<RelationEntity> createRelationEntitiesFromBridgeConceptionEntities(String sourceKindName,String targetKindName, String bridgeKindName,AttributesParameters attributesParameters,String sourceToBridgeRelationKindName,String bridgeToTargetRelationKindName,String sourceToTargetRelationKindName) throws CoreRealmServiceEntityExploreException;
+    public List<RelationEntity> attachConceptionKindsFromBridgeConceptionEntities(String sourceKindName,String targetKindName, String bridgeKindName,AttributesParameters attributesParameters,String sourceToBridgeRelationKindName,String bridgeToTargetRelationKindName,String sourceToTargetRelationKindName,boolean allowRepeat) throws CoreRealmServiceEntityExploreException;
 ```
 
 ###### ↳ SystemMaintenanceOperator
