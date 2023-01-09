@@ -623,7 +623,60 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     @Override
     public List<RelationEntity> createRelationEntitiesFromBridgeConceptionEntities(String sourceKindName,String targetKindName, String bridgeKindName,
                  AttributesParameters attributesParameters,String sourceToBridgeRelationKindName,String bridgeToTargetRelationKindName,
-                                                                                   String sourceToTargetRelationKindName) throws CoreRealmServiceEntityExploreException {
+                 String sourceToTargetRelationKindName,boolean allowRepeat) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        if(sourceToTargetRelationKindName == null){
+            logger.error("Param sourceToTargetRelationKindName in method createRelationEntitiesFromBridgeConceptionEntities is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("Param sourceToTargetRelationKindName in method createRelationEntitiesFromBridgeConceptionEntities is required");
+            throw e1;
+        }
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setDistinctMode(false);
+        queryParameters.setResultNumber(100000000);
+        if (attributesParameters != null) {
+            queryParameters.setDefaultFilteringItem(attributesParameters.getDefaultFilteringItem());
+            if (attributesParameters.getAndFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getAndFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.AND);
+                }
+            }
+            if (attributesParameters.getOrFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getOrFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.OR);
+                }
+            }
+        }
+        String bridgeEntityQueryCQL = CypherBuilder.matchNodesWithQueryParameters(bridgeKindName,queryParameters, CypherBuilder.CypherFunctionType.ID);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListEntityUIDTransformer getListEntityUIDTransformer = new GetListEntityUIDTransformer();
+            Object queryRes = workingGraphOperationExecutor.executeWrite(getListEntityUIDTransformer,bridgeEntityQueryCQL);
+            if(queryRes != null){
+                List<String> resultEntityUIDsList = (List<String>)queryRes;
+
+                String sourceNodesPart = sourceKindName == null ? "sourceNodes":"sourceNodes:"+sourceKindName;
+                String targetNodesPart = targetKindName == null ? "targetNodes":"targetNodes:"+targetKindName;
+                String sourceToBridgeRelPart = sourceToBridgeRelationKindName == null ? "r1":"r1:"+sourceToBridgeRelationKindName;
+                String bridgeToTargetRelPart = bridgeToTargetRelationKindName == null ? "r2":"r2:"+bridgeToTargetRelationKindName;
+
+                String allowRepeatOperationType = allowRepeat ? "CREATE":"MERGE";
+
+                String creatRelationCQL = "MATCH ("+sourceNodesPart+")-["+sourceToBridgeRelPart+"]->(middleNodes)-["+bridgeToTargetRelPart+"]->("+targetNodesPart+") WHERE id(middleNodes) IN "+resultEntityUIDsList.toString()+" \n" +
+                        "WITH sourceNodes,targetNodes\n" +
+                        allowRepeatOperationType+" (sourceNodes)-[sToTRel:"+sourceToTargetRelationKindName+"]->(targetNodes) RETURN sToTRel AS operationResult";
+                logger.debug("Generated Cypher Statement: {}", creatRelationCQL);
+
+                GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(sourceToTargetRelationKindName,workingGraphOperationExecutor,false);;
+                queryRes = workingGraphOperationExecutor.executeWrite(getListRelationEntityTransformer,creatRelationCQL);
+                if(queryRes != null){
+                    return (List<RelationEntity>)queryRes;
+                }
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
         return null;
     }
 

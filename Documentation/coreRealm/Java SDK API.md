@@ -4483,6 +4483,7 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @param sourceToBridgeRelationKindName String 源概念类型指向桥接概念类型的关系类型名称,如输入null值则忽略类型
      * @param bridgeToTargetRelationKindName String 桥接概念类型指向目标概念类型的关系类型名称,如输入null值则忽略类型
      * @param sourceToTargetRelationKindName String 新建的源概念类型指向目标概念类型的关系类型名称,该参数为必填项,不能为null值
+     * @param allowRepeat boolean 在关系类型(sourceToTargetRelationKindName)的实体已经存在的情况下,是否允许重复建立关系实体
      *
      * @return 新建的关系实体列表
      */

@@ -151,7 +151,7 @@ public interface CrossKindDataOperator {
      *
      * @return 合并概念类型操作的执行结果统计
      */
-    public EntitiesOperationResult mergeEntitiesToConceptionKind(String sourceKindName,AttributesParameters attributesParameters,String relationKindName,RelationDirection relationDirection,String targetKindName) throws CoreRealmServiceEntityExploreException;
+    public EntitiesOperationResult mergeEntitiesToConceptionKind(String sourceKindName,AttributesParameters attributesParameters,String relationKindName,RelationDirection relationDirection,String targetKindName) throws CoreRealmServiceEntityExploreException,CoreRealmServiceEntityExploreException;
 
     /**
      * 输入一组概念实体的唯一值ID，查询并返回具有指定关系类型的联接的所有概念实体两两间的关系实体数据
@@ -176,8 +176,9 @@ public interface CrossKindDataOperator {
      * @param sourceToBridgeRelationKindName String 源概念类型指向桥接概念类型的关系类型名称,如输入null值则忽略类型
      * @param bridgeToTargetRelationKindName String 桥接概念类型指向目标概念类型的关系类型名称,如输入null值则忽略类型
      * @param sourceToTargetRelationKindName String 新建的源概念类型指向目标概念类型的关系类型名称,该参数为必填项,不能为null值
+     * @param allowRepeat boolean 在关系类型(sourceToTargetRelationKindName)的实体已经存在的情况下,是否允许重复建立关系实体
      *
      * @return 新建的关系实体列表
      */
-    public List<RelationEntity> createRelationEntitiesFromBridgeConceptionEntities(String sourceKindName,String targetKindName, String bridgeKindName,AttributesParameters attributesParameters,String sourceToBridgeRelationKindName,String bridgeToTargetRelationKindName,String sourceToTargetRelationKindName) throws CoreRealmServiceEntityExploreException;
+    public List<RelationEntity> createRelationEntitiesFromBridgeConceptionEntities(String sourceKindName,String targetKindName, String bridgeKindName,AttributesParameters attributesParameters,String sourceToBridgeRelationKindName,String bridgeToTargetRelationKindName,String sourceToTargetRelationKindName,boolean allowRepeat) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 }
