@@ -4488,6 +4488,16 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 本次操作执行抽取出的所有桥接概念实体相关的源概念类型指向目标概念类型的 sourceToTargetRelationKindName 类型的关系实体列表
      */
     public List<RelationEntity> extractRelationsFromBridgeConceptionEntities(String sourceKindName,String targetKindName, String bridgeKindName,AttributesParameters attributesParameters,String sourceToBridgeRelationKindName,String bridgeToTargetRelationKindName,String sourceToTargetRelationKindName,boolean allowRepeat) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 输入一组概念实体的唯一值ID，删除这些实体并使用指定的关系类型创建替代的关联关系来连接所有与这些实体连接的其他概念实体
+     *
+     * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
+     * @param relationKindName String 新建的替代用关联关系的关系类型,该参数为必填项,不能为null值
+     *
+     * @return 新建的关系实体列表
+     */
+    public List<RelationEntity> collapseConceptionEntities(List<String> conceptionEntityUIDs, String relationKindName) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 ```
 
 ###### ↳ SystemMaintenanceOperator
