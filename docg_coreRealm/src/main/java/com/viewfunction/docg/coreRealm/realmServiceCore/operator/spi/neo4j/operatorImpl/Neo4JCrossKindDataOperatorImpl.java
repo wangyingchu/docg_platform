@@ -708,8 +708,22 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public List<RelationEntity> changeEntitiesConceptionKind(List<String> conceptionEntityUIDs, String newConceptionKind) {
+    public List<ConceptionEntity> changeEntitiesConceptionKind(List<String> conceptionEntityUIDs, String newConceptionKind) {
         //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.rename.label/
+        return null;
+    }
+
+    @Override
+    public List<RelationEntity> invertRelationEntitiesDirection(List<String> relationEntityUIDs) {
+        https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.invert/
+        return null;
+    }
+
+    @Override
+    public List<RelationEntity> redirectRelationsToNewConceptionEntity(List<String> relationEntityUIDs, String targetConceptionEntityUID, RelationDirection relationDirection) {
+        //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.from/
+        //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.to/
+
         return null;
     }
 

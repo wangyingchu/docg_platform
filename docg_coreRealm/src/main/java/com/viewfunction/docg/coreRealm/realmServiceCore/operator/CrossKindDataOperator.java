@@ -212,5 +212,9 @@ public interface CrossKindDataOperator {
 
     public List<RelationEntity> changeEntitiesRelationKind(List<String> relationEntityUIDs,String newRelationKind);
 
-    public List<RelationEntity> changeEntitiesConceptionKind(List<String> conceptionEntityUIDs,String newConceptionKind);
+    public List<ConceptionEntity> changeEntitiesConceptionKind(List<String> conceptionEntityUIDs,String newConceptionKind);
+
+    public List<RelationEntity> invertRelationEntitiesDirection(List<String> relationEntityUIDs);
+
+    public List<RelationEntity> redirectRelationsToNewConceptionEntity(List<String> relationEntityUIDs,String targetConceptionEntityUID,RelationDirection relationDirection);
 }
