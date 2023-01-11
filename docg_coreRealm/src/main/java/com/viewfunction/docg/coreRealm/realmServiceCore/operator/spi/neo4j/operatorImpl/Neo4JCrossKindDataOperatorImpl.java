@@ -689,9 +689,27 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
+    public List<RelationEntity> extractIntermediateConceptionEntitiesFromRelations(List<String> relationEntityUIDs, String newEntityConceptionKindName, String fromRelationKind, String toRelationKind) {
+        //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.extractNode/
+        return null;
+    }
+
+    @Override
     public List<RelationEntity> collapseConceptionEntities(List<String> conceptionEntityUIDs, String relationKindName) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.collapseNode/
 
+        return null;
+    }
+
+    @Override
+    public List<RelationEntity> changeEntitiesRelationKind(List<String> relationEntityUIDs, String newRelationKind) {
+        //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.setType/
+        return null;
+    }
+
+    @Override
+    public List<RelationEntity> changeEntitiesConceptionKind(List<String> conceptionEntityUIDs, String newConceptionKind) {
+        //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.rename.label/
         return null;
     }
 
