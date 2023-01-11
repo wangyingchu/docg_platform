@@ -684,6 +684,11 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
+    public List<RelationEntity> extractRelationsFromBridgeConceptionEntities(String sourceKindName, String targetKindName, List<String> bridgeConceptionEntityUIDs, String sourceToBridgeRelationKindName, String bridgeToTargetRelationKindName, String sourceToTargetRelationKindName, boolean allowRepeat) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
+    @Override
     public List<RelationEntity> collapseConceptionEntities(List<String> conceptionEntityUIDs, String relationKindName) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.collapseNode/
 
