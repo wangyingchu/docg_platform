@@ -217,4 +217,8 @@ public interface CrossKindDataOperator {
     public List<RelationEntity> invertRelationEntitiesDirection(List<String> relationEntityUIDs);
 
     public List<RelationEntity> redirectRelationsToNewConceptionEntity(List<String> relationEntityUIDs,String targetConceptionEntityUID,RelationDirection relationDirection);
+
+    public ConceptionEntity mergeConceptionEntities(String remainsConceptionEntityUID,List<String> mergedConceptionEntitiesUIDs);
+
+    public RelationEntity mergeRelationEntities(String remainsRelationEntityUID,List<String> mergedRelationEntitiesUIDs);
 }

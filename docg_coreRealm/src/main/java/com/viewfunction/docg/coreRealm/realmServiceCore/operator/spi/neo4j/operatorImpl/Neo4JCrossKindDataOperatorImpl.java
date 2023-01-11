@@ -727,6 +727,18 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         return null;
     }
 
+    @Override
+    public ConceptionEntity mergeConceptionEntities(String remainsConceptionEntityUID, List<String> mergedConceptionEntitiesUIDs) {
+        //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.mergeNodes/
+        return null;
+    }
+
+    @Override
+    public RelationEntity mergeRelationEntities(String remainsRelationEntityUID, List<String> mergedRelationEntitiesUIDs) {
+        //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.mergeRelationships/
+        return null;
+    }
+
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }
