@@ -221,4 +221,6 @@ public interface CrossKindDataOperator {
     public ConceptionEntity mergeConceptionEntities(String remainsConceptionEntityUID,List<String> mergedConceptionEntitiesUIDs);
 
     public RelationEntity mergeRelationEntities(String remainsRelationEntityUID,List<String> mergedRelationEntitiesUIDs);
+
+    public RelationEntity mergeRelationsOfConceptionEntityPair(String fromConceptionEntityUID, String toConceptionEntityUID,String newRelationKind);
 }
