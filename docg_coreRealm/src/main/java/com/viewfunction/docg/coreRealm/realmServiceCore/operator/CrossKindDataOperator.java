@@ -207,7 +207,7 @@ public interface CrossKindDataOperator {
      *
      * @return 新建的概念实体实例列表
      */
-    public List<ConceptionEntity> extractIntermediateConceptionEntitiesFromRelations(List<String> relationEntityUIDs,String intermediateConceptionKindName,String fromRelationKind,String toRelationKind);
+    public List<ConceptionEntity> extractIntermediateConceptionEntitiesFromRelations(List<String> relationEntityUIDs,String intermediateConceptionKindName,String fromRelationKind,String toRelationKind) throws CoreRealmServiceRuntimeException;
 
     /**
      * 输入一组概念实体的唯一值ID，删除这些实体并使用指定的关系类型创建替代的关联关系来连接所有与这些实体连接的其他概念实体

@@ -730,9 +730,49 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public List<ConceptionEntity> extractIntermediateConceptionEntitiesFromRelations(List<String> relationEntityUIDs, String newEntityConceptionKindName, String fromRelationKind, String toRelationKind) {
+    public List<ConceptionEntity> extractIntermediateConceptionEntitiesFromRelations(List<String> relationEntityUIDs, String intermediateConceptionKindName, String fromRelationKind, String toRelationKind) throws CoreRealmServiceRuntimeException{
         //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.extractNode/
-        return null;
+        if(intermediateConceptionKindName == null){
+            logger.error("Param intermediateConceptionKindName in method extractIntermediateConceptionEntitiesFromRelations is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("Param intermediateConceptionKindName in method extractIntermediateConceptionEntitiesFromRelations is required");
+            throw e1;
+        }
+        if(fromRelationKind == null){
+            logger.error("Param fromRelationKind in method extractIntermediateConceptionEntitiesFromRelations is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("Param fromRelationKind in method extractIntermediateConceptionEntitiesFromRelations is required");
+            throw e1;
+        }
+        if(toRelationKind == null){
+            logger.error("Param toRelationKind in method extractIntermediateConceptionEntitiesFromRelations is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("Param toRelationKind in method extractIntermediateConceptionEntitiesFromRelations is required");
+            throw e1;
+        }
+        if(relationEntityUIDs == null || relationEntityUIDs.size() == 0){
+            logger.error("At lease one relationEntityUID is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("At lease one relationEntityUID is required");
+            throw e1;
+        }
+
+        String cypherProcedureString = "MATCH (source)-[rel]->(target)\n" +
+                "WHERE id(rel) IN "+relationEntityUIDs.toString()+"\n" +
+                "WITH collect(rel) AS rels\n" +
+                "CALL apoc.refactor.extractNode(rels,['"+intermediateConceptionKindName+"'],'"+fromRelationKind+"','"+toRelationKind+"')\n" +
+                "YIELD output\n" +
+                "RETURN output AS operationResult;";
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(intermediateConceptionKindName,
+                    this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object conceptionEntityList = workingGraphOperationExecutor.executeWrite(getListConceptionEntityTransformer,cypherProcedureString);
+            return conceptionEntityList != null ? (List<ConceptionEntity>)conceptionEntityList : null;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
