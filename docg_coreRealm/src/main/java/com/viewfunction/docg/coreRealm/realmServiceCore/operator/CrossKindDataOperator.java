@@ -217,7 +217,7 @@ public interface CrossKindDataOperator {
      *
      * @return 新建的关系实体列表
      */
-    public List<RelationEntity> collapseConceptionEntities(List<String> conceptionEntityUIDs, String relationKindName) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+    public List<RelationEntity> collapseConceptionEntities(List<String> conceptionEntityUIDs, String relationKindName) throws CoreRealmServiceRuntimeException;
 
     public List<RelationEntity> changeEntitiesRelationKind(List<String> relationEntityUIDs,String newRelationKind);
 
