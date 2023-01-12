@@ -490,9 +490,9 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     @Override
     public EntitiesOperationResult mergeEntitiesToConceptionKind(String sourceKindName, AttributesParameters attributesParameters, String relationKindName, RelationDirection relationDirection, String targetConceptionKindName) throws CoreRealmServiceEntityExploreException {
         if(relationDirection == null || RelationDirection.TWO_WAY.equals(relationDirection)){
-            logger.error("relationDirection must set and can't be TWO_WAY.");
+            logger.error("relationDirection must set and can't be TWO_WAY");
             CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
-            exception.setCauseMessage("relationDirection must set and can't be TWO_WAY.");
+            exception.setCauseMessage("relationDirection must set and can't be TWO_WAY");
             throw exception;
         }
         CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
@@ -622,8 +622,9 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
     @Override
     public List<RelationEntity> extractRelationsFromBridgeConceptionEntities(String sourceKindName,String targetKindName, String bridgeKindName,
-                 AttributesParameters attributesParameters,String sourceToBridgeRelationKindName,String bridgeToTargetRelationKindName,
-                 String sourceToTargetRelationKindName,boolean allowRepeat) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+                                                                             AttributesParameters attributesParameters,String sourceToBridgeRelationKindName,
+                                                                             String bridgeToTargetRelationKindName, String sourceToTargetRelationKindName,
+                                                                             boolean allowRepeat) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         if(sourceToTargetRelationKindName == null){
             logger.error("Param sourceToTargetRelationKindName in method createRelationEntitiesFromBridgeConceptionEntities is required");
             CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
@@ -684,7 +685,47 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public List<RelationEntity> extractRelationsFromBridgeConceptionEntities(String sourceKindName, String targetKindName, List<String> bridgeConceptionEntityUIDs, String sourceToBridgeRelationKindName, String bridgeToTargetRelationKindName, String sourceToTargetRelationKindName, boolean allowRepeat) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+    public List<RelationEntity> extractRelationsFromBridgeConceptionEntities(String sourceKindName, String targetKindName, List<String> bridgeConceptionEntityUIDs,
+                                                                             String sourceToBridgeRelationKindName, String bridgeToTargetRelationKindName,
+                                                                             String sourceToTargetRelationKindName, boolean allowRepeat) throws CoreRealmServiceRuntimeException {
+        if(sourceToTargetRelationKindName == null){
+            logger.error("Param sourceToTargetRelationKindName in method createRelationEntitiesFromBridgeConceptionEntities is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("Param sourceToTargetRelationKindName in method createRelationEntitiesFromBridgeConceptionEntities is required");
+            throw e1;
+        }
+        if(bridgeConceptionEntityUIDs == null || bridgeConceptionEntityUIDs.size() == 0){
+            logger.error("At lease one bridge conceptionEntityUID is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("At lease one bridge conceptionEntityUID is required");
+            throw e1;
+        }
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            String sourceNodesPart = sourceKindName == null ? "sourceNodes":"sourceNodes:"+sourceKindName;
+            String targetNodesPart = targetKindName == null ? "targetNodes":"targetNodes:"+targetKindName;
+            String sourceToBridgeRelPart = sourceToBridgeRelationKindName == null ? "r1":"r1:"+sourceToBridgeRelationKindName;
+            String bridgeToTargetRelPart = bridgeToTargetRelationKindName == null ? "r2":"r2:"+bridgeToTargetRelationKindName;
+
+            String createRelAccordingToAllowRepeatPart = allowRepeat ?
+                    "CREATE (sourceNodes)-[sToTRel:"+sourceToTargetRelationKindName+"]->(targetNodes)\n " +
+                            "WITH sourceNodes,targetNodes\n" +
+                            "MATCH (sourceNodes)-[sToTRel:"+sourceToTargetRelationKindName+"]->(targetNodes) RETURN sToTRel AS operationResult" :
+                    "MERGE (sourceNodes)-[sToTRel:"+sourceToTargetRelationKindName+"]->(targetNodes) RETURN sToTRel AS operationResult";
+            String creatRelationCQL = "MATCH ("+sourceNodesPart+")-["+sourceToBridgeRelPart+"]->(middleNodes)-["+bridgeToTargetRelPart+"]->("+targetNodesPart+") WHERE id(middleNodes) IN "+bridgeConceptionEntityUIDs.toString()+" \n" +
+                    "WITH sourceNodes,targetNodes\n" +
+                    createRelAccordingToAllowRepeatPart;
+            logger.debug("Generated Cypher Statement: {}", creatRelationCQL);
+
+            GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(sourceToTargetRelationKindName,workingGraphOperationExecutor,false);;
+            Object queryRes = workingGraphOperationExecutor.executeWrite(getListRelationEntityTransformer,creatRelationCQL);
+            if(queryRes != null){
+                return (List<RelationEntity>)queryRes;
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
         return null;
     }
 
