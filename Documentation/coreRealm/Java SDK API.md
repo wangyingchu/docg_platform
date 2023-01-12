@@ -4505,6 +4505,18 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
     public List<RelationEntity> extractRelationsFromBridgeConceptionEntities(String sourceKindName,String targetKindName, List<String> bridgeConceptionEntityUIDs,String sourceToBridgeRelationKindName,String bridgeToTargetRelationKindName,String sourceToTargetRelationKindName,boolean allowRepeat) throws CoreRealmServiceRuntimeException;
 
     /**
+     * 输入一组关系实体唯一值ID，将每一个关系实体替换为一个新的居中概念实体以及两个新的关联关系，新的关联关系分别从原关系实体的 From节点指向居中概念实体，从居中概念实体指向原关系实体的 To节点. 原关系实体中的所有属性会被复制到居中概念实体中，原关系实体本身被删除.
+     *
+     * @param relationEntityUIDs List<String> 目标概念实体唯一值ID列表
+     * @param intermediateConceptionKindName String 居中概念实体类型名称,不能为null值
+     * @param fromRelationKind String 由居中概念实体出发的关系实体的关系类型名称,不能为null值
+     * @param toRelationKind String 指向居中概念实体的关系实体的关系类型名称,不能为null值
+     *
+     * @return 新建的概念实体实例列表
+     */
+    public List<ConceptionEntity> extractIntermediateConceptionEntitiesFromRelations(List<String> relationEntityUIDs,String intermediateConceptionKindName,String fromRelationKind,String toRelationKind);
+
+    /**
      * 输入一组概念实体的唯一值ID，删除这些实体并使用指定的关系类型创建替代的关联关系来连接所有与这些实体连接的其他概念实体
      *
      * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表

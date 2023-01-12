@@ -730,7 +730,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public List<RelationEntity> extractIntermediateConceptionEntitiesFromRelations(List<String> relationEntityUIDs, String newEntityConceptionKindName, String fromRelationKind, String toRelationKind) {
+    public List<ConceptionEntity> extractIntermediateConceptionEntitiesFromRelations(List<String> relationEntityUIDs, String newEntityConceptionKindName, String fromRelationKind, String toRelationKind) {
         //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.extractNode/
         return null;
     }
