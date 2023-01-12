@@ -763,6 +763,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                 "CALL apoc.refactor.extractNode(rels,['"+intermediateConceptionKindName+"'],'"+fromRelationKind+"','"+toRelationKind+"')\n" +
                 "YIELD output\n" +
                 "RETURN output AS operationResult;";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
@@ -778,7 +779,35 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     @Override
     public List<RelationEntity> collapseConceptionEntities(List<String> conceptionEntityUIDs, String relationKindName) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.collapseNode/
+        if(conceptionEntityUIDs == null || conceptionEntityUIDs.size() == 0){
+            logger.error("At lease one conceptionEntityUID is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("At lease one conceptionEntityUID is required");
+            throw e1;
+        }
+        if(relationKindName == null){
+            logger.error("Param relationKindName in method collapseConceptionEntities is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("Param relationKindName in method collapseConceptionEntities is required");
+            throw e1;
+        }
 
+        String cypherProcedureString = "MATCH (targetNodes) WHERE id(targetNodes) IN " + conceptionEntityUIDs.toString()+"\n"+
+                "CALL apoc.refactor.collapseNode(targetNodes,'"+relationKindName+"')\n" +
+                "YIELD output\n" +
+                "RETURN output AS operationResult;";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(relationKindName,workingGraphOperationExecutor,false);;
+            Object queryRes = workingGraphOperationExecutor.executeWrite(getListRelationEntityTransformer,cypherProcedureString);
+            if(queryRes != null){
+                return (List<RelationEntity>)queryRes;
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
         return null;
     }
 
