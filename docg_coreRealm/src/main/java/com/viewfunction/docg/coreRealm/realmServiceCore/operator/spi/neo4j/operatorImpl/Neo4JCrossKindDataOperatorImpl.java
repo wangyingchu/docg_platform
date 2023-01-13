@@ -812,8 +812,38 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public List<RelationEntity> changeEntitiesRelationKind(List<String> relationEntityUIDs, String newRelationKind) {
+    public List<RelationEntity> changeEntitiesRelationKind(List<String> relationEntityUIDs, String newRelationKind) throws CoreRealmServiceRuntimeException{
         //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.setType/
+        if(relationEntityUIDs == null || relationEntityUIDs.size() == 0){
+            logger.error("At lease one relationEntityUID is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("At lease one relationEntityUID is required");
+            throw e1;
+        }
+        if(newRelationKind == null){
+            logger.error("Param newRelationKind in method changeEntitiesRelationKind is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("Param newRelationKind in method changeEntitiesRelationKind is required");
+            throw e1;
+        }
+
+        String cypherProcedureString = "MATCH (source)-[rel]->(target)\n" +
+                "WHERE id(rel) IN "+relationEntityUIDs.toString()+"\n" +
+                "CALL apoc.refactor.setType(rel, '"+newRelationKind+"')\n" +
+                "YIELD output\n" +
+                "RETURN output AS operationResult;";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(newRelationKind,workingGraphOperationExecutor,false);;
+            Object queryRes = workingGraphOperationExecutor.executeWrite(getListRelationEntityTransformer,cypherProcedureString);
+            if(queryRes != null){
+                return (List<RelationEntity>)queryRes;
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
         return null;
     }
 

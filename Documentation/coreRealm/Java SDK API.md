@@ -4525,6 +4525,16 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 新建的关系实体列表
      */
     public List<RelationEntity> collapseConceptionEntities(List<String> conceptionEntityUIDs, String relationKindName) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
+    /**
+     * 输入一组关系实体的唯一值ID，将这些实体的关系类型名称改为 newRelationKind 参数中指定的新类型
+     *
+     * @param relationEntityUIDs List<String> 关系实体唯一值ID列表
+     * @param newRelationKind String 需要修改为的新关系类型的名称,该参数为必填项,不能为null值
+     *
+     * @return 新建的关系实体列表
+     */
+    public List<RelationEntity> changeEntitiesRelationKind(List<String> relationEntityUIDs,String newRelationKind) throws CoreRealmServiceRuntimeException;
 ```
 
 ###### ↳ SystemMaintenanceOperator
