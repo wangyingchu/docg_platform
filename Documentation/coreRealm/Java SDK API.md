@@ -4555,6 +4555,17 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 反转后的关系实体列表
      */
     public List<RelationEntity> invertRelationEntitiesDirection(List<String> relationEntityUIDs) throws CoreRealmServiceRuntimeException;
+
+	/**
+     * 输入一组关系实体的唯一值ID和一个概念实体唯一值ID，根据 relationDirection 指定的关系方向，将关系重新定向到概念实体唯一值ID表示的概念实体上
+     *
+     * @param relationEntityUIDs List<String> 关系实体唯一值ID列表
+     * @param targetConceptionEntityUID String 目标概念实体唯一值ID,该参数为必填项,不能为null值
+     * @param relationDirection RelationDirection 需要重定向的关联关系方向,该参数为必填项,不能为null值，且不能为 TWO-WAY 方向
+     *
+     * @return 重定向后的关系实体列表
+     */
+    public List<RelationEntity> redirectRelationsToNewConceptionEntity(List<String> relationEntityUIDs,String targetConceptionEntityUID,RelationDirection relationDirection) throws CoreRealmServiceRuntimeException;
 ```
 
 ###### ↳ SystemMaintenanceOperator

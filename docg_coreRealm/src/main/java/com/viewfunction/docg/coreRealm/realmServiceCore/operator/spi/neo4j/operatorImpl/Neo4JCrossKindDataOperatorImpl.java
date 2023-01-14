@@ -926,7 +926,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public List<RelationEntity> redirectRelationsToNewConceptionEntity(List<String> relationEntityUIDs, List<String> targetConceptionEntityUIDs, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException {
+    public List<RelationEntity> redirectRelationsToNewConceptionEntity(List<String> relationEntityUIDs, String targetConceptionEntityUID, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException {
         //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.from/
         //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.to/
         if(relationEntityUIDs == null || relationEntityUIDs.size() == 0){
@@ -935,10 +935,10 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             e1.setCauseMessage("At lease one relationEntityUID is required");
             throw e1;
         }
-        if(targetConceptionEntityUIDs == null || targetConceptionEntityUIDs.size() == 0){
-            logger.error("At lease one targetConceptionEntityUID is required");
+        if(targetConceptionEntityUID == null){
+            logger.error("Param targetConceptionEntityUID in method redirectRelationsToNewConceptionEntity is required");
             CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
-            e1.setCauseMessage("At lease one targetConceptionEntityUID is required");
+            e1.setCauseMessage("Param targetConceptionEntityUID in method redirectRelationsToNewConceptionEntity is required");
             throw e1;
         }
         if(relationDirection == null){
@@ -964,7 +964,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         String cypherProcedureString = "MATCH ()-[rel]->()\n" +
                 "WHERE id(rel) IN "+relationEntityUIDs.toString()+"\n" +
                 "MATCH (target)\n" +
-                "WHERE id(target) IN "+targetConceptionEntityUIDs.toString()+"\n" +
+                "WHERE id(target) = "+targetConceptionEntityUID+"\n" +
                 redirectLogicCQL+"\n" +
                 "YIELD output\n" +
                 "RETURN output AS operationResult;";
