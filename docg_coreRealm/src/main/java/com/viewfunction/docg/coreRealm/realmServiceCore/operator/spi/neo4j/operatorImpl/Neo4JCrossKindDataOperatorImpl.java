@@ -907,7 +907,6 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
         String cypherProcedureString = "MATCH (source)-[rel]->(target)\n" +
                 "WHERE id(rel) IN "+relationEntityUIDs.toString()+"\n" +
-                //"WITH collect(rel) AS rels\n" +
                 "CALL apoc.refactor.invert(rel)\n"+
                 "YIELD output\n" +
                 "RETURN output AS operationResult;";
@@ -930,6 +929,11 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     public List<RelationEntity> redirectRelationsToNewConceptionEntity(List<String> relationEntityUIDs, String targetConceptionEntityUID, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException {
         //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.from/
         //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.to/
+
+
+
+
+
 
         return null;
     }
