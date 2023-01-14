@@ -4535,6 +4535,17 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 新建的关系实体列表
      */
     public List<RelationEntity> changeEntitiesRelationKind(List<String> relationEntityUIDs,String newRelationKind) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 输入一组概念实体的唯一值ID，将其中类型名称为 oldConceptionKind 的实体的概念类型改为 newConceptionKind 指定的新类型
+     *
+     * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
+     * @param oldConceptionKind String 需要修改的实体的概念类型名称,该参数为必填项,不能为null值
+     * @param newConceptionKind String 需要改为的新概念类型的名称,该参数为必填项,不能为null值
+     *
+     * @return 修改过的的概念实体列表
+     */
+    public List<ConceptionEntity> changeEntitiesConceptionKind(List<String> conceptionEntityUIDs,String oldConceptionKind,String newConceptionKind) throws CoreRealmServiceRuntimeException;
 ```
 
 ###### ↳ SystemMaintenanceOperator

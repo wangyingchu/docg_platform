@@ -848,9 +848,51 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public List<ConceptionEntity> changeEntitiesConceptionKind(List<String> conceptionEntityUIDs, String newConceptionKind) {
-        //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.rename.label/
-        return null;
+    public List<ConceptionEntity> changeEntitiesConceptionKind(List<String> conceptionEntityUIDs, String oldConceptionKind,String newConceptionKind) throws CoreRealmServiceRuntimeException {
+        if(conceptionEntityUIDs == null || conceptionEntityUIDs.size() == 0){
+            logger.error("At lease one relationEntityUID is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("At lease one relationEntityUID is required");
+            throw e1;
+        }
+        if(oldConceptionKind == null){
+            logger.error("Param oldConceptionKind in method changeEntitiesConceptionKind is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("Param oldConceptionKind in method changeEntitiesConceptionKind is required");
+            throw e1;
+        }
+        if(newConceptionKind == null){
+            logger.error("Param newConceptionKind in method changeEntitiesConceptionKind is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("Param newConceptionKind in method changeEntitiesConceptionKind is required");
+            throw e1;
+        }
+
+        String cypherProcedureString = "MATCH (targetNodes:"+oldConceptionKind+") WHERE id(targetNodes) IN " + conceptionEntityUIDs.toString()+"\n"+
+                "SET targetNodes:"+newConceptionKind +"\n"+
+                "REMOVE targetNodes:"+oldConceptionKind +"\n"+
+                "RETURN count(targetNodes) AS operationResult;";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        String cypherProcedureString2 = "MATCH (targetNodes:"+newConceptionKind+") WHERE id(targetNodes) IN " + conceptionEntityUIDs.toString()+"\n"+
+                "RETURN targetNodes AS operationResult;";
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            workingGraphOperationExecutor.executeWrite(new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    return null;
+                }
+            }, cypherProcedureString);
+
+            GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(newConceptionKind,
+                    this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object conceptionEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,cypherProcedureString2);
+            return conceptionEntityList != null ? (List<ConceptionEntity>)conceptionEntityList : null;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
