@@ -926,15 +926,60 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public List<RelationEntity> redirectRelationsToNewConceptionEntity(List<String> relationEntityUIDs, String targetConceptionEntityUID, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException {
+    public List<RelationEntity> redirectRelationsToNewConceptionEntity(List<String> relationEntityUIDs, List<String> targetConceptionEntityUIDs, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException {
         //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.from/
         //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.to/
+        if(relationEntityUIDs == null || relationEntityUIDs.size() == 0){
+            logger.error("At lease one relationEntityUID is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("At lease one relationEntityUID is required");
+            throw e1;
+        }
+        if(targetConceptionEntityUIDs == null || targetConceptionEntityUIDs.size() == 0){
+            logger.error("At lease one targetConceptionEntityUID is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("At lease one targetConceptionEntityUID is required");
+            throw e1;
+        }
+        if(relationDirection == null){
+            logger.error("Param relationDirection in method redirectRelationsToNewConceptionEntity is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("Param relationDirection in method redirectRelationsToNewConceptionEntity is required");
+            throw e1;
+        }
+        if(relationDirection.equals(RelationDirection.TWO_WAY)){
+            logger.error("Param relationDirection in method redirectRelationsToNewConceptionEntity can't be TWO_WAY direction");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("Param relationDirection in method redirectRelationsToNewConceptionEntity can't be TWO_WAY direction");
+            throw e1;
+        }
 
+        String redirectLogicCQL="";
+        switch(relationDirection) {
+            case FROM ->
+                    redirectLogicCQL = "CALL apoc.refactor.from(rel, target)";
+            case TO ->
+                    redirectLogicCQL = "CALL apoc.refactor.to(rel, target)";
+        }
+        String cypherProcedureString = "MATCH ()-[rel]->()\n" +
+                "WHERE id(rel) IN "+relationEntityUIDs.toString()+"\n" +
+                "MATCH (target)\n" +
+                "WHERE id(target) IN "+targetConceptionEntityUIDs.toString()+"\n" +
+                redirectLogicCQL+"\n" +
+                "YIELD output\n" +
+                "RETURN output AS operationResult;";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
-
-
-
-
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(null,workingGraphOperationExecutor,false);;
+            Object queryRes = workingGraphOperationExecutor.executeWrite(getListRelationEntityTransformer,cypherProcedureString);
+            if(queryRes != null){
+                return (List<RelationEntity>)queryRes;
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
         return null;
     }
 

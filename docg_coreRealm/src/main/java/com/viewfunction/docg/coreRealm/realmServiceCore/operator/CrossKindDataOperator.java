@@ -249,7 +249,7 @@ public interface CrossKindDataOperator {
      */
     public List<RelationEntity> invertRelationEntitiesDirection(List<String> relationEntityUIDs) throws CoreRealmServiceRuntimeException;
 
-    public List<RelationEntity> redirectRelationsToNewConceptionEntity(List<String> relationEntityUIDs,String targetConceptionEntityUID,RelationDirection relationDirection) throws CoreRealmServiceRuntimeException;
+    public List<RelationEntity> redirectRelationsToNewConceptionEntity(List<String> relationEntityUIDs,List<String> targetConceptionEntityUIDs,RelationDirection relationDirection) throws CoreRealmServiceRuntimeException;
 
     public ConceptionEntity mergeConceptionEntities(String remainsConceptionEntityUID,List<String> mergedConceptionEntitiesUIDs) throws CoreRealmServiceRuntimeException;
 
