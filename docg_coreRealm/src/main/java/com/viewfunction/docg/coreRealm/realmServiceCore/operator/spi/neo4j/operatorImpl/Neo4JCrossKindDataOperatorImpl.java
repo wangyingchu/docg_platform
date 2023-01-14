@@ -896,13 +896,38 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public List<RelationEntity> invertRelationEntitiesDirection(List<String> relationEntityUIDs) {
+    public List<RelationEntity> invertRelationEntitiesDirection(List<String> relationEntityUIDs) throws CoreRealmServiceRuntimeException {
         https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.invert/
+        if(relationEntityUIDs == null || relationEntityUIDs.size() == 0){
+            logger.error("At lease one relationEntityUID is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("At lease one relationEntityUID is required");
+            throw e1;
+        }
+
+        String cypherProcedureString = "MATCH (source)-[rel]->(target)\n" +
+                "WHERE id(rel) IN "+relationEntityUIDs.toString()+"\n" +
+                //"WITH collect(rel) AS rels\n" +
+                "CALL apoc.refactor.invert(rel)\n"+
+                "YIELD output\n" +
+                "RETURN output AS operationResult;";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(null,workingGraphOperationExecutor,false);;
+            Object queryRes = workingGraphOperationExecutor.executeWrite(getListRelationEntityTransformer,cypherProcedureString);
+            if(queryRes != null){
+                return (List<RelationEntity>)queryRes;
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
         return null;
     }
 
     @Override
-    public List<RelationEntity> redirectRelationsToNewConceptionEntity(List<String> relationEntityUIDs, String targetConceptionEntityUID, RelationDirection relationDirection) {
+    public List<RelationEntity> redirectRelationsToNewConceptionEntity(List<String> relationEntityUIDs, String targetConceptionEntityUID, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException {
         //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.from/
         //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.to/
 
@@ -910,19 +935,19 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public ConceptionEntity mergeConceptionEntities(String remainsConceptionEntityUID, List<String> mergedConceptionEntitiesUIDs) {
+    public ConceptionEntity mergeConceptionEntities(String remainsConceptionEntityUID, List<String> mergedConceptionEntitiesUIDs) throws CoreRealmServiceRuntimeException {
         //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.mergeNodes/
         return null;
     }
 
     @Override
-    public RelationEntity mergeRelationEntities(String remainsRelationEntityUID, List<String> mergedRelationEntitiesUIDs) {
+    public RelationEntity mergeRelationEntities(String remainsRelationEntityUID, List<String> mergedRelationEntitiesUIDs) throws CoreRealmServiceRuntimeException {
         //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.mergeRelationships/
         return null;
     }
 
     @Override
-    public RelationEntity mergeRelationsOfConceptionEntityPair(String fromConceptionEntityUID, String toConceptionEntityUID, String newRelationKind) {
+    public RelationEntity mergeRelationsOfConceptionEntityPair(String fromConceptionEntityUID, String toConceptionEntityUID, String newRelationKind) throws CoreRealmServiceRuntimeException {
         //https://neo4j.com/docs/apoc/current/overview/apoc.merge/apoc.merge.relationship/
         return null;
     }

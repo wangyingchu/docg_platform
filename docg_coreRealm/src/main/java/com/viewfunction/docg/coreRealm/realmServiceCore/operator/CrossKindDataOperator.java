@@ -240,13 +240,20 @@ public interface CrossKindDataOperator {
      */
     public List<ConceptionEntity> changeEntitiesConceptionKind(List<String> conceptionEntityUIDs,String oldConceptionKind,String newConceptionKind) throws CoreRealmServiceRuntimeException;
 
-    public List<RelationEntity> invertRelationEntitiesDirection(List<String> relationEntityUIDs);
+    /**
+     * 输入一组关系实体的唯一值ID，将这些实体所关联的概念实体的指向反转，反转后输入的关系实体的唯一值ID将会重新生成，原唯一值ID失效
+     *
+     * @param relationEntityUIDs List<String> 关系实体唯一值ID列表
+     *
+     * @return 反转后的关系实体列表
+     */
+    public List<RelationEntity> invertRelationEntitiesDirection(List<String> relationEntityUIDs) throws CoreRealmServiceRuntimeException;
 
-    public List<RelationEntity> redirectRelationsToNewConceptionEntity(List<String> relationEntityUIDs,String targetConceptionEntityUID,RelationDirection relationDirection);
+    public List<RelationEntity> redirectRelationsToNewConceptionEntity(List<String> relationEntityUIDs,String targetConceptionEntityUID,RelationDirection relationDirection) throws CoreRealmServiceRuntimeException;
 
-    public ConceptionEntity mergeConceptionEntities(String remainsConceptionEntityUID,List<String> mergedConceptionEntitiesUIDs);
+    public ConceptionEntity mergeConceptionEntities(String remainsConceptionEntityUID,List<String> mergedConceptionEntitiesUIDs) throws CoreRealmServiceRuntimeException;
 
-    public RelationEntity mergeRelationEntities(String remainsRelationEntityUID,List<String> mergedRelationEntitiesUIDs);
+    public RelationEntity mergeRelationEntities(String remainsRelationEntityUID,List<String> mergedRelationEntitiesUIDs) throws CoreRealmServiceRuntimeException;
 
-    public RelationEntity mergeRelationsOfConceptionEntityPair(String fromConceptionEntityUID, String toConceptionEntityUID,String newRelationKind);
+    public RelationEntity mergeRelationsOfConceptionEntityPair(String fromConceptionEntityUID, String toConceptionEntityUID,String newRelationKind) throws CoreRealmServiceRuntimeException;
 }

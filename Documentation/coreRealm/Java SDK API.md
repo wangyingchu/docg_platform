@@ -4546,6 +4546,15 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 修改过的的概念实体列表
      */
     public List<ConceptionEntity> changeEntitiesConceptionKind(List<String> conceptionEntityUIDs,String oldConceptionKind,String newConceptionKind) throws CoreRealmServiceRuntimeException;
+
+	/**
+     * 输入一组关系实体的唯一值ID，将这些实体所关联的概念实体的指向反转，反转后输入的关系实体的唯一值ID将会重新生成，原唯一值ID失效
+     *
+     * @param relationEntityUIDs List<String> 关系实体唯一值ID列表
+     *
+     * @return 反转后的关系实体列表
+     */
+    public List<RelationEntity> invertRelationEntitiesDirection(List<String> relationEntityUIDs) throws CoreRealmServiceRuntimeException;
 ```
 
 ###### ↳ SystemMaintenanceOperator
