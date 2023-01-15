@@ -270,6 +270,14 @@ public interface CrossKindDataOperator {
      */
     public ConceptionEntity mergeConceptionEntities(String remainsConceptionEntityUID,List<String> mergedConceptionEntitiesUIDs) throws CoreRealmServiceRuntimeException;
 
+    /**
+     * 输入一个保留关系实体唯一值ID和一组待合并关系实体唯一值ID列表，所有这些关系实体都必须有相同的起点和终点概念实体。将所有待合并关系实体中的属性合并到保留关系实体中并删除所有待合并关系实体,保留关系实体的关系类型不变
+     *
+     * @param remainsRelationEntityUID String 保留关系实体唯一值ID,该参数为必填项,不能为null值
+     * @param mergedRelationEntitiesUIDs List<String> 待合并关系实体唯一值ID列表
+     *
+     * @return 合并操作完成后的保留关系实体实例
+     */
     public RelationEntity mergeRelationEntities(String remainsRelationEntityUID,List<String> mergedRelationEntitiesUIDs) throws CoreRealmServiceRuntimeException;
 
     public RelationEntity mergeRelationsOfConceptionEntityPair(String fromConceptionEntityUID, String toConceptionEntityUID,String newRelationKind) throws CoreRealmServiceRuntimeException;

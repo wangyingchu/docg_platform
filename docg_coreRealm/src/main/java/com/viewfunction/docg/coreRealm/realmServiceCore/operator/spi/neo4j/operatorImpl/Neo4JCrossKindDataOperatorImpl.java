@@ -1023,13 +1023,52 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
-
         return null;
     }
 
     @Override
     public RelationEntity mergeRelationEntities(String remainsRelationEntityUID, List<String> mergedRelationEntitiesUIDs) throws CoreRealmServiceRuntimeException {
         //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.mergeRelationships/
+        if(remainsRelationEntityUID == null){
+            logger.error("Param remainsRelationEntityUID in method mergeConceptionEntities is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("Param remainsRelationEntityUID in method mergeConceptionEntities is required");
+            throw e1;
+        }
+        if(mergedRelationEntitiesUIDs == null || mergedRelationEntitiesUIDs.size() == 0){
+            logger.error("At lease one mergedRelationEntitiesUID is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("At lease one mergedRelationEntitiesUID is required");
+            throw e1;
+        }
+
+        ArrayList allRelationEntitiesUIDList = new ArrayList();
+        allRelationEntitiesUIDList.add(remainsRelationEntityUID);
+        allRelationEntitiesUIDList.addAll(mergedRelationEntitiesUIDs);
+
+        String cypherProcedureString = "MATCH ()-[targetRel]->() WHERE id(targetRel) IN " + allRelationEntitiesUIDList.toString()+"\n"+
+                "WITH collect(targetRel) as rels\n"+
+                "CALL apoc.refactor.mergeRelationships(rels,{\n" +
+                "  properties:\"combine\"\n" +
+                "})"+
+                "YIELD rel\n" +
+                "RETURN rel as operationResult";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer(null,workingGraphOperationExecutor);
+            Object queryRes = workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer,cypherProcedureString);
+            if(queryRes != null){
+                return (RelationEntity)queryRes;
+            }
+        }catch (org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
         return null;
     }
 

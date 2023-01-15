@@ -45,7 +45,7 @@ public class GetSingleRelationEntityTransformer implements DataTransformer<Relat
                     String fromEntityUID = ""+resultRelationship.startNodeId();
                     String toEntityUID = ""+resultRelationship.endNodeId();
                     Neo4JRelationEntityImpl neo4jRelationEntityImpl =
-                            new Neo4JRelationEntityImpl(targetRelationKindName,relationEntityUID,fromEntityUID,toEntityUID);
+                            new Neo4JRelationEntityImpl(relationType,relationEntityUID,fromEntityUID,toEntityUID);
                     if(sourceNode != null){
                         Iterable<String> sourceNodeLabels = sourceNode.labels();
                         List<String> sourceNodeLabelList = Lists.newArrayList(sourceNodeLabels);
