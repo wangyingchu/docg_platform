@@ -1004,7 +1004,8 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         allConceptionEntitiesUIDList.addAll(mergedConceptionEntitiesUIDs);
 
         String cypherProcedureString = "MATCH (targetNodes) WHERE id(targetNodes) IN " + allConceptionEntitiesUIDList.toString()+"\n"+
-                "CALL apoc.refactor.mergeNodes(targetNodes,{\n" +
+                "WITH collect(targetNodes) as nodes\n"+
+                "CALL apoc.refactor.mergeNodes(nodes,{\n" +
                 "  properties:\"combine\",\n" +
                 "  mergeRels:true\n" +
                 "})"+

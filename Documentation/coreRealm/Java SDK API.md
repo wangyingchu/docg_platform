@@ -4566,6 +4566,16 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 重定向后的关系实体列表
      */
     public List<RelationEntity> redirectRelationsToNewConceptionEntity(List<String> relationEntityUIDs,String targetConceptionEntityUID,RelationDirection relationDirection) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 输入一个保留概念实体唯一值ID和一组待合并概念实体唯一值ID列表，将所有待合并概念实体中的属性与关联关系合并到保留概念实体中并删除所有待合并概念实体
+     *
+     * @param remainsConceptionEntityUID String 保留概念实体唯一值ID,该参数为必填项,不能为null值
+     * @param mergedConceptionEntitiesUIDs List<String> 待合并概念实体唯一值ID列表
+     *
+     * @return 合并操作完成后的保留概念实体实例
+     */
+    public ConceptionEntity mergeConceptionEntities(String remainsConceptionEntityUID,List<String> mergedConceptionEntitiesUIDs) throws CoreRealmServiceRuntimeException;
 ```
 
 ###### ↳ SystemMaintenanceOperator
