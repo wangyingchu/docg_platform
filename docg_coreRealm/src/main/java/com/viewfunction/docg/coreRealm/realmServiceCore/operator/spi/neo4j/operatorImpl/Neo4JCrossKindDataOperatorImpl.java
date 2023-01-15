@@ -672,7 +672,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                         createRelAccordingToAllowRepeatPart;
                 logger.debug("Generated Cypher Statement: {}", creatRelationCQL);
 
-                GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(sourceToTargetRelationKindName,workingGraphOperationExecutor,false);;
+                GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(sourceToTargetRelationKindName,workingGraphOperationExecutor,false);
                 queryRes = workingGraphOperationExecutor.executeWrite(getListRelationEntityTransformer,creatRelationCQL);
                 if(queryRes != null){
                     return (List<RelationEntity>)queryRes;
@@ -718,7 +718,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                     createRelAccordingToAllowRepeatPart;
             logger.debug("Generated Cypher Statement: {}", creatRelationCQL);
 
-            GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(sourceToTargetRelationKindName,workingGraphOperationExecutor,false);;
+            GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(sourceToTargetRelationKindName,workingGraphOperationExecutor,false);
             Object queryRes = workingGraphOperationExecutor.executeWrite(getListRelationEntityTransformer,creatRelationCQL);
             if(queryRes != null){
                 return (List<RelationEntity>)queryRes;
@@ -800,7 +800,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
-            GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(relationKindName,workingGraphOperationExecutor,false);;
+            GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(relationKindName,workingGraphOperationExecutor,false);
             Object queryRes = workingGraphOperationExecutor.executeWrite(getListRelationEntityTransformer,cypherProcedureString);
             if(queryRes != null){
                 return (List<RelationEntity>)queryRes;
@@ -836,7 +836,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
-            GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(newRelationKind,workingGraphOperationExecutor,false);;
+            GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(newRelationKind,workingGraphOperationExecutor,false);
             Object queryRes = workingGraphOperationExecutor.executeWrite(getListRelationEntityTransformer,cypherProcedureString);
             if(queryRes != null){
                 return (List<RelationEntity>)queryRes;
@@ -914,7 +914,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
-            GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(null,workingGraphOperationExecutor,false);;
+            GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(null,workingGraphOperationExecutor,false);
             Object queryRes = workingGraphOperationExecutor.executeWrite(getListRelationEntityTransformer,cypherProcedureString);
             if(queryRes != null){
                 return (List<RelationEntity>)queryRes;
@@ -972,7 +972,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
-            GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(null,workingGraphOperationExecutor,false);;
+            GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(null,workingGraphOperationExecutor,false);
             Object queryRes = workingGraphOperationExecutor.executeWrite(getListRelationEntityTransformer,cypherProcedureString);
             if(queryRes != null){
                 return (List<RelationEntity>)queryRes;
@@ -986,6 +986,43 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     @Override
     public ConceptionEntity mergeConceptionEntities(String remainsConceptionEntityUID, List<String> mergedConceptionEntitiesUIDs) throws CoreRealmServiceRuntimeException {
         //https://neo4j.com/docs/apoc/current/overview/apoc.refactor/apoc.refactor.mergeNodes/
+        if(remainsConceptionEntityUID == null){
+            logger.error("Param remainsConceptionEntityUID in method mergeConceptionEntities is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("Param remainsConceptionEntityUID in method mergeConceptionEntities is required");
+            throw e1;
+        }
+        if(mergedConceptionEntitiesUIDs == null || mergedConceptionEntitiesUIDs.size() == 0){
+            logger.error("At lease one mergedConceptionEntitiesUID is required");
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage("At lease one mergedConceptionEntitiesUID is required");
+            throw e1;
+        }
+
+        ArrayList allConceptionEntitiesUIDList = new ArrayList();
+        allConceptionEntitiesUIDList.add(remainsConceptionEntityUID);
+        allConceptionEntitiesUIDList.addAll(mergedConceptionEntitiesUIDs);
+
+        String cypherProcedureString = "MATCH (targetNodes) WHERE id(targetNodes) IN " + allConceptionEntitiesUIDList.toString()+"\n"+
+                "CALL apoc.refactor.mergeNodes(targetNodes,{\n" +
+                "  properties:\"combine\",\n" +
+                "  mergeRels:true\n" +
+                "})"+
+                "YIELD node\n" +
+                "RETURN node as operationResult";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer = new GetSingleConceptionEntityTransformer(null,workingGraphOperationExecutor);
+            Object queryRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,cypherProcedureString);
+            if(queryRes != null){
+                return (ConceptionEntity)queryRes;
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+
         return null;
     }
 
