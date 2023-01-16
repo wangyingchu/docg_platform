@@ -280,5 +280,5 @@ public interface CrossKindDataOperator {
      */
     public RelationEntity mergeRelationEntities(String remainsRelationEntityUID,List<String> mergedRelationEntitiesUIDs) throws CoreRealmServiceRuntimeException;
 
-    public RelationEntity mergeRelationsOfConceptionEntityPair(String fromConceptionEntityUID, String toConceptionEntityUID,String newRelationKind) throws CoreRealmServiceRuntimeException;
+    public RelationEntity mergeRelationsOfConceptionEntityPair(String fromConceptionEntityUID, String toConceptionEntityUID,String targetRelationKind) throws CoreRealmServiceRuntimeException;
 }
