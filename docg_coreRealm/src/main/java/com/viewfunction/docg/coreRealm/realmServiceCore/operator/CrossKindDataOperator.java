@@ -279,6 +279,4 @@ public interface CrossKindDataOperator {
      * @return 合并操作完成后的保留关系实体实例
      */
     public RelationEntity mergeRelationEntities(String remainsRelationEntityUID,List<String> mergedRelationEntitiesUIDs) throws CoreRealmServiceRuntimeException;
-
-    public RelationEntity mergeRelationsOfConceptionEntityPair(String fromConceptionEntityUID, String toConceptionEntityUID,String targetRelationKind) throws CoreRealmServiceRuntimeException;
 }

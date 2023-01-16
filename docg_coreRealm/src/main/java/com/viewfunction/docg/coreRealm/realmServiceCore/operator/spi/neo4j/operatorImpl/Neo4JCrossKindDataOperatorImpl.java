@@ -1072,12 +1072,6 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         return null;
     }
 
-    @Override
-    public RelationEntity mergeRelationsOfConceptionEntityPair(String fromConceptionEntityUID, String toConceptionEntityUID, String targetRelationKind) throws CoreRealmServiceRuntimeException {
-        //https://neo4j.com/docs/apoc/current/overview/apoc.merge/apoc.merge.relationship/
-        return null;
-    }
-
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }
