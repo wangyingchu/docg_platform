@@ -166,7 +166,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
         String relationKindsString = ( relationKindList == null || relationKindList.size() == 0) ? "'*'" :
                 getKindNamesArrayString(relationKindList);
         String globalKindPropertiesString = getGlobalKindPropertiesString(conceptionKindAttributeSet,relationKindAttributeSet);
-        String cypherProcedureString = "CALL gds.graph.create('"+graphName+"', "+conceptionKindsString+", "+ relationKindsString+globalKindPropertiesString+")";
+        String cypherProcedureString = "CALL gds.graph.project('"+graphName+"', "+conceptionKindsString+", "+ relationKindsString+globalKindPropertiesString+")";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
         return executeCreateAnalyzableGraphOperation(graphName,cypherProcedureString);
@@ -186,7 +186,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
             throw e;
         }
 
-        String cypherProcedureString = "CALL gds.graph.create('"+graphName+"','*','*')";
+        String cypherProcedureString = "CALL gds.graph.project('"+graphName+"','*','*')";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
         return executeCreateAnalyzableGraphOperation(graphName,cypherProcedureString);
@@ -239,7 +239,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
 
         String relationKindDefinitionStr = getRelationKindAndAttributesDefinition(relationKindsPropertyConfigInfoMap,
                 relationKindsOrientationConfigInfoMap,relationKindsAggregationConfigInfoMap);
-        String cypherProcedureString = "CALL gds.graph.create('"+graphName+"',"+conceptionKindDefinitionStr+","+relationKindDefinitionStr+")";
+        String cypherProcedureString = "CALL gds.graph.project('"+graphName+"',"+conceptionKindDefinitionStr+","+relationKindDefinitionStr+")";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
         return executeCreateAnalyzableGraphOperation(graphName,cypherProcedureString);
@@ -258,7 +258,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
             e.setCauseMessage("AnalyzableGraph with name "+graphName+" already exist");
             throw e;
         }
-        String cypherProcedureString = "CALL gds.graph.create.cypher(\n" +
+        String cypherProcedureString = "CALL gds.graph.project.cypher(\n" +
                 "    '"+graphName+"',\n" +
                 "    '"+conceptionEntitiesQuery+"',\n" +
                 "    '"+relationEntitiesQuery+"'\n" +
@@ -349,6 +349,8 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
                 "  samplingSize: "+betweennessCentralityAlgorithmConfig.getSamplingSize().intValue()+",\n" : "";
         String samplingSeedAttributeCQLPart = betweennessCentralityAlgorithmConfig.getSamplingSeed() != null ?
                 "  samplingSeed: "+betweennessCentralityAlgorithmConfig.getSamplingSeed().intValue()+",\n" : "";
+        String relationWeightAttributeCQLPart = betweennessCentralityAlgorithmConfig.getRelationWeightAttribute() != null ?
+                "  relationshipWeightProperty: '"+betweennessCentralityAlgorithmConfig.getRelationWeightAttribute()+"',\n" : "";
         String orderCQLPart = betweennessCentralityAlgorithmConfig.getScoreSortingLogic()!= null ?
                 "ORDER BY score "+betweennessCentralityAlgorithmConfig.getScoreSortingLogic().toString() : "";
 
@@ -358,6 +360,7 @@ public class Neo4JDataScienceOperatorImpl implements DataScienceOperator {
                 relationshipTypes +
                 samplingSizeAttributeCQLPart +
                 samplingSeedAttributeCQLPart +
+                relationWeightAttributeCQLPart +
                 "  concurrency: 4 \n" +
                 "})\n" +
                 "YIELD nodeId, score\n" +

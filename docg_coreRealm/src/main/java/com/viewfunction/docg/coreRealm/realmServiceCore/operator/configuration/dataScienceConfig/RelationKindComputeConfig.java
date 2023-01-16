@@ -14,26 +14,26 @@ public class RelationKindComputeConfig {
 
     public RelationKindComputeConfig(String relationKindName){
         this.relationKindName = relationKindName;
-        this.relationKindAttributes = new HashSet<>();
+        this.setRelationKindAttributes(new HashSet<>());
     }
 
     public RelationKindComputeConfig(String relationKindName, DataScienceOperator.ComputeOrientation relationComputeOrientation){
         this.relationKindName = relationKindName;
         this.relationComputeOrientation = relationComputeOrientation;
-        this.relationKindAttributes = new HashSet<>();
+        this.setRelationKindAttributes(new HashSet<>());
     }
 
     public RelationKindComputeConfig(String relationKindName, DataScienceOperator.ComputeAggregation relationComputeAggregation){
         this.relationKindName = relationKindName;
         this.relationComputeAggregation = relationComputeAggregation;
-        this.relationKindAttributes = new HashSet<>();
+        this.setRelationKindAttributes(new HashSet<>());
     }
 
     public RelationKindComputeConfig(String relationKindName, DataScienceOperator.ComputeOrientation relationComputeOrientation, DataScienceOperator.ComputeAggregation relationComputeAggregation){
         this.relationKindName = relationKindName;
         this.relationComputeOrientation = relationComputeOrientation;
         this.relationComputeAggregation = relationComputeAggregation;
-        this.relationKindAttributes = new HashSet<>();
+        this.setRelationKindAttributes(new HashSet<>());
     }
 
     public String getRelationKindName() {
@@ -62,5 +62,9 @@ public class RelationKindComputeConfig {
 
     public Set<String> getRelationKindAttributes() {
         return relationKindAttributes;
+    }
+
+    public void setRelationKindAttributes(Set<String> relationKindAttributes) {
+        this.relationKindAttributes = relationKindAttributes;
     }
 }

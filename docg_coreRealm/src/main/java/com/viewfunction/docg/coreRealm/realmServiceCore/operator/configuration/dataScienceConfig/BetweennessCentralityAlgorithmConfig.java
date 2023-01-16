@@ -6,6 +6,7 @@ public class BetweennessCentralityAlgorithmConfig extends ResultPaginationableCo
 
     private Integer samplingSize;
     private Integer samplingSeed;
+    private String relationWeightAttribute;
     private DataScienceOperator.ValueScalerLogic valueScalerLogic;
     private DataScienceOperator.ValueSortingLogic valueSortingLogic;
 
@@ -39,5 +40,13 @@ public class BetweennessCentralityAlgorithmConfig extends ResultPaginationableCo
 
     public void setScoreSortingLogic(DataScienceOperator.ValueSortingLogic valueSortingLogic) {
         this.valueSortingLogic = valueSortingLogic;
+    }
+
+    public String getRelationWeightAttribute() {
+        return relationWeightAttribute;
+    }
+
+    public void setRelationWeightAttribute(String relationWeightAttribute) {
+        this.relationWeightAttribute = relationWeightAttribute;
     }
 }
