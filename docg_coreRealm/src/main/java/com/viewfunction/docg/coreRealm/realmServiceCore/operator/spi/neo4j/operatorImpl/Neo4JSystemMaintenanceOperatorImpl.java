@@ -537,6 +537,11 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         return null;
     }
 
+    @Override
+    public Set<ConceptionKindCorrelationInfo> getAllDataRelationDistributionStatistics() {
+        return null;
+    }
+
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }

@@ -108,4 +108,6 @@ public interface SystemMaintenanceOperator {
      * @return 所有概念类型之间的关联关系信息集合
      */
     public Set<ConceptionKindCorrelationInfo> getSystemConceptionKindsRelationDistributionStatistics();
+
+    public Set<ConceptionKindCorrelationInfo> getAllDataRelationDistributionStatistics();
 }
