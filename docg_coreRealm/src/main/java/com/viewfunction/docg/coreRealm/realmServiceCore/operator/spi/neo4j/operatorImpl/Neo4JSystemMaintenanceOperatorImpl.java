@@ -516,15 +516,12 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                         if(conceptionKindId_nameMapping.get(startConceptionKindId).startsWith(RealmConstant.RealmInnerTypePerFix) &
                                 conceptionKindId_nameMapping.get(endConceptionKindId).startsWith(RealmConstant.RealmInnerTypePerFix)){
                         }else{
-                            long existingRelCount = checkRelationEntitiesCount(workingGraphOperationExecutor,conceptionKindId_nameMapping.get(startConceptionKindId),conceptionKindId_nameMapping.get(endConceptionKindId),relationshipType);
-                            if(existingRelCount != 0){
-                                ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
-                                        new ConceptionKindCorrelationInfo(
-                                                conceptionKindId_nameMapping.get(startConceptionKindId),
-                                                conceptionKindId_nameMapping.get(endConceptionKindId),
-                                                relationshipType,existingRelCount);
-                                conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
-                            }
+                            ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
+                                    new ConceptionKindCorrelationInfo(
+                                            conceptionKindId_nameMapping.get(startConceptionKindId),
+                                            conceptionKindId_nameMapping.get(endConceptionKindId),
+                                            relationshipType,1);
+                            conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
                         }
                     }
                     return conceptionKindCorrelationInfoSet;
