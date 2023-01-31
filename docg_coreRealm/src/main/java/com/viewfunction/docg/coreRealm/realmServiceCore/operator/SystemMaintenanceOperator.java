@@ -109,5 +109,10 @@ public interface SystemMaintenanceOperator {
      */
     public Set<ConceptionKindCorrelationInfo> getSystemConceptionKindsRelationDistributionStatistics();
 
+    /**
+     * 统计系统中包含内部概念类型实体在内的所有概念类型实体与其他概念类型实体之间的实时关联关系信息
+     *
+     * @return 所有概念类型之间的关联关系信息集合
+     */
     public Set<ConceptionKindCorrelationInfo> getAllDataRelationDistributionStatistics();
 }
