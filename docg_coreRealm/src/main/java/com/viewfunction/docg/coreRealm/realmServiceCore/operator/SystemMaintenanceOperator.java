@@ -4,6 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface SystemMaintenanceOperator {
@@ -37,6 +38,12 @@ public interface SystemMaintenanceOperator {
      */
     public List<AttributeSystemInfo> getConceptionKindAttributesSystemInfo(String conceptionKindName);
 
+
+
+    public Map<String,List<AttributeSystemInfo>> getAllConceptionKindsAttributesSystemInfo();
+
+
+
     /**
      * 查询指定关系类型的实体数据中的属性的系统信息
      *
@@ -45,6 +52,12 @@ public interface SystemMaintenanceOperator {
      * @return 属性系统信息列表
      */
     public List<AttributeSystemInfo> getRelationKindAttributesSystemInfo(String relationKindName);
+
+
+
+    public Map<String,List<AttributeSystemInfo>> getAllRelationKindsAttributesSystemInfo();
+
+
 
     /**
      * 在当前领域模型中创建针对概念类型的搜索索引

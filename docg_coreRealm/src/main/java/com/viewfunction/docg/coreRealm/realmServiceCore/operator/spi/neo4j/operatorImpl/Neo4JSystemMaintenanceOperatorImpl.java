@@ -214,6 +214,11 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
     }
 
     @Override
+    public Map<String, List<AttributeSystemInfo>> getAllConceptionKindsAttributesSystemInfo() {
+        return null;
+    }
+
+    @Override
     public List<AttributeSystemInfo> getRelationKindAttributesSystemInfo(String relationKindName) {
         /*
         Example:
@@ -243,6 +248,11 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
+    }
+
+    @Override
+    public Map<String, List<AttributeSystemInfo>> getAllRelationKindsAttributesSystemInfo() {
+        return null;
     }
 
     @Override
