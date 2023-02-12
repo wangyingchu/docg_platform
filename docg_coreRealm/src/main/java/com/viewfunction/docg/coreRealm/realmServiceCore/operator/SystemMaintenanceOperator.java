@@ -38,11 +38,12 @@ public interface SystemMaintenanceOperator {
      */
     public List<AttributeSystemInfo> getConceptionKindAttributesSystemInfo(String conceptionKindName);
 
-
-
+    /**
+     * 查询所有概念类型的实体数据中的属性的系统信息
+     *
+     * @return 所有的概念类型名称与其中包含的属性系统信息列表的映射字典
+     */
     public Map<String,List<AttributeSystemInfo>> getAllConceptionKindsAttributesSystemInfo();
-
-
 
     /**
      * 查询指定关系类型的实体数据中的属性的系统信息
@@ -53,11 +54,12 @@ public interface SystemMaintenanceOperator {
      */
     public List<AttributeSystemInfo> getRelationKindAttributesSystemInfo(String relationKindName);
 
-
-
+    /**
+     * 查询所有关系类型的实体数据中的属性的系统信息
+     *
+     * @return 所有的关系类型名称与其中包含的属性系统信息列表的映射字典
+     */
     public Map<String,List<AttributeSystemInfo>> getAllRelationKindsAttributesSystemInfo();
-
-
 
     /**
      * 在当前领域模型中创建针对概念类型的搜索索引
