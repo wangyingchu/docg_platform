@@ -14,6 +14,9 @@ public class SystemStatusSnapshotInfo {
     private long freeDiskSpaceSize;
     private long usableDiskSpaceSize;
     private double freeDiskPercent;
+    private String systemImplementationTech;
+    private String systemImplementationVersion;
+    private String systemImplementationEdition;
 
     public SystemStatusSnapshotInfo(){
         this.snapshotTookTime = new Date().getTime();
@@ -93,5 +96,29 @@ public class SystemStatusSnapshotInfo {
 
     public void setFreeDiskPercent(double freeDiskPercent) {
         this.freeDiskPercent = freeDiskPercent;
+    }
+
+    public String getSystemImplementationTech() {
+        return systemImplementationTech;
+    }
+
+    public void setSystemImplementationTech(String systemImplementationTech) {
+        this.systemImplementationTech = systemImplementationTech;
+    }
+
+    public String getSystemImplementationVersion() {
+        return systemImplementationVersion;
+    }
+
+    public void setSystemImplementationVersion(String systemImplementationVersion) {
+        this.systemImplementationVersion = systemImplementationVersion;
+    }
+
+    public String getSystemImplementationEdition() {
+        return systemImplementationEdition;
+    }
+
+    public void setSystemImplementationEdition(String systemImplementationEdition) {
+        this.systemImplementationEdition = systemImplementationEdition;
     }
 }

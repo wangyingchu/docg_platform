@@ -155,9 +155,34 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
             };
             workingGraphOperationExecutor.executeRead(dataTransformer2,cypherProcedureString);
 
-            cypherProcedureString = "CALL apoc.metrics.storage('dbms.directories.data')";
+            cypherProcedureString = "call dbms.components() yield name, versions, edition unwind versions as version return name, version, edition";
             logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
             DataTransformer<Object> dataTransformer3 = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()) {
+                        Record staticRecord = result.next();
+                        String systemImplementationTech = staticRecord.get("name").asString();
+                        systemStatusSnapshotInfo.setSystemImplementationTech(systemImplementationTech);
+                        String systemImplementationVersion = staticRecord.get("version").asString();
+                        systemStatusSnapshotInfo.setSystemImplementationVersion(systemImplementationVersion);
+                        String systemImplementationEdition = staticRecord.get("edition").asString();
+                        systemStatusSnapshotInfo.setSystemImplementationEdition(systemImplementationEdition);
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeRead(dataTransformer3,cypherProcedureString);
+
+            if(systemStatusSnapshotInfo.getSystemImplementationVersion().startsWith("4")){
+                //for neo4j v4
+                cypherProcedureString = "CALL apoc.metrics.storage('dbms.directories.data')";
+            }else{
+                //for neo4j v5 and above
+                cypherProcedureString = "CALL apoc.metrics.storage('server.directories.data')";
+            }
+            logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+            DataTransformer<Object> dataTransformer4 = new DataTransformer() {
                 @Override
                 public Object transformResult(Result result) {
                     if(result.hasNext()) {
@@ -174,7 +199,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                     return null;
                 }
             };
-            workingGraphOperationExecutor.executeRead(dataTransformer3,cypherProcedureString);
+            workingGraphOperationExecutor.executeRead(dataTransformer4,cypherProcedureString);
 
             return systemStatusSnapshotInfo;
         } finally {
