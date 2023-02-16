@@ -76,6 +76,22 @@
     <orderEntry type="library" name="Maven: com.googlecode.json-simple:json-simple:1.1.1" level="project" />
     <orderEntry type="library" name="Maven: junit:junit:4.10" level="project" />
     <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.arcadedb:arcadedb-engine:23.1.2" level="project" />
+    <orderEntry type="library" name="Maven: com.conversantmedia:disruptor:1.2.21" level="project" />
+    <orderEntry type="library" name="Maven: org.lz4:lz4-java:1.8.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-analyzers-common:8.11.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-core:8.11.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queryparser:8.11.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-queries:8.11.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.lucene:lucene-sandbox:8.11.2" level="project" />
+    <orderEntry type="library" name="Maven: org.locationtech.spatial4j:spatial4j:0.8" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.10.1" level="project" />
+    <orderEntry type="library" name="Maven: org.graalvm.sdk:graal-sdk:22.3.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.graalvm.js:js:22.3.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.graalvm.regex:regex:22.3.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.graalvm.truffle:truffle-api:22.3.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.ibm.icu:icu4j:71.1" level="project" />
+    <orderEntry type="library" name="Maven: com.arcadedb:arcadedb-network:23.1.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.testng:testng:6.14.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.beust:jcommander:1.72" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache-extras.beanshell:bsh:2.0b6" level="project" />
