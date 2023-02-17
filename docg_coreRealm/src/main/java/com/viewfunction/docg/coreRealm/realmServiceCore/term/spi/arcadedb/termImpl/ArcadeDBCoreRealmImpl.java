@@ -21,6 +21,11 @@ public class ArcadeDBCoreRealmImpl implements ArcadeDBCoreRealm {
     private static Logger logger = LoggerFactory.getLogger(ArcadeDBCoreRealmImpl.class);
     private String coreRealmName = null;
 
+    public ArcadeDBCoreRealmImpl(){}
+
+    public ArcadeDBCoreRealmImpl(String coreRealmName){
+        this.coreRealmName = coreRealmName;}
+
     @Override
     public CoreRealmStorageImplTech getStorageImplTech() {
         return CoreRealmStorageImplTech.ARCADEDB;

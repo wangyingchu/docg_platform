@@ -2,6 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.util.factory;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.arcadedb.termImpl.ArcadeDBCoreRealmImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JCoreRealmImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.config.PropertiesHandler;
@@ -22,8 +23,7 @@ public class RealmTermFactory {
                 throw exception;
             }
         }else if(CoreRealmStorageImplTech.ARCADEDB.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
-            //return new OrientDBCoreRealmImpl(coreRealmName);
-            return null;
+            return new ArcadeDBCoreRealmImpl(coreRealmName);
         }else{
             return null;
         }
