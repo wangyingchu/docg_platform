@@ -92,6 +92,7 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.graalvm.truffle:truffle-api:22.3.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.ibm.icu:icu4j:71.1" level="project" />
     <orderEntry type="library" name="Maven: com.arcadedb:arcadedb-network:23.1.2" level="project" />
+    <orderEntry type="library" name="Maven: cn.hutool:hutool-all:5.8.12" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.testng:testng:6.14.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.beust:jcommander:1.72" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache-extras.beanshell:bsh:2.0b6" level="project" />

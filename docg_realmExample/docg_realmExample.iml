@@ -142,5 +142,6 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.graalvm.truffle:truffle-api:22.3.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.ibm.icu:icu4j:71.1" level="project" />
     <orderEntry type="library" name="Maven: com.arcadedb:arcadedb-network:23.1.2" level="project" />
+    <orderEntry type="library" name="Maven: cn.hutool:hutool-all:5.8.12" level="project" />
   </component>
 </module>

@@ -28,7 +28,7 @@ public class CoreRealmSystemUtil {
 
 
 
-       RemoteDatabase database = new RemoteDatabase("localhost", 2480, coreRealmName, "root", "wyc19771123");
+        RemoteDatabase database = new RemoteDatabase("localhost", 2480, coreRealmName, "root", "wyc19771123");
         database.create();
 
 
