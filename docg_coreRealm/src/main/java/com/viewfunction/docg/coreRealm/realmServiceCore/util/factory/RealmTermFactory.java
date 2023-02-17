@@ -33,8 +33,7 @@ public class RealmTermFactory {
         if(CoreRealmStorageImplTech.NEO4J.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
             return new Neo4JCoreRealmImpl();
         }else if(CoreRealmStorageImplTech.ARCADEDB.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
-            //return new OrientDBCoreRealmImpl();
-            return null;
+            return new ArcadeDBCoreRealmImpl();
         }else{
             return null;
         }
