@@ -17,6 +17,9 @@
     </properties>
 
     <dependencies>
+        <!--
+        Neo4j implementation libs
+        -->
         <!-- https://mvnrepository.com/artifact/org.neo4j.driver/neo4j-java-driver -->
         <dependency>
             <groupId>org.neo4j.driver</groupId>
@@ -86,6 +89,9 @@
             <version>${geotools.version}</version>
         </dependency>
 
+        <!--
+        ArcadeDB implementation libs
+        -->
         <dependency>
             <groupId>com.arcadedb</groupId>
             <artifactId>arcadedb-engine</artifactId>
@@ -97,7 +103,9 @@
             <version>${arcadedb.version}</version>
         </dependency>
 
-        <!-- Test lib -->
+        <!--
+        Testing libs
+        -->
         <!-- https://mvnrepository.com/artifact/org.testng/testng -->
         <dependency>
             <groupId>org.testng</groupId>
