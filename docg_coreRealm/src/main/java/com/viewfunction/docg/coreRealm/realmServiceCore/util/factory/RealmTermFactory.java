@@ -9,6 +9,9 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.config.PropertiesHandler;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class RealmTermFactory {
 
     private static String _CORE_REALM_STORAGE_IMPL_TECH = PropertiesHandler.getPropertyValue(PropertiesHandler.CORE_REALM_STORAGE_IMPL_TECH);
@@ -41,10 +44,10 @@ public class RealmTermFactory {
         }
     }
 
-    /*
     public static Set<String> listCoreRealms() throws CoreRealmFunctionNotSupportedException{
         if(CoreRealmStorageImplTech.NEO4J.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
             Set<String> coreRealmsSet = new HashSet<>();
+            /*
             if(supportMultiNeo4JGraph){
                 String queryCQL = "show databases";
                 GraphOperationExecutor _GraphOperationExecutor = new GraphOperationExecutor();
@@ -75,13 +78,16 @@ public class RealmTermFactory {
                 exception.setCauseMessage("Current Neo4J storage implements doesn't support multi Realm");
                 throw exception;
             }
+            */
+            return coreRealmsSet;
         }else if(CoreRealmStorageImplTech.ARCADEDB.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
-            return null;
+            return CoreRealmSystemUtil.listCoreRealms();
         }else{
             return null;
         }
     }
 
+    /*
     public static CoreRealm createCoreRealm(String coreRealmName) throws CoreRealmServiceRuntimeException, CoreRealmFunctionNotSupportedException {
         Set<String> existCoreRealms = listCoreRealms();
         if(existCoreRealms.contains(coreRealmName)){

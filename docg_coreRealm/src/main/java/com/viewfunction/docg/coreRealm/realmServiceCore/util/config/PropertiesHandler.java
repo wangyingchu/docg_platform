@@ -31,6 +31,12 @@ public class PropertiesHandler {
     public static String NEO4J_USER = "NEO4J_USER";
     public static String NEO4J_PASSWORD = "NEO4J_PASSWORD";
 
+    //ArcadeDB Implements configuration properties
+    public static String ARCADEDB_SERVER_ADDRESS = "ARCADEDB_SERVER_ADDRESS";
+    public static String ARCADEDB_SERVER_PORT = "ARCADEDB_SERVER_PORT";
+    public static String ARCADEDB_USER = "ARCADEDB_USER";
+    public static String ARCADEDB_PASSWORD = "ARCADEDB_PASSWORD";
+
     public static String getPropertyValue(String propertyName) {
         if(_properties == null){
             //String configPath= RuntimeEnvironmentHandler.getApplicationRootPath() + "CoreRealmCfg.properties";
