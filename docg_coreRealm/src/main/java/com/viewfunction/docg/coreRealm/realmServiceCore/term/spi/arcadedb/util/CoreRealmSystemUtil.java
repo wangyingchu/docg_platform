@@ -5,8 +5,8 @@ import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSON;
 import cn.hutool.json.JSONUtil;
-import com.arcadedb.database.DatabaseFactory;
 import com.arcadedb.remote.RemoteDatabase;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.arcadedb.termImpl.ArcadeDBCoreRealmImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.arcadedb.util.httpResponseVO.ListDatabasesVO;
@@ -25,10 +25,8 @@ public class CoreRealmSystemUtil {
 
     public static Set<String> listCoreRealms(){
         Set<String> coreRealmsSet = new HashSet<>();
-        String _AUTHORIZATION_INFO_String = user+":"+password;
-        String _AUTHORIZATION_INFO = Base64.getEncoder().encodeToString(_AUTHORIZATION_INFO_String.getBytes());
-        String _HTTP_SERVICE_URL = "http://"+server+":"+portString+"/api/v1/"+"databases";
-        HttpResponse httpResponse = HttpUtil.createGet(_HTTP_SERVICE_URL).header(Header.AUTHORIZATION,"Basic "+_AUTHORIZATION_INFO).execute();
+        String _HTTP_SERVICE_URL = getHttpApiRoot()+"databases";
+        HttpResponse httpResponse = HttpUtil.createGet(_HTTP_SERVICE_URL).header(Header.AUTHORIZATION,getBasicAuthorizationInfo()).execute();
         JSON responseJson = JSONUtil.parse(httpResponse.body());
         ListDatabasesVO listDatabasesVO = responseJson.toBean(ListDatabasesVO.class);
         if(listDatabasesVO.getResult() != null){
@@ -37,10 +35,18 @@ public class CoreRealmSystemUtil {
         return coreRealmsSet;
     }
 
-    public static CoreRealm createCoreRealm(String coreRealmName){
-
-
-
+    public static CoreRealm createCoreRealm(String coreRealmName) throws CoreRealmServiceRuntimeException {
+        Set<String> existCoreRealms = listCoreRealms();
+        if(existCoreRealms.contains(coreRealmName)){
+            CoreRealmServiceRuntimeException coreRealmServiceRuntimeException = new CoreRealmServiceRuntimeException();
+            coreRealmServiceRuntimeException.setCauseMessage("CoreRealm "+coreRealmName+" already exists");
+            throw coreRealmServiceRuntimeException;
+        }else{
+            RemoteDatabase database = new RemoteDatabase(server, Integer.valueOf(portString), coreRealmName, user, password);
+            database.create();
+            return new ArcadeDBCoreRealmImpl(coreRealmName);
+        }
+        /*
         DatabaseFactory arcadeDatabaseFactory = new DatabaseFactory("/media/wangychu/HSStorage/Local_Services/Arcadedb/arcadedb-23.1.2/databases/"+coreRealmName);
         boolean alreadyExist = arcadeDatabaseFactory.exists();
         System.out.println(arcadeDatabaseFactory.exists());
@@ -48,61 +54,23 @@ public class CoreRealmSystemUtil {
             //Database tagetDB = arcadeDatabaseFactory.create();
             //tagetDB.close();
         }
-
-
-        //DatabaseFactory databaseFactory = new DatabaseFactory("databases/"+coreRealmName);
-        //System.out.println(databaseFactory.getDatabasePath());
-        //databaseFactory.open();
-
-
-
-
-
-        RemoteDatabase database = new RemoteDatabase("localhost", 2480, coreRealmName, "root", "wyc19771123");
-        database.create();
-
-
-
-        //System.out.println( database.getLeaderAddress());
-        //System.out.println( database.getReplicaAddresses());
-
-
-
-        //List<String> databases = database.databases();
-       // System.out.println(databases);
-
-        return new ArcadeDBCoreRealmImpl(coreRealmName);
-
-
+        */
     }
 
-
-
-
-
-    public static String httpGet(){
-        String val =
-        Base64.getEncoder().encodeToString("root:wyc4docg".getBytes());
-        System.out.println(val);
-        //HttpResponse httpResponse = HttpUtil.createGet("http://127.0.1.1:2480/api/v1/databases").header(Header.AUTHORIZATION,"Basic cm9vdDp3eWM0ZG9jZw==").execute();
-        HttpResponse httpResponse = HttpUtil.createGet("http://127.0.1.1:2480/api/v1/databases").header(Header.AUTHORIZATION,"Basic "+val).execute();
-        System.out.println(httpResponse.body());
-
-        JSON responseJson = JSONUtil.parse(httpResponse.body());
-        System.out.println(responseJson.toStringPretty());
-        ListDatabasesVO ListDatabasesVO = responseJson.toBean(ListDatabasesVO.class);
-        System.out.println(ListDatabasesVO.getUser());
-        System.out.println(ListDatabasesVO.getResult().length);
-        return null;
-
-
-
-
-
+    public static String getServerHttpLocation(){
+        String _HTTP_SERVICE_URL = "http://"+server+":"+portString;
+        return _HTTP_SERVICE_URL;
     }
 
+    public static String getHttpApiRoot(){
+        String _HTTP_API_ROOT = getServerHttpLocation()+"/api/v1/";
+        return _HTTP_API_ROOT;
+    }
 
-
-
-
+    public static String getBasicAuthorizationInfo(){
+        String _AUTHORIZATION_INFO_String = user+":"+password;
+        String _AUTHORIZATION_INFO = Base64.getEncoder().encodeToString(_AUTHORIZATION_INFO_String.getBytes());
+        String _AUTHORIZATION_INFOString = "Basic "+_AUTHORIZATION_INFO;
+        return _AUTHORIZATION_INFOString;
+    }
 }
