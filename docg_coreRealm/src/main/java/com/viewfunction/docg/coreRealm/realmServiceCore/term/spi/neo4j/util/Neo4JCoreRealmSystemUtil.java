@@ -26,7 +26,8 @@ public class Neo4JCoreRealmSystemUtil {
     public static CoreRealm createCoreRealm(String coreRealmName) throws CoreRealmServiceRuntimeException, CoreRealmFunctionNotSupportedException {
         if(supportMultiNeo4JGraph){
             Set<String> existCoreRealms = listCoreRealms();
-            if(existCoreRealms.contains(coreRealmName)){
+            // in Neo4j all database name is in lowercase
+            if(existCoreRealms.contains(coreRealmName.toLowerCase())){
                 CoreRealmServiceRuntimeException coreRealmServiceRuntimeException = new CoreRealmServiceRuntimeException();
                 coreRealmServiceRuntimeException.setCauseMessage("Core Realm with name "+coreRealmName+" already exist.");
                 throw coreRealmServiceRuntimeException;
