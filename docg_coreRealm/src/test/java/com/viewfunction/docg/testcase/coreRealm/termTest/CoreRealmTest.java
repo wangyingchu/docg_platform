@@ -11,6 +11,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeFlowImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.config.PropertiesHandler;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
@@ -33,6 +34,7 @@ public class CoreRealmTest {
     public void testCoreRealmFunction() throws CoreRealmServiceRuntimeException, CoreRealmFunctionNotSupportedException, CoreRealmServiceEntityExploreException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         Assert.assertEquals(coreRealm.getStorageImplTech(), CoreRealmStorageImplTech.NEO4J);
+        Assert.assertEquals(coreRealm.getCoreRealmName(), PropertiesHandler.getPropertyValue(PropertiesHandler.DEFAULT_REALM_NAME));
 
         ConceptionKind _ConceptionKind01 = coreRealm.getConceptionKind("kind01");
         if(_ConceptionKind01 != null){
