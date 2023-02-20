@@ -10,7 +10,6 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.util.Neo4
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.config.PropertiesHandler;
 
-import java.util.HashSet;
 import java.util.Set;
 
 public class RealmTermFactory {
@@ -47,75 +46,13 @@ public class RealmTermFactory {
 
     public static Set<String> listCoreRealms() throws CoreRealmFunctionNotSupportedException{
         if(CoreRealmStorageImplTech.NEO4J.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
-            Set<String> coreRealmsSet = new HashSet<>();
-            /*
-            if(supportMultiNeo4JGraph){
-                String queryCQL = "show databases";
-                GraphOperationExecutor _GraphOperationExecutor = new GraphOperationExecutor();
-
-                DataTransformer dataTransformer = new DataTransformer() {
-                    @Override
-                    public Object transformResult(Result result) {
-                        while(result.hasNext()){
-                            Record currentRecord = result.next();
-                            String currentCoreRealm = currentRecord.get("name").asString();
-                            boolean isDefaultCoreRealm = currentRecord.get("default").asBoolean();
-                            if(isDefaultCoreRealm){
-                                coreRealmsSet.add("Default_CoreRealm");
-                            }else{
-                                if(!currentCoreRealm.equals("system")){
-                                    coreRealmsSet.add(currentCoreRealm);
-                                }
-                            }
-                        }
-                        return null;
-                    }
-                };
-                _GraphOperationExecutor.executeRead(dataTransformer,queryCQL);
-                _GraphOperationExecutor.close();
-                return coreRealmsSet;
-            }else{
-                CoreRealmFunctionNotSupportedException exception = new CoreRealmFunctionNotSupportedException();
-                exception.setCauseMessage("Current Neo4J storage implements doesn't support multi Realm");
-                throw exception;
-            }
-            */
-            return coreRealmsSet;
+            return Neo4JCoreRealmSystemUtil.listCoreRealms();
         }else if(CoreRealmStorageImplTech.ARCADEDB.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
             return ArcadeDBCoreRealmSystemUtil.listCoreRealms();
         }else{
             return null;
         }
     }
-
-    /*
-    public static CoreRealm createCoreRealm(String coreRealmName) throws CoreRealmServiceRuntimeException, CoreRealmFunctionNotSupportedException {
-        Set<String> existCoreRealms = listCoreRealms();
-        if(existCoreRealms.contains(coreRealmName)){
-            CoreRealmServiceRuntimeException coreRealmServiceRuntimeException = new CoreRealmServiceRuntimeException();
-            coreRealmServiceRuntimeException.setCauseMessage("Core Realm with name "+coreRealmName+" already exist.");
-            throw coreRealmServiceRuntimeException;
-        }else{
-            //only Enterprise edition neo4j support create database XXX command
-            String queryCQL = "create database "+coreRealmName;
-            GraphOperationExecutor _GraphOperationExecutor = new GraphOperationExecutor();
-
-            DataTransformer dataTransformer = new DataTransformer() {
-                @Override
-                public Object transformResult(Result result) {
-                    if(result.hasNext()){
-                        Record currentRecord = result.next();
-                        System.out.println(currentRecord);
-                    }
-                    return null;
-                }
-            };
-            _GraphOperationExecutor.executeWrite(dataTransformer,queryCQL);
-            _GraphOperationExecutor.close();
-        }
-        return null;
-    }
-    */
 
     public static CoreRealm createCoreRealm(String coreRealmName) throws CoreRealmServiceRuntimeException, CoreRealmFunctionNotSupportedException {
         if(CoreRealmStorageImplTech.NEO4J.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
