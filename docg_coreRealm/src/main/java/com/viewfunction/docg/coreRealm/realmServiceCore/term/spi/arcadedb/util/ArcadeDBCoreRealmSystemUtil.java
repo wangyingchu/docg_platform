@@ -12,20 +12,29 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.arcadedb.termIm
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.arcadedb.util.httpResponseVO.ListDatabasesVO;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.config.PropertiesHandler;
 
-import java.util.Base64;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class ArcadeDBCoreRealmSystemUtil {
-
     private static final String server = PropertiesHandler.getPropertyValue(PropertiesHandler.ARCADEDB_SERVER_ADDRESS);
     private static final String portString = PropertiesHandler.getPropertyValue(PropertiesHandler.ARCADEDB_SERVER_PORT);
     private static final String user = PropertiesHandler.getPropertyValue(PropertiesHandler.ARCADEDB_USER);
     private static final String password = PropertiesHandler.getPropertyValue(PropertiesHandler.ARCADEDB_PASSWORD);
     private static String defaultCoreRealmName = PropertiesHandler.getPropertyValue(PropertiesHandler.DEFAULT_REALM_NAME);
+
     public static CoreRealm getDefaultCoreRealm(){
-
-
+        String _HTTP_SERVICE_URL = getHttpApiRoot()+"exists/"+defaultCoreRealmName;
+        HttpResponse httpResponse = HttpUtil.createGet(_HTTP_SERVICE_URL).header(Header.AUTHORIZATION,getBasicAuthorizationInfo()).execute();
+        JSON responseJson = JSONUtil.parse(httpResponse.body());
+        Map<String,Object> responseMap = responseJson.toBean(HashMap.class);
+        boolean isDefaultCoreRealmExist = (boolean)responseMap.get("result");
+        System.out.println(isDefaultCoreRealmExist);
+        if(!isDefaultCoreRealmExist){
+            try {
+                createCoreRealm(defaultCoreRealmName);
+            } catch (CoreRealmServiceRuntimeException e) {
+                throw new RuntimeException(e);
+            }
+        }
         return new ArcadeDBCoreRealmImpl(defaultCoreRealmName);
     }
 
@@ -61,12 +70,6 @@ public class ArcadeDBCoreRealmSystemUtil {
             //tagetDB.close();
         }
         */
-    }
-
-    public CoreRealm getOrCreateDefaultCoreRealm(){
-
-
-        return null;
     }
 
     public static String getServerHttpLocation(){
