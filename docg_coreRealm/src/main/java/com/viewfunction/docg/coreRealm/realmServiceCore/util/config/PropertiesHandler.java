@@ -36,6 +36,7 @@ public class PropertiesHandler {
     public static String ARCADEDB_SERVER_PORT = "ARCADEDB_SERVER_PORT";
     public static String ARCADEDB_USER = "ARCADEDB_USER";
     public static String ARCADEDB_PASSWORD = "ARCADEDB_PASSWORD";
+    public static String ARCADEDB_DEFAULT_REALM_NAME = "ARCADEDB_DEFAULT_REALM_NAME";
 
     public static String getPropertyValue(String propertyName) {
         if(_properties == null){
