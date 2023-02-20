@@ -36,9 +36,9 @@ public class RealmTermFactory {
 
     public static CoreRealm getDefaultCoreRealm(){
         if(CoreRealmStorageImplTech.NEO4J.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
-            return new Neo4JCoreRealmImpl();
+            return Neo4JCoreRealmSystemUtil.getDefaultCoreRealm();
         }else if(CoreRealmStorageImplTech.ARCADEDB.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
-            return new ArcadeDBCoreRealmImpl();
+            return ArcadeDBCoreRealmSystemUtil.getDefaultCoreRealm();
         }else{
             return null;
         }

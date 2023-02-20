@@ -22,6 +22,12 @@ public class ArcadeDBCoreRealmSystemUtil {
     private static final String portString = PropertiesHandler.getPropertyValue(PropertiesHandler.ARCADEDB_SERVER_PORT);
     private static final String user = PropertiesHandler.getPropertyValue(PropertiesHandler.ARCADEDB_USER);
     private static final String password = PropertiesHandler.getPropertyValue(PropertiesHandler.ARCADEDB_PASSWORD);
+    private static String defaultCoreRealmName = PropertiesHandler.getPropertyValue(PropertiesHandler.DEFAULT_REALM_NAME);
+    public static CoreRealm getDefaultCoreRealm(){
+
+
+        return new ArcadeDBCoreRealmImpl(defaultCoreRealmName);
+    }
 
     public static Set<String> listCoreRealms(){
         Set<String> coreRealmsSet = new HashSet<>();

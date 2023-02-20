@@ -19,6 +19,10 @@ public class Neo4JCoreRealmSystemUtil {
             Boolean.parseBoolean(PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_SUPPORT_MULTI_GRAPH));
     private static String defaultCoreRealmName = PropertiesHandler.getPropertyValue(PropertiesHandler.DEFAULT_REALM_NAME);
 
+    public static CoreRealm getDefaultCoreRealm(){
+        return new Neo4JCoreRealmImpl();
+    }
+
     public static CoreRealm createCoreRealm(String coreRealmName) throws CoreRealmServiceRuntimeException, CoreRealmFunctionNotSupportedException {
         if(supportMultiNeo4JGraph){
             Set<String> existCoreRealms = listCoreRealms();
