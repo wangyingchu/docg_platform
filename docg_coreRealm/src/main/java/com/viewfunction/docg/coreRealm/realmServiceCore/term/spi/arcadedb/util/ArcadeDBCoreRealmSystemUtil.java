@@ -16,7 +16,7 @@ import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 
-public class CoreRealmSystemUtil {
+public class ArcadeDBCoreRealmSystemUtil {
 
     private static final String server = PropertiesHandler.getPropertyValue(PropertiesHandler.ARCADEDB_SERVER_ADDRESS);
     private static final String portString = PropertiesHandler.getPropertyValue(PropertiesHandler.ARCADEDB_SERVER_PORT);
@@ -55,6 +55,12 @@ public class CoreRealmSystemUtil {
             //tagetDB.close();
         }
         */
+    }
+
+    public CoreRealm getOrCreateDefaultCoreRealm(){
+
+
+        return null;
     }
 
     public static String getServerHttpLocation(){
