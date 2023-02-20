@@ -48,7 +48,7 @@ public class ArcadeDBCoreRealmImpl implements ArcadeDBCoreRealm {
         }
 
         GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor(this.coreRealmName);
-        graphOperationExecutor.executeCommand("sss","sssss");
+        graphOperationExecutor.executeCommand(null,"sss","sssss");
 
         graphOperationExecutor.close();
 
