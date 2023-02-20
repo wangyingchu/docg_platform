@@ -3,6 +3,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.arcadedb.termI
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.arcadeDB.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.SystemMaintenanceOperator;
@@ -20,8 +21,6 @@ public class ArcadeDBCoreRealmImpl implements ArcadeDBCoreRealm {
 
     private static Logger logger = LoggerFactory.getLogger(ArcadeDBCoreRealmImpl.class);
     private String coreRealmName = null;
-
-    public ArcadeDBCoreRealmImpl(){}
 
     public ArcadeDBCoreRealmImpl(String coreRealmName){
         this.coreRealmName = coreRealmName;
@@ -44,6 +43,15 @@ public class ArcadeDBCoreRealmImpl implements ArcadeDBCoreRealm {
 
     @Override
     public ConceptionKind createConceptionKind(String conceptionKindName, String conceptionKindDesc) {
+        if(conceptionKindName == null){
+            return null;
+        }
+
+        GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor(this.coreRealmName);
+        graphOperationExecutor.executeCommand("sss","sssss");
+
+        graphOperationExecutor.close();
+
         return null;
     }
 
