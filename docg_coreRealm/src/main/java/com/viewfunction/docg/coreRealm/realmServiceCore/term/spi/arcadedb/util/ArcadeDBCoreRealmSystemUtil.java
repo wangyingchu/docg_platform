@@ -61,15 +61,6 @@ public class ArcadeDBCoreRealmSystemUtil {
             database.create();
             return new ArcadeDBCoreRealmImpl(coreRealmName);
         }
-        /*
-        DatabaseFactory arcadeDatabaseFactory = new DatabaseFactory("/media/wangychu/HSStorage/Local_Services/Arcadedb/arcadedb-23.1.2/databases/"+coreRealmName);
-        boolean alreadyExist = arcadeDatabaseFactory.exists();
-        System.out.println(arcadeDatabaseFactory.exists());
-        if(!alreadyExist){
-            //Database tagetDB = arcadeDatabaseFactory.create();
-            //tagetDB.close();
-        }
-        */
     }
 
     public static String getServerHttpLocation(){
