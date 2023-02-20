@@ -67,6 +67,13 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public CoreRealmStorageImplTech getStorageImplTech();
 
     /**
+     * 获取核心领域名称
+     *
+     * @return 核心领域名称
+     */
+    public String getCoreRealmName();
+
+    /**
      * 根据名称获取概念类型对象
      *
      * @param conceptionKindName String 需要获取的概念类型名称

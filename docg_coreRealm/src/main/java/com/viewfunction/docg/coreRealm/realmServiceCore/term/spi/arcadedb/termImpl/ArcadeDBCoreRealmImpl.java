@@ -24,11 +24,17 @@ public class ArcadeDBCoreRealmImpl implements ArcadeDBCoreRealm {
     public ArcadeDBCoreRealmImpl(){}
 
     public ArcadeDBCoreRealmImpl(String coreRealmName){
-        this.coreRealmName = coreRealmName;}
+        this.coreRealmName = coreRealmName;
+    }
 
     @Override
     public CoreRealmStorageImplTech getStorageImplTech() {
         return CoreRealmStorageImplTech.ARCADEDB;
+    }
+
+    @Override
+    public String getCoreRealmName() {
+        return this.coreRealmName;
     }
 
     @Override

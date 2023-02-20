@@ -22,6 +22,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JCoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.config.PropertiesHandler;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
@@ -49,6 +50,11 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     @Override
     public CoreRealmStorageImplTech getStorageImplTech() {
         return CoreRealmStorageImplTech.NEO4J;
+    }
+
+    @Override
+    public String getCoreRealmName() {
+        return coreRealmName != null ? coreRealmName: PropertiesHandler.getPropertyValue(PropertiesHandler.DEFAULT_REALM_NAME);
     }
 
     @Override
