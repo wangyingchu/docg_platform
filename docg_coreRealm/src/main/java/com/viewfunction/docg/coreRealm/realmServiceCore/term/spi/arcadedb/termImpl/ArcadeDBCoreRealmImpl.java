@@ -4,6 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunct
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.arcadeDB.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.arcadeDB.QueryBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.SystemMaintenanceOperator;
@@ -46,15 +47,10 @@ public class ArcadeDBCoreRealmImpl implements ArcadeDBCoreRealm {
         if(conceptionKindName == null){
             return null;
         }
-
-        String operationSql = "create vertex type "+conceptionKindName+" if not exists";
-        logger.debug("Generated Query Statement: {}", operationSql);
-
+        String operationSql = QueryBuilder.createKindSQL(QueryBuilder.KindType.ConceptionKind,conceptionKindName,null);
         GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor(this.coreRealmName);
         graphOperationExecutor.executeCommand(null,operationSql);
-
         graphOperationExecutor.close();
-
         return null;
     }
 

@@ -25,25 +25,29 @@ public class GraphOperationExecutor<T> implements AutoCloseable{
 
     public T executeCommand(DataTransformer<T> dataTransformer, QueryBuilder.QueryLanguage queryLanguage, String queryContent){
         String languageType = queryLanguage != null ? queryLanguage.toString():"sql";
-        database.begin();
-        ResultSet executeResult = database.command(languageType, queryContent);
+        getDatabase().begin();
+        ResultSet executeResult = getDatabase().command(languageType, queryContent);
         System.out.println(executeResult.getQueryStats());
-        database.commit();
+        getDatabase().commit();
         return dataTransformer != null ? dataTransformer.transformResult(executeResult):null;
     }
 
     public T executeCommand(DataTransformer<T> dataTransformer, String queryContent){
-        database.begin();
-        ResultSet executeResult = database.command("sql", queryContent);
+        getDatabase().begin();
+        ResultSet executeResult = getDatabase().command("sql", queryContent);
         System.out.println(executeResult.getQueryStats());
-        database.commit();
+        getDatabase().commit();
         return dataTransformer != null ? dataTransformer.transformResult(executeResult):null;
     }
 
     @Override
     public void close() {
-        if(database != null){
-            database.close();
+        if(getDatabase() != null){
+            getDatabase().close();
         }
+    }
+
+    public RemoteDatabase getDatabase() {
+        return database;
     }
 }
