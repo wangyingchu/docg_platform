@@ -47,8 +47,11 @@ public class ArcadeDBCoreRealmImpl implements ArcadeDBCoreRealm {
             return null;
         }
 
+        String operationSql = "create vertex type "+conceptionKindName+" if not exists";
+        logger.debug("Generated Query Statement: {}", operationSql);
+
         GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor(this.coreRealmName);
-        graphOperationExecutor.executeCommand(null,"sss","sssss");
+        graphOperationExecutor.executeCommand(null,operationSql);
 
         graphOperationExecutor.close();
 

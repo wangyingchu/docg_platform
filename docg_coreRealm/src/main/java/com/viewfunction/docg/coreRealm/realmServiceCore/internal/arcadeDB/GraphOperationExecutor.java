@@ -23,21 +23,21 @@ public class GraphOperationExecutor<T> implements AutoCloseable{
         database = new RemoteDatabase(server, Integer.valueOf(portString), coreRealmName, user, password);
     }
 
-    public T executeCommand(DataTransformer<T> dataTransformer, String commandType, String commandContent){
-        T commandResult = null;
-
+    public T executeCommand(DataTransformer<T> dataTransformer, QueryBuilder.QueryLanguage queryLanguage, String queryContent){
+        String languageType = queryLanguage != null ? queryLanguage.toString():"sql";
         database.begin();
-        ResultSet executeResult = database.command("sql", "create vertex type Production if not exists");
+        ResultSet executeResult = database.command(languageType, queryContent);
         System.out.println(executeResult.getQueryStats());
         database.commit();
-
         return dataTransformer != null ? dataTransformer.transformResult(executeResult):null;
+    }
 
-        /*
-        database.transaction(() -> {
-            ResultSet executeResult = database.command("sql", "create vertex type Customer if not exists");
-        });
-        */
+    public T executeCommand(DataTransformer<T> dataTransformer, String queryContent){
+        database.begin();
+        ResultSet executeResult = database.command("sql", queryContent);
+        System.out.println(executeResult.getQueryStats());
+        database.commit();
+        return dataTransformer != null ? dataTransformer.transformResult(executeResult):null;
     }
 
     @Override

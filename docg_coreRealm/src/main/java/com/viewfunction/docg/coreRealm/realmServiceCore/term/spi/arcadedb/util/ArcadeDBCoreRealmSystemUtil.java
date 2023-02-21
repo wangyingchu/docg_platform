@@ -27,7 +27,6 @@ public class ArcadeDBCoreRealmSystemUtil {
         JSON responseJson = JSONUtil.parse(httpResponse.body());
         Map<String,Object> responseMap = responseJson.toBean(HashMap.class);
         boolean isDefaultCoreRealmExist = (boolean)responseMap.get("result");
-        System.out.println(isDefaultCoreRealmExist);
         if(!isDefaultCoreRealmExist){
             try {
                 createCoreRealm(defaultCoreRealmName);
