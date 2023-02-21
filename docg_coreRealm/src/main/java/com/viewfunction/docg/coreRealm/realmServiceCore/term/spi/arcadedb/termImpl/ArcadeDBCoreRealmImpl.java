@@ -1,10 +1,13 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.arcadedb.termImpl;
 
+import com.arcadedb.query.sql.executor.ResultSet;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.arcadeDB.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.arcadeDB.QueryBuilder;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.arcadeDB.dataTransformer.DataTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.SystemMaintenanceOperator;
@@ -12,9 +15,11 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.arcadedb.termInf.ArcadeDBCoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,9 +52,38 @@ public class ArcadeDBCoreRealmImpl implements ArcadeDBCoreRealm {
         if(conceptionKindName == null){
             return null;
         }
-        String operationSql = QueryBuilder.createKindSQL(QueryBuilder.KindType.ConceptionKind,conceptionKindName,null);
         GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor(this.coreRealmName);
-        graphOperationExecutor.executeCommand(null,operationSql);
+
+        String initConceptionKindInnerDataTypeSQL = QueryBuilder.createKindSQL(QueryBuilder.KindType.ConceptionKind,RealmConstant.ConceptionKindClass,null);
+        graphOperationExecutor.executeCommand(null,initConceptionKindInnerDataTypeSQL);
+
+        String checkConceptionKindExistSQL = QueryBuilder.selectWithSinglePropertyValueMatch(RealmConstant.ConceptionKindClass,RealmConstant._NameProperty,conceptionKindName,1);
+        boolean conceptionKindExist = (Boolean)graphOperationExecutor.executeCommand(new DataTransformer<Boolean>() {
+            @Override
+            public Boolean transformResult(ResultSet resultSet) {
+                long resultNumber = resultSet.stream().count();
+                if(resultNumber > 0){
+                   return true;
+                }
+                return false;
+            }
+        },checkConceptionKindExistSQL);
+        if(conceptionKindExist){
+            return null;
+        }else{
+            String operationSql = QueryBuilder.createKindSQL(QueryBuilder.KindType.ConceptionKind,conceptionKindName,null);
+            graphOperationExecutor.executeCommand(null,operationSql);
+            Map<String,Object> propertiesMap = new HashMap<>();
+            propertiesMap.put(RealmConstant._NameProperty,conceptionKindName);
+            if(conceptionKindDesc != null) {
+                propertiesMap.put(RealmConstant._DescProperty, conceptionKindDesc);
+            }
+            CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
+
+
+
+
+        }
         graphOperationExecutor.close();
         return null;
     }
@@ -308,4 +342,6 @@ public class ArcadeDBCoreRealmImpl implements ArcadeDBCoreRealm {
     public void closeGlobalSession() {
 
     }
+
+
 }

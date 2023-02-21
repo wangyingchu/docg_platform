@@ -27,7 +27,6 @@ public class GraphOperationExecutor<T> implements AutoCloseable{
         String languageType = queryLanguage != null ? queryLanguage.toString():"sql";
         getDatabase().begin();
         ResultSet executeResult = getDatabase().command(languageType, queryContent);
-        System.out.println(executeResult.getQueryStats());
         getDatabase().commit();
         return dataTransformer != null ? dataTransformer.transformResult(executeResult):null;
     }
@@ -35,7 +34,6 @@ public class GraphOperationExecutor<T> implements AutoCloseable{
     public T executeCommand(DataTransformer<T> dataTransformer, String queryContent){
         getDatabase().begin();
         ResultSet executeResult = getDatabase().command("sql", queryContent);
-        System.out.println(executeResult.getQueryStats());
         getDatabase().commit();
         return dataTransformer != null ? dataTransformer.transformResult(executeResult):null;
     }
