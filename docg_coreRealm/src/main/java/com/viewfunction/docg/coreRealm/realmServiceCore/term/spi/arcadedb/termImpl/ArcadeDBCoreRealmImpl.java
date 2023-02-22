@@ -5,7 +5,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunct
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.arcadeDB.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.arcadeDB.QueryBuilder;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.arcadeDB.SQLBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.arcadeDB.dataTransformer.DataTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
@@ -54,10 +54,7 @@ public class ArcadeDBCoreRealmImpl implements ArcadeDBCoreRealm {
         }
         GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor(this.coreRealmName);
 
-        String initConceptionKindInnerDataTypeSQL = QueryBuilder.createKindSQL(QueryBuilder.KindType.ConceptionKind,RealmConstant.ConceptionKindClass,null);
-        graphOperationExecutor.executeCommand(null,initConceptionKindInnerDataTypeSQL);
-
-        String checkConceptionKindExistSQL = QueryBuilder.selectWithSinglePropertyValueMatch(RealmConstant.ConceptionKindClass,RealmConstant._NameProperty,conceptionKindName,1);
+        String checkConceptionKindExistSQL = SQLBuilder.selectWithSinglePropertyValueMatch(RealmConstant.ConceptionKindClass,RealmConstant._NameProperty,conceptionKindName,1);
         boolean conceptionKindExist = (Boolean)graphOperationExecutor.executeCommand(new DataTransformer<Boolean>() {
             @Override
             public Boolean transformResult(ResultSet resultSet) {
@@ -68,21 +65,23 @@ public class ArcadeDBCoreRealmImpl implements ArcadeDBCoreRealm {
                 return false;
             }
         },checkConceptionKindExistSQL);
+
         if(conceptionKindExist){
             return null;
         }else{
-            String operationSql = QueryBuilder.createKindSQL(QueryBuilder.KindType.ConceptionKind,conceptionKindName,null);
+            String operationSql = SQLBuilder.createKindSQL(SQLBuilder.KindType.ConceptionKind,conceptionKindName,null);
             graphOperationExecutor.executeCommand(null,operationSql);
+
+            String initConceptionKindInnerDataTypeSQL = SQLBuilder.createKindSQL(SQLBuilder.KindType.ConceptionKind,RealmConstant.ConceptionKindClass,null);
+            graphOperationExecutor.executeCommand(null,initConceptionKindInnerDataTypeSQL);
             Map<String,Object> propertiesMap = new HashMap<>();
             propertiesMap.put(RealmConstant._NameProperty,conceptionKindName);
             if(conceptionKindDesc != null) {
                 propertiesMap.put(RealmConstant._DescProperty, conceptionKindDesc);
             }
             CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
-
-
-
-
+            String insertSQL = SQLBuilder.createTypeDataWithProperties(RealmConstant.ConceptionKindClass,propertiesMap);
+            graphOperationExecutor.executeCommand(null,insertSQL);
         }
         graphOperationExecutor.close();
         return null;

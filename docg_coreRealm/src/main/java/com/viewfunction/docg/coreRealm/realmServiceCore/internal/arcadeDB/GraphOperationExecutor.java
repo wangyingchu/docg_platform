@@ -23,7 +23,7 @@ public class GraphOperationExecutor<T> implements AutoCloseable{
         database = new RemoteDatabase(server, Integer.valueOf(portString), coreRealmName, user, password);
     }
 
-    public T executeCommand(DataTransformer<T> dataTransformer, QueryBuilder.QueryLanguage queryLanguage, String queryContent){
+    public T executeCommand(DataTransformer<T> dataTransformer, SQLBuilder.QueryLanguage queryLanguage, String queryContent){
         String languageType = queryLanguage != null ? queryLanguage.toString():"sql";
         getDatabase().begin();
         ResultSet executeResult = getDatabase().command(languageType, queryContent);

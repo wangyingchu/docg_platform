@@ -3,12 +3,16 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.internal.arcadeDB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-public class QueryBuilder {
+public class SQLBuilder {
     public enum QueryLanguage {sql,sqlscript,cypher}
     public enum KindType {ConceptionKind,RelationKind}
-    private static Logger logger = LoggerFactory.getLogger(QueryBuilder.class);
+    private static Logger logger = LoggerFactory.getLogger(SQLBuilder.class);
     public static String createKindSQL(KindType kindType,String kindName,String parentKindName){
         if(kindType == null){
             return null;
@@ -31,21 +35,18 @@ public class QueryBuilder {
         return operationSQL;
     }
 
-    public static String createTypeDataWithProperties(String typeNames, Map<String, Object> properties){
-        /*
+    public static String createTypeDataWithProperties(String typeName, Map<String, Object> properties){
         StringBuffer propertiesNameSb = new StringBuffer();
         StringBuffer propertiesValuePlaceHolderSb = new StringBuffer();
         propertiesNameSb.append("(");
         propertiesValuePlaceHolderSb.append("(");
-
-        for(int i = 0; i< propertiesNameList.size(); i++){
-            String currentDataPropertyName = propertiesNameList.get(i);
-            // get dataType for property value validate
-            //String dataType = slicePropertiesMap.get(currentDataPropertyName.toUpperCase());
+        Set<String> propertyNamesSet = properties.keySet();
+        List<String> propertyNamesList = new ArrayList<String>(propertyNamesSet);
+        for(int i = 0; i< propertyNamesList.size(); i++){
+            String currentDataPropertyName = propertyNamesList.get(i);
             propertiesNameSb.append(currentDataPropertyName);
-            propertiesValuePlaceHolderSb.append("?");
-
-            if(i < propertiesNameList.size() - 1){
+            propertiesValuePlaceHolderSb.append(getPropertyValueSQLText(properties.get(currentDataPropertyName)));
+            if(i < propertyNamesSet.size() - 1){
                 propertiesNameSb.append(",");
                 propertiesValuePlaceHolderSb.append(",");
             }
@@ -53,9 +54,19 @@ public class QueryBuilder {
         propertiesNameSb.append(")");
         propertiesValuePlaceHolderSb.append(")");
 
-        String sqlFieldsQuerySQL = "INSERT INTO "+typeNames+" "+propertiesNameSb.toString() +" VALUES "+propertiesValuePlaceHolderSb.toString();
-        */
-        return null;
+        String operationSQL = "INSERT INTO "+typeName+" "+propertiesNameSb.toString() +" VALUES "+propertiesValuePlaceHolderSb.toString();
+        return operationSQL;
     }
 
+    private static String getPropertyValueSQLText(Object propertyValue){
+        if(propertyValue instanceof String){
+            return "'"+propertyValue.toString()+"'";
+        }else if(propertyValue instanceof ZonedDateTime){
+            ZonedDateTime zonedDateTimePropertyValue = (ZonedDateTime)propertyValue;
+            long longValue = zonedDateTimePropertyValue.toInstant().toEpochMilli();
+            return "DATE("+longValue+")";
+        }else{
+            return propertyValue.toString();
+        }
+    }
 }
