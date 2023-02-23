@@ -109,6 +109,14 @@
             <version>5.8.12</version>
         </dependency>
 
+        <!--
+        NubulaGraph implementation libs
+        -->
+        <dependency>
+            <groupId>com.vesoft</groupId>
+            <artifactId>client</artifactId>
+            <version>3.4.0</version>
+        </dependency>
 
         <!--
         Testing libs

@@ -106,6 +106,14 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.ibm.icu:icu4j:71.1" level="project" />
     <orderEntry type="library" name="Maven: com.arcadedb:arcadedb-network:23.1.2" level="project" />
     <orderEntry type="library" name="Maven: cn.hutool:hutool-all:5.8.12" level="project" />
+    <orderEntry type="library" name="Maven: com.vesoft:client:3.4.0" level="project" />
+    <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-pool2:2.2" level="project" />
+    <orderEntry type="library" name="Maven: javax.servlet:javax.servlet-api:3.0.1" level="project" />
+    <orderEntry type="library" name="Maven: com.alibaba:fastjson:1.2.83" level="project" />
+    <orderEntry type="library" name="Maven: org.bouncycastle:bcpkix-jdk15on:1.69" level="project" />
+    <orderEntry type="library" name="Maven: org.bouncycastle:bcprov-jdk15on:1.69" level="project" />
+    <orderEntry type="library" name="Maven: org.bouncycastle:bcutil-jdk15on:1.69" level="project" />
     <orderEntry type="module" module-name="docg_dataCompute" />
     <orderEntry type="library" name="Maven: org.apache.ignite:ignite-log4j2:2.14.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.17.1" level="project" />
@@ -135,14 +143,12 @@
     <orderEntry type="library" name="Maven: com.zaxxer:SparseBitSet:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-math3:3.6.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.ignite:ignite-rest-http:2.14.0" level="project" />
-    <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-continuation:9.4.43.v20210629" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-http:9.4.43.v20210629" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-io:9.4.43.v20210629" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-server:9.4.43.v20210629" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-util:9.4.43.v20210629" level="project" />
     <orderEntry type="library" name="Maven: org.eclipse.jetty:jetty-xml:9.4.43.v20210629" level="project" />
-    <orderEntry type="library" name="Maven: javax.servlet:javax.servlet-api:3.1.0" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.12.7" level="project" />
     <orderEntry type="library" name="Maven: org.jooq:jooq:3.14.7" level="project" />
     <orderEntry type="library" name="Maven: javax.xml.bind:jaxb-api:2.3.1" level="project" />

@@ -93,6 +93,15 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.ibm.icu:icu4j:71.1" level="project" />
     <orderEntry type="library" name="Maven: com.arcadedb:arcadedb-network:23.1.2" level="project" />
     <orderEntry type="library" name="Maven: cn.hutool:hutool-all:5.8.12" level="project" />
+    <orderEntry type="library" name="Maven: com.vesoft:client:3.4.0" level="project" />
+    <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />
+    <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.13" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-pool2:2.2" level="project" />
+    <orderEntry type="library" name="Maven: javax.servlet:javax.servlet-api:3.0.1" level="project" />
+    <orderEntry type="library" name="Maven: com.alibaba:fastjson:1.2.83" level="project" />
+    <orderEntry type="library" name="Maven: org.bouncycastle:bcpkix-jdk15on:1.69" level="project" />
+    <orderEntry type="library" name="Maven: org.bouncycastle:bcprov-jdk15on:1.69" level="project" />
+    <orderEntry type="library" name="Maven: org.bouncycastle:bcutil-jdk15on:1.69" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.testng:testng:6.14.3" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.beust:jcommander:1.72" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache-extras.beanshell:bsh:2.0b6" level="project" />
