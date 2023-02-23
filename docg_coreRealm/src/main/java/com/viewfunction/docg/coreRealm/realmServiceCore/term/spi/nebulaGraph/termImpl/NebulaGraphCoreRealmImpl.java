@@ -10,19 +10,29 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.nebulaGraph.termInf.NebulaGraphCoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
 
 public class NebulaGraphCoreRealmImpl implements NebulaGraphCoreRealm {
+
+    private static Logger logger = LoggerFactory.getLogger(NebulaGraphCoreRealmImpl.class);
+    private String coreRealmName = null;
+
+    public NebulaGraphCoreRealmImpl(String coreRealmName){
+        this.coreRealmName = coreRealmName;
+    }
+
     @Override
     public CoreRealmStorageImplTech getStorageImplTech() {
-        return null;
+        return CoreRealmStorageImplTech.NEBULAGRAPH;
     }
 
     @Override
     public String getCoreRealmName() {
-        return null;
+        return this.coreRealmName;
     }
 
     @Override

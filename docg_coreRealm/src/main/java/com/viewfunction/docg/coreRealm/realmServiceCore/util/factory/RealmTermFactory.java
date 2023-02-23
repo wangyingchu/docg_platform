@@ -5,6 +5,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.arcadedb.termImpl.ArcadeDBCoreRealmImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.arcadedb.util.ArcadeDBCoreRealmSystemUtil;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.nebulaGraph.termImpl.NebulaGraphCoreRealmImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.nebulaGraph.util.NubulaGraphCoreRealmSystemUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JCoreRealmImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.util.Neo4JCoreRealmSystemUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
@@ -29,6 +31,8 @@ public class RealmTermFactory {
             }
         }else if(CoreRealmStorageImplTech.ARCADEDB.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
             return new ArcadeDBCoreRealmImpl(coreRealmName);
+        }else if(CoreRealmStorageImplTech.NEBULAGRAPH.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
+            return new NebulaGraphCoreRealmImpl(coreRealmName);
         }else{
             return null;
         }
@@ -39,6 +43,8 @@ public class RealmTermFactory {
             return Neo4JCoreRealmSystemUtil.getDefaultCoreRealm();
         }else if(CoreRealmStorageImplTech.ARCADEDB.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
             return ArcadeDBCoreRealmSystemUtil.getDefaultCoreRealm();
+        }else if(CoreRealmStorageImplTech.NEBULAGRAPH.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
+        return NubulaGraphCoreRealmSystemUtil.getDefaultCoreRealm();
         }else{
             return null;
         }
@@ -49,6 +55,8 @@ public class RealmTermFactory {
             return Neo4JCoreRealmSystemUtil.listCoreRealms();
         }else if(CoreRealmStorageImplTech.ARCADEDB.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
             return ArcadeDBCoreRealmSystemUtil.listCoreRealms();
+        }else if(CoreRealmStorageImplTech.NEBULAGRAPH.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
+            return NubulaGraphCoreRealmSystemUtil.listCoreRealms();
         }else{
             return null;
         }
@@ -59,6 +67,8 @@ public class RealmTermFactory {
             return Neo4JCoreRealmSystemUtil.createCoreRealm(coreRealmName);
         }else if(CoreRealmStorageImplTech.ARCADEDB.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
             return ArcadeDBCoreRealmSystemUtil.createCoreRealm(coreRealmName);
+        }else if(CoreRealmStorageImplTech.NEBULAGRAPH.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
+            return NubulaGraphCoreRealmSystemUtil.createCoreRealm(coreRealmName);
         }else{
             return null;
         }
