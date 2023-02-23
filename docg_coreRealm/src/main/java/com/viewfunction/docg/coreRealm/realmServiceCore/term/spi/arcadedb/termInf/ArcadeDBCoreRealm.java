@@ -3,5 +3,5 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.arcadedb.termI
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.KindCacheable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 
-public interface ArcadeDBCoreRealm  extends CoreRealm, KindCacheable {
+public interface ArcadeDBCoreRealm extends CoreRealm, KindCacheable  {
 }

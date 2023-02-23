@@ -36,6 +36,13 @@ public class PropertiesHandler {
     public static String ARCADEDB_SERVER_PORT = "ARCADEDB_SERVER_PORT";
     public static String ARCADEDB_USER = "ARCADEDB_USER";
     public static String ARCADEDB_PASSWORD = "ARCADEDB_PASSWORD";
+
+    //NebulaGraph Implements configuration properties
+    public static String NEBULAGRAPH_SERVER_ADDRESS = "NEBULAGRAPH_SERVER_ADDRESS";
+    public static String NEBULAGRAPH_SERVER_PORT = "NEBULAGRAPH_SERVER_PORT";
+    public static String NEBULAGRAPH_USER = "NEBULAGRAPH_USER";
+    public static String NEBULAGRAPH_PASSWORD = "NEBULAGRAPH_PASSWORD";
+
     public static String DEFAULT_REALM_NAME = "DEFAULT_REALM_NAME";
 
     public static String getPropertyValue(String propertyName) {
