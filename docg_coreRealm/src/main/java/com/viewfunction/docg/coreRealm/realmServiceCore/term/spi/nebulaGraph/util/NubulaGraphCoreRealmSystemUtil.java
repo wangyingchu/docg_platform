@@ -28,37 +28,40 @@ public class NubulaGraphCoreRealmSystemUtil {
     private static final String user = PropertiesHandler.getPropertyValue(PropertiesHandler.NEBULAGRAPH_USER);
     private static final String password = PropertiesHandler.getPropertyValue(PropertiesHandler.NEBULAGRAPH_PASSWORD);
     private static String defaultCoreRealmName = PropertiesHandler.getPropertyValue(PropertiesHandler.DEFAULT_REALM_NAME);
+    private static String partitionNumberString = PropertiesHandler.getPropertyValue(PropertiesHandler.NEBULAGRAPH_PARTITION_NUMBER);
+    private static String replicaFactorString = PropertiesHandler.getPropertyValue(PropertiesHandler.NEBULAGRAPH_REPLICA_FACTOR);
 
     public static CoreRealm getDefaultCoreRealm(){
-        Set<String> coreRealmsSet = new HashSet<>();
+        Session session = null;
+        NebulaPool pool = null;
         try {
             NebulaPoolConfig nebulaPoolConfig = new NebulaPoolConfig();
             nebulaPoolConfig.setMaxConnSize(10);
             List<HostAddress> addresses = Arrays.asList(new HostAddress(server,Integer.valueOf(portString)));
-            NebulaPool pool = new NebulaPool();
+            pool = new NebulaPool();
             pool.init(addresses, nebulaPoolConfig);
-            Session session = pool.getSession(user, password, false);
+            session = pool.getSession(user, password, false);
             ResultSet resultSet = session.execute("DESCRIBE SPACE "+defaultCoreRealmName+";");
-
-            if(resultSet.getErrorMessage() != null &&resultSet.getErrorMessage().startsWith("SpaceNotFound")){
+            if(resultSet.getErrorMessage() != null && resultSet.getErrorMessage().startsWith("SpaceNotFound")){
                 //default core realm not creat yet
-                session.execute("CREATE SPACE IF NOT EXISTS "+ defaultCoreRealmName +
-                        "(\n" +
-                        "    [partition_num = <partition_number>,]\n" +
-                        "    [replica_factor = <replica_number>,]\n" +
-                        "    vid_type = {FIXED_STRING(<N>) | INT[64]}\n" +
-                        "    )"
-                );
+                boolean result = createNebulaGraphSpace(session,defaultCoreRealmName);
+                if(result){
+                    return new NebulaGraphCoreRealmImpl(defaultCoreRealmName);
+                }
             }else{
                 return new NebulaGraphCoreRealmImpl(defaultCoreRealmName);
             }
-            session.release();
-            pool.close();
         } catch (UnknownHostException | NotValidConnectionException | IOErrorException | AuthFailedException |
                  ClientServerIncompatibleException e) {
             throw new RuntimeException(e);
+        }finally {
+            if(session != null){
+                session.release();
+            }
+            if(pool != null){
+                pool.close();
+            }
         }
-
         return null;
     }
 
@@ -91,5 +94,16 @@ public class NubulaGraphCoreRealmSystemUtil {
 
     public static CoreRealm createCoreRealm(String coreRealmName){
         return null;
+    }
+
+    private static boolean createNebulaGraphSpace(Session session,String spaceName) throws IOErrorException {
+        String nql = "CREATE SPACE `"+spaceName+"` (partition_num = "+Integer.valueOf(partitionNumberString)+
+                ",replica_factor="+Integer.valueOf(replicaFactorString)+",vid_type = INT64);";
+        ResultSet resultSet = session.execute(nql);
+        if(resultSet.getErrorMessage().equals("")){
+            return true;
+        }else{
+            return false;
+        }
     }
 }

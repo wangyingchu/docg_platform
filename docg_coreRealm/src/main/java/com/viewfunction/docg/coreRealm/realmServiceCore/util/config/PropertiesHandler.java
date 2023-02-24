@@ -42,6 +42,8 @@ public class PropertiesHandler {
     public static String NEBULAGRAPH_SERVER_PORT = "NEBULAGRAPH_SERVER_PORT";
     public static String NEBULAGRAPH_USER = "NEBULAGRAPH_USER";
     public static String NEBULAGRAPH_PASSWORD = "NEBULAGRAPH_PASSWORD";
+    public static String NEBULAGRAPH_PARTITION_NUMBER = "NEBULAGRAPH_PARTITION_NUMBER";
+    public static String NEBULAGRAPH_REPLICA_FACTOR = "NEBULAGRAPH_REPLICA_FACTOR";
 
     public static String DEFAULT_REALM_NAME = "DEFAULT_REALM_NAME";
 
