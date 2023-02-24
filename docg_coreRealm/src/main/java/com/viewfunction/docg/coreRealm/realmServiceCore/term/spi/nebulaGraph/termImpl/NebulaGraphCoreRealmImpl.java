@@ -42,6 +42,12 @@ public class NebulaGraphCoreRealmImpl implements NebulaGraphCoreRealm {
 
     @Override
     public ConceptionKind createConceptionKind(String conceptionKindName, String conceptionKindDesc) {
+
+
+
+
+
+
         return null;
     }
 
