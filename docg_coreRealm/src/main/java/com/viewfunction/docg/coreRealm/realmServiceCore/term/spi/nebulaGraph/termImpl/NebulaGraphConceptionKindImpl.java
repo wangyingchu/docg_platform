@@ -6,6 +6,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationK
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.nebulaGraph.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.nebulaGraph.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
@@ -31,7 +33,7 @@ public class NebulaGraphConceptionKindImpl implements NebulaGraphConceptionKind 
         this.conceptionKindName = conceptionKindName;
         this.conceptionKindDesc = conceptionKindDesc;
         this.conceptionKindUID = conceptionKindUID;
-        //this.graphOperationExecutorHelper = new GraphOperationExecutorHelper();
+        this.graphOperationExecutorHelper = new GraphOperationExecutorHelper();
     }
 
     @Override
@@ -317,5 +319,12 @@ public class NebulaGraphConceptionKindImpl implements NebulaGraphConceptionKind 
     @Override
     public long setKindScopeAttributes(Map<String, Object> attributes) {
         return 0;
+    }
+
+    //internal graphOperationExecutor management logic
+    private GraphOperationExecutorHelper graphOperationExecutorHelper;
+
+    public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor){
+        this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }
 }
