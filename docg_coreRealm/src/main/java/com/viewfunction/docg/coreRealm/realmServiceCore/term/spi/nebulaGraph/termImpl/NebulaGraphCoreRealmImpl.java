@@ -3,6 +3,8 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.nebulaGraph.te
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.nebulaGraph.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.nebulaGraph.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.SystemMaintenanceOperator;
@@ -23,6 +25,7 @@ public class NebulaGraphCoreRealmImpl implements NebulaGraphCoreRealm {
 
     public NebulaGraphCoreRealmImpl(String coreRealmName){
         this.coreRealmName = coreRealmName;
+        this.graphOperationExecutorHelper = new GraphOperationExecutorHelper();
     }
 
     @Override
@@ -298,11 +301,27 @@ public class NebulaGraphCoreRealmImpl implements NebulaGraphCoreRealm {
 
     @Override
     public void openGlobalSession() {
-
+        GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
+        this.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }
 
     @Override
     public void closeGlobalSession() {
+        if(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor() != null){
+            try {
+                this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor().close();
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+                throw new RuntimeException(e);
+            }
+            this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(null);
+        }
+    }
 
+    //internal graphOperationExecutor management logic
+    private GraphOperationExecutorHelper graphOperationExecutorHelper;
+
+    public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor){
+        this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }
 }
