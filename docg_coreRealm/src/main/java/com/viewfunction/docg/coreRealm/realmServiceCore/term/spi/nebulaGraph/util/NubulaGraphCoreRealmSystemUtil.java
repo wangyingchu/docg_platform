@@ -10,6 +10,7 @@ import com.vesoft.nebula.client.graph.exception.IOErrorException;
 import com.vesoft.nebula.client.graph.exception.NotValidConnectionException;
 import com.vesoft.nebula.client.graph.net.NebulaPool;
 import com.vesoft.nebula.client.graph.net.Session;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.nebulaGraph.termImpl.NebulaGraphCoreRealmImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.config.PropertiesHandler;
@@ -92,8 +93,43 @@ public class NubulaGraphCoreRealmSystemUtil {
         return coreRealmsSet;
     }
 
-    public static CoreRealm createCoreRealm(String coreRealmName){
-        return null;
+    public static CoreRealm createCoreRealm(String coreRealmName) throws CoreRealmServiceRuntimeException{
+        Session session = null;
+        NebulaPool pool = null;
+        try {
+            NebulaPoolConfig nebulaPoolConfig = new NebulaPoolConfig();
+            nebulaPoolConfig.setMaxConnSize(10);
+            List<HostAddress> addresses = Arrays.asList(new HostAddress(server,Integer.valueOf(portString)));
+            pool = new NebulaPool();
+            pool.init(addresses, nebulaPoolConfig);
+            session = pool.getSession(user, password, false);
+            ResultSet resultSet = session.execute("DESCRIBE SPACE "+coreRealmName+";");
+            if(resultSet.getErrorMessage() != null && resultSet.getErrorMessage().startsWith("SpaceNotFound")){
+                //default core realm not creat yet
+                boolean result = createNebulaGraphSpace(session,coreRealmName);
+                if(result){
+                    return new NebulaGraphCoreRealmImpl(coreRealmName);
+                }else{
+                    CoreRealmServiceRuntimeException coreRealmServiceRuntimeException = new CoreRealmServiceRuntimeException();
+                    coreRealmServiceRuntimeException.setCauseMessage("Create Core Realm with name "+coreRealmName+" fail.");
+                    throw coreRealmServiceRuntimeException;
+                }
+            }else{
+                CoreRealmServiceRuntimeException coreRealmServiceRuntimeException = new CoreRealmServiceRuntimeException();
+                coreRealmServiceRuntimeException.setCauseMessage("Core Realm with name "+coreRealmName+" already exist.");
+                throw coreRealmServiceRuntimeException;
+            }
+        } catch (UnknownHostException | NotValidConnectionException | IOErrorException | AuthFailedException |
+                 ClientServerIncompatibleException e) {
+            throw new RuntimeException(e);
+        }finally {
+            if (session != null) {
+                session.release();
+            }
+            if (pool != null) {
+                pool.close();
+            }
+        }
     }
 
     private static boolean createNebulaGraphSpace(Session session,String spaceName) throws IOErrorException {
