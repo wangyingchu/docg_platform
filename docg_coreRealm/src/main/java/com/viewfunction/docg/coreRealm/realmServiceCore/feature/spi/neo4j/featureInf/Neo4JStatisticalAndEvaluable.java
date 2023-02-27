@@ -244,11 +244,13 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
                                 String kindName = nodeRecord.get("nodeType").asString().replace(":","").replaceAll("`","");
                                 String propertyName = nodeRecord.get("propertyName").asString();
                                 String propertyTypes = nodeRecord.get("propertyTypes").asList().get(0).toString();
-                                long propertyObservations = nodeRecord.get("propertyObservations").asLong();
-                                long totalObservations = nodeRecord.get("totalObservations").asLong();
-                                KindEntityAttributeRuntimeStatistics currentKindEntityAttributeRuntimeStatistics =
-                                        new KindEntityAttributeRuntimeStatistics(kindName,propertyName,propertyTypes,totalObservations,propertyObservations);
-                                resultList.add(currentKindEntityAttributeRuntimeStatistics);
+                                if(nodeRecord.containsKey("propertyObservations")&&nodeRecord.containsKey("propertyObservations")){
+                                    long propertyObservations = nodeRecord.get("propertyObservations").asLong();
+                                    long totalObservations = nodeRecord.get("totalObservations").asLong();
+                                    KindEntityAttributeRuntimeStatistics currentKindEntityAttributeRuntimeStatistics =
+                                            new KindEntityAttributeRuntimeStatistics(kindName,propertyName,propertyTypes,totalObservations,propertyObservations);
+                                    resultList.add(currentKindEntityAttributeRuntimeStatistics);
+                                }
                             }
                             return null;
                         }
@@ -259,6 +261,7 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
                     evaluateCql = "CALL apoc.meta.relTypeProperties({rels: [\""+statisticTargetType+"\"],maxRels: "+sampleCountRealValue+"});";
                     logger.debug("Generated Cypher Statement: {}", evaluateCql);
                     DataTransformer relTypePropertiesDataTransformer = new DataTransformer() {
+                        Map<String,KindEntityAttributeRuntimeStatistics> existingAttributeStatisticsMap = new HashMap<>();
                         @Override
                         public Object transformResult(Result result) {
                             while(result.hasNext()){
@@ -266,11 +269,21 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
                                 String kindName = nodeRecord.get("relType").asString().replace(":","").replaceAll("`","");
                                 String propertyName = nodeRecord.get("propertyName").asString();
                                 String propertyTypes = nodeRecord.get("propertyTypes").asList().get(0).toString();
-                                long propertyObservations = nodeRecord.get("propertyObservations").asLong();
-                                long totalObservations = nodeRecord.get("totalObservations").asLong();
-                                KindEntityAttributeRuntimeStatistics currentKindEntityAttributeRuntimeStatistics =
-                                        new KindEntityAttributeRuntimeStatistics(kindName,propertyName,propertyTypes,totalObservations,propertyObservations);
-                                resultList.add(currentKindEntityAttributeRuntimeStatistics);
+                                if(nodeRecord.containsKey("propertyObservations")&&nodeRecord.containsKey("totalObservations")){
+                                    long propertyObservations = nodeRecord.get("propertyObservations").asLong();
+                                    long totalObservations = nodeRecord.get("totalObservations").asLong();
+                                    if(existingAttributeStatisticsMap.containsKey(propertyName)){
+                                        long oldAttributeHitCount = existingAttributeStatisticsMap.get(propertyName).getAttributeHitCount();
+                                        long oldSampleCount = existingAttributeStatisticsMap.get(propertyName).getSampleCount();
+                                        existingAttributeStatisticsMap.get(propertyName).setSampleCount(oldSampleCount+totalObservations);
+                                        existingAttributeStatisticsMap.get(propertyName).setAttributeHitCount(oldAttributeHitCount+propertyObservations);
+                                    }else{
+                                        KindEntityAttributeRuntimeStatistics currentKindEntityAttributeRuntimeStatistics =
+                                                new KindEntityAttributeRuntimeStatistics(kindName,propertyName,propertyTypes,totalObservations,propertyObservations);
+                                        existingAttributeStatisticsMap.put(propertyName,currentKindEntityAttributeRuntimeStatistics);
+                                        resultList.add(currentKindEntityAttributeRuntimeStatistics);
+                                    }
+                                }
                             }
                             return null;
                         }

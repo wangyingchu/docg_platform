@@ -86,4 +86,12 @@ public class KindEntityAttributeRuntimeStatistics {
     public long getAttributeHitCount() {
         return attributeHitCount;
     }
+
+    public void setSampleCount(long sampleCount){
+        this.sampleCount = sampleCount;
+    }
+
+    public void setAttributeHitCount(long attributeHitCount){
+        this.attributeHitCount = attributeHitCount;
+    }
 }
