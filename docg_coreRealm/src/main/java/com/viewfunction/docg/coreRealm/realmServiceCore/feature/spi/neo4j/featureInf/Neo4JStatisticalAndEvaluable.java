@@ -19,7 +19,6 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionEntityImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
-
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
@@ -268,20 +267,22 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
                                 Record nodeRecord = result.next();
                                 String kindName = nodeRecord.get("relType").asString().replace(":","").replaceAll("`","");
                                 String propertyName = nodeRecord.get("propertyName").asString();
-                                String propertyTypes = nodeRecord.get("propertyTypes").asList().get(0).toString();
-                                if(nodeRecord.containsKey("propertyObservations")&&nodeRecord.containsKey("totalObservations")){
-                                    long propertyObservations = nodeRecord.get("propertyObservations").asLong();
-                                    long totalObservations = nodeRecord.get("totalObservations").asLong();
-                                    if(existingAttributeStatisticsMap.containsKey(propertyName)){
-                                        long oldAttributeHitCount = existingAttributeStatisticsMap.get(propertyName).getAttributeHitCount();
-                                        long oldSampleCount = existingAttributeStatisticsMap.get(propertyName).getSampleCount();
-                                        existingAttributeStatisticsMap.get(propertyName).setSampleCount(oldSampleCount+totalObservations);
-                                        existingAttributeStatisticsMap.get(propertyName).setAttributeHitCount(oldAttributeHitCount+propertyObservations);
-                                    }else{
-                                        KindEntityAttributeRuntimeStatistics currentKindEntityAttributeRuntimeStatistics =
-                                                new KindEntityAttributeRuntimeStatistics(kindName,propertyName,propertyTypes,totalObservations,propertyObservations);
-                                        existingAttributeStatisticsMap.put(propertyName,currentKindEntityAttributeRuntimeStatistics);
-                                        resultList.add(currentKindEntityAttributeRuntimeStatistics);
+                                if(!nodeRecord.get("propertyTypes").isNull()){
+                                    String propertyTypes = nodeRecord.get("propertyTypes").asList().get(0).toString();
+                                    if(nodeRecord.containsKey("propertyObservations")&&nodeRecord.containsKey("totalObservations")){
+                                        long propertyObservations = nodeRecord.get("propertyObservations").asLong();
+                                        long totalObservations = nodeRecord.get("totalObservations").asLong();
+                                        if(existingAttributeStatisticsMap.containsKey(propertyName)){
+                                            long oldAttributeHitCount = existingAttributeStatisticsMap.get(propertyName).getAttributeHitCount();
+                                            long oldSampleCount = existingAttributeStatisticsMap.get(propertyName).getSampleCount();
+                                            existingAttributeStatisticsMap.get(propertyName).setSampleCount(oldSampleCount+totalObservations);
+                                            existingAttributeStatisticsMap.get(propertyName).setAttributeHitCount(oldAttributeHitCount+propertyObservations);
+                                        }else{
+                                            KindEntityAttributeRuntimeStatistics currentKindEntityAttributeRuntimeStatistics =
+                                                    new KindEntityAttributeRuntimeStatistics(kindName,propertyName,propertyTypes,totalObservations,propertyObservations);
+                                            existingAttributeStatisticsMap.put(propertyName,currentKindEntityAttributeRuntimeStatistics);
+                                            resultList.add(currentKindEntityAttributeRuntimeStatistics);
+                                        }
                                     }
                                 }
                             }
