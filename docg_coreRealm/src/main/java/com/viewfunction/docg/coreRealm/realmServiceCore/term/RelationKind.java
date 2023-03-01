@@ -9,10 +9,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationAt
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaAttributeFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaConfigItemFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.StatisticalAndEvaluable;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationDegreeDistributionInfo;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntitiesAttributesRetrieveResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntitiesRetrieveResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 
 import java.util.List;
@@ -131,6 +128,13 @@ public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttr
      * @return 关系实体度分布信息对象
      */
     public RelationDegreeDistributionInfo computeRelationDegreeDistribution(RelationDirection relationDirection);
+
+    /**
+     * 统计使用当前关系类型关联的各个概念类型之间的实时关联信息
+     *
+     * @return 使用当前关系类型的各个概念类型之间的实体关联信息集合
+     */
+    public Set<ConceptionKindCorrelationInfo> getConceptionKindsRelationStatistics();
 
     /**
      * 随机获取若干当前关系类型下的关系实体

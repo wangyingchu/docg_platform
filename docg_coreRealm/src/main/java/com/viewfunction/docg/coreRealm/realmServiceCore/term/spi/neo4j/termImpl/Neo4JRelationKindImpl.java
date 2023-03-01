@@ -24,6 +24,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.Value;
+import org.neo4j.driver.types.Node;
 import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -320,6 +321,55 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
     }
 
     @Override
+    public Set<ConceptionKindCorrelationInfo> getConceptionKindsRelationStatistics() {
+        Set<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoList = new HashSet<>();
+        String cypherProcedureString = "CALL db.schema.visualization()";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            DataTransformer queryResultDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+
+                    if(result.hasNext()){
+                        Record currentRecord = result.next();
+                        List nodesList = currentRecord.get("nodes").asList();
+
+                        Map<String,String> conceptionKindMetaInfoMap = new HashMap<>();
+                        for(Object currentNode:nodesList){
+                            Node currentNeo4JNode = (Node)currentNode;
+                            conceptionKindMetaInfoMap.put(""+currentNeo4JNode.id(),currentNeo4JNode.get("name").asString());
+                        }
+                        List relationList =  currentRecord.get("relationships").asList();
+                        for(Object currenRelation:relationList){
+                            Relationship currentNeo4JRelation = (Relationship)currenRelation;
+                            String currentRelationKindName = currentNeo4JRelation.type();
+                            if(relationKindName.equals(currentRelationKindName)){
+                                String startConceptionKindName = conceptionKindMetaInfoMap.get(""+currentNeo4JRelation.startNodeId());
+                                String targetConceptionKindName = conceptionKindMetaInfoMap.get(""+currentNeo4JRelation.endNodeId());
+                                //apoc.meta.graphSample does not filter away non-existing paths.so count record maybe return wrong result
+                                //int relationEntityCount = currentNeo4JRelation.get("count").asInt();
+                                long existingRelCount = checkRelationEntitiesCount(workingGraphOperationExecutor,startConceptionKindName,targetConceptionKindName,currentRelationKindName);
+                                if(existingRelCount != 0){
+                                    conceptionKindCorrelationInfoList.add(new ConceptionKindCorrelationInfo(startConceptionKindName,
+                                            targetConceptionKindName,currentRelationKindName,existingRelCount)
+                                    );
+                                }
+                            }
+                        }
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeRead(queryResultDataTransformer,cypherProcedureString);
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return conceptionKindCorrelationInfoList;
+    }
+
+    @Override
     public Set<RelationEntity> getRandomEntities(int entitiesCount) throws CoreRealmServiceEntityExploreException {
         if(entitiesCount < 1){
             logger.error("entitiesCount must equal or great then 1.");
@@ -525,6 +575,17 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
             }
             return relationEntitySet;
         }
+    }
+
+    private long checkRelationEntitiesCount(GraphOperationExecutor workingGraphOperationExecutor,String sourceConceptionKindName,
+                                            String targetConceptionKindName,String relationKindName){
+        String cql = "MATCH p=(source:"+sourceConceptionKindName+")-[r:"+relationKindName+"]->(target:"+targetConceptionKindName+") RETURN count(r) AS operationResult";
+        GetLongFormatReturnValueTransformer GetLongFormatReturnValueTransformer = new GetLongFormatReturnValueTransformer();
+        Object queryRes = workingGraphOperationExecutor.executeRead(GetLongFormatReturnValueTransformer,cql);
+        if(queryRes != null){
+            return (Long)queryRes;
+        }
+        return 0;
     }
 
     //internal graphOperationExecutor management logic

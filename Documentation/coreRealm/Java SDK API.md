@@ -1008,6 +1008,13 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      */
     public RelationDegreeDistributionInfo computeRelationDegreeDistribution(RelationDirection relationDirection);
 
+	/**
+     * 统计使用当前关系类型关联的各个概念类型之间的实时关联信息
+     *
+     * @return 使用当前关系类型的各个概念类型之间的实体关联信息集合
+     */
+    public Set<ConceptionKindCorrelationInfo> getConceptionKindsRelationStatistics();
+
     /**
      * 随机获取若干当前关系类型下的关系实体
      *
