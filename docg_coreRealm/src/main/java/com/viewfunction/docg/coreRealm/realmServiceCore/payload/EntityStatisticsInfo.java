@@ -31,7 +31,7 @@ public class EntityStatisticsInfo {
         this.setEntitiesCount(entitiesCount);
         this.entityKindType = entityKindType;
         this.isSystemKind = isSystemKind;
-        this.entityKindDesc = entityKindDesc;
+        this.setEntityKindDesc(entityKindDesc);
         this.entityKindUID = entityKindUID;
         this.createDateTime = createDateTime;
         this.lastModifyDateTime = lastModifyDateTime;
@@ -61,6 +61,10 @@ public class EntityStatisticsInfo {
 
     public String getEntityKindDesc() {
         return entityKindDesc;
+    }
+
+    public void setEntityKindDesc(String entityKindDesc) {
+        this.entityKindDesc = entityKindDesc;
     }
 
     public String getEntityKindUID() {
