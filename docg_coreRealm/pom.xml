@@ -110,15 +110,6 @@
         </dependency>
 
         <!--
-        NubulaGraph implementation libs
-        -->
-        <dependency>
-            <groupId>com.vesoft</groupId>
-            <artifactId>client</artifactId>
-            <version>3.4.0</version>
-        </dependency>
-
-        <!--
         Testing libs
         -->
         <!-- https://mvnrepository.com/artifact/org.testng/testng -->

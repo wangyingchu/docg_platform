@@ -13,11 +13,13 @@
         <module name="docg_dataAnalyze" />
         <module name="docg_analysisProvider" />
         <module name="docg_realmExample" />
+        <module name="docg_coreRealm_nebulaGraph_impl" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="docg_analysisProvider" target="17" />
       <module name="docg_coreRealm" target="17" />
+      <module name="docg_coreRealm_nebulaGraph_impl" target="17" />
       <module name="docg_dataAnalyze" target="1.8" />
       <module name="docg_dataCollector" target="17" />
       <module name="docg_dataCompute" target="17" />

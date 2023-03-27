@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/docg_analysisProvider/docg_analysisProvider.iml" filepath="$PROJECT_DIR$/docg_analysisProvider/docg_analysisProvider.iml" />
       <module fileurl="file://$PROJECT_DIR$/docg_coreRealm/docg_coreRealm.iml" filepath="$PROJECT_DIR$/docg_coreRealm/docg_coreRealm.iml" />
+      <module fileurl="file://$PROJECT_DIR$/docg_coreRealm_nebulaGraph_impl.iml" filepath="$PROJECT_DIR$/docg_coreRealm_nebulaGraph_impl.iml" />
       <module fileurl="file://$PROJECT_DIR$/docg_dataAnalyze/docg_dataAnalyze.iml" filepath="$PROJECT_DIR$/docg_dataAnalyze/docg_dataAnalyze.iml" />
       <module fileurl="file://$PROJECT_DIR$/docg_dataCollector/docg_dataCollector.iml" filepath="$PROJECT_DIR$/docg_dataCollector/docg_dataCollector.iml" />
       <module fileurl="file://$PROJECT_DIR$/docg_dataCompute/docg_dataCompute.iml" filepath="$PROJECT_DIR$/docg_dataCompute/docg_dataCompute.iml" />
