@@ -7,6 +7,9 @@
     <groupId>com.viewfunction</groupId>
     <artifactId>docg_platform</artifactId>
     <packaging>pom</packaging>
+    <modules>
+        <module>docg_coreRealm_nebulaGraph_impl</module>
+    </modules>
     <version>0.1.0</version>
 
     <properties>
