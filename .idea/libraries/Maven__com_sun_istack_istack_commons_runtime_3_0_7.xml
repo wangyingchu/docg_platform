@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Maven: com.sun.istack:istack-commons-runtime:3.0.7" type="java-imported" external-system-id="Maven">
+    <properties groupId="com.sun.istack" artifactId="istack-commons-runtime" version="3.0.7" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sun/istack/istack-commons-runtime/3.0.7/istack-commons-runtime-3.0.7.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sun/istack/istack-commons-runtime/3.0.7/istack-commons-runtime-3.0.7-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sun/istack/istack-commons-runtime/3.0.7/istack-commons-runtime-3.0.7-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

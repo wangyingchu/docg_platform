@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Maven: com.github.fommil.netlib:core:1.1.2" type="java-imported" external-system-id="Maven">
+    <properties groupId="com.github.fommil.netlib" artifactId="core" version="1.1.2" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/fommil/netlib/core/1.1.2/core-1.1.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/fommil/netlib/core/1.1.2/core-1.1.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/fommil/netlib/core/1.1.2/core-1.1.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

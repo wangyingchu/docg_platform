@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Maven: org.apache.kafka:kafka-raft:6.1.1-ccs" type="java-imported" external-system-id="Maven">
+    <properties groupId="org.apache.kafka" artifactId="kafka-raft" version="6.1.1-ccs" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/kafka/kafka-raft/6.1.1-ccs/kafka-raft-6.1.1-ccs.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/kafka/kafka-raft/6.1.1-ccs/kafka-raft-6.1.1-ccs-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/kafka/kafka-raft/6.1.1-ccs/kafka-raft-6.1.1-ccs-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

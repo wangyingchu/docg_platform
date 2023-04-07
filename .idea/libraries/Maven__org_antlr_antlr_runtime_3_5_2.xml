@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Maven: org.antlr:antlr-runtime:3.5.2" type="java-imported" external-system-id="Maven">
+    <properties groupId="org.antlr" artifactId="antlr-runtime" version="3.5.2" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/antlr/antlr-runtime/3.5.2/antlr-runtime-3.5.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/antlr/antlr-runtime/3.5.2/antlr-runtime-3.5.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/antlr/antlr-runtime/3.5.2/antlr-runtime-3.5.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

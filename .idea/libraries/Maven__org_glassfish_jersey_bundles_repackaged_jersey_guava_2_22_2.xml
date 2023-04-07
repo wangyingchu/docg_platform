@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Maven: org.glassfish.jersey.bundles.repackaged:jersey-guava:2.22.2" type="java-imported" external-system-id="Maven">
+    <properties groupId="org.glassfish.jersey.bundles.repackaged" artifactId="jersey-guava" version="2.22.2" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/jersey/bundles/repackaged/jersey-guava/2.22.2/jersey-guava-2.22.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/jersey/bundles/repackaged/jersey-guava/2.22.2/jersey-guava-2.22.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/jersey/bundles/repackaged/jersey-guava/2.22.2/jersey-guava-2.22.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

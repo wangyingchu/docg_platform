@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Maven: org.glassfish.jersey.core:jersey-client:2.36" type="java-imported" external-system-id="Maven">
+    <properties groupId="org.glassfish.jersey.core" artifactId="jersey-client" version="2.36" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/jersey/core/jersey-client/2.36/jersey-client-2.36.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/jersey/core/jersey-client/2.36/jersey-client-2.36-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/jersey/core/jersey-client/2.36/jersey-client-2.36-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

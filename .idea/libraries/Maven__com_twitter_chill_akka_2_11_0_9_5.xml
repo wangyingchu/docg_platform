@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Maven: com.twitter:chill-akka_2.11:0.9.5" type="java-imported" external-system-id="Maven">
+    <properties groupId="com.twitter" artifactId="chill-akka_2.11" version="0.9.5" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/twitter/chill-akka_2.11/0.9.5/chill-akka_2.11-0.9.5.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/twitter/chill-akka_2.11/0.9.5/chill-akka_2.11-0.9.5-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/twitter/chill-akka_2.11/0.9.5/chill-akka_2.11-0.9.5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

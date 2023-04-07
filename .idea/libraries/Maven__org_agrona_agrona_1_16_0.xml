@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Maven: org.agrona:agrona:1.16.0" type="java-imported" external-system-id="Maven">
+    <properties groupId="org.agrona" artifactId="agrona" version="1.16.0" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/agrona/agrona/1.16.0/agrona-1.16.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/agrona/agrona/1.16.0/agrona-1.16.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/agrona/agrona/1.16.0/agrona-1.16.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Maven: commons-httpclient:commons-httpclient:3.1" type="java-imported" external-system-id="Maven">
+    <properties groupId="commons-httpclient" artifactId="commons-httpclient" version="3.1" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

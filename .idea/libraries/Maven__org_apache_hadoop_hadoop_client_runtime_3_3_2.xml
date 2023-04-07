@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Maven: org.apache.hadoop:hadoop-client-runtime:3.3.2" type="java-imported" external-system-id="Maven">
+    <properties groupId="org.apache.hadoop" artifactId="hadoop-client-runtime" version="3.3.2" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-client-runtime/3.3.2/hadoop-client-runtime-3.3.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-client-runtime/3.3.2/hadoop-client-runtime-3.3.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/apache/hadoop/hadoop-client-runtime/3.3.2/hadoop-client-runtime-3.3.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
