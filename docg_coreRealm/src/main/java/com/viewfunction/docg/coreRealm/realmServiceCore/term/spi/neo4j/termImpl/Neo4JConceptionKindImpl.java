@@ -357,7 +357,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
             // Using below solution for improving performance or execute operation success
             //https://neo4j.com/developer/kb/how-to-bulk-delete-dense-nodes/
             //https://www.freesion.com/article/24571268014/
-            String bulkDeleteCql ="MATCH (n:"+this.conceptionKindName+")\n" +
+            String bulkDeleteCql ="MATCH (n:`"+this.conceptionKindName+"`)\n" +
                     "WITH collect(n) AS nn\n" +
                     "CALL apoc.periodic.commit(\"\n" +
                     "  UNWIND $nodes AS n\n" +
