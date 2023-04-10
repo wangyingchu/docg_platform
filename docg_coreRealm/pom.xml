@@ -12,8 +12,7 @@
         <neo4j.version>5.3.0</neo4j.version>
         <neo4j-cypher-dsl.version>2022.8.2</neo4j-cypher-dsl.version>
         <geotools.version>26.4</geotools.version>
-
-        <arcadedb.version>23.1.2</arcadedb.version>
+        <arcadedb.version>23.3.1</arcadedb.version>
     </properties>
 
     <dependencies>
