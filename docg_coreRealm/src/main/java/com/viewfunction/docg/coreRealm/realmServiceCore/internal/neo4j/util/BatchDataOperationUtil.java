@@ -1026,6 +1026,44 @@ public class BatchDataOperationUtil {
         return false;
     }
 
+    public static boolean importConceptionEntitiesFromCSV(String csvLocation,String conceptionKind,Map<String,String> attributesMapping,String lineSplitChar){
+        if(csvLocation == null || conceptionKind == null || attributesMapping == null){
+            return false;
+        }else{
+            if(attributesMapping.size()>0){
+                String propertyInsertStr="";
+                Set<String> attributeNames = attributesMapping.keySet();
+                for(String currentAttributeName:attributeNames){
+                    String propertyNameOfCSV = attributesMapping.get(currentAttributeName);
+                    propertyInsertStr = propertyInsertStr+currentAttributeName+":row."+propertyNameOfCSV+",";
+                }
+                propertyInsertStr = propertyInsertStr.substring(0,propertyInsertStr.length()-1);
+
+                String csvFileLocation="file:///"+csvLocation.replaceFirst("file:///","");
+                String cql = "LOAD CSV WITH HEADERS FROM \""+csvFileLocation+"\" AS row  FIELDTERMINATOR '"+lineSplitChar+"' CREATE (:"+conceptionKind+" {"+propertyInsertStr+"})";
+
+                GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
+                try{
+                    DataTransformer<Boolean> geospatialCodeSearchDataTransformer = new DataTransformer() {
+                        @Override
+                        public Object transformResult(Result result) {
+                            return true;
+                        }
+                    };
+                    Object result = graphOperationExecutor.executeWrite(geospatialCodeSearchDataTransformer, cql);
+                    if(result != null){
+                        return (Boolean)result;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }finally {
+                    graphOperationExecutor.close();
+                }
+            }
+        }
+        return false;
+    }
+
     public static Map<String,String>  getAttributesMappingFromHeaderCSV(String csvLocation){
         if(csvLocation == null){
             return null;
