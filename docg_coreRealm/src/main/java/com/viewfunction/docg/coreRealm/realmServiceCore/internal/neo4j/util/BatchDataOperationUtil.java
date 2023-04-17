@@ -1184,4 +1184,10 @@ public class BatchDataOperationUtil {
         */
         return false;
     }
+
+    public static void exportToCypher(){
+
+
+        //call apoc.export.cypher.query("MATCH (m:TestLoa) return m", "export/directors.cypher", {});
+    }
 }
