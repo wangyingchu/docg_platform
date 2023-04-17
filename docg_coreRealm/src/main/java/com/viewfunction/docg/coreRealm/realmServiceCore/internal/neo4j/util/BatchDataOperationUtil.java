@@ -1168,9 +1168,20 @@ public class BatchDataOperationUtil {
         YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data
         RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data
          */
-
-        //CALL apoc.export.csv.query("match (m:TestLoad) return m","export/results.csv",{})
-        //CALL apoc.export.arrow.query("export/results.arrow","match (m:TestLoad) return m",{})
         return null;
+    }
+
+    public static boolean importConceptionEntitiesFromCSV(String csvFileLocation){
+        //https://neo4j.com/docs/apoc/current/overview/apoc.import/apoc.import.csv/
+        /*
+        CALL apoc.import.csv(
+          [{fileName: 'file:/export/movies-l.csv', labels: ['TestLoad2']}],
+          [],
+          {delimiter: ',', arrayDelimiter: ',', stringIds: false}
+        )
+        YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data
+        RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data
+        */
+        return false;
     }
 }
