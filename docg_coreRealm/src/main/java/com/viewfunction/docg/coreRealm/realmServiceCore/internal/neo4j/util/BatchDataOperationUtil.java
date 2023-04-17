@@ -1138,37 +1138,19 @@ public class BatchDataOperationUtil {
     }
 
     public static boolean importConceptionEntitiesFromArrow(String arrowFileLocation){
-
-
-
-
-
         //https://neo4j.com/docs/apoc/current/overview/apoc.load/apoc.load.arrow/
         //apoc.load.arrow(file :: STRING?, config = {} :: MAP?)
-
         //CALL apoc.load.arrow("export/results.arrow",{})
         /*
-        CALL apoc.load.arrow("export/results2.arrow",{}) YIELD value
-        CREATE (c:TestLoad3) SET c += value
-
-
-        CALL apoc.load.json("file:///person.json")
-YIELD value
-MERGE (p:Person {name: value.name})
-SET p.age = value.age
-WITH p, value
-UNWIND value.children AS child
-MERGE (c:Person {name: child})
-MERGE (c)-[:CHILD_OF]->(p);
-
-         */
-
+        CALL apoc.load.arrow("export/results.arrow",{}) YIELD value
+        UNWIND value.m AS stat
+        CREATE (c:TestLoa1) SET c = apoc.convert.fromJsonMap(stat).properties
+        */
         return false;
     }
 
     public static File exportConceptionEntitiesToArrow(String conceptionKindName,String arrowFileLocation){
         //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.arrow.query/
-
         //CALL apoc.export.csv.query("match (m:TestLoad) return m","export/results.csv",{})
         //CALL apoc.export.arrow.query("export/results.arrow","match (m:TestLoad) return m",{})
         return null;
@@ -1205,4 +1187,10 @@ MERGE (c)-[:CHILD_OF]->(p);
 
         //call apoc.export.cypher.query("MATCH (m:TestLoa) return m", "export/directors.cypher", {});
     }
+
+    public static boolean importConceptionEntitiesFromCypher(String csvFileLocation){
+        //apoc.import.runFile
+        return true;
+    }
+
 }
