@@ -1136,4 +1136,16 @@ public class BatchDataOperationUtil {
             return true;
         }
     }
+
+    public static boolean importConceptionEntitiesFromArrow(String arrowFileLocation){
+        //https://neo4j.com/docs/apoc/current/overview/apoc.load/apoc.load.arrow/
+
+        return false;
+    }
+
+    public static File exportConceptionEntitiesToArrow(String conceptionKindName,String arrowFileLocation){
+        //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.arrow.query/
+
+        return null;
+    }
 }
