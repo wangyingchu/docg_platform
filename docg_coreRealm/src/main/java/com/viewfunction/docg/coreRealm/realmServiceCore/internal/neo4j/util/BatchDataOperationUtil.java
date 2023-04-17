@@ -1147,6 +1147,11 @@ public class BatchDataOperationUtil {
         //apoc.load.arrow(file :: STRING?, config = {} :: MAP?)
 
         //CALL apoc.load.arrow("export/results.arrow",{})
+        /*
+        CALL apoc.load.arrow("export/results2.arrow",{}) YIELD value
+        CREATE (c:TestLoad3) SET c += value
+
+         */
 
         return false;
     }
