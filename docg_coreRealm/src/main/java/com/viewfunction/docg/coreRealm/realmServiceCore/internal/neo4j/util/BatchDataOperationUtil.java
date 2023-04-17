@@ -1138,7 +1138,15 @@ public class BatchDataOperationUtil {
     }
 
     public static boolean importConceptionEntitiesFromArrow(String arrowFileLocation){
+
+
+
+
+
         //https://neo4j.com/docs/apoc/current/overview/apoc.load/apoc.load.arrow/
+        //apoc.load.arrow(file :: STRING?, config = {} :: MAP?)
+
+        //CALL apoc.load.arrow("export/results.arrow",{})
 
         return false;
     }
@@ -1146,6 +1154,23 @@ public class BatchDataOperationUtil {
     public static File exportConceptionEntitiesToArrow(String conceptionKindName,String arrowFileLocation){
         //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.arrow.query/
 
+        //CALL apoc.export.csv.query("match (m:TestLoad) return m","export/results.csv",{})
+        //CALL apoc.export.arrow.query("export/results.arrow","match (m:TestLoad) return m",{})
+        return null;
+    }
+
+    public static File exportConceptionEntitiesToCSV(String conceptionKindName,String csvFileLocation){
+        //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.csv.data/
+        /*
+        MATCH (testLoad:DOCG_GS_County)
+        WITH collect(testLoad) AS people
+        CALL apoc.export.csv.data(people, [], "export/movies-l.csv", {})
+        YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data
+        RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data
+         */
+
+        //CALL apoc.export.csv.query("match (m:TestLoad) return m","export/results.csv",{})
+        //CALL apoc.export.arrow.query("export/results.arrow","match (m:TestLoad) return m",{})
         return null;
     }
 }
