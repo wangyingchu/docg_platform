@@ -1151,6 +1151,16 @@ public class BatchDataOperationUtil {
         CALL apoc.load.arrow("export/results2.arrow",{}) YIELD value
         CREATE (c:TestLoad3) SET c += value
 
+
+        CALL apoc.load.json("file:///person.json")
+YIELD value
+MERGE (p:Person {name: value.name})
+SET p.age = value.age
+WITH p, value
+UNWIND value.children AS child
+MERGE (c:Person {name: child})
+MERGE (c)-[:CHILD_OF]->(p);
+
          */
 
         return false;
