@@ -15,6 +15,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationStatistics;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeScaleEntityImpl;
@@ -1137,48 +1138,42 @@ public class BatchDataOperationUtil {
         }
     }
 
-    public static boolean importConceptionEntitiesFromArrow(String conceptionKindName,String arrowFileLocation){
+    public static EntitiesOperationStatistics importConceptionEntitiesFromArrow(String conceptionKindName, String arrowFileLocation){
         //https://neo4j.com/docs/apoc/current/overview/apoc.load/apoc.load.arrow/
-
         String cql = "CALL apoc.load.arrow(\""+arrowFileLocation+"\",{}) YIELD value\n" +
                 "        UNWIND value.entityRow AS entity\n" +
                 "        CREATE (operationResult:"+conceptionKindName+") SET operationResult = apoc.convert.fromJsonMap(entity).properties RETURN count(operationResult)";
         logger.debug("Generated Cypher Statement: {}", cql);
 
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
         GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
         try{
             DataTransformer<Boolean> dataTransformer = new DataTransformer() {
                 @Override
                 public Object transformResult(Result result) {
-
-
-
+                    if(result.hasNext()){
+                        Record operationResultRecord = result.next();
+                        if(operationResultRecord.containsKey("count(operationResult)")){
+                            entitiesOperationStatistics.setSuccessItemsCount(operationResultRecord.get("count(operationResult)").asLong());
+                        }
+                    }
                     return true;
                 }
             };
-            Object result = graphOperationExecutor.executeWrite(dataTransformer, cql);
-
+            graphOperationExecutor.executeWrite(dataTransformer, cql);
         } catch (Exception e) {
             e.printStackTrace();
         }finally {
             graphOperationExecutor.close();
         }
-
-
-        //String cql = "LOAD CSV WITH HEADERS FROM \""+csvFileLocation+"\" AS row  FIELDTERMINATOR '"+lineSplitChar+"' CREATE (:"+conceptionKind+" {"+propertyInsertStr+"})";
-
-
-        //apoc.load.arrow(file :: STRING?, config = {} :: MAP?)
-        //CALL apoc.load.arrow("export/results.arrow",{})
-        /*
-        CALL apoc.load.arrow("export/results.arrow",{}) YIELD value
-        UNWIND value.m AS stat
-        CREATE (c:TestLoa1) SET c = apoc.convert.fromJsonMap(stat).properties
-        */
-        return false;
+        entitiesOperationStatistics.setFinishTime(new Date());
+        entitiesOperationStatistics.setOperationSummary("importConceptionEntitiesFromArrow operation execute finish. conceptionKindName is "
+                +conceptionKindName+", arrowFileLocation is "+arrowFileLocation);
+        return entitiesOperationStatistics;
     }
 
-    public static File exportConceptionEntitiesToArrow(String conceptionKindName,String arrowFileLocation){
+    public static EntitiesOperationStatistics exportConceptionEntitiesToArrow(String conceptionKindName,String arrowFileLocation){
         //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.arrow.query/
          /*
         cql = "CALL apoc.export.arrow.query(\"/home/wangychu/Desktop/tess/x4.arrow\",\"match (operationResult:DOCG_GS_Continent) return operationResult\",{})\n" +
@@ -1190,27 +1185,33 @@ public class BatchDataOperationUtil {
                 "RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data";
         logger.debug("Generated Cypher Statement: {}", cql);
 
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
         GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
         try{
             DataTransformer<Boolean> dataTransformer = new DataTransformer() {
                 @Override
                 public Object transformResult(Result result) {
-
-
-
+                    if(result.hasNext()){
+                        Record operationResultRecord = result.next();
+                        if(operationResultRecord.containsKey("nodes")){
+                            entitiesOperationStatistics.setSuccessItemsCount(operationResultRecord.get("nodes").asLong());
+                        }
+                    }
                     return true;
                 }
             };
-            Object result = graphOperationExecutor.executeWrite(dataTransformer, cql);
-
+            graphOperationExecutor.executeWrite(dataTransformer, cql);
         } catch (Exception e) {
             e.printStackTrace();
         }finally {
             graphOperationExecutor.close();
         }
-        return null;
+        entitiesOperationStatistics.setFinishTime(new Date());
+        entitiesOperationStatistics.setOperationSummary("exportConceptionEntitiesToArrow operation execute finish. conceptionKindName is "
+                +conceptionKindName+", arrowFileLocation is "+arrowFileLocation);
+        return entitiesOperationStatistics;
     }
-
 
     public static File exportConceptionEntitiesToCSV(String conceptionKindName,String csvFileLocation){
         //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.csv.data/
