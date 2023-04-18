@@ -1141,11 +1141,28 @@ public class BatchDataOperationUtil {
         //https://neo4j.com/docs/apoc/current/overview/apoc.load/apoc.load.arrow/
 
         String cql = "CALL apoc.load.arrow(\""+arrowFileLocation+"\",{}) YIELD value\n" +
-                "        UNWIND value.m AS stat\n" +
-                "        CREATE (c:TestLoa1) SET c = apoc.convert.fromJsonMap(stat).properties";
+                "        UNWIND value.entityRow AS entity\n" +
+                "        CREATE (operationResult:"+conceptionKindName+") SET operationResult = apoc.convert.fromJsonMap(entity).properties RETURN count(operationResult)";
         logger.debug("Generated Cypher Statement: {}", cql);
 
+        GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
+        try{
+            DataTransformer<Boolean> dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
 
+
+
+                    return true;
+                }
+            };
+            Object result = graphOperationExecutor.executeWrite(dataTransformer, cql);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            graphOperationExecutor.close();
+        }
 
 
         //String cql = "LOAD CSV WITH HEADERS FROM \""+csvFileLocation+"\" AS row  FIELDTERMINATOR '"+lineSplitChar+"' CREATE (:"+conceptionKind+" {"+propertyInsertStr+"})";
@@ -1163,12 +1180,37 @@ public class BatchDataOperationUtil {
 
     public static File exportConceptionEntitiesToArrow(String conceptionKindName,String arrowFileLocation){
         //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.arrow.query/
-        //CALL apoc.export.csv.query("match (m:TestLoad) return m","export/results.csv",{})
-        //CALL apoc.export.arrow.query("export/results.arrow","match (m:TestLoad) return m",{})
+         /*
+        cql = "CALL apoc.export.arrow.query(\"/home/wangychu/Desktop/tess/x4.arrow\",\"match (operationResult:DOCG_GS_Continent) return operationResult\",{})\n" +
+                "YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data\n" +
+                "RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data";
+        */
+        String cql = "CALL apoc.export.arrow.query(\""+arrowFileLocation+"\",\"match (entityRow:"+conceptionKindName+") return entityRow\",{})\n" +
+                "YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data\n" +
+                "RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data";
+        logger.debug("Generated Cypher Statement: {}", cql);
 
-        String cql ="CALL apoc.export.arrow.query(\"export/results.arrow\",\"match (operationResult:DOCG_GS_Continent) return operationResult\",{})";
+        GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
+        try{
+            DataTransformer<Boolean> dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+
+
+
+                    return true;
+                }
+            };
+            Object result = graphOperationExecutor.executeWrite(dataTransformer, cql);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            graphOperationExecutor.close();
+        }
         return null;
     }
+
 
     public static File exportConceptionEntitiesToCSV(String conceptionKindName,String csvFileLocation){
         //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.csv.data/
