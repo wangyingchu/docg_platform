@@ -1176,7 +1176,7 @@ public class BatchDataOperationUtil {
     public static EntitiesOperationStatistics exportConceptionEntitiesToArrow(String conceptionKindName,String arrowFileLocation){
         //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.arrow.query/
          /*
-        cql = "CALL apoc.export.arrow.query(\"/home/wangychu/Desktop/tess/x4.arrow\",\"match (operationResult:DOCG_GS_Continent) return operationResult\",{})\n" +
+            "CALL apoc.export.arrow.query(\"/home/wangychu/Desktop/tess/x4.arrow\",\"match (operationResult:DOCG_GS_Continent) return operationResult\",{})\n" +
                 "YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data\n" +
                 "RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data";
         */
@@ -1213,7 +1213,7 @@ public class BatchDataOperationUtil {
         return entitiesOperationStatistics;
     }
 
-    public static File exportConceptionEntitiesToCSV(String conceptionKindName,String csvFileLocation){
+    public static EntitiesOperationStatistics exportConceptionEntitiesToCSV(String conceptionKindName,String csvFileLocation){
         //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.csv.data/
         /*
         MATCH (testLoad:DOCG_GS_County)
@@ -1222,10 +1222,42 @@ public class BatchDataOperationUtil {
         YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data
         RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data
          */
-        return null;
+        String cql = "MATCH (kindEntity:"+conceptionKindName+")\n" +
+                "        WITH collect(kindEntity) AS entityRow\n" +
+                "        CALL apoc.export.csv.data(entityRow, [], \""+csvFileLocation+"\", {})\n" +
+                "        YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data\n" +
+                "        RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data";
+        logger.debug("Generated Cypher Statement: {}", cql);
+
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+        GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
+        try{
+            DataTransformer<Boolean> dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()){
+                        Record operationResultRecord = result.next();
+                        if(operationResultRecord.containsKey("nodes")){
+                            entitiesOperationStatistics.setSuccessItemsCount(operationResultRecord.get("nodes").asLong());
+                        }
+                    }
+                    return true;
+                }
+            };
+            graphOperationExecutor.executeWrite(dataTransformer, cql);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            graphOperationExecutor.close();
+        }
+        entitiesOperationStatistics.setFinishTime(new Date());
+        entitiesOperationStatistics.setOperationSummary("exportConceptionEntitiesToCSV operation execute finish. conceptionKindName is "
+                +conceptionKindName+", csvFileLocation is "+csvFileLocation);
+        return entitiesOperationStatistics;
     }
 
-    public static boolean importConceptionEntitiesFromCSV(String conceptionKindName,String csvFileLocation){
+    public static EntitiesOperationStatistics importConceptionEntitiesFromCSV(String conceptionKindName,String csvFileLocation){
         //https://neo4j.com/docs/apoc/current/overview/apoc.import/apoc.import.csv/
         /*
         CALL apoc.import.csv(
@@ -1236,18 +1268,78 @@ public class BatchDataOperationUtil {
         YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data
         RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data
         */
-        return false;
+        String cql = "CALL apoc.import.csv(\n" +
+                "          [{fileName: 'file:"+csvFileLocation+"', labels: ['"+conceptionKindName+"']}],\n" +
+                "          [],\n" +
+                "          {delimiter: ',', arrayDelimiter: ',', stringIds: false}\n" +
+                "        )\n" +
+                "        YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data\n" +
+                "        RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data";
+        logger.debug("Generated Cypher Statement: {}", cql);
+
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+        GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
+        try{
+            DataTransformer<Boolean> dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()){
+                        Record operationResultRecord = result.next();
+                        if(operationResultRecord.containsKey("nodes")){
+                            entitiesOperationStatistics.setSuccessItemsCount(operationResultRecord.get("nodes").asLong());
+                        }
+                    }
+                    return true;
+                }
+            };
+            graphOperationExecutor.executeWrite(dataTransformer, cql);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            graphOperationExecutor.close();
+        }
+        entitiesOperationStatistics.setFinishTime(new Date());
+        entitiesOperationStatistics.setOperationSummary("importConceptionEntitiesFromCSV operation execute finish. conceptionKindName is "
+                +conceptionKindName+", csvFileLocation is "+csvFileLocation);
+        return entitiesOperationStatistics;
     }
 
-    public static void exportToCypher(String conceptionKindName,String cypherFileLocation){
+    public static EntitiesOperationStatistics exportConceptionEntitiesToCypher(String conceptionKindName,String cypherFileLocation){
+        //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.cypher.query/
+        /*
+            CALL apoc.export.cypher.query("MATCH (m:TestLoa) return m", "export/directors.cypher", {});
+        */
+        String cql = "CALL apoc.export.cypher.query(\"MATCH (entityRow:"+conceptionKindName+") return entityRow\", \""+cypherFileLocation+"\", {})\n" +
+                "YIELD file, batches, source, format, nodes, relationships, time, rows, batchSize\n" +
+                "RETURN file, batches, source, format, nodes, relationships, time, rows, batchSize;";
+        logger.debug("Generated Cypher Statement: {}", cql);
 
-
-        //call apoc.export.cypher.query("MATCH (m:TestLoa) return m", "export/directors.cypher", {});
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+        GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
+        try{
+            DataTransformer<Boolean> dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()){
+                        Record operationResultRecord = result.next();
+                        if(operationResultRecord.containsKey("nodes")){
+                            entitiesOperationStatistics.setSuccessItemsCount(operationResultRecord.get("nodes").asLong());
+                        }
+                    }
+                    return true;
+                }
+            };
+            graphOperationExecutor.executeWrite(dataTransformer, cql);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            graphOperationExecutor.close();
+        }
+        entitiesOperationStatistics.setFinishTime(new Date());
+        entitiesOperationStatistics.setOperationSummary("exportConceptionEntitiesToCypher operation execute finish. conceptionKindName is "
+                +conceptionKindName+", cypherFileLocation is "+cypherFileLocation);
+        return entitiesOperationStatistics;
     }
-
-    public static boolean importConceptionEntitiesFromCypher(String conceptionKindName,String cypherFileLocation){
-        //apoc.import.runFile
-        return true;
-    }
-
 }
