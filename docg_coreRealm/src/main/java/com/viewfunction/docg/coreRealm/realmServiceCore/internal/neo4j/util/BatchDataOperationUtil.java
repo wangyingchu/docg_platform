@@ -1003,7 +1003,7 @@ public class BatchDataOperationUtil {
 
                 String csvFileLocation="file:///"+csvLocation.replaceFirst("file:///","");
                 String cql = "LOAD CSV WITH HEADERS FROM \""+csvFileLocation+"\" AS row CREATE (:"+conceptionKind+" {"+propertyInsertStr+"})";
-
+                logger.debug("Generated Cypher Statement: {}", cql);
                 GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
                 try{
                     DataTransformer<Boolean> geospatialCodeSearchDataTransformer = new DataTransformer() {
@@ -1041,7 +1041,7 @@ public class BatchDataOperationUtil {
 
                 String csvFileLocation="file:///"+csvLocation.replaceFirst("file:///","");
                 String cql = "LOAD CSV WITH HEADERS FROM \""+csvFileLocation+"\" AS row  FIELDTERMINATOR '"+lineSplitChar+"' CREATE (:"+conceptionKind+" {"+propertyInsertStr+"})";
-
+                logger.debug("Generated Cypher Statement: {}", cql);
                 GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
                 try{
                     DataTransformer<Boolean> geospatialCodeSearchDataTransformer = new DataTransformer() {
@@ -1137,8 +1137,20 @@ public class BatchDataOperationUtil {
         }
     }
 
-    public static boolean importConceptionEntitiesFromArrow(String arrowFileLocation){
+    public static boolean importConceptionEntitiesFromArrow(String conceptionKindName,String arrowFileLocation){
         //https://neo4j.com/docs/apoc/current/overview/apoc.load/apoc.load.arrow/
+
+        String cql = "CALL apoc.load.arrow(\""+arrowFileLocation+"\",{}) YIELD value\n" +
+                "        UNWIND value.m AS stat\n" +
+                "        CREATE (c:TestLoa1) SET c = apoc.convert.fromJsonMap(stat).properties";
+        logger.debug("Generated Cypher Statement: {}", cql);
+
+
+
+
+        //String cql = "LOAD CSV WITH HEADERS FROM \""+csvFileLocation+"\" AS row  FIELDTERMINATOR '"+lineSplitChar+"' CREATE (:"+conceptionKind+" {"+propertyInsertStr+"})";
+
+
         //apoc.load.arrow(file :: STRING?, config = {} :: MAP?)
         //CALL apoc.load.arrow("export/results.arrow",{})
         /*
@@ -1153,6 +1165,8 @@ public class BatchDataOperationUtil {
         //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.arrow.query/
         //CALL apoc.export.csv.query("match (m:TestLoad) return m","export/results.csv",{})
         //CALL apoc.export.arrow.query("export/results.arrow","match (m:TestLoad) return m",{})
+
+        String cql ="CALL apoc.export.arrow.query(\"export/results.arrow\",\"match (operationResult:DOCG_GS_Continent) return operationResult\",{})";
         return null;
     }
 
@@ -1168,7 +1182,7 @@ public class BatchDataOperationUtil {
         return null;
     }
 
-    public static boolean importConceptionEntitiesFromCSV(String csvFileLocation){
+    public static boolean importConceptionEntitiesFromCSV(String conceptionKindName,String csvFileLocation){
         //https://neo4j.com/docs/apoc/current/overview/apoc.import/apoc.import.csv/
         /*
         CALL apoc.import.csv(
@@ -1182,13 +1196,13 @@ public class BatchDataOperationUtil {
         return false;
     }
 
-    public static void exportToCypher(){
+    public static void exportToCypher(String conceptionKindName,String cypherFileLocation){
 
 
         //call apoc.export.cypher.query("MATCH (m:TestLoa) return m", "export/directors.cypher", {});
     }
 
-    public static boolean importConceptionEntitiesFromCypher(String csvFileLocation){
+    public static boolean importConceptionEntitiesFromCypher(String conceptionKindName,String cypherFileLocation){
         //apoc.import.runFile
         return true;
     }
