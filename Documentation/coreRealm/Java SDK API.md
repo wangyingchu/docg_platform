@@ -516,6 +516,13 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public DataScienceOperator getDataScienceOperator();
 
     /**
+     * 获取当前领域的实体数据交换操作器
+     *
+     * @return 当前领域的实体数据交换操作器
+     */
+    public EntitiesExchangeOperator getEntitiesExchangeOperator();
+
+    /**
      * 获取当前领域的全部概念类型元数据信息
      *
      * @return 当前领域的全部概念类型元数据信息列表
@@ -5191,4 +5198,9 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      */
     public DepthFirstSearchAlgorithmResult executeDepthFirstSearchAlgorithm(String graphName, DepthFirstSearchAlgorithmConfig depthFirstSearchAlgorithmConfig) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 ```
+###### ↳ EntitiesExchangeOperator
 
+---
+
+```java
+```

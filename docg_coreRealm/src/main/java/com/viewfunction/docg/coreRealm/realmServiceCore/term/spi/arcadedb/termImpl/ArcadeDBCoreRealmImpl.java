@@ -11,6 +11,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.arcadeDB.dataTr
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.EntitiesExchangeOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.SystemMaintenanceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
@@ -315,6 +316,11 @@ public class ArcadeDBCoreRealmImpl implements ArcadeDBCoreRealm {
 
     @Override
     public DataScienceOperator getDataScienceOperator() {
+        return null;
+    }
+
+    @Override
+    public EntitiesExchangeOperator getEntitiesExchangeOperator() {
         return null;
     }
 

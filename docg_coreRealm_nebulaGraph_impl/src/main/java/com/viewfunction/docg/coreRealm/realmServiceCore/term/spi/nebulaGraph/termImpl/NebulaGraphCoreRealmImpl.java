@@ -7,6 +7,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.nebulaGraph.Gra
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.nebulaGraph.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.EntitiesExchangeOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.SystemMaintenanceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
@@ -276,6 +277,11 @@ public class NebulaGraphCoreRealmImpl implements NebulaGraphCoreRealm {
 
     @Override
     public DataScienceOperator getDataScienceOperator() {
+        return null;
+    }
+
+    @Override
+    public EntitiesExchangeOperator getEntitiesExchangeOperator() {
         return null;
     }
 

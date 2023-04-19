@@ -5,6 +5,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.EntitiesExchangeOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.SystemMaintenanceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
@@ -470,6 +471,13 @@ public interface CoreRealm {
      * @return 当前领域的数据科学操作器
      */
     public DataScienceOperator getDataScienceOperator();
+
+    /**
+     * 获取当前领域的实体数据交换操作器
+     *
+     * @return 当前领域的实体数据交换操作器
+     */
+    public EntitiesExchangeOperator getEntitiesExchangeOperator();
 
     /**
      * 获取当前领域的全部概念类型元数据信息

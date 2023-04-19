@@ -12,6 +12,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.Comm
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.EntitiesExchangeOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.SystemMaintenanceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl.Neo4JCrossKindDataOperatorImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl.Neo4JDataScienceOperatorImpl;
@@ -1344,6 +1345,11 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         Neo4JDataScienceOperatorImpl neo4JDataScienceOperatorImpl = new Neo4JDataScienceOperatorImpl(coreRealmName);
         neo4JDataScienceOperatorImpl.setGlobalGraphOperationExecutor(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
         return neo4JDataScienceOperatorImpl;
+    }
+
+    @Override
+    public EntitiesExchangeOperator getEntitiesExchangeOperator() {
+        return null;
     }
 
     @Override
