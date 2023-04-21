@@ -351,9 +351,42 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
     @Override
     public EntitiesOperationResult purgeAllEntities() throws CoreRealmServiceRuntimeException {
-        CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
-        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
+            CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            /*
+            CALL apoc.periodic.iterate(
+              'MATCH (n:TestLoad) RETURN n',
+              'DETACH DELETE n',
+              {batchSize:100000, iterateList:true})
+             */
+            //return : "batches"│"total"│"timeTaken"│"committedOperations"│"failedOperations"│"failedBatches"│"retries"│"errorMessages"│"batch"│"operations"
+            String cql = "CALL apoc.periodic.iterate(\n" +
+                    "          'MATCH (n:"+this.conceptionKindName+") RETURN n',\n" +
+                    "          'DETACH DELETE n',\n" +
+                    "          {batchSize:100000, iterateList:true})";
+            logger.debug("Generated Cypher Statement: {}", cql);
+            DataTransformer dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()){
+                        Record resultRecord = result.next();
+                        if(resultRecord.containsKey("total")){
+                            long deletedRecordCount = resultRecord.get("total").asLong();
+                            commonEntitiesOperationResultImpl.getOperationStatistics().setSuccessItemsCount(deletedRecordCount);
+                        }
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeWrite(dataTransformer, cql);
+            commonEntitiesOperationResultImpl.getOperationStatistics().
+                    setOperationSummary("purgeAllEntities operation for conceptionKind "+this.conceptionKindName+" success.");
+
+            commonEntitiesOperationResultImpl.finishEntitiesOperation();
+            return commonEntitiesOperationResultImpl;
+
+        /*
             // Using below solution for improving performance or execute operation success
             //https://neo4j.com/developer/kb/how-to-bulk-delete-dense-nodes/
             //https://www.freesion.com/article/24571268014/
@@ -404,24 +437,9 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
             commonEntitiesOperationResultImpl.getOperationStatistics().
                     setOperationSummary("purgeAllEntities operation for conceptionKind "+this.conceptionKindName+" success.");
 
-            /*
-            String deleteCql = CypherBuilder.deleteLabelWithSinglePropertyValueAndFunction(this.conceptionKindName,
-                    CypherBuilder.CypherFunctionType.COUNT,null,null);
-            GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer =
-                    new GetLongFormatAggregatedReturnValueTransformer("count");
-            Object deleteResultObject = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer,deleteCql);
-
-            if(deleteResultObject == null){
-                throw new CoreRealmServiceRuntimeException();
-            }else{
-                commonEntitiesOperationResultImpl.getOperationStatistics().setSuccessItemsCount((Long)deleteResultObject);
-                commonEntitiesOperationResultImpl.getOperationStatistics().
-                        setOperationSummary("purgeAllEntities operation for conceptionKind "+this.conceptionKindName+" success.");
-            }
-            */
-
             commonEntitiesOperationResultImpl.finishEntitiesOperation();
             return commonEntitiesOperationResultImpl;
+        */
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
