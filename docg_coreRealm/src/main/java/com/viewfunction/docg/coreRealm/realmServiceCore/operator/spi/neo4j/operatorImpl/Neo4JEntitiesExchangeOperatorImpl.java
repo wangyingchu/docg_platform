@@ -198,4 +198,14 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
                 +conceptionKindName+", csvFileLocation is "+csvFileLocation);
         return entitiesOperationStatistics;
     }
+
+    @Override
+    public EntitiesOperationStatistics exportCoreRealmEntitiesToArrow(String arrowFileLocation) {
+        return null;
+    }
+
+    @Override
+    public EntitiesOperationStatistics importCoreRealmEntitiesFromArrow(String arrowFileLocation) {
+        return null;
+    }
 }

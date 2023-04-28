@@ -43,4 +43,8 @@ public interface EntitiesExchangeOperator {
      * @return 导出操作的执行结果统计信息
      */
     public EntitiesOperationStatistics exportConceptionEntitiesToCSV(String conceptionKindName,String csvFileLocation);
+
+    public EntitiesOperationStatistics exportCoreRealmEntitiesToArrow(String arrowFileLocation);
+
+    public EntitiesOperationStatistics importCoreRealmEntitiesFromArrow(String arrowFileLocation);
 }
