@@ -214,4 +214,9 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
     public EntitiesOperationStatistics exportConceptionEntitiesToArrow(String conceptionKindName, QueryParameters queryParameters, String arrowFileLocation) {
         return null;
     }
+
+    @Override
+    public EntitiesOperationStatistics exportConceptionEntitiesToCSV(String conceptionKindName, QueryParameters queryParameters, String csvFileLocation) {
+        return null;
+    }
 }
