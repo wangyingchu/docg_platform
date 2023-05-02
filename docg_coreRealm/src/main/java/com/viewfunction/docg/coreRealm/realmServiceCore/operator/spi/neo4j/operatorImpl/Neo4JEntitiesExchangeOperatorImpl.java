@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
@@ -206,6 +207,11 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
 
     @Override
     public EntitiesOperationStatistics importCoreRealmEntitiesFromArrow(String arrowFileLocation) {
+        return null;
+    }
+
+    @Override
+    public EntitiesOperationStatistics exportConceptionEntitiesToArrow(String conceptionKindName, QueryParameters queryParameters, String arrowFileLocation) {
         return null;
     }
 }
