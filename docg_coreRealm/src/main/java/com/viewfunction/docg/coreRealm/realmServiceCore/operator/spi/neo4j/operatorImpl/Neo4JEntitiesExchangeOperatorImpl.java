@@ -202,7 +202,37 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
 
     @Override
     public EntitiesOperationStatistics exportCoreRealmEntitiesToArrow(String arrowFileLocation) {
-        return null;
+        //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.arrow.all/
+        String cql = "CALL apoc.export.arrow.all(\""+ arrowFileLocation +"\", {})\n"+
+                "        YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data\n" +
+                "        RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data";
+
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            DataTransformer<Boolean> dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()){
+                        Record operationResultRecord = result.next();
+                        if(operationResultRecord.containsKey("rows")){
+                            entitiesOperationStatistics.setSuccessItemsCount(operationResultRecord.get("rows").asLong());
+                        }
+                    }
+                    return true;
+                }
+            };
+            workingGraphOperationExecutor.executeWrite(dataTransformer, cql);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        entitiesOperationStatistics.setFinishTime(new Date());
+        entitiesOperationStatistics.setOperationSummary("exportCoreRealmEntitiesToArrow operation execute finish. CoreRealm Name is "
+                +this.coreRealmName+", arrowFileLocation is "+arrowFileLocation);
+        return entitiesOperationStatistics;
     }
 
     @Override
