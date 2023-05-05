@@ -67,7 +67,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
         if(conceptionKindName.startsWith("DOCG_")){
             Neo4JConceptionKindImpl neo4JConceptionKindImpl =
-                    new Neo4JConceptionKindImpl(coreRealmName,conceptionKindName,null,"0");
+                    new Neo4JConceptionKindImpl(getCoreRealmName(),conceptionKindName,null,"0");
             neo4JConceptionKindImpl.setGlobalGraphOperationExecutor(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             return neo4JConceptionKindImpl;
         }
@@ -76,7 +76,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         try{
             String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.ConceptionKindClass,RealmConstant._NameProperty,conceptionKindName,1);
             GetSingleConceptionKindTransformer getSingleConceptionKindTransformer =
-                    new GetSingleConceptionKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    new GetSingleConceptionKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object createConceptionKindRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionKindTransformer,queryCql);
             return createConceptionKindRes != null?(ConceptionKind)createConceptionKindRes:null;
         }finally {
@@ -104,7 +104,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
             String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.ConceptionKindClass},propertiesMap);
             GetSingleConceptionKindTransformer getSingleConceptionKindTransformer =
-                    new GetSingleConceptionKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    new GetSingleConceptionKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object createConceptionKindRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionKindTransformer,createCql);
             ConceptionKind targetConceptionKind = createConceptionKindRes != null ? (ConceptionKind)createConceptionKindRes : null;
             executeConceptionKindCacheOperation(targetConceptionKind,CacheOperationType.INSERT);
@@ -141,14 +141,14 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 String conceptionKindUID = ((Neo4JConceptionKindImpl)targetConceptionKind).getConceptionKindUID();
                 String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(conceptionKindUID),null,null);
                 GetSingleConceptionKindTransformer getSingleConceptionKindTransformer =
-                        new GetSingleConceptionKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                        new GetSingleConceptionKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object deletedConceptionKindRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionKindTransformer,deleteCql);
                 ConceptionKind resultConceptionKind = deletedConceptionKindRes != null ? (ConceptionKind)deletedConceptionKindRes : null;
                 if(resultConceptionKind == null){
                     throw new CoreRealmServiceRuntimeException();
                 }else{
                     String conceptionKindId = ((Neo4JConceptionKindImpl)resultConceptionKind).getConceptionKindUID();
-                    Neo4JConceptionKindImpl resultNeo4JConceptionKindImplForCacheOperation = new Neo4JConceptionKindImpl(coreRealmName,conceptionKindName,null,conceptionKindId);
+                    Neo4JConceptionKindImpl resultNeo4JConceptionKindImplForCacheOperation = new Neo4JConceptionKindImpl(getCoreRealmName(),conceptionKindName,null,conceptionKindId);
                     executeConceptionKindCacheOperation(resultNeo4JConceptionKindImplForCacheOperation,CacheOperationType.DELETE);
                     return true;
                 }
@@ -167,7 +167,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         try{
             String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(attributesViewKindUID), null, null);
             GetSingleAttributesViewKindTransformer getSingleAttributesViewKindTransformer =
-                    new GetSingleAttributesViewKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    new GetSingleAttributesViewKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object createAttributesViewKindRes = workingGraphOperationExecutor.executeWrite(getSingleAttributesViewKindTransformer,queryCql);
             return createAttributesViewKindRes != null ? (AttributesViewKind)createAttributesViewKindRes : null;
         }finally {
@@ -196,7 +196,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.AttributesViewKindClass},propertiesMap);
 
             GetSingleAttributesViewKindTransformer getSingleAttributesViewKindTransformer =
-                    new GetSingleAttributesViewKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    new GetSingleAttributesViewKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object createAttributesViewKindRes = workingGraphOperationExecutor.executeWrite(getSingleAttributesViewKindTransformer,createCql);
             AttributesViewKind resultKind = createAttributesViewKindRes != null ? (AttributesViewKind)createAttributesViewKindRes : null;
             executeAttributesViewKindCacheOperation(resultKind,CacheOperationType.INSERT);
@@ -217,7 +217,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             try{
                 String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(attributesViewKindUID),null,null);
                 GetSingleAttributesViewKindTransformer getSingleAttributesViewKindTransformer =
-                        new GetSingleAttributesViewKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                        new GetSingleAttributesViewKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object deletedAttributesViewKindRes = workingGraphOperationExecutor.executeWrite(getSingleAttributesViewKindTransformer,deleteCql);
                 AttributesViewKind resultKind = deletedAttributesViewKindRes != null ? (AttributesViewKind)deletedAttributesViewKindRes : null;
                 if(resultKind == null){
@@ -266,7 +266,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             try{
                 String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.AttributesViewKindClass,queryParameters,null);
                 GetListAttributesViewKindTransformer getListAttributesViewKindTransformer =
-                        new GetListAttributesViewKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                        new GetListAttributesViewKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object attributesViewKindsRes = workingGraphOperationExecutor.executeWrite(getListAttributesViewKindTransformer,queryCql);
                 return attributesViewKindsRes != null ? (List<AttributesViewKind>) attributesViewKindsRes : null;
             }finally {
@@ -287,7 +287,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         try{
             String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(attributeKindUID), null, null);
             GetSingleAttributeKindTransformer getSingleAttributeKindTransformer =
-                    new GetSingleAttributeKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    new GetSingleAttributeKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object getAttributeKindRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeKindTransformer,queryCql);
             return getAttributeKindRes != null ? (AttributeKind)getAttributeKindRes : null;
         }finally {
@@ -312,7 +312,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.AttributeKindClass},propertiesMap);
 
             GetSingleAttributeKindTransformer getSingleAttributeKindTransformer =
-                    new GetSingleAttributeKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    new GetSingleAttributeKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object createAttributesViewKindRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeKindTransformer,createCql);
             AttributeKind resultKind = createAttributesViewKindRes != null ? (AttributeKind)createAttributesViewKindRes : null;
             executeAttributeKindCacheOperation(resultKind,CacheOperationType.INSERT);
@@ -333,7 +333,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             try{
                 String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(attributeKindUID),null,null);
                 GetSingleAttributeKindTransformer getSingleAttributeKindTransformer =
-                        new GetSingleAttributeKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                        new GetSingleAttributeKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object deletedAttributeKindRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeKindTransformer,deleteCql);
                 AttributeKind resultKind = deletedAttributeKindRes != null ? (AttributeKind)deletedAttributeKindRes : null;
                 if(resultKind == null){
@@ -381,7 +381,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try{
                 String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.AttributeKindClass,queryParameters,null);
-                GetListAttributeKindTransformer getListAttributeKindTransformer = new GetListAttributeKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                GetListAttributeKindTransformer getListAttributeKindTransformer = new GetListAttributeKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object attributeKindsRes = workingGraphOperationExecutor.executeWrite(getListAttributeKindTransformer,queryCql);
                 return attributeKindsRes != null ? (List<AttributeKind>) attributeKindsRes : null;
             }finally {
@@ -401,7 +401,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
         if(relationKindName.startsWith("DOCG_")){
             Neo4JRelationKindImpl neo4JRelationKindImpl =
-                    new Neo4JRelationKindImpl(coreRealmName,relationKindName,null,"0");
+                    new Neo4JRelationKindImpl(getCoreRealmName(),relationKindName,null,"0");
             neo4JRelationKindImpl.setGlobalGraphOperationExecutor(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             return neo4JRelationKindImpl;
         }
@@ -410,7 +410,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         try{
             String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.RelationKindClass,RealmConstant._NameProperty,relationKindName,1);
             GetSingleRelationKindTransformer getSingleRelationKindTransformer =
-                    new GetSingleRelationKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    new GetSingleRelationKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object getRelationKindRes = workingGraphOperationExecutor.executeWrite(getSingleRelationKindTransformer,queryCql);
             return getRelationKindRes != null ? (RelationKind)getRelationKindRes : null;
         }finally {
@@ -438,7 +438,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
             String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.RelationKindClass},propertiesMap);
             GetSingleRelationKindTransformer getSingleRelationKindTransformer =
-                    new GetSingleRelationKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    new GetSingleRelationKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object createRelationKindRes = workingGraphOperationExecutor.executeWrite(getSingleRelationKindTransformer,createCql);
             RelationKind resultKind = createRelationKindRes != null ? (RelationKind)createRelationKindRes : null;
             executeRelationKindCacheOperation(resultKind,CacheOperationType.INSERT);
@@ -475,14 +475,14 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 String relationKindUID = ((Neo4JRelationKindImpl)targetRelationKind).getRelationKindUID();
                 String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(relationKindUID),null,null);
                 GetSingleRelationKindTransformer getSingleRelationKindTransformer =
-                        new GetSingleRelationKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                        new GetSingleRelationKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object deletedRelationKindRes = workingGraphOperationExecutor.executeWrite(getSingleRelationKindTransformer,deleteCql);
                 RelationKind resultKind = deletedRelationKindRes != null ? (RelationKind)deletedRelationKindRes : null;
                 if(resultKind == null){
                     throw new CoreRealmServiceRuntimeException();
                 }else{
                     String resultRelationKindUID = ((Neo4JRelationKindImpl)resultKind).getRelationKindUID();
-                    Neo4JRelationKindImpl resultNeo4JRelationKindImplForCacheOperation = new Neo4JRelationKindImpl(coreRealmName,relationKindName,null,resultRelationKindUID);
+                    Neo4JRelationKindImpl resultNeo4JRelationKindImplForCacheOperation = new Neo4JRelationKindImpl(getCoreRealmName(),relationKindName,null,resultRelationKindUID);
                     executeRelationKindCacheOperation(resultNeo4JRelationKindImplForCacheOperation,CacheOperationType.DELETE);
                     return true;
                 }
@@ -547,7 +547,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try{
                 String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.RelationAttachKindClass,queryParameters,null);
-                GetListRelationAttachKindTransformer getListRelationAttachKindTransformer = new GetListRelationAttachKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                GetListRelationAttachKindTransformer getListRelationAttachKindTransformer = new GetListRelationAttachKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object relationAttachKindsRes = workingGraphOperationExecutor.executeWrite(getListRelationAttachKindTransformer,queryCql);
                 return relationAttachKindsRes != null ? (List<RelationAttachKind>) relationAttachKindsRes : null;
             }finally {
@@ -568,7 +568,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         try{
             String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(relationAttachKindUID), null, null);
             GetSingleRelationAttachKindTransformer getSingleRelationAttachKindTransformer =
-                    new GetSingleRelationAttachKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    new GetSingleRelationAttachKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object getRelationAttachKindRes = workingGraphOperationExecutor.executeWrite(getSingleRelationAttachKindTransformer,queryCql);
             return getRelationAttachKindRes != null ? (RelationAttachKind)getRelationAttachKindRes : null;
         }finally {
@@ -603,7 +603,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.RelationAttachKindClass},propertiesMap);
 
             GetSingleRelationAttachKindTransformer getSingleRelationAttachKindTransformer =
-                    new GetSingleRelationAttachKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    new GetSingleRelationAttachKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object createRelationAttachKindRes = workingGraphOperationExecutor.executeWrite(getSingleRelationAttachKindTransformer,createCql);
             RelationAttachKind resultKind = createRelationAttachKindRes != null ? (RelationAttachKind)createRelationAttachKindRes : null;
             executeRelationAttachKindCacheOperation(resultKind,CacheOperationType.INSERT);
@@ -630,7 +630,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             try{
                 String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(relationAttachKindUID),null,null);
                 GetSingleRelationAttachKindTransformer getSingleRelationAttachKindTransformer =
-                        new GetSingleRelationAttachKindTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                        new GetSingleRelationAttachKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object deletedRelationAttachKindRes = workingGraphOperationExecutor.executeWrite(getSingleRelationAttachKindTransformer,deleteCql);
                 RelationAttachKind resultKind = deletedRelationAttachKindRes != null ? (RelationAttachKind)deletedRelationAttachKindRes : null;
                 if(resultKind == null){
@@ -659,7 +659,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         try{
             String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.ClassificationClass,RealmConstant._NameProperty,classificationName,1);
             GetSingleClassificationTransformer getSingleClassificationTransformer =
-                    new GetSingleClassificationTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    new GetSingleClassificationTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object classificationRes = workingGraphOperationExecutor.executeWrite(getSingleClassificationTransformer,queryCql);
             return classificationRes != null?(Classification)classificationRes:null;
         }finally {
@@ -687,7 +687,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
             String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.ClassificationClass},propertiesMap);
             GetSingleClassificationTransformer getSingleClassificationTransformer =
-                    new GetSingleClassificationTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    new GetSingleClassificationTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object createClassificationRes = workingGraphOperationExecutor.executeWrite(getSingleClassificationTransformer,createCql);
             Classification targetClassification = createClassificationRes != null ? (Classification)createClassificationRes : null;
             executeClassificationCacheOperation(targetClassification,CacheOperationType.INSERT);
@@ -707,7 +707,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             //check Parent Classification exist
             String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.ClassificationClass,RealmConstant._NameProperty,parentClassificationName,1);
             GetSingleClassificationTransformer getSingleClassificationTransformer =
-                    new GetSingleClassificationTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    new GetSingleClassificationTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object parentClassificationRes = workingGraphOperationExecutor.executeWrite(getSingleClassificationTransformer,queryCql);
             if(parentClassificationRes == null){
                 logger.error("Classification named {} doesn't exist.", parentClassificationName);
@@ -922,7 +922,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         try{
             String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.TimeFlowClass,RealmConstant._NameProperty,RealmConstant._defaultTimeFlowName,1);
             GetSingleTimeFlowTransformer getSingleTimeFlowTransformer =
-                    new GetSingleTimeFlowTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    new GetSingleTimeFlowTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object getDefaultTimeFlowRes = workingGraphOperationExecutor.executeRead(getSingleTimeFlowTransformer,queryCql);
             if(getDefaultTimeFlowRes == null){
                 Map<String,Object> propertiesMap = new HashMap<>();
@@ -945,7 +945,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         try{
             String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.TimeFlowClass,RealmConstant._NameProperty,timeFlowName,1);
             GetSingleTimeFlowTransformer getSingleTimeFlowTransformer =
-                    new GetSingleTimeFlowTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    new GetSingleTimeFlowTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object getDefaultTimeFlowRes = workingGraphOperationExecutor.executeRead(getSingleTimeFlowTransformer,queryCql);
             if(getDefaultTimeFlowRes == null){
                 Map<String,Object> propertiesMap = new HashMap<>();
@@ -981,7 +981,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             try{
                 String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.TimeFlowClass,queryParameters,null);
                 GetListTimeFlowTransformer getListTimeFlowTransformer =
-                        new GetListTimeFlowTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                        new GetListTimeFlowTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object timeFlowsRes = workingGraphOperationExecutor.executeRead(getListTimeFlowTransformer,queryCql);
                 return timeFlowsRes != null ? (List<TimeFlow>) timeFlowsRes : null;
             }finally {
@@ -999,7 +999,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         try{
             String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialRegionClass,RealmConstant._NameProperty,RealmConstant._defaultGeospatialRegionName,1);
             GetSingleGeospatialRegionTransformer getSingleGeospatialRegionTransformer =
-                    new GetSingleGeospatialRegionTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    new GetSingleGeospatialRegionTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object getDefaultGeospatialRegionRes = workingGraphOperationExecutor.executeRead(getSingleGeospatialRegionTransformer,queryCql);
             if(getDefaultGeospatialRegionRes == null){
                 Map<String,Object> propertiesMap = new HashMap<>();
@@ -1022,7 +1022,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         try{
             String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialRegionClass,RealmConstant._NameProperty,geospatialRegionName,1);
             GetSingleGeospatialRegionTransformer getSingleGeospatialRegionTransformer =
-                    new GetSingleGeospatialRegionTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    new GetSingleGeospatialRegionTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object getGeospatialRegionRes = workingGraphOperationExecutor.executeRead(getSingleGeospatialRegionTransformer,queryCql);
             if(getGeospatialRegionRes == null){
                 Map<String,Object> propertiesMap = new HashMap<>();
@@ -1058,7 +1058,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             try{
                 String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialRegionClass,queryParameters,null);
                 GetListGeospatialRegionTransformer getListGeospatialRegionTransformer =
-                        new GetListGeospatialRegionTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                        new GetListGeospatialRegionTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object geospatialRegionsRes = workingGraphOperationExecutor.executeRead(getListGeospatialRegionTransformer,queryCql);
                 return geospatialRegionsRes != null ? (List<GeospatialRegion>) geospatialRegionsRes : null;
             }finally {
@@ -1336,21 +1336,21 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
     @Override
     public SystemMaintenanceOperator getSystemMaintenanceOperator() {
-        Neo4JSystemMaintenanceOperatorImpl systemMaintenanceOperatorImpl = new Neo4JSystemMaintenanceOperatorImpl(coreRealmName);
+        Neo4JSystemMaintenanceOperatorImpl systemMaintenanceOperatorImpl = new Neo4JSystemMaintenanceOperatorImpl(getCoreRealmName());
         systemMaintenanceOperatorImpl.setGlobalGraphOperationExecutor(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
         return systemMaintenanceOperatorImpl;
     }
 
     @Override
     public DataScienceOperator getDataScienceOperator() {
-        Neo4JDataScienceOperatorImpl neo4JDataScienceOperatorImpl = new Neo4JDataScienceOperatorImpl(coreRealmName);
+        Neo4JDataScienceOperatorImpl neo4JDataScienceOperatorImpl = new Neo4JDataScienceOperatorImpl(getCoreRealmName());
         neo4JDataScienceOperatorImpl.setGlobalGraphOperationExecutor(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
         return neo4JDataScienceOperatorImpl;
     }
 
     @Override
     public EntitiesExchangeOperator getEntitiesExchangeOperator() {
-        Neo4JEntitiesExchangeOperatorImpl neo4JEntitiesExchangeOperatorImpl = new Neo4JEntitiesExchangeOperatorImpl(coreRealmName);
+        Neo4JEntitiesExchangeOperatorImpl neo4JEntitiesExchangeOperatorImpl = new Neo4JEntitiesExchangeOperatorImpl(getCoreRealmName());
         neo4JEntitiesExchangeOperatorImpl.setGlobalGraphOperationExecutor(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
         return neo4JEntitiesExchangeOperatorImpl;
     }
@@ -1426,14 +1426,14 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                     String classificationUID = ((Neo4JClassificationImpl) targetClassification).getClassificationUID();
                     String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.valueOf(classificationUID), null, null);
                     GetSingleClassificationTransformer getSingleClassificationTransformer =
-                            new GetSingleClassificationTransformer(coreRealmName, this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                            new GetSingleClassificationTransformer(getCoreRealmName(), this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                     Object deletedClassificationRes = workingGraphOperationExecutor.executeWrite(getSingleClassificationTransformer, deleteCql);
                     Classification resultClassification = deletedClassificationRes != null ? (Classification) deletedClassificationRes : null;
                     if (resultClassification == null) {
                         throw new CoreRealmServiceRuntimeException();
                     } else {
                         String classificationId = ((Neo4JClassificationImpl) resultClassification).getClassificationUID();
-                        Neo4JClassificationImpl resultNeo4JClassificationImplForCacheOperation = new Neo4JClassificationImpl(coreRealmName, classificationName, null, classificationId);
+                        Neo4JClassificationImpl resultNeo4JClassificationImplForCacheOperation = new Neo4JClassificationImpl(getCoreRealmName(), classificationName, null, classificationId);
                         executeClassificationCacheOperation(resultNeo4JClassificationImplForCacheOperation, CacheOperationType.DELETE);
                         return true;
                     }

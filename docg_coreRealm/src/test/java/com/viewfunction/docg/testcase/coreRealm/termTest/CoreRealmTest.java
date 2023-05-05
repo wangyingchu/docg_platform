@@ -48,7 +48,7 @@ public class CoreRealmTest {
         Assert.assertEquals(_ConceptionKind01.getConceptionKindName(),"kind01");
         Assert.assertEquals(_ConceptionKind01.getConceptionKindDesc(),"kind01Desc+中文描述");
         Assert.assertNotNull(((Neo4JConceptionKindImpl)_ConceptionKind01).getConceptionKindUID());
-        Assert.assertNull(((Neo4JConceptionKindImpl)_ConceptionKind01).getCoreRealmName());
+        Assert.assertEquals(((Neo4JConceptionKindImpl)_ConceptionKind01).getCoreRealmName(), PropertiesHandler.getPropertyValue(PropertiesHandler.DEFAULT_REALM_NAME));
 
         _ConceptionKind01 = coreRealm.createConceptionKind("kind01","kind01Desc+中文描述");
         Assert.assertNull(_ConceptionKind01);
@@ -65,7 +65,7 @@ public class CoreRealmTest {
         Assert.assertEquals(_ConceptionKind01.getConceptionKindName(),"kind01");
         Assert.assertEquals(_ConceptionKind01.getConceptionKindDesc(),"kind01Desc+中文描述");
         Assert.assertNotNull(((Neo4JConceptionKindImpl)_ConceptionKind01).getConceptionKindUID());
-        Assert.assertNull(((Neo4JConceptionKindImpl)_ConceptionKind01).getCoreRealmName());
+        Assert.assertEquals(((Neo4JConceptionKindImpl)_ConceptionKind01).getCoreRealmName(), PropertiesHandler.getPropertyValue(PropertiesHandler.DEFAULT_REALM_NAME));
 
         AttributesViewKind attributesViewKind01 = coreRealm.createAttributesViewKind("attributesViewKind01","attributesViewKind01Desc",null);
         Assert.assertNotNull(attributesViewKind01);
