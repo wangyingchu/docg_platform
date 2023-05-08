@@ -676,6 +676,55 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         return null;
     }
 
+    @Override
+    public Set<ConceptionKindCorrelationInfo> getAllDataRelationDistributionDetailStatistics() {
+        String cql ="CALL db.schema.visualization()";
+        logger.debug("Generated Cypher Statement: {}", cql);
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            DataTransformer<Set<ConceptionKindCorrelationInfo>> statisticsDataTransformer = new DataTransformer(){
+                @Override
+                public Set<ConceptionKindCorrelationInfo> transformResult(Result result) {
+                    Record currentRecord = result.next();
+                    List<Object> nodesList = currentRecord.get("nodes").asList();
+                    List<Object> relationshipsList = currentRecord.get("relationships").asList();
+
+                    Set<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet = new HashSet<>();
+                    Map<String,String> conceptionKindId_nameMapping = new HashMap<>();
+                    for(Object currentNodeObj:nodesList){
+                        Node currentNode = (Node)currentNodeObj;
+                        long currentNodeId = currentNode.id();
+                        String currentConceptionKindName = currentNode.labels().iterator().next();
+                        conceptionKindId_nameMapping.put(""+currentNodeId,currentConceptionKindName);
+                    }
+                    for(Object currentRelationshipObj:relationshipsList){
+                        Relationship currentRelationship = (Relationship)currentRelationshipObj;
+                        String relationshipType = currentRelationship.type();
+                        String startConceptionKindId = ""+currentRelationship.startNodeId();
+                        String endConceptionKindId = ""+currentRelationship.endNodeId();
+                        long relationEntitiesCount = checkRelationEntitiesCount(workingGraphOperationExecutor,conceptionKindId_nameMapping.get(startConceptionKindId),conceptionKindId_nameMapping.get(endConceptionKindId),relationshipType);
+                        if(relationEntitiesCount > 0){
+                            ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
+                                    new ConceptionKindCorrelationInfo(
+                                            conceptionKindId_nameMapping.get(startConceptionKindId),
+                                            conceptionKindId_nameMapping.get(endConceptionKindId),
+                                            relationshipType,relationEntitiesCount);
+                            conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
+                        }
+                    }
+                    return conceptionKindCorrelationInfoSet;
+                }
+            };
+            Object queryRes = workingGraphOperationExecutor.executeRead(statisticsDataTransformer,cql);
+            if(queryRes != null){
+                return (Set<ConceptionKindCorrelationInfo>)queryRes;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return null;
+    }
+
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }

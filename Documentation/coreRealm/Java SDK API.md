@@ -4729,11 +4729,18 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
     public Set<ConceptionKindCorrelationInfo> getSystemConceptionKindsRelationDistributionStatistics();
 
     /**
-     * 统计系统中包含内部概念类型实体在内的所有概念类型实体与其他概念类型实体之间的实时关联关系信息
+     * 统计系统中包含内部概念类型实体在内的所有概念类型实体与其他概念类型实体之间的实时关联关系信息,此方法不计算各个概念类型之间关系实体的真实数量,relationEntityCount值设置为1
      *
      * @return 所有概念类型之间的关联关系信息集合
      */
     public Set<ConceptionKindCorrelationInfo> getAllDataRelationDistributionStatistics();
+
+    /**
+     * 统计系统中包含内部概念类型实体在内的所有概念类型实体与其他概念类型实体之间的实时关联关系信息,此方法实时计算各个概念类型之间关系实体的真实数量
+     *
+     * @return 所有概念类型之间的关联关系信息集合
+     */
+    public Set<ConceptionKindCorrelationInfo> getAllDataRelationDistributionDetailStatistics();
 ```
 
 ###### ↳ DataScienceOperator
