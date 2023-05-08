@@ -280,17 +280,17 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         */
         String cypherProcedureString =
                 "CALL apoc.meta.schema() yield value\n" +
-                "UNWIND apoc.map.sortedProperties(value) as labelData\n" +
-                "WITH labelData[0] as label, labelData[1] as data\n" +
-                "WHERE data.type = \"relationship\" AND label = \""+relationKindName+"\"\n" +
-                "UNWIND apoc.map.sortedProperties(data.properties) as property\n" +
-                "WITH label, property[0] as property, property[1] as propData\n" +
-                "RETURN label,\n" +
-                "property,\n" +
-                "propData.type as type,\n" +
-                "propData.indexed as isIndexed,\n" +
-                "propData.unique as uniqueConstraint,\n" +
-                "propData.existence as existenceConstraint";
+                        "UNWIND apoc.map.sortedProperties(value) as labelData\n" +
+                        "WITH labelData[0] as label, labelData[1] as data\n" +
+                        "WHERE data.type = \"relationship\" AND label = \""+relationKindName+"\"\n" +
+                        "UNWIND apoc.map.sortedProperties(data.properties) as property\n" +
+                        "WITH label, property[0] as property, property[1] as propData\n" +
+                        "RETURN label,\n" +
+                        "property,\n" +
+                        "propData.type as type,\n" +
+                        "propData.indexed as isIndexed,\n" +
+                        "propData.unique as uniqueConstraint,\n" +
+                        "propData.existence as existenceConstraint";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
@@ -522,7 +522,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         existIndexSet = listConceptionKindSearchIndex();
         for(SearchIndexInfo currentSearchIndexInfo:existIndexSet){
             if(currentSearchIndexInfo.getIndexName().equals(indexName)){
-               return false;
+                return false;
             }
         }
         return true;
@@ -653,13 +653,13 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                         String relationshipType = currentRelationship.type();
                         String startConceptionKindId = ""+currentRelationship.startNodeId();
                         String endConceptionKindId = ""+currentRelationship.endNodeId();
-                        long existingRelCount = checkRelationEntitiesCount(workingGraphOperationExecutor,conceptionKindId_nameMapping.get(startConceptionKindId),conceptionKindId_nameMapping.get(endConceptionKindId),relationshipType);
-                        if(existingRelCount != 0){
+                        boolean relationExist = checkRelationEntitiesExist(workingGraphOperationExecutor,conceptionKindId_nameMapping.get(startConceptionKindId),conceptionKindId_nameMapping.get(endConceptionKindId),relationshipType);
+                        if(relationExist){
                             ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
                                     new ConceptionKindCorrelationInfo(
                                             conceptionKindId_nameMapping.get(startConceptionKindId),
                                             conceptionKindId_nameMapping.get(endConceptionKindId),
-                                            relationshipType,existingRelCount);
+                                            relationshipType,1);
                             conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
                         }
                     }
@@ -742,11 +742,33 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
     private long checkRelationEntitiesCount(GraphOperationExecutor workingGraphOperationExecutor,String sourceConceptionKindName,
                                             String targetConceptionKindName,String relationKindName){
         String cql = "MATCH p=(source:"+sourceConceptionKindName+")-[r:"+relationKindName+"]->(target:"+targetConceptionKindName+") RETURN count(r) AS operationResult";
+        logger.debug("Generated Cypher Statement: {}", cql);
         GetLongFormatReturnValueTransformer GetLongFormatReturnValueTransformer = new GetLongFormatReturnValueTransformer();
         Object queryRes = workingGraphOperationExecutor.executeRead(GetLongFormatReturnValueTransformer,cql);
         if(queryRes != null){
             return (Long)queryRes;
         }
         return 0;
+    }
+
+    private boolean checkRelationEntitiesExist(GraphOperationExecutor workingGraphOperationExecutor,String sourceConceptionKindName,
+                                               String targetConceptionKindName,String relationKindName){
+        String cql = "MATCH p=(source:"+sourceConceptionKindName+")-[r:"+relationKindName+"]->(target:"+targetConceptionKindName+") RETURN r AS operationResult LIMIT 1";
+        logger.debug("Generated Cypher Statement: {}", cql);
+        DataTransformer<Boolean> dataTransformer = new DataTransformer<>() {
+            @Override
+            public Boolean transformResult(Result result) {
+                boolean relationEntitiesExist = false;
+                int resultNumCount = result.list().size();
+                if(resultNumCount == 0){
+                    relationEntitiesExist = false;
+                }else{
+                    relationEntitiesExist = true;
+                }
+                return relationEntitiesExist;
+            }
+        };
+        Object queryRes = workingGraphOperationExecutor.executeRead(dataTransformer,cql);
+        return queryRes != null ? ((Boolean)queryRes).booleanValue():false;
     }
 }
