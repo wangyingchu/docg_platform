@@ -1,8 +1,8 @@
-package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.vo;
+package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService;
 
 import java.util.Collection;
 
-public class DataComputeUnitVO {
+public class DataComputeUnitMetaInfo {
 
     private String unitID;
     private String unitType;
@@ -10,7 +10,7 @@ public class DataComputeUnitVO {
     private Collection<String> unitIPAddresses;
     private boolean isClientUnit;
 
-    public DataComputeUnitVO(String unitID,String unitType,Collection<String> unitHostNames,Collection<String> unitIPAddresses,boolean isClientUnit){
+    public DataComputeUnitMetaInfo(String unitID, String unitType, Collection<String> unitHostNames, Collection<String> unitIPAddresses, boolean isClientUnit){
         this.unitID = unitID;
         this.unitType = unitType;
         this.unitHostNames = unitHostNames;
