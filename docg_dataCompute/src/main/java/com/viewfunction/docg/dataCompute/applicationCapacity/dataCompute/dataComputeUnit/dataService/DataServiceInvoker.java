@@ -25,6 +25,8 @@ public class DataServiceInvoker implements AutoCloseable{
     private Ignite invokerIgnite;
     private final String TEMPLATE_OPERATION_CACHE = "TEMPLATE_OPERATION_CACHE";
 
+    private DataServiceInvoker(){}
+
     public void openServiceSession() throws ComputeGridNotActiveException {
         Ignition.setClientMode(true);
         this.invokerIgnite = Ignition.start(DataComputeConfigurationHandler.getDataComputeIgniteConfigurationFilePath());
