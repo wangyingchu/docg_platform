@@ -1098,6 +1098,26 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         return 0;
     }
 
+    @Override
+    public void convertAttributeToIntType(String attributeName) {
+
+    }
+
+    @Override
+    public void convertAttributeToFloatType(String attributeName) {
+
+    }
+
+    @Override
+    public void convertAttributeToBooleanType(String attributeName) {
+
+    }
+
+    @Override
+    public void convertAttributeToStringType(String attributeName) {
+
+    }
+
     private class RandomItemsConceptionEntitySetDataTransformer implements DataTransformer<Set<ConceptionEntity>>{
         GraphOperationExecutor workingGraphOperationExecutor;
         public RandomItemsConceptionEntitySetDataTransformer(GraphOperationExecutor workingGraphOperationExecutor){
