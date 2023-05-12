@@ -1153,23 +1153,48 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public void convertEntityAttributeToIntType(String attributeName) {
+    public EntitiesOperationStatistics convertEntityAttributeToIntType(String attributeName) {
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
 
+        String queryCql ="MATCH (node:"+this.conceptionKindName+")\n" +
+                "SET node."+attributeName+" = toIntegerOrNull(node."+attributeName+") RETURN count(node) AS "+CypherBuilder.operationResultName;
+
+
+        logger.debug("Generated Cypher Statement: {}", queryCql);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+
+            GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer();
+            Object countConceptionEntitiesRes = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer, queryCql);
+            if (countConceptionEntitiesRes != null) {
+
+                entitiesOperationStatistics.setFinishTime(new Date());
+                entitiesOperationStatistics.setSuccessItemsCount((Long) countConceptionEntitiesRes);
+                entitiesOperationStatistics.setOperationSummary("removeEntityAttributes operation success");
+
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+
+        return entitiesOperationStatistics;
     }
 
     @Override
-    public void convertEntityAttributeToFloatType(String attributeName) {
-
+    public EntitiesOperationStatistics convertEntityAttributeToFloatType(String attributeName) {
+        return null;
     }
 
     @Override
-    public void convertEntityAttributeToBooleanType(String attributeName) {
-
+    public EntitiesOperationStatistics convertEntityAttributeToBooleanType(String attributeName) {
+        return null;
     }
 
     @Override
-    public void convertEntityAttributeToStringType(String attributeName) {
-
+    public EntitiesOperationStatistics convertEntityAttributeToStringType(String attributeName) {
+        return null;
     }
 
     private class RandomItemsConceptionEntitySetDataTransformer implements DataTransformer<Set<ConceptionEntity>>{

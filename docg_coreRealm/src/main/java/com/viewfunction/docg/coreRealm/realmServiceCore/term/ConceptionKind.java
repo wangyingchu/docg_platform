@@ -362,8 +362,8 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
     public EntitiesOperationStatistics removeEntityAttributes(Set<String> attributeNames) throws CoreRealmServiceRuntimeException;
 
 
-    public void convertEntityAttributeToIntType(String attributeName);
-    public void convertEntityAttributeToFloatType(String attributeName);
-    public void convertEntityAttributeToBooleanType(String attributeName);
-    public void convertEntityAttributeToStringType(String attributeName);
+    public EntitiesOperationStatistics convertEntityAttributeToIntType(String attributeName);
+    public EntitiesOperationStatistics convertEntityAttributeToFloatType(String attributeName);
+    public EntitiesOperationStatistics convertEntityAttributeToBooleanType(String attributeName);
+    public EntitiesOperationStatistics convertEntityAttributeToStringType(String attributeName);
 }

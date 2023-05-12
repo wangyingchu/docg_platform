@@ -321,22 +321,22 @@ public class ArcadeDBConceptionKindImpl implements ArcadeDBConceptionKind {
     }
 
     @Override
-    public void convertEntityAttributeToIntType(String attributeName) {
-
+    public EntitiesOperationStatistics convertEntityAttributeToIntType(String attributeName) {
+        return null;
     }
 
     @Override
-    public void convertEntityAttributeToFloatType(String attributeName) {
-
+    public EntitiesOperationStatistics convertEntityAttributeToFloatType(String attributeName) {
+        return null;
     }
 
     @Override
-    public void convertEntityAttributeToBooleanType(String attributeName) {
-
+    public EntitiesOperationStatistics convertEntityAttributeToBooleanType(String attributeName) {
+        return null;
     }
 
     @Override
-    public void convertEntityAttributeToStringType(String attributeName) {
-
+    public EntitiesOperationStatistics convertEntityAttributeToStringType(String attributeName) {
+        return null;
     }
 }
