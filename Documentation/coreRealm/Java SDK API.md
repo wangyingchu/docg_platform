@@ -896,9 +896,18 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @param attributes Map<String, Object> 需要添加的所有属性
      *
-     * @return 操作成功的数据总量
+     * @return 操作执行状况的统计结果
      */
-    public long setKindScopeAttributes(Map<String, Object> attributes);
+    public EntitiesOperationStatistics setKindScopeAttributes(Map<String, Object> attributes) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 从当前概念类型的所有概念实体中删除指定的属性
+     *
+     * @param attributeNames Map<String, Object> 需要删除的所有属性的名称集合
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics removeEntityAttributes(Set<String> attributeNames) throws CoreRealmServiceRuntimeException;
 ```
 ###### ↳ RelationKind
 

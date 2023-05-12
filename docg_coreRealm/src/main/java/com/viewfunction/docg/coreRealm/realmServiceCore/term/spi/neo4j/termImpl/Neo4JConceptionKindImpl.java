@@ -1082,7 +1082,13 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public EntitiesOperationStatistics setKindScopeAttributes(Map<String, Object> attributes) {
+    public EntitiesOperationStatistics setKindScopeAttributes(Map<String, Object> attributes) throws CoreRealmServiceRuntimeException{
+        if(attributes == null || attributes.size() ==0){
+            logger.error("attributes Map must have at least 1 attribute value.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("attributes Map must have at least 1 attribute value.");
+            throw exception;
+        }
         EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
         entitiesOperationStatistics.setStartTime(new Date());
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
@@ -1105,9 +1111,45 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public EntitiesOperationStatistics removeEntityAttributes(Set<String> attributeNames) {
+    public EntitiesOperationStatistics removeEntityAttributes(Set<String> attributeNames) throws CoreRealmServiceRuntimeException{
+        if(attributeNames == null || attributeNames.size() ==0){
+            logger.error("attributeNames must have at least 1 attribute name.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("attributeNames must have at least 1 attribute name.");
+            throw exception;
+        }
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
         //https://neo4j.com/docs/apoc/current/overview/apoc.create/apoc.create.removeProperties/
-        return null;
+        String attributeNameStr = "[";
+        for(String currentAttribute:attributeNames){
+            attributeNameStr = attributeNameStr+"'"+currentAttribute+"'"+",";
+        }
+        attributeNameStr = attributeNameStr.substring(0,attributeNameStr.length()-1);
+        attributeNameStr = attributeNameStr+"]";
+
+        String queryCql = "MATCH (n:"+this.conceptionKindName+") WITH collect(n) AS entities\n" +
+                "CALL apoc.create.removeProperties(entities, "+attributeNameStr+")\n" +
+                "YIELD node\n" +
+                "RETURN count(node) AS "+CypherBuilder.operationResultName;
+        logger.debug("Generated Cypher Statement: {}", queryCql);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+
+            GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer();
+            Object countConceptionEntitiesRes = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer, queryCql);
+            if (countConceptionEntitiesRes == null) {
+                throw new CoreRealmServiceRuntimeException();
+            } else {
+                entitiesOperationStatistics.setFinishTime(new Date());
+                entitiesOperationStatistics.setSuccessItemsCount((Long) countConceptionEntitiesRes);
+                entitiesOperationStatistics.setOperationSummary("removeEntityAttributes operation success");
+                return entitiesOperationStatistics;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override

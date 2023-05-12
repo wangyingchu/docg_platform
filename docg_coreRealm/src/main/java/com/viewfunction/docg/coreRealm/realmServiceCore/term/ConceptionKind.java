@@ -348,14 +348,18 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      *
      * @param attributes Map<String, Object> 需要添加的所有属性
      *
-     * @return 操作成功的数据总量
+     * @return 操作执行状况的统计结果
      */
-    public EntitiesOperationStatistics setKindScopeAttributes(Map<String, Object> attributes);
+    public EntitiesOperationStatistics setKindScopeAttributes(Map<String, Object> attributes) throws CoreRealmServiceRuntimeException;
 
-
-
-
-    public EntitiesOperationStatistics removeEntityAttributes(Set<String> attributeNames);
+    /**
+     * 从当前概念类型的所有概念实体中删除指定的属性
+     *
+     * @param attributeNames Map<String, Object> 需要删除的所有属性的名称集合
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics removeEntityAttributes(Set<String> attributeNames) throws CoreRealmServiceRuntimeException;
 
 
     public void convertEntityAttributeToIntType(String attributeName);
