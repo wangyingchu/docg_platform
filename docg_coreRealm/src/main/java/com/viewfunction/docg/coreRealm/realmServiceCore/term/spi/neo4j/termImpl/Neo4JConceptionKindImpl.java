@@ -1136,7 +1136,6 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
-
             GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer();
             Object countConceptionEntitiesRes = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer, queryCql);
             if (countConceptionEntitiesRes == null) {
@@ -1159,42 +1158,76 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
         String queryCql ="MATCH (node:"+this.conceptionKindName+")\n" +
                 "SET node."+attributeName+" = toIntegerOrNull(node."+attributeName+") RETURN count(node) AS "+CypherBuilder.operationResultName;
-
-
         logger.debug("Generated Cypher Statement: {}", queryCql);
 
-        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-        try {
-
-            GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer();
-            Object countConceptionEntitiesRes = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer, queryCql);
-            if (countConceptionEntitiesRes != null) {
-
-                entitiesOperationStatistics.setFinishTime(new Date());
-                entitiesOperationStatistics.setSuccessItemsCount((Long) countConceptionEntitiesRes);
-                entitiesOperationStatistics.setOperationSummary("removeEntityAttributes operation success");
-
-            }
-        }finally {
-            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-        }
-
+        long operationEntitiesCount = executeEntitiesOperationWithCountResponse(queryCql);
+        entitiesOperationStatistics.setFinishTime(new Date());
+        entitiesOperationStatistics.setSuccessItemsCount(operationEntitiesCount);
+        entitiesOperationStatistics.setOperationSummary("convertEntityAttributeToIntType operation success");
         return entitiesOperationStatistics;
     }
 
     @Override
     public EntitiesOperationStatistics convertEntityAttributeToFloatType(String attributeName) {
-        return null;
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+
+        String queryCql ="MATCH (node:"+this.conceptionKindName+")\n" +
+                "SET node."+attributeName+" = toFloatOrNull(node."+attributeName+") RETURN count(node) AS "+CypherBuilder.operationResultName;
+        logger.debug("Generated Cypher Statement: {}", queryCql);
+
+        long operationEntitiesCount = executeEntitiesOperationWithCountResponse(queryCql);
+        entitiesOperationStatistics.setFinishTime(new Date());
+        entitiesOperationStatistics.setSuccessItemsCount(operationEntitiesCount);
+        entitiesOperationStatistics.setOperationSummary("convertEntityAttributeToFloatType operation success");
+        return entitiesOperationStatistics;
     }
 
     @Override
     public EntitiesOperationStatistics convertEntityAttributeToBooleanType(String attributeName) {
-        return null;
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+
+        String queryCql ="MATCH (node:"+this.conceptionKindName+")\n" +
+                "SET node."+attributeName+" = toBooleanOrNull(node."+attributeName+") RETURN count(node) AS "+CypherBuilder.operationResultName;
+        logger.debug("Generated Cypher Statement: {}", queryCql);
+
+        long operationEntitiesCount = executeEntitiesOperationWithCountResponse(queryCql);
+        entitiesOperationStatistics.setFinishTime(new Date());
+        entitiesOperationStatistics.setSuccessItemsCount(operationEntitiesCount);
+        entitiesOperationStatistics.setOperationSummary("convertEntityAttributeToBooleanType operation success");
+        return entitiesOperationStatistics;
     }
 
     @Override
     public EntitiesOperationStatistics convertEntityAttributeToStringType(String attributeName) {
-        return null;
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+
+        String queryCql ="MATCH (node:"+this.conceptionKindName+")\n" +
+                "SET node."+attributeName+" = toString(node."+attributeName+") RETURN count(node) AS "+CypherBuilder.operationResultName;
+        logger.debug("Generated Cypher Statement: {}", queryCql);
+
+        long operationEntitiesCount = executeEntitiesOperationWithCountResponse(queryCql);
+        entitiesOperationStatistics.setFinishTime(new Date());
+        entitiesOperationStatistics.setSuccessItemsCount(operationEntitiesCount);
+        entitiesOperationStatistics.setOperationSummary("convertEntityAttributeToStringType operation success");
+        return entitiesOperationStatistics;
+    }
+
+    private long executeEntitiesOperationWithCountResponse(String cql){
+        long operationResultCount = 0;
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer();
+            Object countConceptionEntitiesRes = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer, cql);
+            if (countConceptionEntitiesRes != null) {
+                operationResultCount =(Long) countConceptionEntitiesRes;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return operationResultCount;
     }
 
     private class RandomItemsConceptionEntitySetDataTransformer implements DataTransformer<Set<ConceptionEntity>>{

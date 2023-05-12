@@ -908,6 +908,42 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 操作执行状况的统计结果
      */
     public EntitiesOperationStatistics removeEntityAttributes(Set<String> attributeNames) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 将当前概念类型的所有概念实体中指定的属性转换为 Int 类型，如当前属性值无法合法转换则删除该属性
+     *
+     * @param attributeName String 需要转换的属性名称
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics convertEntityAttributeToIntType(String attributeName);
+
+    /**
+     * 将当前概念类型的所有概念实体中指定的属性转换为 Float 类型，如当前属性值无法合法转换则删除该属性
+     *
+     * @param attributeName String 需要转换的属性名称
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics convertEntityAttributeToFloatType(String attributeName);
+
+    /**
+     * 将当前概念类型的所有概念实体中指定的属性转换为 Boolean 类型，如当前属性值无法合法转换则删除该属性
+     *
+     * @param attributeName String 需要转换的属性名称
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics convertEntityAttributeToBooleanType(String attributeName);
+
+    /**
+     * 将当前概念类型的所有概念实体中指定的属性转换为 String 类型
+     *
+     * @param attributeName String 需要转换的属性名称
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics convertEntityAttributeToStringType(String attributeName);
 ```
 ###### ↳ RelationKind
 
