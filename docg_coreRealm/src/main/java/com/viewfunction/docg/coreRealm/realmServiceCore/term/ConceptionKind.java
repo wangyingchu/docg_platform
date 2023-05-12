@@ -350,13 +350,16 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      *
      * @return 操作成功的数据总量
      */
-    public long setKindScopeAttributes(Map<String, Object> attributes);
-
-    public EntitiesOperationResult removeEntityAttributes(Set<String> attributeNames);
+    public EntitiesOperationStatistics setKindScopeAttributes(Map<String, Object> attributes);
 
 
-    public void convertAttributeToIntType(String attributeName);
-    public void convertAttributeToFloatType(String attributeName);
-    public void convertAttributeToBooleanType(String attributeName);
-    public void convertAttributeToStringType(String attributeName);
+
+
+    public EntitiesOperationStatistics removeEntityAttributes(Set<String> attributeNames);
+
+
+    public void convertEntityAttributeToIntType(String attributeName);
+    public void convertEntityAttributeToFloatType(String attributeName);
+    public void convertEntityAttributeToBooleanType(String attributeName);
+    public void convertEntityAttributeToStringType(String attributeName);
 }

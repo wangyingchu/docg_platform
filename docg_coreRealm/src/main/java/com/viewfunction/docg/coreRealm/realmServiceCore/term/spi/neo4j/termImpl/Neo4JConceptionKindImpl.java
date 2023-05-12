@@ -1082,7 +1082,9 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public long setKindScopeAttributes(Map<String, Object> attributes) {
+    public EntitiesOperationStatistics setKindScopeAttributes(Map<String, Object> attributes) {
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
             String queryCql = CypherBuilder.setConceptionKindProperties(this.conceptionKindName,attributes);
@@ -1090,37 +1092,41 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
             Object queryRes = workingGraphOperationExecutor.executeWrite(GetLongFormatAggregatedReturnValueTransformer,queryCql);
             if(queryRes != null) {
                 Long operationResult =(Long)queryRes;
-                return operationResult;
+                entitiesOperationStatistics.setFinishTime(new Date());
+                entitiesOperationStatistics.setSuccessItemsCount(operationResult);
+                entitiesOperationStatistics.setOperationSummary("setKindScopeAttributes operation success");
+                return entitiesOperationStatistics;
             }
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
-        return 0;
+        entitiesOperationStatistics.setFinishTime(new Date());
+        return entitiesOperationStatistics;
     }
 
     @Override
-    public EntitiesOperationResult removeEntityAttributes(Set<String> attributeNames) {
+    public EntitiesOperationStatistics removeEntityAttributes(Set<String> attributeNames) {
         //https://neo4j.com/docs/apoc/current/overview/apoc.create/apoc.create.removeProperties/
         return null;
     }
 
     @Override
-    public void convertAttributeToIntType(String attributeName) {
+    public void convertEntityAttributeToIntType(String attributeName) {
 
     }
 
     @Override
-    public void convertAttributeToFloatType(String attributeName) {
+    public void convertEntityAttributeToFloatType(String attributeName) {
 
     }
 
     @Override
-    public void convertAttributeToBooleanType(String attributeName) {
+    public void convertEntityAttributeToBooleanType(String attributeName) {
 
     }
 
     @Override
-    public void convertAttributeToStringType(String attributeName) {
+    public void convertEntityAttributeToStringType(String attributeName) {
 
     }
 

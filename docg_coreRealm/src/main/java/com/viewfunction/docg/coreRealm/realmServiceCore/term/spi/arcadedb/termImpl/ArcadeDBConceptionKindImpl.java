@@ -311,7 +311,32 @@ public class ArcadeDBConceptionKindImpl implements ArcadeDBConceptionKind {
     }
 
     @Override
-    public long setKindScopeAttributes(Map<String, Object> attributes) {
-        return 0;
+    public EntitiesOperationStatistics setKindScopeAttributes(Map<String, Object> attributes) {
+        return null;
+    }
+
+    @Override
+    public EntitiesOperationStatistics removeEntityAttributes(Set<String> attributeNames) {
+        return null;
+    }
+
+    @Override
+    public void convertEntityAttributeToIntType(String attributeName) {
+
+    }
+
+    @Override
+    public void convertEntityAttributeToFloatType(String attributeName) {
+
+    }
+
+    @Override
+    public void convertEntityAttributeToBooleanType(String attributeName) {
+
+    }
+
+    @Override
+    public void convertEntityAttributeToStringType(String attributeName) {
+
     }
 }
