@@ -352,6 +352,9 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      */
     public long setKindScopeAttributes(Map<String, Object> attributes);
 
+    public EntitiesOperationResult removeEntityAttributes(Set<String> attributeNames);
+
+
     public void convertAttributeToIntType(String attributeName);
     public void convertAttributeToFloatType(String attributeName);
     public void convertAttributeToBooleanType(String attributeName);

@@ -1099,6 +1099,12 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
+    public EntitiesOperationResult removeEntityAttributes(Set<String> attributeNames) {
+        //https://neo4j.com/docs/apoc/current/overview/apoc.create/apoc.create.removeProperties/
+        return null;
+    }
+
+    @Override
     public void convertAttributeToIntType(String attributeName) {
 
     }

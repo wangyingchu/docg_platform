@@ -877,6 +877,10 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         String cypherProcedureString2 = "MATCH (targetNodes:"+newConceptionKind+") WHERE id(targetNodes) IN " + conceptionEntityUIDs.toString()+"\n"+
                 "RETURN targetNodes AS operationResult;";
 
+        //Another implement option:
+        // https://neo4j.com/docs/apoc/current/overview/apoc.create/apoc.create.addLabels/
+        // https://neo4j.com/docs/apoc/current/overview/apoc.create/apoc.create.removeLabels/
+
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
             workingGraphOperationExecutor.executeWrite(new DataTransformer() {
