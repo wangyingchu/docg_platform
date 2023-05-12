@@ -1128,7 +1128,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         attributeNameStr = attributeNameStr.substring(0,attributeNameStr.length()-1);
         attributeNameStr = attributeNameStr+"]";
 
-        String queryCql = "MATCH (n:"+this.conceptionKindName+") WITH collect(n) AS entities\n" +
+        String queryCql = "MATCH (n:`"+this.conceptionKindName+"`) WITH collect(n) AS entities\n" +
                 "CALL apoc.create.removeProperties(entities, "+attributeNameStr+")\n" +
                 "YIELD node\n" +
                 "RETURN count(node) AS "+CypherBuilder.operationResultName;
@@ -1156,7 +1156,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
         entitiesOperationStatistics.setStartTime(new Date());
 
-        String queryCql ="MATCH (node:"+this.conceptionKindName+")\n" +
+        String queryCql ="MATCH (node:`"+this.conceptionKindName+"`)\n" +
                 "SET node."+attributeName+" = toIntegerOrNull(node."+attributeName+") RETURN count(node) AS "+CypherBuilder.operationResultName;
         logger.debug("Generated Cypher Statement: {}", queryCql);
 
@@ -1172,7 +1172,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
         entitiesOperationStatistics.setStartTime(new Date());
 
-        String queryCql ="MATCH (node:"+this.conceptionKindName+")\n" +
+        String queryCql ="MATCH (node:`"+this.conceptionKindName+"`)\n" +
                 "SET node."+attributeName+" = toFloatOrNull(node."+attributeName+") RETURN count(node) AS "+CypherBuilder.operationResultName;
         logger.debug("Generated Cypher Statement: {}", queryCql);
 
@@ -1188,7 +1188,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
         entitiesOperationStatistics.setStartTime(new Date());
 
-        String queryCql ="MATCH (node:"+this.conceptionKindName+")\n" +
+        String queryCql ="MATCH (node:`"+this.conceptionKindName+"`)\n" +
                 "SET node."+attributeName+" = toBooleanOrNull(node."+attributeName+") RETURN count(node) AS "+CypherBuilder.operationResultName;
         logger.debug("Generated Cypher Statement: {}", queryCql);
 
@@ -1204,7 +1204,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
         entitiesOperationStatistics.setStartTime(new Date());
 
-        String queryCql ="MATCH (node:"+this.conceptionKindName+")\n" +
+        String queryCql ="MATCH (node:`"+this.conceptionKindName+"`)\n" +
                 "SET node."+attributeName+" = toString(node."+attributeName+") RETURN count(node) AS "+CypherBuilder.operationResultName;
         logger.debug("Generated Cypher Statement: {}", queryCql);
 

@@ -545,6 +545,67 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
         return null;
     }
 
+    @Override
+    public EntitiesOperationStatistics removeEntityAttributes(Set<String> attributeNames) throws CoreRealmServiceRuntimeException {
+        if(attributeNames == null || attributeNames.size() ==0){
+            logger.error("attributeNames must have at least 1 attribute name.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("attributeNames must have at least 1 attribute name.");
+            throw exception;
+        }
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+        //https://neo4j.com/docs/apoc/current/overview/apoc.create/apoc.create.removeRelProperties/
+        String attributeNameStr = "[";
+        for(String currentAttribute:attributeNames){
+            attributeNameStr = attributeNameStr+"'"+currentAttribute+"'"+",";
+        }
+        attributeNameStr = attributeNameStr.substring(0,attributeNameStr.length()-1);
+        attributeNameStr = attributeNameStr+"]";
+
+        String queryCql = "MATCH ()-[n:`"+this.relationKindName+"`]->() WITH collect(n) AS entities\n" +
+                "CALL apoc.create.removeRelProperties(entities, "+attributeNameStr+")\n" +
+                "YIELD rel\n" +
+                "RETURN count(rel) AS "+CypherBuilder.operationResultName;
+        logger.debug("Generated Cypher Statement: {}", queryCql);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer();
+            Object countConceptionEntitiesRes = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer, queryCql);
+            if (countConceptionEntitiesRes == null) {
+                throw new CoreRealmServiceRuntimeException();
+            } else {
+                entitiesOperationStatistics.setFinishTime(new Date());
+                entitiesOperationStatistics.setSuccessItemsCount((Long) countConceptionEntitiesRes);
+                entitiesOperationStatistics.setOperationSummary("removeEntityAttributes operation success");
+                return entitiesOperationStatistics;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public EntitiesOperationStatistics convertEntityAttributeToIntType(String attributeName) {
+        return null;
+    }
+
+    @Override
+    public EntitiesOperationStatistics convertEntityAttributeToFloatType(String attributeName) {
+        return null;
+    }
+
+    @Override
+    public EntitiesOperationStatistics convertEntityAttributeToBooleanType(String attributeName) {
+        return null;
+    }
+
+    @Override
+    public EntitiesOperationStatistics convertEntityAttributeToStringType(String attributeName) {
+        return null;
+    }
+
     private class RandomItemsRelationEntitySetDataTransformer implements DataTransformer<Set<RelationEntity>>{
         GraphOperationExecutor workingGraphOperationExecutor;
         public RandomItemsRelationEntitySetDataTransformer(GraphOperationExecutor workingGraphOperationExecutor){

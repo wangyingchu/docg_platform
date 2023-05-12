@@ -189,4 +189,49 @@ public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttr
      * @return 删除实体对象操作返回结果
      */
     public EntitiesOperationResult deleteEntities(List<String> relationEntityUIDs) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 从当前关系类型的所有关系实体中删除指定的属性
+     *
+     * @param attributeNames Map<String, Object> 需要删除的所有属性的名称集合
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics removeEntityAttributes(Set<String> attributeNames) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 将当前关系类型的所有关系实体中指定的属性转换为 Int 类型，如当前属性值无法合法转换则删除该属性
+     *
+     * @param attributeName String 需要转换的属性名称
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics convertEntityAttributeToIntType(String attributeName);
+
+    /**
+     * 将当前关系类型的所有关系实体中指定的属性转换为 Float 类型，如当前属性值无法合法转换则删除该属性
+     *
+     * @param attributeName String 需要转换的属性名称
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics convertEntityAttributeToFloatType(String attributeName);
+
+    /**
+     * 将当前关系类型的所有关系实体中指定的属性转换为 Boolean 类型，如当前属性值无法合法转换则删除该属性
+     *
+     * @param attributeName String 需要转换的属性名称
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics convertEntityAttributeToBooleanType(String attributeName);
+
+    /**
+     * 将当前关系类型的所有关系实体中指定的属性转换为 String 类型
+     *
+     * @param attributeName String 需要转换的属性名称
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics convertEntityAttributeToStringType(String attributeName);
 }
