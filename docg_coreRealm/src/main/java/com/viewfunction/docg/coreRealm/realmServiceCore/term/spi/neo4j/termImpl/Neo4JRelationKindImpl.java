@@ -443,7 +443,15 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
     }
 
     @Override
-    public long setKindScopeAttributes(Map<String, Object> attributes) {
+    public EntitiesOperationStatistics setKindScopeAttributes(Map<String, Object> attributes) throws CoreRealmServiceRuntimeException {
+        if(attributes == null || attributes.size() ==0){
+            logger.error("attributes Map must have at least 1 attribute value.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("attributes Map must have at least 1 attribute value.");
+            throw exception;
+        }
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
             String queryCql = CypherBuilder.setRelationKindProperties(this.relationKindName,attributes);
@@ -451,12 +459,16 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
             Object queryRes = workingGraphOperationExecutor.executeWrite(GetLongFormatAggregatedReturnValueTransformer,queryCql);
             if(queryRes != null) {
                 Long operationResult =(Long)queryRes;
-                return operationResult;
+                entitiesOperationStatistics.setFinishTime(new Date());
+                entitiesOperationStatistics.setSuccessItemsCount(operationResult);
+                entitiesOperationStatistics.setOperationSummary("setKindScopeAttributes operation success");
+                return entitiesOperationStatistics;
             }
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
-        return 0;
+        entitiesOperationStatistics.setFinishTime(new Date());
+        return entitiesOperationStatistics;
     }
 
     @Override

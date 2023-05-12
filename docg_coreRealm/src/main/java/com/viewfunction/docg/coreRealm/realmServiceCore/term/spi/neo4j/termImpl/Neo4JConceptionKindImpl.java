@@ -1082,7 +1082,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public EntitiesOperationStatistics setKindScopeAttributes(Map<String, Object> attributes) throws CoreRealmServiceRuntimeException{
+    public EntitiesOperationStatistics setKindScopeAttributes(Map<String, Object> attributes) throws CoreRealmServiceRuntimeException {
         if(attributes == null || attributes.size() ==0){
             logger.error("attributes Map must have at least 1 attribute value.");
             CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();

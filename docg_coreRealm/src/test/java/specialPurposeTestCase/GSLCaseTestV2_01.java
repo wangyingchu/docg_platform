@@ -414,7 +414,7 @@ public class GSLCaseTestV2_01 {
 
     private static void cleanSelfSamePersonLink(){}
 
-    private static void addLinkDisplayProperty(){
+    private static void addLinkDisplayProperty() throws CoreRealmServiceRuntimeException {
         Map<String,Object> attrMap = new HashMap<>();
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         /*
