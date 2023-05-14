@@ -1,6 +1,8 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
@@ -241,14 +243,29 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
     }
 
     @Override
-    public EntitiesOperationStatistics exportConceptionEntitiesToArrow(String conceptionKindName, QueryParameters queryParameters, String arrowFileLocation) {
+    public EntitiesOperationStatistics exportConceptionEntitiesToArrow(String conceptionKindName, QueryParameters queryParameters, String arrowFileLocation) throws CoreRealmServiceEntityExploreException {
         //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.arrow.query/
+        if (queryParameters != null) {
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(conceptionKindName,queryParameters,null);
+            String exportCql = "CALL apoc.export.arrow.query(\""+ arrowFileLocation +"\",\""+queryCql+"\", {})\n"+
+                    "        YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data\n" +
+                    "        RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data";
+            logger.debug("Generated Cypher Statement: {}", exportCql);
+        }
         return null;
     }
 
     @Override
-    public EntitiesOperationStatistics exportConceptionEntitiesToCSV(String conceptionKindName, QueryParameters queryParameters, String csvFileLocation) {
+    public EntitiesOperationStatistics exportConceptionEntitiesToCSV(String conceptionKindName, QueryParameters queryParameters, String csvFileLocation) throws CoreRealmServiceEntityExploreException {
         //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.csv.query/
+        if (queryParameters != null) {
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(conceptionKindName,queryParameters,null);
+            String exportCql = "CALL apoc.export.csv.query(\""+ csvFileLocation +"\",\""+queryCql+"\", {})\n"+
+                    "        YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data\n" +
+                    "        RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data";
+            logger.debug("Generated Cypher Statement: {}", exportCql);
+
+        }
         return null;
     }
 }
