@@ -242,11 +242,13 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
 
     @Override
     public EntitiesOperationStatistics exportConceptionEntitiesToArrow(String conceptionKindName, QueryParameters queryParameters, String arrowFileLocation) {
+        //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.arrow.query/
         return null;
     }
 
     @Override
     public EntitiesOperationStatistics exportConceptionEntitiesToCSV(String conceptionKindName, QueryParameters queryParameters, String csvFileLocation) {
+        //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.csv.query/
         return null;
     }
 }
