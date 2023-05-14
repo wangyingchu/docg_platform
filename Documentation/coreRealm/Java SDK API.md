@@ -5338,25 +5338,7 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      *
      * @return 导出操作的执行结果统计信息
      */
-    public EntitiesOperationStatistics exportConceptionEntitiesToCSV(String conceptionKindName,String csvFileLocation);
-
-    /**
-     * 输入一个 Apache Arrow 格式的数据文件存储路径，将领域模型中的所有实体数据导出到数据文件中
-     *
-     * @param arrowFileLocation String Apache Arrow 格式的数据文件存储路径
-     *
-     * @return 导出操作的执行结果统计信息
-     */
-    public EntitiesOperationStatistics exportCoreRealmEntitiesToArrow(String arrowFileLocation);
-
-    /**
-     * 输入一个 Apache Arrow 格式的数据文件，将数据文件中的所有数据导入到领域模型中。数据文件必须由 EntitiesExchangeOperator 中的 exportCoreRealmEntitiesToArrow 方法生成
-     *
-     * @param arrowFileLocation String Apache Arrow 格式的数据文件存储路径
-     *
-     * @return 导入操作的执行结果统计信息
-     */
-    public EntitiesOperationStatistics importCoreRealmEntitiesFromArrow(String arrowFileLocation);
+    public EntitiesOperationStatistics exportConceptionEntitiesToCSV(String conceptionKindName,String csvFileLocation);    
 
     /**
      * 输入概念类型名称,查询过滤条件,以及一个 Apache Arrow 格式的数据文件存储路径,查询符合过滤条件的概念实体对象，将所有实体数据导出到数据文件中
@@ -5379,4 +5361,22 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 导出操作的执行结果统计信息
      */
     public EntitiesOperationStatistics exportConceptionEntitiesToCSV(String conceptionKindName,QueryParameters queryParameters,String csvFileLocation);
+
+    /**
+     * 输入一个 Apache Arrow 格式的数据文件存储路径，将领域模型中的所有实体数据导出到数据文件中
+     *
+     * @param arrowFileLocation String Apache Arrow 格式的数据文件存储路径
+     *
+     * @return 导出操作的执行结果统计信息
+     */
+    public EntitiesOperationStatistics exportCoreRealmEntitiesToArrow(String arrowFileLocation);
+
+    /**
+     * 输入一个 Apache Arrow 格式的数据文件，将数据文件中的所有数据导入到领域模型中。数据文件必须由 EntitiesExchangeOperator 中的 exportCoreRealmEntitiesToArrow 方法生成
+     *
+     * @param arrowFileLocation String Apache Arrow 格式的数据文件存储路径
+     *
+     * @return 导入操作的执行结果统计信息
+     */
+    public EntitiesOperationStatistics importCoreRealmEntitiesFromArrow(String arrowFileLocation);
 ```
