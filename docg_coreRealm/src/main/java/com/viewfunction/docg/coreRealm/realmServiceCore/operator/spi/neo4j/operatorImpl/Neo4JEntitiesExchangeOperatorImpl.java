@@ -8,6 +8,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.EntitiesExchangeOperator;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeSystemInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationStatistics;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
@@ -15,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
+import java.util.List;
 
 public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperator {
 
@@ -286,7 +288,28 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
     public EntitiesOperationStatistics exportConceptionEntitiesToCSV(String conceptionKindName, QueryParameters queryParameters, String csvFileLocation) throws CoreRealmServiceEntityExploreException {
         //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.csv.query/
         if (queryParameters != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+
+            Neo4JSystemMaintenanceOperatorImpl systemMaintenanceOperator = new Neo4JSystemMaintenanceOperatorImpl(conceptionKindName);
+            systemMaintenanceOperator.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+            List<AttributeSystemInfo> attributeSystemInfoList = systemMaintenanceOperator.getConceptionKindAttributesSystemInfo(conceptionKindName);
+
+
+            /*
+
+            WITH "MATCH path = (person:Person)-[:DIRECTED]->(movie)
+      RETURN person.name AS name, person.born AS born,
+             movie.title AS title, movie.tagline AS tagline, movie.released AS released" AS query
+CALL apoc.export.csv.query(query, "movies-directed.csv", {})
+YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data
+RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data;
+             */
             String queryCql = CypherBuilder.matchNodesWithQueryParameters(conceptionKindName,queryParameters,null);
+
+
+
+
+
             String exportCql = "CALL apoc.export.csv.query(\""+ queryCql +"\",\""+csvFileLocation+"\", {})\n"+
                     "        YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data\n" +
                     "        RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data";
@@ -294,7 +317,7 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
 
             EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
             entitiesOperationStatistics.setStartTime(new Date());
-            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+
             try{
                 DataTransformer<Boolean> dataTransformer = new DataTransformer() {
                     @Override
