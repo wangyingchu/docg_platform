@@ -248,7 +248,24 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
     public EntitiesOperationStatistics exportConceptionEntitiesToArrow(String conceptionKindName, QueryParameters queryParameters, String arrowFileLocation) throws CoreRealmServiceEntityExploreException {
         //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.arrow.query/
         if (queryParameters != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+
+            Neo4JSystemMaintenanceOperatorImpl systemMaintenanceOperator = new Neo4JSystemMaintenanceOperatorImpl(conceptionKindName);
+            systemMaintenanceOperator.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+            List<AttributeSystemInfo> attributeSystemInfoList = systemMaintenanceOperator.getConceptionKindAttributesSystemInfo(conceptionKindName);
+
+            StringBuffer returnAttributesCqlPart = new StringBuffer();
+            for(int i = 0 ; i < attributeSystemInfoList.size(); i++){
+                AttributeSystemInfo currentAttributeSystemInfo = attributeSystemInfoList.get(i);
+                String currentAttributeName = currentAttributeSystemInfo.getAttributeName();
+                returnAttributesCqlPart.append(CypherBuilder.operationResultName + "." + currentAttributeName + " AS "+currentAttributeName);
+                if(i != attributeSystemInfoList.size()-1){
+                    returnAttributesCqlPart.append(", ");
+                }
+            }
+            String returnAttributeCqlPart = "RETURN "+ returnAttributesCqlPart.toString();
             String queryCql = CypherBuilder.matchNodesWithQueryParameters(conceptionKindName,queryParameters,null);
+            queryCql = queryCql.replace("RETURN "+CypherBuilder.operationResultName,returnAttributeCqlPart);
             String exportCql = "CALL apoc.export.arrow.query(\""+ arrowFileLocation +"\",\""+queryCql+"\", {})\n"+
                     "        YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data\n" +
                     "        RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data";
@@ -256,7 +273,7 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
 
             EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
             entitiesOperationStatistics.setStartTime(new Date());
-            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+
             try{
                 DataTransformer<Boolean> dataTransformer = new DataTransformer() {
                     @Override
@@ -294,22 +311,18 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
             systemMaintenanceOperator.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
             List<AttributeSystemInfo> attributeSystemInfoList = systemMaintenanceOperator.getConceptionKindAttributesSystemInfo(conceptionKindName);
 
-
-            /*
-
-            WITH "MATCH path = (person:Person)-[:DIRECTED]->(movie)
-      RETURN person.name AS name, person.born AS born,
-             movie.title AS title, movie.tagline AS tagline, movie.released AS released" AS query
-CALL apoc.export.csv.query(query, "movies-directed.csv", {})
-YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data
-RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data;
-             */
+            StringBuffer returnAttributesCqlPart = new StringBuffer();
+            for(int i = 0 ; i < attributeSystemInfoList.size(); i++){
+                AttributeSystemInfo currentAttributeSystemInfo = attributeSystemInfoList.get(i);
+                String currentAttributeName = currentAttributeSystemInfo.getAttributeName();
+                returnAttributesCqlPart.append(CypherBuilder.operationResultName + "." + currentAttributeName + " AS "+currentAttributeName);
+                if(i != attributeSystemInfoList.size()-1){
+                    returnAttributesCqlPart.append(", ");
+                }
+            }
+            String returnAttributeCqlPart = "RETURN "+ returnAttributesCqlPart.toString();
             String queryCql = CypherBuilder.matchNodesWithQueryParameters(conceptionKindName,queryParameters,null);
-
-
-
-
-
+            queryCql = queryCql.replace("RETURN "+CypherBuilder.operationResultName,returnAttributeCqlPart);
             String exportCql = "CALL apoc.export.csv.query(\""+ queryCql +"\",\""+csvFileLocation+"\", {})\n"+
                     "        YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data\n" +
                     "        RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data";
