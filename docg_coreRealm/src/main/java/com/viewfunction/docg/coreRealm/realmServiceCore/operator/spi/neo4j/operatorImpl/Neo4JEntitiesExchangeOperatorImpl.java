@@ -251,6 +251,33 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
                     "        YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data\n" +
                     "        RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data";
             logger.debug("Generated Cypher Statement: {}", exportCql);
+
+            EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+            entitiesOperationStatistics.setStartTime(new Date());
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                DataTransformer<Boolean> dataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        if(result.hasNext()){
+                            Record operationResultRecord = result.next();
+                            if(operationResultRecord.containsKey("nodes")){
+                                entitiesOperationStatistics.setSuccessItemsCount(operationResultRecord.get("nodes").asLong());
+                            }
+                        }
+                        return true;
+                    }
+                };
+                workingGraphOperationExecutor.executeWrite(dataTransformer, exportCql);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            entitiesOperationStatistics.setFinishTime(new Date());
+            entitiesOperationStatistics.setOperationSummary("exportConceptionEntitiesToArrow operation execute finish. conceptionKindName is "
+                    +conceptionKindName+", arrowFileLocation is "+arrowFileLocation);
+            return entitiesOperationStatistics;
         }
         return null;
     }
@@ -260,11 +287,37 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
         //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.csv.query/
         if (queryParameters != null) {
             String queryCql = CypherBuilder.matchNodesWithQueryParameters(conceptionKindName,queryParameters,null);
-            String exportCql = "CALL apoc.export.csv.query(\""+ csvFileLocation +"\",\""+queryCql+"\", {})\n"+
+            String exportCql = "CALL apoc.export.csv.query(\""+ queryCql +"\",\""+csvFileLocation+"\", {})\n"+
                     "        YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data\n" +
                     "        RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data";
             logger.debug("Generated Cypher Statement: {}", exportCql);
 
+            EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+            entitiesOperationStatistics.setStartTime(new Date());
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                DataTransformer<Boolean> dataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        if(result.hasNext()){
+                            Record operationResultRecord = result.next();
+                            if(operationResultRecord.containsKey("nodes")){
+                                entitiesOperationStatistics.setSuccessItemsCount(operationResultRecord.get("nodes").asLong());
+                            }
+                        }
+                        return true;
+                    }
+                };
+                workingGraphOperationExecutor.executeWrite(dataTransformer, exportCql);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            entitiesOperationStatistics.setFinishTime(new Date());
+            entitiesOperationStatistics.setOperationSummary("exportConceptionEntitiesToCSV operation execute finish. conceptionKindName is "
+                    +conceptionKindName+", csvFileLocation is "+csvFileLocation);
+            return entitiesOperationStatistics;
         }
         return null;
     }
