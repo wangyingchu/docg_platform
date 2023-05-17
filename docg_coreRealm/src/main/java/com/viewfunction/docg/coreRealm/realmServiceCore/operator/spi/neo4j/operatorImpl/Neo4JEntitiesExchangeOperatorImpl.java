@@ -357,4 +357,18 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
         }
         return null;
     }
+
+    @Override
+    public EntitiesOperationStatistics exportConceptionEntitiesToArrow(String conceptionKindName, List<String> resultAttributeNames, QueryParameters queryParameters, String arrowFileLocation) throws CoreRealmServiceEntityExploreException {
+
+
+        String queryCql = CypherBuilder.matchAttributesWithQueryParameters(conceptionKindName,queryParameters,resultAttributeNames);
+
+        return null;
+    }
+
+    @Override
+    public EntitiesOperationStatistics exportConceptionEntitiesToCSV(String conceptionKindName, List<String> resultAttributeNames, QueryParameters queryParameters, String csvFileLocation) throws CoreRealmServiceEntityExploreException {
+        return null;
+    }
 }
