@@ -360,11 +360,48 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
 
     @Override
     public EntitiesOperationStatistics exportConceptionEntitiesToArrow(String conceptionKindName, List<String> resultAttributeNames, QueryParameters queryParameters, String arrowFileLocation) throws CoreRealmServiceEntityExploreException {
+        String queryCql = CypherBuilder.matchAttributesWithQueryParameters(conceptionKindName,queryParameters,resultAttributeNames);
 
+        for(String currentAttribute:resultAttributeNames){
+            queryCql = queryCql.replace(CypherBuilder.operationResultName+"."+currentAttribute+"",""+CypherBuilder.operationResultName+"."+currentAttribute+" AS "+currentAttribute);
+        }
+        queryCql = queryCql.replace("id("+CypherBuilder.operationResultName+")","id("+CypherBuilder.operationResultName+") AS UID");
 
+        String exportCql = "CALL apoc.export.arrow.query(\""+ arrowFileLocation +"\",\""+queryCql+"\", {})\n"+
+                "        YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data\n" +
+                "        RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data";
+        logger.debug("Generated Cypher Statement: {}", exportCql);
 
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
 
-        return null;
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+
+        try{
+            DataTransformer<Boolean> dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()){
+                        Record operationResultRecord = result.next();
+                        if(operationResultRecord.containsKey("rows")){
+                            long arrowOperationResult = operationResultRecord.get("rows").asLong();
+                            long resultCSVRows = arrowOperationResult / (resultAttributeNames.size()+1);
+                            entitiesOperationStatistics.setSuccessItemsCount(resultCSVRows);
+                        }
+                    }
+                    return true;
+                }
+            };
+            workingGraphOperationExecutor.executeWrite(dataTransformer, exportCql);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        entitiesOperationStatistics.setFinishTime(new Date());
+        entitiesOperationStatistics.setOperationSummary("exportConceptionEntitiesToArrow operation execute finish. conceptionKindName is "
+                +conceptionKindName+", arrowFileLocation is "+arrowFileLocation);
+        return entitiesOperationStatistics;
     }
 
     @Override
@@ -380,6 +417,7 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
                 "        YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data\n" +
                 "        RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data";
         logger.debug("Generated Cypher Statement: {}", exportCql);
+
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
 
         EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
