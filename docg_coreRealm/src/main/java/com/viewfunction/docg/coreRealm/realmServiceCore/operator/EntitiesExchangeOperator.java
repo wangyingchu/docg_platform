@@ -7,7 +7,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperatio
 import java.util.List;
 
 public interface EntitiesExchangeOperator {
-
+    // 不啻微芒，造炬成阳
     /**
      * 输入概念类型名称以及一个 Apache Arrow 格式的数据文件，将数据文件中的概念实体数据导入到概念类型中。数据文件必须由 EntitiesExchangeOperator 中的 exportConceptionEntitiesToArrow 方法生成
      *
