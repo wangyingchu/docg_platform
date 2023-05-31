@@ -37,12 +37,27 @@ public class GetListAttributeSystemInfoTransformer implements DataTransformer<Li
                     if(!nodeRecord.get("existenceConstraint").isNull()){
                         constraintAttribute = nodeRecord.get("existenceConstraint").asBoolean();
                     }
-                    AttributeSystemInfo attributeSystemInfo = new AttributeSystemInfo(attributeName,dataType,usedInIndex,
+                    AttributeSystemInfo attributeSystemInfo = new AttributeSystemInfo(attributeName,getAttributeDataType(dataType),usedInIndex,
                             uniqueAttribute,constraintAttribute);
                     attributeSystemInfoList.add(attributeSystemInfo);
                 }
             }
         }
         return attributeSystemInfoList;
+    }
+
+    private String getAttributeDataType(String dataType){
+        //   BOOLEAN,INT,SHORT,LONG,FLOAT,DOUBLE,TIMESTAMP,DATE,DATETIME,TIME,STRING,BYTE,DECIMAL,
+        //    BOOLEAN_ARRAY,INT_ARRAY,SHORT_ARRAY,LONG_ARRAY,FLOAT_ARRAY,DOUBLE_ARRAY,TIMESTAMP_ARRAY,DATE_ARRAY,DATETIME_ARRAY,TIME_ARRAY,STRING_ARRAY,BYTE_ARRAY,DECIMAL_ARRAY,
+        //    BINARY
+        if(dataType.equals("DATE_TIME")){
+            return "TIMESTAMP";
+        }else if(dataType.equals("LOCAL_DATE_TIME")){
+            return "DATETIME";
+        }else if(dataType.equals("LOCAL_TIME")){
+            return "TIME";
+        }else{
+            return dataType;
+        }
     }
 }
