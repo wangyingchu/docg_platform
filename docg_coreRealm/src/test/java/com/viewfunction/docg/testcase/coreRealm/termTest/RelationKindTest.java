@@ -208,16 +208,15 @@ public class RelationKindTest {
         Assert.assertEquals(targetRelationEntity.getFromConceptionEntityKinds().get(0),testConceptionKindName);
         Assert.assertEquals(targetRelationEntity.getToConceptionEntityKinds().get(0),testConceptionKindName);
 
-
-
         Map<String,Object> kindScopeAttributeMap = new HashMap<>();
         kindScopeAttributeMap.put("dateTypeAttrA",new Date());
+        kindScopeAttributeMap.put("intTypeAttr",1000);
         EntitiesOperationStatistics addAttrResult = _RelationKind01.setKindScopeAttributes(kindScopeAttributeMap);
         Assert.assertEquals(addAttrResult.getSuccessItemsCount(),_RelationKind01.countRelationEntities().longValue());
         String randomEntityId = _RelationKind01.getRandomEntities(1).iterator().next().getRelationEntityUID();
         RelationEntity randomEntity = _RelationKind01.getEntityByUID(randomEntityId);
         Assert.assertNotNull(randomEntity.getAttribute("dateTypeAttrA"));
-
+        Assert.assertEquals(((Long)randomEntity.getAttribute("intTypeAttr").getAttributeValue()).longValue(),1000l);
 
         boolean  deleteSingleEntityResult = _RelationKind01.deleteEntity(relationEntityUIDList.get(0));
         Assert.assertTrue(deleteSingleEntityResult);
@@ -238,15 +237,6 @@ public class RelationKindTest {
         Assert.assertEquals(_RelationKind01.getRelationKindDesc(),"TestRelationKindADesc+中文描述UPD");
         Assert.assertEquals(coreRealm.getRelationKind("RelationKind0001ForTest").getRelationKindDesc(),"TestRelationKindADesc+中文描述UPD");
 
-
-
-
-
-
         coreRealm.closeGlobalSession();
-
-
-
-
     }
 }

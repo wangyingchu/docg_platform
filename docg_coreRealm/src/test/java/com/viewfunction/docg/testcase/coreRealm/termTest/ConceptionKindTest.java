@@ -463,10 +463,12 @@ public class ConceptionKindTest {
 
         Map<String,Object> kindScopeAttributeMap = new HashMap<>();
         kindScopeAttributeMap.put("dateTypeAttr",new Date());
+        kindScopeAttributeMap.put("intTypeAttr",1000);
         EntitiesOperationStatistics addAttrResult = _ConceptionKind01.setKindScopeAttributes(kindScopeAttributeMap);
         Assert.assertEquals(addAttrResult.getSuccessItemsCount(),_ConceptionKind01.countConceptionEntities().longValue());
         String randomEntityId = _ConceptionKind01.getRandomEntities(1).iterator().next().getConceptionEntityUID();
         ConceptionEntity randomEntity = _ConceptionKind01.getEntityByUID(randomEntityId);
         Assert.assertNotNull(randomEntity.getAttribute("dateTypeAttr"));
+        Assert.assertEquals(((Long)randomEntity.getAttribute("intTypeAttr").getAttributeValue()).longValue(),1000l);
     }
 }

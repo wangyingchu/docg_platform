@@ -2905,6 +2905,7 @@ public class CypherBuilder {
                     .returning(Functions2.count(targetRelationship))
                     .build();
             String rel = cypherRenderer.render(statement);
+            rel = rel.replaceAll("sourceNode\\.",operationResultName+"\\.");
             logger.debug("Generated Cypher Statement: {}", rel);
             return rel;
         }else{
