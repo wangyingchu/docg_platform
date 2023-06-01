@@ -10,6 +10,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationStatistics;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntitiesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
@@ -207,6 +208,17 @@ public class RelationKindTest {
         Assert.assertEquals(targetRelationEntity.getFromConceptionEntityKinds().get(0),testConceptionKindName);
         Assert.assertEquals(targetRelationEntity.getToConceptionEntityKinds().get(0),testConceptionKindName);
 
+
+
+        Map<String,Object> kindScopeAttributeMap = new HashMap<>();
+        kindScopeAttributeMap.put("dateTypeAttrA",new Date());
+        EntitiesOperationStatistics addAttrResult = _RelationKind01.setKindScopeAttributes(kindScopeAttributeMap);
+        Assert.assertEquals(addAttrResult.getSuccessItemsCount(),_RelationKind01.countRelationEntities().longValue());
+        String randomEntityId = _RelationKind01.getRandomEntities(1).iterator().next().getRelationEntityUID();
+        RelationEntity randomEntity = _RelationKind01.getEntityByUID(randomEntityId);
+        Assert.assertNotNull(randomEntity.getAttribute("dateTypeAttrA"));
+
+
         boolean  deleteSingleEntityResult = _RelationKind01.deleteEntity(relationEntityUIDList.get(0));
         Assert.assertTrue(deleteSingleEntityResult);
 
@@ -225,6 +237,16 @@ public class RelationKindTest {
         Assert.assertTrue(updateDescResult);
         Assert.assertEquals(_RelationKind01.getRelationKindDesc(),"TestRelationKindADesc+中文描述UPD");
         Assert.assertEquals(coreRealm.getRelationKind("RelationKind0001ForTest").getRelationKindDesc(),"TestRelationKindADesc+中文描述UPD");
+
+
+
+
+
+
         coreRealm.closeGlobalSession();
+
+
+
+
     }
 }

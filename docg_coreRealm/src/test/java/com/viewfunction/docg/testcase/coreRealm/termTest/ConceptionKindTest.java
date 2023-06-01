@@ -460,5 +460,13 @@ public class ConceptionKindTest {
         Assert.assertTrue(updateDescResult);
         Assert.assertEquals(attributeKind02.getAttributeKindDesc(),"attributeKind02DescUPD");
         Assert.assertEquals(coreRealm.getAttributeKind(attributeKind02.getAttributeKindUID()).getAttributeKindDesc(),"attributeKind02DescUPD");
+
+        Map<String,Object> kindScopeAttributeMap = new HashMap<>();
+        kindScopeAttributeMap.put("dateTypeAttr",new Date());
+        EntitiesOperationStatistics addAttrResult = _ConceptionKind01.setKindScopeAttributes(kindScopeAttributeMap);
+        Assert.assertEquals(addAttrResult.getSuccessItemsCount(),_ConceptionKind01.countConceptionEntities().longValue());
+        String randomEntityId = _ConceptionKind01.getRandomEntities(1).iterator().next().getConceptionEntityUID();
+        ConceptionEntity randomEntity = _ConceptionKind01.getEntityByUID(randomEntityId);
+        Assert.assertNotNull(randomEntity.getAttribute("dateTypeAttr"));
     }
 }
