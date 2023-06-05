@@ -240,11 +240,6 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
     }
 
     @Override
-    public EntitiesOperationStatistics importCoreRealmEntitiesFromArrow(String arrowFileLocation) {
-        return null;
-    }
-
-    @Override
     public EntitiesOperationStatistics exportConceptionEntitiesToArrow(String conceptionKindName, QueryParameters queryParameters, String arrowFileLocation) throws CoreRealmServiceEntityExploreException {
         //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.arrow.query/
         if (queryParameters != null) {

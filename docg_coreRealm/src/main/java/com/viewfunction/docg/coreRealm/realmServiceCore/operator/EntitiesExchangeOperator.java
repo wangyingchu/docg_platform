@@ -103,12 +103,4 @@ public interface EntitiesExchangeOperator {
      */
     public EntitiesOperationStatistics exportCoreRealmEntitiesToArrow(String arrowFileLocation);
 
-    /**
-     * 输入一个 Apache Arrow 格式的数据文件，将数据文件中的所有数据导入到领域模型中。数据文件必须由 EntitiesExchangeOperator 中的 exportCoreRealmEntitiesToArrow 方法生成
-     *
-     * @param arrowFileLocation String Apache Arrow 格式的数据文件存储路径
-     *
-     * @return 导入操作的执行结果统计信息
-     */
-    public EntitiesOperationStatistics importCoreRealmEntitiesFromArrow(String arrowFileLocation);
 }
