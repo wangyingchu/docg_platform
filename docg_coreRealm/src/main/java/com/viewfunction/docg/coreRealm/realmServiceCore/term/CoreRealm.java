@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface CoreRealm {
+    /* 不要说我们一无所有，我们要做天下的主人 */
     /**
      * 获取底层图数据库的实现技术，可能的类型有 NEO4J 或 ARCADEDB
      *
