@@ -240,6 +240,84 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
     }
 
     @Override
+    public EntitiesOperationStatistics importRelationEntitiesFromArrow(String relationKindName, String arrowFileLocation) {
+        //https://neo4j.com/docs/apoc/current/overview/apoc.load/apoc.load.arrow/
+        String cql = "CALL apoc.load.arrow(\""+arrowFileLocation+"\",{}) YIELD value\n" +
+                "        UNWIND value.entityRow AS entity\n" +
+                "        WITH apoc.convert.fromJsonMap(entity) AS entityDataMap\n" +
+                "        WITH entityDataMap.start.id AS startUID,entityDataMap.end.id AS endUID,entityDataMap.properties AS edgeProperties\n" +
+                "        MATCH (fromNode) WHERE id(fromNode) = toIntegerOrNull(startUID)\n" +
+                "        MATCH (toNode) WHERE id(toNode) = toIntegerOrNull(endUID)\n" +
+                "        CALL apoc.create.relationship(fromNode, \""+relationKindName+"\", edgeProperties, toNode)\n" +
+                "        YIELD rel\n" +
+                "        RETURN count(rel) AS operationResult";
+        logger.debug("Generated Cypher Statement: {}", cql);
+
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            DataTransformer<Boolean> dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()){
+                        Record operationResultRecord = result.next();
+                        if(operationResultRecord.containsKey("operationResult")){
+                            entitiesOperationStatistics.setSuccessItemsCount(operationResultRecord.get("operationResult").asLong());
+                        }
+                    }
+                    return true;
+                }
+            };
+            workingGraphOperationExecutor.executeWrite(dataTransformer, cql);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        entitiesOperationStatistics.setFinishTime(new Date());
+        entitiesOperationStatistics.setOperationSummary("importRelationEntitiesFromArrow operation execute finish. relationKindName is "
+                +relationKindName+", arrowFileLocation is "+arrowFileLocation);
+        return entitiesOperationStatistics;
+    }
+
+    @Override
+    public EntitiesOperationStatistics exportRelationEntitiesToArrow(String relationKindName, String arrowFileLocation) {
+        //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.arrow.query/
+        String cql = "CALL apoc.export.arrow.query(\""+arrowFileLocation+"\",\"MATCH p=()-[entityRow:"+relationKindName+"]->() RETURN entityRow\",{})\n" +
+                "YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data\n" +
+                "RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data";
+        logger.debug("Generated Cypher Statement: {}", cql);
+
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            DataTransformer<Boolean> dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()){
+                        Record operationResultRecord = result.next();
+                        if(operationResultRecord.containsKey("relationships")){
+                            entitiesOperationStatistics.setSuccessItemsCount(operationResultRecord.get("relationships").asLong());
+                        }
+                    }
+                    return true;
+                }
+            };
+            workingGraphOperationExecutor.executeWrite(dataTransformer, cql);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        entitiesOperationStatistics.setFinishTime(new Date());
+        entitiesOperationStatistics.setOperationSummary("exportRelationEntitiesToArrow operation execute finish. relationKindName is "
+                +relationKindName+", arrowFileLocation is "+arrowFileLocation);
+        return entitiesOperationStatistics;
+    }
+
+    @Override
     public EntitiesOperationStatistics exportConceptionEntitiesToArrow(String conceptionKindName, QueryParameters queryParameters, String arrowFileLocation) throws CoreRealmServiceEntityExploreException {
         //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.arrow.query/
         if (queryParameters != null) {

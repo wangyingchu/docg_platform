@@ -103,4 +103,23 @@ public interface EntitiesExchangeOperator {
      */
     public EntitiesOperationStatistics exportCoreRealmEntitiesToArrow(String arrowFileLocation);
 
+    /**
+     * 输入关系类型名称以及一个 Apache Arrow 格式的数据文件，将数据文件中的关系实体数据导入到关系类型中。数据文件必须由 EntitiesExchangeOperator 中的 exportRelationEntitiesToArrow 方法生成
+     *
+     * @param relationKindName String 关系类型名称
+     * @param arrowFileLocation String Apache Arrow 格式的数据文件存储路径
+     *
+     * @return 导入操作的执行结果统计信息
+     */
+    public EntitiesOperationStatistics importRelationEntitiesFromArrow(String relationKindName, String arrowFileLocation);
+
+    /**
+     * 输入关系类型名称以及一个 Apache Arrow 格式的数据文件存储路径，将关系类型的所有实体数据导出到数据文件中
+     *
+     * @param relationKindName String 关系类型名称
+     * @param arrowFileLocation String Apache Arrow 格式的数据文件存储路径
+     *
+     * @return 导出操作的执行结果统计信息
+     */
+    public EntitiesOperationStatistics exportRelationEntitiesToArrow(String relationKindName,String arrowFileLocation);
 }
