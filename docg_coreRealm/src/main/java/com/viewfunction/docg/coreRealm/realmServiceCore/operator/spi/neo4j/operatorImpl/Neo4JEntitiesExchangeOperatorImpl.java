@@ -318,6 +318,48 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
     }
 
     @Override
+    public EntitiesOperationStatistics importRelationEntitiesFromCSV(String relationKindName, String csvFileLocation) {
+        return null;
+    }
+
+    @Override
+    public EntitiesOperationStatistics exportRelationEntitiesToCSV(String relationKindName, String csvFileLocation) {
+        //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.csv.data/
+        String cql ="MATCH p=()-[entityRow:`"+relationKindName+"`]->()\n"+
+                "WITH collect(entityRow) AS relationEntity\n"+
+                "CALL apoc.export.csv.data([],relationEntity, \""+csvFileLocation+"\", {})\n" +
+                "YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data\n" +
+                "RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data";
+        logger.debug("Generated Cypher Statement: {}", cql);
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            DataTransformer<Boolean> dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()){
+                        Record operationResultRecord = result.next();
+                        if(operationResultRecord.containsKey("relationships")){
+                            entitiesOperationStatistics.setSuccessItemsCount(operationResultRecord.get("relationships").asLong());
+                        }
+                    }
+                    return true;
+                }
+            };
+            workingGraphOperationExecutor.executeWrite(dataTransformer, cql);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        entitiesOperationStatistics.setFinishTime(new Date());
+        entitiesOperationStatistics.setOperationSummary("exportRelationEntitiesToCSV operation execute finish. relationKindName is "
+                +relationKindName+", csvFileLocation is "+csvFileLocation);
+        return entitiesOperationStatistics;
+    }
+
+    @Override
     public EntitiesOperationStatistics exportConceptionEntitiesToArrow(String conceptionKindName, QueryParameters queryParameters, String arrowFileLocation) throws CoreRealmServiceEntityExploreException {
         //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.arrow.query/
         if (queryParameters != null) {
