@@ -319,7 +319,42 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
 
     @Override
     public EntitiesOperationStatistics importRelationEntitiesFromCSV(String relationKindName, String csvFileLocation) {
-        return null;
+        //https://neo4j.com/labs/apoc/5/import/load-csv/
+        String cql = "CALL apoc.load.csv('file:"+csvFileLocation+"') YIELD map AS entityDataMap\n" +
+                "WITH entityDataMap._start AS startUID, entityDataMap._end AS endUID, entityDataMap AS edgeProperties\n" +
+                "MATCH (fromNode) WHERE id(fromNode) = toIntegerOrNull(startUID)\n" +
+                "MATCH (toNode) WHERE id(toNode) = toIntegerOrNull(endUID)\n" +
+                "CALL apoc.create.relationship(fromNode, \""+relationKindName+"\", edgeProperties, toNode)\n" +
+                "YIELD rel\n" +
+                "RETURN count(rel) AS operationResult;\n";
+        logger.debug("Generated Cypher Statement: {}", cql);
+
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            DataTransformer<Boolean> dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()){
+                        Record operationResultRecord = result.next();
+                        if(operationResultRecord.containsKey("operationResult")){
+                            entitiesOperationStatistics.setSuccessItemsCount(operationResultRecord.get("operationResult").asLong());
+                        }
+                    }
+                    return true;
+                }
+            };
+            workingGraphOperationExecutor.executeWrite(dataTransformer, cql);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        entitiesOperationStatistics.setFinishTime(new Date());
+        entitiesOperationStatistics.setOperationSummary("importRelationEntitiesFromCSV operation execute finish. relationKindName is "
+                +relationKindName+", csvFileLocation is "+csvFileLocation);
+        return entitiesOperationStatistics;
     }
 
     @Override
