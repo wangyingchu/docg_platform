@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperator {
 
@@ -319,6 +320,8 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
 
     @Override
     public EntitiesOperationStatistics importRelationEntitiesFromCSV(String relationKindName, String csvFileLocation) {
+        TimeZone timeZone = TimeZone.getDefault();
+        String timeZoneID = timeZone.getID();
         //https://neo4j.com/labs/apoc/5/import/load-csv/
         String cql = "CALL apoc.load.csv('file:"+csvFileLocation+"') YIELD map AS entityDataMap\n" +
                 "WITH entityDataMap._start AS startUID, entityDataMap._end AS endUID, entityDataMap AS edgeProperties\n" +
@@ -326,6 +329,8 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
                 "MATCH (toNode) WHERE id(toNode) = toIntegerOrNull(endUID)\n" +
                 "CALL apoc.create.relationship(fromNode, \""+relationKindName+"\", edgeProperties, toNode)\n" +
                 "YIELD rel\n" +
+                "REMOVE rel._start,rel._end,rel._id,rel._labels,rel._type\n" +
+                "SET rel.lastModifyDate = datetime({timezone: '"+timeZoneID+"'})\n" +
                 "RETURN count(rel) AS operationResult;\n";
         logger.debug("Generated Cypher Statement: {}", cql);
 
