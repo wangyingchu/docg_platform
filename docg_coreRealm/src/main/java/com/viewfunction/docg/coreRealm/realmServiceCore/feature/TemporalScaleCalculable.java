@@ -49,5 +49,9 @@ public interface TemporalScaleCalculable {
         public static TemporalValueFormat fromValueFormatString(String valueFormatString) {
             return nameToValueMap.get(valueFormatString);
         }
+
+        public String toString() {
+            return this.valueFormatString;
+        }
     }
 }
