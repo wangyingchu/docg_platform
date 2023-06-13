@@ -5,10 +5,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryPara
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationAttachable;
-import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaAttributeFeatureSupportable;
-import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaConfigItemFeatureSupportable;
-import com.viewfunction.docg.coreRealm.realmServiceCore.feature.StatisticalAndEvaluable;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 
@@ -396,4 +393,16 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      * @return 操作执行状况的统计结果
      */
     public EntitiesOperationStatistics convertEntityAttributeToStringType(String attributeName);
+
+    /**
+     * 将当前概念类型的所有概念实体中指定的属性的 String 数据类型的表达转换为 Temporal 时间类类型
+     *
+     * @param attributeName String 需要转换的属性名称
+     * @param temporalValueFormat TemporalValueFormat 需要转换的属性的时间类型数据格式
+     * @param temporalScaleType TemporalScaleLevel 需要转换为的时间类类型
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics convertEntityAttributeToTemporalType(String attributeName,
+                                TemporalScaleCalculable.TemporalValueFormat temporalValueFormat, TemporalScaleCalculable.TemporalScaleLevel temporalScaleType) throws CoreRealmServiceRuntimeException;
 }

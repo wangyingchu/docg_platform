@@ -7,6 +7,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filtering
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.TemporalScaleCalculable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
@@ -1213,6 +1214,18 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         entitiesOperationStatistics.setSuccessItemsCount(operationEntitiesCount);
         entitiesOperationStatistics.setOperationSummary("convertEntityAttributeToStringType operation success");
         return entitiesOperationStatistics;
+    }
+
+    @Override
+    public EntitiesOperationStatistics convertEntityAttributeToTemporalType(String attributeName,
+                             TemporalScaleCalculable.TemporalValueFormat temporalValueFormat,TemporalScaleCalculable.TemporalScaleLevel temporalScaleType)
+            throws CoreRealmServiceRuntimeException{
+
+
+
+
+
+        return null;
     }
 
     private long executeEntitiesOperationWithCountResponse(String cql){
