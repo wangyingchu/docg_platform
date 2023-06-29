@@ -4716,11 +4716,6 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
 
 ```java
     /**
-     * 搜索索引创建算法
-     */
-    public enum SearchIndexType {BTREE, FULLTEXT, LOOKUP}
-
-    /**
      * 查询并返回当前领域模型所属数据服务系统的事实数据状态快照信息
      *
      * @return 数据状态实时快照信息
@@ -4770,25 +4765,23 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * 在当前领域模型中创建针对概念类型的搜索索引
      *
      *  @param indexName String 搜索索引名称
-     *  @param indexType SearchIndexType 搜索索引算法类型
      *  @param conceptionKindName String 搜索概念类型名称
      *  @param indexAttributeNames Set<String> 索引包含的数据属性集合
      *
      * @return 如创建索引成功返回 true
      */
-    public boolean createConceptionKindSearchIndex(String indexName, SearchIndexType indexType, String conceptionKindName, Set<String> indexAttributeNames) throws CoreRealmServiceRuntimeException;
+    public boolean createConceptionKindSearchIndex(String indexName, String conceptionKindName, Set<String> indexAttributeNames) throws CoreRealmServiceRuntimeException;
 
     /**
      * 在当前领域模型中创建针对关系类型的搜索索引
      *
      *  @param indexName String 搜索索引名称
-     *  @param indexType SearchIndexType 搜索索引算法类型
      *  @param relationKindName String 搜索关系类型名称
      *  @param indexAttributeNames Set<String> 索引包含的数据属性集合
      *
      * @return 如创建索引成功返回 true
      */
-    public boolean createRelationKindSearchIndex(String indexName, SearchIndexType indexType, String relationKindName, Set<String> indexAttributeNames) throws CoreRealmServiceRuntimeException;
+    public boolean createRelationKindSearchIndex(String indexName, String relationKindName, Set<String> indexAttributeNames) throws CoreRealmServiceRuntimeException;
 
     /**
      * 显示当前领域模型中的所有概念类型搜索索引

@@ -336,7 +336,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
     }
 
     @Override
-    public boolean createConceptionKindSearchIndex(String indexName, SearchIndexType indexType, String conceptionKindName, Set<String> indexAttributeNames) throws CoreRealmServiceRuntimeException {
+    public boolean createConceptionKindSearchIndex(String indexName, String conceptionKindName, Set<String> indexAttributeNames) throws CoreRealmServiceRuntimeException {
         /*
         https://neo4j.com/docs/cypher-manual/4.3/indexes-for-search-performance/
         */
@@ -368,9 +368,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
             throw e;
         }
         String searchIndexType = "";
-        if(indexType != null){
-            searchIndexType = "" + indexType;
-        }
+
         Iterator<String> nameIterator = indexAttributeNames.iterator();
         String attributeDefineString = "";
         while(nameIterator.hasNext()){
@@ -403,7 +401,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
     }
 
     @Override
-    public boolean createRelationKindSearchIndex(String indexName, SearchIndexType indexType, String relationKindName, Set<String> indexAttributeNames) throws CoreRealmServiceRuntimeException{
+    public boolean createRelationKindSearchIndex(String indexName, String relationKindName, Set<String> indexAttributeNames) throws CoreRealmServiceRuntimeException{
         /*
         https://neo4j.com/docs/cypher-manual/4.3/indexes-for-search-performance/
         */
@@ -435,9 +433,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
             throw e;
         }
         String searchIndexType = "";
-        if(indexType != null){
-            searchIndexType = "" + indexType;
-        }
+
         Iterator<String> nameIterator = indexAttributeNames.iterator();
         String attributeDefineString = "";
         while(nameIterator.hasNext()){
