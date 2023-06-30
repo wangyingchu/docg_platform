@@ -338,7 +338,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
     @Override
     public boolean createConceptionKindSearchIndex(String indexName, String conceptionKindName, Set<String> indexAttributeNames) throws CoreRealmServiceRuntimeException {
         /*
-        https://neo4j.com/docs/cypher-manual/4.3/indexes-for-search-performance/
+        https://neo4j.com/docs/cypher-manual/current/indexes-for-search-performance/
         */
         if(indexName == null){
             logger.error("Index Name is required");
@@ -403,7 +403,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
     @Override
     public boolean createRelationKindSearchIndex(String indexName, String relationKindName, Set<String> indexAttributeNames) throws CoreRealmServiceRuntimeException{
         /*
-        https://neo4j.com/docs/cypher-manual/4.3/indexes-for-search-performance/
+        https://neo4j.com/docs/cypher-manual/current/indexes-for-search-performance/
         */
         if(indexName == null){
             logger.error("Index Name is required");
@@ -443,7 +443,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
             }
         }
 
-        String cypherProcedureString = "CREATE "+searchIndexType+" INDEX "+indexName+" FOR ()-[r:"+relationKindName+"]-() ON ("+attributeDefineString+")";
+        String cypherProcedureString = "CREATE "+searchIndexType+" INDEX "+indexName+" IF NOT EXISTS FOR ()-[r:"+relationKindName+"]-() ON ("+attributeDefineString+")";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
