@@ -372,7 +372,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         Iterator<String> nameIterator = indexAttributeNames.iterator();
         String attributeDefineString = "";
         while(nameIterator.hasNext()){
-            attributeDefineString = attributeDefineString+"n."+nameIterator.next();
+            attributeDefineString = attributeDefineString+"n."+"`"+nameIterator.next()+"`";
             if(nameIterator.hasNext()){
                 attributeDefineString = attributeDefineString+",";
             }
@@ -437,7 +437,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         Iterator<String> nameIterator = indexAttributeNames.iterator();
         String attributeDefineString = "";
         while(nameIterator.hasNext()){
-            attributeDefineString = attributeDefineString+"r."+nameIterator.next();
+            attributeDefineString = attributeDefineString+"r."+ "`"+nameIterator.next()+"`";
             if(nameIterator.hasNext()){
                 attributeDefineString = attributeDefineString+",";
             }
