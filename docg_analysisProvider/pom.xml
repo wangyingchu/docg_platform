@@ -12,6 +12,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <spark.version>3.4.1</spark.version>
+        <flink.version>1.17.1</flink.version>
         <datasyslab.geotools.version>geotools-24.1</datasyslab.geotools.version>
         <geotools.version>26.4</geotools.version>
         <sedona.version>1.4.1</sedona.version>
@@ -162,6 +163,26 @@
             <groupId>org.geotools</groupId>
             <artifactId>gt-epsg-extension</artifactId>
             <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-java</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-streaming-java</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-clients</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-runtime-web</artifactId>
+            <version>${flink.version}</version>
         </dependency>
 
         <dependency>
