@@ -499,7 +499,7 @@ public interface CoreRealm {
      *
      * @return 当前领域的全部属性类型元数据信息列表
      */
-    public List<KindMetaInfo> getAttributeKindsMetaInfo() throws CoreRealmServiceEntityExploreException;
+    public List<AttributeKindMetaInfo> getAttributeKindsMetaInfo() throws CoreRealmServiceEntityExploreException;
 
     /**
      * 获取当前领域的全部属性视图类型元数据信息

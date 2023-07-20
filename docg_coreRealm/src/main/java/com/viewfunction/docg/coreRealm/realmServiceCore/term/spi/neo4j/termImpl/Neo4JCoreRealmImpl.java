@@ -1366,8 +1366,43 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
-    public List<KindMetaInfo> getAttributeKindsMetaInfo() throws CoreRealmServiceEntityExploreException{
-        return getKindsMetaInfo(RealmConstant.AttributeKindClass);
+    public List<AttributeKindMetaInfo> getAttributeKindsMetaInfo() throws CoreRealmServiceEntityExploreException{
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            List<String> attributesNameList = new ArrayList<>();
+            attributesNameList.add(RealmConstant._NameProperty);
+            attributesNameList.add(RealmConstant._DescProperty);
+            attributesNameList.add(RealmConstant._createDateProperty);
+            attributesNameList.add(RealmConstant._lastModifyDateProperty);
+            attributesNameList.add(RealmConstant._creatorIdProperty);
+            attributesNameList.add(RealmConstant._dataOriginProperty);
+            attributesNameList.add(RealmConstant._attributeDataType);
+            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(RealmConstant.AttributeKindClass,null,attributesNameList);
+            DataTransformer dataTransformer = new DataTransformer<List<AttributeKindMetaInfo>>() {
+                @Override
+                public List<AttributeKindMetaInfo> transformResult(Result result) {
+                    List<AttributeKindMetaInfo> resultKindMetaInfoList = new ArrayList<>();
+                    while(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        String kindName = nodeRecord.get(CypherBuilder.operationResultName+"."+ RealmConstant._NameProperty).asString();
+                        String kindDesc = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._DescProperty).asString();
+                        ZonedDateTime createDate = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._createDateProperty).asZonedDateTime();
+                        ZonedDateTime lastModifyDate = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._lastModifyDateProperty).asZonedDateTime();
+                        String dataOrigin = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._dataOriginProperty).asString();
+                        long KindUID = nodeRecord.get("id("+CypherBuilder.operationResultName+")").asLong();
+                        String creatorId = nodeRecord.containsKey(CypherBuilder.operationResultName+"."+RealmConstant._creatorIdProperty) ?
+                                nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._creatorIdProperty).asString():null;
+                        String attributeDataType = nodeRecord.get(CypherBuilder.operationResultName+"."+ RealmConstant._attributeDataType).asString();
+                        resultKindMetaInfoList.add(new AttributeKindMetaInfo(kindName,kindDesc,""+KindUID,attributeDataType,createDate,lastModifyDate,creatorId,dataOrigin));
+                    }
+                    return resultKindMetaInfoList;
+                }
+            };
+            Object kindMetaInfoListRes = workingGraphOperationExecutor.executeRead(dataTransformer,queryCql);
+            return kindMetaInfoListRes != null ? (List<AttributeKindMetaInfo>) kindMetaInfoListRes : null;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override

@@ -296,7 +296,7 @@ public class NebulaGraphCoreRealmImpl implements NebulaGraphCoreRealm {
     }
 
     @Override
-    public List<KindMetaInfo> getAttributeKindsMetaInfo() throws CoreRealmServiceEntityExploreException {
+    public List<AttributeKindMetaInfo> getAttributeKindsMetaInfo() throws CoreRealmServiceEntityExploreException {
         return null;
     }
 

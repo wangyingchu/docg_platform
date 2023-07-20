@@ -541,7 +541,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @return 当前领域的全部属性类型元数据信息列表
      */
-    public List<KindMetaInfo> getAttributeKindsMetaInfo();
+    public List<AttributeKindMetaInfo> getAttributeKindsMetaInfo();
 
     /**
      * 获取当前领域的全部属性视图类型元数据信息

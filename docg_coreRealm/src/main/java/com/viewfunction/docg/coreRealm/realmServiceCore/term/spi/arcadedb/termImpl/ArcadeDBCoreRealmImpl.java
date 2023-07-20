@@ -335,7 +335,7 @@ public class ArcadeDBCoreRealmImpl implements ArcadeDBCoreRealm {
     }
 
     @Override
-    public List<KindMetaInfo> getAttributeKindsMetaInfo() throws CoreRealmServiceEntityExploreException {
+    public List<AttributeKindMetaInfo> getAttributeKindsMetaInfo() throws CoreRealmServiceEntityExploreException {
         return null;
     }
 

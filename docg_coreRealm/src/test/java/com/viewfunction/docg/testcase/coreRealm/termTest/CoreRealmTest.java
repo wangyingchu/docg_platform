@@ -3,6 +3,7 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeKindMetaInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionKindCorrelationInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntityStatisticsInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.KindMetaInfo;
@@ -415,16 +416,18 @@ public class CoreRealmTest {
         Assert.assertNotNull(correlationInfo);
 
         List<KindMetaInfo> kindMetaInfoList = coreRealm.getConceptionKindsMetaInfo();
-        Assert.assertNotNull(statisticsInfosList);
-        Assert.assertTrue(statisticsInfosList.size()>0);
+        Assert.assertNotNull(kindMetaInfoList);
+        Assert.assertTrue(kindMetaInfoList.size()>0);
         kindMetaInfoList = coreRealm.getRelationKindsMetaInfo();
-        Assert.assertNotNull(statisticsInfosList);
-        Assert.assertTrue(statisticsInfosList.size()>0);
-        kindMetaInfoList = coreRealm.getAttributeKindsMetaInfo();
-        Assert.assertNotNull(statisticsInfosList);
-        Assert.assertTrue(statisticsInfosList.size()>0);
+        Assert.assertNotNull(kindMetaInfoList);
+        Assert.assertTrue(kindMetaInfoList.size()>0);
+
         kindMetaInfoList = coreRealm.getAttributesViewKindsMetaInfo();
-        Assert.assertNotNull(statisticsInfosList);
-        Assert.assertTrue(statisticsInfosList.size()>0);
+        Assert.assertNotNull(kindMetaInfoList);
+        Assert.assertTrue(kindMetaInfoList.size()>0);
+
+        List<AttributeKindMetaInfo> attributeKindMetaInfoList = coreRealm.getAttributeKindsMetaInfo();
+        Assert.assertNotNull(attributeKindMetaInfoList);
+        Assert.assertTrue(attributeKindMetaInfoList.size()>0);
     }
 }
