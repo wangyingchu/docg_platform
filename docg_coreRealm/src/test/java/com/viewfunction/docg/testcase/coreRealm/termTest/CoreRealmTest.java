@@ -7,6 +7,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeKindMet
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionKindCorrelationInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntityStatisticsInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.KindMetaInfo;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.AttributesViewKindMetaInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeFlowImpl;
@@ -422,9 +423,9 @@ public class CoreRealmTest {
         Assert.assertNotNull(kindMetaInfoList);
         Assert.assertTrue(kindMetaInfoList.size()>0);
 
-        kindMetaInfoList = coreRealm.getAttributesViewKindsMetaInfo();
-        Assert.assertNotNull(kindMetaInfoList);
-        Assert.assertTrue(kindMetaInfoList.size()>0);
+        List<AttributesViewKindMetaInfo> attributesViewKindMetaInfoList = coreRealm.getAttributesViewKindsMetaInfo();
+        Assert.assertNotNull(attributesViewKindMetaInfoList);
+        Assert.assertTrue(attributesViewKindMetaInfoList.size()>0);
 
         List<AttributeKindMetaInfo> attributeKindMetaInfoList = coreRealm.getAttributeKindsMetaInfo();
         Assert.assertNotNull(attributeKindMetaInfoList);

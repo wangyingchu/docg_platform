@@ -19,6 +19,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.opera
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl.Neo4JEntitiesExchangeOperatorImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl.Neo4JSystemMaintenanceOperatorImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.AttributesViewKindMetaInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JCoreRealm;
@@ -1406,8 +1407,43 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
-    public List<KindMetaInfo> getAttributesViewKindsMetaInfo() throws CoreRealmServiceEntityExploreException{
-        return getKindsMetaInfo(RealmConstant.AttributesViewKindClass);
+    public List<AttributesViewKindMetaInfo> getAttributesViewKindsMetaInfo() throws CoreRealmServiceEntityExploreException{
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            List<String> attributesNameList = new ArrayList<>();
+            attributesNameList.add(RealmConstant._NameProperty);
+            attributesNameList.add(RealmConstant._DescProperty);
+            attributesNameList.add(RealmConstant._createDateProperty);
+            attributesNameList.add(RealmConstant._lastModifyDateProperty);
+            attributesNameList.add(RealmConstant._creatorIdProperty);
+            attributesNameList.add(RealmConstant._dataOriginProperty);
+            attributesNameList.add(RealmConstant._viewKindDataForm);
+            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(RealmConstant.AttributesViewKindClass,null,attributesNameList);
+            DataTransformer dataTransformer = new DataTransformer<List<AttributesViewKindMetaInfo>>() {
+                @Override
+                public List<AttributesViewKindMetaInfo> transformResult(Result result) {
+                    List<AttributesViewKindMetaInfo> resultKindMetaInfoList = new ArrayList<>();
+                    while(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        String kindName = nodeRecord.get(CypherBuilder.operationResultName+"."+ RealmConstant._NameProperty).asString();
+                        String kindDesc = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._DescProperty).asString();
+                        ZonedDateTime createDate = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._createDateProperty).asZonedDateTime();
+                        ZonedDateTime lastModifyDate = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._lastModifyDateProperty).asZonedDateTime();
+                        String dataOrigin = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._dataOriginProperty).asString();
+                        long KindUID = nodeRecord.get("id("+CypherBuilder.operationResultName+")").asLong();
+                        String creatorId = nodeRecord.containsKey(CypherBuilder.operationResultName+"."+RealmConstant._creatorIdProperty) ?
+                                nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._creatorIdProperty).asString():null;
+                        String viewKindDataForm = nodeRecord.get(CypherBuilder.operationResultName+"."+ RealmConstant._viewKindDataForm).asString();
+                        resultKindMetaInfoList.add(new AttributesViewKindMetaInfo(kindName,kindDesc,""+KindUID,viewKindDataForm,createDate,lastModifyDate,creatorId,dataOrigin));
+                    }
+                    return resultKindMetaInfoList;
+                }
+            };
+            Object kindMetaInfoListRes = workingGraphOperationExecutor.executeRead(dataTransformer,queryCql);
+            return kindMetaInfoListRes != null ? (List<AttributesViewKindMetaInfo>) kindMetaInfoListRes : null;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
