@@ -13,7 +13,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import java.util.List;
 
 public interface CrossKindDataOperator {
-
+    //像花虽未红 如冰虽不冻 却像有无数说话 可惜我听不懂
+    //是杯酒渐浓 或我心真空 何以感震动
     /**
      * 基于图网络拓扑的相关性计算算法
      * AdamicAdar : Adamic Adar算法。
