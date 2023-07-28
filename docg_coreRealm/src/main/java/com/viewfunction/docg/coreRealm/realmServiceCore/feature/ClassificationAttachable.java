@@ -9,6 +9,10 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import java.util.List;
 
 public interface ClassificationAttachable {
+    //someone who ....
+    //sees like a child, gives like a saint, feels like an angel, never mind the broken wings
+    //and speaks like a picture, cries like the rain, shines like the star, as long as the fire remains
+
     /**
      * 将当前对象关联到指定的分类上
      *
