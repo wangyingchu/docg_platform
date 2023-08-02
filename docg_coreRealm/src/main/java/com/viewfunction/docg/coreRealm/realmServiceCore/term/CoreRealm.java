@@ -8,7 +8,6 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.operator.DataScienceOper
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.EntitiesExchangeOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.SystemMaintenanceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.AttributesViewKindMetaInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 
 import java.util.List;

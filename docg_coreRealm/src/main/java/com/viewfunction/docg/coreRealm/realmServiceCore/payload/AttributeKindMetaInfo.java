@@ -55,4 +55,36 @@ public class AttributeKindMetaInfo{
     public String getAttributeDataType() {
         return attributeDataType;
     }
+
+    public void setKindName(String kindName) {
+        this.kindName = kindName;
+    }
+
+    public void setKindDesc(String kindDesc) {
+        this.kindDesc = kindDesc;
+    }
+
+    public void setKindUID(String kindUID) {
+        this.kindUID = kindUID;
+    }
+
+    public void setCreateDate(ZonedDateTime createDate) {
+        this.createDate = createDate;
+    }
+
+    public void setLastModifyDate(ZonedDateTime lastModifyDate) {
+        this.lastModifyDate = lastModifyDate;
+    }
+
+    public void setCreatorId(String creatorId) {
+        this.creatorId = creatorId;
+    }
+
+    public void setDataOrigin(String dataOrigin) {
+        this.dataOrigin = dataOrigin;
+    }
+
+    public void setAttributeDataType(String attributeDataType) {
+        this.attributeDataType = attributeDataType;
+    }
 }

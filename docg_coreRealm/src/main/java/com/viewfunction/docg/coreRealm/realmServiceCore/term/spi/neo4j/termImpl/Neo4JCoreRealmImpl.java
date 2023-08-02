@@ -19,7 +19,6 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.opera
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl.Neo4JEntitiesExchangeOperatorImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl.Neo4JSystemMaintenanceOperatorImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.AttributesViewKindMetaInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JCoreRealm;

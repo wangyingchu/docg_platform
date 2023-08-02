@@ -1,4 +1,4 @@
-package com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl;
+package com.viewfunction.docg.coreRealm.realmServiceCore.payload;
 
 import java.time.ZonedDateTime;
 

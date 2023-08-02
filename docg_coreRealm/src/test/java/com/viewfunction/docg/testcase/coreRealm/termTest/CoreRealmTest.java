@@ -7,7 +7,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeKindMet
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionKindCorrelationInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntityStatisticsInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.KindMetaInfo;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.AttributesViewKindMetaInfo;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributesViewKindMetaInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeFlowImpl;
