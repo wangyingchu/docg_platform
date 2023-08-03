@@ -18,9 +18,8 @@ import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 public class Neo4JAttributesViewKindImpl implements Neo4JAttributesViewKind {
 
@@ -249,6 +248,40 @@ public class Neo4JAttributesViewKindImpl implements Neo4JAttributesViewKind {
     }
 
     @Override
+    public Map<String, Object> getAttributeKindAllAttachMetaInfo(String attributeKindUID) {
+        if(attributeKindUID == null){
+            return null;
+        }
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryRelationCql = CypherBuilder.matchRelationshipsByBothNodesId(Long.parseLong(this.attributesViewKindUID),Long.parseLong(attributeKindUID),RealmConstant.AttributesViewKind_AttributeKindRelationClass);
+            DataTransformer queryRelationDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        if(nodeRecord != null){
+                            Relationship resultRelationship = nodeRecord.get(CypherBuilder.operationResultName).asRelationship();
+                            return resultRelationship.asMap();
+                        }
+                    }
+                    return null;
+                }
+            };
+            Map<String,Object> resultRes = (Map<String,Object>)workingGraphOperationExecutor.executeRead(queryRelationDataTransformer,queryRelationCql);
+            Map<String,Object> resultMap =new HashMap<>();
+            resultMap.putAll(reformatConfigItems(resultRes));
+            resultMap.remove(RealmConstant._dataOriginProperty);
+            resultMap.remove(RealmConstant._createDateProperty);
+            resultMap.remove(RealmConstant._lastModifyDateProperty);
+            resultMap.remove(RealmConstant._creatorIdProperty);
+            return resultMap;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
     public boolean detachAttributeKind(String attributeKindUID) throws CoreRealmServiceRuntimeException{
         if(attributeKindUID == null){
             return false;
@@ -328,6 +361,25 @@ public class Neo4JAttributesViewKindImpl implements Neo4JAttributesViewKind {
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
+    }
+
+    private Map<String,Object> reformatConfigItems(Map<String,Object> orgValueMap){
+        Map<String,Object> resultMap = new HashMap<>();
+        if(orgValueMap != null){
+            Iterator<String> keyItor = orgValueMap.keySet().iterator();
+            while(keyItor.hasNext()){
+                String key = keyItor.next();
+                Object value = orgValueMap.get(key);
+                if(value instanceof ZonedDateTime){
+                    ZonedDateTime currentZonedDateTime = (ZonedDateTime)value;
+                    Date currentDate = Date.from(currentZonedDateTime.toInstant());
+                    resultMap.put(key,currentDate);
+                }else{
+                    resultMap.put(key,value);
+                }
+            }
+        }
+        return resultMap;
     }
 
     @Override

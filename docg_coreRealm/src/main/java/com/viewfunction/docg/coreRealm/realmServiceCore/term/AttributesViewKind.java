@@ -121,6 +121,15 @@ public interface AttributesViewKind extends MetaConfigItemFeatureSupportable, Me
     public Object getAttributeKindAttachMetaInfo(String attributeKindUID,String metaPropertyName);
 
     /**
+     * 获取当前属性视图类型中包含的某一特定属性类型的全部元数据属性信息
+     *
+     * @param attributeKindUID String 需要获取的属性类型唯一ID
+     *
+     * @return 查询结果 Map，其中 Key 为元数据属性的属性名称，Value 为该元数据属性的属性值
+     */
+    public Map<String,Object> getAttributeKindAllAttachMetaInfo(String attributeKindUID);
+
+    /**
      * 从当前属性视图类型上移除已附加的属性类型链接
      *
      * @param attributeKindUID String 需要移除链接的属性类型唯一ID

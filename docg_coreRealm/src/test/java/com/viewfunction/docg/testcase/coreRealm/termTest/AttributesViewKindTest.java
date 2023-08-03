@@ -202,6 +202,13 @@ public class AttributesViewKindTest {
         Assert.assertEquals(metaInfoMap.get(attributeKind02.getAttributeKindUID()),1l);
         Assert.assertEquals(metaInfoMap.get(attributeKind03.getAttributeKindUID()),2l);
 
+        Map<String,Object> metaInfoMap2 = targetAttributesViewKind.getAttributeKindAllAttachMetaInfo(attributeKind02.getAttributeKindUID());
+        Assert.assertNotNull(metaInfoMap2);
+        Assert.assertEquals(metaInfoMap2.size(),3);
+        Assert.assertNotNull(metaInfoMap2.get("attr03"));
+        Assert.assertNotNull(metaInfoMap2.get("attr02"));
+        Assert.assertNotNull(metaInfoMap2.get("attr01"));
+
         Assert.assertEquals(targetAttributesViewKind.getAttributesViewKindDesc(),"targetAttributesViewKindADesc");
         boolean updateDescResult = targetAttributesViewKind.updateAttributesViewKindDesc("targetAttributesViewKindADescUPD");
         Assert.assertTrue(updateDescResult);
