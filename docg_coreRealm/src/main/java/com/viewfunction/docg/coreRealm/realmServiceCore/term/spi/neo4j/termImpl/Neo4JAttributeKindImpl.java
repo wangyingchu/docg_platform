@@ -96,6 +96,18 @@ public class Neo4JAttributeKindImpl implements Neo4JAttributeKind {
         }
     }
 
+    @Override
+    public Map<String, Long> getAttributeInConceptionKindDistributionStatistics() {
+        /*
+        MATCH (n:CPC_Member) WHERE (n.ADMINI_LEVEL) IS NOT NULL
+        RETURN count(n)
+        UNION
+        MATCH (n:Company) WHERE (n.ADMINI_LEVEL) IS NOT NULL
+        RETURN count(n)
+        */
+        return null;
+    }
+
     //internal graphOperationExecutor management logic
     private GraphOperationExecutorHelper graphOperationExecutorHelper;
 

@@ -5,6 +5,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaAttributeFea
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaConfigItemFeatureSupportable;
 
 import java.util.List;
+import java.util.Map;
 
 public interface AttributeKind extends MetaConfigItemFeatureSupportable, MetaAttributeFeatureSupportable, ClassificationAttachable {
     /**
@@ -52,4 +53,10 @@ public interface AttributeKind extends MetaConfigItemFeatureSupportable, MetaAtt
      * @return 属性视图类型对象列表
      */
     public List<AttributesViewKind> getContainerAttributesViewKinds();
+
+    /**
+     * 获取实体对象中拥有当前属性类型定义的属性值的概念类型实体数量。返回值中包含的目标概念类型与当前属性类型通过两者间共同联系的 AttributesViewKind 属性视图类型确定
+     * @return 符合条件的概念实体数量统计结果 Map。其中 Key为概念类型名称，Value为符合条件的概念实体数量
+     */
+    public Map<String,Long> getAttributeInConceptionKindDistributionStatistics();
 }
