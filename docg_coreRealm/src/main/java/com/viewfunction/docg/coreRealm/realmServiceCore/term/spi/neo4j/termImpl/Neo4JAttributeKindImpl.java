@@ -4,12 +4,14 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBui
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListAttributesViewKindTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionKindTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleAttributeValueTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JAttributeKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
@@ -178,6 +180,28 @@ public class Neo4JAttributeKindImpl implements Neo4JAttributeKind {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
         return null;
+    }
+
+    @Override
+    public List<ConceptionKind> getContainerConceptionKinds() {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            /*
+            "MATCH (attributeKind:DOCG_AttributeKind)<-[DOCG_ViewContainsAttributeKindIs]- " +
+            "(attributesViewKind:DOCG_AttributesViewKind)<-[DOCG_ConceptionContainsViewKindIs]-(conceptionKind:DOCG_ConceptionKind) " +
+            "WHERE id(attributeKind) = 40710969 RETURN DISTINCT conceptionKind as operationResult LIMIT 1000000";
+            */
+            String conceptionKindListQuery = "MATCH (attributeKind:"+RealmConstant.AttributeKindClass+")<-["+RealmConstant.AttributesViewKind_AttributeKindRelationClass+"]- " +
+                    "(attributesViewKind:"+RealmConstant.AttributesViewKindClass+")<-["+RealmConstant.ConceptionKind_AttributesViewKindRelationClass+"]-(conceptionKind:"+RealmConstant.ConceptionKindClass+") " +
+                    "WHERE id(attributeKind) = "+this.attributeKindUID+" RETURN DISTINCT conceptionKind as "+CypherBuilder.operationResultName+" LIMIT 1000000";
+            logger.debug("Generated Cypher Statement: {}", conceptionKindListQuery);
+
+            GetListConceptionKindTransformer getListConceptionKindTransformer = new GetListConceptionKindTransformer(this.coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object conceptionKindsRes = workingGraphOperationExecutor.executeWrite(getListConceptionKindTransformer,conceptionKindListQuery);
+            return conceptionKindsRes != null ? (List<ConceptionKind>) conceptionKindsRes : null;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     //internal graphOperationExecutor management logic

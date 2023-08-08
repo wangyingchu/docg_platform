@@ -1378,6 +1378,13 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 符合条件的概念实体数量统计结果 Map。其中 Key为概念类型名称，Value为符合条件的概念实体数量
      */
     public Map<String,Long> getAttributeInConceptionKindDistributionStatistics();
+
+    /**
+     * 获取所有通过属性视图类型中转而包含当前属性类型的概念类型对象
+     *
+     * @return 概念类型对象列表
+     */
+    public List<ConceptionKind> getContainerConceptionKinds();
 ```
 
 ###### ↳ RelationAttachKind
