@@ -130,4 +130,11 @@ public interface SystemMaintenanceOperator {
      * @return 所有概念类型之间的关联关系信息集合
      */
     public Set<ConceptionKindCorrelationInfo> getAllDataRelationDistributionDetailStatistics();
+
+    /**
+     * 查询系统中实时存在的所有属性名称，其范围也包含不在系统属性类型(AttributeKind)定义管理之外的其他所有属性
+     *
+     * @return 属性名称集合
+     */
+    public Set<String> getRealtimeAttributesStatistics();
 }

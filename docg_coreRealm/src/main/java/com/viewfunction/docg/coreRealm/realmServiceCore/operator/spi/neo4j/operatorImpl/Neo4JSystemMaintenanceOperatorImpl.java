@@ -721,6 +721,35 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         return null;
     }
 
+    @Override
+    public Set<String> getRealtimeAttributesStatistics() {
+        String cql ="CALL db.propertyKeys()";
+        logger.debug("Generated Cypher Statement: {}", cql);
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            DataTransformer<Set<String>> statisticsDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    Set<String> attributeNamesSet = new HashSet<>();
+                    while(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        if(nodeRecord.containsKey("propertyKey")){
+                            attributeNamesSet.add(nodeRecord.get("propertyKey").asString());
+                        }
+                    }
+                    return attributeNamesSet;
+                }
+            };
+            Object queryRes = workingGraphOperationExecutor.executeRead(statisticsDataTransformer,cql);
+            if(queryRes != null){
+                return (Set<String>)queryRes;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return null;
+    }
+
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }
