@@ -750,6 +750,11 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         return null;
     }
 
+    @Override
+    public Map<Set<String>, Long> getAttributeValueDistributionStatistic(String attributeName) {
+        return null;
+    }
+
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }

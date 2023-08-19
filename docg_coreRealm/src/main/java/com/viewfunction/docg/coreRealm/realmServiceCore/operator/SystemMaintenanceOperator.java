@@ -137,4 +137,16 @@ public interface SystemMaintenanceOperator {
      * @return 属性名称集合
      */
     public Set<String> getRealtimeAttributesStatistics();
+
+    public Map<Set<String>,Long> getAttributeValueDistributionStatistic(String attributeName);
+    /*
+    属性实时分布查询
+        MATCH (n) WHERE (n.COUNTY) IS NOT NULL
+        RETURN DISTINCT LABELS(n),count(n)
+
+        MATCH ()-[r]-() WHERE (r.COMMITTEE_TYPE) IS NOT NULL
+        RETURN DISTINCT TYPE(r)
+
+        https://www.amcharts.com/demos/rectangular-voronoi-tree-map/
+     */
 }
