@@ -751,7 +751,17 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
     }
 
     @Override
-    public Map<Set<String>, Long> getAttributeValueDistributionStatistic(String attributeName) {
+    public Map<Set<String>, Long> getAttributeValueDistributionStatistic(String attributeName,StatisticScope statisticScope) {
+        /*
+        属性实时分布查询
+        MATCH (n) WHERE (n.COUNTY) IS NOT NULL
+        RETURN DISTINCT LABELS(n),count(n)
+
+        MATCH ()-[r]-() WHERE (r.COMMITTEE_TYPE) IS NOT NULL
+        RETURN DISTINCT TYPE(r)
+
+        https://www.amcharts.com/demos/rectangular-voronoi-tree-map/
+     */
         return null;
     }
 
