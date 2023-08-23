@@ -138,8 +138,15 @@ public interface SystemMaintenanceOperator {
      */
     public Set<String> getRealtimeAttributesStatistics();
 
-    public enum StatisticScope {ConceptionKind,RelationKind,All}
+    /**
+     * 统计范围
+     * ConceptionKind : 只统计概念类型中的数据。
+     * RelationKind : 只统计关系类型中的数据。
+     * All : 同时统计概念类型和关系类型中的数据。
+     */
+    public enum StatisticScope { ConceptionKind,RelationKind,All }
 
-    public Map<Set<String>,Long> getAttributeValueDistributionStatistic(String attributeName,StatisticScope statisticScope);
+    public Map<Set<String>,Long> getConceptionAttributeValueDistributionStatistic(String attributeName);
 
+    public Map<String,Long> getRelationAttributeValueDistributionStatistic(String attributeName);
 }
