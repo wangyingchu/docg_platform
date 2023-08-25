@@ -139,14 +139,20 @@ public interface SystemMaintenanceOperator {
     public Set<String> getRealtimeAttributesStatistics();
 
     /**
-     * 统计范围
-     * ConceptionKind : 只统计概念类型中的数据。
-     * RelationKind : 只统计关系类型中的数据。
-     * All : 同时统计概念类型和关系类型中的数据。
+     * 输入指定属性名称（该属性不需要已经在属性类型中定义），查询系统中该属性在各个概念类型的实体中实时存在的真实数量
+     *
+     *  @param attributeName String 需要查询的属性名称
+     *
+     * @return 属性分布数据信息Map， Key为概念类型名称Set（对应单一概念实体隶属于多个概念类型的情况），Value为该概念类型Set中属性存在的数量
      */
-    public enum StatisticScope { ConceptionKind,RelationKind,All }
-
     public Map<Set<String>,Long> getConceptionAttributeValueDistributionStatistic(String attributeName);
 
+    /**
+     * 输入指定属性名称（该属性不需要已经在属性类型中定义），查询系统中该属性在各个关系类型的实体中实时存在的真实数量
+     *
+     *  @param attributeName String 需要查询的属性名称
+     *
+     * @return 属性分布数据信息Map， Key为关系类型名称，Value为该关系类型中属性存在的数量
+     */
     public Map<String,Long> getRelationAttributeValueDistributionStatistic(String attributeName);
 }
