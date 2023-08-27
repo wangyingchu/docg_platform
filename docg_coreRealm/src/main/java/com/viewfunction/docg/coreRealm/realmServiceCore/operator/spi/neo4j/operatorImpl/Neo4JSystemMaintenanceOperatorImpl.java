@@ -756,10 +756,30 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         属性实时分布查询
         MATCH (n) WHERE (n.COUNTY) IS NOT NULL
         RETURN DISTINCT LABELS(n),count(n)
-
         https://www.amcharts.com/demos/rectangular-voronoi-tree-map/
-     */
-        return null;
+        */
+        String cql ="MATCH (n) WHERE (n.`"+attributeName+"`) IS NOT NULL\n" +
+                    "RETURN DISTINCT LABELS(n),count(n)";
+        logger.debug("Generated Cypher Statement: {}", cql);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            Map<Set<String>, Long> valueDistributionStatisticMap = new HashMap<>();
+            DataTransformer statisticsDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+
+
+
+
+                    return null;
+                }
+            };
+            Object queryRes = workingGraphOperationExecutor.executeRead(statisticsDataTransformer,cql);
+            return valueDistributionStatisticMap;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
