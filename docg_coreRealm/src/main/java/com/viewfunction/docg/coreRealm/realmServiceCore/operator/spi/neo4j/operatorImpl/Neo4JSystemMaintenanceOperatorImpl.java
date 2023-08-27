@@ -788,10 +788,29 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         属性实时分布查询
         MATCH ()-[r]-() WHERE (r.COMMITTEE_TYPE) IS NOT NULL
         RETURN DISTINCT TYPE(r),count(r)
-
         https://www.amcharts.com/demos/rectangular-voronoi-tree-map/
-     */
-        return null;
+        */
+        String cql ="MATCH ()-[r]-() WHERE (r.`"+attributeName+"`) IS NOT NULL\n" +
+                "        RETURN DISTINCT TYPE(r),count(r))";
+        logger.debug("Generated Cypher Statement: {}", cql);
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            Map<String, Long> valueDistributionStatisticMap = new HashMap<>();
+            DataTransformer statisticsDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+
+
+
+
+                    return null;
+                }
+            };
+            Object queryRes = workingGraphOperationExecutor.executeRead(statisticsDataTransformer,cql);
+            return valueDistributionStatisticMap;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
