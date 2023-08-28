@@ -756,10 +756,9 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         属性实时分布查询
         MATCH (n) WHERE (n.COUNTY) IS NOT NULL
         RETURN DISTINCT LABELS(n),count(n)
-        https://www.amcharts.com/demos/rectangular-voronoi-tree-map/
         */
         String cql ="MATCH (n) WHERE (n.`"+attributeName+"`) IS NOT NULL\n" +
-                    "RETURN DISTINCT LABELS(n),count(n)";
+                    "RETURN DISTINCT LABELS(n),COUNT(n)";
         logger.debug("Generated Cypher Statement: {}", cql);
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
@@ -768,14 +767,24 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
             DataTransformer statisticsDataTransformer = new DataTransformer() {
                 @Override
                 public Object transformResult(Result result) {
-
-
-
-
+                    while(result.hasNext()){
+                        Record dataRecord = result.next();
+                        if(dataRecord.containsKey("LABELS(n)")){
+                            List<Object> labelsName = dataRecord.get("LABELS(n)").asList();
+                            Long attributeCount = dataRecord.get("COUNT(n)").asLong();
+                            if(labelsName != null && labelsName.size()>0){
+                                Set<String> conceptionNamesSet = new HashSet<>();
+                                for(Object currentName:labelsName){
+                                    conceptionNamesSet.add(currentName.toString());
+                                }
+                                valueDistributionStatisticMap.put(conceptionNamesSet,attributeCount);
+                            }
+                        }
+                    }
                     return null;
                 }
             };
-            Object queryRes = workingGraphOperationExecutor.executeRead(statisticsDataTransformer,cql);
+            workingGraphOperationExecutor.executeRead(statisticsDataTransformer,cql);
             return valueDistributionStatisticMap;
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
@@ -788,10 +797,9 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         属性实时分布查询
         MATCH ()-[r]-() WHERE (r.COMMITTEE_TYPE) IS NOT NULL
         RETURN DISTINCT TYPE(r),count(r)
-        https://www.amcharts.com/demos/rectangular-voronoi-tree-map/
         */
         String cql ="MATCH ()-[r]-() WHERE (r.`"+attributeName+"`) IS NOT NULL\n" +
-                "        RETURN DISTINCT TYPE(r),count(r))";
+                "        RETURN DISTINCT TYPE(r),COUNT(r)";
         logger.debug("Generated Cypher Statement: {}", cql);
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
@@ -799,14 +807,18 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
             DataTransformer statisticsDataTransformer = new DataTransformer() {
                 @Override
                 public Object transformResult(Result result) {
-
-
-
-
+                    while(result.hasNext()){
+                        Record dataRecord = result.next();
+                        if(dataRecord.containsKey("TYPE(r)")){
+                            String typeName = dataRecord.get("TYPE(r)").asString();
+                            Long attributeCount = dataRecord.get("COUNT(r)").asLong();
+                            valueDistributionStatisticMap.put(typeName,attributeCount);
+                        }
+                    }
                     return null;
                 }
             };
-            Object queryRes = workingGraphOperationExecutor.executeRead(statisticsDataTransformer,cql);
+            workingGraphOperationExecutor.executeRead(statisticsDataTransformer,cql);
             return valueDistributionStatisticMap;
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
