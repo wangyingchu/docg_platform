@@ -11,6 +11,7 @@ public class AttributeKindMetaInfo{
     private String creatorId;
     private String dataOrigin;
     private String attributeDataType;
+    private int containerAttributesViewKindCount;
 
     public AttributeKindMetaInfo(String kindName,String kindDesc,String kindUID,String attributeDataType,ZonedDateTime createDate,
                         ZonedDateTime lastModifyDate,String creatorId,String dataOrigin){
@@ -86,5 +87,13 @@ public class AttributeKindMetaInfo{
 
     public void setAttributeDataType(String attributeDataType) {
         this.attributeDataType = attributeDataType;
+    }
+
+    public int getContainerAttributesViewKindCount() {
+        return containerAttributesViewKindCount;
+    }
+
+    public void setContainerAttributesViewKindCount(int containerAttributesViewKindCount) {
+        this.containerAttributesViewKindCount = containerAttributesViewKindCount;
     }
 }

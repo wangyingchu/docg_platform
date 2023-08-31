@@ -1399,7 +1399,25 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 }
             };
             Object kindMetaInfoListRes = workingGraphOperationExecutor.executeRead(dataTransformer,queryCql);
-            return kindMetaInfoListRes != null ? (List<AttributeKindMetaInfo>) kindMetaInfoListRes : null;
+            List<AttributeKindMetaInfo> resultAttributeKindMetaInfoList = kindMetaInfoListRes != null ? (List<AttributeKindMetaInfo>) kindMetaInfoListRes : null;
+
+            if(resultAttributeKindMetaInfoList != null && resultAttributeKindMetaInfoList.size()>0){
+                queryCql = "MATCH (n:DOCG_AttributeKind)<-[r:DOCG_ViewContainsAttributeKindIs]-(DOCG_AttributesViewKind) RETURN id(n), count(r) LIMIT 10000000";
+                DataTransformer dataTransformer2 = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        while(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            long KindUID = nodeRecord.get("id(n)").asLong();
+                            int attachedAttributesKindNumber = nodeRecord.get("count(r)").asInt();
+                            setContainerAttributesKindCount(resultAttributeKindMetaInfoList,""+KindUID,attachedAttributesKindNumber);
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(dataTransformer2,queryCql);
+            }
+            return resultAttributeKindMetaInfoList;
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
@@ -1624,6 +1642,15 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             return currentDeletedEntitiesCount + currentDeletedFlowsCount;
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    private void setContainerAttributesKindCount(List<AttributeKindMetaInfo> attributeKindMetaInfoList,String attributeKindUID,int containerAttributesKindCount){
+        for(AttributeKindMetaInfo currentAttributeKindMetaInfo:attributeKindMetaInfoList){
+            if(attributeKindUID.equals(currentAttributeKindMetaInfo.getKindUID())){
+                currentAttributeKindMetaInfo.setContainerAttributesViewKindCount(containerAttributesKindCount);
+                return;
+            }
         }
     }
 
