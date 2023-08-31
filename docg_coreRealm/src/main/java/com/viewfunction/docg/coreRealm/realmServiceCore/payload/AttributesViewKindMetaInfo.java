@@ -11,7 +11,8 @@ public class AttributesViewKindMetaInfo {
     private String creatorId;
     private String dataOrigin;
     private String viewKindDataForm;
-
+    private int containerConceptionKindCount;
+    private int containsAttributeKindCount;
     public AttributesViewKindMetaInfo(String kindName, String kindDesc, String kindUID, String viewKindDataForm, ZonedDateTime createDate,
                                       ZonedDateTime lastModifyDate, String creatorId, String dataOrigin){
         this.kindName = kindName;
@@ -86,5 +87,21 @@ public class AttributesViewKindMetaInfo {
 
     public void setViewKindDataForm(String viewKindDataForm) {
         this.viewKindDataForm = viewKindDataForm;
+    }
+
+    public int getContainerConceptionKindCount() {
+        return containerConceptionKindCount;
+    }
+
+    public void setContainerConceptionKindCount(int containerConceptionKindCount) {
+        this.containerConceptionKindCount = containerConceptionKindCount;
+    }
+
+    public int getContainsAttributeKindCount() {
+        return containsAttributeKindCount;
+    }
+
+    public void setContainsAttributeKindCount(int containsAttributeKindCount) {
+        this.containsAttributeKindCount = containsAttributeKindCount;
     }
 }

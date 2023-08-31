@@ -1410,7 +1410,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                             Record nodeRecord = result.next();
                             long KindUID = nodeRecord.get("id(n)").asLong();
                             int attachedAttributesKindNumber = nodeRecord.get("count(r)").asInt();
-                            setContainerAttributesKindCount(resultAttributeKindMetaInfoList,""+KindUID,attachedAttributesKindNumber);
+                            setContainerAttributeKindCount(resultAttributeKindMetaInfoList,""+KindUID,attachedAttributesKindNumber);
                         }
                         return null;
                     }
@@ -1457,7 +1457,39 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 }
             };
             Object kindMetaInfoListRes = workingGraphOperationExecutor.executeRead(dataTransformer,queryCql);
-            return kindMetaInfoListRes != null ? (List<AttributesViewKindMetaInfo>) kindMetaInfoListRes : null;
+            List<AttributesViewKindMetaInfo> resultkindMetaInfoList = kindMetaInfoListRes != null ? (List<AttributesViewKindMetaInfo>) kindMetaInfoListRes : null;
+            if(resultkindMetaInfoList != null && resultkindMetaInfoList.size()>0){
+                queryCql = "MATCH (DOCG_AttributeKind)<-[r1:DOCG_ViewContainsAttributeKindIs]-(n:DOCG_AttributesViewKind) RETURN id(n),count(r1) LIMIT 10000000";
+                DataTransformer dataTransformer2 = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        while(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            long KindUID = nodeRecord.get("id(n)").asLong();
+                            int attachedAttributeKindNumber = nodeRecord.get("count(r1)").asInt();
+                            setContainsAttributeKindCount(resultkindMetaInfoList,""+KindUID,attachedAttributeKindNumber);
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(dataTransformer2,queryCql);
+
+                queryCql = "MATCH (n:DOCG_AttributesViewKind) <-[r2:DOCG_ConceptionContainsViewKindIs] -(DOCG_ConceptionKind) RETURN id(n),count(r2) LIMIT 10000000";
+                DataTransformer dataTransformer3 = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        while(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            long KindUID = nodeRecord.get("id(n)").asLong();
+                            int attachedConceptionKindNumber = nodeRecord.get("count(r2)").asInt();
+                            setContainerConceptionKindCount(resultkindMetaInfoList,""+KindUID,attachedConceptionKindNumber);
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(dataTransformer3,queryCql);
+            }
+            return resultkindMetaInfoList;
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
@@ -1645,7 +1677,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         }
     }
 
-    private void setContainerAttributesKindCount(List<AttributeKindMetaInfo> attributeKindMetaInfoList,String attributeKindUID,int containerAttributesKindCount){
+    private void setContainerAttributeKindCount(List<AttributeKindMetaInfo> attributeKindMetaInfoList, String attributeKindUID, int containerAttributesKindCount){
         for(AttributeKindMetaInfo currentAttributeKindMetaInfo:attributeKindMetaInfoList){
             if(attributeKindUID.equals(currentAttributeKindMetaInfo.getKindUID())){
                 currentAttributeKindMetaInfo.setContainerAttributesViewKindCount(containerAttributesKindCount);
@@ -1653,6 +1685,23 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             }
         }
     }
+
+    private void setContainerConceptionKindCount(List<AttributesViewKindMetaInfo> attributesViewKindMetaInfoList,String attributesViewKindUID,int containerConceptionKindCount){
+        for(AttributesViewKindMetaInfo currentAttributesViewKindMetaInfo:attributesViewKindMetaInfoList){
+            if(attributesViewKindUID.equals(currentAttributesViewKindMetaInfo.getKindUID())){
+                currentAttributesViewKindMetaInfo.setContainerConceptionKindCount(containerConceptionKindCount);
+                return;
+            }
+        }
+    }
+
+    private void setContainsAttributeKindCount(List<AttributesViewKindMetaInfo> attributesViewKindMetaInfoList,String attributesViewKindUID,int containsAttributeKindCount){
+        for(AttributesViewKindMetaInfo currentAttributesViewKindMetaInfo:attributesViewKindMetaInfoList){
+            if(attributesViewKindUID.equals(currentAttributesViewKindMetaInfo.getKindUID())){
+                currentAttributesViewKindMetaInfo.setContainsAttributeKindCount(containsAttributeKindCount);
+                return;
+            }
+        }    }
 
     //internal graphOperationExecutor management logic
     private GraphOperationExecutorHelper graphOperationExecutorHelper;
