@@ -527,7 +527,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @return 当前领域的全部概念类型元数据信息列表
      */
-    public List<KindMetaInfo> getConceptionKindsMetaInfo();
+    public List<KindMetaInfo> getConceptionKindsMetaInfo() throws CoreRealmServiceEntityExploreException;
 
     /**
      * 获取当前领域的全部关系类型元数据信息
@@ -541,14 +541,21 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @return 当前领域的全部属性类型元数据信息列表
      */
-    public List<AttributeKindMetaInfo> getAttributeKindsMetaInfo();
+    public List<AttributeKindMetaInfo> getAttributeKindsMetaInfo() throws CoreRealmServiceEntityExploreException;
 
     /**
      * 获取当前领域的全部属性视图类型元数据信息
      *
      * @return 当前领域的全部属性视图类型元数据信息列表
      */
-    public List<AttributesViewKindMetaInfo> getAttributesViewKindsMetaInfo();
+    public List<AttributesViewKindMetaInfo> getAttributesViewKindsMetaInfo() throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 获取当前领域的全部分类元数据信息
+     *
+     * @return 当前领域的全部分类元数据信息列表
+     */
+    public List<ClassificationMetaInfo> getClassificationsMetaInfo() throws CoreRealmServiceEntityExploreException;
 
     /**
      * 开启全局会话，此操作会创建一个持久化的后端数据库连接，执行该操作后由当前 CoreRealm 所创建的所有对象（以及这些对象创建的后续对象）将继承性的共享该持久化后端数据库连接。
