@@ -1505,13 +1505,40 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                     "OPTIONAL MATCH (n) -[:DOCG_ParentClassificationIs]->(parent:DOCG_Classification)\n" +
                     "RETURN n as classification,count(DISTINCT(child)) as childCount,parent.name as parentName";
                 // real child classification count is childCount -1 (for the 0 in *0..1 logic)
-
-
-
+            //logger.debug("Generated Cypher Statement: {}", queryCql);
+            List<ClassificationMetaInfo> classificationMetaInfoList = new ArrayList<>();
+            DataTransformer dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    while(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        Node classificationNode = nodeRecord.get("classification").asNode();
+                        String classificationName = classificationNode.get(RealmConstant._NameProperty).asString();
+                        String classificationDesc = classificationNode.get(RealmConstant._DescProperty).asString();
+                        ZonedDateTime createDate = classificationNode.get(RealmConstant._createDateProperty).asZonedDateTime();
+                        ZonedDateTime lastModifyDate = classificationNode.get(RealmConstant._lastModifyDateProperty).asZonedDateTime();
+                        String dataOrigin = classificationNode.get(RealmConstant._dataOriginProperty).asString();
+                        String creatorId = classificationNode.containsKey(RealmConstant._creatorIdProperty) ?
+                                classificationNode.get(RealmConstant._creatorIdProperty).asString():null;
+                        int childCount = nodeRecord.get("childCount").asInt();
+                        String parentClassificationName = null;
+                        if(nodeRecord.containsKey("parentName")){
+                            parentClassificationName = nodeRecord.get("parentName").asString().equals("null") ? null: nodeRecord.get("parentName").asString();
+                        }
+                        boolean isRootClassification = parentClassificationName == null?true:false;
+                        ClassificationMetaInfo currentClassificationMetaInfo = new ClassificationMetaInfo(classificationName,
+                                classificationDesc,createDate,lastModifyDate,creatorId,dataOrigin,parentClassificationName,
+                                childCount-1,isRootClassification);
+                        classificationMetaInfoList.add(currentClassificationMetaInfo);
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeRead(dataTransformer,queryCql);
+            return classificationMetaInfoList;
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
-        return null;
     }
 
     @Override
