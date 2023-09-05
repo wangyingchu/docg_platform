@@ -1498,6 +1498,16 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
     @Override
     public List<ClassificationMetaInfo> getClassificationsMetaInfo() throws CoreRealmServiceEntityExploreException {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql ="MATCH (cn:DOCG_Classification)-[:DOCG_ParentClassificationIs*0..1]-> (n:DOCG_Classification) -[:DOCG_ParentClassificationIs]->(pc:DOCG_Classification) RETURN DISTINCT(n) as classification ,count(cn) as childCount, pc.name as parentClassificationName LIMIT 1000000000";
+
+
+
+
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
         return null;
     }
 
