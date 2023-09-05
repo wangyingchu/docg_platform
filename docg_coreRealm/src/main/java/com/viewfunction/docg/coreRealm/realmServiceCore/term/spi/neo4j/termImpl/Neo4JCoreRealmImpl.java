@@ -1500,8 +1500,11 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     public List<ClassificationMetaInfo> getClassificationsMetaInfo() throws CoreRealmServiceEntityExploreException {
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
-            String queryCql ="MATCH (cn:DOCG_Classification)-[:DOCG_ParentClassificationIs*0..1]-> (n:DOCG_Classification) -[:DOCG_ParentClassificationIs]->(pc:DOCG_Classification) RETURN DISTINCT(n) as classification ,count(cn) as childCount, pc.name as parentClassificationName LIMIT 1000000000";
-
+            String queryCql ="MATCH (c:DOCG_Classification)\n" +
+                    "OPTIONAL MATCH (child:DOCG_Classification)-[:DOCG_ParentClassificationIs*0..1]-> (n) \n" +
+                    "OPTIONAL MATCH (n) -[:DOCG_ParentClassificationIs]->(parent:DOCG_Classification)\n" +
+                    "RETURN n as classification,count(DISTINCT(child)) as childCount,parent.name as parentName";
+                // real child classification count is childCount -1 (for the 0 in *0..1 logic)
 
 
 
