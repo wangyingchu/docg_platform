@@ -14,6 +14,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ClassificationRuntimeStatistics;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.spi.common.structureImpl.CommonInheritanceTreeImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
@@ -518,6 +519,42 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
         }
+    }
+
+    @Override
+    public ClassificationRuntimeStatistics getRuntimeStatistics() {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+
+            String cql ="MATCH (n:DOCG_Classification) WHERE id(n) =1336950 \n" +
+                    "\n" +
+                    "OPTIONAL MATCH (n) -[]-(conceptionKinds:DOCG_ConceptionKind)\n" +
+                    "OPTIONAL MATCH (n) -[]-(relationKinds:DOCG_RelationKind)\n" +
+                    "OPTIONAL MATCH (n) -[]-(attributesViewKinds:DOCG_AttributesViewKind)\n" +
+                    "OPTIONAL MATCH (n) -[]-(attributeKinds:DOCG_AttributeKind)\n" +
+                    "OPTIONAL MATCH (n) <-[DOCG_ParentClassificationIs]-(childClassification:DOCG_Classification)\n" +
+                    "\n" +
+                    "WITH conceptionKinds,relationKinds,attributesViewKinds,attributeKinds,childClassification\n" +
+                    "\n" +
+                    "RETURN count(conceptionKinds),count(relationKinds),count(attributesViewKinds),count(attributeKinds),count(childClassification)";
+
+
+            String cql2 ="MATCH (n:DOCG_Classification) WHERE id(n) =1336954 \n" +
+                    "\n" +
+                    "OPTIONAL MATCH (n) -[]-(conceptionEntities) WHERE \n" +
+                    "NOT 'DOCG_AttributeKind' IN labels(conceptionEntities) \n" +
+                    "AND NOT 'DOCG_ConceptionKind' IN labels(conceptionEntities)\n" +
+                    "AND NOT 'DOCG_RelationKind' IN labels(conceptionEntities)\n" +
+                    "AND NOT 'DOCG_AttributesViewKind' IN labels(conceptionEntities)\n" +
+                    "AND NOT 'DOCG_Classification' IN labels(conceptionEntities)\n" +
+                    "\n" +
+                    "WITH conceptionEntities\n" +
+                    "\n" +
+                    "RETURN count(conceptionEntities)";
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return null;
     }
 
     private List<Long> getTargetClassificationsUIDList(GraphOperationExecutor workingGraphOperationExecutor,boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException{
