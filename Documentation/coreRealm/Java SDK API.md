@@ -1785,6 +1785,13 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 概念实体对象列表
      */
     public List<ConceptionEntity> getRelatedConceptionEntity(String relationKindName, RelationDirection relationDirection, QueryParameters queryParameters,boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
+    /**
+     * 获取与当前分类关联的各类型数据的实时统计信息
+     *
+     * @return 分类实时统计信息
+     */
+    public ClassificationRuntimeStatistics getClassificationRuntimeStatistics();
 ```
 
 ###### *通用功能特性*

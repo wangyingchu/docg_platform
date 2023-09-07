@@ -522,11 +522,11 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
     }
 
     @Override
-    public ClassificationRuntimeStatistics getRuntimeStatistics() {
+    public ClassificationRuntimeStatistics getClassificationRuntimeStatistics() {
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
-
-            String cql ="MATCH (n:DOCG_Classification) WHERE id(n) =1336950 \n" +
+            ClassificationRuntimeStatistics classificationRuntimeStatistics = new ClassificationRuntimeStatistics();
+            String cql1 ="MATCH (n:DOCG_Classification) WHERE id(n) = "+classificationUID+" \n" +
                     "\n" +
                     "OPTIONAL MATCH (n) -[]-(conceptionKinds:DOCG_ConceptionKind)\n" +
                     "OPTIONAL MATCH (n) -[]-(relationKinds:DOCG_RelationKind)\n" +
@@ -537,9 +537,31 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
                     "WITH conceptionKinds,relationKinds,attributesViewKinds,attributeKinds,childClassification\n" +
                     "\n" +
                     "RETURN count(conceptionKinds),count(relationKinds),count(attributesViewKinds),count(attributeKinds),count(childClassification)";
+            logger.debug("Generated Cypher Statement: {}", cql1);
+            DataTransformer dataTransformer1 = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        if(nodeRecord != null){
+                            int relatedConceptionKinds = nodeRecord.get("count(conceptionKinds)").asInt();
+                            int relatedRelationKinds = nodeRecord.get("count(relationKinds)").asInt();
+                            int relatedAttributesViewKinds = nodeRecord.get("count(attributesViewKinds)").asInt();
+                            int relatedAttributeKinds = nodeRecord.get("count(attributeKinds)").asInt();
+                            int relatedChildClassification = nodeRecord.get("count(childClassification)").asInt();
+                            classificationRuntimeStatistics.setRelatedConceptionKindCount(relatedConceptionKinds);
+                            classificationRuntimeStatistics.setRelatedRelationKindCount(relatedRelationKinds);
+                            classificationRuntimeStatistics.setRelatedAttributesViewKindCount(relatedAttributesViewKinds);
+                            classificationRuntimeStatistics.setRelatedAttributeKindCount(relatedAttributeKinds);
+                            classificationRuntimeStatistics.setChildClassificationsCount(relatedChildClassification);
+                        }
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeRead(dataTransformer1,cql1);
 
-
-            String cql2 ="MATCH (n:DOCG_Classification) WHERE id(n) =1336954 \n" +
+            String cql2 ="MATCH (n:DOCG_Classification) WHERE id(n) = "+classificationUID+" \n" +
                     "\n" +
                     "OPTIONAL MATCH (n) -[]-(conceptionEntities) WHERE \n" +
                     "NOT 'DOCG_AttributeKind' IN labels(conceptionEntities) \n" +
@@ -547,14 +569,48 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
                     "AND NOT 'DOCG_RelationKind' IN labels(conceptionEntities)\n" +
                     "AND NOT 'DOCG_AttributesViewKind' IN labels(conceptionEntities)\n" +
                     "AND NOT 'DOCG_Classification' IN labels(conceptionEntities)\n" +
+                    "AND NOT 'DOCG_MetaConfigItemsStorage' IN labels(conceptionEntities)\n" +
                     "\n" +
                     "WITH conceptionEntities\n" +
                     "\n" +
                     "RETURN count(conceptionEntities)";
+            logger.debug("Generated Cypher Statement: {}", cql2);
+            DataTransformer dataTransformer2 = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        if(nodeRecord != null){
+                            int relatedConceptionEntities = nodeRecord.get("count(conceptionEntities)").asInt();
+                            classificationRuntimeStatistics.setRelatedConceptionEntityCount(relatedConceptionEntities);
+                        }
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeRead(dataTransformer2,cql2);
+
+            String cql3 = CypherBuilder.matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID, Long.parseLong(classificationUID),
+                    RealmConstant.ClassificationClass,RealmConstant.Classification_ClassificationRelationClass, RelationDirection.FROM,0,0, CypherBuilder.ReturnRelationableDataType.COUNT_NODE);
+            DataTransformer dataTransformer3 = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        if(nodeRecord != null){
+                            int offspringClassifications = nodeRecord.get("count(DISTINCT operationResult)").asInt();
+                            classificationRuntimeStatistics.setOffspringClassificationsCount(offspringClassifications);
+                        }
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeRead(dataTransformer3,cql3);
+
+            return classificationRuntimeStatistics;
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
-        return null;
     }
 
     private List<Long> getTargetClassificationsUIDList(GraphOperationExecutor workingGraphOperationExecutor,boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException{
