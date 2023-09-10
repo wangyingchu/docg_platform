@@ -10,6 +10,14 @@ import java.util.List;
 import java.util.Map;
 
 public interface AttributesMeasurable {
+    /*
+        诉衷情
+        当年忠贞为国愁，何曾怕断头？
+        如今天下红遍，江山靠谁守？
+        业未就，身躯倦，鬓已秋；
+        你我之辈，忍将夙愿，付与东流？
+     */
+
     /**
      * 删除当前对象中包含的属性信息
      *
