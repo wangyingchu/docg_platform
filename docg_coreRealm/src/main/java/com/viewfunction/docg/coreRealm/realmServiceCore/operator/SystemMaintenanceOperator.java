@@ -155,4 +155,11 @@ public interface SystemMaintenanceOperator {
      * @return 属性分布数据信息Map， Key为关系类型名称，Value为该关系类型中属性存在的数量
      */
     public Map<String,Long> getRelationAttributeValueDistributionStatistic(String attributeName);
+
+    /**
+     * 获取与所有分类关联的各类型数据的实时统计信息
+     *
+     * @return 分类实时统计信息
+     */
+    public GlobalClassificationsRuntimeStatistics getGlobalClassificationsRuntimeStatistics();
 }

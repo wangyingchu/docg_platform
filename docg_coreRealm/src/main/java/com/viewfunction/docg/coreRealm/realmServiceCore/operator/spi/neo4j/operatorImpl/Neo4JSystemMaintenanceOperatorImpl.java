@@ -825,6 +825,78 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         }
     }
 
+    @Override
+    public GlobalClassificationsRuntimeStatistics getGlobalClassificationsRuntimeStatistics() {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            GlobalClassificationsRuntimeStatistics globalClassificationsRuntimeStatistics = new GlobalClassificationsRuntimeStatistics();
+            String cql1 ="MATCH (n:DOCG_Classification) \n" +
+                    "\n" +
+                    "OPTIONAL MATCH (n) -[]-(conceptionKinds:DOCG_ConceptionKind)\n" +
+                    "OPTIONAL MATCH (n) -[]-(relationKinds:DOCG_RelationKind)\n" +
+                    "OPTIONAL MATCH (n) -[]-(attributesViewKinds:DOCG_AttributesViewKind)\n" +
+                    "OPTIONAL MATCH (n) -[]-(attributeKinds:DOCG_AttributeKind)\n" +
+                    "\n" +
+                    "WITH conceptionKinds,relationKinds,attributesViewKinds,attributeKinds\n" +
+                    "\n" +
+                    "RETURN count(conceptionKinds),count(relationKinds),count(attributesViewKinds),count(attributeKinds)";
+            logger.debug("Generated Cypher Statement: {}", cql1);
+            DataTransformer dataTransformer1 = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        if(nodeRecord != null){
+                            int relatedConceptionKinds = nodeRecord.get("count(conceptionKinds)").asInt();
+                            int relatedRelationKinds = nodeRecord.get("count(relationKinds)").asInt();
+                            int relatedAttributesViewKinds = nodeRecord.get("count(attributesViewKinds)").asInt();
+                            int relatedAttributeKinds = nodeRecord.get("count(attributeKinds)").asInt();
+                            globalClassificationsRuntimeStatistics.setRelatedConceptionKindCount(relatedConceptionKinds);
+                            globalClassificationsRuntimeStatistics.setRelatedRelationKindCount(relatedRelationKinds);
+                            globalClassificationsRuntimeStatistics.setRelatedAttributesViewKindCount(relatedAttributesViewKinds);
+                            globalClassificationsRuntimeStatistics.setRelatedAttributeKindCount(relatedAttributeKinds);
+                        }
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeRead(dataTransformer1,cql1);
+
+            String cql2 ="MATCH (n:DOCG_Classification) \n" +
+                    "\n" +
+                    "OPTIONAL MATCH (n) -[]-(conceptionEntities) WHERE \n" +
+                    "NOT 'DOCG_AttributeKind' IN labels(conceptionEntities) \n" +
+                    "AND NOT 'DOCG_ConceptionKind' IN labels(conceptionEntities)\n" +
+                    "AND NOT 'DOCG_RelationKind' IN labels(conceptionEntities)\n" +
+                    "AND NOT 'DOCG_AttributesViewKind' IN labels(conceptionEntities)\n" +
+                    "AND NOT 'DOCG_Classification' IN labels(conceptionEntities)\n" +
+                    "AND NOT 'DOCG_MetaConfigItemsStorage' IN labels(conceptionEntities)\n" +
+                    "\n" +
+                    "WITH conceptionEntities\n" +
+                    "\n" +
+                    "RETURN count(conceptionEntities)";
+            logger.debug("Generated Cypher Statement: {}", cql2);
+            DataTransformer dataTransformer2 = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        if(nodeRecord != null){
+                            int relatedConceptionEntities = nodeRecord.get("count(conceptionEntities)").asInt();
+                            globalClassificationsRuntimeStatistics.setRelatedConceptionEntityCount(relatedConceptionEntities);
+                        }
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeRead(dataTransformer2,cql2);
+
+            return globalClassificationsRuntimeStatistics;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }
