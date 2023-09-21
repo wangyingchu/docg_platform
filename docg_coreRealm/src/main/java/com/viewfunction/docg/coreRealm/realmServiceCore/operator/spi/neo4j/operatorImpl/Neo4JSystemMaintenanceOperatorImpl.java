@@ -839,7 +839,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                     "\n" +
                     "WITH conceptionKinds,relationKinds,attributesViewKinds,attributeKinds\n" +
                     "\n" +
-                    "RETURN count(conceptionKinds),count(relationKinds),count(attributesViewKinds),count(attributeKinds)";
+                    "RETURN count(DISTINCT conceptionKinds),count(DISTINCT relationKinds),count(DISTINCT attributesViewKinds),count(DISTINCT attributeKinds)";
             logger.debug("Generated Cypher Statement: {}", cql1);
             DataTransformer dataTransformer1 = new DataTransformer() {
                 @Override
@@ -847,10 +847,10 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                     if(result.hasNext()){
                         Record nodeRecord = result.next();
                         if(nodeRecord != null){
-                            int relatedConceptionKinds = nodeRecord.get("count(conceptionKinds)").asInt();
-                            int relatedRelationKinds = nodeRecord.get("count(relationKinds)").asInt();
-                            int relatedAttributesViewKinds = nodeRecord.get("count(attributesViewKinds)").asInt();
-                            int relatedAttributeKinds = nodeRecord.get("count(attributeKinds)").asInt();
+                            int relatedConceptionKinds = nodeRecord.get("count(DISTINCT conceptionKinds)").asInt();
+                            int relatedRelationKinds = nodeRecord.get("count(DISTINCT relationKinds)").asInt();
+                            int relatedAttributesViewKinds = nodeRecord.get("count(DISTINCT attributesViewKinds)").asInt();
+                            int relatedAttributeKinds = nodeRecord.get("count(DISTINCT attributeKinds)").asInt();
                             globalClassificationsRuntimeStatistics.setRelatedConceptionKindCount(relatedConceptionKinds);
                             globalClassificationsRuntimeStatistics.setRelatedRelationKindCount(relatedRelationKinds);
                             globalClassificationsRuntimeStatistics.setRelatedAttributesViewKindCount(relatedAttributesViewKinds);
@@ -874,7 +874,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                     "\n" +
                     "WITH conceptionEntities\n" +
                     "\n" +
-                    "RETURN count(conceptionEntities)";
+                    "RETURN count(DISTINCT conceptionEntities)";
             logger.debug("Generated Cypher Statement: {}", cql2);
             DataTransformer dataTransformer2 = new DataTransformer() {
                 @Override
@@ -882,7 +882,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                     if(result.hasNext()){
                         Record nodeRecord = result.next();
                         if(nodeRecord != null){
-                            int relatedConceptionEntities = nodeRecord.get("count(conceptionEntities)").asInt();
+                            int relatedConceptionEntities = nodeRecord.get("count(DISTINCT conceptionEntities)").asInt();
                             globalClassificationsRuntimeStatistics.setRelatedConceptionEntityCount(relatedConceptionEntities);
                         }
                     }

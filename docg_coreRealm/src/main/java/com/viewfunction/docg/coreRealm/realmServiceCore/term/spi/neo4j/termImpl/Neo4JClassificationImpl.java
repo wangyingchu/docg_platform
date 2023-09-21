@@ -536,7 +536,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
                     "\n" +
                     "WITH conceptionKinds,relationKinds,attributesViewKinds,attributeKinds,childClassification\n" +
                     "\n" +
-                    "RETURN count(conceptionKinds),count(relationKinds),count(attributesViewKinds),count(attributeKinds),count(childClassification)";
+                    "RETURN count(DISTINCT conceptionKinds),count(DISTINCT relationKinds),count(DISTINCT attributesViewKinds),count(DISTINCT attributeKinds),count(DISTINCT childClassification)";
             logger.debug("Generated Cypher Statement: {}", cql1);
             DataTransformer dataTransformer1 = new DataTransformer() {
                 @Override
@@ -544,11 +544,11 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
                     if(result.hasNext()){
                         Record nodeRecord = result.next();
                         if(nodeRecord != null){
-                            int relatedConceptionKinds = nodeRecord.get("count(conceptionKinds)").asInt();
-                            int relatedRelationKinds = nodeRecord.get("count(relationKinds)").asInt();
-                            int relatedAttributesViewKinds = nodeRecord.get("count(attributesViewKinds)").asInt();
-                            int relatedAttributeKinds = nodeRecord.get("count(attributeKinds)").asInt();
-                            int relatedChildClassification = nodeRecord.get("count(childClassification)").asInt();
+                            int relatedConceptionKinds = nodeRecord.get("count(DISTINCT conceptionKinds)").asInt();
+                            int relatedRelationKinds = nodeRecord.get("count(DISTINCT relationKinds)").asInt();
+                            int relatedAttributesViewKinds = nodeRecord.get("count(DISTINCT attributesViewKinds)").asInt();
+                            int relatedAttributeKinds = nodeRecord.get("count(DISTINCT attributeKinds)").asInt();
+                            int relatedChildClassification = nodeRecord.get("count(DISTINCT childClassification)").asInt();
                             classificationRuntimeStatistics.setRelatedConceptionKindCount(relatedConceptionKinds);
                             classificationRuntimeStatistics.setRelatedRelationKindCount(relatedRelationKinds);
                             classificationRuntimeStatistics.setRelatedAttributesViewKindCount(relatedAttributesViewKinds);
@@ -573,7 +573,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
                     "\n" +
                     "WITH conceptionEntities\n" +
                     "\n" +
-                    "RETURN count(conceptionEntities)";
+                    "RETURN count(DISTINCT conceptionEntities)";
             logger.debug("Generated Cypher Statement: {}", cql2);
             DataTransformer dataTransformer2 = new DataTransformer() {
                 @Override
@@ -581,7 +581,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
                     if(result.hasNext()){
                         Record nodeRecord = result.next();
                         if(nodeRecord != null){
-                            int relatedConceptionEntities = nodeRecord.get("count(conceptionEntities)").asInt();
+                            int relatedConceptionEntities = nodeRecord.get("count(DISTINCT conceptionEntities)").asInt();
                             classificationRuntimeStatistics.setRelatedConceptionEntityCount(relatedConceptionEntities);
                         }
                     }
