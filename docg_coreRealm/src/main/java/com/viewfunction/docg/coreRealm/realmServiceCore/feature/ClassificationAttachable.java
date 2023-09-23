@@ -1,8 +1,9 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.feature;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.Classification;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ClassificationAttachInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachInfo;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.Classification;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 
@@ -43,5 +44,12 @@ public interface ClassificationAttachable {
      * @return 符合条件的分类列表
      */
     List<Classification> getAttachedClassifications(String relationKindName, RelationDirection relationDirection);
+
+    /**
+     * 获取当前对象已经关联的全部分类信息
+     *
+     * @return 全部关联分类信息列表
+     */
+    List<ClassificationAttachInfo> getAllAttachedClassificationsInfo();
 }
 

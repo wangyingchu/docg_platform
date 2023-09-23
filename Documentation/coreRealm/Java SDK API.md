@@ -2476,6 +2476,13 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 符合条件的分类列表
      */
     List<Classification> getAttachedClassifications(String relationKindName, RelationDirection relationDirection);
+
+    /**
+     * 获取当前对象已经关联的全部分类信息
+     *
+     * @return 全部关联分类信息列表
+     */
+    List<ClassificationAttachInfo> getAllAttachedClassificationsInfo();
 ```
 ###### ↳ EntityRelationable
 
