@@ -4,6 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationAttachable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListClassificationTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleClassificationTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleRelationEntityTransformer;
@@ -16,9 +17,14 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JClassificationImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JRelationEntityImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
+import org.neo4j.driver.Record;
+import org.neo4j.driver.Result;
+import org.neo4j.driver.types.Node;
+import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -161,6 +167,65 @@ public interface Neo4JClassificationAttachable extends ClassificationAttachable,
     }
 
     default List<ClassificationAttachInfo> getAllAttachedClassificationsInfo(){
+        if(this.getEntityUID() != null){
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                List<ClassificationAttachInfo> classificationAttachInfoList = new ArrayList<>();
+                String coreRealmName = null;
+                String queryCql ="MATCH (n) -[r]-(classifications:"+RealmConstant.ClassificationClass+") WHERE id(n) = "+this.getEntityUID()+" \n"+
+                        "RETURN DISTINCT classifications as classification,r as attachedRelation";
+                logger.debug("Generated Cypher Statement: {}", queryCql);
+                DataTransformer dataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        while(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            if(nodeRecord.containsKey("classification") && nodeRecord.containsKey("attachedRelation")){
+                                Node classificationNode = nodeRecord.get("classification").asNode();
+
+
+                                long nodeUID = classificationNode.id();
+                                System.out.println(nodeUID);
+
+                                System.out.println(classificationNode.elementId());
+
+
+
+                                String classificationName = classificationNode.get(RealmConstant._NameProperty).asString();
+                                String classificationDesc = null;
+                                if(classificationNode.get(RealmConstant._DescProperty) != null){
+                                    classificationDesc = classificationNode.get(RealmConstant._DescProperty).asString();
+                                }
+                                String classificationUID = ""+nodeUID;
+                                Neo4JClassificationImpl neo4JClassificationImpl =
+                                        new Neo4JClassificationImpl(coreRealmName,classificationName,classificationDesc,classificationUID);
+                                neo4JClassificationImpl.setGlobalGraphOperationExecutor(getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
+
+                                Relationship attachedRelation = nodeRecord.get("attachedRelation").asRelationship();
+                                System.out.println(attachedRelation.type());
+                                System.out.println(attachedRelation.startNodeId());
+                                System.out.println(attachedRelation.endNodeId());
+                                System.out.println(attachedRelation.startNodeElementId());
+                                System.out.println(attachedRelation.endNodeElementId());
+                                System.out.println(attachedRelation.elementId());
+                                System.out.println(attachedRelation.id());
+
+
+                                ClassificationAttachInfo currentClassificationAttachInfo = new ClassificationAttachInfo();
+                                currentClassificationAttachInfo.setAttachedClassification(neo4JClassificationImpl);
+
+                                classificationAttachInfoList.add(currentClassificationAttachInfo);
+                            }
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(dataTransformer,queryCql);
+                return classificationAttachInfoList;
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
 
