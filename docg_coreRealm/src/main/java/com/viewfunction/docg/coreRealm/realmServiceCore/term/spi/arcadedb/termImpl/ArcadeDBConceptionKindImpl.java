@@ -47,6 +47,11 @@ public class ArcadeDBConceptionKindImpl implements ArcadeDBConceptionKind {
     }
 
     @Override
+    public List<ClassificationAttachInfo> getAllAttachedClassificationsInfo() {
+        return null;
+    }
+
+    @Override
     public Date getCreateDateTime() {
         return null;
     }
