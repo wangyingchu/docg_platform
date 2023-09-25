@@ -173,7 +173,7 @@ public interface Neo4JClassificationAttachable extends ClassificationAttachable,
                 List<ClassificationAttachInfo> classificationAttachInfoList = new ArrayList<>();
                 String coreRealmName = null;
                 String queryCql ="MATCH (n) -[r]-(classifications:"+RealmConstant.ClassificationClass+") WHERE id(n) = "+this.getEntityUID()+" \n"+
-                        "RETURN DISTINCT classifications as classification,r as attachedRelation";
+                        "RETURN DISTINCT classifications as classification,r as attachedRelation,properties(r) as relationData";
                 logger.debug("Generated Cypher Statement: {}", queryCql);
                 DataTransformer dataTransformer = new DataTransformer() {
                     @Override
@@ -182,15 +182,7 @@ public interface Neo4JClassificationAttachable extends ClassificationAttachable,
                             Record nodeRecord = result.next();
                             if(nodeRecord.containsKey("classification") && nodeRecord.containsKey("attachedRelation")){
                                 Node classificationNode = nodeRecord.get("classification").asNode();
-
-
                                 long nodeUID = classificationNode.id();
-                                System.out.println(nodeUID);
-
-                                System.out.println(classificationNode.elementId());
-
-
-
                                 String classificationName = classificationNode.get(RealmConstant._NameProperty).asString();
                                 String classificationDesc = null;
                                 if(classificationNode.get(RealmConstant._DescProperty) != null){
@@ -202,17 +194,27 @@ public interface Neo4JClassificationAttachable extends ClassificationAttachable,
                                 neo4JClassificationImpl.setGlobalGraphOperationExecutor(getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
 
                                 Relationship attachedRelation = nodeRecord.get("attachedRelation").asRelationship();
-                                System.out.println(attachedRelation.type());
-                                System.out.println(attachedRelation.startNodeId());
-                                System.out.println(attachedRelation.endNodeId());
-                                System.out.println(attachedRelation.startNodeElementId());
-                                System.out.println(attachedRelation.endNodeElementId());
-                                System.out.println(attachedRelation.elementId());
-                                System.out.println(attachedRelation.id());
-
+                                Map<String,Object> relationDataMap = new HashMap<>();
+                                relationDataMap.putAll(nodeRecord.get("relationData").asMap());
+                                relationDataMap.remove(RealmConstant._createDateProperty);
+                                relationDataMap.remove(RealmConstant._lastModifyDateProperty);
+                                relationDataMap.remove(RealmConstant._creatorIdProperty);
+                                relationDataMap.remove(RealmConstant._dataOriginProperty);
 
                                 ClassificationAttachInfo currentClassificationAttachInfo = new ClassificationAttachInfo();
                                 currentClassificationAttachInfo.setAttachedClassification(neo4JClassificationImpl);
+
+                                RelationAttachInfo relationAttachInfo = new RelationAttachInfo();
+                                relationAttachInfo.setRelationKind(attachedRelation.type());
+                                relationAttachInfo.setRelationData(relationDataMap);
+
+                                String attachedRelationFromUID = ""+attachedRelation.startNodeId();
+                                if(getEntityUID().equals(attachedRelationFromUID)){
+                                    relationAttachInfo.setRelationDirection(RelationDirection.FROM);
+                                }else{
+                                    relationAttachInfo.setRelationDirection(RelationDirection.TO);
+                                }
+                                currentClassificationAttachInfo.setRelationAttachInfo(relationAttachInfo);
 
                                 classificationAttachInfoList.add(currentClassificationAttachInfo);
                             }
