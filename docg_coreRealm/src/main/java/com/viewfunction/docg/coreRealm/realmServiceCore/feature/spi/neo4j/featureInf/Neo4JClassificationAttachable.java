@@ -231,6 +231,10 @@ public interface Neo4JClassificationAttachable extends ClassificationAttachable,
         return null;
     }
 
+    default boolean isClassificationAttached(String classificationName,String relationKindName,RelationDirection relationDirection){
+        return false;
+    }
+
     private Classification getClassificationByName(GraphOperationExecutor workingGraphOperationExecutor,String classificationName) throws CoreRealmServiceRuntimeException{
         String checkCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.ClassificationClass,RealmConstant._NameProperty,classificationName,1);
         GetSingleClassificationTransformer getSingleClassificationTransformer = new GetSingleClassificationTransformer(null,getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
