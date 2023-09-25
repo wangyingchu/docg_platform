@@ -4,10 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationAttachable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListClassificationTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleClassificationTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleRelationEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ClassificationAttachInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachInfo;
@@ -232,6 +229,30 @@ public interface Neo4JClassificationAttachable extends ClassificationAttachable,
     }
 
     default boolean isClassificationAttached(String classificationName,String relationKindName,RelationDirection relationDirection){
+        if(this.getEntityUID() != null){
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                String matchDirectionPart= "-[r:`"+relationKindName+"`]-";
+                switch(relationDirection){
+                    case FROM -> matchDirectionPart = "-[r:`"+relationKindName+"`]->";
+                    case TO -> matchDirectionPart = "<-[r:`"+relationKindName+"`]-";
+                    case TWO_WAY -> matchDirectionPart = "-[r:`"+relationKindName+"`]-";
+                }
+                String queryCql ="MATCH (n) "+matchDirectionPart+"(classification:"+RealmConstant.ClassificationClass+
+                        " { "+RealmConstant._NameProperty+":'"+classificationName+"'}) WHERE id(n) = "+this.getEntityUID()+" \n"+
+                        "RETURN COUNT(DISTINCT classification) as "+CypherBuilder.operationResultName;
+                logger.debug("Generated Cypher Statement: {}", queryCql);
+
+                GetLongFormatReturnValueTransformer getLongFormatReturnValueTransformer = new GetLongFormatReturnValueTransformer();
+                Object queryRes = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,queryCql);
+                if(queryRes != null){
+                    long matchedClassificationCount = (Long)queryRes;
+                    return matchedClassificationCount > 0 ? true:false;
+                }
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return false;
     }
 
