@@ -52,6 +52,11 @@ public class ArcadeDBConceptionKindImpl implements ArcadeDBConceptionKind {
     }
 
     @Override
+    public boolean isClassificationAttached(String classificationName, String relationKindName, RelationDirection relationDirection) {
+        return false;
+    }
+
+    @Override
     public Date getCreateDateTime() {
         return null;
     }
