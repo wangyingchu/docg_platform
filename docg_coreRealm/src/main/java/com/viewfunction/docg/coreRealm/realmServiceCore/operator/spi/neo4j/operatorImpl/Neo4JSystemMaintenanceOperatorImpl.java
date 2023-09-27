@@ -599,15 +599,18 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                         String relationshipType = currentRelationship.type();
                         String startConceptionKindId = ""+currentRelationship.startNodeId();
                         String endConceptionKindId = ""+currentRelationship.endNodeId();
-                        if(conceptionKindId_nameMapping.get(startConceptionKindId).startsWith(RealmConstant.RealmInnerTypePerFix) &
-                                conceptionKindId_nameMapping.get(endConceptionKindId).startsWith(RealmConstant.RealmInnerTypePerFix)){
-                        }else{
-                            ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
-                                    new ConceptionKindCorrelationInfo(
-                                            conceptionKindId_nameMapping.get(startConceptionKindId),
-                                            conceptionKindId_nameMapping.get(endConceptionKindId),
-                                            relationshipType,1);
-                            conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
+                        boolean relationExist = checkRelationEntitiesExist(workingGraphOperationExecutor,conceptionKindId_nameMapping.get(startConceptionKindId),conceptionKindId_nameMapping.get(endConceptionKindId),relationshipType);
+                        if(relationExist){
+                            if(conceptionKindId_nameMapping.get(startConceptionKindId).startsWith(RealmConstant.RealmInnerTypePerFix) &
+                                    conceptionKindId_nameMapping.get(endConceptionKindId).startsWith(RealmConstant.RealmInnerTypePerFix)){
+                            }else{
+                                ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
+                                        new ConceptionKindCorrelationInfo(
+                                                conceptionKindId_nameMapping.get(startConceptionKindId),
+                                                conceptionKindId_nameMapping.get(endConceptionKindId),
+                                                relationshipType,1);
+                                conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
+                            }
                         }
                     }
                     return conceptionKindCorrelationInfoSet;
