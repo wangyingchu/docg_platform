@@ -987,12 +987,15 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
                         String endConceptionKindId = ""+currentRelationship.endNodeId();
                         if(startConceptionKindId.equals(currentConceptionKindID)||
                                 endConceptionKindId.equals(currentConceptionKindID)){
-                            ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
-                                    new ConceptionKindCorrelationInfo(
-                                            conceptionKindId_nameMapping.get(startConceptionKindId),
-                                            conceptionKindId_nameMapping.get(endConceptionKindId),
-                                            relationshipType,1);
-                            conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
+                            boolean relationExist = checkRelationEntitiesExist(workingGraphOperationExecutor,conceptionKindId_nameMapping.get(startConceptionKindId),conceptionKindId_nameMapping.get(endConceptionKindId),relationshipType);
+                            if(relationExist){
+                                ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
+                                        new ConceptionKindCorrelationInfo(
+                                                conceptionKindId_nameMapping.get(startConceptionKindId),
+                                                conceptionKindId_nameMapping.get(endConceptionKindId),
+                                                relationshipType,1);
+                                conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
+                            }
                         }
                     }
                     return conceptionKindCorrelationInfoSet;
@@ -1334,6 +1337,27 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
             }
         }
         return singleValueAttributeKindNames;
+    }
+
+    private boolean checkRelationEntitiesExist(GraphOperationExecutor workingGraphOperationExecutor,String sourceConceptionKindName,
+                                               String targetConceptionKindName,String relationKindName){
+        String cql = "MATCH p=(source:"+sourceConceptionKindName+")-[r:"+relationKindName+"]->(target:"+targetConceptionKindName+") RETURN r AS operationResult LIMIT 1";
+        logger.debug("Generated Cypher Statement: {}", cql);
+        DataTransformer<Boolean> dataTransformer = new DataTransformer<>() {
+            @Override
+            public Boolean transformResult(Result result) {
+                boolean relationEntitiesExist = false;
+                int resultNumCount = result.list().size();
+                if(resultNumCount == 0){
+                    relationEntitiesExist = false;
+                }else{
+                    relationEntitiesExist = true;
+                }
+                return relationEntitiesExist;
+            }
+        };
+        Object queryRes = workingGraphOperationExecutor.executeRead(dataTransformer,cql);
+        return queryRes != null ? ((Boolean)queryRes).booleanValue():false;
     }
 
     //internal graphOperationExecutor management logic
