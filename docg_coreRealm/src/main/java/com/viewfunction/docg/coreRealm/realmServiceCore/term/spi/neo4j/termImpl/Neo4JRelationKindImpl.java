@@ -350,11 +350,14 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
                                 String targetConceptionKindName = conceptionKindMetaInfoMap.get(""+currentNeo4JRelation.endNodeId());
                                 //apoc.meta.graphSample does not filter away non-existing paths.so count record maybe return wrong result
                                 //int relationEntityCount = currentNeo4JRelation.get("count").asInt();
-                                long existingRelCount = checkRelationEntitiesCount(workingGraphOperationExecutor,startConceptionKindName,targetConceptionKindName,currentRelationKindName);
-                                if(existingRelCount != 0){
-                                    conceptionKindCorrelationInfoList.add(new ConceptionKindCorrelationInfo(startConceptionKindName,
-                                            targetConceptionKindName,currentRelationKindName,existingRelCount)
-                                    );
+                                boolean relationExist = checkRelationEntitiesExist(workingGraphOperationExecutor,startConceptionKindName,targetConceptionKindName,currentRelationKindName);
+                                if(relationExist){
+                                    long existingRelCount = checkRelationEntitiesCount(workingGraphOperationExecutor,startConceptionKindName,targetConceptionKindName,currentRelationKindName);
+                                    if(existingRelCount != 0){
+                                        conceptionKindCorrelationInfoList.add(new ConceptionKindCorrelationInfo(startConceptionKindName,
+                                                targetConceptionKindName,currentRelationKindName,existingRelCount)
+                                        );
+                                    }
                                 }
                             }
                         }
@@ -718,6 +721,27 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
             return (Long)queryRes;
         }
         return 0;
+    }
+
+    private boolean checkRelationEntitiesExist(GraphOperationExecutor workingGraphOperationExecutor,String sourceConceptionKindName,
+                                               String targetConceptionKindName,String relationKindName){
+        String cql = "MATCH p=(source:"+sourceConceptionKindName+")-[r:"+relationKindName+"]->(target:"+targetConceptionKindName+") RETURN r AS operationResult LIMIT 1";
+        logger.debug("Generated Cypher Statement: {}", cql);
+        DataTransformer<Boolean> dataTransformer = new DataTransformer<>() {
+            @Override
+            public Boolean transformResult(Result result) {
+                boolean relationEntitiesExist = false;
+                int resultNumCount = result.list().size();
+                if(resultNumCount == 0){
+                    relationEntitiesExist = false;
+                }else{
+                    relationEntitiesExist = true;
+                }
+                return relationEntitiesExist;
+            }
+        };
+        Object queryRes = workingGraphOperationExecutor.executeRead(dataTransformer,cql);
+        return queryRes != null ? ((Boolean)queryRes).booleanValue():false;
     }
 
     //internal graphOperationExecutor management logic
