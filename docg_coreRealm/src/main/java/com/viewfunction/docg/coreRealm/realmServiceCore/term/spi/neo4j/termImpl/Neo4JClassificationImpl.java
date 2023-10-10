@@ -13,8 +13,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOper
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ClassificationRuntimeStatistics;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.spi.common.structureImpl.CommonInheritanceTreeImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
@@ -416,11 +415,6 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
     }
 
     @Override
-    public void getAllDirectRelatedConceptionKinds() {
-
-    }
-
-    @Override
     public List<RelationKind> getRelatedRelationKinds(String relationKindName, RelationDirection relationDirection, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException {
         if(classificationName == null){
             return null;
@@ -646,6 +640,26 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
+    }
+
+    @Override
+    public List<ConceptionKindAttachInfo> getAllDirectRelatedConceptionKindsInfo() {
+        return null;
+    }
+
+    @Override
+    public List<RelationKindAttachInfo> getAllDirectRelatedRelationKindsInfo() {
+        return null;
+    }
+
+    @Override
+    public List<AttributeKindAttachInfo> getAllDirectRelatedAttributeKindsInfo() {
+        return null;
+    }
+
+    @Override
+    public List<AttributesViewKindAttachInfo> getAllDirectRelatedAttributesViewKindsInfo() {
+        return null;
     }
 
     private List<Long> getTargetClassificationsUIDList(GraphOperationExecutor workingGraphOperationExecutor,boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException{

@@ -5,7 +5,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.AttributesMeasurable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaAttributeFeatureSupportable;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ClassificationRuntimeStatistics;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 
 import java.util.List;
@@ -111,9 +111,6 @@ public interface Classification extends MetaAttributeFeatureSupportable, Attribu
      */
     public List<ConceptionKind> getRelatedConceptionKinds(String relationKindName, RelationDirection relationDirection, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException;
 
-
-    public void getAllDirectRelatedConceptionKinds();
-
     /**
      * 获取与当前分类关联的关系分类对象
      *
@@ -169,4 +166,32 @@ public interface Classification extends MetaAttributeFeatureSupportable, Attribu
      * @return 分类实时统计信息
      */
     public ClassificationRuntimeStatistics getClassificationRuntimeStatistics();
+
+    /**
+     * 获取所有与当前分类一度直接关联的概念类型对象以及关联信息
+     *
+     * @return 概念类型关联信息对象列表
+     */
+    public List<ConceptionKindAttachInfo> getAllDirectRelatedConceptionKindsInfo();
+
+    /**
+     * 获取所有与当前分类一度直接关联的关系类型对象以及关联信息
+     *
+     * @return 关系类型关联信息对象列表
+     */
+    public List<RelationKindAttachInfo> getAllDirectRelatedRelationKindsInfo();
+
+    /**
+     * 获取所有与当前分类一度直接关联的属性类型对象以及关联信息
+     *
+     * @return 属性类型关联信息对象列表
+     */
+    public List<AttributeKindAttachInfo> getAllDirectRelatedAttributeKindsInfo();
+
+    /**
+     * 获取所有与当前分类一度直接关联的属性视图类型对象以及关联信息
+     *
+     * @return 属性视图类型关联信息对象列表
+     */
+    public List<AttributesViewKindAttachInfo> getAllDirectRelatedAttributesViewKindsInfo();
 }
