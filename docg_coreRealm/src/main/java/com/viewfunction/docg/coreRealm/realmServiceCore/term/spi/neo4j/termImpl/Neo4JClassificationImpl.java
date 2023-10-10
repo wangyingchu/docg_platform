@@ -397,8 +397,14 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try{
                 List<Long> targetClassificationUIDsList = getTargetClassificationsUIDList(workingGraphOperationExecutor,includeOffspringClassifications,offspringLevel);
+                RelationDirection classificationViewpointRelationDirection = RelationDirection.TWO_WAY;
+                switch (relationDirection){
+                    case FROM -> classificationViewpointRelationDirection = RelationDirection.TO;
+                    case TO -> classificationViewpointRelationDirection = RelationDirection.FROM;
+                    case TWO_WAY -> classificationViewpointRelationDirection = RelationDirection.TWO_WAY;
+                }
                 String queryPairsCql = CypherBuilder.matchRelatedPairFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID,
-                        CommonOperationUtil.formatListLiteralValue(targetClassificationUIDsList),RealmConstant.ConceptionKindClass,relationKindName,relationDirection);
+                        CommonOperationUtil.formatListLiteralValue(targetClassificationUIDsList),RealmConstant.ConceptionKindClass,relationKindName,classificationViewpointRelationDirection);
                 GetListConceptionKindTransformer getListConceptionKindTransformer = new GetListConceptionKindTransformer(this.coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object queryRes = workingGraphOperationExecutor.executeRead(getListConceptionKindTransformer,queryPairsCql);
                 List<ConceptionKind> resultList = queryRes != null ? (List<ConceptionKind>)queryRes: new ArrayList<>();
@@ -417,8 +423,14 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try{
                 List<Long> targetClassificationUIDsList = getTargetClassificationsUIDList(workingGraphOperationExecutor,includeOffspringClassifications,offspringLevel);
+                RelationDirection classificationViewpointRelationDirection = RelationDirection.TWO_WAY;
+                switch (relationDirection){
+                    case FROM -> classificationViewpointRelationDirection = RelationDirection.TO;
+                    case TO -> classificationViewpointRelationDirection = RelationDirection.FROM;
+                    case TWO_WAY -> classificationViewpointRelationDirection = RelationDirection.TWO_WAY;
+                }
                 String queryPairsCql = CypherBuilder.matchRelatedPairFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID,
-                        CommonOperationUtil.formatListLiteralValue(targetClassificationUIDsList),RealmConstant.RelationKindClass,relationKindName,relationDirection);
+                        CommonOperationUtil.formatListLiteralValue(targetClassificationUIDsList),RealmConstant.RelationKindClass,relationKindName,classificationViewpointRelationDirection);
                 GetListRelationKindTransformer getListRelationKindTransformer = new GetListRelationKindTransformer(this.coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object queryRes = workingGraphOperationExecutor.executeRead(getListRelationKindTransformer,queryPairsCql);
                 List<RelationKind> resultList = queryRes != null ? (List<RelationKind>)queryRes: new ArrayList<>();
@@ -437,8 +449,14 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try{
                 List<Long> targetClassificationUIDsList = getTargetClassificationsUIDList(workingGraphOperationExecutor,includeOffspringClassifications,offspringLevel);
+                RelationDirection classificationViewpointRelationDirection = RelationDirection.TWO_WAY;
+                switch (relationDirection){
+                    case FROM -> classificationViewpointRelationDirection = RelationDirection.TO;
+                    case TO -> classificationViewpointRelationDirection = RelationDirection.FROM;
+                    case TWO_WAY -> classificationViewpointRelationDirection = RelationDirection.TWO_WAY;
+                }
                 String queryPairsCql = CypherBuilder.matchRelatedPairFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID,
-                        CommonOperationUtil.formatListLiteralValue(targetClassificationUIDsList),RealmConstant.AttributeKindClass,relationKindName,relationDirection);
+                        CommonOperationUtil.formatListLiteralValue(targetClassificationUIDsList),RealmConstant.AttributeKindClass,relationKindName,classificationViewpointRelationDirection);
                 GetListAttributeKindTransformer getListAttributeKindTransformer = new GetListAttributeKindTransformer(this.coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object queryRes = workingGraphOperationExecutor.executeRead(getListAttributeKindTransformer,queryPairsCql);
                 List<AttributeKind> resultList = queryRes != null ? (List<AttributeKind>)queryRes: new ArrayList<>();
@@ -457,8 +475,14 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try{
                 List<Long> targetClassificationUIDsList = getTargetClassificationsUIDList(workingGraphOperationExecutor,includeOffspringClassifications,offspringLevel);
+                RelationDirection classificationViewpointRelationDirection = RelationDirection.TWO_WAY;
+                switch (relationDirection){
+                    case FROM -> classificationViewpointRelationDirection = RelationDirection.TO;
+                    case TO -> classificationViewpointRelationDirection = RelationDirection.FROM;
+                    case TWO_WAY -> classificationViewpointRelationDirection = RelationDirection.TWO_WAY;
+                }
                 String queryPairsCql = CypherBuilder.matchRelatedPairFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID,
-                        CommonOperationUtil.formatListLiteralValue(targetClassificationUIDsList),RealmConstant.AttributesViewKindClass,relationKindName,relationDirection);
+                        CommonOperationUtil.formatListLiteralValue(targetClassificationUIDsList),RealmConstant.AttributesViewKindClass,relationKindName,classificationViewpointRelationDirection);
                 GetListAttributesViewKindTransformer getListAttributesViewKindTransformer = new GetListAttributesViewKindTransformer(this.coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object queryRes = workingGraphOperationExecutor.executeRead(getListAttributesViewKindTransformer,queryPairsCql);
                 List<AttributesViewKind> resultList = queryRes != null ? (List<AttributesViewKind>)queryRes: new ArrayList<>();
@@ -477,9 +501,15 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try{
                 List<ConceptionEntity> conceptionEntityList = new ArrayList<>();
+                RelationDirection classificationViewpointRelationDirection = RelationDirection.TWO_WAY;
+                switch (relationDirection){
+                    case FROM -> classificationViewpointRelationDirection = RelationDirection.TO;
+                    case TO -> classificationViewpointRelationDirection = RelationDirection.FROM;
+                    case TWO_WAY -> classificationViewpointRelationDirection = RelationDirection.TWO_WAY;
+                }
                 List<Long> targetClassificationUIDsList = getTargetClassificationsUIDList(workingGraphOperationExecutor,includeOffspringClassifications,offspringLevel);
                 String queryPairsCql = CypherBuilder.matchRelatedNodesFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID,
-                        CommonOperationUtil.formatListLiteralValue(targetClassificationUIDsList),queryParameters,relationKindName,relationDirection);
+                        CommonOperationUtil.formatListLiteralValue(targetClassificationUIDsList),queryParameters,relationKindName,classificationViewpointRelationDirection);
                 DataTransformer offspringClassificationsDataTransformer = new DataTransformer() {
                     @Override
                     public Object transformResult(Result result) {
