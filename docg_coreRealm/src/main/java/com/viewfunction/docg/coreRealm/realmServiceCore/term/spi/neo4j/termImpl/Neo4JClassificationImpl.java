@@ -900,7 +900,82 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
 
     @Override
     public List<AttributesViewKindAttachInfo> getAllDirectRelatedAttributesViewKindsInfo() {
-        return null;
+        if(this.classificationUID == null){
+            return null;
+        }else{
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String cql = "MATCH (n:DOCG_Classification)-[r]-(attributesViewKind:DOCG_AttributesViewKind) WHERE id(n) = "+this.classificationUID+" \n" +
+                        "RETURN attributesViewKind,r as attachedRelation,properties(r) as relationData";
+                logger.debug("Generated Cypher Statement: {}", cql);
+                List<AttributesViewKindAttachInfo> attributesViewKindAttachInfoList = new ArrayList<>();
+                DataTransformer dataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        while(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            if(nodeRecord.containsKey("attributesViewKind") && nodeRecord.containsKey("attachedRelation")){
+                                Node resultNode = nodeRecord.get("attributesViewKind").asNode();
+                                long nodeUID = resultNode.id();
+
+                                String attributesViewKindName = resultNode.get(RealmConstant._NameProperty).asString();
+                                String attributesViewKindNameDesc = null;
+                                if(resultNode.get(RealmConstant._DescProperty) != null){
+                                    attributesViewKindNameDesc = resultNode.get(RealmConstant._DescProperty).asString();
+                                }
+                                String attributesViewKindDataForm = resultNode.get(RealmConstant._viewKindDataForm).asString();
+
+                                AttributesViewKind.AttributesViewKindDataForm currentAttributesViewKindDataForm = AttributesViewKind.AttributesViewKindDataForm.SINGLE_VALUE;
+                                switch(attributesViewKindDataForm){
+                                    case "SINGLE_VALUE":currentAttributesViewKindDataForm = AttributesViewKind.AttributesViewKindDataForm.SINGLE_VALUE;
+                                        break;
+                                    case "LIST_VALUE":currentAttributesViewKindDataForm = AttributesViewKind.AttributesViewKindDataForm.LIST_VALUE;
+                                        break;
+                                    case "RELATED_VALUE":currentAttributesViewKindDataForm = AttributesViewKind.AttributesViewKindDataForm.RELATED_VALUE;
+                                        break;
+                                    case "EXTERNAL_VALUE":currentAttributesViewKindDataForm = AttributesViewKind.AttributesViewKindDataForm.EXTERNAL_VALUE;
+                                }
+
+                                String attributesViewKindUID = ""+nodeUID;
+                                Neo4JAttributesViewKindImpl neo4jAttributesViewKindImpl =
+                                        new Neo4JAttributesViewKindImpl(coreRealmName,attributesViewKindName,attributesViewKindNameDesc,currentAttributesViewKindDataForm,attributesViewKindUID);
+                                neo4jAttributesViewKindImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+
+                                Relationship attachedRelation = nodeRecord.get("attachedRelation").asRelationship();
+                                Map<String,Object> relationDataMap = new HashMap<>();
+                                relationDataMap.putAll(nodeRecord.get("relationData").asMap());
+                                relationDataMap.remove(RealmConstant._createDateProperty);
+                                relationDataMap.remove(RealmConstant._lastModifyDateProperty);
+                                relationDataMap.remove(RealmConstant._creatorIdProperty);
+                                relationDataMap.remove(RealmConstant._dataOriginProperty);
+
+                                AttributesViewKindAttachInfo attributesViewKindAttachInfo = new AttributesViewKindAttachInfo();
+                                attributesViewKindAttachInfo.setAttachedAttributesViewKind(neo4jAttributesViewKindImpl);
+
+                                RelationAttachInfo relationAttachInfo = new RelationAttachInfo();
+                                relationAttachInfo.setRelationKind(attachedRelation.type());
+                                relationAttachInfo.setRelationData(relationDataMap);
+
+                                String attachedRelationFromUID = ""+attachedRelation.startNodeId();
+                                if(getEntityUID().equals(attachedRelationFromUID)){
+                                    relationAttachInfo.setRelationDirection(RelationDirection.FROM);
+                                }else{
+                                    relationAttachInfo.setRelationDirection(RelationDirection.TO);
+                                }
+                                attributesViewKindAttachInfo.setRelationAttachInfo(relationAttachInfo);
+
+                                attributesViewKindAttachInfoList.add(attributesViewKindAttachInfo);
+                            }
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(dataTransformer,cql);
+                return attributesViewKindAttachInfoList;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
     }
 
     private List<Long> getTargetClassificationsUIDList(GraphOperationExecutor workingGraphOperationExecutor,boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException{
