@@ -710,7 +710,68 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
 
     @Override
     public List<RelationKindAttachInfo> getAllDirectRelatedRelationKindsInfo() {
-        return null;
+        if(this.classificationUID == null){
+            return null;
+        }else{
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String cql = "MATCH (n:DOCG_Classification)-[r]-(relationKind:DOCG_RelationKind) WHERE id(n) = "+this.classificationUID+" \n" +
+                        "RETURN relationKind,r as attachedRelation,properties(r) as relationData";
+                logger.debug("Generated Cypher Statement: {}", cql);
+                List<RelationKindAttachInfo> relationKindAttachInfoList = new ArrayList<>();
+                DataTransformer dataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        while(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            if(nodeRecord.containsKey("relationKind") && nodeRecord.containsKey("attachedRelation")){
+                                Node resultNode = nodeRecord.get("relationKind").asNode();
+                                long nodeUID = resultNode.id();
+                                String relationKindName = resultNode.get(RealmConstant._NameProperty).asString();
+                                String relationKindDesc = null;
+                                if(resultNode.get(RealmConstant._DescProperty) != null){
+                                    relationKindDesc = resultNode.get(RealmConstant._DescProperty).asString();
+                                }
+                                String relationKindUID = ""+nodeUID;
+                                Neo4JRelationKindImpl neo4JRelationKindImpl =
+                                        new Neo4JRelationKindImpl(coreRealmName,relationKindName,relationKindDesc,relationKindUID);
+                                neo4JRelationKindImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+
+                                Relationship attachedRelation = nodeRecord.get("attachedRelation").asRelationship();
+                                Map<String,Object> relationDataMap = new HashMap<>();
+                                relationDataMap.putAll(nodeRecord.get("relationData").asMap());
+                                relationDataMap.remove(RealmConstant._createDateProperty);
+                                relationDataMap.remove(RealmConstant._lastModifyDateProperty);
+                                relationDataMap.remove(RealmConstant._creatorIdProperty);
+                                relationDataMap.remove(RealmConstant._dataOriginProperty);
+
+                                RelationKindAttachInfo relationKindAttachInfo = new RelationKindAttachInfo();
+                                relationKindAttachInfo.setAttachedRelationKind(neo4JRelationKindImpl);
+
+                                RelationAttachInfo relationAttachInfo = new RelationAttachInfo();
+                                relationAttachInfo.setRelationKind(attachedRelation.type());
+                                relationAttachInfo.setRelationData(relationDataMap);
+
+                                String attachedRelationFromUID = ""+attachedRelation.startNodeId();
+                                if(getEntityUID().equals(attachedRelationFromUID)){
+                                    relationAttachInfo.setRelationDirection(RelationDirection.FROM);
+                                }else{
+                                    relationAttachInfo.setRelationDirection(RelationDirection.TO);
+                                }
+                                relationKindAttachInfo.setRelationAttachInfo(relationAttachInfo);
+
+                                relationKindAttachInfoList.add(relationKindAttachInfo);
+                            }
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(dataTransformer,cql);
+                return relationKindAttachInfoList;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
     }
 
     @Override
