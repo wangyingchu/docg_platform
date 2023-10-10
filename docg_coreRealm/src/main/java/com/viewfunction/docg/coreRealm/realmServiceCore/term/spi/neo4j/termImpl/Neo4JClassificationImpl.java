@@ -644,7 +644,68 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
 
     @Override
     public List<ConceptionKindAttachInfo> getAllDirectRelatedConceptionKindsInfo() {
-        return null;
+        if(this.classificationUID == null){
+            return null;
+        }else{
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String cql = "MATCH (n:DOCG_Classification)-[r]-(conceptionKind:DOCG_ConceptionKind) WHERE id(n) = "+this.classificationUID+" \n" +
+                        "RETURN conceptionKind,r as attachedRelation,properties(r) as relationData";
+                logger.debug("Generated Cypher Statement: {}", cql);
+                List<ConceptionKindAttachInfo> conceptionKindAttachInfoList = new ArrayList<>();
+                DataTransformer dataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        while(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            if(nodeRecord.containsKey("conceptionKind") && nodeRecord.containsKey("attachedRelation")){
+                                Node resultNode = nodeRecord.get("conceptionKind").asNode();
+                                long nodeUID = resultNode.id();
+                                String conceptionKindName = resultNode.get(RealmConstant._NameProperty).asString();
+                                String conceptionKindDesc = null;
+                                if(resultNode.get(RealmConstant._DescProperty) != null){
+                                    conceptionKindDesc = resultNode.get(RealmConstant._DescProperty).asString();
+                                }
+                                String conceptionKindUID = ""+nodeUID;
+                                Neo4JConceptionKindImpl neo4JConceptionKindImpl =
+                                        new Neo4JConceptionKindImpl(coreRealmName,conceptionKindName,conceptionKindDesc,conceptionKindUID);
+                                neo4JConceptionKindImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+
+                                Relationship attachedRelation = nodeRecord.get("attachedRelation").asRelationship();
+                                Map<String,Object> relationDataMap = new HashMap<>();
+                                relationDataMap.putAll(nodeRecord.get("relationData").asMap());
+                                relationDataMap.remove(RealmConstant._createDateProperty);
+                                relationDataMap.remove(RealmConstant._lastModifyDateProperty);
+                                relationDataMap.remove(RealmConstant._creatorIdProperty);
+                                relationDataMap.remove(RealmConstant._dataOriginProperty);
+
+                                ConceptionKindAttachInfo conceptionKindAttachInfo = new ConceptionKindAttachInfo();
+                                conceptionKindAttachInfo.setAttachedConceptionKind(neo4JConceptionKindImpl);
+
+                                RelationAttachInfo relationAttachInfo = new RelationAttachInfo();
+                                relationAttachInfo.setRelationKind(attachedRelation.type());
+                                relationAttachInfo.setRelationData(relationDataMap);
+
+                                String attachedRelationFromUID = ""+attachedRelation.startNodeId();
+                                if(getEntityUID().equals(attachedRelationFromUID)){
+                                    relationAttachInfo.setRelationDirection(RelationDirection.FROM);
+                                }else{
+                                    relationAttachInfo.setRelationDirection(RelationDirection.TO);
+                                }
+                                conceptionKindAttachInfo.setRelationAttachInfo(relationAttachInfo);
+
+                                conceptionKindAttachInfoList.add(conceptionKindAttachInfo);
+                            }
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(dataTransformer,cql);
+                return conceptionKindAttachInfoList;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
     }
 
     @Override
