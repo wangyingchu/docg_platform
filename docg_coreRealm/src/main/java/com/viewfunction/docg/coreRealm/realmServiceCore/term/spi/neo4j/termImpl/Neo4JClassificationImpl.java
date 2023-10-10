@@ -776,7 +776,126 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
 
     @Override
     public List<AttributeKindAttachInfo> getAllDirectRelatedAttributeKindsInfo() {
-        return null;
+        if(this.classificationUID == null){
+            return null;
+        }else{
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String cql = "MATCH (n:DOCG_Classification)-[r]-(attributeKind:DOCG_AttributeKind) WHERE id(n) = "+this.classificationUID+" \n" +
+                        "RETURN attributeKind,r as attachedRelation,properties(r) as relationData";
+                logger.debug("Generated Cypher Statement: {}", cql);
+                List<AttributeKindAttachInfo> attributeKindAttachInfoList = new ArrayList<>();
+                DataTransformer dataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        while(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            if(nodeRecord.containsKey("attributeKind") && nodeRecord.containsKey("attachedRelation")){
+                                Node resultNode = nodeRecord.get("attributeKind").asNode();
+                                long nodeUID = resultNode.id();
+
+                                String attributeKindName = resultNode.get(RealmConstant._NameProperty).asString();
+                                String attributeKindNameDesc = null;
+                                if(resultNode.get(RealmConstant._DescProperty) != null){
+                                    attributeKindNameDesc = resultNode.get(RealmConstant._DescProperty).asString();
+                                }
+                                String attributesViewKindDataForm = resultNode.get(RealmConstant._attributeDataType).asString();
+                                AttributeDataType attributeDataType = null;
+                                switch(attributesViewKindDataForm){
+                                    case "BOOLEAN":attributeDataType = AttributeDataType.BOOLEAN;
+                                        break;
+                                    case "INT":attributeDataType = AttributeDataType.INT;
+                                        break;
+                                    case "SHORT":attributeDataType = AttributeDataType.SHORT;
+                                        break;
+                                    case "LONG":attributeDataType = AttributeDataType.LONG;
+                                        break;
+                                    case "FLOAT":attributeDataType = AttributeDataType.FLOAT;
+                                        break;
+                                    case "DOUBLE":attributeDataType = AttributeDataType.DOUBLE;
+                                        break;
+                                    case "TIMESTAMP":attributeDataType = AttributeDataType.TIMESTAMP;
+                                        break;
+                                    case "STRING":attributeDataType = AttributeDataType.STRING;
+                                        break;
+                                    case "BINARY":attributeDataType = AttributeDataType.BINARY;
+                                        break;
+                                    case "BYTE":attributeDataType = AttributeDataType.BYTE;
+                                        break;
+                                    case "DECIMAL":attributeDataType = AttributeDataType.DECIMAL;
+                                        break;
+                                    case "BOOLEAN_ARRAY":attributeDataType = AttributeDataType.BOOLEAN_ARRAY;
+                                        break;
+                                    case "INT_ARRAY":attributeDataType = AttributeDataType.INT_ARRAY;
+                                        break;
+                                    case "SHORT_ARRAY":attributeDataType = AttributeDataType.SHORT_ARRAY;
+                                        break;
+                                    case "LONG_ARRAY":attributeDataType = AttributeDataType.LONG_ARRAY;
+                                        break;
+                                    case "FLOAT_ARRAY":attributeDataType = AttributeDataType.FLOAT_ARRAY;
+                                        break;
+                                    case "DOUBLE_ARRAY":attributeDataType = AttributeDataType.DOUBLE_ARRAY;
+                                        break;
+                                    case "TIMESTAMP_ARRAY":attributeDataType = AttributeDataType.TIMESTAMP_ARRAY;
+                                        break;
+                                    case "STRING_ARRAY":attributeDataType = AttributeDataType.STRING_ARRAY;
+                                        break;
+                                    case "BYTE_ARRAY":attributeDataType = AttributeDataType.BYTE_ARRAY;
+                                        break;
+                                    case "DECIMAL_ARRAY":attributeDataType = AttributeDataType.DECIMAL_ARRAY;
+                                        break;
+                                    case "DATE":attributeDataType = AttributeDataType.DATE;
+                                        break;
+                                    case "DATETIME":attributeDataType = AttributeDataType.DATETIME;
+                                        break;
+                                    case "TIME":attributeDataType = AttributeDataType.TIME;
+                                        break;
+                                    case "DATE_ARRAY":attributeDataType = AttributeDataType.DATE_ARRAY;
+                                        break;
+                                    case "DATETIME_ARRAY":attributeDataType = AttributeDataType.DATETIME_ARRAY;
+                                        break;
+                                    case "TIME_ARRAY":attributeDataType = AttributeDataType.TIME_ARRAY;
+                                }
+                                String attributeKindUID = ""+nodeUID;
+                                Neo4JAttributeKindImpl Neo4jAttributeKindImpl =
+                                        new Neo4JAttributeKindImpl(coreRealmName,attributeKindName,attributeKindNameDesc,attributeDataType,attributeKindUID);
+                                Neo4jAttributeKindImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+
+                                Relationship attachedRelation = nodeRecord.get("attachedRelation").asRelationship();
+                                Map<String,Object> relationDataMap = new HashMap<>();
+                                relationDataMap.putAll(nodeRecord.get("relationData").asMap());
+                                relationDataMap.remove(RealmConstant._createDateProperty);
+                                relationDataMap.remove(RealmConstant._lastModifyDateProperty);
+                                relationDataMap.remove(RealmConstant._creatorIdProperty);
+                                relationDataMap.remove(RealmConstant._dataOriginProperty);
+
+                                AttributeKindAttachInfo attributeKindAttachInfo = new AttributeKindAttachInfo();
+                                attributeKindAttachInfo.setAttachedAttributeKind(Neo4jAttributeKindImpl);
+
+                                RelationAttachInfo relationAttachInfo = new RelationAttachInfo();
+                                relationAttachInfo.setRelationKind(attachedRelation.type());
+                                relationAttachInfo.setRelationData(relationDataMap);
+
+                                String attachedRelationFromUID = ""+attachedRelation.startNodeId();
+                                if(getEntityUID().equals(attachedRelationFromUID)){
+                                    relationAttachInfo.setRelationDirection(RelationDirection.FROM);
+                                }else{
+                                    relationAttachInfo.setRelationDirection(RelationDirection.TO);
+                                }
+                                attributeKindAttachInfo.setRelationAttachInfo(relationAttachInfo);
+
+                                attributeKindAttachInfoList.add(attributeKindAttachInfo);
+                            }
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(dataTransformer,cql);
+                return attributeKindAttachInfoList;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
     }
 
     @Override
