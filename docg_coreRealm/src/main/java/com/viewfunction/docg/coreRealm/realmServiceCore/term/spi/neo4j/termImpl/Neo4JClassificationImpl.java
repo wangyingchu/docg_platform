@@ -622,29 +622,29 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
         }
         List<Long> classificationsUIDList = new ArrayList<>();
         classificationsUIDList.add(Long.parseLong(this.classificationUID));
-
-        String queryCql = CypherBuilder.matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID, Long.parseLong(classificationUID),
-                RealmConstant.ClassificationClass,RealmConstant.Classification_ClassificationRelationClass, RelationDirection.FROM,1,offspringLevel, CypherBuilder.ReturnRelationableDataType.NODE);
-
-        DataTransformer offspringClassificationsDataTransformer = new DataTransformer() {
-            @Override
-            public Object transformResult(Result result) {
-                while(result.hasNext()){
-                    Record record = result.next();
-                    Node classificationNode = record.get(CypherBuilder.operationResultName).asNode();
-                    List<String> allLabelNames = Lists.newArrayList(classificationNode.labels());
-                    boolean isMatchedKind = false;
-                    if(allLabelNames.size()>0){
-                        isMatchedKind = allLabelNames.contains(RealmConstant.ClassificationClass);
+        if(includeOffspringClassifications){
+            String queryCql = CypherBuilder.matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID, Long.parseLong(classificationUID),
+                    RealmConstant.ClassificationClass,RealmConstant.Classification_ClassificationRelationClass, RelationDirection.FROM,1,offspringLevel, CypherBuilder.ReturnRelationableDataType.NODE);
+            DataTransformer offspringClassificationsDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    while(result.hasNext()){
+                        Record record = result.next();
+                        Node classificationNode = record.get(CypherBuilder.operationResultName).asNode();
+                        List<String> allLabelNames = Lists.newArrayList(classificationNode.labels());
+                        boolean isMatchedKind = false;
+                        if(allLabelNames.size() > 0){
+                            isMatchedKind = allLabelNames.contains(RealmConstant.ClassificationClass);
+                        }
+                        if(isMatchedKind){
+                            classificationsUIDList.add(classificationNode.id());
+                        }
                     }
-                    if(isMatchedKind){
-                        classificationsUIDList.add(classificationNode.id());
-                    }
+                    return null;
                 }
-                return null;
-            }
-        };
-        workingGraphOperationExecutor.executeRead(offspringClassificationsDataTransformer,queryCql);
+            };
+            workingGraphOperationExecutor.executeRead(offspringClassificationsDataTransformer,queryCql);
+        }
         return classificationsUIDList;
     }
 
