@@ -520,14 +520,14 @@ public class ClassificationTest {
         Assert.assertEquals(attachedClassificationList.get(0).getClassificationName(),classificationName03);
 
         Classification rootClassification =coreRealm.getClassification("classification1");
-        List<ConceptionKind> relatedConceptionKindList = rootClassification.getRelatedConceptionKind("relationTypeForClassificationTest02",RelationDirection.TO,true,3);
+        List<ConceptionKind> relatedConceptionKindList = rootClassification.getRelatedConceptionKinds("relationTypeForClassificationTest02",RelationDirection.TO,true,3);
         Assert.assertNotNull(relatedConceptionKindList);
         Assert.assertEquals(relatedConceptionKindList.size(),1);
         Assert.assertEquals(relatedConceptionKindList.get(0).getConceptionKindName(),"testConceptionKindForClassification");
-        relatedConceptionKindList = rootClassification.getRelatedConceptionKind("relationTypeForClassificationTest02",RelationDirection.TO,true,2);
+        relatedConceptionKindList = rootClassification.getRelatedConceptionKinds("relationTypeForClassificationTest02",RelationDirection.TO,true,2);
         Assert.assertNotNull(relatedConceptionKindList);
         Assert.assertEquals(relatedConceptionKindList.size(),0);
-        relatedConceptionKindList = rootClassification.getRelatedConceptionKind("relationTypeForClassificationTest02",RelationDirection.FROM,true,3);
+        relatedConceptionKindList = rootClassification.getRelatedConceptionKinds("relationTypeForClassificationTest02",RelationDirection.FROM,true,3);
         Assert.assertNotNull(relatedConceptionKindList);
         Assert.assertEquals(relatedConceptionKindList.size(),0);
 
@@ -535,14 +535,14 @@ public class ClassificationTest {
         relationAttachInfo.setRelationDirection(RelationDirection.FROM);
         resultRelationEntity01 = targetAttributesViewKind.attachClassification(relationAttachInfo,classificationName05_1_1);
         Assert.assertNotNull(resultRelationEntity01);
-        List<AttributesViewKind> relatedAttributesViewKindList = rootClassification.getRelatedAttributesViewKind("relationTypeForClassificationTest02",RelationDirection.FROM,true,3);
+        List<AttributesViewKind> relatedAttributesViewKindList = rootClassification.getRelatedAttributesViewKinds("relationTypeForClassificationTest02",RelationDirection.FROM,true,3);
         Assert.assertNotNull(relatedAttributesViewKindList);
         Assert.assertEquals(relatedAttributesViewKindList.size(),1);
         Assert.assertEquals(relatedAttributesViewKindList.get(0).getAttributesViewKindName(),"testAttributesViewKindForClassification");
-        relatedAttributesViewKindList = rootClassification.getRelatedAttributesViewKind("relationTypeForClassificationTest02",RelationDirection.FROM,true,2);
+        relatedAttributesViewKindList = rootClassification.getRelatedAttributesViewKinds("relationTypeForClassificationTest02",RelationDirection.FROM,true,2);
         Assert.assertNotNull(relatedAttributesViewKindList);
         Assert.assertEquals(relatedAttributesViewKindList.size(),0);
-        relatedAttributesViewKindList = rootClassification.getRelatedAttributesViewKind("relationTypeForClassificationTest02",RelationDirection.TO,true,3);
+        relatedAttributesViewKindList = rootClassification.getRelatedAttributesViewKinds("relationTypeForClassificationTest02",RelationDirection.TO,true,3);
         Assert.assertNotNull(relatedAttributesViewKindList);
         Assert.assertEquals(relatedAttributesViewKindList.size(),0);
 
@@ -557,14 +557,14 @@ public class ClassificationTest {
         }
         resultRelationEntity01 = _RelationKind01.attachClassification(relationAttachInfo,classificationName05_1_1);
         Assert.assertNotNull(resultRelationEntity01);
-        List<RelationKind> relatedRelationKindList = rootClassification.getRelatedRelationKind("relationTypeForClassificationTest02",RelationDirection.FROM,true,3);
+        List<RelationKind> relatedRelationKindList = rootClassification.getRelatedRelationKinds("relationTypeForClassificationTest02",RelationDirection.FROM,true,3);
         Assert.assertNotNull(relatedRelationKindList);
         Assert.assertEquals(relatedRelationKindList.size(),1);
         Assert.assertEquals(relatedRelationKindList.get(0).getRelationKindName(),"testRelationKindForClassification");
-        relatedRelationKindList = rootClassification.getRelatedRelationKind("relationTypeForClassificationTest02",RelationDirection.FROM,true,2);
+        relatedRelationKindList = rootClassification.getRelatedRelationKinds("relationTypeForClassificationTest02",RelationDirection.FROM,true,2);
         Assert.assertNotNull(relatedRelationKindList);
         Assert.assertEquals(relatedRelationKindList.size(),0);
-        relatedRelationKindList = rootClassification.getRelatedRelationKind("relationTypeForClassificationTest02",RelationDirection.TO,true,3);
+        relatedRelationKindList = rootClassification.getRelatedRelationKinds("relationTypeForClassificationTest02",RelationDirection.TO,true,3);
         Assert.assertNotNull(relatedRelationKindList);
         Assert.assertEquals(relatedRelationKindList.size(),0);
 
@@ -572,14 +572,14 @@ public class ClassificationTest {
         relationAttachInfo.setRelationDirection(RelationDirection.FROM);
         resultRelationEntity01 = targetAttributeKind.attachClassification(relationAttachInfo,classificationName05_1_1);
         Assert.assertNotNull(resultRelationEntity01);
-        List<AttributeKind> relatedAttributeKindList = rootClassification.getRelatedAttributeKind("relationTypeForClassificationTest02",RelationDirection.FROM,true,3);
+        List<AttributeKind> relatedAttributeKindList = rootClassification.getRelatedAttributeKinds("relationTypeForClassificationTest02",RelationDirection.FROM,true,3);
         Assert.assertNotNull(relatedAttributeKindList);
         Assert.assertEquals(relatedAttributeKindList.size(),1);
         Assert.assertEquals(relatedAttributeKindList.get(0).getAttributeKindName(),"testAttributeKindForClassification");
-        relatedAttributeKindList = rootClassification.getRelatedAttributeKind("relationTypeForClassificationTest02",RelationDirection.FROM,true,2);
+        relatedAttributeKindList = rootClassification.getRelatedAttributeKinds("relationTypeForClassificationTest02",RelationDirection.FROM,true,2);
         Assert.assertNotNull(relatedAttributeKindList);
         Assert.assertEquals(relatedAttributeKindList.size(),0);
-        relatedAttributeKindList = rootClassification.getRelatedAttributeKind("relationTypeForClassificationTest02",RelationDirection.TO,true,3);
+        relatedAttributeKindList = rootClassification.getRelatedAttributeKinds("relationTypeForClassificationTest02",RelationDirection.TO,true,3);
         Assert.assertNotNull(relatedAttributeKindList);
         Assert.assertEquals(relatedAttributeKindList.size(),0);
 
@@ -594,7 +594,7 @@ public class ClassificationTest {
         QueryParameters queryParameters = new QueryParameters();
         queryParameters.setEntityKind("testConceptionKindForClassification");
 
-        List<ConceptionEntity> relatedEntitiesList =  rootClassification.getRelatedConceptionEntity("relationTypeForClassificationTest02",RelationDirection.FROM,queryParameters,true,4);
+        List<ConceptionEntity> relatedEntitiesList =  rootClassification.getRelatedConceptionEntities("relationTypeForClassificationTest02",RelationDirection.FROM,queryParameters,true,4);
         Assert.assertNotNull(relatedEntitiesList);
         Assert.assertEquals(relatedEntitiesList.size(),10);
         for(ConceptionEntity currentConceptionEntity:relatedEntitiesList){
@@ -602,12 +602,12 @@ public class ClassificationTest {
         }
 
         queryParameters.setResultNumber(5);
-        relatedEntitiesList = rootClassification.getRelatedConceptionEntity("relationTypeForClassificationTest02",RelationDirection.FROM,queryParameters,true,4);
+        relatedEntitiesList = rootClassification.getRelatedConceptionEntities("relationTypeForClassificationTest02",RelationDirection.FROM,queryParameters,true,4);
         Assert.assertNotNull(relatedEntitiesList);
         Assert.assertEquals(relatedEntitiesList.size(),5);
 
         queryParameters.setDefaultFilteringItem(new EqualFilteringItem("propA", 60000l));
-        relatedEntitiesList = rootClassification.getRelatedConceptionEntity("relationTypeForClassificationTest02",RelationDirection.FROM,queryParameters,true,4);
+        relatedEntitiesList = rootClassification.getRelatedConceptionEntities("relationTypeForClassificationTest02",RelationDirection.FROM,queryParameters,true,4);
         Assert.assertNotNull(relatedEntitiesList);
         Assert.assertEquals(relatedEntitiesList.size(),0);
 
@@ -620,11 +620,11 @@ public class ClassificationTest {
         queryParameters = new QueryParameters();
         queryParameters.setEntityKind("testConceptionKindForClassification");
 
-        relatedEntitiesList =  rootClassification.getRelatedConceptionEntity("relationTypeForClassificationTest02",RelationDirection.FROM,queryParameters,true,4);
+        relatedEntitiesList =  rootClassification.getRelatedConceptionEntities("relationTypeForClassificationTest02",RelationDirection.FROM,queryParameters,true,4);
         Assert.assertNotNull(relatedEntitiesList);
         Assert.assertEquals(relatedEntitiesList.size(),20);
 
-        relatedEntitiesList =  rootClassification.getRelatedConceptionEntity("relationTypeForClassificationTest02",RelationDirection.FROM,queryParameters,true,2);
+        relatedEntitiesList =  rootClassification.getRelatedConceptionEntities("relationTypeForClassificationTest02",RelationDirection.FROM,queryParameters,true,2);
         Assert.assertNotNull(relatedEntitiesList);
         Assert.assertEquals(relatedEntitiesList.size(),10);
 
@@ -642,7 +642,7 @@ public class ClassificationTest {
             ConceptionEntity _ConceptionEntity01_2 = _ConceptionKind02.newEntity(conceptionEntityValue2,false);
             _ConceptionEntity01_2.attachClassification(relationAttachInfo,"classification1");
         }
-        relatedEntitiesList = rootClassification.getRelatedConceptionEntity("relationTypeForClassificationTest02",RelationDirection.FROM,null,true,2);
+        relatedEntitiesList = rootClassification.getRelatedConceptionEntities("relationTypeForClassificationTest02",RelationDirection.FROM,null,true,2);
         Assert.assertNotNull(relatedEntitiesList);
         Assert.assertEquals(relatedEntitiesList.size(),15);
 
@@ -653,11 +653,11 @@ public class ClassificationTest {
             _ConceptionEntity01_2.attachClassification(relationAttachInfo,"classification1");
         }
 
-        relatedEntitiesList = rootClassification.getRelatedConceptionEntity("relationTypeForClassificationTest02",RelationDirection.FROM,null,true,2);
+        relatedEntitiesList = rootClassification.getRelatedConceptionEntities("relationTypeForClassificationTest02",RelationDirection.FROM,null,true,2);
         Assert.assertNotNull(relatedEntitiesList);
         Assert.assertEquals(relatedEntitiesList.size(),15);
 
-        relatedEntitiesList = rootClassification.getRelatedConceptionEntity(null,RelationDirection.FROM,null,true,2);
+        relatedEntitiesList = rootClassification.getRelatedConceptionEntities(null,RelationDirection.FROM,null,true,2);
         Assert.assertNotNull(relatedEntitiesList);
         Assert.assertEquals(relatedEntitiesList.size(),20);
 

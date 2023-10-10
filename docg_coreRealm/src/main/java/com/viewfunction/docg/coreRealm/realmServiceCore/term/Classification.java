@@ -109,7 +109,10 @@ public interface Classification extends MetaAttributeFeatureSupportable, Attribu
      *
      * @return 概念分类对象列表
      */
-    public List<ConceptionKind> getRelatedConceptionKind(String relationKindName, RelationDirection relationDirection,boolean includeOffspringClassifications,int offspringLevel) throws CoreRealmServiceRuntimeException;
+    public List<ConceptionKind> getRelatedConceptionKinds(String relationKindName, RelationDirection relationDirection, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException;
+
+
+    public void getAllDirectRelatedConceptionKinds();
 
     /**
      * 获取与当前分类关联的关系分类对象
@@ -121,7 +124,7 @@ public interface Classification extends MetaAttributeFeatureSupportable, Attribu
      *
      * @return 关系分类对象列表
      */
-    public List<RelationKind> getRelatedRelationKind(String relationKindName, RelationDirection relationDirection,boolean includeOffspringClassifications,int offspringLevel) throws CoreRealmServiceRuntimeException;
+    public List<RelationKind> getRelatedRelationKinds(String relationKindName, RelationDirection relationDirection, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException;
 
     /**
      * 获取与当前分类关联的属性类型对象
@@ -133,7 +136,7 @@ public interface Classification extends MetaAttributeFeatureSupportable, Attribu
      *
      * @return 属性类型对象列表
      */
-    public List<AttributeKind> getRelatedAttributeKind(String relationKindName, RelationDirection relationDirection,boolean includeOffspringClassifications,int offspringLevel) throws CoreRealmServiceRuntimeException;
+    public List<AttributeKind> getRelatedAttributeKinds(String relationKindName, RelationDirection relationDirection, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException;
 
     /**
      * 获取与当前分类关联的属性视图类型对象
@@ -145,7 +148,7 @@ public interface Classification extends MetaAttributeFeatureSupportable, Attribu
      *
      * @return 属性视图类型对象列表
      */
-    public List<AttributesViewKind> getRelatedAttributesViewKind(String relationKindName, RelationDirection relationDirection,boolean includeOffspringClassifications,int offspringLevel) throws CoreRealmServiceRuntimeException;
+    public List<AttributesViewKind> getRelatedAttributesViewKinds(String relationKindName, RelationDirection relationDirection, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException;
 
     /**
      * 获取与当前分类关联的概念实体对象
@@ -158,7 +161,7 @@ public interface Classification extends MetaAttributeFeatureSupportable, Attribu
      *
      * @return 概念实体对象列表
      */
-    public List<ConceptionEntity> getRelatedConceptionEntity(String relationKindName, RelationDirection relationDirection, QueryParameters queryParameters,boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+    public List<ConceptionEntity> getRelatedConceptionEntities(String relationKindName, RelationDirection relationDirection, QueryParameters queryParameters, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
     /**
      * 获取与当前分类关联的各类型数据的实时统计信息

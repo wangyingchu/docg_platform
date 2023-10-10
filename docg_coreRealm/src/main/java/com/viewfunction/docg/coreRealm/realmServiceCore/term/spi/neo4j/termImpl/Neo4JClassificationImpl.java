@@ -390,7 +390,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
     }
 
     @Override
-    public List<ConceptionKind> getRelatedConceptionKind(String relationKindName, RelationDirection relationDirection, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException {
+    public List<ConceptionKind> getRelatedConceptionKinds(String relationKindName, RelationDirection relationDirection, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException {
         if(classificationName == null){
             return null;
         }else{
@@ -416,7 +416,12 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
     }
 
     @Override
-    public List<RelationKind> getRelatedRelationKind(String relationKindName, RelationDirection relationDirection, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException {
+    public void getAllDirectRelatedConceptionKinds() {
+
+    }
+
+    @Override
+    public List<RelationKind> getRelatedRelationKinds(String relationKindName, RelationDirection relationDirection, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException {
         if(classificationName == null){
             return null;
         }else{
@@ -442,7 +447,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
     }
 
     @Override
-    public List<AttributeKind> getRelatedAttributeKind(String relationKindName, RelationDirection relationDirection, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException {
+    public List<AttributeKind> getRelatedAttributeKinds(String relationKindName, RelationDirection relationDirection, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException {
         if(classificationName == null){
             return null;
         }else{
@@ -468,7 +473,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
     }
 
     @Override
-    public List<AttributesViewKind> getRelatedAttributesViewKind(String relationKindName, RelationDirection relationDirection, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException {
+    public List<AttributesViewKind> getRelatedAttributesViewKinds(String relationKindName, RelationDirection relationDirection, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException {
         if(classificationName == null){
             return null;
         }else{
@@ -494,7 +499,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
     }
 
     @Override
-    public List<ConceptionEntity> getRelatedConceptionEntity(String relationKindName, RelationDirection relationDirection, QueryParameters queryParameters, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+    public List<ConceptionEntity> getRelatedConceptionEntities(String relationKindName, RelationDirection relationDirection, QueryParameters queryParameters, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         if(classificationName == null){
             return null;
         }else{
