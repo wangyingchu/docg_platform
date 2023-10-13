@@ -204,6 +204,7 @@ public interface Neo4JClassificationAttachable extends ClassificationAttachable,
                                 RelationAttachInfo relationAttachInfo = new RelationAttachInfo();
                                 relationAttachInfo.setRelationKind(attachedRelation.type());
                                 relationAttachInfo.setRelationData(relationDataMap);
+                                relationAttachInfo.setRelationEntityUID(""+attachedRelation.id());
 
                                 String attachedRelationFromUID = ""+attachedRelation.startNodeId();
                                 if(getEntityUID().equals(attachedRelationFromUID)){

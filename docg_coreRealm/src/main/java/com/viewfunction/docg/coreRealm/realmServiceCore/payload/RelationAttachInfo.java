@@ -8,6 +8,7 @@ public class RelationAttachInfo {
     private String relationKind;
     private RelationDirection relationDirection;
     private Map<String, Object> relationData;
+    private String relationEntityUID;
 
     public String getRelationKind() {
         return relationKind;
@@ -31,5 +32,13 @@ public class RelationAttachInfo {
 
     public void setRelationData(Map<String, Object> relationData) {
         this.relationData = relationData;
+    }
+
+    public String getRelationEntityUID() {
+        return relationEntityUID;
+    }
+
+    public void setRelationEntityUID(String relationEntityUID) {
+        this.relationEntityUID = relationEntityUID;
     }
 }

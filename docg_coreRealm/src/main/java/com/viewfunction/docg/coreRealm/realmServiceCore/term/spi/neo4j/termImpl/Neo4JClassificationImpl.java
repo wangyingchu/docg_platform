@@ -685,6 +685,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
                                 RelationAttachInfo relationAttachInfo = new RelationAttachInfo();
                                 relationAttachInfo.setRelationKind(attachedRelation.type());
                                 relationAttachInfo.setRelationData(relationDataMap);
+                                relationAttachInfo.setRelationEntityUID(""+attachedRelation.id());
 
                                 String attachedRelationFromUID = ""+attachedRelation.startNodeId();
                                 if(getEntityUID().equals(attachedRelationFromUID)){
@@ -751,6 +752,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
                                 RelationAttachInfo relationAttachInfo = new RelationAttachInfo();
                                 relationAttachInfo.setRelationKind(attachedRelation.type());
                                 relationAttachInfo.setRelationData(relationDataMap);
+                                relationAttachInfo.setRelationEntityUID(""+attachedRelation.id());
 
                                 String attachedRelationFromUID = ""+attachedRelation.startNodeId();
                                 if(getEntityUID().equals(attachedRelationFromUID)){
@@ -875,6 +877,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
                                 RelationAttachInfo relationAttachInfo = new RelationAttachInfo();
                                 relationAttachInfo.setRelationKind(attachedRelation.type());
                                 relationAttachInfo.setRelationData(relationDataMap);
+                                relationAttachInfo.setRelationEntityUID(""+attachedRelation.id());
 
                                 String attachedRelationFromUID = ""+attachedRelation.startNodeId();
                                 if(getEntityUID().equals(attachedRelationFromUID)){
@@ -955,6 +958,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
                                 RelationAttachInfo relationAttachInfo = new RelationAttachInfo();
                                 relationAttachInfo.setRelationKind(attachedRelation.type());
                                 relationAttachInfo.setRelationData(relationDataMap);
+                                relationAttachInfo.setRelationEntityUID(""+attachedRelation.id());
 
                                 String attachedRelationFromUID = ""+attachedRelation.startNodeId();
                                 if(getEntityUID().equals(attachedRelationFromUID)){
