@@ -1652,6 +1652,13 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public String getClassificationDesc();
 
     /**
+     * 获取当前分类的唯一值ID
+     *
+     * @return 唯一值ID
+     */
+    public String getClassificationUID();
+
+    /**
      * 更新当前分类描述
      *
      * @param classificationDesc String 新的分类描述

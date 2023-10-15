@@ -48,6 +48,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
         this.graphOperationExecutorHelper = new GraphOperationExecutorHelper();
     }
 
+    @Override
     public String getClassificationUID() {
         return this.classificationUID;
     }

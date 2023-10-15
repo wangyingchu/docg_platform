@@ -26,6 +26,13 @@ public interface Classification extends MetaAttributeFeatureSupportable, Attribu
     public String getClassificationDesc();
 
     /**
+     * 获取当前分类的唯一值ID
+     *
+     * @return 唯一值ID
+     */
+    public String getClassificationUID();
+
+    /**
      * 更新当前分类描述
      *
      * @param classificationDesc String 新的分类描述
