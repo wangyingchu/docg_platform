@@ -168,6 +168,20 @@ public interface Classification extends MetaAttributeFeatureSupportable, Attribu
     public List<ConceptionEntity> getRelatedConceptionEntities(String relationKindName, RelationDirection relationDirection, QueryParameters queryParameters, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
     /**
+     * 获取与当前分类关联的概念实体对象的属性值
+     *
+     * @param relationKindName String 关联的关系类型名称
+     * @param relationDirection RelationDirection 关联的关系方向
+     * @param queryParameters QueryParameters 概念实体查询过滤条件
+     * @param attributeNames List<String> 查询返回的属性类型列表
+     * @param includeOffspringClassifications boolean 是否获取后代分类关联的数据
+     * @param offspringLevel int 包含的后代分类层级数
+     *
+     * @return 概念实体属性查询结果集
+     */
+    public ConceptionEntitiesAttributesRetrieveResult getRelatedConceptionEntityAttributes(String relationKindName, RelationDirection relationDirection, QueryParameters queryParameters, List<String> attributeNames,boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
+    /**
      * 获取与当前分类关联的各类型数据的实时统计信息
      *
      * @return 分类实时统计信息
