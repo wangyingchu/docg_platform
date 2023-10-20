@@ -1,11 +1,13 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.payload;
 
+import java.util.List;
 import java.util.Map;
 
 public class ConceptionEntityValue {
 
     private String conceptionEntityUID;
     private Map<String,Object> entityAttributesValue;
+    private List<String> allConceptionKindNames;
 
     public ConceptionEntityValue(){}
 
@@ -36,5 +38,13 @@ public class ConceptionEntityValue {
 
     public void setEntityAttributesValue(Map<String, Object> entityAttributesValue) {
         this.entityAttributesValue = entityAttributesValue;
+    }
+
+    public List<String> getAllConceptionKindNames() {
+        return allConceptionKindNames;
+    }
+
+    public void setAllConceptionKindNames(List<String> allConceptionKindNames) {
+        this.allConceptionKindNames = allConceptionKindNames;
     }
 }

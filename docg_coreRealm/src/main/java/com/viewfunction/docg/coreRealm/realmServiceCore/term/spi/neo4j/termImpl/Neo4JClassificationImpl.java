@@ -14,6 +14,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonConceptionEntitiesAttributesRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.spi.common.structureImpl.CommonInheritanceTreeImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
@@ -26,10 +27,8 @@ import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl implements Neo4JClassification {
 
@@ -553,6 +552,76 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
 
     @Override
     public ConceptionEntitiesAttributesRetrieveResult getRelatedConceptionEntityAttributes(String relationKindName, RelationDirection relationDirection, QueryParameters queryParameters, List<String> attributeNames, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        if(attributeNames != null && attributeNames.size()>0){
+            CommonConceptionEntitiesAttributesRetrieveResultImpl commonConceptionEntitiesAttributesRetrieveResultImpl
+                    = new CommonConceptionEntitiesAttributesRetrieveResultImpl();
+            commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            List<ConceptionEntityValue> conceptionEntityValueList = new ArrayList<>();
+
+            try{
+                RelationDirection classificationViewpointRelationDirection = RelationDirection.TWO_WAY;
+                switch (relationDirection){
+                    case FROM -> classificationViewpointRelationDirection = RelationDirection.TO;
+                    case TO -> classificationViewpointRelationDirection = RelationDirection.FROM;
+                    case TWO_WAY -> classificationViewpointRelationDirection = RelationDirection.TWO_WAY;
+                }
+                List<Long> targetClassificationUIDsList = getTargetClassificationsUIDList(workingGraphOperationExecutor,includeOffspringClassifications,offspringLevel);
+                String queryPairsCql = CypherBuilder.matchRelatedNodesFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID,
+                        CommonOperationUtil.formatListLiteralValue(targetClassificationUIDsList),queryParameters,relationKindName,classificationViewpointRelationDirection);
+                DataTransformer offspringClassificationsDataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        while(result.hasNext()){
+                            Record record = result.next();
+                            Node conceptionEntityNode = record.get(CypherBuilder.operationResultName).asNode();
+                            //Node classificationNode = record.get(CypherBuilder.sourceNodeName).asNode();
+                            String currentEntityKind = null;
+                            List<String> allLabelNames = Lists.newArrayList(conceptionEntityNode.labels());
+                            if(queryParameters != null && queryParameters.getEntityKind() != null){
+                                boolean isMatchedKind = false;
+                                if(allLabelNames.size()>0){
+                                    isMatchedKind = allLabelNames.contains( queryParameters.getEntityKind());
+                                }
+                                if(isMatchedKind){
+                                    currentEntityKind = queryParameters.getEntityKind();
+                                }
+                            }else{
+                                currentEntityKind = allLabelNames.get(0);
+                            }
+                            if(currentEntityKind != null){
+                                long nodeUID = conceptionEntityNode.id();
+                                String conceptionEntityUID = ""+nodeUID;
+                                Neo4JConceptionEntityImpl neo4jConceptionEntityImpl =
+                                        new Neo4JConceptionEntityImpl(currentEntityKind,conceptionEntityUID);
+                                neo4jConceptionEntityImpl.setAllConceptionKindNames(allLabelNames);
+                                neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+
+                                List<String> allConceptionKindNames = Lists.newArrayList(conceptionEntityNode.labels());
+                                Map<String,Object> entityAttributesValue = new HashMap<>();
+
+                                for(String currentAttribute:attributeNames){
+                                    if(conceptionEntityNode.containsKey(currentAttribute)){
+                                        Object attributeValueObject = conceptionEntityNode.get(currentAttribute).asObject();
+                                        entityAttributesValue.put(currentAttribute,getFormattedValue(attributeValueObject));
+                                    }
+                                }
+                                ConceptionEntityValue currentConceptionEntityValue = new ConceptionEntityValue(conceptionEntityUID,entityAttributesValue);
+                                currentConceptionEntityValue.setAllConceptionKindNames(allConceptionKindNames);
+                                conceptionEntityValueList.add(currentConceptionEntityValue);
+                            }
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(offspringClassificationsDataTransformer,queryPairsCql);
+                commonConceptionEntitiesAttributesRetrieveResultImpl.addConceptionEntitiesAttributes(conceptionEntityValueList);
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            commonConceptionEntitiesAttributesRetrieveResultImpl.finishEntitiesRetrieving();
+            return commonConceptionEntitiesAttributesRetrieveResultImpl;
+        }
         return null;
     }
 
@@ -1029,6 +1098,39 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
                 new GetSingleClassificationTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
         Object classificationRes = workingGraphOperationExecutor.executeRead(getSingleClassificationTransformer,queryCql);
         return classificationRes != null ? (Classification)classificationRes : null;
+    }
+
+    private Object getFormattedValue(Object attributeValue){
+        if(attributeValue != null) {
+            if(attributeValue instanceof Boolean || attributeValue instanceof String || attributeValue instanceof Number) {
+                return attributeValue;
+            }else if (attributeValue instanceof ZonedDateTime) {
+                ZonedDateTime targetZonedDateTime = (ZonedDateTime) attributeValue;
+                Date currentDate = Date.from(targetZonedDateTime.toInstant());
+                return currentDate;
+            }else if (attributeValue instanceof List && ((List<?>) attributeValue).size() > 0) {
+                Object firstAttributeValue = ((List<?>) attributeValue).get(0);
+                if (firstAttributeValue instanceof Boolean) {
+                    List<Boolean> booleanValueList = (List<Boolean>) attributeValue;
+                    Boolean[] returnBooleanValueArray = booleanValueList.toArray(new Boolean[booleanValueList.size()]);
+                    return returnBooleanValueArray;
+                }else if (firstAttributeValue instanceof ZonedDateTime) {
+                    List<ZonedDateTime> valueList = (List<ZonedDateTime>) attributeValue;
+                    Date[] returnDateValueArray = new Date[valueList.size()];
+                    for (int i = 0; i < valueList.size(); i++) {
+                        returnDateValueArray[i] = Date.from(valueList.get(i).toInstant());
+                    }
+                    return returnDateValueArray;
+                }else if (firstAttributeValue instanceof String) {
+                    List<String> stringValueList = (List<String>) attributeValue;
+                    String[] returnStringValueArray = stringValueList.toArray(new String[stringValueList.size()]);
+                    return returnStringValueArray;
+                }
+            }else {
+                return attributeValue;
+            }
+        }
+        return null;
     }
 
     //internal graphOperationExecutor management logic

@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer;
 
+import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
@@ -21,15 +22,9 @@ public class GetListConceptionEntityValueTransformer implements DataTransformer<
     private boolean useIDMatchLogic = true;
 
     public GetListConceptionEntityValueTransformer(List<String> returnedAttributeList){
-        this.containsAttributeKindList = new ArrayList<>();
         this.returnedAttributeList = returnedAttributeList;
         this.setUseIDMatchLogic(false);
         this.attributeDataTypeMap = new HashMap<>();
-        for(AttributeKind currentAttributeKind:this.containsAttributeKindList){
-            String attributeName = currentAttributeKind.getAttributeKindName();
-            AttributeDataType attributeDataType = currentAttributeKind.getAttributeDataType();
-            this.attributeDataTypeMap.put(attributeName,attributeDataType);
-        }
     }
 
     public GetListConceptionEntityValueTransformer(List<String> returnedAttributeList,List<AttributeKind> containsAttributeKindList){
@@ -48,6 +43,7 @@ public class GetListConceptionEntityValueTransformer implements DataTransformer<
     public List<ConceptionEntityValue> transformResult(Result result) {
         List<ConceptionEntityValue> conceptionEntityValueList = new ArrayList<>();
         while(result.hasNext()){
+            List<String> allConceptionKindNames = null;
             Record nodeRecord = result.next();
             String conceptionEntityUID;
             Map<String,Object> valueMap;
@@ -58,6 +54,7 @@ public class GetListConceptionEntityValueTransformer implements DataTransformer<
                 conceptionEntityUID = ""+uidValue.longValue();
             }else{
                 Node resultNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
+                allConceptionKindNames = Lists.newArrayList(nodeRecord.get(CypherBuilder.operationResultName).asNode().labels());
                 long nodeUID = resultNode.id();
                 conceptionEntityUID = ""+nodeUID;
                 valueMap = resultNode.asMap();
@@ -65,6 +62,7 @@ public class GetListConceptionEntityValueTransformer implements DataTransformer<
 
             Map<String,Object> entityAttributesValue = new HashMap<>();
             ConceptionEntityValue currentConceptionEntityValue = new ConceptionEntityValue(conceptionEntityUID,entityAttributesValue);
+            currentConceptionEntityValue.setAllConceptionKindNames(allConceptionKindNames);
             conceptionEntityValueList.add(currentConceptionEntityValue);
             if(this.isUseIDMatchLogic()){
                 for(String currentAttributeName:returnedAttributeList){
