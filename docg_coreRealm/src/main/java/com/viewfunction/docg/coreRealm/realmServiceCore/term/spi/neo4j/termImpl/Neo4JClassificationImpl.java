@@ -616,6 +616,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
                 };
                 workingGraphOperationExecutor.executeRead(offspringClassificationsDataTransformer,queryPairsCql);
                 commonConceptionEntitiesAttributesRetrieveResultImpl.addConceptionEntitiesAttributes(conceptionEntityValueList);
+                commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(conceptionEntityValueList.size());
             }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
