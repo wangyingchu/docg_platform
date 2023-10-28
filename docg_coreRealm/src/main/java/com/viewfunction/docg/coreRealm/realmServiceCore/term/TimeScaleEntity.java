@@ -25,6 +25,20 @@ public interface TimeScaleEntity {
     public TimeFlow.TimeScaleGrade getTimeScaleGrade();
 
     /**
+     * 获取当前时间刻度实体对象所属的时间流名称
+     *
+     * @return 时间流名称
+     */
+    public String getTimeFlowName();
+
+    /**
+     * 获取当前时间刻度实体对象的唯一ID
+     *
+     * @return 时间刻度实体对象唯一ID
+     */
+    public String getTimeScaleEntityUID();
+
+    /**
      * 获取当前时间刻度实体对象本身最小粒度的绝对数值（例如2015年为 2015, 2015年1月20日为 20）
      *
      * @return 当前时间刻度实体对象的绝对值

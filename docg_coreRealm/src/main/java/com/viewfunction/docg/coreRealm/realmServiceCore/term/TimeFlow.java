@@ -272,4 +272,13 @@ public interface TimeFlow {
      * @return 删除的时间刻度事件数量
      */
     public long removeRefersTimeScaleEvents();
+
+    /**
+     * 根据唯一ID获取当前时间流的时间刻度实体对象
+     *
+     * @param timeScaleEntityUID String 需要获取的时间刻度实体对象唯一ID
+     *
+     * @return 时间刻度实体对象
+     */
+    public TimeScaleEntity getTimeScaleEntityByUID(String timeScaleEntityUID);
 }

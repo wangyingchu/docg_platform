@@ -57,6 +57,11 @@ public class Neo4JTimeScaleEntityImpl implements Neo4JTimeScaleEntity {
     }
 
     @Override
+    public String getTimeFlowName() {
+        return this.timeFlowName;
+    }
+
+    @Override
     public int getEntityValue() {
         return this.entityValue;
     }
@@ -425,6 +430,7 @@ public class Neo4JTimeScaleEntityImpl implements Neo4JTimeScaleEntity {
         return null;
     }
 
+    @Override
     public String getTimeScaleEntityUID() {
         return timeScaleEntityUID;
     }

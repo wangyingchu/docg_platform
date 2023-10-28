@@ -556,6 +556,14 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
         }
     }
 
+    @Override
+    public TimeScaleEntity getTimeScaleEntityByUID(String timeScaleEntityUID) {
+
+
+
+        return null;
+    }
+
     private TimeScaleEntity getSpecialTimeScaleEntity(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade){
         int targetYear = timeScaleMoment.getYear();
         int targetMonth = timeScaleMoment.getMonth();
