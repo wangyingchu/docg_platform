@@ -559,7 +559,7 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
     @Override
     public TimeScaleEntity getTimeScaleEntityByUID(String timeScaleEntityUID) {
         String queryCql =
-                "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains*1..5]->(docg_TimeScaleEntity:DOCG_TimeScaleEntity) WHERE id(docg_TimeScaleEntity) = "+timeScaleEntityUID+" RETURN docg_TimeScaleEntity as operationResult";
+                "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains*1..6]->(docg_TimeScaleEntity:DOCG_TimeScaleEntity) WHERE id(docg_TimeScaleEntity) = "+timeScaleEntityUID+" RETURN docg_TimeScaleEntity as operationResult";
         return getSingleTimeScaleEntity(queryCql);
     }
 
