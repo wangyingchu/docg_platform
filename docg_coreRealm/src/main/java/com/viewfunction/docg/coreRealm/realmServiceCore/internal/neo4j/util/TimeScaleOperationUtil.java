@@ -52,7 +52,7 @@ public class TimeScaleOperationUtil {
                 "FOREACH(year IN years |\n" +
                 "  MERGE (y:DOCG_TS_Year:DOCG_TimeScaleEntity {year:year,id:year,timeFlow:\""+timeFlowName+"\"})\n" +
                 "  FOREACH(month IN months |\n" +
-                "    CREATE (m:DOCG_TS_Month:DOCG_TimeScaleEntity {month: month,id:month,timeFlow:\""+timeFlowName+"\"})\n" +
+                "    CREATE (m:DOCG_TS_Month:DOCG_TimeScaleEntity {year:year,month:month,id:month,timeFlow:\""+timeFlowName+"\"})\n" +
                 "    MERGE (y)-[:DOCG_TS_Contains]->(m)    \n" +
                 "    FOREACH(month IN CASE WHEN month=1 THEN [1] ELSE [] END | \n" +
                 "        MERGE (y)-[:DOCG_TS_FirstChildIs]->(m)\n" +
@@ -71,7 +71,7 @@ public class TimeScaleOperationUtil {
                 "                        END\n" +
                 "                      ELSE range(1,30)\n" +
                 "                    END) |\n" +
-                "        CREATE (d:DOCG_TS_Day:DOCG_TimeScaleEntity {day:day,id:day,timeFlow:\""+timeFlowName+"\"})\n" +
+                "        CREATE (d:DOCG_TS_Day:DOCG_TimeScaleEntity {year:year,month:month,day:day,id:day,timeFlow:\""+timeFlowName+"\"})\n" +
                 "        MERGE (m)-[:DOCG_TS_Contains]->(d)        \n" +
                 "        FOREACH(day IN CASE WHEN day=1 THEN [1] ELSE [] END | \n" +
                 "            MERGE (m)-[:DOCG_TS_FirstChildIs]->(d)\n" +
@@ -100,7 +100,7 @@ public class TimeScaleOperationUtil {
         String createTimeFlowEntitiesCql = "MATCH (year:DOCG_TS_Year{timeFlow:\""+timeFlowName+"\"})-[:DOCG_TS_Contains]->(month)-[:DOCG_TS_Contains]->(day:DOCG_TS_Day) WHERE year.year in range("+startYear+","+endYear+")\n"+
                 "WITH range(0,23) as HOURS, day\n" +
                 "FOREACH (hour in HOURS | \n" +
-                "    MERGE (h:DOCG_TS_Hour:DOCG_TimeScaleEntity {hour:hour,id:hour,timeFlow:\""+timeFlowName+"\"})<-[:DOCG_TS_Contains]-(day)\n" +
+                "    MERGE (h:DOCG_TS_Hour:DOCG_TimeScaleEntity {year:day.year,month:day.month,day:day.day,hour:hour,id:hour,timeFlow:\""+timeFlowName+"\"})<-[:DOCG_TS_Contains]-(day)\n" +
                 "    FOREACH(hour IN CASE WHEN hour=0 THEN [1] ELSE [] END | \n" +
                 "        MERGE (h)<-[:DOCG_TS_FirstChildIs]-(day)\n" +
                 "    )\n" +
@@ -115,7 +115,7 @@ public class TimeScaleOperationUtil {
     private static void generateTimeFlowScaleEntities_Minute(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int startYear, int endYear){
         String createTimeFlowEntitiesCql = "MATCH (year:DOCG_TS_Year{timeFlow:\""+timeFlowName+"\"})-[:DOCG_TS_Contains]->(month)-[:DOCG_TS_Contains]->(day)-[:DOCG_TS_Contains]->(hour:DOCG_TS_Hour) WHERE year.year in range("+startYear+","+endYear+")\n"+
                 "FOREACH (minute in range(0,59) | \n" +
-                "    MERGE (m:DOCG_TS_Minute:DOCG_TimeScaleEntity {id:minute,minute:minute,timeFlow:\""+timeFlowName+"\"})<-[:DOCG_TS_Contains]-(hour)\n" +
+                "    MERGE (m:DOCG_TS_Minute:DOCG_TimeScaleEntity {year:hour.year,month:hour.month,day:hour.day,hour:hour.hour,id:minute,minute:minute,timeFlow:\""+timeFlowName+"\"})<-[:DOCG_TS_Contains]-(hour)\n" +
                 "    FOREACH(minute IN CASE WHEN minute=0 THEN [1] ELSE [] END | \n" +
                 "        MERGE (m)<-[:DOCG_TS_FirstChildIs]-(hour)\n" +
                 "    )\n" +
@@ -131,7 +131,7 @@ public class TimeScaleOperationUtil {
         String createTimeFlowEntitiesCql = "WITH range(1,12) as months, "+targetYear+" as year\n" +
                 "MERGE (y:DOCG_TS_Year:DOCG_TimeScaleEntity {year:year,id:year,timeFlow:\""+timeFlowName+"\"})\n" +
                 "  FOREACH(month IN months |\n" +
-                "    CREATE (m:DOCG_TS_Month:DOCG_TimeScaleEntity {month: month,id:month,timeFlow:\""+timeFlowName+"\"})\n" +
+                "    CREATE (m:DOCG_TS_Month:DOCG_TimeScaleEntity {year:year,month:month,id:month,timeFlow:\""+timeFlowName+"\"})\n" +
                 "    MERGE (y)-[:DOCG_TS_Contains]->(m)\n" +
                 "    FOREACH(month IN CASE WHEN month=1 THEN [1] ELSE [] END |\n" +
                 "        MERGE (y)-[:DOCG_TS_FirstChildIs]->(m)\n" +
@@ -150,7 +150,7 @@ public class TimeScaleOperationUtil {
                 "                        END\n" +
                 "                      ELSE range(1,30)\n" +
                 "                    END) |\n" +
-                "        CREATE (d:DOCG_TS_Day:DOCG_TimeScaleEntity {day:day,id:day,timeFlow:\""+timeFlowName+"\"})\n" +
+                "        CREATE (d:DOCG_TS_Day:DOCG_TimeScaleEntity {year:year,month:month,day:day,id:day,timeFlow:\""+timeFlowName+"\"})\n" +
                 "        MERGE (m)-[:DOCG_TS_Contains]->(d)\n" +
                 "        FOREACH(day IN CASE WHEN day=1 THEN [1] ELSE [] END |\n" +
                 "            MERGE (m)-[:DOCG_TS_FirstChildIs]->(d)\n" +
@@ -177,7 +177,7 @@ public class TimeScaleOperationUtil {
         String createTimeFlowEntitiesCql = "MATCH (year:DOCG_TS_Year{timeFlow:\""+timeFlowName+"\",year:"+targetYear+"})-[:DOCG_TS_Contains]->(month)-[:DOCG_TS_Contains]->(day:DOCG_TS_Day)\n" +
                 "WITH range(0,23) as HOURS, day\n" +
                 "FOREACH (hour in HOURS |\n" +
-                "    MERGE (h:DOCG_TS_Hour:DOCG_TimeScaleEntity {hour:hour,id:hour,timeFlow:\""+timeFlowName+"\"})<-[:DOCG_TS_Contains]-(day)\n" +
+                "    MERGE (h:DOCG_TS_Hour:DOCG_TimeScaleEntity {year:day.year,month:day.month,day:day.day,hour:hour,id:hour,timeFlow:\""+timeFlowName+"\"})<-[:DOCG_TS_Contains]-(day)\n" +
                 "    FOREACH(hour IN CASE WHEN hour=0 THEN [1] ELSE [] END |\n" +
                 "        MERGE (h)<-[:DOCG_TS_FirstChildIs]-(day)\n" +
                 "    )\n" +
@@ -192,7 +192,7 @@ public class TimeScaleOperationUtil {
     private static void generateTimeFlowScaleEntities_Minute(GraphOperationExecutor workingGraphOperationExecutor, String timeFlowName, int targetYear){
         String createTimeFlowEntitiesCql = "MATCH (year:DOCG_TS_Year{timeFlow:\""+timeFlowName+"\",year:"+targetYear+"})-[:DOCG_TS_Contains]->(month)-[:DOCG_TS_Contains]->(day)-[:DOCG_TS_Contains]->(hour:DOCG_TS_Hour)\n" +
                 "FOREACH (minute in range(0,59) |\n" +
-                "    MERGE (m:DOCG_TS_Minute:DOCG_TimeScaleEntity {id:minute,minute:minute,timeFlow:\""+timeFlowName+"\"})<-[:DOCG_TS_Contains]-(hour)\n" +
+                "    MERGE (m:DOCG_TS_Minute:DOCG_TimeScaleEntity {year:hour.year,month:hour.month,day:hour.day,hour:hour.hour,id:minute,minute:minute,timeFlow:\""+timeFlowName+"\"})<-[:DOCG_TS_Contains]-(hour)\n" +
                 "    FOREACH(minute IN CASE WHEN minute=0 THEN [1] ELSE [] END |\n" +
                 "        MERGE (m)<-[:DOCG_TS_FirstChildIs]-(hour)\n" +
                 "    )\n" +
