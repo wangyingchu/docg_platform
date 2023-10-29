@@ -81,6 +81,7 @@ public class TimeFlowTest {
         Assert.assertNotNull(_2000YearTimeScaleEntity2);
         Assert.assertEquals(_2000YearTimeScaleEntity2.getTimeScaleGrade(), TimeFlow.TimeScaleGrade.YEAR);
         Assert.assertEquals(_2000YearTimeScaleEntity2.getEntityValue(),2000);
+        Assert.assertNotNull(_2000YearTimeScaleEntity2.getTimeScaleEntityDesc());
 
         LinkedList<TimeScaleEntity> timeScaleEntityLinkedList1 = defaultTimeFlow.getYearEntities(2001,2004);
         Assert.assertEquals(timeScaleEntityLinkedList1.getFirst().getEntityValue(),2001);
@@ -98,6 +99,7 @@ public class TimeFlowTest {
         Assert.assertNotNull(singleTimeScaleEntity1_2);
         Assert.assertEquals(singleTimeScaleEntity1_2.getTimeScaleGrade(), TimeFlow.TimeScaleGrade.MONTH);
         Assert.assertEquals(singleTimeScaleEntity1_2.getEntityValue(),6);
+        Assert.assertNotNull(singleTimeScaleEntity1_2.getTimeScaleEntityDesc());
 
         TimeScaleEntity[] timeScaleEntityArray2 = defaultTimeFlow.getSpecificMonthEntities(new TimeScaleMoment(2004,6),new TimeScaleMoment(1999,8));
         Assert.assertEquals(timeScaleEntityArray2.length,2);
@@ -122,6 +124,7 @@ public class TimeFlowTest {
         Assert.assertNotNull(singleTimeScaleEntity2_2);
         Assert.assertEquals(singleTimeScaleEntity2_2.getTimeScaleGrade(), TimeFlow.TimeScaleGrade.DAY);
         Assert.assertEquals(singleTimeScaleEntity2_2.getEntityValue(),29);
+        Assert.assertNotNull(singleTimeScaleEntity2_2.getTimeScaleEntityDesc());
 
         TimeScaleEntity[] timeScaleEntityArray3 = defaultTimeFlow.getSpecificDayEntities(new TimeScaleMoment(2004,6,5),
                 new TimeScaleMoment(1999,11,23),
@@ -146,6 +149,7 @@ public class TimeFlowTest {
         Assert.assertNotNull(singleTimeScaleEntity3_2);
         Assert.assertEquals(singleTimeScaleEntity3_2.getTimeScaleGrade(), TimeFlow.TimeScaleGrade.HOUR);
         Assert.assertEquals(singleTimeScaleEntity3_2.getEntityValue(),18);
+        Assert.assertNotNull(singleTimeScaleEntity3_2.getTimeScaleEntityDesc());
 
         TimeScaleEntity[] timeScaleEntityArray4 = defaultTimeFlow.getSpecificHourEntities(new TimeScaleMoment(2004,6,5,13),
                 new TimeScaleMoment(1999,11,23,22),
@@ -181,6 +185,7 @@ public class TimeFlowTest {
         Assert.assertNotNull(singleTimeScaleEntity4_2);
         Assert.assertEquals(singleTimeScaleEntity4_2.getTimeScaleGrade(), TimeFlow.TimeScaleGrade.MINUTE);
         Assert.assertEquals(singleTimeScaleEntity4_2.getEntityValue(),35);
+        Assert.assertNotNull(singleTimeScaleEntity4_2.getTimeScaleEntityDesc());
 
         TimeScaleEntity singleTimeScaleEntity4_nextEntity = singleTimeScaleEntity4.getNextSameScaleEntity();
         Assert.assertEquals(singleTimeScaleEntity4_nextEntity.getTimeScaleGrade(),TimeFlow.TimeScaleGrade.MINUTE);
