@@ -40,17 +40,19 @@ public class GetSingleTimeScaleEntityTransformer implements DataTransformer<Time
                     String entityUID = ""+nodeUID;
                     int value = resultNode.get("id").asInt();
                     String timeFlowName = resultNode.get("timeFlow").asString();
-                    if(resultNode.get("year").asObject() != null){
+
+                    if(allLabelNames.contains(RealmConstant.TimeScaleYearEntityClass)){
                         timeScaleGrade = TimeFlow.TimeScaleGrade.YEAR;
-                    }else if(resultNode.get("month").asObject() != null){
+                    }else if(allLabelNames.contains(RealmConstant.TimeScaleMonthEntityClass)){
                         timeScaleGrade = TimeFlow.TimeScaleGrade.MONTH;
-                    }else if(resultNode.get("day").asObject() != null){
+                    }else if(allLabelNames.contains(RealmConstant.TimeScaleDayEntityClass)){
                         timeScaleGrade = TimeFlow.TimeScaleGrade.DAY;
-                    }else if(resultNode.get("hour").asObject() != null){
+                    }else if(allLabelNames.contains(RealmConstant.TimeScaleHourEntityClass)){
                         timeScaleGrade = TimeFlow.TimeScaleGrade.HOUR;
-                    }else if(resultNode.get("minute").asObject() != null){
+                    }else if(allLabelNames.contains(RealmConstant.TimeScaleMinuteEntityClass)){
                         timeScaleGrade = TimeFlow.TimeScaleGrade.MINUTE;
                     }
+
                     Neo4JTimeScaleEntityImpl neo4JTimeScaleEntityImpl = new Neo4JTimeScaleEntityImpl(
                             currentCoreRealmName,timeFlowName,entityUID,timeScaleGrade,value);
                     neo4JTimeScaleEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);

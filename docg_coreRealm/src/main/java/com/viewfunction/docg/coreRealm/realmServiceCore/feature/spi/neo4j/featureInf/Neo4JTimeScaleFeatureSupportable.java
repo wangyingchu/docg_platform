@@ -171,17 +171,18 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
                                 int value = timeScaleEntityNode.get("id").asInt();
                                 String timeFlowName = timeScaleEntityNode.get("timeFlow").asString();
 
-                                if (timeScaleEntityNode.get("year").asObject() != null) {
+                                if(allLabelNames.contains(RealmConstant.TimeScaleYearEntityClass)){
                                     timeScaleGrade = TimeFlow.TimeScaleGrade.YEAR;
-                                } else if (timeScaleEntityNode.get("month").asObject() != null) {
+                                }else if(allLabelNames.contains(RealmConstant.TimeScaleMonthEntityClass)){
                                     timeScaleGrade = TimeFlow.TimeScaleGrade.MONTH;
-                                } else if (timeScaleEntityNode.get("day").asObject() != null) {
+                                }else if(allLabelNames.contains(RealmConstant.TimeScaleDayEntityClass)){
                                     timeScaleGrade = TimeFlow.TimeScaleGrade.DAY;
-                                } else if (timeScaleEntityNode.get("hour").asObject() != null) {
+                                }else if(allLabelNames.contains(RealmConstant.TimeScaleHourEntityClass)){
                                     timeScaleGrade = TimeFlow.TimeScaleGrade.HOUR;
-                                } else if (timeScaleEntityNode.get("minute").asObject() != null) {
+                                }else if(allLabelNames.contains(RealmConstant.TimeScaleMinuteEntityClass)){
                                     timeScaleGrade = TimeFlow.TimeScaleGrade.MINUTE;
                                 }
+
                                 neo4JTimeScaleEntityImpl = new Neo4JTimeScaleEntityImpl(
                                         null, timeFlowName, entityUID, timeScaleGrade, value);
                                 neo4JTimeScaleEntityImpl.setGlobalGraphOperationExecutor(getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());

@@ -1,6 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
 import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
@@ -21,6 +22,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEvent;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JTimeScaleEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
@@ -142,17 +144,20 @@ public class Neo4JTimeScaleEntityImpl implements Neo4JTimeScaleEntity {
                             String entityUID = ""+nodeUID;
                             int value = resultNode.get("id").asInt();
                             String timeFlowName = resultNode.get("timeFlow").asString();
-                            if(resultNode.get("year").asObject() != null){
+
+                            List<String> allLabelNames = Lists.newArrayList(resultNode.labels());
+                            if(allLabelNames.contains(RealmConstant.TimeScaleYearEntityClass)){
                                 timeScaleGrade = TimeFlow.TimeScaleGrade.YEAR;
-                            }else if(resultNode.get("month").asObject() != null){
+                            }else if(allLabelNames.contains(RealmConstant.TimeScaleMonthEntityClass)){
                                 timeScaleGrade = TimeFlow.TimeScaleGrade.MONTH;
-                            }else if(resultNode.get("day").asObject() != null){
+                            }else if(allLabelNames.contains(RealmConstant.TimeScaleDayEntityClass)){
                                 timeScaleGrade = TimeFlow.TimeScaleGrade.DAY;
-                            }else if(resultNode.get("hour").asObject() != null){
+                            }else if(allLabelNames.contains(RealmConstant.TimeScaleHourEntityClass)){
                                 timeScaleGrade = TimeFlow.TimeScaleGrade.HOUR;
-                            }else if(resultNode.get("minute").asObject() != null){
+                            }else if(allLabelNames.contains(RealmConstant.TimeScaleMinuteEntityClass)){
                                 timeScaleGrade = TimeFlow.TimeScaleGrade.MINUTE;
                             }
+
                             Neo4JTimeScaleEntityImpl neo4JTimeScaleEntityImpl = new Neo4JTimeScaleEntityImpl(currentCoreRealmName,timeFlowName,entityUID,timeScaleGrade,value);
                             neo4JTimeScaleEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
 
