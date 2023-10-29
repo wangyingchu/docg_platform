@@ -32,6 +32,13 @@ public interface TimeScaleEntity {
     public String getTimeFlowName();
 
     /**
+     * 获取当前时间刻度实体对象描述
+     *
+     * @return 时间刻度实体对象描述
+     */
+    public String getTimeScaleEntityDesc();
+
+    /**
      * 获取当前时间刻度实体对象的唯一ID
      *
      * @return 时间刻度实体对象唯一ID

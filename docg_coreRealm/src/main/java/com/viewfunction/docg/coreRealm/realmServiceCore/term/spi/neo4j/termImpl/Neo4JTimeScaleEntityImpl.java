@@ -64,6 +64,14 @@ public class Neo4JTimeScaleEntityImpl implements Neo4JTimeScaleEntity {
     }
 
     @Override
+    public String getTimeScaleEntityDesc() {
+
+
+
+        return null;
+    }
+
+    @Override
     public int getEntityValue() {
         return this.entityValue;
     }
