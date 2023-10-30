@@ -171,20 +171,51 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
                                 int value = timeScaleEntityNode.get("id").asInt();
                                 String timeFlowName = timeScaleEntityNode.get("timeFlow").asString();
 
+                                String timeScaleEntityDesc = null;
                                 if(allLabelNames.contains(RealmConstant.TimeScaleYearEntityClass)){
                                     timeScaleGrade = TimeFlow.TimeScaleGrade.YEAR;
+                                    if(timeScaleEntityNode.containsKey("year")){
+                                        timeScaleEntityDesc = ""+timeScaleEntityNode.get("year").asInt();
+                                    }
                                 }else if(allLabelNames.contains(RealmConstant.TimeScaleMonthEntityClass)){
                                     timeScaleGrade = TimeFlow.TimeScaleGrade.MONTH;
+                                    if(timeScaleEntityNode.containsKey("year") && timeScaleEntityNode.containsKey("month")){
+                                        timeScaleEntityDesc = ""+timeScaleEntityNode.get("year").asInt()+
+                                                "-"+timeScaleEntityNode.get("month").asInt();
+                                    }
                                 }else if(allLabelNames.contains(RealmConstant.TimeScaleDayEntityClass)){
                                     timeScaleGrade = TimeFlow.TimeScaleGrade.DAY;
+                                    if(timeScaleEntityNode.containsKey("year") && timeScaleEntityNode.containsKey("month")
+                                            && timeScaleEntityNode.containsKey("day")){
+                                        timeScaleEntityDesc = ""+timeScaleEntityNode.get("year").asInt()+
+                                                "-"+timeScaleEntityNode.get("month").asInt()+
+                                                "-"+timeScaleEntityNode.get("day").asInt();
+                                    }
                                 }else if(allLabelNames.contains(RealmConstant.TimeScaleHourEntityClass)){
                                     timeScaleGrade = TimeFlow.TimeScaleGrade.HOUR;
+                                    if(timeScaleEntityNode.containsKey("year") && timeScaleEntityNode.containsKey("month")
+                                            && timeScaleEntityNode.containsKey("day") && timeScaleEntityNode.containsKey("hour")){
+                                        timeScaleEntityDesc = ""+timeScaleEntityNode.get("year").asInt()+
+                                                "-"+timeScaleEntityNode.get("month").asInt()+
+                                                "-"+timeScaleEntityNode.get("day").asInt()+
+                                                " "+timeScaleEntityNode.get("hour").asInt();
+                                    }
                                 }else if(allLabelNames.contains(RealmConstant.TimeScaleMinuteEntityClass)){
                                     timeScaleGrade = TimeFlow.TimeScaleGrade.MINUTE;
+                                    if(timeScaleEntityNode.containsKey("year") && timeScaleEntityNode.containsKey("month")
+                                            && timeScaleEntityNode.containsKey("day") && timeScaleEntityNode.containsKey("hour")
+                                            && timeScaleEntityNode.containsKey("minute")){
+                                        timeScaleEntityDesc = ""+timeScaleEntityNode.get("year").asInt()+
+                                                "-"+timeScaleEntityNode.get("month").asInt()+
+                                                "-"+timeScaleEntityNode.get("day").asInt()+
+                                                " "+timeScaleEntityNode.get("hour").asInt()+
+                                                ":"+timeScaleEntityNode.get("minute").asInt();
+                                    }
                                 }
 
                                 neo4JTimeScaleEntityImpl = new Neo4JTimeScaleEntityImpl(
                                         null, timeFlowName, entityUID, timeScaleGrade, value);
+                                neo4JTimeScaleEntityImpl.setEntityDescription(timeScaleEntityDesc);
                                 neo4JTimeScaleEntityImpl.setGlobalGraphOperationExecutor(getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
                             }
 
