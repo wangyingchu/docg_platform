@@ -8,6 +8,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleTimeScaleEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.TimeScaleOperationUtil;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeFlowRuntimeStatistics;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleMoment;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
@@ -561,6 +562,54 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
         String queryCql =
                 "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains*1..6]->(docg_TimeScaleEntity:DOCG_TimeScaleEntity) WHERE id(docg_TimeScaleEntity) = "+timeScaleEntityUID+" RETURN docg_TimeScaleEntity as operationResult";
         return getSingleTimeScaleEntity(queryCql);
+    }
+
+    @Override
+    public TimeFlowRuntimeStatistics getTimeFlowRuntimeStatistics() {
+        /*
+        MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains]->(_DOCG_TS_Year:DOCG_TS_Year)
+        OPTIONAL MATCH (_DOCG_TS_Year)-[:DOCG_TS_TimeReferTo]->(_YEAR_Event:DOCG_TimeScaleEvent)
+        RETURN COUNT(_DOCG_TS_Year),COUNT(_YEAR_Event)
+
+        MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains*2]->(_DOCG_TS_Month:DOCG_TS_Month)
+        OPTIONAL MATCH (_DOCG_TS_Month)-[:DOCG_TS_TimeReferTo]->(_MONTH_Event:DOCG_TimeScaleEvent)
+        RETURN COUNT(_DOCG_TS_Month),COUNT(_MONTH_Event)
+
+        MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains*3]->(_DOCG_TS_Day:DOCG_TS_Day)
+        OPTIONAL MATCH (_DOCG_TS_Day)-[:DOCG_TS_TimeReferTo]->(_DAY_Event:DOCG_TimeScaleEvent)
+        RETURN COUNT(_DOCG_TS_Day),COUNT(_DAY_Event)
+
+        MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains*4]->(_DOCG_TS_Hour:DOCG_TS_Hour)
+        OPTIONAL MATCH (_DOCG_TS_Hour)-[:DOCG_TS_TimeReferTo]->(_HOUR_Event:DOCG_TimeScaleEvent)
+        RETURN COUNT(_DOCG_TS_Hour),COUNT(_HOUR_Event)
+
+        MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains*5]->(_DOCG_TS_Minute:DOCG_TS_Minute)
+        OPTIONAL MATCH (_DOCG_TS_Minute)-[:DOCG_TS_TimeReferTo]->(_MINUTE_Event:DOCG_TimeScaleEvent)
+        RETURN COUNT(_DOCG_TS_Minute),COUNT(_MINUTE_Event)
+
+        MATCH (n:DOCG_TimeScaleEntity{timeFlow:"DefaultTimeFlow"}) RETURN COUNT(n)
+        MATCH (n:DOCG_TimeScaleEvent{DOCG_TimeScaleEventTimeFlow:"DefaultTimeFlow"}) RETURN COUNT(n)
+        */
+        TimeFlowRuntimeStatistics timeFlowRuntimeStatistics = new TimeFlowRuntimeStatistics();
+
+
+
+
+
+
+
+        String queryCql =
+                "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains*1..6]->(docg_TimeScaleEntity:DOCG_TimeScaleEntity) -[:DOCG_TS_TimeReferTo]->[docg_TimeScaleEvent:DOCG_TimeScaleEvent]" +
+                        "RETURN COUNT(docg_TimeScaleEntity), COUNT(docg_TimeScaleEvent)";
+
+
+
+
+
+
+
+
+        return timeFlowRuntimeStatistics;
     }
 
     private TimeScaleEntity getSpecialTimeScaleEntity(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade){

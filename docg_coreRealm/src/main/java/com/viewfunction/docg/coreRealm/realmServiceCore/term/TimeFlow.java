@@ -1,6 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeFlowRuntimeStatistics;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleMoment;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 
@@ -281,4 +282,11 @@ public interface TimeFlow {
      * @return 时间刻度实体对象
      */
     public TimeScaleEntity getTimeScaleEntityByUID(String timeScaleEntityUID);
+
+    /**
+     * 获取当前时间流相关的各类数据的实时统计信息
+     *
+     * @return 时间流相关数据实时统计信息
+     */
+    public TimeFlowRuntimeStatistics getTimeFlowRuntimeStatistics();
 }
