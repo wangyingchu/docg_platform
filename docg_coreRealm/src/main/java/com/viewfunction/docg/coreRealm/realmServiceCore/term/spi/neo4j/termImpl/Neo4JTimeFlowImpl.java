@@ -21,10 +21,7 @@ import org.neo4j.driver.types.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
 
@@ -569,46 +566,104 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
         /*
         MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains]->(_DOCG_TS_Year:DOCG_TS_Year)
         OPTIONAL MATCH (_DOCG_TS_Year)-[:DOCG_TS_TimeReferTo]->(_YEAR_Event:DOCG_TimeScaleEvent)
-        RETURN COUNT(_DOCG_TS_Year),COUNT(_YEAR_Event)
+        RETURN COUNT(DISTINCT(_DOCG_TS_Year)) AS timeEntityCount,COUNT(DISTINCT(_YEAR_Event)) AS timeEventCount
 
         MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains*2]->(_DOCG_TS_Month:DOCG_TS_Month)
         OPTIONAL MATCH (_DOCG_TS_Month)-[:DOCG_TS_TimeReferTo]->(_MONTH_Event:DOCG_TimeScaleEvent)
-        RETURN COUNT(_DOCG_TS_Month),COUNT(_MONTH_Event)
+        RETURN COUNT(DISTINCT(_DOCG_TS_Month)) AS timeEntityCount,COUNT(DISTINCT(_MONTH_Event)) AS timeEventCount
 
         MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains*3]->(_DOCG_TS_Day:DOCG_TS_Day)
         OPTIONAL MATCH (_DOCG_TS_Day)-[:DOCG_TS_TimeReferTo]->(_DAY_Event:DOCG_TimeScaleEvent)
-        RETURN COUNT(_DOCG_TS_Day),COUNT(_DAY_Event)
+        RETURN COUNT(DISTINCT((_DOCG_TS_Day)) AS timeEntityCount,COUNT(DISTINCT(_DAY_Event)) AS timeEventCount
 
         MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains*4]->(_DOCG_TS_Hour:DOCG_TS_Hour)
         OPTIONAL MATCH (_DOCG_TS_Hour)-[:DOCG_TS_TimeReferTo]->(_HOUR_Event:DOCG_TimeScaleEvent)
-        RETURN COUNT(_DOCG_TS_Hour),COUNT(_HOUR_Event)
+        RETURN COUNT(DISTINCT(_DOCG_TS_Hour)) AS timeEntityCount,COUNT(DISTINCT(_HOUR_Event)) AS timeEventCount
 
         MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains*5]->(_DOCG_TS_Minute:DOCG_TS_Minute)
         OPTIONAL MATCH (_DOCG_TS_Minute)-[:DOCG_TS_TimeReferTo]->(_MINUTE_Event:DOCG_TimeScaleEvent)
-        RETURN COUNT(_DOCG_TS_Minute),COUNT(_MINUTE_Event)
+        RETURN COUNT(DISTINCT(_DOCG_TS_Minute)) AS timeEntityCount,COUNT(DISTINCT((_MINUTE_Event)) AS timeEventCount
 
         MATCH (n:DOCG_TimeScaleEntity{timeFlow:"DefaultTimeFlow"}) RETURN COUNT(n)
         MATCH (n:DOCG_TimeScaleEvent{DOCG_TimeScaleEventTimeFlow:"DefaultTimeFlow"}) RETURN COUNT(n)
         */
         TimeFlowRuntimeStatistics timeFlowRuntimeStatistics = new TimeFlowRuntimeStatistics();
 
+        Map<String,Long> timeDataCountMap = new HashMap<>();
+        DataTransformer<Long> getStaticInfoTransformer = new DataTransformer() {
+            @Override
+            public Long transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    Long timeEntityCountNumber =  nodeRecord.get("timeEntityCount").asLong();
+                    Long timeEventCountNumber =  nodeRecord.get("timeEventCount").asLong();
 
+                    timeDataCountMap.put("timeEntityCountNumber",timeEntityCountNumber);
+                    timeDataCountMap.put("timeEventCountNumber",timeEventCountNumber);
+                }
+                return null;
+            }
+        };
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            String queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(_DOCG_TS_Year:DOCG_TS_Year)\n" +
+                    "        OPTIONAL MATCH (_DOCG_TS_Year)-[:DOCG_TS_TimeReferTo]->(_YEAR_Event:DOCG_TimeScaleEvent)\n" +
+                    "        RETURN COUNT(DISTINCT(_DOCG_TS_Year)) AS timeEntityCount,COUNT(DISTINCT(_YEAR_Event)) AS timeEventCount";
+            workingGraphOperationExecutor.executeRead(getStaticInfoTransformer,queryCql);
+            timeFlowRuntimeStatistics.setContainsYearScaleTimeScaleEntityCount(timeDataCountMap.get("timeEntityCountNumber"));
+            timeFlowRuntimeStatistics.setRefersYearScaleTimeScaleEventCount(timeDataCountMap.get("timeEventCountNumber"));
+            timeDataCountMap.clear();
 
+            queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains*2]->(_DOCG_TS_Month:DOCG_TS_Month)\n" +
+                    "        OPTIONAL MATCH (_DOCG_TS_Month)-[:DOCG_TS_TimeReferTo]->(_MONTH_Event:DOCG_TimeScaleEvent)\n" +
+                    "        RETURN COUNT(DISTINCT(_DOCG_TS_Month)) AS timeEntityCount,COUNT(DISTINCT(_MONTH_Event)) AS timeEventCount";
+            workingGraphOperationExecutor.executeRead(getStaticInfoTransformer,queryCql);
+            timeFlowRuntimeStatistics.setContainsMonthScaleTimeScaleEntityCount(timeDataCountMap.get("timeEntityCountNumber"));
+            timeFlowRuntimeStatistics.setRefersMonthScaleTimeScaleEventCount(timeDataCountMap.get("timeEventCountNumber"));
+            timeDataCountMap.clear();
 
+            queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains*3]->(_DOCG_TS_Day:DOCG_TS_Day)\n" +
+                    "        OPTIONAL MATCH (_DOCG_TS_Day)-[:DOCG_TS_TimeReferTo]->(_DAY_Event:DOCG_TimeScaleEvent)\n" +
+                    "        RETURN COUNT(DISTINCT(_DOCG_TS_Day)) AS timeEntityCount,COUNT(DISTINCT(_DAY_Event)) AS timeEventCount";
+            workingGraphOperationExecutor.executeRead(getStaticInfoTransformer,queryCql);
+            timeFlowRuntimeStatistics.setContainsDayScaleTimeScaleEntityCount(timeDataCountMap.get("timeEntityCountNumber"));
+            timeFlowRuntimeStatistics.setRefersDayScaleTimeScaleEventCount(timeDataCountMap.get("timeEventCountNumber"));
+            timeDataCountMap.clear();
 
+            queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains*4]->(_DOCG_TS_Hour:DOCG_TS_Hour)\n" +
+                    "        OPTIONAL MATCH (_DOCG_TS_Hour)-[:DOCG_TS_TimeReferTo]->(_HOUR_Event:DOCG_TimeScaleEvent)\n" +
+                    "        RETURN COUNT(DISTINCT(_DOCG_TS_Hour)) AS timeEntityCount,COUNT(DISTINCT(_HOUR_Event)) AS timeEventCount";
+            workingGraphOperationExecutor.executeRead(getStaticInfoTransformer,queryCql);
+            timeFlowRuntimeStatistics.setContainsHourScaleTimeScaleEntityCount(timeDataCountMap.get("timeEntityCountNumber"));
+            timeFlowRuntimeStatistics.setRefersHourScaleTimeScaleEventCount(timeDataCountMap.get("timeEventCountNumber"));
+            timeDataCountMap.clear();
 
+            queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains*5]->(_DOCG_TS_Minute:DOCG_TS_Minute)\n" +
+                    "        OPTIONAL MATCH (_DOCG_TS_Minute)-[:DOCG_TS_TimeReferTo]->(_MINUTE_Event:DOCG_TimeScaleEvent)\n" +
+                    "        RETURN COUNT(DISTINCT(_DOCG_TS_Minute)) AS timeEntityCount,COUNT(DISTINCT(_MINUTE_Event)) AS timeEventCount";
+            workingGraphOperationExecutor.executeRead(getStaticInfoTransformer,queryCql);
+            timeFlowRuntimeStatistics.setContainsMinuteScaleTimeScaleEntityCount(timeDataCountMap.get("timeEntityCountNumber"));
+            timeFlowRuntimeStatistics.setRefersMinuteScaleTimeScaleEventCount(timeDataCountMap.get("timeEventCountNumber"));
+            timeDataCountMap.clear();
 
-        String queryCql =
-                "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains*1..6]->(docg_TimeScaleEntity:DOCG_TimeScaleEntity) -[:DOCG_TS_TimeReferTo]->[docg_TimeScaleEvent:DOCG_TimeScaleEvent]" +
-                        "RETURN COUNT(docg_TimeScaleEntity), COUNT(docg_TimeScaleEvent)";
+            timeFlowRuntimeStatistics.setContainsTotalTimeScaleEntityCount(
+                    timeFlowRuntimeStatistics.getContainsYearScaleTimeScaleEntityCount()+
+                            timeFlowRuntimeStatistics.getContainsMonthScaleTimeScaleEntityCount()+
+                            timeFlowRuntimeStatistics.getContainsDayScaleTimeScaleEntityCount()+
+                            timeFlowRuntimeStatistics.getContainsHourScaleTimeScaleEntityCount()+
+                            timeFlowRuntimeStatistics.getContainsMinuteScaleTimeScaleEntityCount()
+            );
 
-
-
-
-
-
-
-
+            timeFlowRuntimeStatistics.setRefersTotalTimeScaleEventCount(
+                    timeFlowRuntimeStatistics.getRefersYearScaleTimeScaleEventCount()+
+                            timeFlowRuntimeStatistics.getRefersMonthScaleTimeScaleEventCount()+
+                            timeFlowRuntimeStatistics.getRefersDayScaleTimeScaleEventCount()+
+                            timeFlowRuntimeStatistics.getRefersHourScaleTimeScaleEventCount()+
+                            timeFlowRuntimeStatistics.getRefersMinuteScaleTimeScaleEventCount()
+            );
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
         return timeFlowRuntimeStatistics;
     }
 
