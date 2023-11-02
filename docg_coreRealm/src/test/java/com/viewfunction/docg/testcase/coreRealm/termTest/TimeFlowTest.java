@@ -146,6 +146,8 @@ public class TimeFlowTest {
 
         LinkedList<TimeScaleEntity> timeScaleEntityLinkedList3 = defaultTimeFlow.getDayEntities(new TimeScaleMoment(1997,12,2),new TimeScaleMoment(1998,1,2));
         Assert.assertEquals(timeScaleEntityLinkedList3.size(),32);
+        timeScaleEntityLinkedList3 = defaultTimeFlow.getDayEntities(new TimeScaleMoment(1997,12,2),new TimeScaleMoment(1999,1,2));
+        Assert.assertEquals(timeScaleEntityLinkedList3.size(),397);
 
         TimeScaleEntity singleTimeScaleEntity3 = defaultTimeFlow.getHourEntity(2000,2,29,18);
         Assert.assertNotNull(singleTimeScaleEntity3);

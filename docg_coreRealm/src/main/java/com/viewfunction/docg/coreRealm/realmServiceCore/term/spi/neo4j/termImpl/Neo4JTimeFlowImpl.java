@@ -308,7 +308,7 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
                 int yearSpan = toYear - fromYear;
                 if(yearSpan > 1 ){
                     String yearRange ="range("+(fromYear+1)+","+(fromYear+yearSpan-1)+")";
-                    String wholeYearPartQuery = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month:DOCG_TS_Month)-[:DOCG_TS_Contains]->(day:DOCG_TS_Day) WHERE year.year in "+yearRange+" RETURN month as operationResult ORDER BY year.year, month.month, day.day";
+                    String wholeYearPartQuery = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month:DOCG_TS_Month)-[:DOCG_TS_Contains]->(day:DOCG_TS_Day) WHERE year.year in "+yearRange+" RETURN day as operationResult ORDER BY year.year, month.month, day.day";
                     queryCql = queryCql +" UNION "+"\n" + wholeYearPartQuery;
                 }
             }
