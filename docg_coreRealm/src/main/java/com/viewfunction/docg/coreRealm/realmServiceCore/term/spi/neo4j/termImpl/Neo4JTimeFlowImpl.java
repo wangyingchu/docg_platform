@@ -214,7 +214,7 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
             if(toMonth <= fromMonth){
                 logger.error("To Month {} must great than From Month {}.", toMonth, fromMonth);
                 CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
-                exception.setCauseMessage("To Year "+toYear+" must great than From Year "+fromYear+".");
+                exception.setCauseMessage("To Month "+toMonth+" must great than From Month "+fromMonth+".");
                 throw exception;
             }
         }
@@ -282,6 +282,13 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
             logger.error("To Year {} must great than or equal From Year {}.", toYear, fromYear);
             CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
             exception.setCauseMessage("To Year "+toYear+" must great than From Year "+fromYear+".");
+            throw exception;
+        }
+
+        if(fromYear == toYear && fromMonth > toMonth){
+            logger.error("To Month {} must great than or equal From Month {}.", toMonth, fromMonth);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("To Month "+toMonth+" must great than From Month "+fromMonth+".");
             throw exception;
         }
 
