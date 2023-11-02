@@ -201,7 +201,7 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
         int toYear = toMonthMoment.getYear();
         int toMonth = toMonthMoment.getMonth();
 
-        if(toYear<=fromYear){
+        if(toYear<fromYear){
             logger.error("To Year {} must great than From Year {}.", toYear, fromYear);
             CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
             exception.setCauseMessage("To Year "+toYear+" must great than From Year "+fromYear+".");
@@ -210,25 +210,37 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
 
         String queryCql = null;
 
-        //for from part year
-        queryCql = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+fromYear+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month) WHERE month.month in range("+fromMonth+",12) RETURN month as operationResult ORDER BY year.year, month.month";
-
-        //for middle whole years
-        int yearSpan = toYear - fromYear;
-        if(yearSpan > 1 ){
-            if(yearSpan == 2){
-                String yearRange =""+(fromYear+1);
-                String wholeYearPartQuery = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month:DOCG_TS_Month) WHERE year.year ="+yearRange+" RETURN month as operationResult ORDER BY year.year, month.month";
-                queryCql = queryCql +" UNION "+"\n" + wholeYearPartQuery;
-            }else{
-                String yearRange ="range("+(fromYear+1)+","+(fromYear+yearSpan-1)+")";
-                String wholeYearPartQuery = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month:DOCG_TS_Month) WHERE year.year in "+yearRange+" RETURN month as operationResult ORDER BY year.year, month.month";
-                queryCql = queryCql +" UNION "+"\n" + wholeYearPartQuery;
+        if(fromYear == toYear){
+            if(toMonth <= fromMonth){
+                logger.error("To Month {} must great than From Month {}.", toMonth, fromMonth);
+                CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                exception.setCauseMessage("To Year "+toYear+" must great than From Year "+fromYear+".");
+                throw exception;
             }
         }
-        //for to part year
-        queryCql = queryCql +" UNION "+"\n" +
-                "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+toYear+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month) WHERE month.month in range(1,"+toMonth+") RETURN month as operationResult ORDER BY year.year, month.month";
+
+        if(fromYear == toYear){
+            queryCql = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+fromYear+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month) WHERE month.month in range("+fromMonth+","+toMonth+") RETURN month as operationResult ORDER BY year.year, month.month";
+        }else{
+            //for from part year
+            queryCql = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+fromYear+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month) WHERE month.month in range("+fromMonth+",12) RETURN month as operationResult ORDER BY year.year, month.month";
+            //for middle whole years
+            int yearSpan = toYear - fromYear;
+            if(yearSpan > 1 ){
+                if(yearSpan == 2){
+                    String yearRange =""+(fromYear+1);
+                    String wholeYearPartQuery = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month:DOCG_TS_Month) WHERE year.year ="+yearRange+" RETURN month as operationResult ORDER BY year.year, month.month";
+                    queryCql = queryCql +" UNION "+"\n" + wholeYearPartQuery;
+                }else{
+                    String yearRange ="range("+(fromYear+1)+","+(fromYear+yearSpan-1)+")";
+                    String wholeYearPartQuery = "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year)-[:DOCG_TS_Contains]->(month:DOCG_TS_Month) WHERE year.year in "+yearRange+" RETURN month as operationResult ORDER BY year.year, month.month";
+                    queryCql = queryCql +" UNION "+"\n" + wholeYearPartQuery;
+                }
+            }
+            //for to part year
+            queryCql = queryCql +" UNION "+"\n" +
+                    "MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(year:DOCG_TS_Year{year:"+toYear+"})-[:DOCG_TS_Contains]->(month:DOCG_TS_Month) WHERE month.month in range(1,"+toMonth+") RETURN month as operationResult ORDER BY year.year, month.month";
+        }
         return getListTimeScaleEntity(queryCql);
     }
 

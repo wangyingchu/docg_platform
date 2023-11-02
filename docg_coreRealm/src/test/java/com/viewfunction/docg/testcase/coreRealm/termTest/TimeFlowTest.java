@@ -115,6 +115,13 @@ public class TimeFlowTest {
         Assert.assertEquals(timeScaleEntityLinkedList2.getLast().getTimeScaleGrade(),TimeFlow.TimeScaleGrade.MONTH);
         Assert.assertEquals(timeScaleEntityLinkedList2.size(),90);
 
+        timeScaleEntityLinkedList2 = defaultTimeFlow.getMonthEntities(new TimeScaleMoment(1997,4),new TimeScaleMoment(1997,6));
+        Assert.assertEquals(timeScaleEntityLinkedList2.getFirst().getEntityValue(),4);
+        Assert.assertEquals(timeScaleEntityLinkedList2.getFirst().getTimeScaleGrade(),TimeFlow.TimeScaleGrade.MONTH);
+        Assert.assertEquals(timeScaleEntityLinkedList2.getLast().getEntityValue(),6);
+        Assert.assertEquals(timeScaleEntityLinkedList2.getLast().getTimeScaleGrade(),TimeFlow.TimeScaleGrade.MONTH);
+        Assert.assertEquals(timeScaleEntityLinkedList2.size(),3);
+
         TimeScaleEntity singleTimeScaleEntity2 = defaultTimeFlow.getDayEntity(2000,2,29);
         Assert.assertNotNull(singleTimeScaleEntity2);
         Assert.assertEquals(singleTimeScaleEntity2.getTimeScaleGrade(),TimeFlow.TimeScaleGrade.DAY);
