@@ -507,6 +507,32 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
             exception.setCauseMessage("To Year "+toYear+" must great than From Year "+fromYear+".");
             throw exception;
         }
+        if(fromYear == toYear & fromMonth > toMonth){
+            logger.error("To Month {} must great than or equal From Month {}.", toMonth, fromMonth);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("To Month "+toMonth+" must great than From Month "+fromMonth+".");
+            throw exception;
+        }
+        if(fromYear == toYear & fromMonth == toMonth & fromDay > toDay){
+            logger.error("To Day {} must great than or equal From Day {}.", toDay, fromDay);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("To Day "+toDay+" must great than or equal From Day "+fromDay+".");
+            throw exception;
+        }
+        if(fromYear == toYear & fromMonth == toMonth & toDay == fromDay & fromHour > toHour){
+            logger.error("To Hour {} must great than or equal From Hour {}.", toHour, fromHour);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("To Hour "+toHour+" must great than or equal From Hour "+fromHour+".");
+            throw exception;
+        }
+        if(fromYear == toYear & fromMonth == toMonth & toDay == fromDay & fromHour == toHour){
+            if(toMinute <= fromMinute){
+                logger.error("To Minute {} must great than From Minute {}.", toMinute, fromMinute);
+                CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                exception.setCauseMessage("To Minute "+toMinute+" must great than From Minute "+fromMinute+".");
+                throw exception;
+            }
+        }
 
         String queryCql = null;
         if(fromYear == toYear && fromMonth == toMonth && fromDay == toDay && fromHour == toHour) {
