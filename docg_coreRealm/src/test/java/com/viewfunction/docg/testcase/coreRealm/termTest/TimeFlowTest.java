@@ -178,7 +178,7 @@ public class TimeFlowTest {
         Assert.assertEquals(timeScaleEntityLinkedList4.get(0).getTimeScaleGrade(),TimeFlow.TimeScaleGrade.HOUR);
 
         timeScaleEntityLinkedList4 = defaultTimeFlow.getHourEntities(new TimeScaleMoment(1997,9,2,3),new TimeScaleMoment(1997,11,4,21));
-        Assert.assertEquals(timeScaleEntityLinkedList4.size(),787);
+        Assert.assertEquals(timeScaleEntityLinkedList4.size(),1531);
         Assert.assertEquals(timeScaleEntityLinkedList4.get(0).getTimeScaleGrade(),TimeFlow.TimeScaleGrade.HOUR);
 
         timeScaleEntityLinkedList4 = defaultTimeFlow.getHourEntities(new TimeScaleMoment(1997,12,31,3),new TimeScaleMoment(2000,1,1,22));
