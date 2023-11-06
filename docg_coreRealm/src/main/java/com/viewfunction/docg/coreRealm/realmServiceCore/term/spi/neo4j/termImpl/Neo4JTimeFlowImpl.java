@@ -689,7 +689,7 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
 
         MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains*3]->(_DOCG_TS_Day:DOCG_TS_Day)
         OPTIONAL MATCH (_DOCG_TS_Day)-[:DOCG_TS_TimeReferTo]->(_DAY_Event:DOCG_TimeScaleEvent)
-        RETURN COUNT(DISTINCT((_DOCG_TS_Day)) AS timeEntityCount,COUNT(DISTINCT(_DAY_Event)) AS timeEventCount
+        RETURN COUNT(DISTINCT(_DOCG_TS_Day)) AS timeEntityCount,COUNT(DISTINCT(_DAY_Event)) AS timeEventCount
 
         MATCH(timeFlow:DOCG_TimeFlow{name:"DefaultTimeFlow"})-[:DOCG_TS_Contains*4]->(_DOCG_TS_Hour:DOCG_TS_Hour)
         OPTIONAL MATCH (_DOCG_TS_Hour)-[:DOCG_TS_TimeReferTo]->(_HOUR_Event:DOCG_TimeScaleEvent)
