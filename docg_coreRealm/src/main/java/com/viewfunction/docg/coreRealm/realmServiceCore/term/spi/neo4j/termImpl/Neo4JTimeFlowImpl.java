@@ -724,6 +724,7 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
             String queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains]->(_DOCG_TS_Year:DOCG_TS_Year)\n" +
                     "        OPTIONAL MATCH (_DOCG_TS_Year)-[:DOCG_TS_TimeReferTo]->(_YEAR_Event:DOCG_TimeScaleEvent)\n" +
                     "        RETURN COUNT(DISTINCT(_DOCG_TS_Year)) AS timeEntityCount,COUNT(DISTINCT(_YEAR_Event)) AS timeEventCount";
+            logger.debug("Generated Cypher Statement: {}", queryCql);
             workingGraphOperationExecutor.executeRead(getStaticInfoTransformer,queryCql);
             timeFlowRuntimeStatistics.setContainsYearScaleTimeScaleEntityCount(timeDataCountMap.get("timeEntityCountNumber"));
             timeFlowRuntimeStatistics.setRefersYearScaleTimeScaleEventCount(timeDataCountMap.get("timeEventCountNumber"));
@@ -732,6 +733,7 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
             queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains*2]->(_DOCG_TS_Month:DOCG_TS_Month)\n" +
                     "        OPTIONAL MATCH (_DOCG_TS_Month)-[:DOCG_TS_TimeReferTo]->(_MONTH_Event:DOCG_TimeScaleEvent)\n" +
                     "        RETURN COUNT(DISTINCT(_DOCG_TS_Month)) AS timeEntityCount,COUNT(DISTINCT(_MONTH_Event)) AS timeEventCount";
+            logger.debug("Generated Cypher Statement: {}", queryCql);
             workingGraphOperationExecutor.executeRead(getStaticInfoTransformer,queryCql);
             timeFlowRuntimeStatistics.setContainsMonthScaleTimeScaleEntityCount(timeDataCountMap.get("timeEntityCountNumber"));
             timeFlowRuntimeStatistics.setRefersMonthScaleTimeScaleEventCount(timeDataCountMap.get("timeEventCountNumber"));
@@ -740,6 +742,7 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
             queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains*3]->(_DOCG_TS_Day:DOCG_TS_Day)\n" +
                     "        OPTIONAL MATCH (_DOCG_TS_Day)-[:DOCG_TS_TimeReferTo]->(_DAY_Event:DOCG_TimeScaleEvent)\n" +
                     "        RETURN COUNT(DISTINCT(_DOCG_TS_Day)) AS timeEntityCount,COUNT(DISTINCT(_DAY_Event)) AS timeEventCount";
+            logger.debug("Generated Cypher Statement: {}", queryCql);
             workingGraphOperationExecutor.executeRead(getStaticInfoTransformer,queryCql);
             timeFlowRuntimeStatistics.setContainsDayScaleTimeScaleEntityCount(timeDataCountMap.get("timeEntityCountNumber"));
             timeFlowRuntimeStatistics.setRefersDayScaleTimeScaleEventCount(timeDataCountMap.get("timeEventCountNumber"));
@@ -748,6 +751,7 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
             queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains*4]->(_DOCG_TS_Hour:DOCG_TS_Hour)\n" +
                     "        OPTIONAL MATCH (_DOCG_TS_Hour)-[:DOCG_TS_TimeReferTo]->(_HOUR_Event:DOCG_TimeScaleEvent)\n" +
                     "        RETURN COUNT(DISTINCT(_DOCG_TS_Hour)) AS timeEntityCount,COUNT(DISTINCT(_HOUR_Event)) AS timeEventCount";
+            logger.debug("Generated Cypher Statement: {}", queryCql);
             workingGraphOperationExecutor.executeRead(getStaticInfoTransformer,queryCql);
             timeFlowRuntimeStatistics.setContainsHourScaleTimeScaleEntityCount(timeDataCountMap.get("timeEntityCountNumber"));
             timeFlowRuntimeStatistics.setRefersHourScaleTimeScaleEventCount(timeDataCountMap.get("timeEventCountNumber"));
@@ -756,6 +760,7 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
             queryCql ="MATCH(timeFlow:DOCG_TimeFlow{name:\""+getTimeFlowName()+"\"})-[:DOCG_TS_Contains*5]->(_DOCG_TS_Minute:DOCG_TS_Minute)\n" +
                     "        OPTIONAL MATCH (_DOCG_TS_Minute)-[:DOCG_TS_TimeReferTo]->(_MINUTE_Event:DOCG_TimeScaleEvent)\n" +
                     "        RETURN COUNT(DISTINCT(_DOCG_TS_Minute)) AS timeEntityCount,COUNT(DISTINCT(_MINUTE_Event)) AS timeEventCount";
+            logger.debug("Generated Cypher Statement: {}", queryCql);
             workingGraphOperationExecutor.executeRead(getStaticInfoTransformer,queryCql);
             timeFlowRuntimeStatistics.setContainsMinuteScaleTimeScaleEntityCount(timeDataCountMap.get("timeEntityCountNumber"));
             timeFlowRuntimeStatistics.setRefersMinuteScaleTimeScaleEventCount(timeDataCountMap.get("timeEventCountNumber"));
