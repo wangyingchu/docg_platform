@@ -9,6 +9,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.TimeScaleOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeFlowRuntimeStatistics;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeFlowSummaryStatistics;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleMoment;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
@@ -785,6 +786,11 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
         return timeFlowRuntimeStatistics;
+    }
+
+    @Override
+    public TimeFlowSummaryStatistics getTimeFlowSummaryStatistics() {
+        return null;
     }
 
     private TimeScaleEntity getSpecialTimeScaleEntity(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade){

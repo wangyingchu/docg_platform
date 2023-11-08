@@ -2,6 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeFlowRuntimeStatistics;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeFlowSummaryStatistics;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleMoment;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 
@@ -289,4 +290,11 @@ public interface TimeFlow {
      * @return 时间流相关数据实时统计信息
      */
     public TimeFlowRuntimeStatistics getTimeFlowRuntimeStatistics();
+
+    /**
+     * 获取当前时间流相关数据的概要统计信息
+     *
+     * @return 时间流相关数据概要统计信息
+     */
+    public TimeFlowSummaryStatistics getTimeFlowSummaryStatistics();
 }

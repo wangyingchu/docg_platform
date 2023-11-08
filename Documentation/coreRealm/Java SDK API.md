@@ -3949,6 +3949,13 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 时间流相关数据实时统计信息
      */
     public TimeFlowRuntimeStatistics getTimeFlowRuntimeStatistics();
+
+    /**
+     * 获取当前时间流相关数据的概要统计信息
+     *
+     * @return 时间流相关数据概要统计信息
+     */
+    public TimeFlowSummaryStatistics getTimeFlowSummaryStatistics();
 ```
 
 ###### ↳ TimeScaleEntity
