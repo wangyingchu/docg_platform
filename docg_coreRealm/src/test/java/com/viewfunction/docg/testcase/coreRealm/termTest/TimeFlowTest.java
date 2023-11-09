@@ -444,7 +444,15 @@ public class TimeFlowTest {
         Assert.assertNotNull(timeScaleEventsRetrieveResult.getOperationStatistics().getResultEntitiesCount());
         Assert.assertNotNull(timeScaleEventsRetrieveResult.getOperationStatistics().getQueryParameters());
 
+        TimeFlowSummaryStatistics timeFlowSummaryStatistics = defaultTimeFlow.getTimeFlowSummaryStatistics();
+        Assert.assertTrue(timeFlowSummaryStatistics.getContainsTotalTimeScaleEntityCount()>0);
+        Assert.assertTrue(timeFlowSummaryStatistics.getRefersTotalTimeScaleEventCount()>0);
+
         long removeRefersEventsResult = defaultTimeFlow.removeRefersTimeScaleEvents();
         Assert.assertTrue(removeRefersEventsResult > 0);
+
+        timeFlowSummaryStatistics = defaultTimeFlow.getTimeFlowSummaryStatistics();
+        Assert.assertTrue(timeFlowSummaryStatistics.getContainsTotalTimeScaleEntityCount() > 0);
+        Assert.assertTrue(timeFlowSummaryStatistics.getRefersTotalTimeScaleEventCount() == 0);
     }
 }
