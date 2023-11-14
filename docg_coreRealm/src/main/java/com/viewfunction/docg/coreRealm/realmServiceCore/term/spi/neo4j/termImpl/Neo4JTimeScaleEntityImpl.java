@@ -13,6 +13,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleEventsRetrieveResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleRelationsInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonConceptionEntitiesRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonTimeScaleEventsRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
@@ -30,6 +31,8 @@ import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -476,6 +479,66 @@ public class Neo4JTimeScaleEntityImpl implements Neo4JTimeScaleEntity {
         }
         return null;
     }
+
+    @Override
+    public List<TimeScaleRelationsInfo> sampleSelfAttachedTimeScaleRelationsInfos(int resultCount, int skipCount) throws CoreRealmServiceEntityExploreException{
+        if(resultCount < 0 ){
+            String exceptionMessage = "result Count must great then zero";
+            CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
+            coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
+            throw coreRealmServiceEntityExploreException;
+        }
+        if(skipCount < 0 ){
+            String exceptionMessage = "skip Count must great then zero";
+            CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
+            coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
+            throw coreRealmServiceEntityExploreException;
+        }
+
+        String queryCql = "MATCH(currentTimeScaleEntity:DOCG_TimeScaleEntity)-[timeReferToRelation:`DOCG_TS_TimeReferTo`]->(timeScaleEvent:`DOCG_TimeScaleEvent`) " +
+                "<-[attachToTimeScaleRelation:`DOCG_AttachToTimeScale`]-(conceptionEntity)" +
+                " WHERE id(currentTimeScaleEntity) = "+this.getTimeScaleEntityUID()+" \n" +
+                "RETURN currentTimeScaleEntity,timeReferToRelation,timeScaleEvent,attachToTimeScaleRelation,conceptionEntity" +
+                " SKIP " +skipCount + " LIMIT "+resultCount+" \n";
+        logger.debug("Generated Cypher Statement: {}", queryCql);
+
+        List<TimeScaleRelationsInfo> timeScaleRelationsInfoList = new ArrayList<>();
+        DataTransformer<Object> _DataTransformer = new DataTransformer<Object>() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
+                    Record record = result.next();
+                    Node timeScaleEntityNode = record.get("currentTimeScaleEntity").asNode();
+                    Relationship timeReferToRelation = record.get("timeReferToRelation").asRelationship();
+                    Node timeScaleEventNode = record.get("timeScaleEvent").asNode();
+                    Relationship attachToTimeScaleRelation = record.get("attachToTimeScaleRelation").asRelationship();
+                    Node conceptionEntityNode = record.get("conceptionEntity").asNode();
+
+                    String timeScaleEntityUID = ""+timeScaleEntityNode.id();
+                    String timeReferToRelationEntityUID = ""+timeReferToRelation.id();
+                    String timeScaleEventUID = ""+timeScaleEventNode.id();
+                    String attachToTimeScaleRelationEntityUID = ""+attachToTimeScaleRelation.id();
+                    String conceptionEntityUID = ""+conceptionEntityNode.id();
+                    String conceptionKindName = conceptionEntityNode.labels().iterator().next();
+                    TimeFlow.TimeScaleGrade currentTimeScaleGrade = timeScaleGrade;
+                    LocalDateTime referTime = timeScaleEventNode.get(RealmConstant._TimeScaleEventReferTime).asLocalDateTime();
+
+                    TimeScaleRelationsInfo timeScaleRelationsInfo = new TimeScaleRelationsInfo(timeScaleEntityUID,timeReferToRelationEntityUID,timeScaleEventUID,attachToTimeScaleRelationEntityUID,conceptionEntityUID,conceptionKindName,currentTimeScaleGrade,referTime);
+                    timeScaleRelationsInfoList.add(timeScaleRelationsInfo);
+                }
+                return null;
+            }
+        };
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            workingGraphOperationExecutor.executeRead(_DataTransformer,queryCql);
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return timeScaleRelationsInfoList;
+    }
+
 
     @Override
     public String getTimeScaleEntityUID() {

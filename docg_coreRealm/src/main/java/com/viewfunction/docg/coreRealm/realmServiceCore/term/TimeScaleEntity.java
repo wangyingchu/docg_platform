@@ -2,11 +2,14 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleEventsRetrieveResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleRelationsInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public interface TimeScaleEntity {
     /**
@@ -160,4 +163,14 @@ public interface TimeScaleEntity {
      * @return 概念实体返回结果集
      */
     public ConceptionEntitiesRetrieveResult getAttachedConceptionEntities(String conceptionKindName,QueryParameters queryParameters,TimeScaleLevel timeScaleLevel);
+
+    /**
+     * 在当前时间刻度实体对象上取样直接相关的时间刻度事件，概念实体以及关联关系实体的基本信息
+     *
+     * @param resultCount int 返回的时间刻度关联信息数量
+     * @param skipCount int 取样中忽略的时间刻度关联信息数量
+     *
+     * @return 时间刻度关联信息列表
+     */
+    public List<TimeScaleRelationsInfo> sampleSelfAttachedTimeScaleRelationsInfos(int resultCount, int skipCount) throws CoreRealmServiceEntityExploreException;
 }
