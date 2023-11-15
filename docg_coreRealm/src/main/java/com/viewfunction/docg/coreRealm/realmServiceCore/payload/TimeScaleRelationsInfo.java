@@ -13,9 +13,11 @@ public class TimeScaleRelationsInfo {
     private String conceptionKindName;
     private String timeReferToRelationEntityUID;
     private String attachToTimeScaleRelationEntityUID;
+    private String timeScaleEventComment;
 
     public TimeScaleRelationsInfo(String timeScaleEntityUID,String timeReferToRelationEntityUID,String timeScaleEventUID,
-                                  String attachToTimeScaleRelationEntityUID,String conceptionEntityUID,String conceptionKindName,TimeFlow.TimeScaleGrade timeScaleGrade,LocalDateTime referTime){
+                                  String attachToTimeScaleRelationEntityUID,String conceptionEntityUID,String conceptionKindName,
+                                  TimeFlow.TimeScaleGrade timeScaleGrade,LocalDateTime referTime,String timeScaleEventComment){
         this.timeScaleEntityUID = timeScaleEntityUID;
         this.timeReferToRelationEntityUID = timeReferToRelationEntityUID;
         this.timeScaleEventUID = timeScaleEventUID;
@@ -24,6 +26,7 @@ public class TimeScaleRelationsInfo {
         this.conceptionKindName = conceptionKindName;
         this.timeScaleGrade = timeScaleGrade;
         this.referTime = referTime;
+        this.timeScaleEventComment = timeScaleEventComment;
     }
 
     public String getTimeScaleEntityUID() {
@@ -56,5 +59,9 @@ public class TimeScaleRelationsInfo {
 
     public String getAttachToTimeScaleRelationEntityUID() {
         return attachToTimeScaleRelationEntityUID;
+    }
+
+    public String getTimeScaleEventComment() {
+        return timeScaleEventComment;
     }
 }

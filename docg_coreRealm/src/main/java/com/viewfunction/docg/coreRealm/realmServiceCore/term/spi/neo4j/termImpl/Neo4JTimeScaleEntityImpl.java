@@ -522,8 +522,11 @@ public class Neo4JTimeScaleEntityImpl implements Neo4JTimeScaleEntity {
                     String conceptionKindName = conceptionEntityNode.labels().iterator().next();
                     TimeFlow.TimeScaleGrade currentTimeScaleGrade = timeScaleGrade;
                     LocalDateTime referTime = timeScaleEventNode.get(RealmConstant._TimeScaleEventReferTime).asLocalDateTime();
+                    String timeScaleEventComment = timeScaleEventNode.get(RealmConstant._TimeScaleEventComment).asString();
 
-                    TimeScaleRelationsInfo timeScaleRelationsInfo = new TimeScaleRelationsInfo(timeScaleEntityUID,timeReferToRelationEntityUID,timeScaleEventUID,attachToTimeScaleRelationEntityUID,conceptionEntityUID,conceptionKindName,currentTimeScaleGrade,referTime);
+                    TimeScaleRelationsInfo timeScaleRelationsInfo = new TimeScaleRelationsInfo(timeScaleEntityUID,
+                            timeReferToRelationEntityUID, timeScaleEventUID,attachToTimeScaleRelationEntityUID,
+                            conceptionEntityUID,conceptionKindName,currentTimeScaleGrade,referTime,timeScaleEventComment);
                     timeScaleRelationsInfoList.add(timeScaleRelationsInfo);
                 }
                 return null;
