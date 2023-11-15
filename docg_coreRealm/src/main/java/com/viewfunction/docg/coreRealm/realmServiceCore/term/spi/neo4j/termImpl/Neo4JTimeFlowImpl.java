@@ -94,6 +94,37 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
     }
 
     @Override
+    public boolean expandMinuteScaleGradeEntities(int fromYear, int toYear) throws CoreRealmServiceRuntimeException {
+        if(toYear<=fromYear){
+            logger.error("To Year {} must great than From Year {}.", toYear, fromYear);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("To Year "+toYear+" must great than From Year "+fromYear+".");
+            throw exception;
+        }
+        List<Integer> availableTimeSpanYears = getAvailableTimeSpanYears();
+        if(!availableTimeSpanYears.contains(fromYear) ){
+            logger.error("Year {} does not initialized in TimeFlow {}.", fromYear, getTimeFlowName());
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("Year "+fromYear+" does not initialized in TimeFlow "+getTimeFlowName()+".");
+            throw exception;
+        }
+        if(!availableTimeSpanYears.contains(toYear)){
+            logger.error("Year {} does not initialized in TimeFlow {}.", toYear, getTimeFlowName());
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("Year "+toYear+" does not initialized in TimeFlow "+getTimeFlowName()+".");
+            throw exception;
+        }
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            TimeScaleOperationUtil.generateTimeFlowScaleEntities_Minute(workingGraphOperationExecutor,timeFlowName,fromYear,toYear);
+            TimeScaleOperationUtil.linkTimeFlowScaleEntities_Minute(workingGraphOperationExecutor,timeFlowName,fromYear-1,toYear+1);
+            return true;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
     public boolean createTimeSpanEntities(int targetYear, boolean createMinuteData) throws CoreRealmServiceRuntimeException {
         List<Integer> availableTimeSpanYears = getAvailableTimeSpanYears();
         if(availableTimeSpanYears.contains(targetYear)){
@@ -121,6 +152,25 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
             };
             Object resultRes = workingGraphOperationExecutor.executeWrite(dataTransformer,linkYearCql);
             return resultRes != null ? true : false;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public boolean expandMinuteScaleGradeEntities(int targetYear) throws CoreRealmServiceRuntimeException {
+        List<Integer> availableTimeSpanYears = getAvailableTimeSpanYears();
+        if(!availableTimeSpanYears.contains(targetYear)){
+            logger.error("Year {} does not initialized in TimeFlow {}.", targetYear, getTimeFlowName());
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("Year "+targetYear+" does not initialized in TimeFlow "+getTimeFlowName()+".");
+            throw exception;
+        }
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            TimeScaleOperationUtil.generateTimeFlowScaleEntities_Minute(workingGraphOperationExecutor,timeFlowName,targetYear);
+            TimeScaleOperationUtil.linkTimeFlowScaleEntities_Minute(workingGraphOperationExecutor,timeFlowName,targetYear-1,targetYear+1);
+            return true;
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
