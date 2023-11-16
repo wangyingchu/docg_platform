@@ -900,6 +900,44 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         }
     }
 
+    @Override
+    public Set<String> generateTimeFlowSearchIndexes() throws CoreRealmServiceRuntimeException {
+        Set<String> generatedIndexSet = new HashSet<>();
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            String cypherProcedureString = "CREATE INDEX DOCG_TIMEFLOW_TimeScaleEntity_FilterIndex IF NOT EXISTS FOR (n:DOCG_TimeScaleEntity) ON (n.timeFlow)";
+            workingGraphOperationExecutor.executeWrite(result -> null, cypherProcedureString);
+            generatedIndexSet.add("DOCG_TIMEFLOW_TimeScaleEntity_FilterIndex");
+
+            cypherProcedureString = "CREATE INDEX DOCG_TIMEFLOW_Minute_FilterIndex IF NOT EXISTS FOR (n:DOCG_TS_Minute) ON (n.timeFlow)";
+            workingGraphOperationExecutor.executeWrite(result -> null, cypherProcedureString);
+            generatedIndexSet.add("DOCG_TIMEFLOW_Minute_FilterIndex");
+
+            cypherProcedureString = "CREATE INDEX DOCG_TIMEFLOW_Hour_FilterIndex IF NOT EXISTS FOR (n:DOCG_TS_Hour) ON (n.timeFlow)";
+            workingGraphOperationExecutor.executeWrite(result -> null, cypherProcedureString);
+            generatedIndexSet.add("DOCG_TIMEFLOW_Hour_FilterIndex");
+
+            cypherProcedureString = "CREATE INDEX DOCG_TIMEFLOW_TimeScaleEvent_FilterIndex IF NOT EXISTS FOR (n:DOCG_TimeScaleEvent) ON (n.DOCG_TimeScaleEventTimeFlow)";
+            workingGraphOperationExecutor.executeWrite(result -> null, cypherProcedureString);
+            generatedIndexSet.add("DOCG_TIMEFLOW_TimeScaleEvent_FilterIndex");
+
+            cypherProcedureString = "CREATE INDEX DOCG_TIMEFLOW_Hour_ValueFinderIndex IF NOT EXISTS FOR (n:DOCG_TS_Hour) ON (n.year,n.month,n.day,n.hour)";
+            workingGraphOperationExecutor.executeWrite(result -> null, cypherProcedureString);
+            generatedIndexSet.add("DOCG_TIMEFLOW_Hour_ValueFinderIndex");
+
+            cypherProcedureString = "CREATE INDEX DOCG_TIMEFLOW_Minute_ValueFinderIndex IF NOT EXISTS FOR (n:DOCG_TS_Minute) ON (n.year,n.month,n.day,n.hour,n.minute)";
+            workingGraphOperationExecutor.executeWrite(result -> null, cypherProcedureString);
+            generatedIndexSet.add("DOCG_TIMEFLOW_Minute_ValueFinderIndex");
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return generatedIndexSet;
+    }
+
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }

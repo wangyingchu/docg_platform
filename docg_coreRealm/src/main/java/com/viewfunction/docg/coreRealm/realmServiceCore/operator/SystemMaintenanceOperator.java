@@ -162,4 +162,11 @@ public interface SystemMaintenanceOperator {
      * @return 分类实时统计信息
      */
     public GlobalClassificationsRuntimeStatistics getGlobalClassificationsRuntimeStatistics();
+
+    /**
+     * 在当前领域模型中生成针对时间流的搜索索引以提高时间流相关的查询统计性能
+     *
+     * @return 创建成功的索引名称集合 Set<String>
+     */
+    public Set<String> generateTimeFlowSearchIndexes() throws CoreRealmServiceRuntimeException;
 }

@@ -5036,6 +5036,13 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 属性分布数据信息Map， Key为关系类型名称，Value为该关系类型中属性存在的数量
      */
     public Map<String,Long> getRelationAttributeValueDistributionStatistic(String attributeName);
+
+    /**
+     * 在当前领域模型中生成针对时间流的搜索索引以提高时间流相关的查询统计性能
+     *
+     * @return 创建成功的索引名称集合 Set<String>
+     */
+    public Set<String> generateTimeFlowSearchIndexes() throws CoreRealmServiceRuntimeException;
 ```
 
 ###### ↳ DataScienceOperator
