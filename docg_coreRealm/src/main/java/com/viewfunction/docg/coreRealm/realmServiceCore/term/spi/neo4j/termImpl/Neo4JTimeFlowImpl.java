@@ -1,5 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
@@ -844,21 +846,40 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
         TimeFlowSummaryStatistics timeFlowSummaryStatistics = new TimeFlowSummaryStatistics();
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
-            String queryCql ="MATCH (n:DOCG_TimeScaleEntity{timeFlow:\""+getTimeFlowName()+"\"}) RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
-            logger.debug("Generated Cypher Statement: {}", queryCql);
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setResultNumber(5);
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.TimeFlowClass,queryParameters, CypherBuilder.CypherFunctionType.COUNT);
+            GetLongFormatReturnValueTransformer getLongFormatReturnValueTransformer0 = new GetLongFormatReturnValueTransformer("count(operationResult)");
+            Object responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer0,queryCql);
+            boolean hasOnlyOneTimeFlowFlag = (Long)responseObj ==1 ? true:false;
 
             GetLongFormatReturnValueTransformer getLongFormatReturnValueTransformer = new GetLongFormatReturnValueTransformer();
-            Object responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,queryCql);
+
+            if(hasOnlyOneTimeFlowFlag){
+                //ignore timeFlow filter for better performance
+                queryCql ="MATCH (n:DOCG_TimeScaleEntity) RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            }else{
+                queryCql ="MATCH (n:DOCG_TimeScaleEntity{timeFlow:\""+getTimeFlowName()+"\"}) RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            }
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,queryCql);
             if(responseObj != null){
                 timeFlowSummaryStatistics.setContainsTotalTimeScaleEntityCount((Long)responseObj);
             }
 
-            queryCql ="MATCH (n:DOCG_TimeScaleEvent{DOCG_TimeScaleEventTimeFlow:\""+getTimeFlowName()+"\"}) RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            if(hasOnlyOneTimeFlowFlag){
+                //ignore timeFlow filter for better performance
+                queryCql ="MATCH (n:DOCG_TimeScaleEvent) RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            }else{
+                queryCql ="MATCH (n:DOCG_TimeScaleEvent{DOCG_TimeScaleEventTimeFlow:\""+getTimeFlowName()+"\"}) RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            }
             logger.debug("Generated Cypher Statement: {}", queryCql);
             responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,queryCql);
             if(responseObj != null){
                 timeFlowSummaryStatistics.setRefersTotalTimeScaleEventCount((Long)responseObj);
             }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            throw new RuntimeException(e);
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
