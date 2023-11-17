@@ -917,9 +917,17 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
             workingGraphOperationExecutor.executeWrite(result -> null, cypherProcedureString);
             generatedIndexSet.add("DOCG_TIMEFLOW_Hour_FilterIndex");
 
-            cypherProcedureString = "CREATE INDEX DOCG_TIMEFLOW_TimeScaleEvent_FilterIndex IF NOT EXISTS FOR (n:DOCG_TimeScaleEvent) ON (n.DOCG_TimeScaleEventTimeFlow)";
+            cypherProcedureString = "CREATE INDEX DOCG_TIMEFLOW_TimeScaleEvent_FilterIndex0 IF NOT EXISTS FOR (n:DOCG_TimeScaleEvent) ON (n.DOCG_TimeScaleEventTimeFlow)";
             workingGraphOperationExecutor.executeWrite(result -> null, cypherProcedureString);
-            generatedIndexSet.add("DOCG_TIMEFLOW_TimeScaleEvent_FilterIndex");
+            generatedIndexSet.add("DOCG_TIMEFLOW_TimeScaleEvent_FilterIndex0");
+
+            cypherProcedureString = "CREATE INDEX DOCG_TIMEFLOW_TimeScaleEvent_FilterIndex1 IF NOT EXISTS FOR (n:DOCG_TimeScaleEvent) ON (n.DOCG_TimeScaleEventScaleGrade)";
+            workingGraphOperationExecutor.executeWrite(result -> null, cypherProcedureString);
+            generatedIndexSet.add("DOCG_TIMEFLOW_TimeScaleEvent_FilterIndex1");
+
+            cypherProcedureString = "CREATE INDEX DOCG_TIMEFLOW_TimeScaleEvent_FilterIndex2 IF NOT EXISTS FOR (n:DOCG_TimeScaleEvent) ON (n.DOCG_TimeScaleEventTimeFlow,n.DOCG_TimeScaleEventScaleGrade)";
+            workingGraphOperationExecutor.executeWrite(result -> null, cypherProcedureString);
+            generatedIndexSet.add("DOCG_TIMEFLOW_TimeScaleEvent_FilterIndex2");
 
             cypherProcedureString = "CREATE INDEX DOCG_TIMEFLOW_Hour_ValueFinderIndex IF NOT EXISTS FOR (n:DOCG_TS_Hour) ON (n.year,n.month,n.day,n.hour)";
             workingGraphOperationExecutor.executeWrite(result -> null, cypherProcedureString);
