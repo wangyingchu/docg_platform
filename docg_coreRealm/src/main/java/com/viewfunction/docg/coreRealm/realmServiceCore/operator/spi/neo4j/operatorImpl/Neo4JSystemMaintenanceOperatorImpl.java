@@ -946,6 +946,32 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         return generatedIndexSet;
     }
 
+    @Override
+    public Set<String> generateGeospatialRegionSearchIndexes() throws CoreRealmServiceRuntimeException {
+        Set<String> generatedIndexSet = new HashSet<>();
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            String cypherProcedureString = "CREATE INDEX DOCG_GEOSPATIALREGION_GeospatialScaleEvent_FilterIndex0 IF NOT EXISTS FOR (n:DOCG_GeospatialScaleEvent) ON (n.DOCG_GeospatialScaleEventGeospatialRegion)";
+            workingGraphOperationExecutor.executeWrite(result -> null, cypherProcedureString);
+            generatedIndexSet.add("DOCG_GEOSPATIALREGION_GeospatialScaleEvent_FilterIndex0");
+
+            cypherProcedureString = "CREATE INDEX DOCG_GEOSPATIALREGION_GeospatialScaleEvent_FilterIndex1 IF NOT EXISTS FOR (n:DOCG_GeospatialScaleEvent) ON (n.DOCG_GeospatialScaleEventScaleGrade)";
+            workingGraphOperationExecutor.executeWrite(result -> null, cypherProcedureString);
+            generatedIndexSet.add("DOCG_GEOSPATIALREGION_GeospatialScaleEvent_FilterIndex1");
+
+            cypherProcedureString = "CREATE INDEX DOCG_GEOSPATIALREGION_GeospatialScaleEvent_FilterIndex2 IF NOT EXISTS FOR (n:DOCG_GeospatialScaleEvent) ON (n.DOCG_GeospatialScaleEventGeospatialRegion,n.DOCG_GeospatialScaleEventScaleGrade)";
+            workingGraphOperationExecutor.executeWrite(result -> null, cypherProcedureString);
+            generatedIndexSet.add("DOCG_GEOSPATIALREGION_GeospatialScaleEvent_FilterIndex2");
+        } catch(org.neo4j.driver.exceptions.ClientException e){
+            CoreRealmServiceRuntimeException e1 = new CoreRealmServiceRuntimeException();
+            e1.setCauseMessage(e.getMessage());
+            throw e1;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return generatedIndexSet;
+    }
+
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }

@@ -5057,6 +5057,13 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 创建成功的索引名称集合 Set<String>
      */
     public Set<String> generateTimeFlowSearchIndexes() throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前领域模型中生成针对地理空间区域范围的搜索索引以提高地理空间区域范围相关的查询统计性能
+     *
+     * @return 创建成功的索引名称集合 Set<String>
+     */
+    public Set<String> generateGeospatialRegionSearchIndexes() throws CoreRealmServiceRuntimeException;
 ```
 
 ###### ↳ DataScienceOperator
