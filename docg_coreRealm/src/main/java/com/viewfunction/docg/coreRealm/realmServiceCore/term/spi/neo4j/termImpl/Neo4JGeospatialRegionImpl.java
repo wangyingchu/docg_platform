@@ -9,6 +9,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBui
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListGeospatialScaleEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetLongFormatReturnValueTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleGeospatialScaleEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GeospatialScaleOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
@@ -440,11 +441,47 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
 
     @Override
     public GeospatialRegionSummaryStatistics getGeospatialRegionSummaryStatistics() {
+        GeospatialRegionSummaryStatistics geospatialRegionSummaryStatistics = new GeospatialRegionSummaryStatistics();
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setResultNumber(5);
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialRegionClass,queryParameters, CypherBuilder.CypherFunctionType.COUNT);
+            GetLongFormatReturnValueTransformer getLongFormatReturnValueTransformer0 = new GetLongFormatReturnValueTransformer("count(operationResult)");
+            Object responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer0,queryCql);
+            boolean hasOnlyOneGeospatialRegionFlag = (Long)responseObj == 1 ? true:false;
 
+            GetLongFormatReturnValueTransformer getLongFormatReturnValueTransformer = new GetLongFormatReturnValueTransformer();
 
+            if(hasOnlyOneGeospatialRegionFlag){
+                //ignore GeospatialRegion filter for better performance
+                queryCql ="MATCH (n:DOCG_GeospatialScaleEntity) RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            }else{
+                queryCql ="MATCH (n:DOCG_GeospatialScaleEntity{DOCG_GeospatialRegion:\""+getGeospatialRegionName()+"\"}) RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            }
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,queryCql);
+            if(responseObj != null){
+                geospatialRegionSummaryStatistics.setContainsTotalGeospatialScaleEntityCount((Long)responseObj);
+            }
 
-
-        return null;
+            if(hasOnlyOneGeospatialRegionFlag){
+                //ignore DOCG_GeospatialScaleEventGeospatialRegion filter for better performance
+                queryCql ="MATCH (n:DOCG_GeospatialScaleEvent) RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            }else{
+                queryCql ="MATCH (n:DOCG_GeospatialScaleEvent{DOCG_GeospatialScaleEventGeospatialRegion:\""+getGeospatialRegionName()+"\"}) RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            }
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,queryCql);
+            if(responseObj != null){
+                geospatialRegionSummaryStatistics.setRefersTotalGeospatialScaleEventCount((Long)responseObj);
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            throw new RuntimeException(e);
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return geospatialRegionSummaryStatistics;
     }
 
     private GeospatialScaleEntity getFullMatchedEntity(List<GeospatialScaleEntity> geospatialScaleEntitiesList,
