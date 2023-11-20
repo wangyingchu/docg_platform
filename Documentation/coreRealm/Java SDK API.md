@@ -4428,6 +4428,20 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 删除的地理空间刻度事件数量
      */
     public long removeRefersGeospatialScaleEvents();
+
+    /**
+     * 获取当前地理空间区域范围相关的各类数据的实时统计信息
+     *
+     * @return 地理空间区域范围相关数据实时统计信息
+     */
+    public GeospatialRegionRuntimeStatistics getGeospatialRegionRuntimeStatistics();
+
+    /**
+     * 获取当前地理空间区域范围相关数据的概要统计信息
+     *
+     * @return 地理空间区域范围相关数据概要统计信息
+     */
+    public GeospatialRegionSummaryStatistics getGeospatialRegionSummaryStatistics();
 ```
 ###### ↳ GeospatialScaleEntity
 

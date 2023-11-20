@@ -12,6 +12,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleGeospatialScaleEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GeospatialScaleOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GeospatialRegionRuntimeStatistics;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GeospatialRegionSummaryStatistics;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JGeospatialRegion;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
@@ -425,6 +427,24 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
+    }
+
+    @Override
+    public GeospatialRegionRuntimeStatistics getGeospatialRegionRuntimeStatistics() {
+
+
+
+
+        return null;
+    }
+
+    @Override
+    public GeospatialRegionSummaryStatistics getGeospatialRegionSummaryStatistics() {
+
+
+
+
+        return null;
     }
 
     private GeospatialScaleEntity getFullMatchedEntity(List<GeospatialScaleEntity> geospatialScaleEntitiesList,
