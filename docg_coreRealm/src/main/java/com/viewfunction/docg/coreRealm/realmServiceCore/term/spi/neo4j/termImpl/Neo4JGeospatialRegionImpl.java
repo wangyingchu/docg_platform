@@ -432,11 +432,145 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
 
     @Override
     public GeospatialRegionRuntimeStatistics getGeospatialRegionRuntimeStatistics() {
+        GeospatialRegionRuntimeStatistics geospatialRegionRuntimeStatistics = new GeospatialRegionRuntimeStatistics();
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setResultNumber(5);
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialRegionClass,queryParameters, CypherBuilder.CypherFunctionType.COUNT);
+            GetLongFormatReturnValueTransformer getLongFormatReturnValueTransformer0 = new GetLongFormatReturnValueTransformer("count(operationResult)");
+            Object responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer0,queryCql);
+            boolean hasOnlyOneGeospatialRegionFlag = (Long)responseObj == 1 ? true:false;
 
+            String geospatialRegionNameFilter = hasOnlyOneGeospatialRegionFlag ? "":"{DOCG_GeospatialRegion:'"+getGeospatialRegionName()+"'}";
 
+            GetLongFormatReturnValueTransformer getLongFormatReturnValueTransformer = new GetLongFormatReturnValueTransformer();
 
+            queryCql ="MATCH (n:DOCG_GS_Continent"+geospatialRegionNameFilter+") RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,queryCql);
+            if(responseObj != null){
+                geospatialRegionRuntimeStatistics.setContainsContinentScaleTimeScaleEntityCount((Long)responseObj);
+            }
 
-        return null;
+            queryCql ="MATCH (n:DOCG_GS_CountryRegion"+geospatialRegionNameFilter+") RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,queryCql);
+            if(responseObj != null){
+                geospatialRegionRuntimeStatistics.setContainsCountry_RegionScaleTimeScaleEntityCount((Long)responseObj);
+            }
+
+            queryCql ="MATCH (n:DOCG_GS_Province"+geospatialRegionNameFilter+") RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,queryCql);
+            if(responseObj != null){
+                geospatialRegionRuntimeStatistics.setContainsProvinceScaleTimeScaleEntityCount((Long)responseObj);
+            }
+
+            queryCql ="MATCH (n:DOCG_GS_Prefecture"+geospatialRegionNameFilter+") RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,queryCql);
+            if(responseObj != null){
+                geospatialRegionRuntimeStatistics.setContainsPrefectureScaleTimeScaleEntityCount((Long)responseObj);
+            }
+
+            queryCql ="MATCH (n:DOCG_GS_County"+geospatialRegionNameFilter+") RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,queryCql);
+            if(responseObj != null){
+                geospatialRegionRuntimeStatistics.setContainsCountyScaleTimeScaleEntityCount((Long)responseObj);
+            }
+
+            queryCql ="MATCH (n:DOCG_GS_Township"+geospatialRegionNameFilter+") RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,queryCql);
+            if(responseObj != null){
+                geospatialRegionRuntimeStatistics.setContainsTownshipScaleTimeScaleEntityCount((Long)responseObj);
+            }
+
+            queryCql ="MATCH (n:DOCG_GS_Village"+geospatialRegionNameFilter+") RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,queryCql);
+            if(responseObj != null){
+                geospatialRegionRuntimeStatistics.setContainsVillageScaleTimeScaleEntityCount((Long)responseObj);
+            }
+
+            geospatialRegionRuntimeStatistics.setContainsTotalGeospatialScaleEntityCount(
+                    geospatialRegionRuntimeStatistics.getContainsContinentScaleTimeScaleEntityCount()+
+                            geospatialRegionRuntimeStatistics.getContainsCountry_RegionScaleTimeScaleEntityCount()+
+                            geospatialRegionRuntimeStatistics.getContainsProvinceScaleTimeScaleEntityCount()+
+                            geospatialRegionRuntimeStatistics.getContainsPrefectureScaleTimeScaleEntityCount()+
+                            geospatialRegionRuntimeStatistics.getContainsCountyScaleTimeScaleEntityCount()+
+                            geospatialRegionRuntimeStatistics.getContainsTownshipScaleTimeScaleEntityCount()+
+                            geospatialRegionRuntimeStatistics.getContainsVillageScaleTimeScaleEntityCount()
+            );
+
+            String geospatialRegionNameFilter2 = hasOnlyOneGeospatialRegionFlag ? "":"{DOCG_GeospatialScaleEventGeospatialRegion:'"+getGeospatialRegionName()+"'}";
+
+            queryCql ="MATCH (n:DOCG_GeospatialScaleEvent{"+geospatialRegionNameFilter2+"DOCG_GeospatialScaleEventScaleGrade:'CONTINENT'}) RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,queryCql);
+            if(responseObj != null){
+                geospatialRegionRuntimeStatistics.setRefersContinentScaleTimeScaleEventCount((Long)responseObj);
+            }
+
+            queryCql ="MATCH (n:DOCG_GeospatialScaleEvent{"+geospatialRegionNameFilter2+"DOCG_GeospatialScaleEventScaleGrade:'COUNTRY_REGION'}) RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,queryCql);
+            if(responseObj != null){
+                geospatialRegionRuntimeStatistics.setRefersCountry_RegionScaleTimeScaleEventCount((Long)responseObj);
+            }
+
+            queryCql ="MATCH (n:DOCG_GeospatialScaleEvent{"+geospatialRegionNameFilter2+"DOCG_GeospatialScaleEventScaleGrade:'PROVINCE'}) RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,queryCql);
+            if(responseObj != null){
+                geospatialRegionRuntimeStatistics.setRefersProvinceScaleTimeScaleEventCount((Long)responseObj);
+            }
+
+            queryCql ="MATCH (n:DOCG_GeospatialScaleEvent{"+geospatialRegionNameFilter2+"DOCG_GeospatialScaleEventScaleGrade:'PREFECTURE'}) RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,queryCql);
+            if(responseObj != null){
+                geospatialRegionRuntimeStatistics.setRefersPrefectureScaleTimeScaleEventCount((Long)responseObj);
+            }
+
+            queryCql ="MATCH (n:DOCG_GeospatialScaleEvent{"+geospatialRegionNameFilter2+"DOCG_GeospatialScaleEventScaleGrade:'COUNTY'}) RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,queryCql);
+            if(responseObj != null){
+                geospatialRegionRuntimeStatistics.setRefersCountyScaleTimeScaleEventCount((Long)responseObj);
+            }
+
+            queryCql ="MATCH (n:DOCG_GeospatialScaleEvent{"+geospatialRegionNameFilter2+"DOCG_GeospatialScaleEventScaleGrade:'TOWNSHIP'}) RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,queryCql);
+            if(responseObj != null){
+                geospatialRegionRuntimeStatistics.setRefersTownshipScaleTimeScaleEventCount((Long)responseObj);
+            }
+
+            queryCql ="MATCH (n:DOCG_GeospatialScaleEvent{"+geospatialRegionNameFilter2+"DOCG_GeospatialScaleEventScaleGrade:'VILLAGE'}) RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,queryCql);
+            if(responseObj != null){
+                geospatialRegionRuntimeStatistics.setRefersVillageScaleTimeScaleEventCount((Long)responseObj);
+            }
+
+            geospatialRegionRuntimeStatistics.setRefersTotalGeospatialScaleEventCount(
+                    geospatialRegionRuntimeStatistics.getRefersContinentScaleTimeScaleEventCount()+
+                            geospatialRegionRuntimeStatistics.getRefersCountry_RegionScaleTimeScaleEventCount()+
+                            geospatialRegionRuntimeStatistics.getRefersProvinceScaleTimeScaleEventCount()+
+                            geospatialRegionRuntimeStatistics.getRefersPrefectureScaleTimeScaleEventCount()+
+                            geospatialRegionRuntimeStatistics.getRefersCountyScaleTimeScaleEventCount()+
+                            geospatialRegionRuntimeStatistics.getRefersTownshipScaleTimeScaleEventCount()+
+                            geospatialRegionRuntimeStatistics.getRefersVillageScaleTimeScaleEventCount()
+            );
+        } catch (CoreRealmServiceEntityExploreException e) {
+            throw new RuntimeException(e);
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return geospatialRegionRuntimeStatistics;
     }
 
     @Override
