@@ -213,6 +213,17 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
 
     @Override
     public List<GeospatialScaleEntity> listProvinceEntities(GeospatialProperty geospatialProperty, String countryValue, String provinceValue) throws CoreRealmServiceRuntimeException {
+        if(countryValue == null & provinceValue == null){
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialScaleProvinceEntityClass,
+                    RealmConstant.GeospatialRegionProperty,geospatialRegionName,1000000);
+            GetListGeospatialScaleEntityTransformer getListGeospatialScaleEntityTransformer =
+                    new GetListGeospatialScaleEntityTransformer(this.coreRealmName,this.geospatialRegionName,workingGraphOperationExecutor);
+            Object resultEntityList = workingGraphOperationExecutor.executeRead(getListGeospatialScaleEntityTransformer,queryCql);
+            if(resultEntityList != null){
+                return (List<GeospatialScaleEntity>)resultEntityList;
+            }
+        }
         if(countryValue != null){
             try {
                 GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
@@ -295,6 +306,17 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
 
     @Override
     public List<GeospatialScaleEntity> listPrefectureEntities(GeospatialProperty geospatialProperty, String countryValue, String provinceValue, String prefectureValue) throws CoreRealmServiceRuntimeException{
+        if(countryValue == null & provinceValue == null & prefectureValue == null){
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialScalePrefectureEntityClass,
+                    RealmConstant.GeospatialRegionProperty,geospatialRegionName,1000000);
+            GetListGeospatialScaleEntityTransformer getListGeospatialScaleEntityTransformer =
+                    new GetListGeospatialScaleEntityTransformer(this.coreRealmName,this.geospatialRegionName,workingGraphOperationExecutor);
+            Object resultEntityList = workingGraphOperationExecutor.executeRead(getListGeospatialScaleEntityTransformer,queryCql);
+            if(resultEntityList != null){
+                return (List<GeospatialScaleEntity>)resultEntityList;
+            }
+        }
         GeospatialScaleEntity provinceGeospatialScaleEntity = getProvinceEntity(geospatialProperty,countryValue,provinceValue);
         if(provinceGeospatialScaleEntity == null){
             logger.error("PROVINCE GeospatialScaleEntity with {} = {} , doesn't exist.", ""+geospatialProperty, countryValue+","+provinceValue);
@@ -323,6 +345,17 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
 
     @Override
     public List<GeospatialScaleEntity> listCountyEntities(GeospatialProperty geospatialProperty, String countryValue, String provinceValue, String prefectureValue, String countyValue) throws CoreRealmServiceRuntimeException{
+        if(countryValue == null & provinceValue == null & prefectureValue == null & countyValue == null){
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialScaleCountyEntityClass,
+                    RealmConstant.GeospatialRegionProperty,geospatialRegionName,100000000);
+            GetListGeospatialScaleEntityTransformer getListGeospatialScaleEntityTransformer =
+                    new GetListGeospatialScaleEntityTransformer(this.coreRealmName,this.geospatialRegionName,workingGraphOperationExecutor);
+            Object resultEntityList = workingGraphOperationExecutor.executeRead(getListGeospatialScaleEntityTransformer,queryCql);
+            if(resultEntityList != null){
+                return (List<GeospatialScaleEntity>)resultEntityList;
+            }
+        }
         GeospatialScaleEntity provinceGeospatialScaleEntity = getPrefectureEntity(geospatialProperty,countryValue,provinceValue,prefectureValue);
         if(provinceGeospatialScaleEntity == null){
             logger.error("PREFECTURE GeospatialScaleEntity with {} = {} , doesn't exist.", ""+geospatialProperty, countryValue+","+provinceValue+","+prefectureValue);
@@ -351,6 +384,17 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
 
     @Override
     public List<GeospatialScaleEntity> listTownshipEntities(GeospatialProperty geospatialProperty, String countryValue, String provinceValue, String prefectureValue, String countyValue, String townshipValue) throws CoreRealmServiceRuntimeException {
+        if(countryValue == null & provinceValue == null & prefectureValue == null & countyValue == null & townshipValue == null){
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialScaleTownshipEntityClass,
+                    RealmConstant.GeospatialRegionProperty,geospatialRegionName,100000000);
+            GetListGeospatialScaleEntityTransformer getListGeospatialScaleEntityTransformer =
+                    new GetListGeospatialScaleEntityTransformer(this.coreRealmName,this.geospatialRegionName,workingGraphOperationExecutor);
+            Object resultEntityList = workingGraphOperationExecutor.executeRead(getListGeospatialScaleEntityTransformer,queryCql);
+            if(resultEntityList != null){
+                return (List<GeospatialScaleEntity>)resultEntityList;
+            }
+        }
         GeospatialScaleEntity provinceGeospatialScaleEntity = getCountyEntity(geospatialProperty,countryValue,provinceValue,prefectureValue,countyValue);
         if(provinceGeospatialScaleEntity == null){
             logger.error("COUNTY GeospatialScaleEntity with {} = {} , doesn't exist.", ""+geospatialProperty, countryValue+","+provinceValue+","+prefectureValue+","+countyValue);
@@ -379,6 +423,17 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
 
     @Override
     public List<GeospatialScaleEntity> listVillageEntities(GeospatialProperty geospatialProperty, String countryValue, String provinceValue, String prefectureValue, String countyValue, String townshipValue, String villageValue) throws CoreRealmServiceRuntimeException {
+        if(countryValue == null & provinceValue == null & prefectureValue == null & countyValue == null & townshipValue == null & villageValue == null){
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialScaleVillageEntityClass,
+                    RealmConstant.GeospatialRegionProperty,geospatialRegionName,100000000);
+            GetListGeospatialScaleEntityTransformer getListGeospatialScaleEntityTransformer =
+                    new GetListGeospatialScaleEntityTransformer(this.coreRealmName,this.geospatialRegionName,workingGraphOperationExecutor);
+            Object resultEntityList = workingGraphOperationExecutor.executeRead(getListGeospatialScaleEntityTransformer,queryCql);
+            if(resultEntityList != null){
+                return (List<GeospatialScaleEntity>)resultEntityList;
+            }
+        }
         GeospatialScaleEntity provinceGeospatialScaleEntity = getTownshipEntity(geospatialProperty,countryValue,provinceValue,prefectureValue,countyValue,townshipValue);
         if(provinceGeospatialScaleEntity == null){
             logger.error("TOWNSHIP GeospatialScaleEntity with {} = {} , doesn't exist.", ""+geospatialProperty, countryValue+","+provinceValue+","+prefectureValue+","+countyValue+","+townshipValue);
