@@ -4485,6 +4485,13 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
     public String getEnglishName();
 
     /**
+     * 获取当前地理空间刻度实体对象的唯一ID
+     *
+     * @return 地理空间刻度实体对象唯一ID
+     */
+    public String getGeospatialScaleEntityUID();
+
+    /**
      * 获取当前对象的上一级地理空间刻度实体对象
      *
      * @return 上一级地理空间刻度实体对象

@@ -74,6 +74,11 @@ public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntit
     }
 
     @Override
+    public String getGeospatialScaleEntityUID(){
+        return this.geospatialScaleEntityUID;
+    }
+
+    @Override
     public GeospatialScaleEntity getParentEntity() {
         String queryCql = "MATCH(currentEntity:DOCG_GeospatialScaleEntity)<-[:DOCG_GS_SpatialContains]-(targetEntities:DOCG_GeospatialScaleEntity) WHERE id(currentEntity) = "+ this.getGeospatialScaleEntityUID() +" RETURN targetEntities as operationResult ORDER BY targetEntities.id LIMIT 1";
         return getSingleGeospatialScaleEntity(queryCql);
@@ -491,10 +496,6 @@ public class Neo4JGeospatialScaleEntityImpl implements Neo4JGeospatialScaleEntit
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
         return null;
-    }
-
-    public String getGeospatialScaleEntityUID() {
-        return geospatialScaleEntityUID;
     }
 
     //internal graphOperationExecutor management logic
