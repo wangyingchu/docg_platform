@@ -4273,6 +4273,18 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      */
     public GeospatialScaleEntity getContinentEntity(GeospatialProperty geospatialProperty,String continentValue);
 
+
+    /**
+     * 获取当前地理空间区域范围内的指定国家地区地理空间刻度实体列表
+     *
+     * @param geospatialProperty GeospatialProperty 地理空间刻度实体标准属性类型
+     * @param continentValue String 指定国家地区所属洲际目标属性值（完全精确匹配）
+     * @param countryValue String 指定国家地区目标属性值（模糊匹配）
+     *
+     * @return 目标地理空间刻度实体对象列表
+     */
+    public List<GeospatialScaleEntity> listCountryRegionEntities(GeospatialProperty geospatialProperty,String continentValue,String countryValue);
+
     /**
      * 获取当前地理空间区域范围内的指定国家地区地理空间刻度实体列表
      *
