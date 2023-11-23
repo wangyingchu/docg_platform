@@ -33,7 +33,7 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
     private String geospatialRegionName;
     private String geospatialRegionUID;
 
-    public Neo4JGeospatialRegionImpl(String coreRealmName, String geospatialRegionName,String geospatialRegionUID){
+    public Neo4JGeospatialRegionImpl(String coreRealmName, String geospatialRegionName, String geospatialRegionUID){
         this.coreRealmName = coreRealmName;
         this.geospatialRegionName = geospatialRegionName;
         this.geospatialRegionUID = geospatialRegionUID;
@@ -362,6 +362,7 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
             exception.setCauseMessage("PROVINCE GeospatialScaleEntity with "+geospatialProperty+" = "+countryValue+","+provinceValue+" doesn't exist.");
             throw exception;
         }else{
+            ((Neo4JGeospatialScaleEntityImpl)provinceGeospatialScaleEntity).setGlobalGraphOperationExecutor(this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor());
             List<GeospatialScaleEntity> allChildrenGeospatialScaleEntities = provinceGeospatialScaleEntity.getChildEntities();
             return getFullMatchedEntitiesList(allChildrenGeospatialScaleEntities,geospatialProperty,prefectureValue);
         }
@@ -376,6 +377,7 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
             exception.setCauseMessage("PROVINCE GeospatialScaleEntity with "+geospatialProperty+" = "+countryValue+","+provinceValue+" doesn't exist.");
             throw exception;
         }else{
+            ((Neo4JGeospatialScaleEntityImpl)provinceGeospatialScaleEntity).setGlobalGraphOperationExecutor(this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor());
             List<GeospatialScaleEntity> allChildrenGeospatialScaleEntities = provinceGeospatialScaleEntity.getChildEntities();
             return getFullMatchedEntity(allChildrenGeospatialScaleEntities,geospatialProperty,prefectureValue);
         }
@@ -401,6 +403,7 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
             exception.setCauseMessage("PREFECTURE GeospatialScaleEntity with "+geospatialProperty+" = "+countryValue+","+provinceValue+","+prefectureValue+" doesn't exist.");
             throw exception;
         }else{
+            ((Neo4JGeospatialScaleEntityImpl)provinceGeospatialScaleEntity).setGlobalGraphOperationExecutor(this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor());
             List<GeospatialScaleEntity> allChildrenGeospatialScaleEntities = provinceGeospatialScaleEntity.getChildEntities();
             return getFullMatchedEntitiesList(allChildrenGeospatialScaleEntities,geospatialProperty,countyValue);
         }
@@ -415,6 +418,7 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
             exception.setCauseMessage("PREFECTURE GeospatialScaleEntity with "+geospatialProperty+" = "+countryValue+","+provinceValue+","+prefectureValue+" doesn't exist.");
             throw exception;
         }else{
+            ((Neo4JGeospatialScaleEntityImpl)provinceGeospatialScaleEntity).setGlobalGraphOperationExecutor(this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor());
             List<GeospatialScaleEntity> allChildrenGeospatialScaleEntities = provinceGeospatialScaleEntity.getChildEntities();
             return getFullMatchedEntity(allChildrenGeospatialScaleEntities,geospatialProperty,countyValue);
         }
@@ -440,6 +444,7 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
             exception.setCauseMessage("COUNTY GeospatialScaleEntity with "+geospatialProperty+" = "+countryValue+","+provinceValue+","+prefectureValue+","+countyValue+" doesn't exist.");
             throw exception;
         }else{
+            ((Neo4JGeospatialScaleEntityImpl)provinceGeospatialScaleEntity).setGlobalGraphOperationExecutor(this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor());
             List<GeospatialScaleEntity> allChildrenGeospatialScaleEntities = provinceGeospatialScaleEntity.getChildEntities();
             return getFullMatchedEntitiesList(allChildrenGeospatialScaleEntities,geospatialProperty,townshipValue);
         }
@@ -454,6 +459,7 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
             exception.setCauseMessage("COUNTY GeospatialScaleEntity with "+geospatialProperty+" = "+countryValue+","+provinceValue+","+prefectureValue+","+countyValue+" doesn't exist.");
             throw exception;
         }else{
+            ((Neo4JGeospatialScaleEntityImpl)provinceGeospatialScaleEntity).setGlobalGraphOperationExecutor(this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor());
             List<GeospatialScaleEntity> allChildrenGeospatialScaleEntities = provinceGeospatialScaleEntity.getChildEntities();
             return getFullMatchedEntity(allChildrenGeospatialScaleEntities,geospatialProperty,townshipValue);
         }
@@ -479,6 +485,7 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
             exception.setCauseMessage("TOWNSHIP GeospatialScaleEntity with "+geospatialProperty+" = "+countryValue+","+provinceValue+","+prefectureValue+","+countyValue+","+townshipValue+" doesn't exist.");
             throw exception;
         }else{
+            ((Neo4JGeospatialScaleEntityImpl)provinceGeospatialScaleEntity).setGlobalGraphOperationExecutor(this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor());
             List<GeospatialScaleEntity> allChildrenGeospatialScaleEntities = provinceGeospatialScaleEntity.getChildEntities();
             return getFullMatchedEntitiesList(allChildrenGeospatialScaleEntities,geospatialProperty,villageValue);
         }
@@ -493,6 +500,7 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
             exception.setCauseMessage("TOWNSHIP GeospatialScaleEntity with "+geospatialProperty+" = "+countryValue+","+provinceValue+","+prefectureValue+","+countyValue+","+townshipValue+" doesn't exist.");
             throw exception;
         }else{
+            ((Neo4JGeospatialScaleEntityImpl)provinceGeospatialScaleEntity).setGlobalGraphOperationExecutor(this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor());
             List<GeospatialScaleEntity> allChildrenGeospatialScaleEntities = provinceGeospatialScaleEntity.getChildEntities();
             return getFullMatchedEntity(allChildrenGeospatialScaleEntities,geospatialProperty,villageValue);
         }
@@ -736,7 +744,7 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
     }
 
     private List<GeospatialScaleEntity> getFullMatchedEntitiesList(List<GeospatialScaleEntity> geospatialScaleEntitiesList,
-                                                       GeospatialProperty geospatialProperty,String propertyValue){
+                                                                   GeospatialProperty geospatialProperty,String propertyValue){
         if(propertyValue == null){
             return geospatialScaleEntitiesList;
         }
