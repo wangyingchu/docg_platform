@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl;
 
+import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
@@ -21,6 +22,9 @@ import org.slf4j.LoggerFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOperator {
 
@@ -647,21 +651,23 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                         String currentConceptionKindName = currentNode.labels().iterator().next();
                         conceptionKindId_nameMapping.put(""+currentNodeId,currentConceptionKindName);
                     }
-                    for(Object currentRelationshipObj:relationshipsList){
-                        Relationship currentRelationship = (Relationship)currentRelationshipObj;
-                        String relationshipType = currentRelationship.type();
-                        String startConceptionKindId = ""+currentRelationship.startNodeId();
-                        String endConceptionKindId = ""+currentRelationship.endNodeId();
-                        boolean relationExist = checkRelationEntitiesExist(workingGraphOperationExecutor,conceptionKindId_nameMapping.get(startConceptionKindId),conceptionKindId_nameMapping.get(endConceptionKindId),relationshipType);
-                        if(relationExist){
-                            ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
-                                    new ConceptionKindCorrelationInfo(
-                                            conceptionKindId_nameMapping.get(startConceptionKindId),
-                                            conceptionKindId_nameMapping.get(endConceptionKindId),
-                                            relationshipType,1);
-                            conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
-                        }
+
+                    int degreeOfParallelism = 6;
+                    int singlePartitionSize = (relationshipsList.size()/degreeOfParallelism)+1;
+
+                    List<List<Object>> rsList = Lists.partition(relationshipsList, singlePartitionSize);
+                    ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+                    for(List<Object> currentRelationEntityValueList:rsList){
+                        CheckRelationEntitiesExistThread checkRelationEntitiesExistThread = new CheckRelationEntitiesExistThread(currentRelationEntityValueList,conceptionKindId_nameMapping,conceptionKindCorrelationInfoSet);
+                        executor.execute(checkRelationEntitiesExistThread);
                     }
+                    executor.shutdown();
+                    try {
+                        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
                     return conceptionKindCorrelationInfoSet;
                 }
             };
@@ -673,6 +679,37 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
         return null;
+    }
+
+    private class CheckRelationEntitiesExistThread implements Runnable{
+        private List<Object> relationEntityValueList;
+        private Map<String,String> conceptionKindId_nameMapping;
+        private Set<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet;
+        public CheckRelationEntitiesExistThread(List<Object> relationEntityValueList,Map<String,String> conceptionKindId_nameMapping,Set<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet){
+            this.relationEntityValueList = relationEntityValueList;
+            this.conceptionKindId_nameMapping = conceptionKindId_nameMapping;
+            this.conceptionKindCorrelationInfoSet = conceptionKindCorrelationInfoSet;
+        }
+
+        @Override
+        public void run() {
+            for(Object currentRelationshipObj:relationEntityValueList){
+                Relationship currentRelationship = (Relationship)currentRelationshipObj;
+                String relationshipType = currentRelationship.type();
+                String startConceptionKindId = ""+currentRelationship.startNodeId();
+                String endConceptionKindId = ""+currentRelationship.endNodeId();
+                GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
+                boolean relationExist = checkRelationEntitiesExist(graphOperationExecutor,conceptionKindId_nameMapping.get(startConceptionKindId),conceptionKindId_nameMapping.get(endConceptionKindId),relationshipType);
+                if(relationExist){
+                    ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
+                            new ConceptionKindCorrelationInfo(
+                                    conceptionKindId_nameMapping.get(startConceptionKindId),
+                                    conceptionKindId_nameMapping.get(endConceptionKindId),
+                                    relationshipType,1);
+                    conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
+                }
+            }
+        }
     }
 
     @Override
@@ -761,7 +798,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         RETURN DISTINCT LABELS(n),count(n)
         */
         String cql ="MATCH (n) WHERE (n.`"+attributeName+"`) IS NOT NULL\n" +
-                    "RETURN DISTINCT LABELS(n),COUNT(n)";
+                "RETURN DISTINCT LABELS(n),COUNT(n)";
         logger.debug("Generated Cypher Statement: {}", cql);
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
