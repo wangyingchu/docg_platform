@@ -598,6 +598,24 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                         String currentConceptionKindName = currentNode.labels().iterator().next();
                         conceptionKindId_nameMapping.put(""+currentNodeId,currentConceptionKindName);
                     }
+
+                    int degreeOfParallelism = 6;
+                    int singlePartitionSize = (relationshipsList.size()/degreeOfParallelism)+1;
+
+                    List<List<Object>> rsList = Lists.partition(relationshipsList, singlePartitionSize);
+                    ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+                    for(List<Object> currentRelationEntityValueList:rsList){
+                        CheckConceptionKindsRelationEntitiesExistThread checkConceptionKindsRelationEntitiesExistThread = new CheckConceptionKindsRelationEntitiesExistThread(currentRelationEntityValueList,conceptionKindId_nameMapping,conceptionKindCorrelationInfoSet);
+                        executor.execute(checkConceptionKindsRelationEntitiesExistThread);
+                    }
+                    executor.shutdown();
+                    try {
+                        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    /*
                     for(Object currentRelationshipObj:relationshipsList){
                         Relationship currentRelationship = (Relationship)currentRelationshipObj;
                         String relationshipType = currentRelationship.type();
@@ -617,6 +635,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                             }
                         }
                     }
+                    */
                     return conceptionKindCorrelationInfoSet;
                 }
             };
@@ -628,6 +647,41 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
         return null;
+    }
+
+    private class CheckConceptionKindsRelationEntitiesExistThread implements Runnable{
+        private List<Object> relationEntityValueList;
+        private Map<String,String> conceptionKindId_nameMapping;
+        private Set<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet;
+        public CheckConceptionKindsRelationEntitiesExistThread(List<Object> relationEntityValueList,Map<String,String> conceptionKindId_nameMapping,Set<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet){
+            this.relationEntityValueList = relationEntityValueList;
+            this.conceptionKindId_nameMapping = conceptionKindId_nameMapping;
+            this.conceptionKindCorrelationInfoSet = conceptionKindCorrelationInfoSet;
+        }
+
+        @Override
+        public void run() {
+            for(Object currentRelationshipObj:relationEntityValueList){
+                Relationship currentRelationship = (Relationship)currentRelationshipObj;
+                String relationshipType = currentRelationship.type();
+                String startConceptionKindId = ""+currentRelationship.startNodeId();
+                String endConceptionKindId = ""+currentRelationship.endNodeId();
+                GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
+                boolean relationExist = checkRelationEntitiesExist(graphOperationExecutor,conceptionKindId_nameMapping.get(startConceptionKindId),conceptionKindId_nameMapping.get(endConceptionKindId),relationshipType);
+                if(relationExist){
+                    if(conceptionKindId_nameMapping.get(startConceptionKindId).startsWith(RealmConstant.RealmInnerTypePerFix) &
+                            conceptionKindId_nameMapping.get(endConceptionKindId).startsWith(RealmConstant.RealmInnerTypePerFix)){
+                    }else{
+                        ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
+                                new ConceptionKindCorrelationInfo(
+                                        conceptionKindId_nameMapping.get(startConceptionKindId),
+                                        conceptionKindId_nameMapping.get(endConceptionKindId),
+                                        relationshipType,1);
+                        conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
+                    }
+                }
+            }
+        }
     }
 
     @Override
