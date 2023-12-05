@@ -44,6 +44,10 @@ public class UnitmetrCommandProcessor implements BaseCommandProcessor {
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("Used Heap Memory:             " + metrics.getHeapMemoryUsed()/1024/1024+" MB");
         appInfoStringBuffer.append("\n\r");
+        appInfoStringBuffer.append("Total Non-Heap Memory:         " + metrics.getNonHeapMemoryTotal()/1024/1024+" MB");
+        appInfoStringBuffer.append("\n\r");
+        appInfoStringBuffer.append("Total Heap Memory:             " + metrics.getHeapMemoryTotal()/1024/1024+" MB");
+        appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("Available CPU cores:          " + metrics.getTotalCpus());
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("Current Cpu Load Percentage:  " + metrics.getCurrentCpuLoad()*100+"%");
