@@ -61,15 +61,6 @@
                 </property>
             </bean>
         </property>
-
-        <property name="communicationSpi">
-            <bean class="org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi">
-                <property name="messageQueueLimit" value="1024"/>
-                <!--Managing slow clients-->
-                <property name="slowClientQueueLimit" value="2000"/>
-            </bean>
-        </property>
-
         <!--By default, Ignite nodes consume up to 20% of the RAM available locally, and in most cases this is the only
         parameter you might need to change. To do this, change the size of the default memory region-->
         <property name="dataStorageConfiguration">
@@ -78,10 +69,13 @@
                 <property name="defaultDataRegionConfiguration">
                     <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
                         <property name="name" value="Default_DataStore_Region"/>
-                        <!-- Setting the size of the default region to 10GB. -->
-                        <property name="maxSize" value="#{10L * 1024 * 1024 * 1024}"/>
+                        <property name="initialSize" value="#{5L * 1024 * 1024 * 1024}"/>
+                        <!-- Setting the size of the default region to 20GB. -->
+                        <property name="maxSize" value="#{20L * 1024 * 1024 * 1024}"/>
                         <!-- When persistence is enabled, data and indexes are stored both in memory and on disk across all the cluster nodes. -->
                         <property name="persistenceEnabled" value="false"/>
+                        <!-- enable mertrics for the default data region -->
+                        <property name="metricsEnabled" value="true"/>
                     </bean>
                 </property>
                 <!-- When persistence is enabled,use below configuration to set the data store location. -->

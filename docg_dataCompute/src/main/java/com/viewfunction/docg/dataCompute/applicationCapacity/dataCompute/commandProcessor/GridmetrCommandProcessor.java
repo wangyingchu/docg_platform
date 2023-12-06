@@ -1,13 +1,14 @@
 package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.commandProcessor;
 
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.DataComputeConfigurationHandler;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.UnitOperationResult;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.UnitIgniteOperationUtil;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.UnitOperationResult;
 import com.viewfunction.docg.dataCompute.consoleApplication.feature.BaseCommandProcessor;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.cluster.ClusterGroup;
 import org.apache.ignite.cluster.ClusterMetrics;
 import org.apache.ignite.cluster.ClusterNode;
+import org.apache.ignite.configuration.DataRegionConfiguration;
 
 import java.util.Date;
 
@@ -29,6 +30,16 @@ public class GridmetrCommandProcessor implements BaseCommandProcessor {
         String unitScopeName= DataComputeConfigurationHandler.getConfigPropertyValue("unitScopeAttributeName");
         String unitScopeValue= DataComputeConfigurationHandler.getConfigPropertyValue("unitScopeAttributeValue");
         ClusterGroup clusterGroup = this.nodeIgnite.cluster().forAttribute(unitScopeName, unitScopeValue);
+        this.nodeIgnite.configuration().getDataStorageConfiguration().getDefaultDataRegionConfiguration().getMaxSize();
+
+        DataRegionConfiguration targetDataRegionConfiguration = this.nodeIgnite.configuration().getDataStorageConfiguration().getDefaultDataRegionConfiguration();
+
+        this.nodeIgnite.cluster().forServers().metrics().getTotalNodes();
+
+        //Collection<BaselineNode> baselineNodes = this.nodeIgnite.cluster().currentBaselineTopology();
+
+        //this.nodeIgnite.snapshot().
+
         ClusterNode oldestNode=clusterGroup.forOldest().node();
         ClusterNode youngestNode=clusterGroup.forYoungest().node();
         ClusterMetrics metrics = clusterGroup.metrics();
@@ -69,5 +80,13 @@ public class GridmetrCommandProcessor implements BaseCommandProcessor {
         appInfoStringBuffer.append("\n\r");
         appInfoStringBuffer.append("================================================================");
         System.out.println(appInfoStringBuffer.toString());
+
+
+        System.out.println(metrics.getNonHeapMemoryTotal());
+        System.out.println(metrics.getNonHeapMemoryMaximum());
+        System.out.println(metrics.getNonHeapMemoryCommitted());
+        System.out.println(metrics.getNonHeapMemoryInitialized());
+        System.out.println(metrics.getNonHeapMemoryUsed());
+        //System.out.println(clusterGroup.node().metrics().getNonHeapMemoryTotal());
     }
 }
