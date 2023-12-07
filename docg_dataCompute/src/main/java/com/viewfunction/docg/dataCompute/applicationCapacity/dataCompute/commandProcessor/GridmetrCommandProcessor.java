@@ -4,6 +4,7 @@ import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCom
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.UnitIgniteOperationUtil;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.UnitOperationResult;
 import com.viewfunction.docg.dataCompute.consoleApplication.feature.BaseCommandProcessor;
+import org.apache.ignite.DataRegionMetrics;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.cluster.ClusterGroup;
 import org.apache.ignite.cluster.ClusterMetrics;
@@ -88,5 +89,19 @@ public class GridmetrCommandProcessor implements BaseCommandProcessor {
         System.out.println(metrics.getNonHeapMemoryInitialized());
         System.out.println(metrics.getNonHeapMemoryUsed());
         //System.out.println(clusterGroup.node().metrics().getNonHeapMemoryTotal());
+
+        DataRegionMetrics dataRegionMetrics = this.nodeIgnite.dataRegionMetrics("Default_DataStore_Region");
+        System.out.println(dataRegionMetrics);
+        System.out.println(dataRegionMetrics.getPagesFillFactor());
+
+        System.out.println(dataRegionMetrics.getAllocationRate());
+        System.out.println(dataRegionMetrics.getPageSize());
+        System.out.println(dataRegionMetrics.getOffheapUsedSize());
+        System.out.println(dataRegionMetrics.getTotalUsedSize());
+        System.out.println(dataRegionMetrics.getTotalUsedPages());
+
+        System.out.println(dataRegionMetrics.getOffHeapSize());
+        System.out.println(dataRegionMetrics.getOffheapUsedSize());
+
     }
 }
