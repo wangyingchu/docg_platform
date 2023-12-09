@@ -1,4 +1,6 @@
 package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception;
 
-public class ComputeGridNotActiveException extends Exception{
+import com.viewfunction.docg.dataCompute.computeServiceCore.exception.ComputeGridException;
+
+public class ComputeGridNotActiveException extends ComputeGridException {
 }

@@ -4,9 +4,10 @@ import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCom
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.result.DataSliceOperationResult;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.result.DataSliceQueryResult;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.util.DataSliceQueryBuilder;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSliceDataException;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSlicePropertiesStructureException;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSliceQueryStructureException;
+import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSlicePropertiesStructureException;
+import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSliceQueryStructureException;
+import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSliceDataException;
+import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceMetaInfo;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.cache.CacheMode;

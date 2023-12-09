@@ -1,4 +1,4 @@
-package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception;
+package com.viewfunction.docg.dataCompute.computeServiceCore.exception;
 
 public class DataSliceQueryStructureException extends Exception{
 

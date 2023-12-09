@@ -1,11 +1,12 @@
 package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService;
 
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.util.DataSliceUtil;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.DataComputeConfigurationHandler;
+import com.viewfunction.docg.dataCompute.computeServiceCore.util.config.DataComputeConfigurationHandler;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.UnitIgniteOperationUtil;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.ComputeGridNotActiveException;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSliceExistException;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSlicePropertiesStructureException;
+import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSliceExistException;
+import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSlicePropertiesStructureException;
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSlicePropertyType;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
@@ -39,7 +40,7 @@ public class DataServiceInvoker implements AutoCloseable{
         }
     }
 
-    public DataSlice createGridDataSlice(String dataSliceName, String dataSliceGroup, Map<String, DataSlicePropertyType> propertiesDefinitionMap,List<String> primaryKeysList) throws DataSliceExistException,DataSlicePropertiesStructureException {
+    public DataSlice createGridDataSlice(String dataSliceName, String dataSliceGroup, Map<String, DataSlicePropertyType> propertiesDefinitionMap, List<String> primaryKeysList) throws DataSliceExistException,DataSlicePropertiesStructureException {
         return createDataSlice(dataSliceName,dataSliceGroup,propertiesDefinitionMap,primaryKeysList,"PARTITIONED");
     }
 

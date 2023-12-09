@@ -1,4 +1,4 @@
-package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService;
+package com.viewfunction.docg.dataCompute.computeServiceCore.payload;
 
 import java.util.Collection;
 
