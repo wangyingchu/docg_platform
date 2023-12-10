@@ -1,12 +1,14 @@
-package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService;
+package com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termImpl;
 
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.util.DataSliceUtil;
-import com.viewfunction.docg.dataCompute.computeServiceCore.util.config.DataComputeConfigurationHandler;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.UnitIgniteOperationUtil;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.ComputeGridNotActiveException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSliceExistException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSlicePropertiesStructureException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSlicePropertyType;
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termInf.IgniteDataService;
+import com.viewfunction.docg.dataCompute.computeServiceCore.util.config.DataComputeConfigurationHandler;
 
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
@@ -22,12 +24,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class DataServiceInvoker implements AutoCloseable{
+public class IgniteDataServiceImpl implements IgniteDataService {
 
     private Ignite invokerIgnite;
     private final String TEMPLATE_OPERATION_CACHE = "TEMPLATE_OPERATION_CACHE";
 
-    private DataServiceInvoker(){}
+    private IgniteDataServiceImpl(){}
 
     public void openServiceSession() throws ComputeGridNotActiveException {
         Ignition.setClientMode(true);
@@ -41,7 +43,7 @@ public class DataServiceInvoker implements AutoCloseable{
         }
     }
 
-    public DataSlice createGridDataSlice(String dataSliceName, String dataSliceGroup, Map<String, DataSlicePropertyType> propertiesDefinitionMap, List<String> primaryKeysList) throws DataSliceExistException,DataSlicePropertiesStructureException {
+    public DataSlice createGridDataSlice(String dataSliceName, String dataSliceGroup, Map<String, DataSlicePropertyType> propertiesDefinitionMap, List<String> primaryKeysList) throws DataSliceExistException, DataSlicePropertiesStructureException {
         return createDataSlice(dataSliceName,dataSliceGroup,propertiesDefinitionMap,primaryKeysList,"PARTITIONED");
     }
 
@@ -68,11 +70,11 @@ public class DataServiceInvoker implements AutoCloseable{
         String dataStoreRegionNameStr= DataComputeConfigurationHandler.getConfigPropertyValue("dataStoreRegionName");
         String propertiesStructureSQL = DataSliceUtil.buildSliceStructureSQL(propertiesDefinitionMap,primaryKeysList);
         String createSentence =  "CREATE TABLE "+dataSliceName+" ("+propertiesStructureSQL+") " +
-        "WITH \"CACHE_NAME="+dataSliceName+
-        ",DATA_REGION="+dataStoreRegionNameStr+
-        ",BACKUPS="+dataStoreBackupNumberStr+
-        ",ATOMICITY="+dataStoreAtomicityModeStr+
-        ",TEMPLATE="+templateType+"\"";
+                "WITH \"CACHE_NAME="+dataSliceName+
+                ",DATA_REGION="+dataStoreRegionNameStr+
+                ",BACKUPS="+dataStoreBackupNumberStr+
+                ",ATOMICITY="+dataStoreAtomicityModeStr+
+                ",TEMPLATE="+templateType+"\"";
         return createSentence;
     }
 
@@ -102,25 +104,25 @@ public class DataServiceInvoker implements AutoCloseable{
         return dataSliceNameList;
     }
 
-    public static DataServiceInvoker getInvokerInstance() throws ComputeGridNotActiveException {
-        DataServiceInvoker invokerInstance=new DataServiceInvoker();
+    public static IgniteDataServiceImpl getServiceInstance() throws ComputeGridNotActiveException {
+        IgniteDataServiceImpl igniteDataServiceImpl= new IgniteDataServiceImpl();
         try{
-            invokerInstance.openServiceSession();
+            igniteDataServiceImpl.openServiceSession();
         }catch (ComputeGridNotActiveException e){
-            invokerInstance.closeServiceSession();
+            igniteDataServiceImpl.closeServiceSession();
             throw e;
         }
-        return invokerInstance;
+        return igniteDataServiceImpl;
     }
 
     public void setServiceSession(Ignite invokerIgnite){
         this.invokerIgnite=invokerIgnite;
     }
 
-    public static DataServiceInvoker getInvokerInstance(Ignite invokerIgnite) throws ComputeGridNotActiveException {
-        DataServiceInvoker invokerInstance=new DataServiceInvoker();
-        invokerInstance.setServiceSession(invokerIgnite);
-        return invokerInstance;
+    public static IgniteDataServiceImpl getServiceInstance(Ignite invokerIgnite) throws ComputeGridNotActiveException {
+        IgniteDataServiceImpl igniteDataServiceImpl=new IgniteDataServiceImpl();
+        igniteDataServiceImpl.setServiceSession(invokerIgnite);
+        return igniteDataServiceImpl;
     }
 
     private IgniteCache createIgniteCache(Ignite invokerIgnite, String cacheName, CacheMode cacheMode){
