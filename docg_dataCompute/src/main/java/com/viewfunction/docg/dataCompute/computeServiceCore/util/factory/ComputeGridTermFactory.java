@@ -5,7 +5,7 @@ import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.term
 
 public class ComputeGridTermFactory {
 
-    public ComputeGrid getComputeGrid(){
+    public static ComputeGrid getComputeGrid(){
         return new IgniteComputeGridImpl();
     }
 }
