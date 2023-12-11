@@ -1,11 +1,11 @@
 package com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termImpl;
 
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.util.DataSliceUtil;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.UnitIgniteOperationUtil;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.ComputeGridNotActiveException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSliceExistException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSlicePropertiesStructureException;
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSlice;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSlicePropertyType;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termInf.IgniteDataService;
 import com.viewfunction.docg.dataCompute.computeServiceCore.util.config.DataComputeConfigurationHandler;
@@ -60,7 +60,7 @@ public class IgniteDataServiceImpl implements IgniteDataService {
         cache.query(new SqlFieldsQuery(sliceCreateSentence)).getAll();
         this.invokerIgnite.destroyCache(TEMPLATE_OPERATION_CACHE);
         IgniteCache igniteCache = this.invokerIgnite.cache(dataSliceName);
-        DataSlice targetDataSlice = new DataSlice(this.invokerIgnite,igniteCache);
+        IgniteDataSliceImpl targetDataSlice = new IgniteDataSliceImpl(this.invokerIgnite,igniteCache);
         return targetDataSlice;
     }
 
@@ -89,7 +89,7 @@ public class IgniteDataServiceImpl implements IgniteDataService {
         if(targetCache==null){
             return null;
         }else{
-            return new DataSlice(this.invokerIgnite,targetCache);
+            return new IgniteDataSliceImpl(this.invokerIgnite,targetCache);
         }
     }
 

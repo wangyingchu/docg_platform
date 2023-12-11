@@ -7,11 +7,11 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlicePropertyType;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSliceDataException;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSliceExistException;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.DataSlicePropertiesStructureException;
+import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSliceDataException;
+import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSliceExistException;
+import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSlicePropertiesStructureException;
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSlicePropertyType;
 import com.viewfunction.docg.knowledgeManage.consoleApplication.util.ApplicationLauncherUtil;
 
 import java.io.BufferedReader;
@@ -22,7 +22,7 @@ import java.util.*;
 
 public class DataSliceSyncUtil {
 
-    public static void syncGeospatialRegionData(DataServiceInvoker dataServiceInvoker){
+    public static void syncGeospatialRegionData(DataServiceInvoker dataServiceInvoker) throws DataSliceExistException, DataSlicePropertiesStructureException {
         String dataSliceGroupName = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.dataSliceGroup");
         String dataSyncPerLoadResultNumber = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.dataSyncPerLoadResultNumber");
         String degreeOfParallelismNumber = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.degreeOfParallelism");
