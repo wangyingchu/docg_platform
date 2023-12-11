@@ -1,20 +1,21 @@
 package com.viewfunction.docg.dataCompute.computeServiceCore.internal;
 
-import com.viewfunction.docg.dataCompute.computeServiceCore.util.config.DataComputeConfigurationHandler;
+import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeGridRealtimeStatisticsInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataComputeUnitMetaInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceMetaInfo;
+import com.viewfunction.docg.dataCompute.computeServiceCore.util.config.DataComputeConfigurationHandler;
+
 import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.CacheMode;
 import org.apache.ignite.cache.CachePeekMode;
+import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.apache.ignite.client.ClientCache;
 import org.apache.ignite.client.ClientCacheConfiguration;
 import org.apache.ignite.client.IgniteClient;
 import org.apache.ignite.cluster.ClusterNode;
 import org.apache.ignite.configuration.ClientConfiguration;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class ComputeGridObserver implements AutoCloseable{
 
@@ -89,5 +90,24 @@ public class ComputeGridObserver implements AutoCloseable{
             }
         }
         return dataSliceMetaInfoSet;
+    }
+
+    public ComputeGridRealtimeStatisticsInfo getGridRealtimeStatisticsInfo(){
+        Map<String,Object> currentIgniteMetricsValueMap = getCurrentIgniteMetricsValueMap();
+        System.out.println(currentIgniteMetricsValueMap);
+        ComputeGridRealtimeStatisticsInfo computeGridRealtimeStatisticsInfo = new ComputeGridRealtimeStatisticsInfo();
+        return computeGridRealtimeStatisticsInfo;
+    }
+
+
+    private Map<String,Object> getCurrentIgniteMetricsValueMap(){
+        Map<String,Object> currentIgniteMetricsValueMap = new HashMap<>();
+        List<List<?>> listValue = igniteClient.query(new SqlFieldsQuery("select name, value from SYS.METRICS").setSchema("SYS")).getAll();
+        for(List<?> currentList :listValue){
+            String metricName = currentList.get(0).toString();
+            Object metricNameValue = currentList.get(1);
+            currentIgniteMetricsValueMap.put(metricName,metricNameValue);
+        }
+        return currentIgniteMetricsValueMap;
     }
 }

@@ -23,6 +23,7 @@ public class ComputeGridTest {
         System.out.println(targetComputeGrid.getGridImplTech());
 
         ComputeGridRealtimeStatisticsInfo targetComputeGridRealtimeStatisticsInfo = targetComputeGrid.getGridRealtimeStatisticsInfo();
+
         System.out.println(targetComputeGridRealtimeStatisticsInfo.getGridStartTime());
         System.out.println(targetComputeGridRealtimeStatisticsInfo.getGridUpTimeInMinute());
         System.out.println(targetComputeGridRealtimeStatisticsInfo.getGridIdleTimeInSecond());

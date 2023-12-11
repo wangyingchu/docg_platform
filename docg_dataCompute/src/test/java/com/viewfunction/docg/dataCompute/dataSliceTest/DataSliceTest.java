@@ -2,9 +2,9 @@ package com.viewfunction.docg.dataCompute.dataSliceTest;
 
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
-import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSlicePropertyType;
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceOperationResult;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.ComputeGridNotActiveException;
+import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceOperationResult;
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSlicePropertyType;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.apache.ignite.client.ClientException;
@@ -16,8 +16,8 @@ import java.util.*;
 public class DataSliceTest {
 
     public static void main(String[] args){
-        massDataInsertTest();
-        //checkMetr();
+        //massDataInsertTest();
+        checkMetr();
     }
 
     private static void massDataInsertTest(){
@@ -105,6 +105,26 @@ System.out.println(result);
 
 
 
+            List<List<?>> listValue = igniteClient.query(new SqlFieldsQuery("select name, value from SYS.METRICS")
+                    .setSchema("SYS")).getAll();
+
+            for(List<?> currentList :listValue){
+
+
+                //System.out.println(currentList);
+
+                //System.out.println(currentList.size());
+
+                String metricName = currentList.get(0).toString();
+                Object metricNameValue = currentList.get(1);
+
+
+                System.out.println(metricName);
+                System.out.println(metricNameValue);
+            }
+
+
+
             double cpu_load = (Double) igniteClient
                     .query(new SqlFieldsQuery("select CUR_CPU_LOAD * 100 from NODE_METRICS where NODE_ID = ? ")
                             .setSchema("SYS").setArgs(nodeId.toString()))
@@ -112,10 +132,6 @@ System.out.println(result);
 
             System.out.println("node's cpu load = " + cpu_load);
 
-            igniteClient
-                    .query(new SqlFieldsQuery("select OffheapUsedSize from io.dataregion.Default_DataStore_Region ")
-                            .setSchema("SYS").setArgs(nodeId.toString()))
-                    .getAll().iterator().next().get(0);
 
 
         } catch (ClientException e) {
