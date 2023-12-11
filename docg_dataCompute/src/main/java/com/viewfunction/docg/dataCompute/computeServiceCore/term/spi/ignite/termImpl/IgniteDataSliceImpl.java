@@ -1,6 +1,6 @@
 package com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termImpl;
 
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.QueryParameters;
+import com.viewfunction.docg.dataCompute.computeServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceOperationResult;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceQueryResult;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.util.DataSliceQueryBuilder;

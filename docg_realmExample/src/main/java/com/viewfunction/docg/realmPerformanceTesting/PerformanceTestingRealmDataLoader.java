@@ -217,7 +217,7 @@ public class PerformanceTestingRealmDataLoader {
         List<RelationEntityValue> relationEntityValueList = new ArrayList<>();
         try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
             DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
-            DataSliceQueryResult dataSliceQueryResult = targetDataSlice.queryDataRecords((com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.QueryParameters) null);
+            DataSliceQueryResult dataSliceQueryResult = targetDataSlice.queryDataRecords((com.viewfunction.docg.dataCompute.computeServiceCore.analysis.query.QueryParameters) null);
             for(Map<String,Object> currentData:dataSliceQueryResult.getResultRecords()){
                 RelationEntityValue currentRelationEntityValue = new RelationEntityValue();
                 currentRelationEntityValue.setFromConceptionEntityUID(currentData.get("FIRMDATA__REALMGLOBALUID").toString());
@@ -241,7 +241,7 @@ public class PerformanceTestingRealmDataLoader {
         List<RelationEntityValue> relationEntityValueList = new ArrayList<>();
         try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
             DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
-            DataSliceQueryResult dataSliceQueryResult = targetDataSlice.queryDataRecords((com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.QueryParameters) null);
+            DataSliceQueryResult dataSliceQueryResult = targetDataSlice.queryDataRecords((com.viewfunction.docg.dataCompute.computeServiceCore.analysis.query.QueryParameters) null);
             for(Map<String,Object> currentData:dataSliceQueryResult.getResultRecords()){
                 RelationEntityValue currentRelationEntityValue = new RelationEntityValue();
                 currentRelationEntityValue.setFromConceptionEntityUID(currentData.get("FIRMDATA__REALMGLOBALUID").toString());

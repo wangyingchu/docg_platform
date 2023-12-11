@@ -1,8 +1,8 @@
 package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.util;
 
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.QueryParameters;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.SortingItem;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.filteringItem.*;
+import com.viewfunction.docg.dataCompute.computeServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.dataCompute.computeServiceCore.analysis.query.SortingItem;
+import com.viewfunction.docg.dataCompute.computeServiceCore.analysis.query.filteringItem.*;
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSliceQueryStructureException;
 import org.jooq.*;
 import org.jooq.conf.ParamType;
