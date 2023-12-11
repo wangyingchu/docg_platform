@@ -10,10 +10,10 @@ public class ComputeGridRealtimeStatisticsInfo {
     private int dataComputeUnitsAmount;
     private String oldestUnitId;
     private String youngestUnitId;
-    private long usedNonHeapMemoryInMB;
-    private long usedHeapMemoryInMB;
-    private long totalNonHeapMemoryInMB;
-    private long totalHeapMemoryInMB;
+    private long maxAvailableMemoryInMB;
+    private long usedMemoryInMB;
+    private long assignedMemoryInMB;
+
     private int availableCPUCores;
     private double currentCPULoadPercentage;
     private double averageCPULoadPercentage;
@@ -75,36 +75,28 @@ public class ComputeGridRealtimeStatisticsInfo {
         this.youngestUnitId = youngestUnitId;
     }
 
-    public long getUsedNonHeapMemoryInMB() {
-        return usedNonHeapMemoryInMB;
+    public long getMaxAvailableMemoryInMB() {
+        return maxAvailableMemoryInMB;
     }
 
-    public void setUsedNonHeapMemoryInMB(long usedNonHeapMemoryInMB) {
-        this.usedNonHeapMemoryInMB = usedNonHeapMemoryInMB;
+    public void setMaxAvailableMemoryInMB(long maxAvailableMemoryInMB) {
+        this.maxAvailableMemoryInMB = maxAvailableMemoryInMB;
     }
 
-    public long getUsedHeapMemoryInMB() {
-        return usedHeapMemoryInMB;
+    public long getUsedMemoryInMB() {
+        return usedMemoryInMB;
     }
 
-    public void setUsedHeapMemoryInMB(long usedHeapMemoryInMB) {
-        this.usedHeapMemoryInMB = usedHeapMemoryInMB;
+    public void setUsedMemoryInMB(long usedMemoryInMB) {
+        this.usedMemoryInMB = usedMemoryInMB;
     }
 
-    public long getTotalNonHeapMemoryInMB() {
-        return totalNonHeapMemoryInMB;
+    public long getAssignedMemoryInMB() {
+        return assignedMemoryInMB;
     }
 
-    public void setTotalNonHeapMemoryInMB(long totalNonHeapMemoryInMB) {
-        this.totalNonHeapMemoryInMB = totalNonHeapMemoryInMB;
-    }
-
-    public long getTotalHeapMemoryInMB() {
-        return totalHeapMemoryInMB;
-    }
-
-    public void setTotalHeapMemoryInMB(long totalHeapMemoryInMB) {
-        this.totalHeapMemoryInMB = totalHeapMemoryInMB;
+    public void setAssignedMemoryInMB(long assignedMemoryInMB) {
+        this.assignedMemoryInMB = assignedMemoryInMB;
     }
 
     public int getAvailableCPUCores() {

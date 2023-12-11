@@ -64,10 +64,10 @@ public class ComputeGridOperator implements AutoCloseable{
         targetComputeGridRealtimeStatisticsInfo.setDataComputeUnitsAmount(metrics.getTotalNodes()-1);
         targetComputeGridRealtimeStatisticsInfo.setOldestUnitId(oldestNode.id().toString());
         targetComputeGridRealtimeStatisticsInfo.setYoungestUnitId(youngestNode.id().toString());
-        targetComputeGridRealtimeStatisticsInfo.setUsedNonHeapMemoryInMB(metrics.getNonHeapMemoryUsed()/1024/1024);
-        targetComputeGridRealtimeStatisticsInfo.setTotalNonHeapMemoryInMB(metrics.getNonHeapMemoryTotal()/1024/1024);
-        targetComputeGridRealtimeStatisticsInfo.setUsedHeapMemoryInMB(metrics.getHeapMemoryUsed()/1024/1024);
-        targetComputeGridRealtimeStatisticsInfo.setTotalHeapMemoryInMB(metrics.getHeapMemoryTotal()/1024/1024);
+        targetComputeGridRealtimeStatisticsInfo.setMaxAvailableMemoryInMB(metrics.getNonHeapMemoryUsed()/1024/1024);
+        targetComputeGridRealtimeStatisticsInfo.setAssignedMemoryInMB(metrics.getNonHeapMemoryTotal()/1024/1024);
+        targetComputeGridRealtimeStatisticsInfo.setUsedMemoryInMB(metrics.getHeapMemoryUsed()/1024/1024);
+
         targetComputeGridRealtimeStatisticsInfo.setAvailableCPUCores(metrics.getTotalCpus());
         targetComputeGridRealtimeStatisticsInfo.setCurrentCPULoadPercentage(metrics.getCurrentCpuLoad());
         targetComputeGridRealtimeStatisticsInfo.setAverageCPULoadPercentage(metrics.getAverageCpuLoad());

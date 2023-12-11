@@ -17,10 +17,9 @@ public class ComputeGridOperatorTest {
             System.out.println(targetComputeGridRealtimeStatisticsInfo.getDataComputeUnitsAmount());
             System.out.println(targetComputeGridRealtimeStatisticsInfo.getOldestUnitId());
             System.out.println(targetComputeGridRealtimeStatisticsInfo.getYoungestUnitId());
-            System.out.println(targetComputeGridRealtimeStatisticsInfo.getUsedNonHeapMemoryInMB());
-            System.out.println(targetComputeGridRealtimeStatisticsInfo.getTotalNonHeapMemoryInMB());
-            System.out.println(targetComputeGridRealtimeStatisticsInfo.getUsedHeapMemoryInMB());
-            System.out.println(targetComputeGridRealtimeStatisticsInfo.getTotalHeapMemoryInMB());
+            System.out.println(targetComputeGridRealtimeStatisticsInfo.getMaxAvailableMemoryInMB());
+            System.out.println(targetComputeGridRealtimeStatisticsInfo.getAssignedMemoryInMB());
+            System.out.println(targetComputeGridRealtimeStatisticsInfo.getUsedMemoryInMB());
             System.out.println(targetComputeGridRealtimeStatisticsInfo.getAvailableCPUCores());
             System.out.println(targetComputeGridRealtimeStatisticsInfo.getCurrentCPULoadPercentage());
             System.out.println(targetComputeGridRealtimeStatisticsInfo.getAverageCPULoadPercentage());
