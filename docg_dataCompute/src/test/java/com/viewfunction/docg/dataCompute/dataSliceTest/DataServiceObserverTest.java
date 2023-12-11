@@ -4,6 +4,7 @@ import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataCom
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.ComputeGridNotActiveException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSliceExistException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSlicePropertiesStructureException;
+import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ComputeGridObserver;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataComputeUnitMetaInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceMetaInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSlicePropertyType;
@@ -15,10 +16,10 @@ public class DataServiceObserverTest {
     public static void main(String[] args){
         //initDataSlice();
 
-        DataServiceObserver dataServiceObserver = DataServiceObserver.getObserverInstance();
-        Set<DataComputeUnitMetaInfo> dataComputeUnitMetaInfoSet = dataServiceObserver.listDataComputeUnit();
-        Set<DataSliceMetaInfo> dataSliceMetaInfoSet = dataServiceObserver.listDataSlice();
-        dataServiceObserver.closeObserveSession();
+        ComputeGridObserver computeGridObserver = ComputeGridObserver.getObserverInstance();
+        Set<DataComputeUnitMetaInfo> dataComputeUnitMetaInfoSet = computeGridObserver.listDataComputeUnit();
+        Set<DataSliceMetaInfo> dataSliceMetaInfoSet = computeGridObserver.listDataSlice();
+        computeGridObserver.closeObserveSession();
         for(DataSliceMetaInfo currentDataSliceMetaInfo : dataSliceMetaInfoSet){
             System.out.println(currentDataSliceMetaInfo.getDataSliceName());
             System.out.println(currentDataSliceMetaInfo.getAtomicityMode());

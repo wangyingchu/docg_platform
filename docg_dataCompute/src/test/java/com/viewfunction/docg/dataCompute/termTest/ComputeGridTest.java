@@ -1,6 +1,7 @@
 package com.viewfunction.docg.dataCompute.termTest;
 
 
+import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeGridRealtimeStatisticsInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceOperationResult;
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.ComputeGridException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSliceExistException;
@@ -16,10 +17,27 @@ import java.util.*;
 public class ComputeGridTest {
     private static final String _unitTestDataSliceGroupName = "Testing_SliceGroup";
 
-    public static void main(String[] args)  {
+    public static void main(String[] args) throws ComputeGridException {
 
         ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
         System.out.println(targetComputeGrid.getGridImplTech());
+
+        ComputeGridRealtimeStatisticsInfo targetComputeGridRealtimeStatisticsInfo = targetComputeGrid.getGridRealtimeStatisticsInfo();
+        System.out.println(targetComputeGridRealtimeStatisticsInfo.getGridStartTime());
+        System.out.println(targetComputeGridRealtimeStatisticsInfo.getGridUpTimeInMinute());
+        System.out.println(targetComputeGridRealtimeStatisticsInfo.getGridIdleTimeInSecond());
+        System.out.println(targetComputeGridRealtimeStatisticsInfo.getGridTotalIdleTimeInSecond());
+        System.out.println(targetComputeGridRealtimeStatisticsInfo.getDataComputeUnitsAmount());
+        System.out.println(targetComputeGridRealtimeStatisticsInfo.getOldestUnitId());
+        System.out.println(targetComputeGridRealtimeStatisticsInfo.getYoungestUnitId());
+        System.out.println(targetComputeGridRealtimeStatisticsInfo.getUsedNonHeapMemoryInMB());
+        System.out.println(targetComputeGridRealtimeStatisticsInfo.getTotalNonHeapMemoryInMB());
+        System.out.println(targetComputeGridRealtimeStatisticsInfo.getUsedHeapMemoryInMB());
+        System.out.println(targetComputeGridRealtimeStatisticsInfo.getTotalHeapMemoryInMB());
+        System.out.println(targetComputeGridRealtimeStatisticsInfo.getAvailableCPUCores());
+        System.out.println(targetComputeGridRealtimeStatisticsInfo.getCurrentCPULoadPercentage());
+        System.out.println(targetComputeGridRealtimeStatisticsInfo.getAverageCPULoadPercentage());
+        System.out.println(targetComputeGridRealtimeStatisticsInfo.getTotalExecutedComputes());
 
         try(DataService dataService = targetComputeGrid.getDataService()){
             List<String> dataSliceList = dataService.listDataSlices();
@@ -27,7 +45,7 @@ public class ComputeGridTest {
 
             //createDataSlicesTest(dataService,"gridDataSlice1");
             //insertDataTest(dataService,"gridDataSlice1");
-            emptyDataTest(dataService,"gridDataSlice1");
+            //emptyDataTest(dataService,"gridDataSlice1");
 
         } catch (ComputeGridException e) {
             throw new RuntimeException(e);

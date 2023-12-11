@@ -2,7 +2,7 @@ package com.viewfunction.docg.dataCompute.computeServiceCore.payload;
 
 import java.time.LocalDateTime;
 
-public class ComputeGridRealtimeMetaInfo {
+public class ComputeGridRealtimeStatisticsInfo {
     private LocalDateTime gridStartTime;
     private long gridUpTimeInMinute;
     private long gridIdleTimeInSecond;

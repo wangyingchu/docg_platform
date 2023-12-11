@@ -1,6 +1,6 @@
-package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeGrid;
+package com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite;
 
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeGridRealtimeMetaInfo;
+import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeGridRealtimeStatisticsInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.util.config.DataComputeConfigurationHandler;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.UnitIgniteOperationUtil;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.ComputeGridNotActiveException;
@@ -43,7 +43,7 @@ public class ComputeGridOperator implements AutoCloseable{
         closeOperatorSession();
     }
 
-    public ComputeGridRealtimeMetaInfo getComputeGridRealtimeMetrics(){
+    public ComputeGridRealtimeStatisticsInfo getComputeGridRealtimeMetrics(){
         String unitScopeName= DataComputeConfigurationHandler.getConfigPropertyValue("unitScopeAttributeName");
         String unitScopeValue= DataComputeConfigurationHandler.getConfigPropertyValue("unitScopeAttributeValue");
 
@@ -52,26 +52,26 @@ public class ComputeGridOperator implements AutoCloseable{
         ClusterNode youngestNode = clusterGroup.forYoungest().node();
         ClusterMetrics metrics = clusterGroup.metrics();
 
-        ComputeGridRealtimeMetaInfo targetComputeGridRealtimeMetaInfo = new ComputeGridRealtimeMetaInfo();
+        ComputeGridRealtimeStatisticsInfo targetComputeGridRealtimeStatisticsInfo = new ComputeGridRealtimeStatisticsInfo();
 
         Instant instant = Instant.ofEpochMilli(metrics.getStartTime());
         LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
-        targetComputeGridRealtimeMetaInfo.setGridStartTime(localDateTime);
-        targetComputeGridRealtimeMetaInfo.setGridUpTimeInMinute(metrics.getUpTime()/1000/60);
-        targetComputeGridRealtimeMetaInfo.setGridIdleTimeInSecond(metrics.getCurrentIdleTime()/1000);
-        targetComputeGridRealtimeMetaInfo.setGridTotalIdleTimeInSecond(metrics.getTotalIdleTime()/1000);
+        targetComputeGridRealtimeStatisticsInfo.setGridStartTime(localDateTime);
+        targetComputeGridRealtimeStatisticsInfo.setGridUpTimeInMinute(metrics.getUpTime()/1000/60);
+        targetComputeGridRealtimeStatisticsInfo.setGridIdleTimeInSecond(metrics.getCurrentIdleTime()/1000);
+        targetComputeGridRealtimeStatisticsInfo.setGridTotalIdleTimeInSecond(metrics.getTotalIdleTime()/1000);
         //ComputeGridOperator 本身在当前时刻也是一个 DataComputeUnit,需要在总量中减去
-        targetComputeGridRealtimeMetaInfo.setDataComputeUnitsAmount(metrics.getTotalNodes()-1);
-        targetComputeGridRealtimeMetaInfo.setOldestUnitId(oldestNode.id().toString());
-        targetComputeGridRealtimeMetaInfo.setYoungestUnitId(youngestNode.id().toString());
-        targetComputeGridRealtimeMetaInfo.setUsedNonHeapMemoryInMB(metrics.getNonHeapMemoryUsed()/1024/1024);
-        targetComputeGridRealtimeMetaInfo.setTotalNonHeapMemoryInMB(metrics.getNonHeapMemoryTotal()/1024/1024);
-        targetComputeGridRealtimeMetaInfo.setUsedHeapMemoryInMB(metrics.getHeapMemoryUsed()/1024/1024);
-        targetComputeGridRealtimeMetaInfo.setTotalHeapMemoryInMB(metrics.getHeapMemoryTotal()/1024/1024);
-        targetComputeGridRealtimeMetaInfo.setAvailableCPUCores(metrics.getTotalCpus());
-        targetComputeGridRealtimeMetaInfo.setCurrentCPULoadPercentage(metrics.getCurrentCpuLoad());
-        targetComputeGridRealtimeMetaInfo.setAverageCPULoadPercentage(metrics.getAverageCpuLoad());
-        targetComputeGridRealtimeMetaInfo.setTotalExecutedComputes(metrics.getTotalExecutedJobs());
+        targetComputeGridRealtimeStatisticsInfo.setDataComputeUnitsAmount(metrics.getTotalNodes()-1);
+        targetComputeGridRealtimeStatisticsInfo.setOldestUnitId(oldestNode.id().toString());
+        targetComputeGridRealtimeStatisticsInfo.setYoungestUnitId(youngestNode.id().toString());
+        targetComputeGridRealtimeStatisticsInfo.setUsedNonHeapMemoryInMB(metrics.getNonHeapMemoryUsed()/1024/1024);
+        targetComputeGridRealtimeStatisticsInfo.setTotalNonHeapMemoryInMB(metrics.getNonHeapMemoryTotal()/1024/1024);
+        targetComputeGridRealtimeStatisticsInfo.setUsedHeapMemoryInMB(metrics.getHeapMemoryUsed()/1024/1024);
+        targetComputeGridRealtimeStatisticsInfo.setTotalHeapMemoryInMB(metrics.getHeapMemoryTotal()/1024/1024);
+        targetComputeGridRealtimeStatisticsInfo.setAvailableCPUCores(metrics.getTotalCpus());
+        targetComputeGridRealtimeStatisticsInfo.setCurrentCPULoadPercentage(metrics.getCurrentCpuLoad());
+        targetComputeGridRealtimeStatisticsInfo.setAverageCPULoadPercentage(metrics.getAverageCpuLoad());
+        targetComputeGridRealtimeStatisticsInfo.setTotalExecutedComputes(metrics.getTotalExecutedJobs());
 
 
         metrics.getBusyTimePercentage();
@@ -83,6 +83,6 @@ public class ComputeGridOperator implements AutoCloseable{
         metrics.getTotalNodes();
 
 
-        return targetComputeGridRealtimeMetaInfo;
+        return targetComputeGridRealtimeStatisticsInfo;
     }
 }

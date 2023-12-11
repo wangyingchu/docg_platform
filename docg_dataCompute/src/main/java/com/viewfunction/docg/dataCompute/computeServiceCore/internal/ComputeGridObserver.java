@@ -1,4 +1,4 @@
-package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService;
+package com.viewfunction.docg.dataCompute.computeServiceCore.internal;
 
 import com.viewfunction.docg.dataCompute.computeServiceCore.util.config.DataComputeConfigurationHandler;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataComputeUnitMetaInfo;
@@ -16,12 +16,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class DataServiceObserver implements AutoCloseable{
+public class ComputeGridObserver implements AutoCloseable{
 
     private String observedUnitIPsStr= DataComputeConfigurationHandler.getConfigPropertyValue("observedUnitIPs");
     private IgniteClient igniteClient;
 
-    private DataServiceObserver(){}
+    private ComputeGridObserver(){}
 
     public void openObserveSession(){
         String[] unitIPArray = observedUnitIPsStr.split(",");
@@ -35,10 +35,10 @@ public class DataServiceObserver implements AutoCloseable{
         }
     }
 
-    public static DataServiceObserver getObserverInstance(){
-        DataServiceObserver dataServiceObserver = new DataServiceObserver();
-        dataServiceObserver.openObserveSession();
-        return dataServiceObserver;
+    public static ComputeGridObserver getObserverInstance(){
+        ComputeGridObserver computeGridObserver = new ComputeGridObserver();
+        computeGridObserver.openObserveSession();
+        return computeGridObserver;
     }
 
     @Override
