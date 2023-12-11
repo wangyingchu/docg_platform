@@ -1,8 +1,8 @@
-package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeGrid;
+package com.viewfunction.docg.dataCompute.computeServiceCore.payload;
 
 import java.time.LocalDateTime;
 
-public class ComputeGridRealtimeMetrics {
+public class ComputeGridRealtimeMetaInfo {
     private LocalDateTime gridStartTime;
     private long gridUpTimeInMinute;
     private long gridIdleTimeInSecond;
