@@ -16,8 +16,8 @@ import java.util.*;
 public class DataSliceTest {
 
     public static void main(String[] args){
-        //massDataInsertTest();
-        checkMetr();
+        massDataInsertTest();
+        //checkMetr();
     }
 
     private static void massDataInsertTest(){

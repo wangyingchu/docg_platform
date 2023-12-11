@@ -22,22 +22,15 @@
                 <entry key="UNIT_ROLE" value="SERVICE_UNIT"/>
             </map>
         </property>
-        <!-- Enable task execution events. -->
-        <!--
-        <property name="includeEventTypes">
-            <list>
-                <util:constant static-field="org.apache.ignite.events.EventType.EVT_TASK_STARTED"/>
-                <util:constant static-field="org.apache.ignite.events.EventType.EVT_TASK_FINISHED"/>
-                <util:constant static-field="org.apache.ignite.events.EventType.EVT_TASK_FAILED"/>
-                <util:constant static-field="org.apache.ignite.events.EventType.EVT_TASK_TIMEDOUT"/>
-                <util:constant static-field="org.apache.ignite.events.EventType.EVT_TASK_SESSION_ATTR_SET"/>
-                <util:constant static-field="org.apache.ignite.events.EventType.EVT_TASK_REDUCED"/>
-                <util:constant static-field="org.apache.ignite.events.EventType.EVT_CACHE_OBJECT_PUT"/>
-                <util:constant static-field="org.apache.ignite.events.EventType.EVT_CACHE_OBJECT_READ"/>
-                <util:constant static-field="org.apache.ignite.events.EventType.EVT_CACHE_OBJECT_REMOVED"/>
-            </list>
+
+        <property name="communicationSpi">
+            <bean class="org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi">
+                <property name="messageQueueLimit" value="2048"/>
+                <!--Managing slow clients-->
+                <property name="slowClientQueueLimit" value="1024"/>
+            </bean>
         </property>
-        -->
+
         <!-- Explicitly configure TCP discovery SPI to provide list of initial nodes. -->
         <!-- For auto discover distributed nodes without configuration,below section should be deleted-->
         <property name="discoverySpi">
@@ -69,7 +62,7 @@
                 <property name="defaultDataRegionConfiguration">
                     <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
                         <property name="name" value="Default_DataStore_Region"/>
-                        <property name="initialSize" value="#{5L * 1024 * 1024 * 1024}"/>
+                        <property name="initialSize" value="#{1L * 1024 * 1024 * 1024}"/>
                         <!-- Setting the size of the default region to 20GB. -->
                         <property name="maxSize" value="#{20L * 1024 * 1024 * 1024}"/>
                         <!-- When persistence is enabled, data and indexes are stored both in memory and on disk across all the cluster nodes. -->
