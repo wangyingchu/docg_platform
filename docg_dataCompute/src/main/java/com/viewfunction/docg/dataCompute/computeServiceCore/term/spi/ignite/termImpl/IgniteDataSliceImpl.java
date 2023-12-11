@@ -1,8 +1,8 @@
 package com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termImpl;
 
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.query.QueryParameters;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.result.DataSliceOperationResult;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.result.DataSliceQueryResult;
+import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceOperationResult;
+import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceQueryResult;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.util.DataSliceQueryBuilder;
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSliceDataException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSlicePropertiesStructureException;

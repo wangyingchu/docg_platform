@@ -3,9 +3,9 @@ package com.viewfunction.docg.analysisProvider.fundamental.dataSlice
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.ResponseDataSourceTech.ResponseDataSourceTech
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.result.DataSliceOperationResult
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlice, DataSlicePropertyType}
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.MassDataOperationUtil
+import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceOperationResult
 import org.apache.spark.sql.types.DataTypes
 
 import java.util
