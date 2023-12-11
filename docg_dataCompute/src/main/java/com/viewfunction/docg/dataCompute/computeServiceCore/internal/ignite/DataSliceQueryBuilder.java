@@ -1,4 +1,4 @@
-package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.util;
+package com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite;
 
 import com.viewfunction.docg.dataCompute.computeServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.dataCompute.computeServiceCore.analysis.query.SortingItem;

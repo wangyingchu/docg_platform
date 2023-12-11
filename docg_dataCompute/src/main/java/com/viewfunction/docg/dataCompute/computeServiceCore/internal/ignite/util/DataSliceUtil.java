@@ -1,4 +1,4 @@
-package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.util;
+package com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.util;
 
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSlicePropertyType;
 

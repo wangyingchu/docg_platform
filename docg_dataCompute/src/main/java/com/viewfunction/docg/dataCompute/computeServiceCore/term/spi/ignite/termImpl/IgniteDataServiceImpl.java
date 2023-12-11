@@ -1,6 +1,6 @@
 package com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termImpl;
 
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.util.DataSliceUtil;
+import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.util.DataSliceUtil;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.UnitIgniteOperationUtil;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.ComputeGridNotActiveException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSliceExistException;

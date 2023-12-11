@@ -25,8 +25,9 @@ public class ComputeGridTest {
             List<String> dataSliceList = dataService.listDataSlices();
             System.out.println(dataSliceList);
 
-            createDataSlicesTest(dataService,"gridDataSlice1");
-            insertDataTest(dataService,"gridDataSlice1");
+            //createDataSlicesTest(dataService,"gridDataSlice1");
+            //insertDataTest(dataService,"gridDataSlice1");
+            emptyDataTest(dataService,"gridDataSlice1");
 
         } catch (ComputeGridException e) {
             throw new RuntimeException(e);
@@ -74,5 +75,12 @@ public class ComputeGridTest {
 
         DataSliceOperationResult addResult = targetDataSlice.addDataRecords(propertyList,dataList);
         System.out.println(addResult.getSuccessItemsCount());
+    }
+
+    private static void emptyDataTest(DataService dataService,String dataSliceName) throws DataSlicePropertiesStructureException{
+        DataSlice targetDataSlice = dataService.getDataSlice(dataSliceName);
+        targetDataSlice.emptyDataSlice();
+
+
     }
 }
