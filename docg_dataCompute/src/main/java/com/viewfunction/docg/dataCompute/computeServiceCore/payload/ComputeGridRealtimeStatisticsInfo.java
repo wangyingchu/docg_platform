@@ -11,14 +11,8 @@ public class ComputeGridRealtimeStatisticsInfo {
     private long maxAvailableMemoryInMB;
     private long usedMemoryInMB;
     private long assignedMemoryInMB;
-
-
-
-    private int availableCPUCores;
-
-    private int totalExecutedComputes;
-
-    private long gridTotalIdleTimeInSecond;
+    private int totalAvailableCPUCores;
+    private long totalIdleTimeInSecond;
 
     public LocalDateTime getGridStartTime() {
         return gridStartTime;
@@ -36,12 +30,12 @@ public class ComputeGridRealtimeStatisticsInfo {
         this.gridUpTimeInMinute = gridUpTimeInMinute;
     }
 
-    public long getGridTotalIdleTimeInSecond() {
-        return gridTotalIdleTimeInSecond;
+    public long getTotalIdleTimeInSecond() {
+        return totalIdleTimeInSecond;
     }
 
-    public void setGridTotalIdleTimeInSecond(long gridTotalIdleTimeInSecond) {
-        this.gridTotalIdleTimeInSecond = gridTotalIdleTimeInSecond;
+    public void setTotalIdleTimeInSecond(long totalIdleTimeInSecond) {
+        this.totalIdleTimeInSecond = totalIdleTimeInSecond;
     }
 
     public int getDataComputeUnitsAmount() {
@@ -92,19 +86,11 @@ public class ComputeGridRealtimeStatisticsInfo {
         this.assignedMemoryInMB = assignedMemoryInMB;
     }
 
-    public int getAvailableCPUCores() {
-        return availableCPUCores;
+    public int getTotalAvailableCPUCores() {
+        return totalAvailableCPUCores;
     }
 
-    public void setAvailableCPUCores(int availableCPUCores) {
-        this.availableCPUCores = availableCPUCores;
-    }
-
-    public int getTotalExecutedComputes() {
-        return totalExecutedComputes;
-    }
-
-    public void setTotalExecutedComputes(int totalExecutedComputes) {
-        this.totalExecutedComputes = totalExecutedComputes;
+    public void setTotalAvailableCPUCores(int totalAvailableCPUCores) {
+        this.totalAvailableCPUCores = totalAvailableCPUCores;
     }
 }

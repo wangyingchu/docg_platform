@@ -59,7 +59,7 @@ public class ComputeGridOperator implements AutoCloseable{
         targetComputeGridRealtimeStatisticsInfo.setGridStartTime(localDateTime);
         targetComputeGridRealtimeStatisticsInfo.setGridUpTimeInMinute(metrics.getUpTime()/1000/60);
 
-        targetComputeGridRealtimeStatisticsInfo.setGridTotalIdleTimeInSecond(metrics.getTotalIdleTime()/1000);
+        targetComputeGridRealtimeStatisticsInfo.setTotalIdleTimeInSecond(metrics.getTotalIdleTime()/1000);
         //ComputeGridOperator 本身在当前时刻也是一个 DataComputeUnit,需要在总量中减去
         targetComputeGridRealtimeStatisticsInfo.setDataComputeUnitsAmount(metrics.getTotalNodes()-1);
         targetComputeGridRealtimeStatisticsInfo.setOldestUnitId(oldestNode.id().toString());
@@ -67,8 +67,7 @@ public class ComputeGridOperator implements AutoCloseable{
         targetComputeGridRealtimeStatisticsInfo.setMaxAvailableMemoryInMB(metrics.getNonHeapMemoryUsed()/1024/1024);
         targetComputeGridRealtimeStatisticsInfo.setAssignedMemoryInMB(metrics.getNonHeapMemoryTotal()/1024/1024);
         targetComputeGridRealtimeStatisticsInfo.setUsedMemoryInMB(metrics.getHeapMemoryUsed()/1024/1024);
-        targetComputeGridRealtimeStatisticsInfo.setAvailableCPUCores(metrics.getTotalCpus());
-        targetComputeGridRealtimeStatisticsInfo.setTotalExecutedComputes(metrics.getTotalExecutedJobs());
+        targetComputeGridRealtimeStatisticsInfo.setTotalAvailableCPUCores(metrics.getTotalCpus());
 
         metrics.getBusyTimePercentage();
         metrics.getHeapMemoryCommitted();
@@ -77,7 +76,6 @@ public class ComputeGridOperator implements AutoCloseable{
         metrics.getNodeStartTime();
         metrics.getTotalCpus();
         metrics.getTotalNodes();
-
 
         return targetComputeGridRealtimeStatisticsInfo;
     }

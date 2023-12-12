@@ -11,16 +11,14 @@ public class ComputeGridOperatorTest {
             ComputeGridRealtimeStatisticsInfo targetComputeGridRealtimeStatisticsInfo = computeGridOperator.getComputeGridRealtimeMetrics();
             System.out.println(targetComputeGridRealtimeStatisticsInfo.getGridStartTime());
             System.out.println(targetComputeGridRealtimeStatisticsInfo.getGridUpTimeInMinute());
-            System.out.println(targetComputeGridRealtimeStatisticsInfo.getGridTotalIdleTimeInSecond());
+            System.out.println(targetComputeGridRealtimeStatisticsInfo.getTotalIdleTimeInSecond());
             System.out.println(targetComputeGridRealtimeStatisticsInfo.getDataComputeUnitsAmount());
             System.out.println(targetComputeGridRealtimeStatisticsInfo.getOldestUnitId());
             System.out.println(targetComputeGridRealtimeStatisticsInfo.getYoungestUnitId());
             System.out.println(targetComputeGridRealtimeStatisticsInfo.getMaxAvailableMemoryInMB());
             System.out.println(targetComputeGridRealtimeStatisticsInfo.getAssignedMemoryInMB());
             System.out.println(targetComputeGridRealtimeStatisticsInfo.getUsedMemoryInMB());
-            System.out.println(targetComputeGridRealtimeStatisticsInfo.getAvailableCPUCores());
-            System.out.println(targetComputeGridRealtimeStatisticsInfo.getTotalExecutedComputes());
-
+            System.out.println(targetComputeGridRealtimeStatisticsInfo.getTotalAvailableCPUCores());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

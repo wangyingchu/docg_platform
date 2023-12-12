@@ -106,7 +106,6 @@ public class ComputeGridObserver implements AutoCloseable{
 
         int executorService = Integer.parseInt(currentIgniteMetricsValueMap.get("ignite.executorServiceFormatted").toString());
 
-
         ClientClusterGroup computeUnitCluster = this.igniteClient.cluster().forServers();
         int serverUnitCount = computeUnitCluster.nodes().size();
 
@@ -121,24 +120,40 @@ public class ComputeGridObserver implements AutoCloseable{
         LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
         computeGridRealtimeStatisticsInfo.setGridStartTime(localDateTime);
         computeGridRealtimeStatisticsInfo.setDataComputeUnitsAmount(serverUnitCount);
-        computeGridRealtimeStatisticsInfo.setAvailableCPUCores(executorService);
 
+        Map<String,Object> ipAddressInfoMap = getCurrentUnitAttributeValueMap("org.apache.ignite.ips");
+        List<String> ipAddressList = new ArrayList<>();
+        Set<String> keySet = ipAddressInfoMap.keySet();
+        List<String> needRemoveKey = new ArrayList<>();
+        for(String currentKey:keySet){
+            String unitIP = ipAddressInfoMap.get(currentKey).toString();
+            if(ipAddressList.contains(unitIP)){
+                needRemoveKey.add(currentKey);
+            }else{
+                ipAddressList.add(unitIP);
+            }
+        }
+        for(String key:needRemoveKey){
+            ipAddressInfoMap.remove(key);
+        }
 
+        List<Map<String,Object>> unitsMetricsList = getCurrentUnitsMetricsValuesList();
 
-        /*
-        targetComputeGridRealtimeStatisticsInfo.setCurrentCPULoadPercentage(metrics.getCurrentCpuLoad());
-        targetComputeGridRealtimeStatisticsInfo.setAverageCPULoadPercentage(metrics.getAverageCpuLoad());
-        targetComputeGridRealtimeStatisticsInfo.setTotalExecutedComputes(metrics.getTotalExecutedJobs());
-        targetComputeGridRealtimeStatisticsInfo.setGridIdleTimeInSecond(metrics.getCurrentIdleTime()/1000);
-        targetComputeGridRealtimeStatisticsInfo.setGridTotalIdleTimeInSecond(metrics.getTotalIdleTime()/1000);
-        */
+        long totalIdleTimeValue = 0;
+        int totalCPUValue = 0;
+        for(Map<String,Object> currentMetricsList:unitsMetricsList){
+            totalIdleTimeValue = totalIdleTimeValue + (Long)currentMetricsList.get("TOTAL_IDLE_TIME");
 
-
-
-
+            String unitId = currentMetricsList.get("UNIT_ID").toString();
+            if(ipAddressInfoMap.containsKey(unitId)){
+                int currentTotalCPU = (Integer)currentMetricsList.get("TOTAL_CPU");
+                totalCPUValue = totalCPUValue+currentTotalCPU;
+            }
+        }
+        computeGridRealtimeStatisticsInfo.setTotalIdleTimeInSecond(totalIdleTimeValue/1000);
+        computeGridRealtimeStatisticsInfo.setTotalAvailableCPUCores(totalCPUValue);
         return computeGridRealtimeStatisticsInfo;
     }
-
 
     private Map<String,Object> getCurrentIgniteMetricsValueMap(){
         Map<String,Object> currentIgniteMetricsValueMap = new HashMap<>();
@@ -149,5 +164,54 @@ public class ComputeGridObserver implements AutoCloseable{
             currentIgniteMetricsValueMap.put(metricName,metricNameValue);
         }
         return currentIgniteMetricsValueMap;
+    }
+
+    private List<Map<String,Object>> getCurrentUnitsMetricsValuesList(){
+        List<Map<String,Object>> unitsMetricsValuesList = new ArrayList<>();
+        String sql = "SELECT NODE_ID, LAST_UPDATE_TIME, MAX_ACTIVE_JOBS, CUR_ACTIVE_JOBS, AVG_ACTIVE_JOBS, MAX_WAITING_JOBS, CUR_WAITING_JOBS, AVG_WAITING_JOBS, MAX_REJECTED_JOBS, CUR_REJECTED_JOBS, AVG_REJECTED_JOBS, TOTAL_REJECTED_JOBS, MAX_CANCELED_JOBS, CUR_CANCELED_JOBS, AVG_CANCELED_JOBS, TOTAL_CANCELED_JOBS, MAX_JOBS_WAIT_TIME, CUR_JOBS_WAIT_TIME, AVG_JOBS_WAIT_TIME, MAX_JOBS_EXECUTE_TIME, CUR_JOBS_EXECUTE_TIME, AVG_JOBS_EXECUTE_TIME, TOTAL_JOBS_EXECUTE_TIME, TOTAL_EXECUTED_JOBS, TOTAL_EXECUTED_TASKS, TOTAL_BUSY_TIME, TOTAL_IDLE_TIME, CUR_IDLE_TIME, BUSY_TIME_PERCENTAGE, IDLE_TIME_PERCENTAGE, TOTAL_CPU, CUR_CPU_LOAD, AVG_CPU_LOAD, CUR_GC_CPU_LOAD, HEAP_MEMORY_INIT, HEAP_MEMORY_USED, HEAP_MEMORY_COMMITED, HEAP_MEMORY_MAX, HEAP_MEMORY_TOTAL, NONHEAP_MEMORY_INIT, NONHEAP_MEMORY_USED, NONHEAP_MEMORY_COMMITED, NONHEAP_MEMORY_MAX, NONHEAP_MEMORY_TOTAL, UPTIME, JVM_START_TIME, NODE_START_TIME, LAST_DATA_VERSION, CUR_THREAD_COUNT, MAX_THREAD_COUNT, TOTAL_THREAD_COUNT, CUR_DAEMON_THREAD_COUNT, SENT_MESSAGES_COUNT, SENT_BYTES_COUNT, RECEIVED_MESSAGES_COUNT, RECEIVED_BYTES_COUNT, OUTBOUND_MESSAGES_QUEUE\n" +
+        "FROM SYS.NODE_METRICS;";
+
+        List<List<?>> listValue = this.igniteClient.query(new SqlFieldsQuery(sql).setSchema("SYS")).getAll();
+        for(List<?> currentList :listValue){
+            String unitId = currentList.get(0).toString();
+
+            Map<String,Object> metricsValueMap = new HashMap<>();
+            metricsValueMap.put("UNIT_ID",unitId);
+
+            Long _TOTAL_BUSY_TIME = Long.parseLong(currentList.get(25).toString());
+            Long _TOTAL_IDLE_TIME = Long.parseLong(currentList.get(26).toString());
+            Long _CUR_IDLE_TIME = Long.parseLong(currentList.get(27).toString());
+            Double _BUSY_TIME_PERCENTAGE = Double.parseDouble(currentList.get(28).toString());
+            Double _IDLE_TIME_PERCENTAGE = Double.parseDouble(currentList.get(29).toString());
+            Integer _TOTAL_CPU = Integer.parseInt(currentList.get(30).toString());
+            Double _CUR_CPU_LOAD = Double.parseDouble(currentList.get(31).toString());
+            Double _AVG_CPU_LOAD = Double.parseDouble(currentList.get(32).toString());
+
+            metricsValueMap.put("TOTAL_BUSY_TIME",_TOTAL_BUSY_TIME);
+            metricsValueMap.put("TOTAL_IDLE_TIME",_TOTAL_IDLE_TIME);
+            metricsValueMap.put("CUR_IDLE_TIME",_CUR_IDLE_TIME);
+            metricsValueMap.put("BUSY_TIME_PERCENTAGE",_BUSY_TIME_PERCENTAGE);
+            metricsValueMap.put("IDLE_TIME_PERCENTAGE",_IDLE_TIME_PERCENTAGE);
+            metricsValueMap.put("TOTAL_CPU",_TOTAL_CPU);
+            metricsValueMap.put("CUR_CPU_LOAD",_CUR_CPU_LOAD);
+            metricsValueMap.put("AVG_CPU_LOAD",_AVG_CPU_LOAD);
+
+            unitsMetricsValuesList.add(metricsValueMap);
+        }
+
+        return unitsMetricsValuesList;
+    }
+
+    private Map<String,Object> getCurrentUnitAttributeValueMap(String attributeName){
+        Map<String,Object> unitAttributeValueMap = new HashMap<>();
+        List<List<?>> listValue = this.igniteClient
+                .query(new SqlFieldsQuery("SELECT NODE_ID,VALUE FROM SYS.NODE_ATTRIBUTES where NAME = ? ")
+                        .setSchema("SYS").setArgs(attributeName)).getAll();
+        for(List<?> currentList :listValue){
+            String unitId = currentList.get(0).toString();
+            Object attributeValue = currentList.get(1);
+            unitAttributeValueMap.put(unitId,attributeValue);
+        }
+        return unitAttributeValueMap;
     }
 }
