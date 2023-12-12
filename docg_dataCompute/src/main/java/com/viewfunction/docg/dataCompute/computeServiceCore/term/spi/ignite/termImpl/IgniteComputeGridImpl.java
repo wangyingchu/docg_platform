@@ -1,7 +1,7 @@
 package com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termImpl;
 
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.ComputeGridException;
-import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ComputeGridObserver;
+import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.ComputeGridObserver;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeGridRealtimeStatisticsInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeUnitRealtimeStatisticsInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataService;

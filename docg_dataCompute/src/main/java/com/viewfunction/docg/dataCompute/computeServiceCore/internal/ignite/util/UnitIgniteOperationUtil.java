@@ -1,4 +1,4 @@
-package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util;
+package com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.util;
 
 import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.exception.ComputeGridNotActiveException;
 import org.apache.ignite.Ignite;

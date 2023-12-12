@@ -1,4 +1,4 @@
-package com.viewfunction.docg.dataCompute.computeServiceCore.internal;
+package com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite;
 
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeGridRealtimeStatisticsInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataComputeUnitMetaInfo;
