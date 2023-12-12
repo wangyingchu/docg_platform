@@ -108,18 +108,19 @@ public class ComputeGridObserver implements AutoCloseable{
 
 
         ClientClusterGroup computeUnitCluster = this.igniteClient.cluster().forServers();
+        int serverUnitCount = computeUnitCluster.nodes().size();
 
         ComputeGridRealtimeStatisticsInfo computeGridRealtimeStatisticsInfo = new ComputeGridRealtimeStatisticsInfo();
-        computeGridRealtimeStatisticsInfo.setAssignedMemoryInMB(assignedMem/1024/1024);
-        computeGridRealtimeStatisticsInfo.setMaxAvailableMemoryInMB(maxAvailableMem/1024/1024);
-        computeGridRealtimeStatisticsInfo.setUsedMemoryInMB(usedMem/1024/1024);
+        computeGridRealtimeStatisticsInfo.setAssignedMemoryInMB(serverUnitCount*(assignedMem/1024/1024));
+        computeGridRealtimeStatisticsInfo.setMaxAvailableMemoryInMB(serverUnitCount*(maxAvailableMem/1024/1024));
+        computeGridRealtimeStatisticsInfo.setUsedMemoryInMB(serverUnitCount*(usedMem/1024/1024));
         computeGridRealtimeStatisticsInfo.setYoungestUnitId(computeUnitCluster.forYoungest().node().id().toString());
         computeGridRealtimeStatisticsInfo.setOldestUnitId(computeUnitCluster.forOldest().node().id().toString());
         computeGridRealtimeStatisticsInfo.setGridUpTimeInMinute(upTime/1000/60);
         Instant instant = Instant.ofEpochMilli(startTime);
         LocalDateTime localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
         computeGridRealtimeStatisticsInfo.setGridStartTime(localDateTime);
-        computeGridRealtimeStatisticsInfo.setDataComputeUnitsAmount(computeUnitCluster.nodes().size());
+        computeGridRealtimeStatisticsInfo.setDataComputeUnitsAmount(serverUnitCount);
         computeGridRealtimeStatisticsInfo.setAvailableCPUCores(executorService);
 
 

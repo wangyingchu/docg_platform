@@ -5,13 +5,14 @@ import java.time.LocalDateTime;
 public class ComputeGridRealtimeStatisticsInfo {
     private LocalDateTime gridStartTime;
     private long gridUpTimeInMinute;
-
     private int dataComputeUnitsAmount;
     private String oldestUnitId;
     private String youngestUnitId;
     private long maxAvailableMemoryInMB;
     private long usedMemoryInMB;
     private long assignedMemoryInMB;
+
+
 
     private int availableCPUCores;
 
