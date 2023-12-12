@@ -64,11 +64,13 @@
                         <property name="name" value="Default_DataStore_Region"/>
                         <property name="initialSize" value="#{1L * 1024 * 1024 * 1024}"/>
                         <!-- Setting the size of the default region to 20GB. -->
-                        <property name="maxSize" value="#{20L * 1024 * 1024 * 1024}"/>
+                        <property name="maxSize" value="#{1L * 1024 * 1024 * 1024}"/>
                         <!-- When persistence is enabled, data and indexes are stored both in memory and on disk across all the cluster nodes. -->
                         <property name="persistenceEnabled" value="false"/>
                         <!-- enable mertrics for the default data region -->
                         <property name="metricsEnabled" value="true"/>
+                        <!-- Enabling eviction for this memory region -->
+                        <property name="pageEvictionMode" value="RANDOM_2_LRU"/>
                     </bean>
                 </property>
                 <!-- When persistence is enabled,use below configuration to set the data store location. -->

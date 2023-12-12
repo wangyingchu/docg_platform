@@ -5,8 +5,7 @@ import java.time.LocalDateTime;
 public class ComputeGridRealtimeStatisticsInfo {
     private LocalDateTime gridStartTime;
     private long gridUpTimeInMinute;
-    private long gridIdleTimeInSecond;
-    private long gridTotalIdleTimeInSecond;
+
     private int dataComputeUnitsAmount;
     private String oldestUnitId;
     private String youngestUnitId;
@@ -15,9 +14,10 @@ public class ComputeGridRealtimeStatisticsInfo {
     private long assignedMemoryInMB;
 
     private int availableCPUCores;
-    private double currentCPULoadPercentage;
-    private double averageCPULoadPercentage;
+
     private int totalExecutedComputes;
+
+    private long gridTotalIdleTimeInSecond;
 
     public LocalDateTime getGridStartTime() {
         return gridStartTime;
@@ -33,14 +33,6 @@ public class ComputeGridRealtimeStatisticsInfo {
 
     public void setGridUpTimeInMinute(long gridUpTimeInMinute) {
         this.gridUpTimeInMinute = gridUpTimeInMinute;
-    }
-
-    public long getGridIdleTimeInSecond() {
-        return gridIdleTimeInSecond;
-    }
-
-    public void setGridIdleTimeInSecond(long gridIdleTimeInSecond) {
-        this.gridIdleTimeInSecond = gridIdleTimeInSecond;
     }
 
     public long getGridTotalIdleTimeInSecond() {
@@ -105,22 +97,6 @@ public class ComputeGridRealtimeStatisticsInfo {
 
     public void setAvailableCPUCores(int availableCPUCores) {
         this.availableCPUCores = availableCPUCores;
-    }
-
-    public double getCurrentCPULoadPercentage() {
-        return currentCPULoadPercentage;
-    }
-
-    public void setCurrentCPULoadPercentage(double currentCPULoadPercentage) {
-        this.currentCPULoadPercentage = currentCPULoadPercentage;
-    }
-
-    public double getAverageCPULoadPercentage() {
-        return averageCPULoadPercentage;
-    }
-
-    public void setAverageCPULoadPercentage(double averageCPULoadPercentage) {
-        this.averageCPULoadPercentage = averageCPULoadPercentage;
     }
 
     public int getTotalExecutedComputes() {
