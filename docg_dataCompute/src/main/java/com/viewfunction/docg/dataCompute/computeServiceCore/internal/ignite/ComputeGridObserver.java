@@ -1,6 +1,7 @@
 package com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite;
 
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeGridRealtimeStatisticsInfo;
+import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeUnitRealtimeStatisticsInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataComputeUnitMetaInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceMetaInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.util.config.DataComputeConfigurationHandler;
@@ -153,6 +154,11 @@ public class ComputeGridObserver implements AutoCloseable{
         computeGridRealtimeStatisticsInfo.setTotalIdleTimeInSecond(totalIdleTimeValue/1000);
         computeGridRealtimeStatisticsInfo.setTotalAvailableCPUCores(totalCPUValue);
         return computeGridRealtimeStatisticsInfo;
+    }
+
+    public Set<ComputeUnitRealtimeStatisticsInfo> getComputeUnitsRealtimeStatisticsInfo(){
+
+        return null;
     }
 
     private Map<String,Object> getCurrentIgniteMetricsValueMap(){

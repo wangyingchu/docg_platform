@@ -94,7 +94,5 @@ public class ComputeGridTest {
     private static void emptyDataTest(DataService dataService,String dataSliceName) throws DataSlicePropertiesStructureException{
         DataSlice targetDataSlice = dataService.getDataSlice(dataSliceName);
         targetDataSlice.emptyDataSlice();
-
-
     }
 }

@@ -35,6 +35,11 @@ public class IgniteComputeGridImpl implements IgniteComputeGrid {
 
     @Override
     public Set<ComputeUnitRealtimeStatisticsInfo> getComputeUnitsRealtimeStatisticsInfo() throws ComputeGridException {
-        return null;
+        try(ComputeGridObserver computeGridObserver = ComputeGridObserver.getObserverInstance()){
+            Set<ComputeUnitRealtimeStatisticsInfo> computeUnitRealtimeStatisticsInfoSet = computeGridObserver.getComputeUnitsRealtimeStatisticsInfo();
+            return computeUnitRealtimeStatisticsInfoSet;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
