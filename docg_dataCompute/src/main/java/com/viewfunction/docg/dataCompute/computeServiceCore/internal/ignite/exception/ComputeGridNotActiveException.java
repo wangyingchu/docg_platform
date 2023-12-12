@@ -1,4 +1,4 @@
-package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception;
+package com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.exception;
 
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.ComputeGridException;
 

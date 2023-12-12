@@ -3,9 +3,12 @@ package com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.ter
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.ComputeGridException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ComputeGridObserver;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeGridRealtimeStatisticsInfo;
+import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeUnitRealtimeStatisticsInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataService;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termInf.IgniteComputeGrid;
 import com.viewfunction.docg.dataCompute.computeServiceCore.util.ComputeGridImplTech;
+
+import java.util.Set;
 
 public class IgniteComputeGridImpl implements IgniteComputeGrid {
 
@@ -28,5 +31,10 @@ public class IgniteComputeGridImpl implements IgniteComputeGrid {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public Set<ComputeUnitRealtimeStatisticsInfo> getComputeUnitsRealtimeStatisticsInfo() throws ComputeGridException {
+        return null;
     }
 }
