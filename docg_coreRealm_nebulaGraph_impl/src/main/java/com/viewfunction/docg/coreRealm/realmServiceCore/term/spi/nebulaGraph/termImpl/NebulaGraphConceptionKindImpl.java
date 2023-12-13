@@ -6,6 +6,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationK
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.TemporalScaleCalculable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.nebulaGraph.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.nebulaGraph.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
@@ -49,6 +50,16 @@ public class NebulaGraphConceptionKindImpl implements NebulaGraphConceptionKind 
     @Override
     public List<Classification> getAttachedClassifications(String relationKindName, RelationDirection relationDirection) {
         return null;
+    }
+
+    @Override
+    public List<ClassificationAttachInfo> getAllAttachedClassificationsInfo() {
+        return null;
+    }
+
+    @Override
+    public boolean isClassificationAttached(String classificationName, String relationKindName, RelationDirection relationDirection) {
+        return false;
     }
 
     @Override
@@ -343,6 +354,11 @@ public class NebulaGraphConceptionKindImpl implements NebulaGraphConceptionKind 
 
     @Override
     public EntitiesOperationStatistics convertEntityAttributeToStringType(String attributeName) {
+        return null;
+    }
+
+    @Override
+    public EntitiesOperationStatistics convertEntityAttributeToTemporalType(String attributeName, TemporalScaleCalculable.TemporalValueFormat temporalValueFormat, TemporalScaleCalculable.TemporalScaleLevel temporalScaleType) throws CoreRealmServiceRuntimeException {
         return null;
     }
 

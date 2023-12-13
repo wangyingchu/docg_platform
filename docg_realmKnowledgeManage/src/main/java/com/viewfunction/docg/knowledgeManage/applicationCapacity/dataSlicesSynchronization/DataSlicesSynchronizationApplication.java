@@ -1,6 +1,8 @@
 package com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization;
 
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
+import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSliceExistException;
+import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSlicePropertiesStructureException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.exception.ComputeGridNotActiveException;
 import com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization.commandProcessor.DataSlicesSyncCommandProcessorFactory;
 import com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization.dataSlicesSync.DataSliceSyncUtil;
@@ -39,7 +41,13 @@ public class DataSlicesSynchronizationApplication implements BaseApplication {
         this.commandContextDataMap.put(SYNC_LISTENING_START_TIME,new Date());
         String syncGeospatialRegionDataFlag = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.syncGeospatialRegionData");
         if(Boolean.parseBoolean(syncGeospatialRegionDataFlag)){
-            DataSliceSyncUtil.syncGeospatialRegionData(dataServiceInvoker);
+            try {
+                DataSliceSyncUtil.syncGeospatialRegionData(dataServiceInvoker);
+            } catch (DataSliceExistException e) {
+                throw new RuntimeException(e);
+            } catch (DataSlicePropertiesStructureException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         String launchSyncAtStartupFlag = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.launchSyncAtStartup");
