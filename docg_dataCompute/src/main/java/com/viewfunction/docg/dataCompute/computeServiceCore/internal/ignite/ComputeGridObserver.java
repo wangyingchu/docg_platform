@@ -164,6 +164,18 @@ public class ComputeGridObserver implements AutoCloseable{
         List<Map<String,Object>> currentUnitsMetricsValuesList = getCurrentUnitsMetricsValuesList();
         for(Map<String,Object> currentMetricsMap : currentUnitsMetricsValuesList){
             ComputeUnitRealtimeStatisticsInfo computeUnitRealtimeStatisticsInfo = new ComputeUnitRealtimeStatisticsInfo();
+            computeUnitRealtimeStatisticsInfo.setUnitID(currentMetricsMap.get("UNIT_ID").toString());
+
+            computeUnitRealtimeStatisticsInfo.setAvailableCPUCores((Integer)currentMetricsMap.get("TOTAL_CPU"));
+            computeUnitRealtimeStatisticsInfo.setUnitUpTimeInMinute((Long)currentMetricsMap.get("UPTIME")/1000/60);
+            computeUnitRealtimeStatisticsInfo.setTotalIdleTimeInSecond((Long)currentMetricsMap.get("TOTAL_IDLE_TIME")/1000);
+            computeUnitRealtimeStatisticsInfo.setTotalBusyTimeInSecond((Long)currentMetricsMap.get("TOTAL_BUSY_TIME")/1000);
+            computeUnitRealtimeStatisticsInfo.setAverageCPULoadPercentage((Double)currentMetricsMap.get("AVG_CPU_LOAD"));
+            computeUnitRealtimeStatisticsInfo.setCurrentCPULoadPercentage((Double)currentMetricsMap.get("CUR_CPU_LOAD"));
+            computeUnitRealtimeStatisticsInfo.setIdleTimePercentage((Double)currentMetricsMap.get("IDLE_TIME_PERCENTAGE"));
+            computeUnitRealtimeStatisticsInfo.setBusyTimePercentage((Double)currentMetricsMap.get("BUSY_TIME_PERCENTAGE"));
+            computeUnitRealtimeStatisticsInfo.setCurrentIdleTimeInSecond((Long)currentMetricsMap.get("CUR_IDLE_TIME")/1000);
+
             String unitStartDatetime = currentMetricsMap.get("NODE_START_TIME").toString();
             try {
                 //输出格式为："2023-12-13 09:16:38.845"
@@ -174,6 +186,15 @@ public class ComputeGridObserver implements AutoCloseable{
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
+
+            Map<String,Object> currentIgniteMetricsValueMap = getCurrentIgniteMetricsValueMap();
+            long maxAvailableMem = Long.parseLong(currentIgniteMetricsValueMap.get("io.dataregion.Default_DataStore_Region.MaxSize").toString());
+            long usedMem = Long.parseLong(currentIgniteMetricsValueMap.get("io.dataregion.Default_DataStore_Region.TotalUsedSize").toString());
+            long assignedMem = Long.parseLong(currentIgniteMetricsValueMap.get("io.dataregion.Default_DataStore_Region.OffHeapSize").toString());
+            computeUnitRealtimeStatisticsInfo.setAssignedMemoryInMB(assignedMem/1024/1024);
+            computeUnitRealtimeStatisticsInfo.setMaxAvailableMemoryInMB(maxAvailableMem/1024/1024);
+            computeUnitRealtimeStatisticsInfo.setUsedMemoryInMB(usedMem/1024/1024);
+
             computeUnitRealtimeStatisticsInfoSet.add(computeUnitRealtimeStatisticsInfo);
         }
         return computeUnitRealtimeStatisticsInfoSet;

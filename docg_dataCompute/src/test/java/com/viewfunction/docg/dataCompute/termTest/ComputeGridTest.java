@@ -41,6 +41,19 @@ public class ComputeGridTest {
         for(ComputeUnitRealtimeStatisticsInfo currentComputeUnitRealtimeStatisticsInfo:computeUnitRealtimeStatisticsInfoSet){
             System.out.println("===================");
             System.out.println(currentComputeUnitRealtimeStatisticsInfo.getUnitStartTime());
+            System.out.println(currentComputeUnitRealtimeStatisticsInfo.getUnitID());
+            System.out.println(currentComputeUnitRealtimeStatisticsInfo.getAssignedMemoryInMB());
+            System.out.println(currentComputeUnitRealtimeStatisticsInfo.getMaxAvailableMemoryInMB());
+            System.out.println(currentComputeUnitRealtimeStatisticsInfo.getUsedMemoryInMB());
+            System.out.println(currentComputeUnitRealtimeStatisticsInfo.getAvailableCPUCores());
+            System.out.println(currentComputeUnitRealtimeStatisticsInfo.getUnitUpTimeInMinute());
+            System.out.println(currentComputeUnitRealtimeStatisticsInfo.getTotalIdleTimeInSecond());
+            System.out.println(currentComputeUnitRealtimeStatisticsInfo.getTotalBusyTimeInSecond());
+            System.out.println(currentComputeUnitRealtimeStatisticsInfo.getAverageCPULoadPercentage());
+            System.out.println(currentComputeUnitRealtimeStatisticsInfo.getCurrentCPULoadPercentage());
+            System.out.println(currentComputeUnitRealtimeStatisticsInfo.getIdleTimePercentage());
+            System.out.println(currentComputeUnitRealtimeStatisticsInfo.getBusyTimePercentage());
+            System.out.println(currentComputeUnitRealtimeStatisticsInfo.getCurrentIdleTimeInSecond());
         }
 
         try(DataService dataService = targetComputeGrid.getDataService()){
@@ -80,7 +93,7 @@ public class ComputeGridTest {
         DataSlice targetDataSlice = dataService.getDataSlice(dataSliceName);
 
         List<Map<String,Object>> dataList = new ArrayList<>();
-        for(int i=0;i<10000000;i++) {
+        for(int i=0;i<100000;i++) {
             Map<String, Object> dataPropertiesValue = new HashMap<>();
             dataPropertiesValue.put("property1", "DataProperty1Value" + new Date().getTime());
             dataPropertiesValue.put("property2", 1000+i);
