@@ -5,7 +5,6 @@ import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeUnitR
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataComputeUnitMetaInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceMetaInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.util.config.DataComputeConfigurationHandler;
-
 import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.CacheMode;
 import org.apache.ignite.cache.CachePeekMode;
@@ -17,6 +16,8 @@ import org.apache.ignite.client.IgniteClient;
 import org.apache.ignite.cluster.ClusterNode;
 import org.apache.ignite.configuration.ClientConfiguration;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -105,7 +106,7 @@ public class ComputeGridObserver implements AutoCloseable{
         int upTime = Integer.parseInt(currentIgniteMetricsValueMap.get("ignite.uptime").toString());
         long startTime = Long.parseLong(currentIgniteMetricsValueMap.get("ignite.startTimestamp").toString());
 
-        int executorService = Integer.parseInt(currentIgniteMetricsValueMap.get("ignite.executorServiceFormatted").toString());
+        //int executorService = Integer.parseInt(currentIgniteMetricsValueMap.get("ignite.executorServiceFormatted").toString());
 
         ClientClusterGroup computeUnitCluster = this.igniteClient.cluster().forServers();
         int serverUnitCount = computeUnitCluster.nodes().size();
@@ -157,8 +158,25 @@ public class ComputeGridObserver implements AutoCloseable{
     }
 
     public Set<ComputeUnitRealtimeStatisticsInfo> getComputeUnitsRealtimeStatisticsInfo(){
-
-        return null;
+        Set<ComputeUnitRealtimeStatisticsInfo> computeUnitRealtimeStatisticsInfoSet = new HashSet<>();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        ZoneId zoneId = ZoneId.systemDefault();
+        List<Map<String,Object>> currentUnitsMetricsValuesList = getCurrentUnitsMetricsValuesList();
+        for(Map<String,Object> currentMetricsMap : currentUnitsMetricsValuesList){
+            ComputeUnitRealtimeStatisticsInfo computeUnitRealtimeStatisticsInfo = new ComputeUnitRealtimeStatisticsInfo();
+            String unitStartDatetime = currentMetricsMap.get("NODE_START_TIME").toString();
+            try {
+                //输出格式为："2023-12-13 09:16:38.845"
+                Date nodeStartDate = sdf.parse(unitStartDatetime.substring(0,unitStartDatetime.length()-4));
+                Instant instant = nodeStartDate.toInstant();
+                LocalDateTime localDateTime = instant.atZone(zoneId).toLocalDateTime();
+                computeUnitRealtimeStatisticsInfo.setUnitStartTime(localDateTime);
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+            computeUnitRealtimeStatisticsInfoSet.add(computeUnitRealtimeStatisticsInfo);
+        }
+        return computeUnitRealtimeStatisticsInfoSet;
     }
 
     private Map<String,Object> getCurrentIgniteMetricsValueMap(){
@@ -192,6 +210,8 @@ public class ComputeGridObserver implements AutoCloseable{
             Integer _TOTAL_CPU = Integer.parseInt(currentList.get(30).toString());
             Double _CUR_CPU_LOAD = Double.parseDouble(currentList.get(31).toString());
             Double _AVG_CPU_LOAD = Double.parseDouble(currentList.get(32).toString());
+            Long _UPTIME = Long.parseLong(currentList.get(44).toString());
+            String _NODE_START_TIME = currentList.get(46).toString().toString();
 
             metricsValueMap.put("TOTAL_BUSY_TIME",_TOTAL_BUSY_TIME);
             metricsValueMap.put("TOTAL_IDLE_TIME",_TOTAL_IDLE_TIME);
@@ -201,6 +221,8 @@ public class ComputeGridObserver implements AutoCloseable{
             metricsValueMap.put("TOTAL_CPU",_TOTAL_CPU);
             metricsValueMap.put("CUR_CPU_LOAD",_CUR_CPU_LOAD);
             metricsValueMap.put("AVG_CPU_LOAD",_AVG_CPU_LOAD);
+            metricsValueMap.put("UPTIME",_UPTIME);
+            metricsValueMap.put("NODE_START_TIME",_NODE_START_TIME);
 
             unitsMetricsValuesList.add(metricsValueMap);
         }

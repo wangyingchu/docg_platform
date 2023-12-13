@@ -2,6 +2,7 @@ package com.viewfunction.docg.dataCompute.termTest;
 
 
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeGridRealtimeStatisticsInfo;
+import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeUnitRealtimeStatisticsInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceOperationResult;
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.ComputeGridException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSliceExistException;
@@ -34,6 +35,13 @@ public class ComputeGridTest {
         System.out.println(targetComputeGridRealtimeStatisticsInfo.getTotalIdleTimeInSecond());
         System.out.println(targetComputeGridRealtimeStatisticsInfo.getDataComputeUnitsAmount());
         System.out.println(targetComputeGridRealtimeStatisticsInfo.getTotalAvailableCPUCores());
+
+        Set<ComputeUnitRealtimeStatisticsInfo> computeUnitRealtimeStatisticsInfoSet = targetComputeGrid.getComputeUnitsRealtimeStatisticsInfo();
+
+        for(ComputeUnitRealtimeStatisticsInfo currentComputeUnitRealtimeStatisticsInfo:computeUnitRealtimeStatisticsInfoSet){
+            System.out.println("===================");
+            System.out.println(currentComputeUnitRealtimeStatisticsInfo.getUnitStartTime());
+        }
 
         try(DataService dataService = targetComputeGrid.getDataService()){
             List<String> dataSliceList = dataService.listDataSlices();
