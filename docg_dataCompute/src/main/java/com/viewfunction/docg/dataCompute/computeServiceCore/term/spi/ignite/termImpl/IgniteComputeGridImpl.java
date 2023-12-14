@@ -4,6 +4,7 @@ import com.viewfunction.docg.dataCompute.computeServiceCore.exception.ComputeGri
 import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.ComputeGridObserver;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeGridRealtimeStatisticsInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeUnitRealtimeStatisticsInfo;
+import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataComputeUnitMetaInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataService;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termInf.IgniteComputeGrid;
 import com.viewfunction.docg.dataCompute.computeServiceCore.util.ComputeGridImplTech;
@@ -29,7 +30,7 @@ public class IgniteComputeGridImpl implements IgniteComputeGrid {
             ComputeGridRealtimeStatisticsInfo computeGridRealtimeStatisticsInfo = computeGridObserver.getGridRealtimeStatisticsInfo();
             return computeGridRealtimeStatisticsInfo;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ComputeGridException(e);
         }
     }
 
@@ -39,7 +40,17 @@ public class IgniteComputeGridImpl implements IgniteComputeGrid {
             Set<ComputeUnitRealtimeStatisticsInfo> computeUnitRealtimeStatisticsInfoSet = computeGridObserver.getComputeUnitsRealtimeStatisticsInfo();
             return computeUnitRealtimeStatisticsInfoSet;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ComputeGridException(e);
+        }
+    }
+
+    @Override
+    public Set<DataComputeUnitMetaInfo> listDataComputeUnit() throws ComputeGridException {
+        try(ComputeGridObserver computeGridObserver = ComputeGridObserver.getObserverInstance()){
+            Set<DataComputeUnitMetaInfo> dataComputeUnitMetaInfoSet = computeGridObserver.listDataComputeUnit();
+            return dataComputeUnitMetaInfoSet;
+        } catch (Exception e) {
+            throw new ComputeGridException(e);
         }
     }
 }
