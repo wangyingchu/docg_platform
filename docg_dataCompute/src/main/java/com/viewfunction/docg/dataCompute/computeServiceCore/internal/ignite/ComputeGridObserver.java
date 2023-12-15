@@ -142,10 +142,11 @@ public class ComputeGridObserver implements AutoCloseable{
         List<Map<String,Object>> unitsMetricsList = getCurrentUnitsMetricsValuesList();
 
         long totalIdleTimeValue = 0;
+        long totalBusyTimeValue = 0;
         int totalCPUValue = 0;
         for(Map<String,Object> currentMetricsList:unitsMetricsList){
             totalIdleTimeValue = totalIdleTimeValue + (Long)currentMetricsList.get("TOTAL_IDLE_TIME");
-
+            totalBusyTimeValue = totalBusyTimeValue + (Long)currentMetricsList.get("TOTAL_BUSY_TIME");
             String unitId = currentMetricsList.get("UNIT_ID").toString();
             if(ipAddressInfoMap.containsKey(unitId)){
                 int currentTotalCPU = (Integer)currentMetricsList.get("TOTAL_CPU");
@@ -153,6 +154,7 @@ public class ComputeGridObserver implements AutoCloseable{
             }
         }
         computeGridRealtimeStatisticsInfo.setTotalIdleTimeInSecond(totalIdleTimeValue/1000);
+        computeGridRealtimeStatisticsInfo.setTotalBusyTimeInSecond(totalBusyTimeValue/1000);
         computeGridRealtimeStatisticsInfo.setTotalAvailableCPUCores(totalCPUValue);
         return computeGridRealtimeStatisticsInfo;
     }

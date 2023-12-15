@@ -13,6 +13,7 @@ public class ComputeGridRealtimeStatisticsInfo {
     private long assignedMemoryInMB;
     private int totalAvailableCPUCores;
     private long totalIdleTimeInSecond;
+    private long totalBusyTimeInSecond;
 
     public LocalDateTime getGridStartTime() {
         return gridStartTime;
@@ -92,5 +93,13 @@ public class ComputeGridRealtimeStatisticsInfo {
 
     public void setTotalAvailableCPUCores(int totalAvailableCPUCores) {
         this.totalAvailableCPUCores = totalAvailableCPUCores;
+    }
+
+    public long getTotalBusyTimeInSecond() {
+        return totalBusyTimeInSecond;
+    }
+
+    public void setTotalBusyTimeInSecond(long totalBusyTimeInSecond) {
+        this.totalBusyTimeInSecond = totalBusyTimeInSecond;
     }
 }
