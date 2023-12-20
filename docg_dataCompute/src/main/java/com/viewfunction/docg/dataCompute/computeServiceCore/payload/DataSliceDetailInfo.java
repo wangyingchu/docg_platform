@@ -1,5 +1,9 @@
 package com.viewfunction.docg.dataCompute.computeServiceCore.payload;
 
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSlicePropertyType;
+
+import java.util.Map;
+
 public class DataSliceDetailInfo {
 
 
@@ -13,6 +17,8 @@ public class DataSliceDetailInfo {
     private Class keyClass;
     private Class valueClass;
     private String dataSliceName;
+
+    private Map<String, DataSlicePropertyType> propertiesDefinition;
 
 
 
