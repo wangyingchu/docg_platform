@@ -1,13 +1,11 @@
 package com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite;
 
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeGridRealtimeStatisticsInfo;
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeUnitRealtimeStatisticsInfo;
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataComputeUnitMetaInfo;
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceMetaInfo;
+import com.viewfunction.docg.dataCompute.computeServiceCore.payload.*;
 import com.viewfunction.docg.dataCompute.computeServiceCore.util.config.DataComputeConfigurationHandler;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.CacheMode;
 import org.apache.ignite.cache.CachePeekMode;
+import org.apache.ignite.cache.QueryEntity;
 import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.apache.ignite.client.ClientCache;
 import org.apache.ignite.client.ClientCacheConfiguration;
@@ -200,6 +198,49 @@ public class ComputeGridObserver implements AutoCloseable{
             computeUnitRealtimeStatisticsInfoSet.add(computeUnitRealtimeStatisticsInfo);
         }
         return computeUnitRealtimeStatisticsInfoSet;
+    }
+
+    public DataSliceDetailInfo getDataSliceDetail(String dataSliceName){
+        ClientCache targetClientCache = this.igniteClient.cache(dataSliceName);
+
+        ClientCacheConfiguration clientCacheConfiguration = targetClientCache.getConfiguration();
+        clientCacheConfiguration.getCacheMode();
+
+        QueryEntity[] entities = clientCacheConfiguration.getQueryEntities();
+
+        LinkedHashMap<String,String> propertiesMap = null;
+        if(entities != null && entities.length > 0){
+            QueryEntity currentQueryEntity = entities[0];
+            propertiesMap = currentQueryEntity.getFields();
+        }
+
+
+
+
+        if(propertiesMap != null){
+            Set<String> propertyNameSet = propertiesMap.keySet();
+            for(String currentPropertyName : propertyNameSet){
+                String propertyType = propertiesMap.get(currentPropertyName);
+
+                System.out.println(currentPropertyName + " "+propertyType);
+
+            }
+        }
+
+
+
+
+
+
+
+
+        targetClientCache.size(CachePeekMode.PRIMARY);
+        targetClientCache.size(CachePeekMode.BACKUP);
+        targetClientCache.size(CachePeekMode.ALL);
+
+
+
+        return null;
     }
 
     private Map<String,Object> getCurrentIgniteMetricsValueMap(){

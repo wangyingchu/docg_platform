@@ -2,10 +2,7 @@ package com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.ter
 
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.ComputeGridException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.ComputeGridObserver;
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeGridRealtimeStatisticsInfo;
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeUnitRealtimeStatisticsInfo;
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataComputeUnitMetaInfo;
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceMetaInfo;
+import com.viewfunction.docg.dataCompute.computeServiceCore.payload.*;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataService;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termInf.IgniteComputeGrid;
 import com.viewfunction.docg.dataCompute.computeServiceCore.util.ComputeGridImplTech;
@@ -63,5 +60,17 @@ public class IgniteComputeGridImpl implements IgniteComputeGrid {
         } catch (Exception e) {
             throw new ComputeGridException(e);
         }
+    }
+
+    @Override
+    public DataSliceDetailInfo getDataSliceDetail(String dataSliceName) {
+
+
+
+
+
+
+
+        return null;
     }
 }

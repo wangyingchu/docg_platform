@@ -1,10 +1,7 @@
 package com.viewfunction.docg.dataCompute.computeServiceCore.term;
 
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.ComputeGridException;
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeGridRealtimeStatisticsInfo;
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeUnitRealtimeStatisticsInfo;
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataComputeUnitMetaInfo;
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceMetaInfo;
+import com.viewfunction.docg.dataCompute.computeServiceCore.payload.*;
 import com.viewfunction.docg.dataCompute.computeServiceCore.util.ComputeGridImplTech;
 
 import java.util.Set;
@@ -22,4 +19,6 @@ public interface ComputeGrid {
     public Set<DataComputeUnitMetaInfo> listDataComputeUnit() throws ComputeGridException;
 
     public Set<DataSliceMetaInfo> listDataSlice() throws ComputeGridException;
+
+    public DataSliceDetailInfo getDataSliceDetail(String dataSliceName) throws ComputeGridException;
 }
