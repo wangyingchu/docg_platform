@@ -79,7 +79,7 @@ public class IgniteDataServiceImpl implements IgniteDataService {
     }
 
     public void eraseDataSlice(String dataSliceName){
-        if(listDataSlices().contains(dataSliceName)){
+        if(listDataSliceNames().contains(dataSliceName)){
             this.invokerIgnite.destroyCache(dataSliceName);
         }
     }
@@ -93,7 +93,7 @@ public class IgniteDataServiceImpl implements IgniteDataService {
         }
     }
 
-    public List<String> listDataSlices(){
+    public List<String> listDataSliceNames(){
         Collection<String> igniteCacheNames = this.invokerIgnite.cacheNames();
         List<String> dataSliceNameList = new ArrayList<>();
         for(String currentString:igniteCacheNames){

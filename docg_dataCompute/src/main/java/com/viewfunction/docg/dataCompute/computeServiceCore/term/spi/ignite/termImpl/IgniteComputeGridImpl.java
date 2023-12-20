@@ -5,6 +5,7 @@ import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.Comp
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeGridRealtimeStatisticsInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.ComputeUnitRealtimeStatisticsInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataComputeUnitMetaInfo;
+import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceMetaInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataService;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termInf.IgniteComputeGrid;
 import com.viewfunction.docg.dataCompute.computeServiceCore.util.ComputeGridImplTech;
@@ -49,6 +50,16 @@ public class IgniteComputeGridImpl implements IgniteComputeGrid {
         try(ComputeGridObserver computeGridObserver = ComputeGridObserver.getObserverInstance()){
             Set<DataComputeUnitMetaInfo> dataComputeUnitMetaInfoSet = computeGridObserver.listDataComputeUnit();
             return dataComputeUnitMetaInfoSet;
+        } catch (Exception e) {
+            throw new ComputeGridException(e);
+        }
+    }
+
+    @Override
+    public Set<DataSliceMetaInfo> listDataSlice() throws ComputeGridException {
+        try(ComputeGridObserver computeGridObserver = ComputeGridObserver.getObserverInstance()){
+            Set<DataSliceMetaInfo> dataSliceMetaInfoSet = computeGridObserver.listDataSlice();
+            return dataSliceMetaInfoSet;
         } catch (Exception e) {
             throw new ComputeGridException(e);
         }

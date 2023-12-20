@@ -20,6 +20,6 @@ public interface DataService extends AutoCloseable{
 
     public DataSlice getDataSlice(String dataSliceName);
 
-    public List<String> listDataSlices();
+    public List<String> listDataSliceNames();
 
 }

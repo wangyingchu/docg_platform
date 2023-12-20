@@ -5,9 +5,4 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/scala" isTestSource="false" />
     </content>
   </component>
-  <component name="FacetManager">
-    <facet type="Spring" name="Spring">
-      <configuration />
-    </facet>
-  </component>
 </module>
