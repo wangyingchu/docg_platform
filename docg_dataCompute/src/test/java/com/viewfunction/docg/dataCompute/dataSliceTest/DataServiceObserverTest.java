@@ -19,6 +19,9 @@ public class DataServiceObserverTest {
         ComputeGridObserver computeGridObserver = ComputeGridObserver.getObserverInstance();
         Set<DataComputeUnitMetaInfo> dataComputeUnitMetaInfoSet = computeGridObserver.listDataComputeUnit();
         Set<DataSliceMetaInfo> dataSliceMetaInfoSet = computeGridObserver.listDataSlice();
+
+        computeGridObserver.getDataSliceDetail("gridDataSliceA1");
+
         computeGridObserver.closeObserveSession();
         for(DataSliceMetaInfo currentDataSliceMetaInfo : dataSliceMetaInfoSet){
             System.out.println(currentDataSliceMetaInfo.getDataSliceName());
@@ -44,15 +47,28 @@ public class DataServiceObserverTest {
     private static void initDataSlice(){
         try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
             Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
-            dataSlicePropertyMap.put("property1",DataSlicePropertyType.STRING);
+
+            dataSlicePropertyMap.put("property1",DataSlicePropertyType.BOOLEAN);
             dataSlicePropertyMap.put("property2",DataSlicePropertyType.INT);
-            dataSlicePropertyMap.put("property3",DataSlicePropertyType.DOUBLE);
-            dataSlicePropertyMap.put("property4",DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put("property3",DataSlicePropertyType.SHORT);
+            dataSlicePropertyMap.put("property4",DataSlicePropertyType.LONG);
+            dataSlicePropertyMap.put("property5",DataSlicePropertyType.FLOAT);
+            dataSlicePropertyMap.put("property6",DataSlicePropertyType.DOUBLE);
+            dataSlicePropertyMap.put("property7",DataSlicePropertyType.DATE);
+            dataSlicePropertyMap.put("property8",DataSlicePropertyType.TIME);
+            dataSlicePropertyMap.put("property9",DataSlicePropertyType.TIMESTAMP);
+            dataSlicePropertyMap.put("property10",DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put("property11",DataSlicePropertyType.BYTE);
+            dataSlicePropertyMap.put("property12",DataSlicePropertyType.DECIMAL);
+            dataSlicePropertyMap.put("property13",DataSlicePropertyType.BINARY);
+            dataSlicePropertyMap.put("property14",DataSlicePropertyType.GEOMETRY);
+            dataSlicePropertyMap.put("property15",DataSlicePropertyType.UUID);
+
             List<String> pkList = new ArrayList<>();
             pkList.add("property1");
             pkList.add("property2");
-            dataServiceInvoker.createPerUnitDataSlice("gridDataSlice1","sliceGroup1",dataSlicePropertyMap,pkList);
-            dataServiceInvoker.createGridDataSlice("gridDataSlice2","sliceGroup1",dataSlicePropertyMap,pkList);
+            dataServiceInvoker.createPerUnitDataSlice("gridDataSliceA","sliceGroup1",dataSlicePropertyMap,pkList);
+            dataServiceInvoker.createGridDataSlice("gridDataSliceB","sliceGroup1",dataSlicePropertyMap,pkList);
         } catch (DataSliceExistException e) {
             throw new RuntimeException(e);
         } catch (DataSlicePropertiesStructureException e) {

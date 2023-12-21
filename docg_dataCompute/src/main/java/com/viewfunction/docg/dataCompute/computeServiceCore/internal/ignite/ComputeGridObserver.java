@@ -1,6 +1,7 @@
 package com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite;
 
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.*;
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSlicePropertyType;
 import com.viewfunction.docg.dataCompute.computeServiceCore.util.config.DataComputeConfigurationHandler;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.CacheMode;
@@ -207,38 +208,26 @@ public class ComputeGridObserver implements AutoCloseable{
         clientCacheConfiguration.getCacheMode();
 
         QueryEntity[] entities = clientCacheConfiguration.getQueryEntities();
-
         LinkedHashMap<String,String> propertiesMap = null;
         if(entities != null && entities.length > 0){
             QueryEntity currentQueryEntity = entities[0];
             propertiesMap = currentQueryEntity.getFields();
         }
 
-
-
+        Map<String, DataSlicePropertyType> propertiesDefinition = new HashMap<>();
 
         if(propertiesMap != null){
             Set<String> propertyNameSet = propertiesMap.keySet();
             for(String currentPropertyName : propertyNameSet){
                 String propertyType = propertiesMap.get(currentPropertyName);
-
-                System.out.println(currentPropertyName + " "+propertyType);
-
+                DataSlicePropertyType currentPropertyType = getSlicePropertyType(propertyType);
+                propertiesDefinition.put(currentPropertyName,currentPropertyType);
             }
         }
-
-
-
-
-
-
-
 
         targetClientCache.size(CachePeekMode.PRIMARY);
         targetClientCache.size(CachePeekMode.BACKUP);
         targetClientCache.size(CachePeekMode.ALL);
-
-
 
         return null;
     }
@@ -305,5 +294,42 @@ public class ComputeGridObserver implements AutoCloseable{
             unitAttributeValueMap.put(unitId,attributeValue);
         }
         return unitAttributeValueMap;
+    }
+
+    private DataSlicePropertyType getSlicePropertyType(String propertyKindDesc){
+        if(propertyKindDesc != null){
+            if("java.sql.Timestamp".equals(propertyKindDesc)){
+                return DataSlicePropertyType.TIMESTAMP;
+            }else if("java.lang.Double".equals(propertyKindDesc)){
+                return DataSlicePropertyType.DOUBLE;
+            }else if("java.lang.Float".equals(propertyKindDesc)){
+                return DataSlicePropertyType.FLOAT;
+            }else if("java.sql.Time".equals(propertyKindDesc)){
+                return DataSlicePropertyType.TIME;
+            }else if("java.sql.Date".equals(propertyKindDesc)){
+                return DataSlicePropertyType.DATE;
+            }else if("java.lang.Integer".equals(propertyKindDesc)){
+                return DataSlicePropertyType.INT;
+            }else if("java.lang.Boolean".equals(propertyKindDesc)){
+                return DataSlicePropertyType.BOOLEAN;
+            }else if("java.lang.Long".equals(propertyKindDesc)){
+                return DataSlicePropertyType.LONG;
+            }else if("java.lang.Short".equals(propertyKindDesc)){
+                return DataSlicePropertyType.SHORT;
+            }else if("java.util.UUID".equals(propertyKindDesc)){
+                return DataSlicePropertyType.UUID;
+            }else if("org.locationtech.jts.geom.Geometry".equals(propertyKindDesc)){
+                return DataSlicePropertyType.GEOMETRY;
+            }else if("java.lang.Byte".equals(propertyKindDesc)){
+                return DataSlicePropertyType.BYTE;
+            }else if("java.lang.String".equals(propertyKindDesc)){
+                return DataSlicePropertyType.STRING;
+            }else if("[B".equals(propertyKindDesc)){
+                return DataSlicePropertyType.BINARY;
+            }else if("java.math.BigDecimal".equals(propertyKindDesc)){
+                return DataSlicePropertyType.DECIMAL;
+            }
+        }
+        return null;
     }
 }
