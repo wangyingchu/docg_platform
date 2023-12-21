@@ -63,14 +63,12 @@ public class IgniteComputeGridImpl implements IgniteComputeGrid {
     }
 
     @Override
-    public DataSliceDetailInfo getDataSliceDetail(String dataSliceName) {
-
-
-
-
-
-
-
-        return null;
+    public DataSliceDetailInfo getDataSliceDetail(String dataSliceName) throws ComputeGridException {
+        try(ComputeGridObserver computeGridObserver = ComputeGridObserver.getObserverInstance()){
+            DataSliceDetailInfo targetDataSliceDetailInfo = computeGridObserver.getDataSliceDetail(dataSliceName);
+            return targetDataSliceDetailInfo;
+        } catch (Exception e) {
+            throw new ComputeGridException(e);
+        }
     }
 }
