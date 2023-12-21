@@ -8,6 +8,8 @@ import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSliceP
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSliceQueryStructureException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSliceDataException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceMetaInfo;
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSliceAtomicityMode;
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSliceStoreMode;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.cache.CacheMode;
@@ -296,13 +298,14 @@ public class DataSlice {
         dataSliceMetaInfo.setTotalDataCount(this.cache.size(CachePeekMode.ALL));
         dataSliceMetaInfo.setStoreBackupNumber(currentCacheConfig.getBackups());
         CacheMode currentStoreCacheMode=currentCacheConfig.getCacheMode();
-        String dataStoreMode="UNKNOWN";
         switch(currentStoreCacheMode){
-            case PARTITIONED:dataStoreMode="Grid";break;
-            case REPLICATED:dataStoreMode="Grid PerUnit";break;
+            case PARTITIONED -> dataSliceMetaInfo.setDataStoreMode(DataSliceStoreMode.Grid);
+            case REPLICATED -> dataSliceMetaInfo.setDataStoreMode(DataSliceStoreMode.PerUnit);
         }
-        dataSliceMetaInfo.setDataStoreMode(dataStoreMode);
-        dataSliceMetaInfo.setAtomicityMode(""+currentCacheConfig.getAtomicityMode());
+        switch(currentCacheConfig.getAtomicityMode()){
+            case ATOMIC -> dataSliceMetaInfo.setAtomicityMode(DataSliceAtomicityMode.ATOMIC);
+            case TRANSACTIONAL -> dataSliceMetaInfo.setAtomicityMode(DataSliceAtomicityMode.TRANSACTIONAL);
+        }
         dataSliceMetaInfo.setSliceGroupName(""+currentCacheConfig.getSqlSchema());
         dataSliceMetaInfo.setKeyClass(currentCacheConfig.getKeyType());
         dataSliceMetaInfo.setValueClass(currentCacheConfig.getValueType());

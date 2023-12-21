@@ -57,11 +57,11 @@ public class ComputeGridTest {
         }
 
         try(DataService dataService = targetComputeGrid.getDataService()){
-            List<String> dataSliceList = dataService.listDataSlices();
+            List<String> dataSliceList = dataService.listDataSliceNames();
             System.out.println(dataSliceList);
 
-            //createDataSlicesTest(dataService,"gridDataSlice1");
-            //insertDataTest(dataService,"gridDataSlice1");
+            createDataSlicesTest(dataService,"gridDataSlice1");
+            insertDataTest(dataService,"gridDataSlice1");
             //emptyDataTest(dataService,"gridDataSlice1");
 
         } catch (ComputeGridException e) {
@@ -86,14 +86,14 @@ public class ComputeGridTest {
         System.out.println(targetDataSlice.getDataSliceMetaInfo().getDataSliceName());
         System.out.println(targetDataSlice.getDataSliceMetaInfo().getStoreBackupNumber());
         System.out.println(targetDataSlice.getDataSliceMetaInfo().getSliceGroupName());
-        System.out.println(dataService.listDataSlices());
+        System.out.println(dataService.listDataSliceNames());
     }
 
     private static void insertDataTest(DataService dataService,String dataSliceName) throws DataSlicePropertiesStructureException {
         DataSlice targetDataSlice = dataService.getDataSlice(dataSliceName);
 
         List<Map<String,Object>> dataList = new ArrayList<>();
-        for(int i=0;i<100000;i++) {
+        for(int i=0;i<10000000;i++) {
             Map<String, Object> dataPropertiesValue = new HashMap<>();
             dataPropertiesValue.put("property1", "DataProperty1Value" + new Date().getTime());
             dataPropertiesValue.put("property2", 1000+i);

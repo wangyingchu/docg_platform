@@ -1,13 +1,16 @@
 package com.viewfunction.docg.dataCompute.computeServiceCore.payload;
 
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSliceAtomicityMode;
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSliceStoreMode;
+
 public class DataSliceMetaInfo {
 
     private int primaryDataCount;
     private int backupDataCount;
     private int totalDataCount;
     private int storeBackupNumber;
-    private String dataStoreMode;
-    private String atomicityMode;
+    private DataSliceStoreMode dataStoreMode;
+    private DataSliceAtomicityMode atomicityMode;
     private String sliceGroupName;
     private Class keyClass;
     private Class valueClass;
@@ -45,19 +48,19 @@ public class DataSliceMetaInfo {
         this.storeBackupNumber = storeBackupNumber;
     }
 
-    public String getDataStoreMode() {
+    public DataSliceStoreMode getDataStoreMode() {
         return dataStoreMode;
     }
 
-    public void setDataStoreMode(String dataStoreMode) {
+    public void setDataStoreMode(DataSliceStoreMode dataStoreMode) {
         this.dataStoreMode = dataStoreMode;
     }
 
-    public String getAtomicityMode() {
+    public DataSliceAtomicityMode getAtomicityMode() {
         return atomicityMode;
     }
 
-    public void setAtomicityMode(String atomicityMode) {
+    public void setAtomicityMode(DataSliceAtomicityMode atomicityMode) {
         this.atomicityMode = atomicityMode;
     }
 

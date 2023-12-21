@@ -1,9 +1,12 @@
 package com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite;
 
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.*;
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSliceAtomicityMode;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSlicePropertyType;
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSliceStoreMode;
 import com.viewfunction.docg.dataCompute.computeServiceCore.util.config.DataComputeConfigurationHandler;
 import org.apache.ignite.Ignition;
+import org.apache.ignite.cache.CacheAtomicityMode;
 import org.apache.ignite.cache.CacheMode;
 import org.apache.ignite.cache.CachePeekMode;
 import org.apache.ignite.cache.QueryEntity;
@@ -83,15 +86,17 @@ public class ComputeGridObserver implements AutoCloseable{
                 dataSliceMetaInfo.setTotalDataCount(currentCache.size(CachePeekMode.ALL));
                 dataSliceMetaInfo.setStoreBackupNumber(clientCacheConfiguration.getBackups());
                 CacheMode currentStoreCacheMode=clientCacheConfiguration.getCacheMode();
-                String dataStoreMode="UNKNOWN";
                 switch(currentStoreCacheMode){
-                    case PARTITIONED:dataStoreMode="Grid";break;
-                    case REPLICATED:dataStoreMode="Grid PerUnit";break;
+                    case PARTITIONED -> dataSliceMetaInfo.setDataStoreMode(DataSliceStoreMode.Grid);
+                    case REPLICATED -> dataSliceMetaInfo.setDataStoreMode(DataSliceStoreMode.PerUnit);
                 }
-                dataSliceMetaInfo.setDataStoreMode(dataStoreMode);
-                dataSliceMetaInfo.setAtomicityMode(""+clientCacheConfiguration.getAtomicityMode());
-                dataSliceMetaInfo.setSliceGroupName(""+clientCacheConfiguration.getSqlSchema());
+                switch(clientCacheConfiguration.getAtomicityMode()){
+                    case ATOMIC -> dataSliceMetaInfo.setAtomicityMode(DataSliceAtomicityMode.ATOMIC);
+                    case TRANSACTIONAL -> dataSliceMetaInfo.setAtomicityMode(DataSliceAtomicityMode.TRANSACTIONAL);
+                }
                 dataSliceMetaInfoSet.add(dataSliceMetaInfo);
+
+                //dataSliceMetaInfo.setSliceGroupName();
             }
         }
         return dataSliceMetaInfoSet;
@@ -203,31 +208,48 @@ public class ComputeGridObserver implements AutoCloseable{
 
     public DataSliceDetailInfo getDataSliceDetail(String dataSliceName){
         ClientCache targetClientCache = this.igniteClient.cache(dataSliceName);
+        if(targetClientCache!= null){
+            DataSliceDetailInfo dataSliceDetailInfo = new DataSliceDetailInfo();
+            dataSliceDetailInfo.setDataSliceName(targetClientCache.getName());
 
-        ClientCacheConfiguration clientCacheConfiguration = targetClientCache.getConfiguration();
-        clientCacheConfiguration.getCacheMode();
+            ClientCacheConfiguration clientCacheConfiguration = targetClientCache.getConfiguration();
+            dataSliceDetailInfo.setStoreBackupNumber(clientCacheConfiguration.getBackups());
+            dataSliceDetailInfo.setSliceGroupName(clientCacheConfiguration.getGroupName());
 
-        QueryEntity[] entities = clientCacheConfiguration.getQueryEntities();
-        LinkedHashMap<String,String> propertiesMap = null;
-        if(entities != null && entities.length > 0){
-            QueryEntity currentQueryEntity = entities[0];
-            propertiesMap = currentQueryEntity.getFields();
-        }
-
-        Map<String, DataSlicePropertyType> propertiesDefinition = new HashMap<>();
-
-        if(propertiesMap != null){
-            Set<String> propertyNameSet = propertiesMap.keySet();
-            for(String currentPropertyName : propertyNameSet){
-                String propertyType = propertiesMap.get(currentPropertyName);
-                DataSlicePropertyType currentPropertyType = getSlicePropertyType(propertyType);
-                propertiesDefinition.put(currentPropertyName,currentPropertyType);
+            QueryEntity[] entities = clientCacheConfiguration.getQueryEntities();
+            LinkedHashMap<String,String> propertiesMap = null;
+            if(entities != null && entities.length > 0){
+                QueryEntity currentQueryEntity = entities[0];
+                propertiesMap = currentQueryEntity.getFields();
             }
-        }
+            Map<String, DataSlicePropertyType> propertiesDefinition = new HashMap<>();
+            if(propertiesMap != null){
+                Set<String> propertyNameSet = propertiesMap.keySet();
+                for(String currentPropertyName : propertyNameSet){
+                    String propertyType = propertiesMap.get(currentPropertyName);
+                    DataSlicePropertyType currentPropertyType = getSlicePropertyType(propertyType);
+                    propertiesDefinition.put(currentPropertyName,currentPropertyType);
+                }
+            }
+            dataSliceDetailInfo.setPropertiesDefinition(propertiesDefinition);
 
-        targetClientCache.size(CachePeekMode.PRIMARY);
-        targetClientCache.size(CachePeekMode.BACKUP);
-        targetClientCache.size(CachePeekMode.ALL);
+            dataSliceDetailInfo.setPrimaryDataCount(targetClientCache.size(CachePeekMode.PRIMARY));
+            dataSliceDetailInfo.setBackupDataCount(targetClientCache.size(CachePeekMode.BACKUP));
+            dataSliceDetailInfo.setTotalDataCount(targetClientCache.size(CachePeekMode.ALL));
+
+            CacheMode cacheMode = clientCacheConfiguration.getCacheMode();
+            switch(cacheMode){
+                case REPLICATED -> dataSliceDetailInfo.setDataStoreMode(DataSliceStoreMode.PerUnit);
+                case PARTITIONED -> dataSliceDetailInfo.setDataStoreMode(DataSliceStoreMode.Grid);
+            }
+
+            CacheAtomicityMode cacheAtomicityMode = clientCacheConfiguration.getAtomicityMode();
+            switch(cacheAtomicityMode){
+                case ATOMIC -> dataSliceDetailInfo.setAtomicityMode(DataSliceAtomicityMode.ATOMIC);
+                case TRANSACTIONAL -> dataSliceDetailInfo.setAtomicityMode(DataSliceAtomicityMode.TRANSACTIONAL);
+            }
+            return dataSliceDetailInfo;
+        }
 
         return null;
     }

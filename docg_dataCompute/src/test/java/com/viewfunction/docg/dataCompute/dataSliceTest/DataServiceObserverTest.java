@@ -1,11 +1,12 @@
 package com.viewfunction.docg.dataCompute.dataSliceTest;
 
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.*;
-import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.exception.ComputeGridNotActiveException;
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSliceExistException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSlicePropertiesStructureException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.ComputeGridObserver;
+import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.exception.ComputeGridNotActiveException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataComputeUnitMetaInfo;
+import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceDetailInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceMetaInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSlicePropertyType;
 
@@ -19,9 +20,7 @@ public class DataServiceObserverTest {
         ComputeGridObserver computeGridObserver = ComputeGridObserver.getObserverInstance();
         Set<DataComputeUnitMetaInfo> dataComputeUnitMetaInfoSet = computeGridObserver.listDataComputeUnit();
         Set<DataSliceMetaInfo> dataSliceMetaInfoSet = computeGridObserver.listDataSlice();
-
-        computeGridObserver.getDataSliceDetail("gridDataSliceA1");
-
+        DataSliceDetailInfo dataSliceDetailInfo = computeGridObserver.getDataSliceDetail("gridDataSliceA1");
         computeGridObserver.closeObserveSession();
         for(DataSliceMetaInfo currentDataSliceMetaInfo : dataSliceMetaInfoSet){
             System.out.println(currentDataSliceMetaInfo.getDataSliceName());
@@ -42,6 +41,16 @@ public class DataServiceObserverTest {
             System.out.println(currentDataComputeUnitMetaInfo.getIsClientUnit());
             System.out.println("==========================");
         }
+
+        System.out.println(dataSliceDetailInfo.getDataSliceName());
+        System.out.println(dataSliceDetailInfo.getSliceGroupName());
+        System.out.println(dataSliceDetailInfo.getStoreBackupNumber());
+        System.out.println(dataSliceDetailInfo.getPrimaryDataCount());
+        System.out.println(dataSliceDetailInfo.getBackupDataCount());
+        System.out.println(dataSliceDetailInfo.getTotalDataCount());
+        System.out.println(dataSliceDetailInfo.getAtomicityMode());
+        System.out.println(dataSliceDetailInfo.getDataStoreMode());
+        System.out.println(dataSliceDetailInfo.getPropertiesDefinition());
     }
 
     private static void initDataSlice(){
