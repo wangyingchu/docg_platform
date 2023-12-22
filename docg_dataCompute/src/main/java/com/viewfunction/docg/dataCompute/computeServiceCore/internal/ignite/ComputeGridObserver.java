@@ -81,6 +81,7 @@ public class ComputeGridObserver implements AutoCloseable{
                 ClientCacheConfiguration clientCacheConfiguration = currentCache.getConfiguration();
                 DataSliceMetaInfo dataSliceMetaInfo = new DataSliceMetaInfo();
                 dataSliceMetaInfo.setDataSliceName(clientCacheConfiguration.getName());
+                dataSliceMetaInfo.setSliceGroupName(clientCacheConfiguration.getSqlSchema());
                 dataSliceMetaInfo.setPrimaryDataCount(currentCache.size(CachePeekMode.PRIMARY));
                 dataSliceMetaInfo.setBackupDataCount(currentCache.size(CachePeekMode.BACKUP));
                 dataSliceMetaInfo.setTotalDataCount(currentCache.size(CachePeekMode.ALL));
@@ -95,8 +96,6 @@ public class ComputeGridObserver implements AutoCloseable{
                     case TRANSACTIONAL -> dataSliceMetaInfo.setAtomicityMode(DataSliceAtomicityMode.TRANSACTIONAL);
                 }
                 dataSliceMetaInfoSet.add(dataSliceMetaInfo);
-
-                //dataSliceMetaInfo.setSliceGroupName();
             }
         }
         return dataSliceMetaInfoSet;
@@ -211,11 +210,9 @@ public class ComputeGridObserver implements AutoCloseable{
         if(targetClientCache!= null){
             DataSliceDetailInfo dataSliceDetailInfo = new DataSliceDetailInfo();
             dataSliceDetailInfo.setDataSliceName(targetClientCache.getName());
-
             ClientCacheConfiguration clientCacheConfiguration = targetClientCache.getConfiguration();
             dataSliceDetailInfo.setStoreBackupNumber(clientCacheConfiguration.getBackups());
-            dataSliceDetailInfo.setSliceGroupName(clientCacheConfiguration.getGroupName());
-
+            dataSliceDetailInfo.setSliceGroupName(clientCacheConfiguration.getSqlSchema());
             QueryEntity[] entities = clientCacheConfiguration.getQueryEntities();
             LinkedHashMap<String,String> propertiesMap = null;
             if(entities != null && entities.length > 0){

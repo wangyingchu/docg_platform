@@ -20,7 +20,7 @@ public class DataServiceObserverTest {
         ComputeGridObserver computeGridObserver = ComputeGridObserver.getObserverInstance();
         Set<DataComputeUnitMetaInfo> dataComputeUnitMetaInfoSet = computeGridObserver.listDataComputeUnit();
         Set<DataSliceMetaInfo> dataSliceMetaInfoSet = computeGridObserver.listDataSlice();
-        DataSliceDetailInfo dataSliceDetailInfo = computeGridObserver.getDataSliceDetail("gridDataSliceA1");
+        DataSliceDetailInfo dataSliceDetailInfo = computeGridObserver.getDataSliceDetail("gridDataSlice1");
         computeGridObserver.closeObserveSession();
         for(DataSliceMetaInfo currentDataSliceMetaInfo : dataSliceMetaInfoSet){
             System.out.println(currentDataSliceMetaInfo.getDataSliceName());
