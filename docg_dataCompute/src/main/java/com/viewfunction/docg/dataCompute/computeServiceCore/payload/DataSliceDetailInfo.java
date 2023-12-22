@@ -16,9 +16,6 @@ public class DataSliceDetailInfo {
     private String sliceGroupName;
     private String dataSliceName;
     private Map<String, DataSlicePropertyType> propertiesDefinition;
-    //占用存储大小......
-
-
 
     public int getPrimaryDataCount() {
         return primaryDataCount;
