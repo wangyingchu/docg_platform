@@ -1,6 +1,10 @@
 package com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite;
 
+import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSliceExistException;
+import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSlicePropertiesStructureException;
+import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.util.DataSliceUtil;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.*;
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSlice;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSliceAtomicityMode;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSlicePropertyType;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSliceStoreMode;
@@ -351,4 +355,61 @@ public class ComputeGridObserver implements AutoCloseable{
         }
         return null;
     }
+
+    public DataSlice createGridDataSlice(String dataSliceName, String dataSliceGroup,
+                                         Map<String, DataSlicePropertyType> propertiesDefinitionMap,
+                                         List<String> primaryKeysList) throws DataSliceExistException, DataSlicePropertiesStructureException{
+        return createDataSlice(dataSliceName,dataSliceGroup,propertiesDefinitionMap,primaryKeysList,"PARTITIONED");
+    }
+
+    public DataSlice createPerUnitDataSlice(String dataSliceName, String dataSliceGroup,
+                                            Map<String, DataSlicePropertyType> propertiesDefinitionMap,
+                                            List<String> primaryKeysList) throws DataSliceExistException,DataSlicePropertiesStructureException{
+        return createDataSlice(dataSliceName,dataSliceGroup,propertiesDefinitionMap,primaryKeysList,"REPLICATED");
+    }
+
+    private final String TEMPLATE_OPERATION_CACHE = "TEMPLATE_OPERATION_CACHE";
+
+    private DataSlice createDataSlice(String dataSliceName, String dataSliceGroup, Map<String, DataSlicePropertyType> propertiesDefinitionMap,List<String> primaryKeysList,String templateType) throws DataSliceExistException,DataSlicePropertiesStructureException {
+        confirmDataSliceNotExist(dataSliceName);
+        validateFieldsDefinition(propertiesDefinitionMap,primaryKeysList);
+        ClientCacheConfiguration cacheCfg = new ClientCacheConfiguration().setName(TEMPLATE_OPERATION_CACHE).setSqlSchema(dataSliceGroup);
+        ClientCache<?, ?> cache = this.igniteClient.getOrCreateCache(cacheCfg);
+        String sliceCreateSentence = generateDataSliceCreateSentence(dataSliceName,propertiesDefinitionMap,primaryKeysList,templateType);
+        cache.query(new SqlFieldsQuery(sliceCreateSentence)).getAll();
+        this.igniteClient.destroyCache(TEMPLATE_OPERATION_CACHE);
+        ClientCache igniteCache = this.igniteClient.cache(dataSliceName);
+        //IgniteDataSliceImpl targetDataSlice = new IgniteDataSliceImpl(this.invokerIgnite,igniteCache);
+        //return targetDataSlice;
+        return null;
+    }
+
+    private String generateDataSliceCreateSentence(String dataSliceName,Map<String, DataSlicePropertyType> propertiesDefinitionMap,List<String> primaryKeysList,String templateType){
+        String dataStoreBackupNumberStr= DataComputeConfigurationHandler.getConfigPropertyValue("dataStoreBackupsNumber");
+        String dataStoreAtomicityModeStr= DataComputeConfigurationHandler.getConfigPropertyValue("dataStoreAtomicityMode");
+        String dataStoreRegionNameStr= DataComputeConfigurationHandler.getConfigPropertyValue("dataStoreRegionName");
+        String propertiesStructureSQL = DataSliceUtil.buildSliceStructureSQL(propertiesDefinitionMap,primaryKeysList);
+        String createSentence =  "CREATE TABLE "+dataSliceName+" ("+propertiesStructureSQL+") " +
+                "WITH \"CACHE_NAME="+dataSliceName+
+                ",DATA_REGION="+dataStoreRegionNameStr+
+                ",BACKUPS="+dataStoreBackupNumberStr+
+                ",ATOMICITY="+dataStoreAtomicityModeStr+
+                ",TEMPLATE="+templateType+"\"";
+        return createSentence;
+    }
+
+    private void confirmDataSliceNotExist(String dataCubeName) throws DataSliceExistException {
+        Collection<String> cacheNameCollection = this.igniteClient.cacheNames();
+        if(cacheNameCollection.contains(dataCubeName)){
+            throw new DataSliceExistException();
+        }
+    }
+
+    private void validateFieldsDefinition(Map<String, DataSlicePropertyType> fieldsDefinitionMap,List<String> primaryKeysList) throws DataSlicePropertiesStructureException {
+        if(fieldsDefinitionMap == null || fieldsDefinitionMap.size() ==0){
+            throw new DataSlicePropertiesStructureException();
+        }
+    }
+
+    public void eraseDataSlice(String dataSliceName){}
 }
