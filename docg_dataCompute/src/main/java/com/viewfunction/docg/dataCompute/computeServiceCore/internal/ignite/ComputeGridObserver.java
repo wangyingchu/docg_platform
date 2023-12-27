@@ -222,6 +222,7 @@ public class ComputeGridObserver implements AutoCloseable {
             if (entities != null && entities.length > 0) {
                 QueryEntity currentQueryEntity = entities[0];
                 propertiesMap = currentQueryEntity.getFields();
+                dataSliceDetailInfo.setPrimaryKeyPropertiesNames(currentQueryEntity.getKeyFields());
             }
             Map<String, DataSlicePropertyType> propertiesDefinition = new HashMap<>();
             if (propertiesMap != null) {

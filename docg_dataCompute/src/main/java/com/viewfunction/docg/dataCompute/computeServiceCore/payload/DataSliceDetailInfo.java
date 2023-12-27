@@ -5,6 +5,7 @@ import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSliceProper
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSliceStoreMode;
 
 import java.util.Map;
+import java.util.Set;
 
 public class DataSliceDetailInfo {
     private int primaryDataCount;
@@ -16,6 +17,7 @@ public class DataSliceDetailInfo {
     private String sliceGroupName;
     private String dataSliceName;
     private Map<String, DataSlicePropertyType> propertiesDefinition;
+    private Set<String> primaryKeyPropertiesNames;
 
     public int getPrimaryDataCount() {
         return primaryDataCount;
@@ -87,5 +89,13 @@ public class DataSliceDetailInfo {
 
     public void setPropertiesDefinition(Map<String, DataSlicePropertyType> propertiesDefinition) {
         this.propertiesDefinition = propertiesDefinition;
+    }
+
+    public Set<String> getPrimaryKeyPropertiesNames() {
+        return primaryKeyPropertiesNames;
+    }
+
+    public void setPrimaryKeyPropertiesNames(Set<String> primaryKeyPropertiesNames) {
+        this.primaryKeyPropertiesNames = primaryKeyPropertiesNames;
     }
 }
