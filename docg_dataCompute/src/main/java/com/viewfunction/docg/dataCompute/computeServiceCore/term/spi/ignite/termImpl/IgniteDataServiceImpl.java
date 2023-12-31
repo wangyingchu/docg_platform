@@ -146,9 +146,6 @@ public class IgniteDataServiceImpl implements IgniteDataService {
             if(dataStoreAtomicityModeStr.equals(""+CacheAtomicityMode.TRANSACTIONAL)){
                 cacheCfg.setAtomicityMode(CacheAtomicityMode.TRANSACTIONAL);
             }
-            if(dataStoreAtomicityModeStr.equals(""+CacheAtomicityMode.TRANSACTIONAL_SNAPSHOT)){
-                cacheCfg.setAtomicityMode(CacheAtomicityMode.TRANSACTIONAL_SNAPSHOT);
-            }
         }
         cacheCfg.setCacheMode(cacheMode);
         String dataStoreRegionNameStr= DataComputeConfigurationHandler.getConfigPropertyValue("dataStoreRegionName");

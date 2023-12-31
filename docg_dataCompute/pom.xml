@@ -11,7 +11,7 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <ignite.version>2.15.0</ignite.version>
+        <ignite.version>2.16.0</ignite.version>
         <geotools.version>26.4</geotools.version>
     </properties>
 
@@ -43,12 +43,6 @@
         <dependency>
             <groupId>org.apache.ignite</groupId>
             <artifactId>ignite-clients</artifactId>
-            <version>${ignite.version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.ignite/ignite-ml -->
-        <dependency>
-            <groupId>org.apache.ignite</groupId>
-            <artifactId>ignite-ml</artifactId>
             <version>${ignite.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.ignite/ignite-rest-http -->
