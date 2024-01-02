@@ -3,6 +3,7 @@ package com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.ter
 import com.viewfunction.docg.dataCompute.computeServiceCore.exception.ComputeGridException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.ComputeGridObserver;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.*;
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.ComputeService;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataService;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termInf.IgniteComputeGrid;
 import com.viewfunction.docg.dataCompute.computeServiceCore.util.ComputeGridImplTech;
@@ -70,5 +71,10 @@ public class IgniteComputeGridImpl implements IgniteComputeGrid {
         } catch (Exception e) {
             throw new ComputeGridException(e);
         }
+    }
+
+    @Override
+    public ComputeService getComputeService() throws ComputeGridException {
+        return null;
     }
 }
