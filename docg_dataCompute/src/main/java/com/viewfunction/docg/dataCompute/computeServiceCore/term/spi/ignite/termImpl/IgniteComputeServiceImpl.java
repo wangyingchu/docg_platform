@@ -2,10 +2,12 @@ package com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.ter
 
 import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.exception.ComputeGridNotActiveException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.util.UnitIgniteOperationUtil;
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.ComputeFunction;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termInf.IgniteComputeService;
 import com.viewfunction.docg.dataCompute.computeServiceCore.util.config.DataComputeConfigurationHandler;
 
 import org.apache.ignite.Ignite;
+import org.apache.ignite.IgniteServices;
 import org.apache.ignite.Ignition;
 
 public class IgniteComputeServiceImpl implements IgniteComputeService {
@@ -40,5 +42,21 @@ public class IgniteComputeServiceImpl implements IgniteComputeService {
     @Override
     public void close() throws Exception {
         closeServiceSession();
+    }
+
+    @Override
+    public void deployGridComputeFunction(String functionName, ComputeFunction computeFunction) {
+        IgniteServices svcs = this.invokerIgnite.services(this.invokerIgnite.cluster().forServers());
+        svcs.deployClusterSingleton(functionName, (IgniteComputeFunctionAbstractImpl)computeFunction);
+    }
+
+    @Override
+    public void deployPerUnitComputeFunction(String functionName, ComputeFunction computeFunction) {
+
+    }
+
+    @Override
+    public void deployMultipleUnitComputeFunction(String functionName, ComputeFunction computeFunction) {
+
     }
 }
