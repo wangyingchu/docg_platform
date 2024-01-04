@@ -1,12 +1,11 @@
 package com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termImpl;
 
-import com.viewfunction.docg.dataCompute.computeServiceCore.term.ComputeFunctionCallback;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termInf.IgniteComputeFunction;
 import org.apache.ignite.services.Service;
 
 import java.io.Serializable;
 
-public abstract class IgniteComputeFunctionAbstractImpl implements IgniteComputeFunction, Service, Serializable,ComputeFunctionCallback {
+public abstract class ComputeFunctionImpl implements IgniteComputeFunction, Service, Serializable {
 
     public abstract void onPrepare();
 
