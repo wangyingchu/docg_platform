@@ -23,4 +23,5 @@ public interface ComputeGrid {
     public DataSliceDetailInfo getDataSliceDetail(String dataSliceName) throws ComputeGridException;
 
     public ComputeService getComputeService() throws ComputeGridException;
+
 }
