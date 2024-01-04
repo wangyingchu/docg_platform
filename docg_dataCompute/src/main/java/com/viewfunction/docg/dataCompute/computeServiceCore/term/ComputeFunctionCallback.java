@@ -1,6 +1,8 @@
 package com.viewfunction.docg.dataCompute.computeServiceCore.term;
 
-public interface ComputeFunctionCallback {
+import java.io.Serializable;
+
+public interface ComputeFunctionCallback extends Serializable {
 
     public void onPrepare();
 
