@@ -75,6 +75,7 @@ public class IgniteComputeGridImpl implements IgniteComputeGrid {
 
     @Override
     public ComputeService getComputeService() throws ComputeGridException {
-        return null;
+        ComputeService computeService = IgniteComputeServiceImpl.getServiceInstance();
+        return computeService;
     }
 }
