@@ -1,10 +1,7 @@
 package com.viewfunction.docg.dataCompute.computeServiceCore.term;
 
-public interface ComputeFunction {
+import org.apache.ignite.services.Service;
 
-    public void onPrepare();
+public interface ComputeFunction extends Service {
 
-    public void onFinish();
-
-    public void onRun();
 }

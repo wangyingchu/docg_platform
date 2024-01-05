@@ -2,5 +2,6 @@ package com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.ter
 
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.ComputeService;
 
-public interface IgniteComputeService extends ComputeService {
+public interface IgniteComputeService<T> extends ComputeService {
+    T getComputeFunction(String functionName, Class functionClass);
 }

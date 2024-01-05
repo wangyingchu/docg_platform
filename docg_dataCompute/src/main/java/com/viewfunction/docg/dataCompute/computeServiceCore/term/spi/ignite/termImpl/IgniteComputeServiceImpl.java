@@ -47,7 +47,7 @@ public class IgniteComputeServiceImpl implements IgniteComputeService {
     @Override
     public void deployGridComputeFunction(String functionName, ComputeFunction computeFunction) {
         IgniteServices svcs = this.invokerIgnite.services(this.invokerIgnite.cluster().forServers());
-        svcs.deployClusterSingleton(functionName, (ComputeFunctionImpl)computeFunction);
+        svcs.deployClusterSingleton(functionName, computeFunction);
     }
 
     @Override
@@ -60,5 +60,11 @@ public class IgniteComputeServiceImpl implements IgniteComputeService {
     public void deployMultipleUnitComputeFunction(String functionName, ComputeFunction computeFunction,int functionCount) {
         IgniteServices svcs = this.invokerIgnite.services(this.invokerIgnite.cluster().forServers());
         svcs.deployMultiple(functionName, (ComputeFunctionImpl)computeFunction,functionCount,0);
+    }
+
+    @Override
+    public Object getComputeFunction(String functionName, Class functionClass) {
+        Object computeFunction = this.invokerIgnite.services().serviceProxy(functionName,functionClass, false);
+        return computeFunction;
     }
 }
