@@ -52,11 +52,13 @@ public class IgniteComputeServiceImpl implements IgniteComputeService {
 
     @Override
     public void deployPerUnitComputeFunction(String functionName, ComputeFunction computeFunction) {
-
+        IgniteServices svcs = this.invokerIgnite.services(this.invokerIgnite.cluster().forServers());
+        svcs.deployNodeSingleton(functionName, (ComputeFunctionImpl)computeFunction);
     }
 
     @Override
-    public void deployMultipleUnitComputeFunction(String functionName, ComputeFunction computeFunction) {
-
+    public void deployMultipleUnitComputeFunction(String functionName, ComputeFunction computeFunction,int functionCount) {
+        IgniteServices svcs = this.invokerIgnite.services(this.invokerIgnite.cluster().forServers());
+        svcs.deployMultiple(functionName, (ComputeFunctionImpl)computeFunction,functionCount,0);
     }
 }

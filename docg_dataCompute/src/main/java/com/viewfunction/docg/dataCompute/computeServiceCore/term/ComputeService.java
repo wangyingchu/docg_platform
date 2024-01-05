@@ -6,6 +6,6 @@ public interface ComputeService extends AutoCloseable{
 
     public void deployPerUnitComputeFunction(String functionName,ComputeFunction computeFunction);
 
-    public void deployMultipleUnitComputeFunction(String functionName,ComputeFunction computeFunction);
+    public void deployMultipleUnitComputeFunction(String functionName,ComputeFunction computeFunction,int functionCount);
 
 }
