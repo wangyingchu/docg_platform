@@ -64,8 +64,8 @@ public class IgniteComputeServiceImpl implements IgniteComputeService {
     }
 
     @Override
-    public Object getComputeFunction(String functionName, Class functionClass) {
-        Object computeFunction = this.invokerIgnite.services().serviceProxy(functionName,functionClass, false);
+    public <T> T getComputeFunction(String functionName, Class<? super T> functionClass) {
+        T computeFunction = this.invokerIgnite.services().serviceProxy(functionName,functionClass, false);
         return computeFunction;
     }
 }

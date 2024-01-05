@@ -8,5 +8,5 @@ public interface ComputeService extends AutoCloseable{
 
     public void deployMultipleUnitComputeFunction(String functionName,ComputeFunction computeFunction,int functionCount);
 
-    public Object getComputeFunction(String functionName,Class functionClass);
+    <T> T getComputeFunction(String functionName,Class<? super T> functionClass);
 }

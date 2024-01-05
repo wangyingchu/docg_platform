@@ -5,15 +5,14 @@ import com.viewfunction.docg.dataCompute.computeServiceCore.term.ComputeGrid;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.ComputeService;
 import com.viewfunction.docg.dataCompute.computeServiceCore.util.factory.ComputeGridTermFactory;
 
-
 public class ComputeServiceTest {
 
     public static void main(String[] args) throws ComputeGridException{
-        //doDeploy();
+        doDeploy();
         doInvoke();
     }
 
-    public static void doDeploy() throws ComputeGridException {
+    public static void doDeploy() {
         ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
         try(ComputeService computeService = targetComputeGrid.getComputeService()){
             ComputeFunctionImplementationA computeFunctionImplementationA = new ComputeFunctionImplementationA();
@@ -23,12 +22,11 @@ public class ComputeServiceTest {
         }
     }
 
-    public static void doInvoke() throws ComputeGridException {
+    public static void doInvoke() {
         ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
         try(ComputeService computeService = targetComputeGrid.getComputeService()){
-            Object computeFunctionImplementationA = computeService.getComputeFunction("testFunction1", ComputeFunctionA.class);
-            ComputeFunctionA target = (ComputeFunctionA)computeFunctionImplementationA;
-            String result = target.doSomeThing("hello world");
+            ComputeFunctionA computeFunctionA = computeService.getComputeFunction("testFunction1", ComputeFunctionA.class);
+            String result = computeFunctionA.doSomeThing("hello world");
             System.out.println(result);
         } catch (Exception e) {
             throw new RuntimeException(e);
