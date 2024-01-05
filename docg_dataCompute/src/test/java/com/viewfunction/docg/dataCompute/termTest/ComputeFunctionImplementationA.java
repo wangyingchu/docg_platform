@@ -1,10 +1,8 @@
 package com.viewfunction.docg.dataCompute.termTest;
 
-import com.viewfunction.docg.dataCompute.computeServiceCore.term.ComputeFunction;
-import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termImpl.ComputeFunctionImpl;
-import org.apache.ignite.services.Service;
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termInf.IgniteComputeFunction;
 
-public class ComputeFunctionImplementationA implements ComputeFunctionA,ComputeFunction {
+public class ComputeFunctionImplementationA implements ComputeFunctionA, IgniteComputeFunction {
 
 
     public String doSomeThing(String thing){

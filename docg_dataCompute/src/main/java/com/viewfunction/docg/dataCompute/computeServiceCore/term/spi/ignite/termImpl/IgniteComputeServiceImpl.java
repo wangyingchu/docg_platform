@@ -3,6 +3,7 @@ package com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.ter
 import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.exception.ComputeGridNotActiveException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.util.UnitIgniteOperationUtil;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.ComputeFunction;
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termInf.IgniteComputeFunction;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termInf.IgniteComputeService;
 import com.viewfunction.docg.dataCompute.computeServiceCore.util.config.DataComputeConfigurationHandler;
 
@@ -47,19 +48,19 @@ public class IgniteComputeServiceImpl implements IgniteComputeService {
     @Override
     public void deployGridComputeFunction(String functionName, ComputeFunction computeFunction) {
         IgniteServices svcs = this.invokerIgnite.services(this.invokerIgnite.cluster().forServers());
-        svcs.deployClusterSingleton(functionName, computeFunction);
+        svcs.deployClusterSingleton(functionName, (IgniteComputeFunction)computeFunction);
     }
 
     @Override
     public void deployPerUnitComputeFunction(String functionName, ComputeFunction computeFunction) {
         IgniteServices svcs = this.invokerIgnite.services(this.invokerIgnite.cluster().forServers());
-        svcs.deployNodeSingleton(functionName, (ComputeFunctionImpl)computeFunction);
+        svcs.deployNodeSingleton(functionName, (IgniteComputeFunction)computeFunction);
     }
 
     @Override
     public void deployMultipleUnitComputeFunction(String functionName, ComputeFunction computeFunction,int functionCount) {
         IgniteServices svcs = this.invokerIgnite.services(this.invokerIgnite.cluster().forServers());
-        svcs.deployMultiple(functionName, (ComputeFunctionImpl)computeFunction,functionCount,0);
+        svcs.deployMultiple(functionName, (IgniteComputeFunction)computeFunction,functionCount,0);
     }
 
     @Override
