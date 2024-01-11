@@ -2,12 +2,14 @@ package com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.uti
 
 import org.apache.ignite.*;
 import org.apache.ignite.configuration.CollectionConfiguration;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 import static org.apache.ignite.cache.CacheMode.PARTITIONED;
 
-public class UnitIgniteFeatureHandler {
+public class UnitIgniteFeatureHandler<T,S> {
+
     private Ignite handlerIgnite;
 
     public UnitIgniteFeatureHandler(Ignite handlerIgnite){
@@ -23,12 +25,12 @@ public class UnitIgniteFeatureHandler {
         return this.handlerIgnite.atomicLong(atomicName, 0, false);
     }
 
-    public IgniteAtomicReference createAtomicReference(Object referenceValue){
+    public IgniteAtomicReference<T> createAtomicReference(@Nullable T referenceValue){
         String atomicName = UUID.randomUUID().toString();
         return this.handlerIgnite.atomicReference(atomicName,referenceValue,true);
     }
 
-    public IgniteAtomicReference getExistAtomicReference(String atomicName){
+    public IgniteAtomicReference<T> getExistAtomicReference(String atomicName){
         return this.handlerIgnite.atomicReference(atomicName,null,false);
     }
 
@@ -41,12 +43,12 @@ public class UnitIgniteFeatureHandler {
         return this.handlerIgnite.atomicSequence(atomicName, 0, false);
     }
 
-    public IgniteAtomicStamped createAtomicStamped(Object initVal, Object initStamp){
+    public IgniteAtomicStamped<T, S> createAtomicStamped(@Nullable T initVal, @Nullable S initStamp){
         String atomicName = UUID.randomUUID().toString();
         return this.handlerIgnite.atomicStamped(atomicName,initVal,initStamp,true);
     }
 
-    public IgniteAtomicStamped getExistAtomicStamped(String atomicName){
+    public IgniteAtomicStamped<T, S> getExistAtomicStamped(String atomicName){
         return this.handlerIgnite.atomicStamped(atomicName,null,null,false);
     }
 
@@ -68,7 +70,7 @@ public class UnitIgniteFeatureHandler {
         return this.handlerIgnite.semaphore(semaphoreName,0,false,false);
     }
 
-    public IgniteQueue createUnlimitedQueue(){
+    public IgniteQueue<T> createUnlimitedQueue(){
         String queueName = UUID.randomUUID().toString();
         CollectionConfiguration colCfg = new CollectionConfiguration();
         colCfg.setCollocated(false);
@@ -77,7 +79,7 @@ public class UnitIgniteFeatureHandler {
         return this.handlerIgnite.queue(queueName, 0, colCfg);
     }
 
-    public IgniteQueue createFixedSizeQueue(int queueSize){
+    public IgniteQueue<T> createFixedSizeQueue(int queueSize){
         String queueName = UUID.randomUUID().toString();
         CollectionConfiguration colCfg = new CollectionConfiguration();
         colCfg.setCollocated(false);
@@ -86,11 +88,11 @@ public class UnitIgniteFeatureHandler {
         return this.handlerIgnite.queue(queueName, queueSize, colCfg);
     }
 
-    public IgniteQueue getExistQueue(String queueName){
+    public IgniteQueue<T> getExistQueue(String queueName){
         return this.handlerIgnite.queue(queueName, 0, null);
     }
 
-    public IgniteSet createSet(){
+    public IgniteSet<T> createSet(){
         String setName = UUID.randomUUID().toString();
         CollectionConfiguration colCfg = new CollectionConfiguration();
         colCfg.setCollocated(false);
@@ -99,7 +101,7 @@ public class UnitIgniteFeatureHandler {
         return this.handlerIgnite.set(setName,colCfg);
     }
 
-    public IgniteSet getExistSet(String setName){
+    public IgniteSet<T> getExistSet(String setName){
         return this.handlerIgnite.set(setName,null);
     }
 }
