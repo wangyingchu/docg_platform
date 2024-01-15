@@ -2,9 +2,9 @@ package com.viewfunction.docg.dataCompute.termTest;
 
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termImpl.BaseIgniteValueReturnComputeLogic;
 
-public class ValueReturnComputeLogicA extends BaseIgniteValueReturnComputeLogic<Integer> {
+public class ValueReturnComputeLogicA extends BaseIgniteValueReturnComputeLogic<Double> {
     @Override
-    public Integer execute() {
-        return Integer.valueOf(10086);
+    public Double execute() {
+        return Double.valueOf(Math.random());
     }
 }

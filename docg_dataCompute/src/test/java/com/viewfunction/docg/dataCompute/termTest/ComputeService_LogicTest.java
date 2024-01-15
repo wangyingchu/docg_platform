@@ -19,9 +19,12 @@ public class ComputeService_LogicTest {
             computeService.executePerUnitComputeLogic(voidReturnComputeLogicA);
 
             ValueReturnComputeLogicA valueReturnComputeLogicA = new ValueReturnComputeLogicA();
-            Collection<Integer> result = computeService.executePerUnitComputeLogic(valueReturnComputeLogicA);
+            Collection<Double> result = computeService.executePerUnitComputeLogic(valueReturnComputeLogicA);
             System.out.println(result);
 
+            FixInputTypeComputeLogicA fixInputTypeComputeLogicA = new FixInputTypeComputeLogicA();
+            Collection<String> collection = computeService.executePerUnitComputeLogic(fixInputTypeComputeLogicA,(double)1000);
+            System.out.println(collection);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
