@@ -15,6 +15,7 @@ import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCompute;
 import org.apache.ignite.IgniteServices;
 import org.apache.ignite.Ignition;
+import org.apache.ignite.lang.IgniteClosure;
 
 import java.util.Collection;
 
@@ -86,14 +87,14 @@ public class IgniteComputeServiceImpl implements IgniteComputeService {
     @Override
     public <V> Collection<V> executePerUnitComputeLogic(ValueReturnComputeLogic<V> valueReturnComputeLogic) {
         IgniteCompute compute = this.invokerIgnite.compute(this.invokerIgnite.cluster().forServers());
+        //Broadcasts to all nodes in the cluster group.
         return compute.broadcast((BaseIgniteValueReturnComputeLogic<V>)valueReturnComputeLogic);
     }
 
     @Override
-    public <E, R> R executePerUnitComputeLogic(FixInputTypeComputeLogic<E, R> fixInputTypeComputeLogic) {
+    public <E, R> Collection<R> executePerUnitComputeLogic(FixInputTypeComputeLogic<E, R> fixInputTypeComputeLogic,E valeOfInputType) {
         IgniteCompute compute = this.invokerIgnite.compute(this.invokerIgnite.cluster().forServers());
-
-
-        return null;
+        //Broadcasts to all nodes in the cluster group.
+        return compute.broadcast((BaseIgniteFixInputTypeComputeLogic<E,R>)fixInputTypeComputeLogic,valeOfInputType);
     }
 }

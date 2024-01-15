@@ -16,5 +16,5 @@ public interface ComputeService extends AutoCloseable{
 
     <V> Collection<V> executePerUnitComputeLogic(ValueReturnComputeLogic<V> valueReturnComputeLogic);
 
-    <E,R> R executePerUnitComputeLogic(FixInputTypeComputeLogic<E,R> fixInputTypeComputeLogic);
+    <E,R> Collection<R> executePerUnitComputeLogic(FixInputTypeComputeLogic<E,R> fixInputTypeComputeLogic,E valeOfInputType);
 }
