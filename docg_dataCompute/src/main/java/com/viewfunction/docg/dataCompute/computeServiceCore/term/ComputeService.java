@@ -9,4 +9,8 @@ public interface ComputeService extends AutoCloseable{
     public void deployMultipleUnitComputeFunction(String functionName,ComputeFunction computeFunction,int functionCount);
 
     <T> T getComputeFunction(String functionName,Class<? super T> functionClass);
+
+    public void executePerUnitComputeLogic(VoidReturnComputeLogic voidReturnComputeLogic);
+
+
 }

@@ -5,7 +5,7 @@ import com.viewfunction.docg.dataCompute.computeServiceCore.term.ComputeGrid;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.ComputeService;
 import com.viewfunction.docg.dataCompute.computeServiceCore.util.factory.ComputeGridTermFactory;
 
-public class ComputeServiceTest {
+public class ComputeService_FunctionTest {
 
     public static void main(String[] args) throws ComputeGridException{
         doDeploy();
