@@ -97,4 +97,25 @@ public class IgniteComputeServiceImpl implements IgniteComputeService {
         //Broadcasts to all nodes in the cluster group.
         return compute.broadcast((BaseIgniteFixInputTypeComputeLogic<E,R>)fixInputTypeComputeLogic,valeOfInputType);
     }
+
+    @Override
+    public void executeGridSingletonComputeLogic(VoidReturnComputeLogic voidReturnComputeLogic) {
+        IgniteCompute compute = this.invokerIgnite.compute(this.invokerIgnite.cluster().forServers());
+        //Run on a node within the underlying cluster group.
+        compute.run((BaseIgniteVoidReturnComputeLogic)voidReturnComputeLogic);
+    }
+
+    @Override
+    public <V> V executeGridSingletonComputeLogic(ValueReturnComputeLogic<V> valueReturnComputeLogic) {
+        IgniteCompute compute = this.invokerIgnite.compute(this.invokerIgnite.cluster().forServers());
+        //Run on a node within the underlying cluster group.
+        return compute.call((BaseIgniteValueReturnComputeLogic<V>)valueReturnComputeLogic);
+    }
+
+    @Override
+    public <E, R> R executeGridSingletonComputeLogic(FixInputTypeComputeLogic<E, R> fixInputTypeComputeLogic, E valeOfInputType) {
+        IgniteCompute compute = this.invokerIgnite.compute(this.invokerIgnite.cluster().forServers());
+        //Run on a node within the underlying cluster group.
+        return compute.apply((BaseIgniteFixInputTypeComputeLogic<E,R>)fixInputTypeComputeLogic,valeOfInputType);
+    }
 }
