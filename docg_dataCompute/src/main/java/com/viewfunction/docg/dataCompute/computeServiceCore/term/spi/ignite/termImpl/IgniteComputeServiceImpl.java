@@ -3,6 +3,8 @@ package com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.ter
 import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.exception.ComputeGridNotActiveException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.util.UnitIgniteOperationUtil;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.ComputeFunction;
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.FixInputTypeComputeLogic;
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.ValueReturnComputeLogic;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.VoidReturnComputeLogic;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termInf.IgniteComputeFunction;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termInf.IgniteComputeService;
@@ -13,6 +15,8 @@ import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCompute;
 import org.apache.ignite.IgniteServices;
 import org.apache.ignite.Ignition;
+
+import java.util.Collection;
 
 public class IgniteComputeServiceImpl implements IgniteComputeService {
 
@@ -77,5 +81,19 @@ public class IgniteComputeServiceImpl implements IgniteComputeService {
         IgniteCompute compute = this.invokerIgnite.compute(this.invokerIgnite.cluster().forServers());
         //Broadcasts to all nodes in the cluster group.
         compute.broadcast((BaseIgniteVoidReturnComputeLogic)voidReturnComputeLogic);
+    }
+
+    @Override
+    public <V> Collection<V> executePerUnitComputeLogic(ValueReturnComputeLogic<V> valueReturnComputeLogic) {
+        IgniteCompute compute = this.invokerIgnite.compute(this.invokerIgnite.cluster().forServers());
+        return compute.broadcast((BaseIgniteValueReturnComputeLogic<V>)valueReturnComputeLogic);
+    }
+
+    @Override
+    public <E, R> R executePerUnitComputeLogic(FixInputTypeComputeLogic<E, R> fixInputTypeComputeLogic) {
+        IgniteCompute compute = this.invokerIgnite.compute(this.invokerIgnite.cluster().forServers());
+
+
+        return null;
     }
 }

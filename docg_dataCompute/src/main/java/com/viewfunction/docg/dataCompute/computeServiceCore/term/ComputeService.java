@@ -1,5 +1,7 @@
 package com.viewfunction.docg.dataCompute.computeServiceCore.term;
 
+import java.util.Collection;
+
 public interface ComputeService extends AutoCloseable{
 
     public void deployGridComputeFunction(String functionName,ComputeFunction computeFunction);
@@ -12,5 +14,7 @@ public interface ComputeService extends AutoCloseable{
 
     public void executePerUnitComputeLogic(VoidReturnComputeLogic voidReturnComputeLogic);
 
+    <V> Collection<V> executePerUnitComputeLogic(ValueReturnComputeLogic<V> valueReturnComputeLogic);
 
+    <E,R> R executePerUnitComputeLogic(FixInputTypeComputeLogic<E,R> fixInputTypeComputeLogic);
 }

@@ -5,6 +5,6 @@ import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.term
 public class ValueReturnComputeLogicA extends BaseIgniteValueReturnComputeLogic<Integer> {
     @Override
     public Integer execute() {
-        return null;
+        return Integer.valueOf(10086);
     }
 }
