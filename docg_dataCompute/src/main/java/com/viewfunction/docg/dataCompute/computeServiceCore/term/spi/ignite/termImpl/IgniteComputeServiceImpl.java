@@ -17,6 +17,7 @@ import org.apache.ignite.IgniteServices;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.lang.IgniteClosure;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class IgniteComputeServiceImpl implements IgniteComputeService {
@@ -114,6 +115,35 @@ public class IgniteComputeServiceImpl implements IgniteComputeService {
 
     @Override
     public <E, R> R executeGridSingletonComputeLogic(FixInputTypeComputeLogic<E, R> fixInputTypeComputeLogic, E valeOfInputType) {
+        IgniteCompute compute = this.invokerIgnite.compute(this.invokerIgnite.cluster().forServers());
+        //Run on a node within the underlying cluster group.
+        return compute.apply((BaseIgniteFixInputTypeComputeLogic<E,R>)fixInputTypeComputeLogic,valeOfInputType);
+    }
+
+    @Override
+    public void executeGridMultipleVoidReturnComputeLogic(Collection<VoidReturnComputeLogic> voidReturnComputeLogics) {
+        IgniteCompute compute = this.invokerIgnite.compute(this.invokerIgnite.cluster().forServers());
+        //Run on a node within the underlying cluster group.
+        Collection<BaseIgniteVoidReturnComputeLogic> logicCollection = new ArrayList<>();
+        for(VoidReturnComputeLogic currentLogic:voidReturnComputeLogics){
+            logicCollection.add((BaseIgniteVoidReturnComputeLogic)currentLogic);
+        }
+        compute.run(logicCollection);
+    }
+
+    @Override
+    public <V> Collection<V> executeGridMultipleComputeLogic(Collection<ValueReturnComputeLogic<V>> valueReturnComputeLogics) {
+        IgniteCompute compute = this.invokerIgnite.compute(this.invokerIgnite.cluster().forServers());
+        //Run on a node within the underlying cluster group.
+        Collection<BaseIgniteValueReturnComputeLogic<V>> logicCollection = new ArrayList<>();
+        for(ValueReturnComputeLogic<V> currentLogic:valueReturnComputeLogics){
+            logicCollection.add((BaseIgniteValueReturnComputeLogic<V>)currentLogic);
+        }
+        return compute.call(logicCollection);
+    }
+
+    @Override
+    public <E, R> Collection<R> executeGridMultipleComputeLogic(FixInputTypeComputeLogic<E, R> fixInputTypeComputeLogic, Collection<E> valeOfInputType) {
         IgniteCompute compute = this.invokerIgnite.compute(this.invokerIgnite.cluster().forServers());
         //Run on a node within the underlying cluster group.
         return compute.apply((BaseIgniteFixInputTypeComputeLogic<E,R>)fixInputTypeComputeLogic,valeOfInputType);

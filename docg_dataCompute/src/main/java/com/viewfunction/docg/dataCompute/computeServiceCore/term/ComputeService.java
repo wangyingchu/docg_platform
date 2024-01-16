@@ -23,4 +23,10 @@ public interface ComputeService extends AutoCloseable{
     <V> V executeGridSingletonComputeLogic(ValueReturnComputeLogic<V> valueReturnComputeLogic);
 
     <E,R> R executeGridSingletonComputeLogic(FixInputTypeComputeLogic<E,R> fixInputTypeComputeLogic,E valeOfInputType);
+
+    public void executeGridMultipleVoidReturnComputeLogic(Collection<VoidReturnComputeLogic> voidReturnComputeLogic);
+
+    <V> Collection<V> executeGridMultipleComputeLogic(Collection<ValueReturnComputeLogic<V>> valueReturnComputeLogics);
+
+    <E,R> Collection<R> executeGridMultipleComputeLogic(FixInputTypeComputeLogic<E,R> fixInputTypeComputeLogics,Collection<E> valeOfInputType);
 }
