@@ -11,9 +11,6 @@ import org.apache.ignite.services.ServiceContext;
 
 public class BaseIgniteComputeFunction implements IgniteComputeFunction, Service {
 
-    /** Serial version UID. */
-    private static final long serialVersionUID = 0L;
-
     /** Ignite instance. */
     @IgniteInstanceResource
     private Ignite ignite;

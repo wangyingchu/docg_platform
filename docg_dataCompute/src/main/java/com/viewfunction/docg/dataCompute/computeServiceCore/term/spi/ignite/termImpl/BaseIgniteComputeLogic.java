@@ -9,9 +9,6 @@ import org.apache.ignite.services.ServiceContext;
 
 public class BaseIgniteComputeLogic implements IgniteComputeLogic {
 
-    /** Serial version UID. */
-    private static final long serialVersionUID = 0L;
-
     /** Ignite instance. */
     @IgniteInstanceResource
     private Ignite ignite;

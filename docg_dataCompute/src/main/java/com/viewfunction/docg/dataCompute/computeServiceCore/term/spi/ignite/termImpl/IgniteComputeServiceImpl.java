@@ -2,10 +2,7 @@ package com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.ter
 
 import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.exception.ComputeGridNotActiveException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.util.UnitIgniteOperationUtil;
-import com.viewfunction.docg.dataCompute.computeServiceCore.term.ComputeFunction;
-import com.viewfunction.docg.dataCompute.computeServiceCore.term.FixInputTypeComputeLogic;
-import com.viewfunction.docg.dataCompute.computeServiceCore.term.ValueReturnComputeLogic;
-import com.viewfunction.docg.dataCompute.computeServiceCore.term.VoidReturnComputeLogic;
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.*;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termInf.IgniteComputeFunction;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termInf.IgniteComputeService;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termInf.IgniteVoidReturnComputeLogic;
@@ -147,5 +144,10 @@ public class IgniteComputeServiceImpl implements IgniteComputeService {
         IgniteCompute compute = this.invokerIgnite.compute(this.invokerIgnite.cluster().forServers());
         //Run on a node within the underlying cluster group.
         return compute.apply((BaseIgniteFixInputTypeComputeLogic<E,R>)fixInputTypeComputeLogic,valeOfInputType);
+    }
+
+    @Override
+    public AsyncExecutionResultHandler asyncExecutePerUnitVoidReturnComputeLogic(VoidReturnComputeLogic voidReturnComputeLogic) {
+        return null;
     }
 }
