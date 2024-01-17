@@ -9,7 +9,7 @@ import java.util.Collection;
 public class ComputeService_LogicTest {
 
     public static void main(String[] args){
-        //runPerUnitTest();
+        runPerUnitTest();
         runGridTest();
     }
 
@@ -17,14 +17,14 @@ public class ComputeService_LogicTest {
         ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
         try(ComputeService computeService = targetComputeGrid.getComputeService()){
             VoidReturnComputeLogicA voidReturnComputeLogicA = new VoidReturnComputeLogicA();
-            computeService.executePerUnitComputeLogic(voidReturnComputeLogicA);
+            computeService.executePerUnitVoidReturnComputeLogic(voidReturnComputeLogicA);
 
             ValueReturnComputeLogicA valueReturnComputeLogicA = new ValueReturnComputeLogicA();
-            Collection<Double> result = computeService.executePerUnitComputeLogic(valueReturnComputeLogicA);
+            Collection<Double> result = computeService.executePerUnitValueReturnComputeLogic(valueReturnComputeLogicA);
             System.out.println(result);
 
             FixInputTypeComputeLogicA fixInputTypeComputeLogicA = new FixInputTypeComputeLogicA();
-            Collection<String> collection = computeService.executePerUnitComputeLogic(fixInputTypeComputeLogicA,(double)1000);
+            Collection<String> collection = computeService.executePerUnitFixInputTypeComputeLogic(fixInputTypeComputeLogicA,(double)1000);
             System.out.println(collection);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -35,14 +35,14 @@ public class ComputeService_LogicTest {
         ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
         try(ComputeService computeService = targetComputeGrid.getComputeService()){
             VoidReturnComputeLogicA voidReturnComputeLogicA = new VoidReturnComputeLogicA();
-            computeService.executeGridSingletonComputeLogic(voidReturnComputeLogicA);
+            computeService.executeGridSingletonVoidReturnComputeLogic(voidReturnComputeLogicA);
 
             ValueReturnComputeLogicA valueReturnComputeLogicA = new ValueReturnComputeLogicA();
-            Double result = computeService.executeGridSingletonComputeLogic(valueReturnComputeLogicA);
+            Double result = computeService.executeGridSingletonValueReturnComputeLogic(valueReturnComputeLogicA);
             System.out.println(result);
 
             FixInputTypeComputeLogicA fixInputTypeComputeLogicA = new FixInputTypeComputeLogicA();
-            String collection = computeService.executeGridSingletonComputeLogic(fixInputTypeComputeLogicA,(double)1000);
+            String collection = computeService.executeGridSingletonFixInputTypeComputeLogic(fixInputTypeComputeLogicA,(double)1000);
             System.out.println(collection);
 
         } catch (Exception e) {

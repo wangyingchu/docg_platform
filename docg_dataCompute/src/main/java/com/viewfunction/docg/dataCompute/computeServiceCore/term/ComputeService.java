@@ -12,21 +12,21 @@ public interface ComputeService extends AutoCloseable{
 
     <T> T getComputeFunction(String functionName,Class<? super T> functionClass);
 
-    public void executePerUnitComputeLogic(VoidReturnComputeLogic voidReturnComputeLogic);
+    public void executePerUnitVoidReturnComputeLogic(VoidReturnComputeLogic voidReturnComputeLogic);
 
-    <V> Collection<V> executePerUnitComputeLogic(ValueReturnComputeLogic<V> valueReturnComputeLogic);
+    <V> Collection<V> executePerUnitValueReturnComputeLogic(ValueReturnComputeLogic<V> valueReturnComputeLogic);
 
-    <E,R> Collection<R> executePerUnitComputeLogic(FixInputTypeComputeLogic<E,R> fixInputTypeComputeLogic,E valeOfInputType);
+    <E,R> Collection<R> executePerUnitFixInputTypeComputeLogic(FixInputTypeComputeLogic<E,R> fixInputTypeComputeLogic, E valeOfInputType);
 
-    public void executeGridSingletonComputeLogic(VoidReturnComputeLogic voidReturnComputeLogic);
+    public void executeGridSingletonVoidReturnComputeLogic(VoidReturnComputeLogic voidReturnComputeLogic);
 
-    <V> V executeGridSingletonComputeLogic(ValueReturnComputeLogic<V> valueReturnComputeLogic);
+    <V> V executeGridSingletonValueReturnComputeLogic(ValueReturnComputeLogic<V> valueReturnComputeLogic);
 
-    <E,R> R executeGridSingletonComputeLogic(FixInputTypeComputeLogic<E,R> fixInputTypeComputeLogic,E valeOfInputType);
+    <E,R> R executeGridSingletonFixInputTypeComputeLogic(FixInputTypeComputeLogic<E,R> fixInputTypeComputeLogic, E valeOfInputType);
 
     public void executeGridMultipleVoidReturnComputeLogic(Collection<VoidReturnComputeLogic> voidReturnComputeLogic);
 
-    <V> Collection<V> executeGridMultipleComputeLogic(Collection<ValueReturnComputeLogic<V>> valueReturnComputeLogics);
+    <V> Collection<V> executeGridMultipleValueReturnComputeLogic(Collection<ValueReturnComputeLogic<V>> valueReturnComputeLogics);
 
-    <E,R> Collection<R> executeGridMultipleComputeLogic(FixInputTypeComputeLogic<E,R> fixInputTypeComputeLogics,Collection<E> valeOfInputType);
+    <E,R> Collection<R> executeGridMultipleFixInputTypeComputeLogic(FixInputTypeComputeLogic<E,R> fixInputTypeComputeLogics, Collection<E> valeOfInputType);
 }
