@@ -13,6 +13,7 @@ import org.apache.ignite.IgniteCompute;
 import org.apache.ignite.IgniteServices;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.lang.IgniteClosure;
+import org.apache.ignite.lang.IgniteFuture;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -148,6 +149,10 @@ public class IgniteComputeServiceImpl implements IgniteComputeService {
 
     @Override
     public AsyncExecutionResultHandler asyncExecutePerUnitVoidReturnComputeLogic(VoidReturnComputeLogic voidReturnComputeLogic) {
+        IgniteCompute compute = this.invokerIgnite.compute(this.invokerIgnite.cluster().forServers());
+        //Broadcasts to all nodes in the cluster group.
+        IgniteFuture<Void> igniteFuture = compute.broadcastAsync((BaseIgniteVoidReturnComputeLogic)voidReturnComputeLogic);
+
         return null;
     }
 }

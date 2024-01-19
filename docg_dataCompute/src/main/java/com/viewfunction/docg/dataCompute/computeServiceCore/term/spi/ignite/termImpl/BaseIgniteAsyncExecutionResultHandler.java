@@ -5,6 +5,7 @@ import org.apache.ignite.Ignite;
 import org.apache.ignite.resources.IgniteInstanceResource;
 import org.apache.ignite.resources.ServiceContextResource;
 import org.apache.ignite.services.ServiceContext;
+import org.apache.ignite.lang.IgniteFuture;
 
 import java.util.concurrent.TimeUnit;
 
@@ -17,6 +18,8 @@ public class BaseIgniteAsyncExecutionResultHandler<V> implements IgniteAsyncExec
     /** Service context. */
     @ServiceContextResource
     private ServiceContext ctx;
+
+    private IgniteFuture<V> igniteFuture;
 
     @Override
     public boolean cancelAsyncExecution() {
