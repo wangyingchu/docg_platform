@@ -12,6 +12,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTre
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.arcadedb.termInf.ArcadeDBConceptionKind;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -353,6 +354,11 @@ public class ArcadeDBConceptionKindImpl implements ArcadeDBConceptionKind {
 
     @Override
     public EntitiesOperationStatistics convertEntityAttributeToTemporalType(String attributeName, TemporalScaleCalculable.TemporalValueFormat temporalValueFormat, TemporalScaleCalculable.TemporalScaleLevel temporalScaleType) throws CoreRealmServiceRuntimeException {
+        return null;
+    }
+
+    @Override
+    public EntitiesOperationStatistics attachTimeScaleEvents(QueryParameters queryParameters, String timeEventAttributeName, DateTimeFormatter dateTimeFormatter, String timeFlowName, String eventComment, Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         return null;
     }
 }

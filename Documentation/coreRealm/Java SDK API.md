@@ -969,7 +969,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @param queryParameters QueryParameters 概念实体查询过滤条件
      * @param timeEventAttributeName String 在时间流上确定具体时间点的属性名称，该属性类型应当为时间类或 String 类型
      * @param dateTimeFormatter DateTimeFormatter 当 timeEventAttributeName 属性为 String 类型时，需要使用本属性提供日期时间获取的格式信息
-     * @param timeFlowName String 指定时间流名称
+     * @param timeFlowName String 指定时间流名称,输入 null 则选择默认时间流
      * @param eventComment String 事件备注
      * @param eventData Map<String, Object> 事件数据
      * @param timeScaleGrade TimeFlow.TimeScaleGrade 事件时间刻度

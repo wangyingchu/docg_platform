@@ -210,7 +210,7 @@ public class PerformanceTestingRealmDataLoader {
         ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributeResult =  conceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeNamesList,queryParameters);
 
         List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
-        BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,datePropertyName,attachEventName,null, TimeFlow.TimeScaleGrade.DAY,30);
+        BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,datePropertyName,null,attachEventName,null, TimeFlow.TimeScaleGrade.DAY,30);
     }
 
     private static void  linkCountyGeoData(String dataSliceName){

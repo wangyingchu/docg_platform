@@ -608,7 +608,7 @@ public class GSLCaseTestV2_01 {
 
         List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("d/M/yyyy HH:mm:ss");
-        BatchDataOperationUtil.batchAttachTimeScaleEventsWithStringDateAttributeValue(conceptionEntityValueList,"ESTABLISH_TIME","firmStartedAt",dtf,null, TimeFlow.TimeScaleGrade.DAY, BatchDataOperationUtil.CPUUsageRate.High);
+        BatchDataOperationUtil.batchAttachTimeScaleEventsWithStringDateAttributeValue(conceptionEntityValueList,"ESTABLISH_TIME",null,"firmStartedAt",dtf,null, TimeFlow.TimeScaleGrade.DAY, BatchDataOperationUtil.CPUUsageRate.High);
     }
 
     private static void linkIndividualMemberDate() throws CoreRealmServiceEntityExploreException {
@@ -623,7 +623,7 @@ public class GSLCaseTestV2_01 {
 
         List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("d/M/yyyy HH:mm:ss");
-        BatchDataOperationUtil.batchAttachTimeScaleEventsWithStringDateAttributeValue(conceptionEntityValueList,"BIRTHDATE","personBirthdayIs",dtf,null, TimeFlow.TimeScaleGrade.DAY, BatchDataOperationUtil.CPUUsageRate.High);
+        BatchDataOperationUtil.batchAttachTimeScaleEventsWithStringDateAttributeValue(conceptionEntityValueList,"BIRTHDATE",null,"personBirthdayIs",dtf,null, TimeFlow.TimeScaleGrade.DAY, BatchDataOperationUtil.CPUUsageRate.High);
     }
 
     private static void linkExecutiveDate() throws CoreRealmServiceEntityExploreException {
@@ -638,7 +638,7 @@ public class GSLCaseTestV2_01 {
 
         List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("d/M/yyyy HH:mm:ss");
-        BatchDataOperationUtil.batchAttachTimeScaleEventsWithStringDateAttributeValue(conceptionEntityValueList,"BIRTHDATE","personBirthdayIs",dtf,null, TimeFlow.TimeScaleGrade.DAY, BatchDataOperationUtil.CPUUsageRate.High);
+        BatchDataOperationUtil.batchAttachTimeScaleEventsWithStringDateAttributeValue(conceptionEntityValueList,"BIRTHDATE",null,"personBirthdayIs",dtf,null, TimeFlow.TimeScaleGrade.DAY, BatchDataOperationUtil.CPUUsageRate.High);
     }
 
     private static void linkExecutiveEnterpriseDate() throws CoreRealmServiceEntityExploreException {
@@ -653,7 +653,7 @@ public class GSLCaseTestV2_01 {
 
         List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("d/M/yyyy HH:mm:ss");
-        BatchDataOperationUtil.batchAttachTimeScaleEventsWithStringDateAttributeValue(conceptionEntityValueList,"ESTABLISH_TIME","firmStartedAt",dtf,null, TimeFlow.TimeScaleGrade.DAY, BatchDataOperationUtil.CPUUsageRate.High);
+        BatchDataOperationUtil.batchAttachTimeScaleEventsWithStringDateAttributeValue(conceptionEntityValueList,"ESTABLISH_TIME",null,"firmStartedAt",dtf,null, TimeFlow.TimeScaleGrade.DAY, BatchDataOperationUtil.CPUUsageRate.High);
     }
 
     private static void linkChamberOfCommerceDate() throws CoreRealmServiceEntityExploreException {
@@ -668,7 +668,7 @@ public class GSLCaseTestV2_01 {
 
         List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("d/M/yyyy HH:mm:ss");
-        BatchDataOperationUtil.batchAttachTimeScaleEventsWithStringDateAttributeValue(conceptionEntityValueList,"ESTABLISHED_TIME","chamberFoundedAt",dtf,null, TimeFlow.TimeScaleGrade.DAY, BatchDataOperationUtil.CPUUsageRate.High);
+        BatchDataOperationUtil.batchAttachTimeScaleEventsWithStringDateAttributeValue(conceptionEntityValueList,"ESTABLISHED_TIME",null,"chamberFoundedAt",dtf,null, TimeFlow.TimeScaleGrade.DAY, BatchDataOperationUtil.CPUUsageRate.High);
     }
 
     private static void createCPCOrganizationForChamberOfCommerce() throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {

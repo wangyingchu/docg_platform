@@ -59,7 +59,7 @@ public class MassConceptionIntegratedTest {
             ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributeResult = _ChinaFirmConceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeNamesList,queryParameters);
 
             List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
-            BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,ApprovedTime,"approvedAt",null, TimeFlow.TimeScaleGrade.DAY,10);
+            BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,ApprovedTime,null,"approvedAt",null, TimeFlow.TimeScaleGrade.DAY,10);
         }
     }
 
@@ -77,7 +77,7 @@ public class MassConceptionIntegratedTest {
             ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributeResult = _ChinaFirmConceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeNamesList,queryParameters);
 
             List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
-            BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,StartDate,"startedAt",null, TimeFlow.TimeScaleGrade.DAY,10);
+            BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,StartDate,null,"startedAt",null, TimeFlow.TimeScaleGrade.DAY,10);
         }
     }
 

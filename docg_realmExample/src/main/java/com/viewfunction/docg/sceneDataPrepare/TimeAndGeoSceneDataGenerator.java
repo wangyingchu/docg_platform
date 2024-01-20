@@ -451,6 +451,6 @@ public class TimeAndGeoSceneDataGenerator {
         attributeNamesList.add(dateAttributeName);
         ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributeResult =  conceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeNamesList,queryParameters);
         List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
-        BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,dateAttributeName,eventComment,globalEventData, timeScaleGrade, BatchDataOperationUtil.CPUUsageRate.High);
+        BatchDataOperationUtil.batchAttachTimeScaleEvents(conceptionEntityValueList,dateAttributeName,null,eventComment,globalEventData, timeScaleGrade, BatchDataOperationUtil.CPUUsageRate.High);
     }
 }

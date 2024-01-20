@@ -11,6 +11,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.TemporalScaleCal
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
@@ -29,7 +30,7 @@ import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -1234,9 +1235,62 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
     @Override
     public EntitiesOperationStatistics attachTimeScaleEvents(QueryParameters queryParameters, String timeEventAttributeName, DateTimeFormatter dateTimeFormatter,
-                                 String timeFlowName, String eventComment, Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException{
+                                 String timeFlowName, String eventComment, Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade)
+            throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException {
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
 
-        return null;
+        QueryParameters filterQueryParameters;
+        if(queryParameters != null){
+            filterQueryParameters = queryParameters;
+        }else{
+            filterQueryParameters = new QueryParameters();
+            filterQueryParameters.setResultNumber(1000000000);
+        }
+        if(timeEventAttributeName == null){
+            logger.error("timeEventAttributeName is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("timeEventAttributeName is required.");
+            throw exception;
+        }
+        List<String> attributeNamesList = new ArrayList<>();
+        attributeNamesList.add(timeEventAttributeName);
+        ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributeResult =  getSingleValueEntityAttributesByAttributeNames(attributeNamesList,filterQueryParameters);
+        long successItemCount = 0;
+        if(conceptionEntitiesAttributeResult == null || conceptionEntitiesAttributeResult.getOperationStatistics().getResultEntitiesCount() == 0){
+            successItemCount = 0;
+        }else{
+            List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
+            ConceptionEntityValue firstConceptionEntityValue = conceptionEntityValueList.get(0);
+            Object targetAttribute = firstConceptionEntityValue.getEntityAttributesValue().get(timeEventAttributeName);
+            Map<String,Object> operationResult = null;
+            if(targetAttribute instanceof String){
+                operationResult = BatchDataOperationUtil.batchAttachTimeScaleEventsWithStringDateAttributeValue(
+                                conceptionEntityValueList,timeEventAttributeName,timeFlowName,eventComment,dateTimeFormatter,eventData, timeScaleGrade, BatchDataOperationUtil.CPUUsageRate.High);
+            }else if(targetAttribute instanceof ZonedDateTime){
+                operationResult = BatchDataOperationUtil.batchAttachTimeScaleEventsWithStringDateAttributeValue(
+                        conceptionEntityValueList,timeEventAttributeName,timeFlowName,eventComment,null,eventData, timeScaleGrade, BatchDataOperationUtil.CPUUsageRate.High);
+            }else if(targetAttribute instanceof LocalDateTime){
+                operationResult = BatchDataOperationUtil.batchAttachTimeScaleEventsWithStringDateAttributeValue(
+                        conceptionEntityValueList,timeEventAttributeName,timeFlowName,eventComment,null,eventData, timeScaleGrade, BatchDataOperationUtil.CPUUsageRate.High);
+            }else if(targetAttribute instanceof LocalDate){
+                operationResult = BatchDataOperationUtil.batchAttachTimeScaleEventsWithStringDateAttributeValue(
+                        conceptionEntityValueList,timeEventAttributeName,timeFlowName,eventComment,null,eventData, timeScaleGrade, BatchDataOperationUtil.CPUUsageRate.High);
+            }else if(targetAttribute instanceof Date){
+                operationResult = BatchDataOperationUtil.batchAttachTimeScaleEventsWithStringDateAttributeValue(
+                        conceptionEntityValueList,timeEventAttributeName,timeFlowName,eventComment,null,eventData, timeScaleGrade, BatchDataOperationUtil.CPUUsageRate.High);
+            }
+            Collection<Object> resultCountCollection = operationResult.values();
+            for(Object currentResultCount :resultCountCollection){
+                if(currentResultCount instanceof Long) {
+                    successItemCount = successItemCount + (Long) currentResultCount;
+                }
+            }
+        }
+        entitiesOperationStatistics.setFinishTime(new Date());
+        entitiesOperationStatistics.setSuccessItemsCount(successItemCount);
+        entitiesOperationStatistics.setOperationSummary("attachTimeScaleEvents operation success");
+        return entitiesOperationStatistics;
     }
 
     private long executeEntitiesOperationWithCountResponse(String cql){
