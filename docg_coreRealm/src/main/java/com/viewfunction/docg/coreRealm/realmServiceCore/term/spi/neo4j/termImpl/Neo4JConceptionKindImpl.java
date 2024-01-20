@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
@@ -1227,6 +1228,13 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
 
 
+
+        return null;
+    }
+
+    @Override
+    public EntitiesOperationStatistics attachTimeScaleEvents(QueryParameters queryParameters, String timeEventAttributeName, DateTimeFormatter dateTimeFormatter,
+                                 String timeFlowName, String eventComment, Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException{
 
         return null;
     }

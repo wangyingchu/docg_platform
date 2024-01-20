@@ -962,6 +962,22 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 操作执行状况的统计结果
      */
     public EntitiesOperationStatistics convertEntityAttributeToTemporalType(String attributeName,TemporalScaleCalculable.TemporalValueFormat temporalValueFormat, TemporalScaleCalculable.TemporalScaleLevel temporalScaleType) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 为当前概念类型的特定概念实体在指定的时间流上附加时间刻度事件
+     *
+     * @param queryParameters QueryParameters 概念实体查询过滤条件
+     * @param timeEventAttributeName String 在时间流上确定具体时间点的属性名称，该属性类型应当为时间类或 String 类型
+     * @param dateTimeFormatter DateTimeFormatter 当 timeEventAttributeName 属性为 String 类型时，需要使用本属性提供日期时间获取的格式信息
+     * @param timeFlowName String 指定时间流名称
+     * @param eventComment String 事件备注
+     * @param eventData Map<String, Object> 事件数据
+     * @param timeScaleGrade TimeFlow.TimeScaleGrade 事件时间刻度
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics attachTimeScaleEvents(QueryParameters queryParameters, String timeEventAttributeName, DateTimeFormatter dateTimeFormatter,String timeFlowName, String eventComment, Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException;
+
 ```
 ###### ↳ RelationKind
 
