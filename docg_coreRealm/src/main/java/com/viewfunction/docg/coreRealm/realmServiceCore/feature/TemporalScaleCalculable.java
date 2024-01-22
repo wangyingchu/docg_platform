@@ -16,16 +16,17 @@ public interface TemporalScaleCalculable {
     public enum TemporalScaleLevel {Date,Time,Datetime,Timestamp}
 
     public enum TemporalValueFormat {
-        Format1("yyyy-MM-dd HH:mm:ss"),
-        Format2("yyyyMMdd"),
-        Format3("yyyy-MM-dd"),
-        Format4("yyyy-MM-dd HH:mm:ss"),
-        Format5("yyyy/mm/dd hh:mm:ss"),
-        Format6("yyyy/m/d h:mm:ss"),
-        Format7("yyyy/m/dd h:mm:ss"),
-        Format8("yyyymmdd"),
-        Format9("yyyy/mm/dd"),
-        Format10("yyyy/m/d");
+        Format1("yyyyMMdd"),
+        Format2("yyyy-MM-dd"),
+        Format3("yyyy-MM-dd HH:mm:ss"),
+        Format4("yyyy/mm/dd hh:mm:ss"),
+        Format5("yyyy/m/d h:mm:ss"),
+        Format6("yyyy/m/dd h:mm:ss"),
+        Format7("yyyymmdd"),
+        Format8("yyyy/mm/dd"),
+        Format9("yyyy/m/d"),
+        Format10("MM/dd/yyyy HH:mm:ss a"),
+        Format11("MM/dd/yyyy hh:mm:ss a");
 
         private static final Map<String, TemporalValueFormat> nameToValueMap;
 
