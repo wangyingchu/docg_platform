@@ -710,18 +710,20 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                     int singlePartitionSize = (relationshipsList.size()/degreeOfParallelism)+1;
 
                     List<List<Object>> rsList = Lists.partition(relationshipsList, singlePartitionSize);
-                    ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
-                    for(List<Object> currentRelationEntityValueList:rsList){
-                        CheckRelationEntitiesExistThread checkRelationEntitiesExistThread = new CheckRelationEntitiesExistThread(currentRelationEntityValueList,conceptionKindId_nameMapping,conceptionKindCorrelationInfoSet);
-                        executor.execute(checkRelationEntitiesExistThread);
-                    }
-                    executor.shutdown();
-                    try {
-                        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
 
+                    if(rsList.size() > 0){
+                        ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+                        for(List<Object> currentRelationEntityValueList:rsList){
+                            CheckRelationEntitiesExistThread checkRelationEntitiesExistThread = new CheckRelationEntitiesExistThread(currentRelationEntityValueList,conceptionKindId_nameMapping,conceptionKindCorrelationInfoSet);
+                            executor.execute(checkRelationEntitiesExistThread);
+                        }
+                        executor.shutdown();
+                        try {
+                            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
                     return conceptionKindCorrelationInfoSet;
                 }
             };
