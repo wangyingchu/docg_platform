@@ -956,12 +956,12 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * 将当前概念类型的所有概念实体中指定的属性的 String 数据类型的表达转换为 Temporal 时间类类型
      *
      * @param attributeName String 需要转换的属性名称
-     * @param temporalValueFormat TemporalValueFormat 需要转换的属性的时间类型数据格式
+     * @param dateTimeFormatter DateTimeFormatter 需要转换的属性的时间类型数据格式
      * @param temporalScaleType TemporalScaleLevel 需要转换为的时间类类型
      *
      * @return 操作执行状况的统计结果
      */
-    public EntitiesOperationStatistics convertEntityAttributeToTemporalType(String attributeName,TemporalScaleCalculable.TemporalValueFormat temporalValueFormat, TemporalScaleCalculable.TemporalScaleLevel temporalScaleType) throws CoreRealmServiceRuntimeException;
+    public EntitiesOperationStatistics convertEntityAttributeToTemporalType(String attributeName, DateTimeFormatter dateTimeFormatter,TemporalScaleCalculable.TemporalScaleLevel temporalScaleType) throws CoreRealmServiceRuntimeException;
 
     /**
      * 为当前概念类型的特定概念实体在指定的时间流上附加时间刻度事件

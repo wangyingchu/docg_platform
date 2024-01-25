@@ -16,6 +16,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.nebulaGraph.ter
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -358,7 +359,12 @@ public class NebulaGraphConceptionKindImpl implements NebulaGraphConceptionKind 
     }
 
     @Override
-    public EntitiesOperationStatistics convertEntityAttributeToTemporalType(String attributeName, TemporalScaleCalculable.TemporalValueFormat temporalValueFormat, TemporalScaleCalculable.TemporalScaleLevel temporalScaleType) throws CoreRealmServiceRuntimeException {
+    public EntitiesOperationStatistics convertEntityAttributeToTemporalType(String attributeName, DateTimeFormatter dateTimeFormatter, TemporalScaleCalculable.TemporalScaleLevel temporalScaleType) throws CoreRealmServiceRuntimeException {
+        return null;
+    }
+
+    @Override
+    public EntitiesOperationStatistics attachTimeScaleEvents(QueryParameters queryParameters, String timeEventAttributeName, DateTimeFormatter dateTimeFormatter, String timeFlowName, String eventComment, Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         return null;
     }
 

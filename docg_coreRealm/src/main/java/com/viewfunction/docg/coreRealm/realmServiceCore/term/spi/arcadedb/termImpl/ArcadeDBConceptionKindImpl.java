@@ -353,7 +353,7 @@ public class ArcadeDBConceptionKindImpl implements ArcadeDBConceptionKind {
     }
 
     @Override
-    public EntitiesOperationStatistics convertEntityAttributeToTemporalType(String attributeName, TemporalScaleCalculable.TemporalValueFormat temporalValueFormat, TemporalScaleCalculable.TemporalScaleLevel temporalScaleType) throws CoreRealmServiceRuntimeException {
+    public EntitiesOperationStatistics convertEntityAttributeToTemporalType(String attributeName, DateTimeFormatter dateTimeFormatter, TemporalScaleCalculable.TemporalScaleLevel temporalScaleType) throws CoreRealmServiceRuntimeException {
         return null;
     }
 
