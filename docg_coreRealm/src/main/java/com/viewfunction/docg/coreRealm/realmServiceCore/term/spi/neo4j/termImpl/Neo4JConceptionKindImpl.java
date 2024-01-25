@@ -1223,8 +1223,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
     @Override
     public EntitiesOperationStatistics convertEntityAttributeToTemporalType(String attributeName,DateTimeFormatter dateTimeFormatter,
-                             TemporalScaleCalculable.TemporalScaleLevel temporalScaleType)
-            throws CoreRealmServiceRuntimeException{
+                             TemporalScaleCalculable.TemporalScaleLevel temporalScaleType) throws CoreRealmServiceRuntimeException {
 
 
 
