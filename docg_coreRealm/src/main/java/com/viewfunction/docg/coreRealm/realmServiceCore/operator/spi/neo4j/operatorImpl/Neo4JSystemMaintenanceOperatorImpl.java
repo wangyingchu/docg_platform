@@ -602,17 +602,19 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                     int degreeOfParallelism = 6;
                     int singlePartitionSize = (relationshipsList.size()/degreeOfParallelism)+1;
 
-                    List<List<Object>> rsList = Lists.partition(relationshipsList, singlePartitionSize);
-                    ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
-                    for(List<Object> currentRelationEntityValueList:rsList){
-                        CheckConceptionKindsRelationEntitiesExistThread checkConceptionKindsRelationEntitiesExistThread = new CheckConceptionKindsRelationEntitiesExistThread(currentRelationEntityValueList,conceptionKindId_nameMapping,conceptionKindCorrelationInfoSet);
-                        executor.execute(checkConceptionKindsRelationEntitiesExistThread);
-                    }
-                    executor.shutdown();
-                    try {
-                        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    if(relationshipsList.size()>0){
+                        List<List<Object>> rsList = Lists.partition(relationshipsList, singlePartitionSize);
+                        ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+                        for(List<Object> currentRelationEntityValueList:rsList){
+                            CheckConceptionKindsRelationEntitiesExistThread checkConceptionKindsRelationEntitiesExistThread = new CheckConceptionKindsRelationEntitiesExistThread(currentRelationEntityValueList,conceptionKindId_nameMapping,conceptionKindCorrelationInfoSet);
+                            executor.execute(checkConceptionKindsRelationEntitiesExistThread);
+                        }
+                        executor.shutdown();
+                        try {
+                            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
 
                     /*
