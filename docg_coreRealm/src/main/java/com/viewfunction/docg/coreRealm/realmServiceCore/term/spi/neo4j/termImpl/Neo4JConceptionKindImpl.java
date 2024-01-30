@@ -1226,6 +1226,56 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
                              TemporalScaleCalculable.TemporalScaleLevel temporalScaleType) throws CoreRealmServiceRuntimeException {
 
 
+        if(attributeName != null ){
+
+
+            List<String> attributeNames = new ArrayList<>();
+            attributeNames.add(attributeName);
+
+            QueryParameters exploreParameters = new QueryParameters();
+            exploreParameters.setResultNumber(1000000000);
+
+            CommonConceptionEntitiesAttributesRetrieveResultImpl commonConceptionEntitiesAttributesRetrieveResultImpl
+                    = new CommonConceptionEntitiesAttributesRetrieveResultImpl();
+            commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setQueryParameters(exploreParameters);
+
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try {
+                String queryCql = CypherBuilder.matchAttributesWithQueryParameters(this.conceptionKindName,exploreParameters,attributeNames);
+                List<AttributeKind> containsAttributesKinds = getContainsSingleValueAttributeKinds(workingGraphOperationExecutor);
+                GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer =
+                        new GetListConceptionEntityValueTransformer(attributeNames,containsAttributesKinds);
+                Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
+                if(resEntityRes != null){
+                    List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
+
+
+
+
+
+                    commonConceptionEntitiesAttributesRetrieveResultImpl.addConceptionEntitiesAttributes(resultEntitiesValues);
+                    commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultEntitiesValues.size());
+                }
+            } catch (CoreRealmServiceEntityExploreException e) {
+                throw new RuntimeException(e);
+            } finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            commonConceptionEntitiesAttributesRetrieveResultImpl.finishEntitiesRetrieving();
+            //return commonConceptionEntitiesAttributesRetrieveResultImpl;
+
+            return null;
+        }
+
+
+
+
+
+
+
+
+
+
 
 
 
