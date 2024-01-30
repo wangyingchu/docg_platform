@@ -2861,7 +2861,7 @@ public class CypherBuilder {
         if (relationKind != null && entityProperties != null && entityProperties.size() > 0) {
             Node sourceNode = Cypher.anyNode().named(sourceNodeName);
             Node targetNode = Cypher.anyNode().named(targetNodeName);
-            Relationship targetRelationship = sourceNode.relationshipBetween(targetNode, relationKind).named(operationResultName);
+            Relationship targetRelationship = sourceNode.relationshipTo(targetNode, relationKind).named(operationResultName);
             Map<String,Object> attributesMap = CommonOperationUtil.reformatPropertyValues(entityProperties);
             Operation[] propertyOperationArray = new Operation[attributesMap.size()];
             Set<String> keySet = entityProperties.keySet();
