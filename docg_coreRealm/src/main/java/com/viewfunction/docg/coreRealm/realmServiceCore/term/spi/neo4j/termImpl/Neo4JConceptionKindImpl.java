@@ -1224,62 +1224,61 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     @Override
     public EntitiesOperationStatistics convertEntityAttributeToTemporalType(String attributeName,DateTimeFormatter dateTimeFormatter,
                              TemporalScaleCalculable.TemporalScaleLevel temporalScaleType) throws CoreRealmServiceRuntimeException {
-
-
-        if(attributeName != null ){
-
-
-            List<String> attributeNames = new ArrayList<>();
-            attributeNames.add(attributeName);
-
-            QueryParameters exploreParameters = new QueryParameters();
-            exploreParameters.setResultNumber(1000000000);
-
-            CommonConceptionEntitiesAttributesRetrieveResultImpl commonConceptionEntitiesAttributesRetrieveResultImpl
-                    = new CommonConceptionEntitiesAttributesRetrieveResultImpl();
-            commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setQueryParameters(exploreParameters);
-
-            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-            try {
-                String queryCql = CypherBuilder.matchAttributesWithQueryParameters(this.conceptionKindName,exploreParameters,attributeNames);
-                List<AttributeKind> containsAttributesKinds = getContainsSingleValueAttributeKinds(workingGraphOperationExecutor);
-                GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer =
-                        new GetListConceptionEntityValueTransformer(attributeNames,containsAttributesKinds);
-                Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
-                if(resEntityRes != null){
-                    List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
-
-
-
-
-
-                    commonConceptionEntitiesAttributesRetrieveResultImpl.addConceptionEntitiesAttributes(resultEntitiesValues);
-                    commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultEntitiesValues.size());
-                }
-            } catch (CoreRealmServiceEntityExploreException e) {
-                throw new RuntimeException(e);
-            } finally {
-                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-            }
-            commonConceptionEntitiesAttributesRetrieveResultImpl.finishEntitiesRetrieving();
-            //return commonConceptionEntitiesAttributesRetrieveResultImpl;
-
-            return null;
+        if(attributeName == null){
+            logger.error("attributeName is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("attributeName is required.");
+            throw exception;
+        }
+        if(dateTimeFormatter == null){
+            logger.error("dateTimeFormatter is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("dateTimeFormatter is required.");
+            throw exception;
+        }
+        if(temporalScaleType == null){
+            logger.error("temporalScaleType is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("temporalScaleType is required.");
+            throw exception;
         }
 
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+        List<String> attributeNames = new ArrayList<>();
+        attributeNames.add(attributeName);
+        QueryParameters exploreParameters = new QueryParameters();
+        exploreParameters.setResultNumber(1000000000);
 
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(this.conceptionKindName,exploreParameters,attributeNames);
+            List<AttributeKind> containsAttributesKinds = getContainsSingleValueAttributeKinds(workingGraphOperationExecutor);
+            GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer =
+                    new GetListConceptionEntityValueTransformer(attributeNames,containsAttributesKinds);
+            Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
+            if(resEntityRes != null){
+                List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
+                Map<String,Object> operationResult =
+                        BatchDataOperationUtil.batchConvertEntityAttributeToTemporalType(attributeName,resultEntitiesValues,dateTimeFormatter,temporalScaleType,BatchDataOperationUtil.CPUUsageRate.High);
+                long successItemCount = 0;
+                Collection<Object> resultCountCollection = operationResult.values();
+                for(Object currentResultCount :resultCountCollection){
+                    if(currentResultCount instanceof Long) {
+                        successItemCount = successItemCount + (Long) currentResultCount;
+                    }
+                }
+                entitiesOperationStatistics.setSuccessItemsCount(successItemCount);
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            throw new RuntimeException(e);
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
 
-
-
-
-
-
-
-
-
-
-
-        return null;
+        entitiesOperationStatistics.setOperationSummary("convert String Entity Attribute "+attributeName+" to "+temporalScaleType + " operation finished.");
+        entitiesOperationStatistics.setFinishTime(new Date());
+        return entitiesOperationStatistics;
     }
 
     @Override

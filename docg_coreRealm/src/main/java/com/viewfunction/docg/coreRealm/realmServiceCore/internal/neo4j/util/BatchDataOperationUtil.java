@@ -6,6 +6,7 @@ import com.google.common.collect.Multimap;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.TemporalScaleCalculable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
@@ -46,7 +47,7 @@ public class BatchDataOperationUtil {
     private static ZoneId zone = ZoneId.systemDefault();
 
     public static Map<String,Object> batchAddNewEntities(String targetConceptionTypeName,List<ConceptionEntityValue> conceptionEntityValuesList,CPUUsageRate _CPUUsageRate){
-        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(conceptionEntityValuesList.size(),_CPUUsageRate);
+        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
         return batchAddNewEntities(targetConceptionTypeName,conceptionEntityValuesList,degreeOfParallelism);
     }
 
@@ -125,7 +126,7 @@ public class BatchDataOperationUtil {
 
     public static Map<String,Object> batchAttachTimeScaleEvents(List<ConceptionEntityValue> conceptionEntityValueList, String timeEventAttributeName,String timeFlowName,String eventComment,
                                                                 Map<String,Object> globalEventData, TimeFlow.TimeScaleGrade timeScaleGrade,CPUUsageRate _CPUUsageRate){
-        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(conceptionEntityValueList.size(),_CPUUsageRate);
+        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
         return batchAttachTimeScaleEvents(conceptionEntityValueList,timeEventAttributeName,timeFlowName,eventComment,globalEventData,timeScaleGrade,degreeOfParallelism);
     }
 
@@ -309,7 +310,7 @@ public class BatchDataOperationUtil {
 
     public static Map<String,Object> batchAttachTimeScaleEventsWithStringDateAttributeValue(List<ConceptionEntityValue> conceptionEntityValueList, String timeEventAttributeName,String timeFlowName,String eventComment,
                                        DateTimeFormatter formatter,Map<String,Object> globalEventData, TimeFlow.TimeScaleGrade timeScaleGrade,CPUUsageRate _CPUUsageRate){
-        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(conceptionEntityValueList.size(),_CPUUsageRate);
+        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
         return batchAttachTimeScaleEvents(conceptionEntityValueList,timeEventAttributeName,timeFlowName,eventComment,formatter,globalEventData,timeScaleGrade,degreeOfParallelism);
     }
 
@@ -383,7 +384,7 @@ public class BatchDataOperationUtil {
     }
 
     public static Map<String,Object> batchAttachNewRelations(List<RelationEntityValue> relationEntityValueList, String relationKindName,CPUUsageRate _CPUUsageRate){
-        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(relationEntityValueList.size(),_CPUUsageRate);
+        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
         return batchAttachNewRelations(relationEntityValueList,relationKindName,degreeOfParallelism);
     }
 
@@ -544,7 +545,7 @@ public class BatchDataOperationUtil {
     }
 
     public static Map<String,Object> batchDeleteEntities(List<String> conceptionEntityUIDs,CPUUsageRate _CPUUsageRate){
-        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(conceptionEntityUIDs.size(),_CPUUsageRate);
+        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
         return batchDeleteEntities(conceptionEntityUIDs,degreeOfParallelism);
     }
 
@@ -611,7 +612,7 @@ public class BatchDataOperationUtil {
     }
 
     public static Map<String,Object> batchAddNewOrUpdateEntityAttributes(String conceptionEntityUIDKeyName,List<Map<String,Object>> entityPropertiesValueList,CPUUsageRate _CPUUsageRate){
-        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(entityPropertiesValueList.size(),_CPUUsageRate);
+        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
         return batchAddNewOrUpdateEntityAttributes(conceptionEntityUIDKeyName,entityPropertiesValueList,degreeOfParallelism);
     }
 
@@ -694,7 +695,7 @@ public class BatchDataOperationUtil {
 
     public static Map<String,Object> batchAttachGeospatialScaleEvents(List<RelationEntityValue> relationEntityValueList,String eventComment,Map<String,Object> globalEventData,
                                                                       GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade, CPUUsageRate _CPUUsageRate){
-        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(relationEntityValueList.size(),_CPUUsageRate);
+        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
         return batchAttachGeospatialScaleEvents(relationEntityValueList,eventComment,globalEventData,geospatialScaleGrade,degreeOfParallelism);
     }
 
@@ -956,7 +957,40 @@ public class BatchDataOperationUtil {
         return batchAttachGeospatialScaleEvents(attachEntityMetaDataList,eventComment,globalEventData,geospatialScaleGrade,_CPUUsageRate);
     }
 
-    public static int calculateRuntimeCPUCoresByUsageRate(int entityVolume,CPUUsageRate _CPUUsageRate){
+    public static Map<String,Object> batchConvertEntityAttributeToTemporalType(String attributeName,
+                 List<ConceptionEntityValue> conceptionEntityValueList,DateTimeFormatter dateTimeFormatter,
+                 TemporalScaleCalculable.TemporalScaleLevel temporalScaleType, CPUUsageRate _CPUUsageRate){
+        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
+
+        int singlePartitionSize = (conceptionEntityValueList.size()/degreeOfParallelism)+1;
+
+
+        List<List<ConceptionEntityValue>> rsList = Lists.partition(conceptionEntityValueList, singlePartitionSize);
+        Map<String,Object> threadReturnDataMap = new Hashtable<>();
+        threadReturnDataMap.put("StartTime", LocalDateTime.now());
+        ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+
+        for(List<ConceptionEntityValue> currentRelationEntityValueList:rsList){
+
+
+            LinkGeospatialScaleEventThread linkGeospatialScaleEventThread = new LinkGeospatialScaleEventThread(RealmConstant._defaultGeospatialRegionName,
+                    null,null,null,null,threadReturnDataMap);
+
+
+
+            executor.execute(linkGeospatialScaleEventThread);
+        }
+        executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        threadReturnDataMap.put("FinishTime", LocalDateTime.now());
+        return threadReturnDataMap;
+    }
+
+    public static int calculateRuntimeCPUCoresByUsageRate(CPUUsageRate _CPUUsageRate){
         int availableCoreNumber = Runtime.getRuntime().availableProcessors();
         if(availableCoreNumber<=4){
             return 4;

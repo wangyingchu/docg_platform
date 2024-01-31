@@ -546,7 +546,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
 
-        int degreeOfParallelism = BatchDataOperationUtil.calculateRuntimeCPUCoresByUsageRate(resultEntitiesValues.size(),BatchDataOperationUtil.CPUUsageRate.High);
+        int degreeOfParallelism = BatchDataOperationUtil.calculateRuntimeCPUCoresByUsageRate(BatchDataOperationUtil.CPUUsageRate.High);
         int singlePartitionSize = (resultEntitiesValues.size()/degreeOfParallelism)+1;
         List<List<RelationEntityValue>> rsList = Lists.partition(resultEntitiesValues, singlePartitionSize);
         Map<String,Object> threadReturnDataMap = new Hashtable<>();
