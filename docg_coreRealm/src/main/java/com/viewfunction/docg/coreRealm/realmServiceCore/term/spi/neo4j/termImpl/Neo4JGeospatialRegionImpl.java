@@ -606,9 +606,9 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
                             geospatialRegionRuntimeStatistics.getContainsVillageScaleTimeScaleEntityCount()
             );
 
-            String geospatialRegionNameFilter2 = hasOnlyOneGeospatialRegionFlag ? "":"{DOCG_GeospatialScaleEventGeospatialRegion:'"+getGeospatialRegionName()+"'}";
+            String geospatialRegionNameFilter2 = hasOnlyOneGeospatialRegionFlag ? "":"DOCG_GeospatialScaleEventGeospatialRegion:'"+getGeospatialRegionName()+"',";
 
-            queryCql ="MATCH (n:DOCG_GeospatialScaleEvent{"+geospatialRegionNameFilter2+"DOCG_GeospatialScaleEventScaleGrade:'CONTINENT'}) RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
+            queryCql ="MATCH (n:DOCG_GeospatialScaleEvent {"+geospatialRegionNameFilter2+"DOCG_GeospatialScaleEventScaleGrade:'CONTINENT'}) RETURN COUNT(n) AS "+CypherBuilder.operationResultName;
             logger.debug("Generated Cypher Statement: {}", queryCql);
             responseObj = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,queryCql);
             if(responseObj != null){
