@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -961,24 +962,16 @@ public class BatchDataOperationUtil {
                  List<ConceptionEntityValue> conceptionEntityValueList,DateTimeFormatter dateTimeFormatter,
                  TemporalScaleCalculable.TemporalScaleLevel temporalScaleType, CPUUsageRate _CPUUsageRate){
         int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
-
         int singlePartitionSize = (conceptionEntityValueList.size()/degreeOfParallelism)+1;
-
-
         List<List<ConceptionEntityValue>> rsList = Lists.partition(conceptionEntityValueList, singlePartitionSize);
         Map<String,Object> threadReturnDataMap = new Hashtable<>();
         threadReturnDataMap.put("StartTime", LocalDateTime.now());
         ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
-
         for(List<ConceptionEntityValue> currentRelationEntityValueList:rsList){
-
-
-            LinkGeospatialScaleEventThread linkGeospatialScaleEventThread = new LinkGeospatialScaleEventThread(RealmConstant._defaultGeospatialRegionName,
-                    null,null,null,null,threadReturnDataMap);
-
-
-
-            executor.execute(linkGeospatialScaleEventThread);
+            ConvertConceptionEntityAttributeToTemporalTypeThread convertConceptionEntityAttributeToTemporalTypeThread =
+                    new ConvertConceptionEntityAttributeToTemporalTypeThread(attributeName,dateTimeFormatter,
+                    temporalScaleType,currentRelationEntityValueList,threadReturnDataMap);
+            executor.execute(convertConceptionEntityAttributeToTemporalTypeThread);
         }
         executor.shutdown();
         try {
@@ -988,6 +981,65 @@ public class BatchDataOperationUtil {
         }
         threadReturnDataMap.put("FinishTime", LocalDateTime.now());
         return threadReturnDataMap;
+    }
+
+    private static class ConvertConceptionEntityAttributeToTemporalTypeThread implements Runnable{
+        private String attributeName;
+        private DateTimeFormatter dateTimeFormatter;
+        private TemporalScaleCalculable.TemporalScaleLevel temporalScaleType;
+        private List<ConceptionEntityValue> conceptionEntityValueList;
+        private Map<String,Object> threadReturnDataMap;
+
+        public ConvertConceptionEntityAttributeToTemporalTypeThread(String attributeName,DateTimeFormatter dateTimeFormatter,
+                     TemporalScaleCalculable.TemporalScaleLevel temporalScaleType,List<ConceptionEntityValue> conceptionEntityValueList,
+                     Map<String,Object> threadReturnDataMap){
+            this.attributeName = attributeName;
+            this.dateTimeFormatter = dateTimeFormatter;
+            this.temporalScaleType = temporalScaleType;
+            this.conceptionEntityValueList = conceptionEntityValueList;
+            this.threadReturnDataMap = threadReturnDataMap;
+        }
+        @Override
+        public void run() {
+            List<String> validConceptionEntityUIDList = new ArrayList<>();
+            Map<String,String> conceptionEntityUID_attributeValueMap = new HashMap<>();
+            for(ConceptionEntityValue currentConceptionEntityValue:this.conceptionEntityValueList){
+                if(currentConceptionEntityValue.getEntityAttributesValue().containsKey(this.attributeName)){
+                    String attributeStringValue = currentConceptionEntityValue.getEntityAttributesValue().get(this.attributeName).toString();
+                    String conceptionEntityUID = currentConceptionEntityValue.getConceptionEntityUID();
+                    validConceptionEntityUIDList.add(conceptionEntityUID);
+                    conceptionEntityUID_attributeValueMap.put(conceptionEntityUID,attributeStringValue);
+                }
+            }
+
+            CoreRealm targetCoreRealm = null;
+            try {
+                targetCoreRealm = RealmTermFactory.getDefaultCoreRealm();
+                targetCoreRealm.openGlobalSession();
+                CrossKindDataOperator targetCrossKindDataOperator = targetCoreRealm.getCrossKindDataOperator();
+                List<ConceptionEntity> conceptionEntityList = targetCrossKindDataOperator.getConceptionEntitiesByUIDs(validConceptionEntityUIDList);
+                for(ConceptionEntity currentConceptionEntity : conceptionEntityList){
+                    String currentConceptionEntityUID = currentConceptionEntity.getConceptionEntityUID();
+                    currentConceptionEntity.removeAttribute(attributeName);
+
+                    String temporalStringValue = conceptionEntityUID_attributeValueMap.get(currentConceptionEntityUID);
+
+                    TemporalAccessor temporalAccessor = dateTimeFormatter.parse(temporalStringValue);
+
+
+                    currentConceptionEntity.updateAttribute(attributeName,new Date());
+
+                }
+            } catch (CoreRealmServiceEntityExploreException e) {
+                throw new RuntimeException(e);
+            } catch (CoreRealmServiceRuntimeException e) {
+                throw new RuntimeException(e);
+            } finally {
+                if(targetCoreRealm != null){
+                    targetCoreRealm.closeGlobalSession();
+                }
+            }
+        }
     }
 
     public static int calculateRuntimeCPUCoresByUsageRate(CPUUsageRate _CPUUsageRate){
