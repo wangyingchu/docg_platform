@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -999,8 +998,11 @@ public class BatchDataOperationUtil {
             this.conceptionEntityValueList = conceptionEntityValueList;
             this.threadReturnDataMap = threadReturnDataMap;
         }
+
         @Override
         public void run() {
+            String currentThreadName = Thread.currentThread().getName();
+            long successfulCount = 0;
             List<String> validConceptionEntityUIDList = new ArrayList<>();
             Map<String,String> conceptionEntityUID_attributeValueMap = new HashMap<>();
             for(ConceptionEntityValue currentConceptionEntityValue:this.conceptionEntityValueList){
@@ -1021,14 +1023,45 @@ public class BatchDataOperationUtil {
                 for(ConceptionEntity currentConceptionEntity : conceptionEntityList){
                     String currentConceptionEntityUID = currentConceptionEntity.getConceptionEntityUID();
                     currentConceptionEntity.removeAttribute(attributeName);
-
                     String temporalStringValue = conceptionEntityUID_attributeValueMap.get(currentConceptionEntityUID);
-
-                    TemporalAccessor temporalAccessor = dateTimeFormatter.parse(temporalStringValue);
-
-
-                    currentConceptionEntity.updateAttribute(attributeName,new Date());
-
+                    switch(temporalScaleType){
+                        case Date :
+                            try {
+                                LocalDate localDateAttributeValue = LocalDate.parse(temporalStringValue, dateTimeFormatter);
+                                currentConceptionEntity.addAttribute(attributeName,localDateAttributeValue);
+                                successfulCount++;
+                            }catch(DateTimeParseException e){
+                                e.printStackTrace();
+                            }
+                            break;
+                        case Time:
+                            try {
+                                LocalTime localTimeAttributeValue = LocalTime.parse(temporalStringValue,dateTimeFormatter);
+                                currentConceptionEntity.addAttribute(attributeName,localTimeAttributeValue);
+                                successfulCount++;
+                            } catch(DateTimeParseException e){
+                                e.printStackTrace();
+                            }
+                            break;
+                        case Datetime:
+                            try {
+                                LocalDateTime localDateTimeAttributeValue = LocalDateTime.parse(temporalStringValue,dateTimeFormatter);
+                                currentConceptionEntity.addAttribute(attributeName,localDateTimeAttributeValue);
+                                successfulCount++;
+                            }catch(DateTimeParseException e){
+                                e.printStackTrace();
+                            }
+                            break;
+                        case Timestamp:
+                            try {
+                                ZonedDateTime zonedDateTimeAttributeValue = ZonedDateTime.parse(temporalStringValue,dateTimeFormatter);
+                                Date timeStampDateAttributeValue = Date.from(zonedDateTimeAttributeValue.toInstant());
+                                currentConceptionEntity.addAttribute(attributeName,timeStampDateAttributeValue);
+                                successfulCount++;
+                            }catch(DateTimeParseException e){
+                                e.printStackTrace();
+                            }
+                    }
                 }
             } catch (CoreRealmServiceEntityExploreException e) {
                 throw new RuntimeException(e);
@@ -1039,6 +1072,7 @@ public class BatchDataOperationUtil {
                     targetCoreRealm.closeGlobalSession();
                 }
             }
+            threadReturnDataMap.put(currentThreadName,successfulCount);
         }
     }
 
