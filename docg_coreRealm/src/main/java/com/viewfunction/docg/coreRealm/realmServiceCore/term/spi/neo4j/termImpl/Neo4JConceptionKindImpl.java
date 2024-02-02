@@ -1341,6 +1341,11 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         return entitiesOperationStatistics;
     }
 
+    @Override
+    public EntitiesOperationStatistics attachGeospatialScaleEvents(QueryParameters queryParameters, String geospatialEventAttributeName, GeospatialRegion.GeospatialProperty geospatialPropertyType, String geospatialRegionName, String eventComment, Map<String, Object> eventData, GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
     private long executeEntitiesOperationWithCountResponse(String cql){
         long operationResultCount = 0;
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
