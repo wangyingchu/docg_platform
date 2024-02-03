@@ -408,6 +408,16 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
                                 TemporalScaleCalculable.TemporalScaleLevel temporalScaleType) throws CoreRealmServiceRuntimeException;
 
     /**
+     * 将当前概念类型所有概念实体中指定属性的值复制到新的属性中，如已经存在与新属性同名的属性值，则该值将被覆盖
+     *
+     * @param originalAttributeName String 需要被复制的属性名称
+     * @param newAttributeName String 复制目标新属性的名称
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics duplicateEntityAttribute(String originalAttributeName, String newAttributeName) throws CoreRealmServiceRuntimeException;
+
+    /**
      * 为当前概念类型的特定概念实体在指定的时间流上附加时间刻度事件
      *
      * @param queryParameters QueryParameters 概念实体查询过滤条件
@@ -423,7 +433,19 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
     public EntitiesOperationStatistics attachTimeScaleEvents(QueryParameters queryParameters, String timeEventAttributeName, DateTimeFormatter dateTimeFormatter,
                                 String timeFlowName, String eventComment, Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 
+    /**
+     * 为当前概念类型的特定概念实体在指定的地理空间区域上附加地理空间刻度事件
+     *
+     * @param queryParameters QueryParameters 概念实体查询过滤条件
+     * @param geospatialEventAttributeName String 在地理空间区域上确定具体地理空间目标的属性名称，该属性类型应当为 String 类型
+     * @param geospatialPropertyType GeospatialRegion.GeospatialProperty 确定属性 geospatialEventAttributeName 内容表示的具体地理空间属性类型
+     * @param geospatialRegionName String 指定地理空间区域名称,输入 null 则选择默认地理空间区域
+     * @param eventComment String 事件备注
+     * @param eventData Map<String, Object> 事件数据
+     * @param geospatialScaleGrade GeospatialRegion.GeospatialScaleGrade 事件地理空间刻度等级
+     *
+     * @return 操作执行状况的统计结果
+     */
     public EntitiesOperationStatistics attachGeospatialScaleEvents(QueryParameters queryParameters, String geospatialEventAttributeName, GeospatialRegion.GeospatialProperty geospatialPropertyType,
                                                                    String geospatialRegionName, String eventComment, Map<String, Object> eventData, GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
-
 }
