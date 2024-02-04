@@ -1140,9 +1140,9 @@ public class BatchDataOperationUtil {
                 CrossKindDataOperator targetCrossKindDataOperator = targetCoreRealm.getCrossKindDataOperator();
                 List<RelationEntity> relationEntityList = targetCrossKindDataOperator.getRelationEntitiesByUIDs(validRelationEntityUIDList);
                 for(RelationEntity currentRelationEntity : relationEntityList){
-                    String currentConceptionEntityUID = currentRelationEntity.getRelationEntityUID();
+                    String currentRelationEntityUID = currentRelationEntity.getRelationEntityUID();
                     currentRelationEntity.removeAttribute(attributeName);
-                    String temporalStringValue = relationEntityUID_attributeValueMap.get(currentConceptionEntityUID);
+                    String temporalStringValue = relationEntityUID_attributeValueMap.get(currentRelationEntityUID);
                     switch(temporalScaleType){
                         case Date :
                             try {

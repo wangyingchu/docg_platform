@@ -695,6 +695,7 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
         attributeNames.add(attributeName);
         QueryParameters exploreParameters = new QueryParameters();
         exploreParameters.setResultNumber(1000000000);
+        exploreParameters.setEntityKind(this.relationKindName);
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
