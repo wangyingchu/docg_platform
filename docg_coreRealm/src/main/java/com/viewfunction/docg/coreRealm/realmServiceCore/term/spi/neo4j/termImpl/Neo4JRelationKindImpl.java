@@ -6,9 +6,11 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filtering
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.TemporalScaleCalculable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
@@ -29,6 +31,7 @@ import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Neo4JRelationKindImpl implements Neo4JRelationKind {
@@ -662,6 +665,66 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
         entitiesOperationStatistics.setFinishTime(new Date());
         entitiesOperationStatistics.setSuccessItemsCount(operationEntitiesCount);
         entitiesOperationStatistics.setOperationSummary("convertEntityAttributeToStringType operation success");
+        return entitiesOperationStatistics;
+    }
+
+    @Override
+    public EntitiesOperationStatistics convertEntityAttributeToTemporalType(String attributeName, DateTimeFormatter dateTimeFormatter, TemporalScaleCalculable.TemporalScaleLevel temporalScaleType) throws CoreRealmServiceRuntimeException {
+        if(attributeName == null){
+            logger.error("attributeName is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("attributeName is required.");
+            throw exception;
+        }
+        if(dateTimeFormatter == null){
+            logger.error("dateTimeFormatter is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("dateTimeFormatter is required.");
+            throw exception;
+        }
+        if(temporalScaleType == null){
+            logger.error("temporalScaleType is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("temporalScaleType is required.");
+            throw exception;
+        }
+
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+        List<String> attributeNames = new ArrayList<>();
+        attributeNames.add(attributeName);
+        QueryParameters exploreParameters = new QueryParameters();
+        exploreParameters.setResultNumber(1000000000);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,
+                    null,null,false,exploreParameters,null);
+            GetListRelationEntityValueTransformer getListRelationEntityValueTransformer =
+                    new GetListRelationEntityValueTransformer(this.relationKindName,attributeNames);
+            Object resEntityRes = workingGraphOperationExecutor.executeRead(getListRelationEntityValueTransformer,queryCql);
+
+            if(resEntityRes != null){
+                List<RelationEntityValue> resultEntitiesValues = (List<RelationEntityValue>)resEntityRes;
+                Map<String,Object> operationResult =
+                        BatchDataOperationUtil.batchConvertRelationEntityAttributeToTemporalType(attributeName,resultEntitiesValues,dateTimeFormatter,temporalScaleType,BatchDataOperationUtil.CPUUsageRate.High);
+                long successItemCount = 0;
+                Collection<Object> resultCountCollection = operationResult.values();
+                for(Object currentResultCount :resultCountCollection){
+                    if(currentResultCount instanceof Long) {
+                        successItemCount = successItemCount + (Long) currentResultCount;
+                    }
+                }
+                entitiesOperationStatistics.setSuccessItemsCount(successItemCount);
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            throw new RuntimeException(e);
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+
+        entitiesOperationStatistics.setOperationSummary("convert String Entity Attribute "+attributeName+" to "+temporalScaleType + " operation finished.");
+        entitiesOperationStatistics.setFinishTime(new Date());
         return entitiesOperationStatistics;
     }
 

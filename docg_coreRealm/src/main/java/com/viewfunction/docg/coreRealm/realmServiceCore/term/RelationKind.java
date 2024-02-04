@@ -5,13 +5,11 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryPara
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ClassificationAttachable;
-import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaAttributeFeatureSupportable;
-import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaConfigItemFeatureSupportable;
-import com.viewfunction.docg.coreRealm.realmServiceCore.feature.StatisticalAndEvaluable;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -234,4 +232,16 @@ public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttr
      * @return 操作执行状况的统计结果
      */
     public EntitiesOperationStatistics convertEntityAttributeToStringType(String attributeName);
+
+    /**
+     * 将当前关系类型的所有关系实体中指定的属性的 String 数据类型的表达转换为 Temporal 时间类类型
+     *
+     * @param attributeName String 需要转换的属性名称
+     * @param dateTimeFormatter DateTimeFormatter 需要转换的属性的时间类型数据格式
+     * @param temporalScaleType TemporalScaleLevel 需要转换为的时间类类型
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics convertEntityAttributeToTemporalType(String attributeName, DateTimeFormatter dateTimeFormatter,
+                                                                            TemporalScaleCalculable.TemporalScaleLevel temporalScaleType) throws CoreRealmServiceRuntimeException;
 }

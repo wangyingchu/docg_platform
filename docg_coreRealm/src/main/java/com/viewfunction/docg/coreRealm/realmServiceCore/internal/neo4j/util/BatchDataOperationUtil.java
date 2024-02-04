@@ -957,9 +957,9 @@ public class BatchDataOperationUtil {
         return batchAttachGeospatialScaleEvents(attachEntityMetaDataList,eventComment,globalEventData,geospatialScaleGrade,_CPUUsageRate);
     }
 
-    public static Map<String,Object> batchConvertEntityAttributeToTemporalType(String attributeName,
-                 List<ConceptionEntityValue> conceptionEntityValueList,DateTimeFormatter dateTimeFormatter,
-                 TemporalScaleCalculable.TemporalScaleLevel temporalScaleType, CPUUsageRate _CPUUsageRate){
+    public static Map<String,Object> batchConvertConceptionEntityAttributeToTemporalType(String attributeName,
+                                                                                         List<ConceptionEntityValue> conceptionEntityValueList, DateTimeFormatter dateTimeFormatter,
+                                                                                         TemporalScaleCalculable.TemporalScaleLevel temporalScaleType, CPUUsageRate _CPUUsageRate){
         int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
         int singlePartitionSize = (conceptionEntityValueList.size()/degreeOfParallelism)+1;
         List<List<ConceptionEntityValue>> rsList = Lists.partition(conceptionEntityValueList, singlePartitionSize);
@@ -1057,6 +1057,125 @@ public class BatchDataOperationUtil {
                                 ZonedDateTime zonedDateTimeAttributeValue = ZonedDateTime.parse(temporalStringValue,dateTimeFormatter);
                                 Date timeStampDateAttributeValue = Date.from(zonedDateTimeAttributeValue.toInstant());
                                 currentConceptionEntity.addAttribute(attributeName,timeStampDateAttributeValue);
+                                successfulCount++;
+                            }catch(DateTimeParseException e){
+                                e.printStackTrace();
+                            }
+                    }
+                }
+            } catch (CoreRealmServiceEntityExploreException e) {
+                throw new RuntimeException(e);
+            } catch (CoreRealmServiceRuntimeException e) {
+                throw new RuntimeException(e);
+            } finally {
+                if(targetCoreRealm != null){
+                    targetCoreRealm.closeGlobalSession();
+                }
+            }
+            threadReturnDataMap.put(currentThreadName,successfulCount);
+        }
+    }
+
+    public static Map<String,Object> batchConvertRelationEntityAttributeToTemporalType(String attributeName,
+                                                                                       List<RelationEntityValue> relationEntityValueList, DateTimeFormatter dateTimeFormatter,
+                                                                                       TemporalScaleCalculable.TemporalScaleLevel temporalScaleType, CPUUsageRate _CPUUsageRate){
+        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
+        int singlePartitionSize = (relationEntityValueList.size()/degreeOfParallelism)+1;
+        List<List<RelationEntityValue>> rsList = Lists.partition(relationEntityValueList, singlePartitionSize);
+        Map<String,Object> threadReturnDataMap = new Hashtable<>();
+        threadReturnDataMap.put("StartTime", LocalDateTime.now());
+        ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+        for(List<RelationEntityValue> currentRelationEntityValueList:rsList){
+            ConvertRelationEntityAttributeToTemporalTypeThread convertRelationEntityAttributeToTemporalTypeThread =
+                    new ConvertRelationEntityAttributeToTemporalTypeThread(attributeName,dateTimeFormatter,
+                            temporalScaleType,currentRelationEntityValueList,threadReturnDataMap);
+            executor.execute(convertRelationEntityAttributeToTemporalTypeThread);
+        }
+        executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        threadReturnDataMap.put("FinishTime", LocalDateTime.now());
+        return threadReturnDataMap;
+    }
+
+    private static class ConvertRelationEntityAttributeToTemporalTypeThread implements Runnable{
+        private String attributeName;
+        private DateTimeFormatter dateTimeFormatter;
+        private TemporalScaleCalculable.TemporalScaleLevel temporalScaleType;
+        private List<RelationEntityValue> relationEntityValueList;
+        private Map<String,Object> threadReturnDataMap;
+
+        public ConvertRelationEntityAttributeToTemporalTypeThread(String attributeName,DateTimeFormatter dateTimeFormatter,
+                                                                    TemporalScaleCalculable.TemporalScaleLevel temporalScaleType,List<RelationEntityValue> relationEntityValueList,
+                                                                    Map<String,Object> threadReturnDataMap){
+            this.attributeName = attributeName;
+            this.dateTimeFormatter = dateTimeFormatter;
+            this.temporalScaleType = temporalScaleType;
+            this.relationEntityValueList = relationEntityValueList;
+            this.threadReturnDataMap = threadReturnDataMap;
+        }
+
+        @Override
+        public void run() {
+            String currentThreadName = Thread.currentThread().getName();
+            long successfulCount = 0;
+            List<String> validRelationEntityUIDList = new ArrayList<>();
+            Map<String,String> relationEntityUID_attributeValueMap = new HashMap<>();
+            for(RelationEntityValue currentRelationEntityValue:this.relationEntityValueList){
+                if(currentRelationEntityValue.getEntityAttributesValue().containsKey(this.attributeName)){
+                    String attributeStringValue = currentRelationEntityValue.getEntityAttributesValue().get(this.attributeName).toString();
+                    String relationEntityUID = currentRelationEntityValue.getRelationEntityUID();
+                    validRelationEntityUIDList.add(relationEntityUID);
+                    relationEntityUID_attributeValueMap.put(relationEntityUID,attributeStringValue);
+                }
+            }
+
+            CoreRealm targetCoreRealm = null;
+            try {
+                targetCoreRealm = RealmTermFactory.getDefaultCoreRealm();
+                targetCoreRealm.openGlobalSession();
+                CrossKindDataOperator targetCrossKindDataOperator = targetCoreRealm.getCrossKindDataOperator();
+                List<RelationEntity> relationEntityList = targetCrossKindDataOperator.getRelationEntitiesByUIDs(validRelationEntityUIDList);
+                for(RelationEntity currentRelationEntity : relationEntityList){
+                    String currentConceptionEntityUID = currentRelationEntity.getRelationEntityUID();
+                    currentRelationEntity.removeAttribute(attributeName);
+                    String temporalStringValue = relationEntityUID_attributeValueMap.get(currentConceptionEntityUID);
+                    switch(temporalScaleType){
+                        case Date :
+                            try {
+                                LocalDate localDateAttributeValue = LocalDate.parse(temporalStringValue, dateTimeFormatter);
+                                currentRelationEntity.addAttribute(attributeName,localDateAttributeValue);
+                                successfulCount++;
+                            }catch(DateTimeParseException e){
+                                e.printStackTrace();
+                            }
+                            break;
+                        case Time:
+                            try {
+                                LocalTime localTimeAttributeValue = LocalTime.parse(temporalStringValue,dateTimeFormatter);
+                                currentRelationEntity.addAttribute(attributeName,localTimeAttributeValue);
+                                successfulCount++;
+                            } catch(DateTimeParseException e){
+                                e.printStackTrace();
+                            }
+                            break;
+                        case Datetime:
+                            try {
+                                LocalDateTime localDateTimeAttributeValue = LocalDateTime.parse(temporalStringValue,dateTimeFormatter);
+                                currentRelationEntity.addAttribute(attributeName,localDateTimeAttributeValue);
+                                successfulCount++;
+                            }catch(DateTimeParseException e){
+                                e.printStackTrace();
+                            }
+                            break;
+                        case Timestamp:
+                            try {
+                                ZonedDateTime zonedDateTimeAttributeValue = ZonedDateTime.parse(temporalStringValue,dateTimeFormatter);
+                                Date timeStampDateAttributeValue = Date.from(zonedDateTimeAttributeValue.toInstant());
+                                currentRelationEntity.addAttribute(attributeName,timeStampDateAttributeValue);
                                 successfulCount++;
                             }catch(DateTimeParseException e){
                                 e.printStackTrace();

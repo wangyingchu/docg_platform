@@ -1260,7 +1260,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
             if(resEntityRes != null){
                 List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
                 Map<String,Object> operationResult =
-                        BatchDataOperationUtil.batchConvertEntityAttributeToTemporalType(attributeName,resultEntitiesValues,dateTimeFormatter,temporalScaleType,BatchDataOperationUtil.CPUUsageRate.High);
+                        BatchDataOperationUtil.batchConvertConceptionEntityAttributeToTemporalType(attributeName,resultEntitiesValues,dateTimeFormatter,temporalScaleType,BatchDataOperationUtil.CPUUsageRate.High);
                 long successItemCount = 0;
                 Collection<Object> resultCountCollection = operationResult.values();
                 for(Object currentResultCount :resultCountCollection){
