@@ -530,11 +530,11 @@ public class GSLCaseTestV2_01 {
         System.out.println(_SHIDataMap.size());
         System.out.println(_SHENGDataMap.size());
 
-        Map<String,Object> attachResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByGeospatialCode(_SHENGDataMap,"organizationAdministrativeAtDistrict",null, GeospatialRegion.GeospatialScaleGrade.PROVINCE,BatchDataOperationUtil.CPUUsageRate.Low);
+        Map<String,Object> attachResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByGeospatialCode(_SHENGDataMap,"organizationAdministrativeAtDistrict",null,null, GeospatialRegion.GeospatialScaleGrade.PROVINCE,BatchDataOperationUtil.CPUUsageRate.Low);
         System.out.println(attachResult);
-        attachResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByGeospatialCode(_SHIDataMap,"organizationAdministrativeAtDistrict",null, GeospatialRegion.GeospatialScaleGrade.PREFECTURE,BatchDataOperationUtil.CPUUsageRate.Low);
+        attachResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByGeospatialCode(_SHIDataMap,"organizationAdministrativeAtDistrict",null,null, GeospatialRegion.GeospatialScaleGrade.PREFECTURE,BatchDataOperationUtil.CPUUsageRate.Low);
         System.out.println(attachResult);
-        attachResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByGeospatialCode(_XIANDataMap,"organizationAdministrativeAtDistrict",null, GeospatialRegion.GeospatialScaleGrade.COUNTY,BatchDataOperationUtil.CPUUsageRate.Middle);
+        attachResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByGeospatialCode(_XIANDataMap,"organizationAdministrativeAtDistrict",null, null,GeospatialRegion.GeospatialScaleGrade.COUNTY,BatchDataOperationUtil.CPUUsageRate.Middle);
         System.out.println(attachResult);
     }
 
@@ -588,11 +588,11 @@ public class GSLCaseTestV2_01 {
         System.out.println(_SHIDataMap.size());
         System.out.println(_SHENGDataMap.size());
 
-        Map<String,Object> attachResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByChineseNames(_SHENGDataMap,eventComment,null, GeospatialRegion.GeospatialScaleGrade.PROVINCE,BatchDataOperationUtil.CPUUsageRate.High);
+        Map<String,Object> attachResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByChineseNames(_SHENGDataMap,eventComment,null, null,GeospatialRegion.GeospatialScaleGrade.PROVINCE,BatchDataOperationUtil.CPUUsageRate.High);
         System.out.println(attachResult);
-        attachResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByChineseNames(_SHIDataMap,eventComment,null, GeospatialRegion.GeospatialScaleGrade.PREFECTURE,BatchDataOperationUtil.CPUUsageRate.High);
+        attachResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByChineseNames(_SHIDataMap,eventComment,null, null,GeospatialRegion.GeospatialScaleGrade.PREFECTURE,BatchDataOperationUtil.CPUUsageRate.High);
         System.out.println(attachResult);
-        attachResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByChineseNames(_XIANDataMap,eventComment,null, GeospatialRegion.GeospatialScaleGrade.COUNTY,BatchDataOperationUtil.CPUUsageRate.High);
+        attachResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByChineseNames(_XIANDataMap,eventComment,null, null,GeospatialRegion.GeospatialScaleGrade.COUNTY,BatchDataOperationUtil.CPUUsageRate.High);
         System.out.println(attachResult);
     }
 

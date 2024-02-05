@@ -1372,7 +1372,66 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
     @Override
     public EntitiesOperationStatistics attachGeospatialScaleEvents(QueryParameters queryParameters, String geospatialEventAttributeName, GeospatialRegion.GeospatialProperty geospatialPropertyType, String geospatialRegionName, String eventComment, Map<String, Object> eventData, GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
-        return null;
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+
+        if(geospatialPropertyType == null){
+            logger.error("geospatialPropertyType is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("geospatialPropertyType is required.");
+            throw exception;
+        }
+        if (Objects.requireNonNull(geospatialPropertyType) == GeospatialRegion.GeospatialProperty.EnglishName) {
+            logger.error("EnglishName geospatialPropertyType is not supported.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("EnglishName geospatialPropertyType is not supported.");
+            throw exception;
+        }
+
+        QueryParameters filterQueryParameters;
+        if(queryParameters != null){
+            filterQueryParameters = queryParameters;
+        }else{
+            filterQueryParameters = new QueryParameters();
+            filterQueryParameters.setResultNumber(1000000000);
+        }
+        if(geospatialEventAttributeName == null){
+            logger.error("geospatialEventAttributeName is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("geospatialEventAttributeName is required.");
+            throw exception;
+        }
+        List<String> attributeNamesList = new ArrayList<>();
+        attributeNamesList.add(geospatialEventAttributeName);
+
+        ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributeResult =  getSingleValueEntityAttributesByAttributeNames(attributeNamesList,filterQueryParameters);
+        long successItemCount = 0;
+        if(conceptionEntitiesAttributeResult == null || conceptionEntitiesAttributeResult.getOperationStatistics().getResultEntitiesCount() == 0){
+            successItemCount = 0;
+        }else{
+            List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
+            Map<String,String> entityUIDAndGeospatialChinaNamesMap = new HashMap<>();
+            for(ConceptionEntityValue currentConceptionEntityValue : conceptionEntityValueList){
+                entityUIDAndGeospatialChinaNamesMap.put(currentConceptionEntityValue.getConceptionEntityUID(),currentConceptionEntityValue.getEntityAttributesValue().get(geospatialEventAttributeName).toString());
+            }
+            Map<String,Object> operationResult = null;
+            switch(geospatialPropertyType){
+                case ChineseName -> operationResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByChineseNames(
+                        entityUIDAndGeospatialChinaNamesMap,geospatialRegionName,eventComment,eventData,geospatialScaleGrade,BatchDataOperationUtil.CPUUsageRate.High);
+                case GeospatialCode -> operationResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByGeospatialCode(
+                        entityUIDAndGeospatialChinaNamesMap,geospatialRegionName,eventComment,eventData,geospatialScaleGrade,BatchDataOperationUtil.CPUUsageRate.High);
+            }
+            Collection<Object> resultCountCollection = operationResult.values();
+            for(Object currentResultCount :resultCountCollection){
+                if(currentResultCount instanceof Long) {
+                    successItemCount = successItemCount + (Long) currentResultCount;
+                }
+            }
+        }
+        entitiesOperationStatistics.setFinishTime(new Date());
+        entitiesOperationStatistics.setSuccessItemsCount(successItemCount);
+        entitiesOperationStatistics.setOperationSummary("attachTimeScaleEvents operation success");
+        return entitiesOperationStatistics;
     }
 
     private long executeEntitiesOperationWithCountResponse(String cql){

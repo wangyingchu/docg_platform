@@ -788,7 +788,7 @@ public class BatchDataOperationUtil {
         }
     }
 
-    public static Map<String,Object> batchAttachGeospatialScaleEventsByGeospatialCode(Map<String,String> entityUIDAndGeospatialCodeMap,
+    public static Map<String,Object> batchAttachGeospatialScaleEventsByGeospatialCode(Map<String,String> entityUIDAndGeospatialCodeMap,String geospatialRegionName,
                                                     String eventComment,Map<String,Object> globalEventData,GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade, CPUUsageRate _CPUUsageRate){
         Map<String,String> geospatialScaleEntityUIDAndCodeMap = new HashMap<>();
         GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
@@ -840,7 +840,7 @@ public class BatchDataOperationUtil {
         return batchAttachGeospatialScaleEvents(attachEntityMetaDataList,eventComment,globalEventData,geospatialScaleGrade,_CPUUsageRate);
     }
 
-    public static Map<String,Object> batchAttachGeospatialScaleEventsByChineseNames(Map<String,String> entityUIDAndGeospatialChinaNamesMap,
+    public static Map<String,Object> batchAttachGeospatialScaleEventsByChineseNames(Map<String,String> entityUIDAndGeospatialChinaNamesMap,String geospatialRegionName,
                                                                                       String eventComment,Map<String,Object> globalEventData,GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade, CPUUsageRate _CPUUsageRate){
         Map<String,String> geospatialScaleEntityUIDAndChinaNamesMap = new HashMap<>();
         Map<String,String> geospatialScaleEntityUIDAndCodeMap = new HashMap<>();
