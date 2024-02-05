@@ -1283,7 +1283,31 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
     @Override
     public EntitiesOperationStatistics duplicateEntityAttribute(String originalAttributeName, String newAttributeName) throws CoreRealmServiceRuntimeException {
-        return null;
+        if(originalAttributeName == null){
+            logger.error("originalAttributeName is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("originalAttributeName is required.");
+            throw exception;
+        }
+        if(newAttributeName == null){
+            logger.error("newAttributeName is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("newAttributeName is required.");
+            throw exception;
+        }
+
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+
+        String queryCql = "MATCH (node:`"+this.conceptionKindName+"`) WHERE node.`"+ originalAttributeName +"` IS NOT null \n" +
+                "SET node.`"+newAttributeName+"` = node.`"+ originalAttributeName +"` RETURN count(node) AS "+CypherBuilder.operationResultName;
+        logger.debug("Generated Cypher Statement: {}", queryCql);
+
+        long operationEntitiesCount = executeEntitiesOperationWithCountResponse(queryCql);
+        entitiesOperationStatistics.setFinishTime(new Date());
+        entitiesOperationStatistics.setSuccessItemsCount(operationEntitiesCount);
+        entitiesOperationStatistics.setOperationSummary("convertEntityAttributeToStringType operation success");
+        return entitiesOperationStatistics;
     }
 
     @Override
