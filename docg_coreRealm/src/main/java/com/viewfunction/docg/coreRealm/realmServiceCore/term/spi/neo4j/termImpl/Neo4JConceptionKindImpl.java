@@ -1412,7 +1412,9 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
             List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
             Map<String,String> entityUIDAndGeospatialChinaNamesMap = new HashMap<>();
             for(ConceptionEntityValue currentConceptionEntityValue : conceptionEntityValueList){
-                entityUIDAndGeospatialChinaNamesMap.put(currentConceptionEntityValue.getConceptionEntityUID(),currentConceptionEntityValue.getEntityAttributesValue().get(geospatialEventAttributeName).toString());
+                if(currentConceptionEntityValue.getEntityAttributesValue().containsKey(geospatialEventAttributeName)){
+                    entityUIDAndGeospatialChinaNamesMap.put(currentConceptionEntityValue.getConceptionEntityUID(),currentConceptionEntityValue.getEntityAttributesValue().get(geospatialEventAttributeName).toString());
+                }
             }
             Map<String,Object> operationResult = null;
             switch(geospatialPropertyType){
