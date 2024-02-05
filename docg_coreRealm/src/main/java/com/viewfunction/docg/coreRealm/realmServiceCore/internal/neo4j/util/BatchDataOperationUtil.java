@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.TemporalScaleCalculable;
@@ -693,21 +694,22 @@ public class BatchDataOperationUtil {
         }
     }
 
-    public static Map<String,Object> batchAttachGeospatialScaleEvents(List<RelationEntityValue> relationEntityValueList,String eventComment,Map<String,Object> globalEventData,
+    public static Map<String,Object> batchAttachGeospatialScaleEvents(List<RelationEntityValue> relationEntityValueList,String geospatialRegionName,String eventComment,Map<String,Object> globalEventData,
                                                                       GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade, CPUUsageRate _CPUUsageRate){
         int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
-        return batchAttachGeospatialScaleEvents(relationEntityValueList,eventComment,globalEventData,geospatialScaleGrade,degreeOfParallelism);
+        return batchAttachGeospatialScaleEvents(relationEntityValueList,geospatialRegionName,eventComment,globalEventData,geospatialScaleGrade,degreeOfParallelism);
     }
 
-    public static Map<String,Object> batchAttachGeospatialScaleEvents(List<RelationEntityValue> relationEntityValueList,String eventComment,Map<String,Object> globalEventData,
+    public static Map<String,Object> batchAttachGeospatialScaleEvents(List<RelationEntityValue> relationEntityValueList,String geospatialRegionName,String eventComment,Map<String,Object> globalEventData,
                                                                       GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade, int degreeOfParallelism){
         int singlePartitionSize = (relationEntityValueList.size()/degreeOfParallelism)+1;
         List<List<RelationEntityValue>> rsList = Lists.partition(relationEntityValueList, singlePartitionSize);
         Map<String,Object> threadReturnDataMap = new Hashtable<>();
         threadReturnDataMap.put("StartTime", LocalDateTime.now());
+        String realGeospatialRegionName = geospatialRegionName != null ? geospatialRegionName : RealmConstant._defaultGeospatialRegionName;
         ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
         for(List<RelationEntityValue> currentRelationEntityValueList:rsList){
-            LinkGeospatialScaleEventThread linkGeospatialScaleEventThread = new LinkGeospatialScaleEventThread(RealmConstant._defaultGeospatialRegionName,
+            LinkGeospatialScaleEventThread linkGeospatialScaleEventThread = new LinkGeospatialScaleEventThread(realGeospatialRegionName,
                     eventComment,globalEventData,geospatialScaleGrade,currentRelationEntityValueList,threadReturnDataMap);
             executor.execute(linkGeospatialScaleEventThread);
         }
@@ -795,6 +797,8 @@ public class BatchDataOperationUtil {
         try{
             QueryParameters geospatialScaleEntityQueryParameters = new QueryParameters();
             geospatialScaleEntityQueryParameters.setResultNumber(10000000);
+            String realGeospatialRegionName = geospatialRegionName != null ? geospatialRegionName : RealmConstant._defaultGeospatialRegionName;
+            geospatialScaleEntityQueryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,realGeospatialRegionName));
             List<String> attributeNamesList = new ArrayList<>();
             attributeNamesList.add(RealmConstant.GeospatialCodeProperty);
             String queryCql = CypherBuilder.matchAttributesWithQueryParameters(RealmConstant.GeospatialScaleEntityClass,geospatialScaleEntityQueryParameters,attributeNamesList);
@@ -837,7 +841,7 @@ public class BatchDataOperationUtil {
                 attachEntityMetaDataList.add(relationEntityValue);
             }
         }
-        return batchAttachGeospatialScaleEvents(attachEntityMetaDataList,eventComment,globalEventData,geospatialScaleGrade,_CPUUsageRate);
+        return batchAttachGeospatialScaleEvents(attachEntityMetaDataList,geospatialRegionName,eventComment,globalEventData,geospatialScaleGrade,_CPUUsageRate);
     }
 
     public static Map<String,Object> batchAttachGeospatialScaleEventsByChineseNames(Map<String,String> entityUIDAndGeospatialChinaNamesMap,String geospatialRegionName,
@@ -848,6 +852,8 @@ public class BatchDataOperationUtil {
         try{
             QueryParameters geospatialScaleEntityQueryParameters = new QueryParameters();
             geospatialScaleEntityQueryParameters.setResultNumber(10000000);
+            String realGeospatialRegionName = geospatialRegionName != null ? geospatialRegionName : RealmConstant._defaultGeospatialRegionName;
+            geospatialScaleEntityQueryParameters.setDefaultFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,realGeospatialRegionName));
             List<String> attributeNamesList = new ArrayList<>();
             attributeNamesList.add(RealmConstant.GeospatialChineseNameProperty);
             attributeNamesList.add(RealmConstant.GeospatialCodeProperty);
@@ -954,7 +960,7 @@ public class BatchDataOperationUtil {
                 attachEntityMetaDataList.add(relationEntityValue);
             }
         }
-        return batchAttachGeospatialScaleEvents(attachEntityMetaDataList,eventComment,globalEventData,geospatialScaleGrade,_CPUUsageRate);
+        return batchAttachGeospatialScaleEvents(attachEntityMetaDataList,geospatialRegionName,eventComment,globalEventData,geospatialScaleGrade,_CPUUsageRate);
     }
 
     public static Map<String,Object> batchConvertConceptionEntityAttributeToTemporalType(String attributeName,

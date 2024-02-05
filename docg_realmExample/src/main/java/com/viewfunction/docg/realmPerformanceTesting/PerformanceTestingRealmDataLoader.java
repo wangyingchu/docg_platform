@@ -233,7 +233,7 @@ public class PerformanceTestingRealmDataLoader {
             e.printStackTrace();
         }
         Map<String,Object> attachGeoResult =
-                BatchDataOperationUtil.batchAttachGeospatialScaleEvents(relationEntityValueList,"firmLocatedAtCounty",null, GeospatialRegion.GeospatialScaleGrade.COUNTY,16);
+                BatchDataOperationUtil.batchAttachGeospatialScaleEvents(relationEntityValueList,null,"firmLocatedAtCounty",null, GeospatialRegion.GeospatialScaleGrade.COUNTY,16);
         System.out.println(attachGeoResult);
     }
 
@@ -258,7 +258,7 @@ public class PerformanceTestingRealmDataLoader {
         }
 
         Map<String,Object> attachGeoResult =
-                BatchDataOperationUtil.batchAttachGeospatialScaleEvents(relationEntityValueList,"firmLocatedAtTownship",null, GeospatialRegion.GeospatialScaleGrade.TOWNSHIP,16);
+                BatchDataOperationUtil.batchAttachGeospatialScaleEvents(relationEntityValueList,null,"firmLocatedAtTownship",null, GeospatialRegion.GeospatialScaleGrade.TOWNSHIP,16);
         System.out.println(attachGeoResult);
     }
 }
