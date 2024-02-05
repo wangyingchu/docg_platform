@@ -1306,7 +1306,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         long operationEntitiesCount = executeEntitiesOperationWithCountResponse(queryCql);
         entitiesOperationStatistics.setFinishTime(new Date());
         entitiesOperationStatistics.setSuccessItemsCount(operationEntitiesCount);
-        entitiesOperationStatistics.setOperationSummary("convertEntityAttributeToStringType operation success");
+        entitiesOperationStatistics.setOperationSummary("duplicateEntityAttribute operation success");
         return entitiesOperationStatistics;
     }
 

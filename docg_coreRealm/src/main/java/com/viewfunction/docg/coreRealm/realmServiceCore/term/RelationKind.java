@@ -244,4 +244,14 @@ public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttr
      */
     public EntitiesOperationStatistics convertEntityAttributeToTemporalType(String attributeName, DateTimeFormatter dateTimeFormatter,
                                                                             TemporalScaleCalculable.TemporalScaleLevel temporalScaleType) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 将当前关系类型所有关系实体中指定属性的值复制到新的属性中，如已经存在与新属性同名的属性值，则该值将被覆盖
+     *
+     * @param originalAttributeName String 需要被复制的属性名称
+     * @param newAttributeName String 复制目标新属性的名称
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics duplicateEntityAttribute(String originalAttributeName, String newAttributeName) throws CoreRealmServiceRuntimeException;
 }

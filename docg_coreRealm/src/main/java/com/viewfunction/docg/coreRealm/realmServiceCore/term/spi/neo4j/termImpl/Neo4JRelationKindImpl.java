@@ -729,6 +729,35 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
         return entitiesOperationStatistics;
     }
 
+    @Override
+    public EntitiesOperationStatistics duplicateEntityAttribute(String originalAttributeName, String newAttributeName) throws CoreRealmServiceRuntimeException {
+        if(originalAttributeName == null){
+            logger.error("originalAttributeName is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("originalAttributeName is required.");
+            throw exception;
+        }
+        if(newAttributeName == null){
+            logger.error("newAttributeName is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("newAttributeName is required.");
+            throw exception;
+        }
+
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+
+        String queryCql = "MATCH p=()-[relation:`"+this.relationKindName+"`]->() WHERE relation.`"+ originalAttributeName +"` IS NOT null \n" +
+                "SET relation.`"+newAttributeName+"` = relation.`"+ originalAttributeName +"` RETURN count(relation) AS "+CypherBuilder.operationResultName;
+        logger.debug("Generated Cypher Statement: {}", queryCql);
+
+        long operationEntitiesCount = executeEntitiesOperationWithCountResponse(queryCql);
+        entitiesOperationStatistics.setFinishTime(new Date());
+        entitiesOperationStatistics.setSuccessItemsCount(operationEntitiesCount);
+        entitiesOperationStatistics.setOperationSummary("duplicateEntityAttribute operation success");
+        return entitiesOperationStatistics;
+    }
+
     private long executeEntitiesOperationWithCountResponse(String cql){
         long operationResultCount = 0;
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
