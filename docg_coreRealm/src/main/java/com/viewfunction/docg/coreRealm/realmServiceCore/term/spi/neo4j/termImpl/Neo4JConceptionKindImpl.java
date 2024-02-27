@@ -365,7 +365,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
              */
             //return : "batches"│"total"│"timeTaken"│"committedOperations"│"failedOperations"│"failedBatches"│"retries"│"errorMessages"│"batch"│"operations"
             String cql = "CALL apoc.periodic.iterate(\n" +
-                    "          'MATCH (n:"+this.conceptionKindName+") RETURN n',\n" +
+                    "          'MATCH (n:`"+this.conceptionKindName+"`) RETURN n',\n" +
                     "          'DETACH DELETE n',\n" +
                     "          {batchSize:100000, iterateList:true})";
             logger.debug("Generated Cypher Statement: {}", cql);
@@ -850,7 +850,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
             exception.setCauseMessage("Sample Ratio should between (0,1] .");
             throw exception;
         }
-        String cql = "MATCH (n:"+this.conceptionKindName+") WHERE rand() <= "+sampleRatio+"\n" +
+        String cql = "MATCH (n:`"+this.conceptionKindName+"`) WHERE rand() <= "+sampleRatio+"\n" +
                 "RETURN\n" +
                 "DISTINCT labels(n),max(keys(n)) as PropertyList,count(*) AS SampleSize";
         logger.debug("Generated Cypher Statement: {}", cql);
@@ -899,7 +899,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
             exception.setCauseMessage("Sample Ratio should between (0,1] .");
             throw exception;
         }
-        String cql = "MATCH (n:"+this.conceptionKindName+") WHERE rand() <= "+sampleRatio+"\n" +
+        String cql = "MATCH (n:`"+this.conceptionKindName+"`) WHERE rand() <= "+sampleRatio+"\n" +
                 "        RETURN\n" +
                 "        DISTINCT labels(n),\n" +
                 "        count(*) AS SampleSize,\n" +
@@ -1023,7 +1023,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         }
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
-            String queryCql = "MATCH (n:"+this.conceptionKindName+") RETURN apoc.coll.randomItems(COLLECT(n),"+entitiesCount+") AS " +CypherBuilder.operationResultName;
+            String queryCql = "MATCH (n:`"+this.conceptionKindName+"`) RETURN apoc.coll.randomItems(COLLECT(n),"+entitiesCount+") AS " +CypherBuilder.operationResultName;
             logger.debug("Generated Cypher Statement: {}", queryCql);
             RandomItemsConceptionEntitySetDataTransformer randomItemsConceptionEntitySetDataTransformer =
                     new RandomItemsConceptionEntitySetDataTransformer(workingGraphOperationExecutor);
@@ -1546,7 +1546,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
     private boolean checkRelationEntitiesExist(GraphOperationExecutor workingGraphOperationExecutor,String sourceConceptionKindName,
                                                String targetConceptionKindName,String relationKindName){
-        String cql = "MATCH p=(source:"+sourceConceptionKindName+")-[r:"+relationKindName+"]->(target:"+targetConceptionKindName+") RETURN r AS operationResult LIMIT 1";
+        String cql = "MATCH p=(source:`"+sourceConceptionKindName+"`)-[r:`"+relationKindName+"`]->(target:`"+targetConceptionKindName+"`) RETURN r AS operationResult LIMIT 1";
         logger.debug("Generated Cypher Statement: {}", cql);
         DataTransformer<Boolean> dataTransformer = new DataTransformer<>() {
             @Override
