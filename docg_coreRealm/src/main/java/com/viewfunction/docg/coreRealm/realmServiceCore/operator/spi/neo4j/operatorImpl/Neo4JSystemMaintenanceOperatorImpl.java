@@ -1132,7 +1132,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
 
     private long checkRelationEntitiesCount(GraphOperationExecutor workingGraphOperationExecutor,String sourceConceptionKindName,
                                             String targetConceptionKindName,String relationKindName){
-        String cql = "MATCH p=(source:"+sourceConceptionKindName+")-[r:"+relationKindName+"]->(target:"+targetConceptionKindName+") RETURN count(r) AS operationResult";
+        String cql = "MATCH p=(source:`"+sourceConceptionKindName+"`)-[r:`"+relationKindName+"`]->(target:`"+targetConceptionKindName+"`) RETURN count(r) AS operationResult";
         logger.debug("Generated Cypher Statement: {}", cql);
         GetLongFormatReturnValueTransformer GetLongFormatReturnValueTransformer = new GetLongFormatReturnValueTransformer();
         Object queryRes = workingGraphOperationExecutor.executeRead(GetLongFormatReturnValueTransformer,cql);
@@ -1144,7 +1144,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
 
     private boolean checkRelationEntitiesExist(GraphOperationExecutor workingGraphOperationExecutor,String sourceConceptionKindName,
                                                String targetConceptionKindName,String relationKindName){
-        String cql = "MATCH p=(source:"+sourceConceptionKindName+")-[r:"+relationKindName+"]->(target:"+targetConceptionKindName+") RETURN r AS operationResult LIMIT 1";
+        String cql = "MATCH p=(source:`"+sourceConceptionKindName+"`)-[r:`"+relationKindName+"`]->(target:`"+targetConceptionKindName+"`) RETURN r AS operationResult LIMIT 1";
         logger.debug("Generated Cypher Statement: {}", cql);
         DataTransformer<Boolean> dataTransformer = new DataTransformer<>() {
             @Override
