@@ -385,7 +385,7 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
         }
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
-            String queryCql = "MATCH p=()-[r:"+this.relationKindName+"]->() RETURN apoc.coll.randomItems(COLLECT(r),"+entitiesCount+") AS "+CypherBuilder.operationResultName;
+            String queryCql = "MATCH p=()-[r:`"+this.relationKindName+"`]->() RETURN apoc.coll.randomItems(COLLECT(r),"+entitiesCount+") AS "+CypherBuilder.operationResultName;
             logger.debug("Generated Cypher Statement: {}", queryCql);
             RandomItemsRelationEntitySetDataTransformer randomItemsRelationEntitySetDataTransformer = new RandomItemsRelationEntitySetDataTransformer(workingGraphOperationExecutor);
             Object queryRes = workingGraphOperationExecutor.executeRead(randomItemsRelationEntitySetDataTransformer,queryCql);
@@ -481,7 +481,7 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
     public long purgeRelationsOfSelfAttachedConceptionEntities() {
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
-            String queryCql = "MATCH p=(n1)-[r:"+this.relationKindName+"]->(n2) WHERE id(n1) = id(n2) delete r return count(r) AS " + CypherBuilder.operationResultName;
+            String queryCql = "MATCH p=(n1)-[r:`"+this.relationKindName+"`]->(n2) WHERE id(n1) = id(n2) delete r return count(r) AS " + CypherBuilder.operationResultName;
             logger.debug("Generated Cypher Statement: {}", queryCql);
             GetLongFormatAggregatedReturnValueTransformer GetLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer();
             Object queryRes = workingGraphOperationExecutor.executeWrite(GetLongFormatAggregatedReturnValueTransformer,queryCql);
@@ -807,7 +807,7 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
 
     private long checkRelationEntitiesCount(GraphOperationExecutor workingGraphOperationExecutor,String sourceConceptionKindName,
                                             String targetConceptionKindName,String relationKindName){
-        String cql = "MATCH p=(source:"+sourceConceptionKindName+")-[r:"+relationKindName+"]->(target:"+targetConceptionKindName+") RETURN count(r) AS operationResult";
+        String cql = "MATCH p=(source:`"+sourceConceptionKindName+"`)-[r:`"+relationKindName+"`]->(target:`"+targetConceptionKindName+"`) RETURN count(r) AS operationResult";
         GetLongFormatReturnValueTransformer GetLongFormatReturnValueTransformer = new GetLongFormatReturnValueTransformer();
         Object queryRes = workingGraphOperationExecutor.executeRead(GetLongFormatReturnValueTransformer,cql);
         if(queryRes != null){
@@ -818,7 +818,7 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
 
     private boolean checkRelationEntitiesExist(GraphOperationExecutor workingGraphOperationExecutor,String sourceConceptionKindName,
                                                String targetConceptionKindName,String relationKindName){
-        String cql = "MATCH p=(source:"+sourceConceptionKindName+")-[r:"+relationKindName+"]->(target:"+targetConceptionKindName+") RETURN r AS operationResult LIMIT 1";
+        String cql = "MATCH p=(source:`"+sourceConceptionKindName+"`)-[r:`"+relationKindName+"`]->(target:`"+targetConceptionKindName+"`) RETURN r AS operationResult LIMIT 1";
         logger.debug("Generated Cypher Statement: {}", cql);
         DataTransformer<Boolean> dataTransformer = new DataTransformer<>() {
             @Override
