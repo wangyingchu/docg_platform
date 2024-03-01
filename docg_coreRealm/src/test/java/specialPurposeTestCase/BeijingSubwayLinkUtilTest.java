@@ -5,10 +5,12 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filtering
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleCalculable;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 
 import java.io.IOException;
@@ -75,7 +77,7 @@ public class BeijingSubwayLinkUtilTest {
         }
 
         //System.out.println(stationNameMapping);
-
+/*
         String[] line1Array = new String[]{"苹果园","古城","八角游乐园","八宝山","玉泉路","五棵松","万寿路","公主坟","军事博物馆","木樨地","南礼士路","复兴门","西单","天安门西","天安门东","王府井","东单","建国门","永安里","国贸","大望路","四惠","四惠东","高碑店","传媒大学","双桥","管庄","八里桥","通州北苑","果园","九棵树","梨园","临河里","土桥","花庄","环球度假区"};
         linkLineData(line1Array,stationNameMapping,"1号线/八通线");
         String[] line2Array = new String[]{"西直门","积水潭","鼓楼大街","安定门","雍和宫","东直门","东四十条","朝阳门","建国门","北京站","崇文门","前门","和平门","宣武门","长椿街","复兴门","阜成门","车公庄","西直门"};//环线
@@ -122,7 +124,11 @@ public class BeijingSubwayLinkUtilTest {
         linkLineData(line1大兴机场线Array,stationNameMapping,"大兴机场线");
         String[] line1燕房线Array = new String[]{"燕山","房山城关","饶乐府","马各庄","大石河东","星城","阎村","紫草坞","阎村东"};
         linkLineData(line1燕房线Array,stationNameMapping,"燕房线");
-
+*/
+        /*
+        CrossKindDataOperator crossKindDataOperator = coreRealm.getCrossKindDataOperator();
+        linkSameLocationStations(crossKindDataOperator,stationNameMapping);
+        */
         coreRealm.closeGlobalSession();
     }
 
@@ -173,11 +179,16 @@ public class BeijingSubwayLinkUtilTest {
         }
     }
 
-    private static void linkSameLocationStations(HashMap<String,List<ConceptionEntity>> stationNameMapping){
+    private static void linkSameLocationStations(CrossKindDataOperator crossKindDataOperator,HashMap<String,List<ConceptionEntity>> stationNameMapping) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         Collection<List<ConceptionEntity>> sameLocationStations =  stationNameMapping.values();
         for(List<ConceptionEntity> currentStationsList : sameLocationStations){
             if(currentStationsList.size()>1){
-
+                List<String> conceptionEntityUIDList = new ArrayList<>();
+                for (ConceptionEntity currentConceptionEntity:currentStationsList){
+                    conceptionEntityUIDList.add(currentConceptionEntity.getConceptionEntityUID());
+                }
+                List<RelationEntity> resultRelList = crossKindDataOperator.createBiDirectionRelationsByConceptionEntityUIDs(conceptionEntityUIDList,"ConnectedByBuildingSpace",null,false);
+                System.out.println(resultRelList.size());
             }
         }
     }
