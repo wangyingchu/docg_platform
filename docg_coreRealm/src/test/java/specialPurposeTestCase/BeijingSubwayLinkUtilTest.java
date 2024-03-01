@@ -1,19 +1,19 @@
 package specialPurposeTestCase;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.NullValueFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleCalculable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 
 public class BeijingSubwayLinkUtilTest {
@@ -52,7 +52,7 @@ public class BeijingSubwayLinkUtilTest {
         coreRealm.closeGlobalSession();
     }
 
-    public static void main(String[] args) throws IOException, CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+    public static void main1(String[] args) throws IOException, CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         coreRealm.openGlobalSession();
         ConceptionKind lineKind = coreRealm.getConceptionKind("SubWay-Station");
@@ -132,6 +132,13 @@ public class BeijingSubwayLinkUtilTest {
         coreRealm.closeGlobalSession();
     }
 
+    public static void main(String[] args) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+        //linkStationsTimeScaleEvent1();
+        //linkStationsTimeScaleEvent2();
+        //linkStationsTimeScaleEvent3();
+        //linkStationsGeoEvent();
+        linkLinesGeoEvent();
+    }
 
     private static void linkLineData(String[] line1NameArray,HashMap<String,List<ConceptionEntity>> stationNameMapping,String lineName) throws CoreRealmServiceRuntimeException {
 
@@ -191,5 +198,161 @@ public class BeijingSubwayLinkUtilTest {
                 System.out.println(resultRelList.size());
             }
         }
+    }
+
+    private static void linkStationsTimeScaleEvent1() throws CoreRealmServiceEntityExploreException {
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        coreRealm.openGlobalSession();
+        ConceptionKind stationKind = coreRealm.getConceptionKind("SubWay-Station");
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(10000);
+        ConceptionEntitiesRetrieveResult conceptionEntitiesRetrieveResult = stationKind.getEntities(queryParameters);
+        List<ConceptionEntity> conceptionEntityList = conceptionEntitiesRetrieveResult.getConceptionEntities();
+
+        for(ConceptionEntity currentConceptionEntity:conceptionEntityList){
+            if(currentConceptionEntity.hasAttribute("规划时")){
+                String planningYear = currentConceptionEntity.getAttribute("规划时").getAttributeValue().toString();
+                try {
+                   long yearValue = Long.parseLong(planningYear);
+                   System.out.println(yearValue);
+
+                   LocalDate currentStationLocalDate = LocalDate.of((int) yearValue,1,1);
+                   System.out.println(currentStationLocalDate);
+
+                   Map<String,Object> eventData = new HashMap<>();
+                   eventData.put("planningYear",(int) yearValue);
+
+                   currentConceptionEntity.attachTimeScaleEvent(currentStationLocalDate.atStartOfDay(),"地铁站点规划于",eventData, TimeFlow.TimeScaleGrade.YEAR);
+
+                }catch(NumberFormatException | CoreRealmServiceRuntimeException e){
+                   e.printStackTrace();
+               }
+            }
+        }
+
+        coreRealm.closeGlobalSession();
+    }
+
+    private static void linkStationsTimeScaleEvent2() throws CoreRealmServiceEntityExploreException {
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        coreRealm.openGlobalSession();
+        ConceptionKind stationKind = coreRealm.getConceptionKind("SubWay-Station");
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(10000);
+        ConceptionEntitiesRetrieveResult conceptionEntitiesRetrieveResult = stationKind.getEntities(queryParameters);
+        List<ConceptionEntity> conceptionEntityList = conceptionEntitiesRetrieveResult.getConceptionEntities();
+
+        for(ConceptionEntity currentConceptionEntity:conceptionEntityList){
+            if(currentConceptionEntity.hasAttribute("动工时")){
+                Long planningYear = (Long)currentConceptionEntity.getAttribute("动工时").getAttributeValue();
+                try {
+                    System.out.println(planningYear.intValue());
+                    LocalDate currentStationLocalDate = LocalDate.of(planningYear.intValue(),1,1);
+                    System.out.println(currentStationLocalDate);
+                    Map<String,Object> eventData = new HashMap<>();
+                    eventData.put("beginConstructionYear",planningYear.intValue());
+                    currentConceptionEntity.attachTimeScaleEvent(currentStationLocalDate.atStartOfDay(),"地铁站点动工于",eventData, TimeFlow.TimeScaleGrade.YEAR);
+                }catch(NumberFormatException | CoreRealmServiceRuntimeException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        coreRealm.closeGlobalSession();
+    }
+
+    private static void linkStationsTimeScaleEvent3() throws CoreRealmServiceEntityExploreException {
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        coreRealm.openGlobalSession();
+        ConceptionKind stationKind = coreRealm.getConceptionKind("SubWay-Station");
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(10000);
+        ConceptionEntitiesRetrieveResult conceptionEntitiesRetrieveResult = stationKind.getEntities(queryParameters);
+        List<ConceptionEntity> conceptionEntityList = conceptionEntitiesRetrieveResult.getConceptionEntities();
+
+        for(ConceptionEntity currentConceptionEntity:conceptionEntityList){
+            if(currentConceptionEntity.hasAttribute("建成")){
+                Long planningYear = (Long)currentConceptionEntity.getAttribute("建成").getAttributeValue();
+                try {
+                    System.out.println(planningYear.intValue());
+                    LocalDate currentStationLocalDate = LocalDate.of(planningYear.intValue(),1,1);
+                    System.out.println(currentStationLocalDate);
+                    Map<String,Object> eventData = new HashMap<>();
+                    eventData.put("completeConstructionYear",planningYear.intValue());
+                    currentConceptionEntity.attachTimeScaleEvent(currentStationLocalDate.atStartOfDay(),"地铁站点建成于",eventData, TimeFlow.TimeScaleGrade.YEAR);
+                }catch(NumberFormatException | CoreRealmServiceRuntimeException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        coreRealm.closeGlobalSession();
+    }
+
+    private static void linkStationsGeoEvent() throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        coreRealm.openGlobalSession();
+        ConceptionKind stationKind = coreRealm.getConceptionKind("SubWay-Station");
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(10000000);
+        ConceptionEntitiesRetrieveResult conceptionEntitiesRetrieveResult = stationKind.getEntities(queryParameters);
+        List<ConceptionEntity> conceptionEntityList = conceptionEntitiesRetrieveResult.getConceptionEntities();
+
+        for(ConceptionEntity currentStation:conceptionEntityList){
+
+            NullValueFilteringItem nullValueFilteringItem = new NullValueFilteringItem("DOCG_GS_GLGeometryContent");
+            nullValueFilteringItem.reverseCondition();
+            AttributesParameters attributesParameters = new AttributesParameters();
+            attributesParameters.setDefaultFilteringItem(nullValueFilteringItem);
+            List<ConceptionEntity> stationEntitiesList = currentStation.getSpatialPredicateMatchedConceptionEntities("DOCG_GS_Township",attributesParameters, GeospatialScaleCalculable.SpatialPredicateType.Within, GeospatialScaleCalculable.SpatialScaleLevel.Global);
+
+            if(stationEntitiesList.size()>0){
+                System.out.println("-------------------------");
+                System.out.println(stationEntitiesList);
+                System.out.println("-------------------------");
+                for(ConceptionEntity currentTownship:stationEntitiesList){
+                    String currentGeospatialCode = currentTownship.getAttribute("DOCG_GeospatialCode").getAttributeValue().toString();
+                    currentStation.attachGeospatialScaleEvent(currentGeospatialCode,"地铁站点位于",null);
+                }
+            }
+        }
+
+        coreRealm.closeGlobalSession();
+    }
+
+    private static void linkLinesGeoEvent() throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        coreRealm.openGlobalSession();
+        ConceptionKind stationKind = coreRealm.getConceptionKind("SubWay-Line");
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(10000000);
+        ConceptionEntitiesRetrieveResult conceptionEntitiesRetrieveResult = stationKind.getEntities(queryParameters);
+        List<ConceptionEntity> conceptionEntityList = conceptionEntitiesRetrieveResult.getConceptionEntities();
+
+        for(ConceptionEntity currentStation:conceptionEntityList){
+
+            NullValueFilteringItem nullValueFilteringItem = new NullValueFilteringItem("DOCG_GS_GLGeometryContent");
+            nullValueFilteringItem.reverseCondition();
+            AttributesParameters attributesParameters = new AttributesParameters();
+            attributesParameters.setDefaultFilteringItem(nullValueFilteringItem);
+            List<ConceptionEntity> stationEntitiesList = currentStation.getSpatialPredicateMatchedConceptionEntities("DOCG_GS_County",attributesParameters, GeospatialScaleCalculable.SpatialPredicateType.Crosses, GeospatialScaleCalculable.SpatialScaleLevel.Global);
+
+            if(stationEntitiesList.size()>0){
+                System.out.println("-------------------------");
+                System.out.println(stationEntitiesList);
+                System.out.println("-------------------------");
+                for(ConceptionEntity currentTownship:stationEntitiesList){
+                    String currentGeospatialCode = currentTownship.getAttribute("DOCG_GeospatialCode").getAttributeValue().toString();
+                    currentStation.attachGeospatialScaleEvent(currentGeospatialCode,"地铁线路穿过",null);
+                }
+            }
+        }
+
+        coreRealm.closeGlobalSession();
     }
 }
