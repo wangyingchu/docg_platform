@@ -1077,16 +1077,44 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public List<RelationEntity> createBiDirectionRelationsByConceptionEntityUIDs(List<String> conceptionEntityUIDs, String relationKind, Map<String, Object> relationAttributes) throws CoreRealmServiceEntityExploreException {
+    public List<RelationEntity> createBiDirectionRelationsByConceptionEntityUIDs(List<String> conceptionEntityUIDs, String relationKind, Map<String, Object> relationAttributes,boolean repeatable) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+        if(conceptionEntityUIDs == null || conceptionEntityUIDs.isEmpty()){
+            logger.error("At least one conception entity UID is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("At least one conception entity UID is required");
+            throw e;
+        }
+        List<RelationEntity> resultRelationEntityList = new ArrayList<>();
 
+        String cypherProcedureString = "MATCH (targetNodes) WHERE id(targetNodes) IN " + conceptionEntityUIDs.toString()+"\n"+
+                "RETURN DISTINCT targetNodes as operationResult";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(null,
+                    this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object conceptionEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,cypherProcedureString);
+            List<ConceptionEntity> realConceptionEntityList = conceptionEntityList != null ? (List<ConceptionEntity>)conceptionEntityList : null;
 
-
-
-
-
-
-        return null;
+            if(realConceptionEntityList != null){
+                for(ConceptionEntity currentConceptionEntity:realConceptionEntityList){
+                    List<String> targetConceptionEntityUIDList = new ArrayList<>();
+                    for(String currentUID:conceptionEntityUIDs){
+                        if(!currentConceptionEntity.getConceptionEntityUID().equals(currentUID)){
+                            targetConceptionEntityUIDList.add(currentUID);
+                        }
+                    }
+                    List<RelationEntity> currentResult = currentConceptionEntity.attachToRelation(targetConceptionEntityUIDList,relationKind,relationAttributes,repeatable);
+                    if(currentResult != null){
+                        resultRelationEntityList.addAll(currentResult);
+                    }
+                }
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return resultRelationEntityList;
     }
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {

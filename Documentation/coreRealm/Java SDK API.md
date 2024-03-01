@@ -4986,10 +4986,11 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
      * @param relationKind String 新建关系实体的关系类型
      * @param relationAttributes Map<String,Object> 新建关系实体的属性
+     * @param repeatable boolean 是否允许重复建立已有关系类型的数据关联
      *
      * @return 创建的关系实体对象列表
      */
-    public List<RelationEntity> createBiDirectionRelationsByConceptionEntityUIDs(List<String> conceptionEntityUIDs, String relationKind, Map<String,Object> relationAttributes) throws CoreRealmServiceEntityExploreException;
+    public List<RelationEntity> createBiDirectionRelationsByConceptionEntityUIDs(List<String> conceptionEntityUIDs, String relationKind, Map<String,Object> relationAttributes,boolean repeatable) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
 
 ```
 
