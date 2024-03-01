@@ -11,6 +11,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CrossKindDataOperator {
     //像花虽未红 如冰虽不冻 却像有无数说话 可惜我听不懂
@@ -280,4 +281,15 @@ public interface CrossKindDataOperator {
      * @return 合并操作完成后的保留关系实体实例
      */
     public RelationEntity mergeRelationEntities(String remainsRelationEntityUID,List<String> mergedRelationEntitiesUIDs) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 输入一组概念实体的唯一值ID，在这些实体两两间创建双向的关系实体
+     *
+     * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
+     * @param relationKind String 新建关系实体的关系类型
+     * @param relationAttributes Map<String,Object> 新建关系实体的属性
+     *
+     * @return 创建的关系实体对象列表
+     */
+    public List<RelationEntity> createBiDirectionRelationsByConceptionEntityUIDs(List<String> conceptionEntityUIDs, String relationKind, Map<String,Object> relationAttributes) throws CoreRealmServiceEntityExploreException;
 }

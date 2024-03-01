@@ -172,4 +172,13 @@ public class BeijingSubwayLinkUtilTest {
             currentFromStation.attachFromRelation(nextStationUIDList,"ConnectedBySubWayLine",dataMap,false);
         }
     }
+
+    private static void linkSameLocationStations(HashMap<String,List<ConceptionEntity>> stationNameMapping){
+        Collection<List<ConceptionEntity>> sameLocationStations =  stationNameMapping.values();
+        for(List<ConceptionEntity> currentStationsList : sameLocationStations){
+            if(currentStationsList.size()>1){
+
+            }
+        }
+    }
 }

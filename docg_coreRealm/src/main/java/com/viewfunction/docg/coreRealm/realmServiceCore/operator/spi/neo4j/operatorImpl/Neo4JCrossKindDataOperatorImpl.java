@@ -1076,6 +1076,19 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         return null;
     }
 
+    @Override
+    public List<RelationEntity> createBiDirectionRelationsByConceptionEntityUIDs(List<String> conceptionEntityUIDs, String relationKind, Map<String, Object> relationAttributes) throws CoreRealmServiceEntityExploreException {
+
+
+
+
+
+
+
+
+        return null;
+    }
+
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }
