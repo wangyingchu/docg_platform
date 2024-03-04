@@ -448,4 +448,21 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      */
     public EntitiesOperationStatistics attachGeospatialScaleEvents(QueryParameters queryParameters, String geospatialEventAttributeName, GeospatialRegion.GeospatialProperty geospatialPropertyType,
                                                                    String geospatialRegionName, String eventComment, Map<String, Object> eventData, GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
+    /**
+     * 根据当前概念类型实体的地理空间 WKT 数据计算其与系统内置的地理空间区域实体（行政区划）的特定空间关系，并在符合计算逻辑的地理空间区域实体与概念类型实体之间附加地理空间刻度事件
+     *
+     * @param queryParameters QueryParameters 概念实体查询过滤条件
+     * @param spatialScaleLevel GeospatialScaleCalculable.SpatialScaleLevel 空间计算使用的地理空间尺度参考坐标系
+     * @param spatialPredicateType GeospatialScaleCalculable.SpatialPredicateType 空间计算使用的空间拓扑关系定义
+     * @param geospatialScaleGrade GeospatialRegion.GeospatialScaleGrade 空间计算的目标地理空间区域实体的地理空间刻度等级
+     * @param geospatialRegionName String 指定地理空间区域名称,输入 null 则选择默认地理空间区域
+     * @param eventComment String 事件备注
+     * @param eventData Map<String, Object> 事件数据
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics attachGeospatialScaleEventsByEntityGeometryContent(QueryParameters queryParameters,GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel,
+                                                                    GeospatialScaleCalculable.SpatialPredicateType spatialPredicateType, GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade,
+                                                                    String geospatialRegionName,String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
 }

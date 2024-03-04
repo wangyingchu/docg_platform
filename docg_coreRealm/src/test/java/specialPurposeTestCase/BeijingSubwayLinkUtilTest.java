@@ -9,6 +9,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleCalculable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesRetrieveResult;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationStatistics;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 
@@ -137,7 +138,8 @@ public class BeijingSubwayLinkUtilTest {
         //linkStationsTimeScaleEvent2();
         //linkStationsTimeScaleEvent3();
         //linkStationsGeoEvent();
-        linkLinesGeoEvent();
+        //linkLinesGeoEvent();
+        linkLinesGeoEventWithConceptionKindAPI();
     }
 
     private static void linkLineData(String[] line1NameArray,HashMap<String,List<ConceptionEntity>> stationNameMapping,String lineName) throws CoreRealmServiceRuntimeException {
@@ -354,5 +356,19 @@ public class BeijingSubwayLinkUtilTest {
         }
 
         coreRealm.closeGlobalSession();
+    }
+
+    private static void linkLinesGeoEventWithConceptionKindAPI() throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        ConceptionKind stationKind = coreRealm.getConceptionKind("SubWay-Line");
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(10000000);
+        EntitiesOperationStatistics entitiesOperationStatistics = stationKind.attachGeospatialScaleEventsByEntityGeometryContent(queryParameters,GeospatialScaleCalculable.SpatialScaleLevel.Global,GeospatialScaleCalculable.SpatialPredicateType.Within,GeospatialRegion.GeospatialScaleGrade.COUNTY,null,"地铁线路位于",null);
+
+        System.out.println(entitiesOperationStatistics.getStartTime());
+        System.out.println(entitiesOperationStatistics.getFinishTime());
+        System.out.println(entitiesOperationStatistics.getOperationSummary());
+        System.out.println(entitiesOperationStatistics.getSuccessItemsCount());
+        System.out.println(entitiesOperationStatistics.getFailItemsCount());
     }
 }

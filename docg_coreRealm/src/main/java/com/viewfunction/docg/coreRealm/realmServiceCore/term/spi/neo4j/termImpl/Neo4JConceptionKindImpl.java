@@ -3,10 +3,13 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl
 import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.NullValueFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleCalculable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.TemporalScaleCalculable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
@@ -1433,6 +1436,88 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         entitiesOperationStatistics.setFinishTime(new Date());
         entitiesOperationStatistics.setSuccessItemsCount(successItemCount);
         entitiesOperationStatistics.setOperationSummary("attachTimeScaleEvents operation success");
+        return entitiesOperationStatistics;
+    }
+
+    @Override
+    public EntitiesOperationStatistics attachGeospatialScaleEventsByEntityGeometryContent(QueryParameters queryParameters, GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel, GeospatialScaleCalculable.SpatialPredicateType spatialPredicateType, GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade, String geospatialRegionName, String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+        long successItemCount = 0;
+        if(spatialScaleLevel == null){
+            logger.error("spatialScaleLevel is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("spatialScaleLevel is required.");
+            throw exception;
+        }
+        if(spatialPredicateType == null){
+            logger.error("spatialPredicateType is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("spatialPredicateType is required.");
+            throw exception;
+        }
+        if(geospatialScaleGrade == null){
+            logger.error("geospatialScaleGrade is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("geospatialScaleGrade is required.");
+            throw exception;
+        }
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(this.conceptionKindName,queryParameters,null);
+            GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(this.conceptionKindName,
+                    workingGraphOperationExecutor);
+            Object queryRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
+            if(queryRes != null){
+                String spatialScaleLevelValue = null;
+                switch (spatialScaleLevel){
+                    case Local -> spatialScaleLevelValue = RealmConstant._GeospatialLLGeometryContent;
+                    case Country -> spatialScaleLevelValue = RealmConstant._GeospatialCLGeometryContent;
+                    case Global -> spatialScaleLevelValue = RealmConstant._GeospatialGLGeometryContent;
+                }
+
+                String geospatialScaleGradeValue = null;
+                switch(geospatialScaleGrade){
+                    case CONTINENT -> geospatialScaleGradeValue =RealmConstant.GeospatialScaleContinentEntityClass;
+                    case COUNTRY_REGION -> geospatialScaleGradeValue =RealmConstant.GeospatialScaleCountryRegionEntityClass;
+                    case PROVINCE -> geospatialScaleGradeValue =RealmConstant.GeospatialScaleProvinceEntityClass;
+                    case PREFECTURE -> geospatialScaleGradeValue =RealmConstant.GeospatialScalePrefectureEntityClass;
+                    case COUNTY -> geospatialScaleGradeValue =RealmConstant.GeospatialScaleCountyEntityClass;
+                    case TOWNSHIP -> geospatialScaleGradeValue =RealmConstant.GeospatialScaleTownshipEntityClass;
+                    case VILLAGE -> geospatialScaleGradeValue =RealmConstant.GeospatialScaleVillageEntityClass;
+                }
+
+                List<ConceptionEntity> resultConceptionEntityList = (List<ConceptionEntity>)queryRes;
+
+                for(ConceptionEntity currentEntity : resultConceptionEntityList){
+                    NullValueFilteringItem nullValueFilteringItem = new NullValueFilteringItem(spatialScaleLevelValue);
+                    nullValueFilteringItem.reverseCondition();
+                    AttributesParameters attributesParameters = new AttributesParameters();
+                    attributesParameters.setDefaultFilteringItem(nullValueFilteringItem);
+                    if(geospatialRegionName != null){
+                        attributesParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
+                    }
+                    List<ConceptionEntity> stationEntitiesList = currentEntity.
+                            getSpatialPredicateMatchedConceptionEntities(geospatialScaleGradeValue,attributesParameters, spatialPredicateType, spatialScaleLevel);
+                    if(!stationEntitiesList.isEmpty()){
+                        for(ConceptionEntity currentTownship:stationEntitiesList){
+                            String currentGeospatialCode = currentTownship.getAttribute(RealmConstant.GeospatialCodeProperty).getAttributeValue().toString();
+                            GeospatialScaleEvent result = currentEntity.attachGeospatialScaleEvent(currentGeospatialCode,eventComment,eventData);
+                            if(result != null){
+                                successItemCount++;
+                            }
+                        }
+                    }
+                }
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+
+        entitiesOperationStatistics.setFinishTime(new Date());
+        entitiesOperationStatistics.setSuccessItemsCount(successItemCount);
+        entitiesOperationStatistics.setOperationSummary("attachGeospatialScaleEventsByEntityGeometryContent operation success");
         return entitiesOperationStatistics;
     }
 
