@@ -989,6 +989,24 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public EntitiesOperationStatistics attachTimeScaleEvents(QueryParameters queryParameters, String timeEventAttributeName, DateTimeFormatter dateTimeFormatter,String timeFlowName, String eventComment, Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException;
 
     /**
+     * 为当前概念类型的特定概念实体在指定的时间流上附加时间刻度事件
+     *
+     * @param queryParameters QueryParameters 概念实体查询过滤条件
+     * @param timeEventYearAttributeName String 在时间流上确定具体时间点年份的属性名称，概念实体的该属性值应当为数值类型，范围在年份概念内，否则将在操作中忽略该概念实体
+     * @param timeEventMonthAttributeName String 在时间流上确定具体时间点月份的属性名称，概念实体的该属性值应当为数值类型，范围在 1 至 12 之间，否则将在操作中忽略该概念实体
+     * @param timeEventDayAttributeName String 在时间流上确定具体时间点的日属性名称，概念实体的该属性值应当为数值类型，范围在 1 至 31 之间，否则将在操作中忽略该概念实体
+     * @param timeEventHourAttributeName String 在时间流上确定具体时间点的小时属性名称，该属性类型应当为数值类型，范围在 0 至 23 之间，否则将在操作中忽略该概念实体
+     * @param timeEventMinuteAttributeName String 在时间流上确定具体时间点的分钟属性名称，概念实体的该属性值应当为数值类型，范围在 1 至 59 之间，否则将在操作中忽略该概念实体
+     * @param timeFlowName String 指定时间流名称,输入 null 则选择默认时间流
+     * @param eventComment String 事件备注
+     * @param eventData Map<String, Object> 事件数据
+     * @param timeScaleGrade TimeFlow.TimeScaleGrade 事件时间刻度
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics attachTimeScaleEvents(QueryParameters queryParameters, String timeEventYearAttributeName, String timeEventMonthAttributeName,String timeEventDayAttributeName,String timeEventHourAttributeName,String timeEventMinuteAttributeName,String timeFlowName, String eventComment, Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+    
+    /**
      * 为当前概念类型的特定概念实体在指定的地理空间区域上附加地理空间刻度事件
      *
      * @param queryParameters QueryParameters 概念实体查询过滤条件
