@@ -1375,7 +1375,95 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
     @Override
     public EntitiesOperationStatistics attachTimeScaleEvents(QueryParameters queryParameters, String timeEventYearAttributeName, String timeEventMonthAttributeName, String timeEventDayAttributeName, String timeEventHourAttributeName, String timeEventMinuteAttributeName, String timeFlowName, String eventComment, Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
-        return null;
+        if(timeScaleGrade == null){
+            logger.error("timeScaleGrade is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("timeScaleGrade is required.");
+            throw exception;
+        }
+        if(timeEventYearAttributeName == null){
+            logger.error("timeEventYearAttributeName is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("timeEventYearAttributeName is required.");
+            throw exception;
+        }
+        switch (timeScaleGrade){
+            case MONTH :if(timeEventMonthAttributeName == null){
+                logger.error("timeEventMonthAttributeName is required.");
+                CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                exception.setCauseMessage("timeEventMonthAttributeName is required.");
+                throw exception;
+            }
+            break;
+            case DAY:if(timeEventMonthAttributeName == null || timeEventDayAttributeName == null){
+                logger.error("timeEventMonthAttributeName and timeEventDayAttributeName is required.");
+                CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                exception.setCauseMessage("timeEventMonthAttributeName and timeEventDayAttributeName is required.");
+                throw exception;
+            }
+            break;
+            case HOUR:if(timeEventMonthAttributeName == null || timeEventDayAttributeName == null || timeEventHourAttributeName == null){
+                logger.error("timeEventMonthAttributeName,timeEventDayAttributeName and timeEventHourAttributeName is required.");
+                CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                exception.setCauseMessage("timeEventMonthAttributeName,timeEventDayAttributeName and timeEventHourAttributeName is required.");
+                throw exception;
+            }
+            break;
+            case MINUTE:if(timeEventMonthAttributeName == null || timeEventDayAttributeName == null || timeEventHourAttributeName == null || timeEventMinuteAttributeName == null){
+                logger.error("timeEventMonthAttributeName,timeEventDayAttributeName,timeEventHourAttributeName and timeEventMinuteAttributeName is required.");
+                CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                exception.setCauseMessage("timeEventMonthAttributeName,timeEventDayAttributeName,timeEventHourAttributeName and timeEventMinuteAttributeName is required.");
+                throw exception;
+            }
+            break;
+        }
+
+        List<String> attributeNamesList = new ArrayList<>();
+        attributeNamesList.add(timeEventYearAttributeName);
+        if(timeEventMonthAttributeName != null){
+            attributeNamesList.add(timeEventYearAttributeName);
+        }
+        if(timeEventDayAttributeName != null){
+            attributeNamesList.add(timeEventDayAttributeName);
+        }
+        if(timeEventHourAttributeName != null){
+            attributeNamesList.add(timeEventHourAttributeName);
+        }
+        if(timeEventMinuteAttributeName != null){
+            attributeNamesList.add(timeEventMinuteAttributeName);
+        }
+
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+
+        QueryParameters filterQueryParameters;
+        if(queryParameters != null){
+            filterQueryParameters = queryParameters;
+        }else{
+            filterQueryParameters = new QueryParameters();
+            filterQueryParameters.setResultNumber(1000000000);
+        }
+
+        ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributeResult = getSingleValueEntityAttributesByAttributeNames(attributeNamesList,filterQueryParameters);
+        long successItemCount = 0;
+        if(conceptionEntitiesAttributeResult == null || conceptionEntitiesAttributeResult.getOperationStatistics().getResultEntitiesCount() == 0){
+            successItemCount = 0;
+        }else{
+            List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
+            Map<String,Object> operationResult = BatchDataOperationUtil.batchAttachTimeScaleEventsWithDateAttributesValue(
+                    conceptionEntityValueList,timeEventYearAttributeName, timeEventMonthAttributeName, timeEventDayAttributeName, timeEventHourAttributeName, timeEventMinuteAttributeName,
+                    timeFlowName,eventComment,eventData, timeScaleGrade, BatchDataOperationUtil.CPUUsageRate.High);;
+            Collection<Object> resultCountCollection = operationResult.values();
+            for(Object currentResultCount :resultCountCollection){
+                if(currentResultCount instanceof Long) {
+                    successItemCount = successItemCount + (Long) currentResultCount;
+                }
+            }
+        }
+        entitiesOperationStatistics.setFinishTime(new Date());
+        entitiesOperationStatistics.setSuccessItemsCount(successItemCount);
+        entitiesOperationStatistics.setOperationSummary("attachTimeScaleEvents operation success");
+        return entitiesOperationStatistics;
     }
 
     @Override

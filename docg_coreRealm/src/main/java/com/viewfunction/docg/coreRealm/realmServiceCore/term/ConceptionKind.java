@@ -441,7 +441,7 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      * @param timeEventMonthAttributeName String 在时间流上确定具体时间点月份的属性名称，概念实体的该属性值应当为数值类型，范围在 1 至 12 之间，否则将在操作中忽略该概念实体
      * @param timeEventDayAttributeName String 在时间流上确定具体时间点的日属性名称，概念实体的该属性值应当为数值类型，范围在 1 至 31 之间，否则将在操作中忽略该概念实体
      * @param timeEventHourAttributeName String 在时间流上确定具体时间点的小时属性名称，该属性类型应当为数值类型，范围在 0 至 23 之间，否则将在操作中忽略该概念实体
-     * @param timeEventMinuteAttributeName String 在时间流上确定具体时间点的分钟属性名称，概念实体的该属性值应当为数值类型，范围在 1 至 59 之间，否则将在操作中忽略该概念实体
+     * @param timeEventMinuteAttributeName String 在时间流上确定具体时间点的分钟属性名称，概念实体的该属性值应当为数值类型，范围在 0 至 59 之间，否则将在操作中忽略该概念实体
      * @param timeFlowName String 指定时间流名称,输入 null 则选择默认时间流
      * @param eventComment String 事件备注
      * @param eventData Map<String, Object> 事件数据

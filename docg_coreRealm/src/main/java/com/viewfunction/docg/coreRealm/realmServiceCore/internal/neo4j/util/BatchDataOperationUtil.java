@@ -164,6 +164,13 @@ public class BatchDataOperationUtil {
         private Map<String,Object> threadReturnDataMap;
         private DateTimeFormatter formatter;
         private String timeFlowName;
+        private String timeEventYearAttributeName;
+        private String timeEventMonthAttributeName;
+        private String timeEventDayAttributeName;
+        private String timeEventHourAttributeName;
+        private String timeEventMinuteAttributeName;
+        private boolean isMultiAttributesMode = false;
+
         public LinkTimeScaleEventThread(String timeEventAttributeName,String timeFlowName,String eventComment,Map<String,Object> globalEventData,
                                         TimeFlow.TimeScaleGrade timeScaleGrade,List<ConceptionEntityValue> conceptionEntityValueList,
                                         Map<String,String> timeScaleEntitiesMetaInfoMapping,Map<String,Object> threadReturnDataMap){
@@ -191,24 +198,157 @@ public class BatchDataOperationUtil {
             this.timeFlowName = timeFlowName;
         }
 
+        public LinkTimeScaleEventThread(String timeEventYearAttributeName, String timeEventMonthAttributeName, String timeEventDayAttributeName, String timeEventHourAttributeName, String timeEventMinuteAttributeName,
+                                        String timeFlowName,String eventComment,Map<String,Object> globalEventData,TimeFlow.TimeScaleGrade timeScaleGrade,List<ConceptionEntityValue> conceptionEntityValueList,
+                                        Map<String,String> timeScaleEntitiesMetaInfoMapping,Map<String,Object> threadReturnDataMap){
+            this.timeEventYearAttributeName = timeEventYearAttributeName;
+            this.timeEventMonthAttributeName = timeEventMonthAttributeName;
+            this.timeEventDayAttributeName = timeEventDayAttributeName;
+            this.timeEventHourAttributeName = timeEventHourAttributeName;
+            this.timeEventMinuteAttributeName = timeEventMinuteAttributeName;
+            this.eventComment = eventComment;
+            this.globalEventData = globalEventData;
+            this.timeScaleGrade = timeScaleGrade;
+            this.conceptionEntityValueList = conceptionEntityValueList;
+            this.timeScaleEntitiesMetaInfoMapping = timeScaleEntitiesMetaInfoMapping;
+            this.threadReturnDataMap = threadReturnDataMap;
+            this.timeFlowName = timeFlowName;
+            this.isMultiAttributesMode = true;
+        }
+
         @Override
         public void run() {
             String currentThreadName = Thread.currentThread().getName();
             long successfulCount = 0;
             GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
             for(ConceptionEntityValue currentConceptionEntityValue:conceptionEntityValueList){
-                if(currentConceptionEntityValue.getEntityAttributesValue().get(timeEventAttributeName) != null){
-                    Object targetDateValue = currentConceptionEntityValue.getEntityAttributesValue().get(timeEventAttributeName);
-                    boolean attachResult;
-                    if(formatter != null){
-                        attachResult = attachTimeScaleEventLogic(timeScaleEntitiesMetaInfoMapping,currentConceptionEntityValue.getConceptionEntityUID(),timeFlowName,targetDateValue,formatter,
-                            eventComment,globalEventData,timeScaleGrade,graphOperationExecutor);
-                    }else{
-                        attachResult = attachTimeScaleEventLogic(timeScaleEntitiesMetaInfoMapping,currentConceptionEntityValue.getConceptionEntityUID(),timeFlowName,targetDateValue,
-                                eventComment,globalEventData,timeScaleGrade,graphOperationExecutor);
+                if(this.isMultiAttributesMode){
+                    Map<String, Object> entityAttributesValue = currentConceptionEntityValue.getEntityAttributesValue();
+                    boolean attachResult=false;
+                    switch (timeScaleGrade){
+                        case YEAR :
+                            if(entityAttributesValue.containsKey(this.timeEventYearAttributeName)){
+                                Object yearValue = currentConceptionEntityValue.getEntityAttributesValue().get(this.timeEventYearAttributeName);
+                                try{
+                                    int yearValueInt = Integer.parseInt(yearValue.toString());
+                                    LocalDateTime localDateTime = LocalDateTime.of(yearValueInt,1,1,0,0);
+                                    attachResult = attachTimeScaleEventLogic(timeScaleEntitiesMetaInfoMapping,currentConceptionEntityValue.getConceptionEntityUID(),timeFlowName,localDateTime,
+                                            eventComment,globalEventData,timeScaleGrade,graphOperationExecutor);
+                                }catch(NumberFormatException e){
+                                    e.printStackTrace();
+                                }catch(DateTimeException e){
+                                    e.printStackTrace();
+                                }
+                            }
+                            break;
+                        case MONTH :
+                            if(entityAttributesValue.containsKey(this.timeEventYearAttributeName) &
+                                    entityAttributesValue.containsKey(this.timeEventMonthAttributeName)){
+                                Object yearValue = currentConceptionEntityValue.getEntityAttributesValue().get(this.timeEventYearAttributeName);
+                                Object monthValue = currentConceptionEntityValue.getEntityAttributesValue().get(this.timeEventMonthAttributeName);
+                                try{
+                                    int yearValueInt = Integer.parseInt(yearValue.toString());
+                                    int monthValueInt = Integer.parseInt(monthValue.toString());
+                                    LocalDateTime localDateTime = LocalDateTime.of(yearValueInt,monthValueInt,1,0,0);
+                                    attachResult = attachTimeScaleEventLogic(timeScaleEntitiesMetaInfoMapping,currentConceptionEntityValue.getConceptionEntityUID(),timeFlowName,localDateTime,
+                                            eventComment,globalEventData,timeScaleGrade,graphOperationExecutor);
+                                }catch(NumberFormatException e){
+                                    e.printStackTrace();
+                                }catch(DateTimeException e){
+                                    e.printStackTrace();
+                                }
+                            }
+                            break;
+                        case DAY :
+                            if(entityAttributesValue.containsKey(this.timeEventYearAttributeName) &
+                                    entityAttributesValue.containsKey(this.timeEventMonthAttributeName) &
+                                    entityAttributesValue.containsKey(this.timeEventDayAttributeName)){
+                                Object yearValue = currentConceptionEntityValue.getEntityAttributesValue().get(this.timeEventYearAttributeName);
+                                Object monthValue = currentConceptionEntityValue.getEntityAttributesValue().get(this.timeEventMonthAttributeName);
+                                Object dayValue = currentConceptionEntityValue.getEntityAttributesValue().get(this.timeEventDayAttributeName);
+                                try{
+                                    int yearValueInt = Integer.parseInt(yearValue.toString());
+                                    int monthValueInt = Integer.parseInt(monthValue.toString());
+                                    int dayValueInt = Integer.parseInt(dayValue.toString());
+                                    LocalDateTime localDateTime = LocalDateTime.of(yearValueInt,monthValueInt,dayValueInt,0,0);
+                                    attachResult = attachTimeScaleEventLogic(timeScaleEntitiesMetaInfoMapping,currentConceptionEntityValue.getConceptionEntityUID(),timeFlowName,localDateTime,
+                                            eventComment,globalEventData,timeScaleGrade,graphOperationExecutor);
+                                }catch(NumberFormatException e){
+                                    e.printStackTrace();
+                                }catch(DateTimeException e){
+                                    e.printStackTrace();
+                                }
+                            }
+                            break;
+                        case HOUR :
+                            if(entityAttributesValue.containsKey(this.timeEventYearAttributeName) &
+                                    entityAttributesValue.containsKey(this.timeEventMonthAttributeName) &
+                                    entityAttributesValue.containsKey(this.timeEventDayAttributeName) &
+                                    entityAttributesValue.containsKey(this.timeEventHourAttributeName)){
+                                Object yearValue = currentConceptionEntityValue.getEntityAttributesValue().get(this.timeEventYearAttributeName);
+                                Object monthValue = currentConceptionEntityValue.getEntityAttributesValue().get(this.timeEventMonthAttributeName);
+                                Object dayValue = currentConceptionEntityValue.getEntityAttributesValue().get(this.timeEventDayAttributeName);
+                                Object hourValue = currentConceptionEntityValue.getEntityAttributesValue().get(this.timeEventHourAttributeName);
+                                try{
+                                    int yearValueInt = Integer.parseInt(yearValue.toString());
+                                    int monthValueInt = Integer.parseInt(monthValue.toString());
+                                    int dayValueInt = Integer.parseInt(dayValue.toString());
+                                    int hourValueInt = Integer.parseInt(hourValue.toString());
+                                    LocalDateTime localDateTime = LocalDateTime.of(yearValueInt,monthValueInt,dayValueInt,hourValueInt,0);
+                                    attachResult = attachTimeScaleEventLogic(timeScaleEntitiesMetaInfoMapping,currentConceptionEntityValue.getConceptionEntityUID(),timeFlowName,localDateTime,
+                                            eventComment,globalEventData,timeScaleGrade,graphOperationExecutor);
+                                }catch(NumberFormatException e){
+                                    e.printStackTrace();
+                                }catch(DateTimeException e){
+                                    e.printStackTrace();
+                                }
+                            }
+                            break;
+                        case MINUTE :
+                            if(entityAttributesValue.containsKey(this.timeEventYearAttributeName) &
+                                    entityAttributesValue.containsKey(this.timeEventMonthAttributeName) &
+                                    entityAttributesValue.containsKey(this.timeEventDayAttributeName) &
+                                    entityAttributesValue.containsKey(this.timeEventHourAttributeName) &
+                                    entityAttributesValue.containsKey(this.timeEventMinuteAttributeName)){
+                                Object yearValue = currentConceptionEntityValue.getEntityAttributesValue().get(this.timeEventYearAttributeName);
+                                Object monthValue = currentConceptionEntityValue.getEntityAttributesValue().get(this.timeEventMonthAttributeName);
+                                Object dayValue = currentConceptionEntityValue.getEntityAttributesValue().get(this.timeEventDayAttributeName);
+                                Object hourValue = currentConceptionEntityValue.getEntityAttributesValue().get(this.timeEventHourAttributeName);
+                                Object minuteValue = currentConceptionEntityValue.getEntityAttributesValue().get(this.timeEventMinuteAttributeName);
+                                try{
+                                    int yearValueInt = Integer.parseInt(yearValue.toString());
+                                    int monthValueInt = Integer.parseInt(monthValue.toString());
+                                    int dayValueInt = Integer.parseInt(dayValue.toString());
+                                    int hourValueInt = Integer.parseInt(hourValue.toString());
+                                    int minuteValueInt = Integer.parseInt(minuteValue.toString());
+                                    LocalDateTime localDateTime = LocalDateTime.of(yearValueInt,monthValueInt,dayValueInt,hourValueInt,minuteValueInt);
+                                    attachResult = attachTimeScaleEventLogic(timeScaleEntitiesMetaInfoMapping,currentConceptionEntityValue.getConceptionEntityUID(),timeFlowName,localDateTime,
+                                            eventComment,globalEventData,timeScaleGrade,graphOperationExecutor);
+                                }catch(NumberFormatException e){
+                                    e.printStackTrace();
+                                }catch(DateTimeException e){
+                                    e.printStackTrace();
+                                }
+                            }
+                            break;
                     }
                     if(attachResult){
                         successfulCount++;
+                    }
+                }else{
+                    if(currentConceptionEntityValue.getEntityAttributesValue().get(timeEventAttributeName) != null){
+                        Object targetDateValue = currentConceptionEntityValue.getEntityAttributesValue().get(timeEventAttributeName);
+                        boolean attachResult;
+                        if(formatter != null){
+                            attachResult = attachTimeScaleEventLogic(timeScaleEntitiesMetaInfoMapping,currentConceptionEntityValue.getConceptionEntityUID(),timeFlowName,targetDateValue,formatter,
+                                    eventComment,globalEventData,timeScaleGrade,graphOperationExecutor);
+                        }else{
+                            attachResult = attachTimeScaleEventLogic(timeScaleEntitiesMetaInfoMapping,currentConceptionEntityValue.getConceptionEntityUID(),timeFlowName,targetDateValue,
+                                    eventComment,globalEventData,timeScaleGrade,graphOperationExecutor);
+                        }
+                        if(attachResult){
+                            successfulCount++;
+                        }
                     }
                 }
             }
@@ -326,6 +466,39 @@ public class BatchDataOperationUtil {
         for(List<ConceptionEntityValue> currentConceptionEntityValueList:rsList){
             LinkTimeScaleEventThread linkTimeScaleEventThread = new LinkTimeScaleEventThread(timeEventAttributeName,formatter,timeFlowName,
                     eventComment,globalEventData,timeScaleGrade,currentConceptionEntityValueList,timeScaleEntitiesMetaInfoMapping,threadReturnDataMap);
+            executor.execute(linkTimeScaleEventThread);
+        }
+        executor.shutdown();
+        try {
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        threadReturnDataMap.put("FinishTime", LocalDateTime.now());
+        return threadReturnDataMap;
+    }
+
+    public static Map<String,Object> batchAttachTimeScaleEventsWithDateAttributesValue(List<ConceptionEntityValue> conceptionEntityValueList,
+                                              String timeEventYearAttributeName, String timeEventMonthAttributeName, String timeEventDayAttributeName, String timeEventHourAttributeName, String timeEventMinuteAttributeName,
+                                              String timeFlowName, String eventComment, Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade,CPUUsageRate _CPUUsageRate){
+        int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
+        return batchAttachTimeScaleEventsWithDateAttributesValue(conceptionEntityValueList,
+                timeEventYearAttributeName, timeEventMonthAttributeName, timeEventDayAttributeName, timeEventHourAttributeName, timeEventMinuteAttributeName,
+                timeFlowName, eventComment, eventData, timeScaleGrade,degreeOfParallelism);
+    }
+
+    public static Map<String,Object> batchAttachTimeScaleEventsWithDateAttributesValue(List<ConceptionEntityValue> conceptionEntityValueList,
+                                      String timeEventYearAttributeName, String timeEventMonthAttributeName, String timeEventDayAttributeName, String timeEventHourAttributeName, String timeEventMinuteAttributeName,
+                                      String timeFlowName, String eventComment, Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade,int degreeOfParallelism){
+        int singlePartitionSize = (conceptionEntityValueList.size()/degreeOfParallelism)+1;
+        List<List<ConceptionEntityValue>> rsList = Lists.partition(conceptionEntityValueList, singlePartitionSize);
+        Map<String,String> timeScaleEntitiesMetaInfoMapping = new HashMap<>();
+        Map<String,Object> threadReturnDataMap = new Hashtable<>();
+        threadReturnDataMap.put("StartTime", LocalDateTime.now());
+        ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+        for(List<ConceptionEntityValue> currentConceptionEntityValueList:rsList){
+            LinkTimeScaleEventThread linkTimeScaleEventThread = new LinkTimeScaleEventThread(timeEventYearAttributeName,timeEventMonthAttributeName,timeEventDayAttributeName,timeEventHourAttributeName,timeEventMinuteAttributeName
+                    ,timeFlowName,eventComment,eventData,timeScaleGrade,currentConceptionEntityValueList,timeScaleEntitiesMetaInfoMapping,threadReturnDataMap);
             executor.execute(linkTimeScaleEventThread);
         }
         executor.shutdown();

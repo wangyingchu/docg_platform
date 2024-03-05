@@ -139,7 +139,8 @@ public class BeijingSubwayLinkUtilTest {
         //linkStationsTimeScaleEvent3();
         //linkStationsGeoEvent();
         //linkLinesGeoEvent();
-        linkLinesGeoEventWithConceptionKindAPI();
+        //linkLinesGeoEventWithConceptionKindAPI();
+        //linkStationsTimeScaleEvent4();
     }
 
     private static void linkLineData(String[] line1NameArray,HashMap<String,List<ConceptionEntity>> stationNameMapping,String lineName) throws CoreRealmServiceRuntimeException {
@@ -292,6 +293,21 @@ public class BeijingSubwayLinkUtilTest {
         }
 
         coreRealm.closeGlobalSession();
+    }
+
+    private static void linkStationsTimeScaleEvent4() throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        ConceptionKind stationKind = coreRealm.getConceptionKind("SubWay-Station");
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(10000);
+
+        EntitiesOperationStatistics entitiesOperationStatistics = stationKind.attachTimeScaleEvents(queryParameters,"建成",null,null,null,null,null,"AAAAA",null, TimeFlow.TimeScaleGrade.YEAR);
+        System.out.println(entitiesOperationStatistics.getStartTime());
+        System.out.println(entitiesOperationStatistics.getFinishTime());
+        System.out.println(entitiesOperationStatistics.getOperationSummary());
+        System.out.println(entitiesOperationStatistics.getSuccessItemsCount());
+        System.out.println(entitiesOperationStatistics.getFailItemsCount());
     }
 
     private static void linkStationsGeoEvent() throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
