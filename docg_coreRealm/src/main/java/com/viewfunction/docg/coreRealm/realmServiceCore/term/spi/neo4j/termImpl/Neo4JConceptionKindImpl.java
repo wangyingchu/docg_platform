@@ -1591,16 +1591,20 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
                     if(geospatialRegionName != null){
                         attributesParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
                     }
-                    List<ConceptionEntity> stationEntitiesList = currentEntity.
-                            getSpatialPredicateMatchedConceptionEntities(geospatialScaleGradeValue,attributesParameters, spatialPredicateType, spatialScaleLevel);
-                    if(!stationEntitiesList.isEmpty()){
-                        for(ConceptionEntity currentTownship:stationEntitiesList){
-                            String currentGeospatialCode = currentTownship.getAttribute(RealmConstant.GeospatialCodeProperty).getAttributeValue().toString();
-                            GeospatialScaleEvent result = currentEntity.attachGeospatialScaleEvent(currentGeospatialCode,eventComment,eventData);
-                            if(result != null){
-                                successItemCount++;
+                    try{
+                        List<ConceptionEntity> matchedEntitiesList = currentEntity.
+                                getSpatialPredicateMatchedConceptionEntities(geospatialScaleGradeValue,attributesParameters, spatialPredicateType, spatialScaleLevel);
+                        if(matchedEntitiesList != null && !matchedEntitiesList.isEmpty()){
+                            for(ConceptionEntity currentTownship:matchedEntitiesList){
+                                String currentGeospatialCode = currentTownship.getAttribute(RealmConstant.GeospatialCodeProperty).getAttributeValue().toString();
+                                GeospatialScaleEvent result = currentEntity.attachGeospatialScaleEvent(currentGeospatialCode,eventComment,eventData);
+                                if(result != null){
+                                    successItemCount++;
+                                }
                             }
                         }
+                    }catch(CoreRealmServiceRuntimeException e){
+                        e.printStackTrace();
                     }
                 }
             }
