@@ -3221,9 +3221,19 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @return 如操作成功，返回结果为相应时间刻度事件对象
      */
-    public TimeScaleEvent attachTimeScaleEvent(String timeFlowName,LocalDate date, String eventComment,
-                                               Map<String, Object> eventData) throws CoreRealmServiceRuntimeException;
+    public TimeScaleEvent attachTimeScaleEvent(String timeFlowName,LocalDate date, String eventComment,Map<String, Object> eventData) throws CoreRealmServiceRuntimeException;
 
+    /**
+     * 在当前对象与指定时间刻度实体之间附加时间刻度事件
+     *
+     * @param timeScaleEntityUID String 时间刻度实体唯一ID
+     * @param eventComment String 事件备注
+     * @param eventData Map<String, Object> 事件数据
+     *
+     * @return 如操作成功，返回结果为相应时间刻度事件对象
+     */
+    public TimeScaleEvent attachTimeScaleEventByTimeScaleEntityUID(String timeScaleEntityUID, String eventComment,Map<String, Object> eventData) throws CoreRealmServiceRuntimeException;
+    
     /**
      * 删除当前对象上关联的指定时间刻度事件
      *
