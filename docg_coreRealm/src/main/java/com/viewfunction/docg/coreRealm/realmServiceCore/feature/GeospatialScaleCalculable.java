@@ -4,6 +4,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.Attribute
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEntity;
 
 import java.util.List;
 import java.util.Set;
@@ -45,8 +47,19 @@ public interface GeospatialScaleCalculable {
      * @return 符合空间计算规则定义的目标概念实体列表
      */
     public List<ConceptionEntity> getSpatialPredicateMatchedConceptionEntities(String targetConceptionKind, AttributesParameters attributesParameters,
-                                                                               SpatialPredicateType spatialPredicateType,
-                                                                               SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException;
+                                                                               SpatialPredicateType spatialPredicateType, SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException;/**
+    /* 根据当前概念类型实体的地理空间 WKT 数据计算其与系统内置的地理空间区域实体（行政区划）的特定空间关系，返回符合计算逻辑的地理空间区域实体
+     *
+     * @param spatialScaleLevel GeospatialScaleCalculable.SpatialScaleLevel 空间计算使用的地理空间尺度参考坐标系
+     * @param spatialPredicateType GeospatialScaleCalculable.SpatialPredicateType 空间计算使用的空间拓扑关系定义
+     * @param geospatialScaleGrade GeospatialRegion.GeospatialScaleGrade 空间计算的目标地理空间区域实体的地理空间刻度等级
+     * @param geospatialRegionName String 指定地理空间区域名称,输入 null 则选择默认地理空间区域
+     *
+     * @return 符合空间计算规则定义的目标地理空间刻度实体列表
+     */
+    List<GeospatialScaleEntity> getSpatialPredicateMatchedGeospatialScaleEntities(SpatialScaleLevel spatialScaleLevel, SpatialPredicateType spatialPredicateType,
+                                                                                  GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade,String geospatialRegionName) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException;
+
     /**
      * 选择一个概念类型中的若干目标概念实体，与由当前概念实体计算获取的缓冲区进行平面地理空间计算，并过滤返回符合计算规则的目标概念实体列表
      *
@@ -61,6 +74,7 @@ public interface GeospatialScaleCalculable {
     public List<ConceptionEntity> getSpatialBufferMatchedConceptionEntities(String targetConceptionKind, AttributesParameters attributesParameters,
                                                                             double bufferDistanceValue,SpatialPredicateType spatialPredicateType,
                                                                             SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException;
+
     /**
      * 选择一个目标概念实体，与当前概念实体进行平面地理空间计算
      *
