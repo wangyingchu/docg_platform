@@ -2,16 +2,24 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featu
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.NullValueFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleCalculable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetBooleanFormatReturnValueTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionEntityValueTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JGeospatialScaleEntityImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.geospatial.GeospatialCalculateUtil;
 import org.neo4j.driver.Record;
@@ -41,6 +49,87 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
                             getGeospatialScaleContentMap.get(this.getEntityUID()),spatialPredicateType,entitiesSpatialContentDataMap);
 
                     return getConceptionEntitiesByUIDs(workingGraphOperationExecutor,matchedEntityUIDSet);
+                }
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
+    }
+
+    default List<GeospatialScaleEntity> getSpatialPredicateMatchedGeospatialScaleEntities(SpatialScaleLevel spatialScaleLevel, SpatialPredicateType spatialPredicateType,
+                                                                                          GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade, String geospatialRegionName) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException{
+        if(spatialScaleLevel == null){
+            logger.error("spatialScaleLevel is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("spatialScaleLevel is required.");
+            throw exception;
+        }
+        if(spatialPredicateType == null){
+            logger.error("spatialPredicateType is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("spatialPredicateType is required.");
+            throw exception;
+        }
+        if(geospatialScaleGrade == null){
+            logger.error("geospatialScaleGrade is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("geospatialScaleGrade is required.");
+            throw exception;
+        }
+
+        String spatialScaleLevelValue = null;
+        switch (spatialScaleLevel) {
+            case Local -> spatialScaleLevelValue = RealmConstant._GeospatialLLGeometryContent;
+            case Country -> spatialScaleLevelValue = RealmConstant._GeospatialCLGeometryContent;
+            case Global -> spatialScaleLevelValue = RealmConstant._GeospatialGLGeometryContent;
+        }
+        String geospatialScaleGradeValue = null;
+        switch (geospatialScaleGrade) {
+            case CONTINENT -> geospatialScaleGradeValue = RealmConstant.GeospatialScaleContinentEntityClass;
+            case COUNTRY_REGION ->
+                    geospatialScaleGradeValue = RealmConstant.GeospatialScaleCountryRegionEntityClass;
+            case PROVINCE -> geospatialScaleGradeValue = RealmConstant.GeospatialScaleProvinceEntityClass;
+            case PREFECTURE -> geospatialScaleGradeValue = RealmConstant.GeospatialScalePrefectureEntityClass;
+            case COUNTY -> geospatialScaleGradeValue = RealmConstant.GeospatialScaleCountyEntityClass;
+            case TOWNSHIP -> geospatialScaleGradeValue = RealmConstant.GeospatialScaleTownshipEntityClass;
+            case VILLAGE -> geospatialScaleGradeValue = RealmConstant.GeospatialScaleVillageEntityClass;
+        }
+
+        NullValueFilteringItem nullValueFilteringItem = new NullValueFilteringItem(spatialScaleLevelValue);
+        nullValueFilteringItem.reverseCondition();
+        AttributesParameters attributesParameters = new AttributesParameters();
+        attributesParameters.setDefaultFilteringItem(nullValueFilteringItem);
+        if(geospatialRegionName != null){
+            attributesParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
+        }
+
+        if(this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
+                List<GeospatialScaleEntity> matchedGeospatialScaleEntitiesList = new ArrayList<>();
+                Map<String,String> entitiesSpatialContentDataMap = getEntitiesGeospatialScaleContentMap(workingGraphOperationExecutor,geospatialScaleGradeValue,attributesParameters,spatialScaleLevel);
+                if(entitiesSpatialContentDataMap != null){
+                    List<String> entityUIDList = new ArrayList<>();
+                    entityUIDList.add(this.getEntityUID());
+                    Map<String,String> geospatialScaleContentMap = getGeospatialScaleEntityContent(workingGraphOperationExecutor,spatialScaleLevel,entityUIDList);
+                    Set<String> matchedEntityUIDSet = GeospatialCalculateUtil.spatialPredicateFilterWKTsCalculate(
+                            geospatialScaleContentMap.get(this.getEntityUID()),spatialPredicateType,entitiesSpatialContentDataMap);
+
+                    for(String entityUID:matchedEntityUIDSet){
+                        String geospatialCode = geospatialScaleContentMap.getOrDefault(entityUID + "-" + RealmConstant.GeospatialCodeProperty, null);
+                        String entityChineseName = geospatialScaleContentMap.getOrDefault(entityUID + "-" + RealmConstant.GeospatialChineseNameProperty, null);
+                        String entityEnglishName = geospatialScaleContentMap.getOrDefault(entityUID + "-" + RealmConstant.GeospatialEnglishNameProperty, null);
+
+                        Neo4JGeospatialScaleEntityImpl currentNeo4JGeospatialScaleEntityImpl =
+                                new Neo4JGeospatialScaleEntityImpl(null,geospatialRegionName,entityUID,geospatialScaleGrade,geospatialCode,entityChineseName,entityEnglishName);
+                        currentNeo4JGeospatialScaleEntityImpl.setGlobalGraphOperationExecutor(getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
+
+                        matchedGeospatialScaleEntitiesList.add(currentNeo4JGeospatialScaleEntityImpl);
+                    }
+
+                    return matchedGeospatialScaleEntitiesList;
                 }
             }finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
@@ -319,6 +408,49 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
             return resultRes != null ? (Boolean)resultRes : false;
         }
         return false;
+    }
+
+    private Map<String,String> getGeospatialScaleEntityContent(GraphOperationExecutor workingGraphOperationExecutor, SpatialScaleLevel spatialScaleLevel, List<String> entityUIDs){
+        String spatialScalePropertyName = getGeospatialScaleContentAttributeName(spatialScaleLevel);
+        List<String> attributeNames = new ArrayList<>();
+        attributeNames.add(spatialScalePropertyName);
+        attributeNames.add(RealmConstant.GeospatialCodeProperty);
+        attributeNames.add(RealmConstant.GeospatialChineseNameProperty);
+        attributeNames.add(RealmConstant.GeospatialEnglishNameProperty);
+        try {
+            String cypherProcedureString = CypherBuilder.matchAttributesWithNodeIDs(entityUIDs,attributeNames);
+
+            GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer = new GetListConceptionEntityValueTransformer(attributeNames);
+            getListConceptionEntityValueTransformer.setUseIDMatchLogic(true);
+            Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer,cypherProcedureString);
+            if(resEntityRes != null){
+                Map<String,String> geospatialScaleContentMap = new HashMap<>();
+                List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
+
+                for(ConceptionEntityValue currentConceptionEntityValue:resultEntitiesValues){
+                    Map<String, Object> entityAttributesMap = currentConceptionEntityValue.getEntityAttributesValue();
+                    String entityUID = currentConceptionEntityValue.getConceptionEntityUID();
+                    String geospatialScaleContent = entityAttributesMap.get(spatialScalePropertyName).toString();
+                    geospatialScaleContentMap.put(entityUID,geospatialScaleContent);
+                    if(entityAttributesMap.containsKey(RealmConstant.GeospatialCodeProperty)){
+                        String geospatialCodeProperty = entityAttributesMap.get(RealmConstant.GeospatialCodeProperty).toString();
+                        geospatialScaleContentMap.put(entityUID+"-"+RealmConstant.GeospatialCodeProperty,geospatialCodeProperty);
+                    }
+                    if(entityAttributesMap.containsKey(RealmConstant.GeospatialChineseNameProperty)){
+                        String geospatialChineseNameProperty = entityAttributesMap.get(RealmConstant.GeospatialChineseNameProperty).toString();
+                        geospatialScaleContentMap.put(entityUID+"-"+RealmConstant.GeospatialChineseNameProperty,geospatialChineseNameProperty);
+                    }
+                    if(entityAttributesMap.containsKey(RealmConstant.GeospatialEnglishNameProperty)){
+                        String geospatialEnglishNameProperty = entityAttributesMap.get(RealmConstant.GeospatialEnglishNameProperty).toString();
+                        geospatialScaleContentMap.put(entityUID+"-"+RealmConstant.GeospatialEnglishNameProperty,geospatialEnglishNameProperty);
+                    }
+                }
+                return geospatialScaleContentMap;
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private Map<String,String> getGeospatialScaleContent(GraphOperationExecutor workingGraphOperationExecutor, SpatialScaleLevel spatialScaleLevel, List<String> entityUIDs){
