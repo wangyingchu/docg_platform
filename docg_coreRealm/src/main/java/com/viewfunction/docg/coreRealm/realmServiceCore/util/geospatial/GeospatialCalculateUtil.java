@@ -5,13 +5,12 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleCalculable.SpatialPredicateType;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil;
+import org.geotools.geojson.geom.GeometryJSON;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
-
-import org.geotools.geojson.geom.GeometryJSON;
 
 import java.io.StringWriter;
 import java.util.*;
@@ -25,7 +24,7 @@ public class GeospatialCalculateUtil {
     private static WKTReader _WKTReader = null;
 
     public static boolean spatialPredicateWKTCalculate(String fromGeometryWKT,
-                          SpatialPredicateType spatialPredicateType, String toGeometryWKT) throws CoreRealmServiceRuntimeException {
+                                                       SpatialPredicateType spatialPredicateType, String toGeometryWKT) throws CoreRealmServiceRuntimeException {
         if(geometryFactory == null){
             geometryFactory = JTSFactoryFinder.getGeometryFactory();
             _WKTReader = new WKTReader(geometryFactory);
@@ -43,7 +42,7 @@ public class GeospatialCalculateUtil {
     }
 
     public static boolean spatialPredicateWKTCalculate(String fromGeometryWKT,
-                          SpatialPredicateType spatialPredicateType, Set<String> toGeometryWKTSet) throws CoreRealmServiceRuntimeException {
+                                                       SpatialPredicateType spatialPredicateType, Set<String> toGeometryWKTSet) throws CoreRealmServiceRuntimeException {
         if(geometryFactory == null){
             geometryFactory = JTSFactoryFinder.getGeometryFactory();
             _WKTReader = new WKTReader(geometryFactory);
@@ -74,7 +73,7 @@ public class GeospatialCalculateUtil {
     }
 
     public static Set<String> spatialBufferPredicateFilterWKTsCalculate(String fromGeometryWKT,double bufferDistanceValue,
-                                                                  SpatialPredicateType spatialPredicateType, Map<String,String> entitiesSpatialContentDataMap) throws CoreRealmServiceRuntimeException {
+                                                                        SpatialPredicateType spatialPredicateType, Map<String,String> entitiesSpatialContentDataMap) throws CoreRealmServiceRuntimeException {
         if(geometryFactory == null){
             geometryFactory = JTSFactoryFinder.getGeometryFactory();
             _WKTReader = new WKTReader(geometryFactory);
@@ -92,7 +91,7 @@ public class GeospatialCalculateUtil {
     }
 
     public static Set<String> spatialPredicateFilterWKTsCalculate(String fromGeometryWKT,
-                                                            SpatialPredicateType spatialPredicateType, Map<String,String> entitiesSpatialContentDataMap) throws CoreRealmServiceRuntimeException {
+                                                                  SpatialPredicateType spatialPredicateType, Map<String,String> entitiesSpatialContentDataMap) throws CoreRealmServiceRuntimeException {
         if(entitiesSpatialContentDataMap != null && entitiesSpatialContentDataMap.size()>0){
             if(geometryFactory == null){
                 geometryFactory = JTSFactoryFinder.getGeometryFactory();
@@ -106,9 +105,15 @@ public class GeospatialCalculateUtil {
                     for(Map.Entry<String, String> entry : entitiesSpatialContentDataMap.entrySet()){
                         String entityUID = entry.getKey();
                         String spatialContent = entry.getValue();
-                        currentToGeometry = _WKTReader.read(spatialContent);
-                        if(spatialPredicateWKTCalculate(fromGeometry,spatialPredicateType,currentToGeometry)){
-                            entityUIDsSet.add(entityUID);
+                        if(spatialContent != null){
+                            try {
+                                currentToGeometry = _WKTReader.read(spatialContent);
+                                if(spatialPredicateWKTCalculate(fromGeometry,spatialPredicateType,currentToGeometry)){
+                                    entityUIDsSet.add(entityUID);
+                                }
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }else{
@@ -183,12 +188,14 @@ public class GeospatialCalculateUtil {
                 String entityUID = currentEntitySpatialContentMapper.getEntityUID();
                 String spatialContent = currentEntitySpatialContentMapper.getEntitySpatialContentValue();
                 try {
-                    currentToGeometry = _WKTReader.read(spatialContent);
-                    if(spatialPredicateWKTCalculate(this.fromGeometry,this.spatialPredicateType,currentToGeometry)){
-                        entityUIDsSet.add(entityUID);
+                    if(spatialContent != null){
+                        currentToGeometry = _WKTReader.read(spatialContent);
+                        if(spatialPredicateWKTCalculate(this.fromGeometry,this.spatialPredicateType,currentToGeometry)){
+                            entityUIDsSet.add(entityUID);
+                        }
                     }
                 } catch (ParseException e) {
-                    throw new RuntimeException(e);
+                    e.printStackTrace();
                 }
             }
         }

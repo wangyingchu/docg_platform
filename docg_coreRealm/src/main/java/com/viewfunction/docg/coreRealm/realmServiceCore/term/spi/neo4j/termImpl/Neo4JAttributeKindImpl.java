@@ -123,7 +123,6 @@ public class Neo4JAttributeKindImpl implements Neo4JAttributeKind {
                         Record record = result.next();
                         String resultDataProperty = CypherBuilder.operationResultName;
                         if(record.containsKey(CypherBuilder.operationResultName)){
-                            System.out.println(record.get(resultDataProperty).asString());
                             fixSequenceConceptionKindNameList.add(record.get(resultDataProperty).asString());
                         }
                     }
