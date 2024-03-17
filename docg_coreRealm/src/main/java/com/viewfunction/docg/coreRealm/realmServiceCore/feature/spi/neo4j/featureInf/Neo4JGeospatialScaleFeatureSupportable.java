@@ -106,6 +106,55 @@ public interface Neo4JGeospatialScaleFeatureSupportable extends GeospatialScaleF
         return attachGeospatialScaleEventInnerLogic(RealmConstant._defaultGeospatialRegionName,geospatialCode,eventComment,eventData);
     }
 
+    public default GeospatialScaleEvent attachGeospatialScaleEventByGeospatialScaleEntityUID(String geospatialScaleEntityUID,
+                                                                                             String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException{
+        if(this.getEntityUID() != null & geospatialScaleEntityUID != null){
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                String queryCql = CypherBuilder.matchNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, Long.parseLong(geospatialScaleEntityUID), null, null);
+                GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                        new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleEntityClass, getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
+                Object resEntityRes = workingGraphOperationExecutor.executeRead(getSingleConceptionEntityTransformer, queryCql);
+                if(resEntityRes == null){
+                    logger.error("GeospatialScaleEntity does not contains entity with UID {}.", geospatialScaleEntityUID);
+                    CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                    exception.setCauseMessage("GeospatialScaleEntity does not contains entity with UID " + geospatialScaleEntityUID + ".");
+                    throw exception;
+                }
+                ConceptionEntity targetGeospatialScaleEntity = (ConceptionEntity)resEntityRes;
+                String geospatialRegionName = targetGeospatialScaleEntity.getAttribute(RealmConstant.GeospatialRegionClass).getAttributeValue().toString();
+                String eventGeospatialScaleGrade = targetGeospatialScaleEntity.getAttribute(RealmConstant.GeospatialScaleGradeProperty).getAttributeValue().toString();
+                String geospatialCode = targetGeospatialScaleEntity.getAttribute(RealmConstant.GeospatialCodeProperty).getAttributeValue().toString();
+
+                Map<String, Object> propertiesMap = eventData != null ? eventData : new HashMap<>();
+
+                CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
+                propertiesMap.put(RealmConstant._GeospatialScaleEventReferLocation,geospatialCode);
+                propertiesMap.put(RealmConstant._GeospatialScaleEventComment,eventComment);
+                propertiesMap.put(RealmConstant._GeospatialScaleEventScaleGrade,eventGeospatialScaleGrade);
+                propertiesMap.put(RealmConstant._GeospatialScaleEventGeospatialRegion,geospatialRegionName);
+                String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.GeospatialScaleEventClass}, propertiesMap);
+                logger.debug("Generated Cypher Statement: {}", createCql);
+                getSingleConceptionEntityTransformer =
+                        new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleEventClass, workingGraphOperationExecutor);
+                Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer, createCql);
+                if(newEntityRes != null) {
+                    ConceptionEntity geospatialScaleEventEntity = (ConceptionEntity) newEntityRes;
+                    geospatialScaleEventEntity.attachToRelation(this.getEntityUID(), RealmConstant.GeospatialScale_AttachToRelationClass, null, true);
+                    RelationEntity linkToGeospatialScaleEntityRelation = targetGeospatialScaleEntity.attachFromRelation(geospatialScaleEventEntity.getConceptionEntityUID(), RealmConstant.GeospatialScale_GeospatialReferToRelationClass, null, true);
+                    if(linkToGeospatialScaleEntityRelation != null){
+                        Neo4JGeospatialScaleEventImpl neo4JGeospatialScaleEventImpl = new Neo4JGeospatialScaleEventImpl(geospatialRegionName,eventComment,geospatialCode,getGeospatialScaleGrade(eventGeospatialScaleGrade.trim()),geospatialScaleEventEntity.getConceptionEntityUID());
+                        neo4JGeospatialScaleEventImpl.setGlobalGraphOperationExecutor(getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
+                        return neo4JGeospatialScaleEventImpl;
+                    }
+                }
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
+    }
+
     public default GeospatialScaleEvent attachGeospatialScaleEvent(String geospatialRegionName,String geospatialCode,
                                                                    String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException{
         return attachGeospatialScaleEventInnerLogic(geospatialRegionName,geospatialCode,eventComment,eventData);
