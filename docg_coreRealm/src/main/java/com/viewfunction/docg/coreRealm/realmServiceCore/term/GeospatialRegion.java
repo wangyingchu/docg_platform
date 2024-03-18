@@ -247,4 +247,15 @@ public interface GeospatialRegion {
      * @return 地理空间区域范围相关数据概要统计信息
      */
     public GeospatialRegionSummaryStatistics getGeospatialRegionSummaryStatistics();
+
+    /**
+     * 查询获取当前地理空间区域范围内的特定地理空间刻度实体列表
+     *
+     * @param geospatialScaleGrade GeospatialScaleGrade 实体地理空间刻度等级
+     * @param geospatialProperty GeospatialProperty 地理空间刻度实体标准属性类型
+     * @param propertyValue String 指定地理空间区域目标属性值（模糊匹配）
+     *
+     * @return 目标地理空间刻度实体对象列表
+     */
+    public List<GeospatialScaleEntity> listGeospatialScaleEntities(GeospatialScaleGrade geospatialScaleGrade,GeospatialProperty geospatialProperty,String propertyValue);
 }
