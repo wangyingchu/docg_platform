@@ -1075,11 +1075,11 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     public List<EntityStatisticsInfo> getConceptionEntitiesStatistics() throws CoreRealmServiceEntityExploreException {
         List<EntityStatisticsInfo> entityStatisticsInfoList = new ArrayList<>();
         String cypherProcedureString = "CALL db.labels()\n" +
-            "YIELD label\n" +
-            "CALL apoc.cypher.run(\"MATCH (:`\"+label+\"`) RETURN count(*) as count\", null)\n" +
-            "YIELD value\n" +
-            "RETURN label, value.count as count\n" +
-            "ORDER BY label";
+                "YIELD label\n" +
+                "CALL apoc.cypher.run(\"MATCH (:`\"+label+\"`) RETURN count(*) as count\", null)\n" +
+                "YIELD value\n" +
+                "RETURN label, value.count as count\n" +
+                "ORDER BY label";
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
             List<String> attributesNameList = new ArrayList<>();
@@ -1169,9 +1169,9 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                         }
                     }
                     return null;
-                    }
-                };
-                workingGraphOperationExecutor.executeRead(queryResultDataTransformer,cypherProcedureString);
+                }
+            };
+            workingGraphOperationExecutor.executeRead(queryResultDataTransformer,cypherProcedureString);
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
@@ -1183,7 +1183,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         List<EntityStatisticsInfo> entityStatisticsInfoList = new ArrayList<>();
         String cypherProcedureString = "CALL db.relationshipTypes()\n" +
                 "YIELD relationshipType\n" +
-                "CALL apoc.cypher.run(\"MATCH ()-[:\" + `relationshipType` + \"]->()\n" +
+                "CALL apoc.cypher.run(\"MATCH ()-[:`\" + `relationshipType` + \"`]->()\n" +
                 "RETURN count(*) as count\", null)\n" +
                 "YIELD value\n" +
                 "RETURN relationshipType, value.count AS count\n" +
@@ -1504,7 +1504,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                     "OPTIONAL MATCH (child:DOCG_Classification)-[:DOCG_ParentClassificationIs*0..1]-> (n) \n" +
                     "OPTIONAL MATCH (n) -[:DOCG_ParentClassificationIs]->(parent:DOCG_Classification)\n" +
                     "RETURN n as classification,count(DISTINCT(child)) as childCount,parent.name as parentName";
-                // real child classification count is childCount -1 (for the 0 in *0..1 logic)
+            // real child classification count is childCount -1 (for the 0 in *0..1 logic)
             //logger.debug("Generated Cypher Statement: {}", queryCql);
             List<ClassificationMetaInfo> classificationMetaInfoList = new ArrayList<>();
             DataTransformer dataTransformer = new DataTransformer() {
