@@ -83,4 +83,14 @@ public interface StatisticalAndEvaluable {
      * @return 属性值分布信息对象
      */
     public AttributeValueDistributionInfo statisticAttributeValueDistribution(AttributesParameters queryParameters,String attributeName) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 根据指定属性名称，按照该属性的值对符合过滤条件的概念实体分组统计实体数量
+     *
+     * @param queryParameters QueryParameters 待统计数据查询条件
+     * @param attributeName String 待统计数值类属性名称
+     *
+     * @return 统计结果键值对
+     */
+    public Map<Object,Number> statisticEntityGroupByAttributeValue(QueryParameters queryParameters,String attributeName) throws CoreRealmServiceEntityExploreException;
 }

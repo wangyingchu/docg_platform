@@ -453,4 +453,39 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
         }
         return null;
     }
+
+    default Map<Object,Number> statisticEntityGroupByAttributeValue(QueryParameters queryParameters,String attributeName) throws CoreRealmServiceEntityExploreException{
+        if (this.getEntityUID() != null) {
+            Map<Object,Number> statisticEntityGroup = new HashMap<>();
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                String checkCql = CypherBuilder.matchNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.getEntityUID()),new String[]{RealmConstant._NameProperty});
+                GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._NameProperty);
+                Object resultRes = workingGraphOperationExecutor.executeRead(getSingleAttributeValueTransformer,checkCql);
+                String statisticTargetType = ((AttributeValue)resultRes).getAttributeValue().toString();
+
+                String queryCql = CypherBuilder.matchNodesWithQueryParameters(statisticTargetType, queryParameters, null);
+                queryCql = queryCql.replace("RETURN operationResult","RETURN operationResult.`"+attributeName+"` as attributeValue, count(operationResult.`"+attributeName+"`) as frequency");
+                logger.debug("Generated Cypher Statement: {}", queryCql);
+
+                DataTransformer<AttributeValueDistributionInfo> statisticEntityGroupByAttributeDataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        while(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            Object attributeValue = nodeRecord.get("attributeValue").asObject();
+                            Number attributeValueFrequency = (Number)nodeRecord.get("frequency").asLong();
+                            statisticEntityGroup.put(attributeValue,attributeValueFrequency);
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(statisticEntityGroupByAttributeDataTransformer,queryCql);
+            } finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+            return statisticEntityGroup;
+        }
+        return null;
+    }
 }

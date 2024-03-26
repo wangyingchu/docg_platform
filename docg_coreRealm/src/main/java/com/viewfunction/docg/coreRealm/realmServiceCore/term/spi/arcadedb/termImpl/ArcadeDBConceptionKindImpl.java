@@ -144,6 +144,11 @@ public class ArcadeDBConceptionKindImpl implements ArcadeDBConceptionKind {
     }
 
     @Override
+    public Map<Object, Number> statisticEntityGroupByAttributeValue(QueryParameters queryParameters, String attributeName) throws CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
+    @Override
     public String getConceptionKindName() {
         return this.conceptionKindName;
     }
