@@ -521,6 +521,9 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
                         new GetSingleConceptionEntityTransformer(this.conceptionKindName, this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object resEntityRes = workingGraphOperationExecutor.executeRead(getSingleConceptionEntityTransformer, queryCql);
                 return resEntityRes != null ? (ConceptionEntity) resEntityRes : null;
+            }catch (NumberFormatException e){
+                e.printStackTrace();
+                return null;
             }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
