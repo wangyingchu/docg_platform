@@ -265,6 +265,9 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
                         (this.relationKindName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object resEntityRes = workingGraphOperationExecutor.executeRead(getSingleRelationEntityTransformer, queryCql);
                 return resEntityRes != null ? (RelationEntity) resEntityRes : null;
+            }catch (NumberFormatException e){
+                e.printStackTrace();
+                return null;
             }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
