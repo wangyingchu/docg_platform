@@ -71,7 +71,7 @@ public class DataSliceTest {
 
 
             DataSliceOperationResult addResult = targetDataSlice.addDataRecords(propertyList,dataList);
-           System.out.println(addResult.getSuccessItemsCount());
+            System.out.println(addResult.getSuccessItemsCount());
 
 
 
