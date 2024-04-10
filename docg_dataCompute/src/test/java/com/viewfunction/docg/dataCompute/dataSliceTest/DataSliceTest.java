@@ -2,9 +2,13 @@ package com.viewfunction.docg.dataCompute.dataSliceTest;
 
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
+import com.viewfunction.docg.dataCompute.computeServiceCore.exception.ComputeGridException;
 import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.exception.ComputeGridNotActiveException;
+import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceDetailInfo;
 import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceOperationResult;
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.ComputeGrid;
 import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSlicePropertyType;
+import com.viewfunction.docg.dataCompute.computeServiceCore.util.factory.ComputeGridTermFactory;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.apache.ignite.client.ClientException;
@@ -16,8 +20,20 @@ import java.util.*;
 public class DataSliceTest {
 
     public static void main(String[] args){
-        //massDataInsertTest();
-        checkMetr();
+        massDataInsertTest();
+        //checkMetr();
+        //checkDataSlice();
+    }
+
+    private static void checkDataSlice(){
+        ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
+        try {
+            DataSliceDetailInfo dataSliceDetailInfo =targetComputeGrid.getDataSliceDetail("gridDataSlice1");
+            System.out.println(dataSliceDetailInfo.getPrimaryKeyPropertiesNames());
+
+        } catch (ComputeGridException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static void massDataInsertTest(){
