@@ -39,7 +39,7 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
         //https://neo4j.com/docs/apoc/current/overview/apoc.load/apoc.load.arrow/
         String cql = "CALL apoc.load.arrow(\""+arrowFileLocation+"\",{}) YIELD value\n" +
                 "        UNWIND value.entityRow AS entity\n" +
-                "        CREATE (operationResult:"+conceptionKindName+") SET operationResult = apoc.convert.fromJsonMap(entity).properties RETURN count(operationResult)";
+                "        CREATE (operationResult:`"+conceptionKindName+"`) SET operationResult = apoc.convert.fromJsonMap(entity).properties RETURN count(operationResult)";
         logger.debug("Generated Cypher Statement: {}", cql);
 
         EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
@@ -78,7 +78,7 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
            "YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data\n" +
            "RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data";
         */
-        String cql = "CALL apoc.export.arrow.query(\""+arrowFileLocation+"\",\"match (entityRow:"+conceptionKindName+") return entityRow\",{})\n" +
+        String cql = "CALL apoc.export.arrow.query(\""+arrowFileLocation+"\",\"match (entityRow:`"+conceptionKindName+"`) return entityRow\",{})\n" +
                 "YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data\n" +
                 "RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data";
         logger.debug("Generated Cypher Statement: {}", cql);
@@ -124,7 +124,7 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
         RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data
         */
         String cql = "CALL apoc.import.csv(\n" +
-                "          [{fileName: 'file:"+csvFileLocation+"', labels: ['"+conceptionKindName+"']}],\n" +
+                "          [{fileName: 'file:"+csvFileLocation+"', labels: ['`"+conceptionKindName+"`']}],\n" +
                 "          [],\n" +
                 "          {delimiter: ',', arrayDelimiter: ',', stringIds: false}\n" +
                 "        )\n" +
@@ -170,7 +170,7 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
         YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data
         RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data
          */
-        String cql = "MATCH (kindEntity:"+conceptionKindName+")\n" +
+        String cql = "MATCH (kindEntity:`"+conceptionKindName+"`)\n" +
                 "        WITH collect(kindEntity) AS entityRow\n" +
                 "        CALL apoc.export.csv.data(entityRow, [], \""+csvFileLocation+"\", {})\n" +
                 "        YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data\n" +
@@ -249,7 +249,7 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
                 "        WITH entityDataMap.start.id AS startUID,entityDataMap.end.id AS endUID,entityDataMap.properties AS edgeProperties\n" +
                 "        MATCH (fromNode) WHERE id(fromNode) = toIntegerOrNull(startUID)\n" +
                 "        MATCH (toNode) WHERE id(toNode) = toIntegerOrNull(endUID)\n" +
-                "        CALL apoc.create.relationship(fromNode, \""+relationKindName+"\", edgeProperties, toNode)\n" +
+                "        CALL apoc.create.relationship(fromNode, \"`"+relationKindName+"`\", edgeProperties, toNode)\n" +
                 "        YIELD rel\n" +
                 "        RETURN count(rel) AS operationResult";
         logger.debug("Generated Cypher Statement: {}", cql);
@@ -285,7 +285,7 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
     @Override
     public EntitiesOperationStatistics exportRelationEntitiesToArrow(String relationKindName, String arrowFileLocation) {
         //https://neo4j.com/docs/apoc/current/overview/apoc.export/apoc.export.arrow.query/
-        String cql = "CALL apoc.export.arrow.query(\""+arrowFileLocation+"\",\"MATCH p=()-[entityRow:"+relationKindName+"]->() RETURN entityRow\",{})\n" +
+        String cql = "CALL apoc.export.arrow.query(\""+arrowFileLocation+"\",\"MATCH p=()-[entityRow:`"+relationKindName+"`]->() RETURN entityRow\",{})\n" +
                 "YIELD file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data\n" +
                 "RETURN file, source, format, nodes, relationships, properties, time, rows, batchSize, batches, done, data";
         logger.debug("Generated Cypher Statement: {}", cql);
@@ -327,7 +327,7 @@ public class Neo4JEntitiesExchangeOperatorImpl implements EntitiesExchangeOperat
                 "WITH entityDataMap._start AS startUID, entityDataMap._end AS endUID, entityDataMap AS edgeProperties\n" +
                 "MATCH (fromNode) WHERE id(fromNode) = toIntegerOrNull(startUID)\n" +
                 "MATCH (toNode) WHERE id(toNode) = toIntegerOrNull(endUID)\n" +
-                "CALL apoc.create.relationship(fromNode, \""+relationKindName+"\", edgeProperties, toNode)\n" +
+                "CALL apoc.create.relationship(fromNode, \"`"+relationKindName+"`\", edgeProperties, toNode)\n" +
                 "YIELD rel\n" +
                 "REMOVE rel._start,rel._end,rel._id,rel._labels,rel._type\n" +
                 "SET rel.lastModifyDate = datetime({timezone: '"+timeZoneID+"'})\n" +
