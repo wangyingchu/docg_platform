@@ -48,7 +48,7 @@ public class CoreRealmOperationUtil {
             conceptionKindPropertiesList.addAll(propertiesNameSet);
             dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID,DataSlicePropertyType.STRING);
 
-            // use this logic to avoid create ready exist ignite nodes has same name
+            // use this logic to avoid create already exist ignite nodes has same name
             IgniteConfiguration igniteConfiguration= new IgniteConfiguration();
             igniteConfiguration.setClientMode(true);
             igniteConfiguration.setIgniteInstanceName("DataSliceCreateThread_"+new Date().getTime());
