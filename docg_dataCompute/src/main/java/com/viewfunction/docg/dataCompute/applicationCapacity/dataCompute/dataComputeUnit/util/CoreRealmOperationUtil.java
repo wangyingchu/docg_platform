@@ -30,9 +30,9 @@ import java.util.concurrent.TimeUnit;
 
 public class CoreRealmOperationUtil {
 
-    public final static String RealmGlobalUID = "RealmGlobalUID";
-    public final static String RelationFromEntityUID = "RelationFromEntityUID";
-    public final static String RelationToEntityUID = "RelationToEntityUID";
+    public final static String RealmGlobalUID = "DOCG_RealmGlobalUID";
+    public final static String RelationFromEntityUID = "DOCG_RelationFromEntityUID";
+    public final static String RelationToEntityUID = "DOCG_RelationToEntityUID";
     public final static String defaultSliceGroup = "DefaultSliceGroup";
     private final static int defaultResultNumber = 100000000;
 
@@ -85,31 +85,43 @@ public class CoreRealmOperationUtil {
         }
     }
 
-    public static DataSliceOperationResult refreshDataSliceAndLoadDataFromConceptionKind(String dataSliceGroupName,String dataSliceName,Map<String, DataSlicePropertyType> dataSlicePropertyMap,String conceptionKindName,QueryParameters queryParameters,int degreeOfParallelism){
+    public static DataSliceOperationResult cleanAndSyncConceptionKindToDataSlice(String conceptionKindName,String dataSliceName,String dataSliceGroup,Map<String, DataSlicePropertyType> dataSlicePropertyMap,QueryParameters queryParameters){
         if(dataSlicePropertyMap == null ||dataSlicePropertyMap.size() == 0){
             return null;
         }
+
+        String dataSliceRealName = dataSliceName != null ? dataSliceName : conceptionKindName;
+        String dataSliceRealGroup = dataSliceGroup != null ? dataSliceGroup : defaultSliceGroup;
         Set<String> propertyNameSet = dataSlicePropertyMap.keySet();
         List<String> conceptionKindPropertiesList = new ArrayList<>();
         conceptionKindPropertiesList.addAll(propertyNameSet);
 
         try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
-            DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+            DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceRealName);
             if(targetDataSlice != null){
-                dataServiceInvoker.eraseDataSlice(dataSliceName);
+                dataServiceInvoker.eraseDataSlice(dataSliceRealName);
             }
             dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID,DataSlicePropertyType.STRING);
-            if(targetDataSlice == null){
-                List<String> pkList = new ArrayList<>();
-                pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
-                dataServiceInvoker.createGridDataSlice(dataSliceName,dataSliceGroupName+"_CONCEPTION",dataSlicePropertyMap,pkList);
-            }
+            List<String> pkList = new ArrayList<>();
+            pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
+            dataServiceInvoker.createGridDataSlice(dataSliceRealName,dataSliceRealGroup,dataSlicePropertyMap,pkList);
         } catch (ComputeGridNotActiveException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return loadConceptionKindEntitiesToDataSlice(conceptionKindName,conceptionKindPropertiesList,queryParameters,dataSliceName,true,degreeOfParallelism);
+
+        QueryParameters executedQueryParameters;
+        if(queryParameters != null){
+            executedQueryParameters = queryParameters;
+        }else{
+            executedQueryParameters = new QueryParameters();
+            executedQueryParameters.setResultNumber(defaultResultNumber);
+        }
+
+        int processorNumber = Runtime.getRuntime().availableProcessors();
+        int degreeOfParallelism = (processorNumber/2) >=4 ? (processorNumber/2) : 4;
+        return loadConceptionKindEntitiesToDataSlice(conceptionKindName,conceptionKindPropertiesList,executedQueryParameters,dataSliceRealName,true,degreeOfParallelism);
     }
 
     public static DataSliceOperationResult loadConceptionKindEntitiesToDataSlice(String conceptionKindName, List<String> attributeNamesList,QueryParameters queryParameters, String dataSliceName,boolean useConceptionEntityUIDAsPK,int degreeOfParallelism) {
@@ -446,6 +458,33 @@ public class CoreRealmOperationUtil {
         dataSliceOperationResult.finishOperation();
         dataSliceOperationResult.setOperationSummary("Load RelationKind Entities To DataSlice Operation");
         return dataSliceOperationResult;
+    }
+
+    public static DataSliceOperationResult refreshDataSliceAndLoadDataFromConceptionKind(String dataSliceGroupName,String dataSliceName,Map<String, DataSlicePropertyType> dataSlicePropertyMap,String conceptionKindName,QueryParameters queryParameters,int degreeOfParallelism){
+        if(dataSlicePropertyMap == null ||dataSlicePropertyMap.size() == 0){
+            return null;
+        }
+        Set<String> propertyNameSet = dataSlicePropertyMap.keySet();
+        List<String> conceptionKindPropertiesList = new ArrayList<>();
+        conceptionKindPropertiesList.addAll(propertyNameSet);
+
+        try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
+            DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+            if(targetDataSlice != null){
+                dataServiceInvoker.eraseDataSlice(dataSliceName);
+            }
+            dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID,DataSlicePropertyType.STRING);
+            if(targetDataSlice == null){
+                List<String> pkList = new ArrayList<>();
+                pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
+                dataServiceInvoker.createGridDataSlice(dataSliceName,dataSliceGroupName+"_CONCEPTION",dataSlicePropertyMap,pkList);
+            }
+        } catch (ComputeGridNotActiveException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return loadConceptionKindEntitiesToDataSlice(conceptionKindName,conceptionKindPropertiesList,queryParameters,dataSliceName,true,degreeOfParallelism);
     }
 
     private static class DataSliceInsertDataThread implements Runnable{
