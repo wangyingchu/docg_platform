@@ -59,6 +59,8 @@ public class CoreRealmOperationUtil {
                     List<String> pkList = new ArrayList<>();
                     pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
                     dataServiceInvoker.createGridDataSlice(dataSliceRealName,dataSliceRealGroup,dataSlicePropertyMap,pkList);
+                }else{
+                    return null;
                 }
             } catch (ComputeGridNotActiveException e) {
                 e.printStackTrace();
