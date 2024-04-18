@@ -126,6 +126,71 @@ public class CoreRealmOperationUtil {
         return loadConceptionKindEntitiesToDataSlice(conceptionKindName,conceptionKindPropertiesList,executedQueryParameters,dataSliceRealName,true,degreeOfParallelism);
     }
 
+    public static DataSliceOperationResult loadConceptionKindEntitiesToDataSlice(String conceptionKindName,String dataSliceName,Map<String,String> sliceAndKindAttributeMapping,QueryParameters queryParameters, String conceptionEntityUIDNameAlias) {
+        if(sliceAndKindAttributeMapping == null ||sliceAndKindAttributeMapping.size() == 0){
+            return null;
+        }
+
+        DataSliceOperationResult dataSliceOperationResult = new DataSliceOperationResult();
+        Set<String> attributeNameSet = sliceAndKindAttributeMapping.keySet();
+        List<String> attributeNamesList = new ArrayList<>();
+        for(String currentAttributeName : attributeNameSet){
+            String conceptionKindAttributeName = sliceAndKindAttributeMapping.get(currentAttributeName);
+            if(!conceptionKindAttributeName.equals(conceptionEntityUIDNameAlias)){
+                attributeNamesList.add(conceptionKindAttributeName);
+            }
+        }
+
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        ConceptionKind targetConceptionKind = coreRealm.getConceptionKind(conceptionKindName);
+        int totalResultConceptionEntitiesCount = 0;
+
+        try {
+            ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributeResult = targetConceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeNamesList,queryParameters);
+            List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
+            totalResultConceptionEntitiesCount = conceptionEntityValueList.size();
+
+            int processorNumber = Runtime.getRuntime().availableProcessors();
+            int degreeOfParallelism = (processorNumber/2) >=4 ? (processorNumber/2) : 4;
+            int singlePartitionSize = (conceptionEntityValueList.size()/degreeOfParallelism)+1;
+            List<List<ConceptionEntityValue>> rsList = Lists.partition(conceptionEntityValueList, singlePartitionSize);
+
+            ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+            for(int i = 0;i < rsList.size(); i++){
+                List<ConceptionEntityValue> currentConceptionEntityValueList = rsList.get(i);
+                DataSliceInsertDataThread dataSliceInsertDataThread = new DataSliceInsertDataThread(i,dataSliceName,attributeNamesList,currentConceptionEntityValueList,false);
+                executor.execute(dataSliceInsertDataThread);
+            }
+            executor.shutdown();
+            executor.awaitTermination(Long.MAX_VALUE,TimeUnit.NANOSECONDS);
+        } catch (CoreRealmServiceEntityExploreException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // use this logic to avoid create ready exist ignite nodes has same name
+        IgniteConfiguration igniteConfiguration= new IgniteConfiguration();
+        igniteConfiguration.setClientMode(true);
+        igniteConfiguration.setIgniteInstanceName("DataSliceConfirmThread_"+new Date().getTime());
+        Ignite invokerIgnite =Ignition.start(igniteConfiguration);
+        try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance(invokerIgnite)){
+            DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+            DataSliceMetaInfo dataSliceMetaInfo = targetDataSlice.getDataSliceMetaInfo();
+            int successDataCount = dataSliceMetaInfo.getPrimaryDataCount() + dataSliceMetaInfo.getBackupDataCount();
+            dataSliceOperationResult.setSuccessItemsCount(successDataCount);
+            dataSliceOperationResult.setFailItemsCount(totalResultConceptionEntitiesCount-successDataCount);
+        } catch (ComputeGridNotActiveException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        dataSliceOperationResult.finishOperation();
+        dataSliceOperationResult.setOperationSummary("Load ConceptionKind Entities To DataSlice Operation");
+        return dataSliceOperationResult;
+    }
+
+
+
+
     public static DataSliceOperationResult loadConceptionKindEntitiesToDataSlice(String conceptionKindName, List<String> attributeNamesList,QueryParameters queryParameters, String dataSliceName,boolean useConceptionEntityUIDAsPK,int degreeOfParallelism) {
         DataSliceOperationResult dataSliceOperationResult = new DataSliceOperationResult();
 
@@ -577,6 +642,56 @@ public class CoreRealmOperationUtil {
                 DataSliceOperationResult dataSliceOperationResult = targetDataSlice.addDataRecords(this.sliceDataProperties,sliceDataRowsDataList);
                 System.out.println("--------------------------------------");
                 System.out.println("Execution result of : "+"DataSliceInsertRelationThread_"+threadId);
+                System.out.println(dataSliceOperationResult.getOperationSummary());
+                System.out.println(dataSliceOperationResult.getStartTime());
+                System.out.println(dataSliceOperationResult.getFinishTime());
+                System.out.println(dataSliceOperationResult.getSuccessItemsCount());
+                System.out.println(dataSliceOperationResult.getFailItemsCount());
+                System.out.println("--------------------------------------");
+            } catch (ComputeGridNotActiveException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static class DataSliceInsertConceptionEntitiesThread implements Runnable{
+        private String dataSliceName;
+        private List<String> sliceDataProperties;
+        private List<ConceptionEntityValue> sliceDataRows;
+        private int threadId;
+        private Map<String,String> sliceAndKindAttributeMapping;
+        private String conceptionEntityUIDNameAlias;
+
+        public DataSliceInsertConceptionEntitiesThread(int threadId,String dataSliceName, Map<String,String> sliceAndKindAttributeMapping,String conceptionEntityUIDNameAlias,List<ConceptionEntityValue> sliceDataRows){
+            this.dataSliceName = dataSliceName;
+            this.sliceAndKindAttributeMapping = sliceAndKindAttributeMapping;
+            this.conceptionEntityUIDNameAlias = conceptionEntityUIDNameAlias;
+            this.sliceDataProperties = new ArrayList<>(sliceAndKindAttributeMapping.keySet());
+            this.sliceDataRows = sliceDataRows;
+            this.threadId = threadId;
+        }
+
+        @Override
+        public void run() {
+            List<Map<String,Object>> sliceDataRowsDataList = new ArrayList<>();
+            for(ConceptionEntityValue currentConceptionEntityValue :this.sliceDataRows){
+                Map<String,Object> currentDataMap = currentConceptionEntityValue.getEntityAttributesValue();
+
+                sliceDataRowsDataList.add(currentDataMap);
+            }
+
+            IgniteConfiguration igniteConfiguration= new IgniteConfiguration();
+            igniteConfiguration.setClientMode(true);
+            igniteConfiguration.setIgniteInstanceName("DataSliceInsertConceptionEntitiesThread_"+threadId);
+            Ignite invokerIgnite =Ignition.start(igniteConfiguration);
+
+            try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance(invokerIgnite)){
+                DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(this.dataSliceName);
+                DataSliceOperationResult dataSliceOperationResult = targetDataSlice.addDataRecords(this.sliceDataProperties,sliceDataRowsDataList);
+                System.out.println("--------------------------------------");
+                System.out.println("Execution result of : "+"DataSliceInsertConceptionEntitiesThread_"+threadId);
                 System.out.println(dataSliceOperationResult.getOperationSummary());
                 System.out.println(dataSliceOperationResult.getStartTime());
                 System.out.println(dataSliceOperationResult.getFinishTime());
