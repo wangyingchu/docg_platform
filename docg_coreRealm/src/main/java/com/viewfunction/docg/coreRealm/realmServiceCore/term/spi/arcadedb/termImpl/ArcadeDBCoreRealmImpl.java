@@ -126,6 +126,11 @@ public class ArcadeDBCoreRealmImpl implements ArcadeDBCoreRealm {
     }
 
     @Override
+    public List<AttributesViewKind> getAttributesViewKindsByMetaConfigItemMatch(String itemName, Object itemValue) {
+        return List.of();
+    }
+
+    @Override
     public AttributeKind getAttributeKind(String attributeKindUID) {
         return null;
     }

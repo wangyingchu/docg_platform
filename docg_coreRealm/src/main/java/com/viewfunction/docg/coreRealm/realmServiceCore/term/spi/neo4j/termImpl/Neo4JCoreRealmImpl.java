@@ -2,6 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.NullValueFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
@@ -280,6 +281,38 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
+    public List<AttributesViewKind> getAttributesViewKindsByMetaConfigItemMatch(String itemName, Object itemValue) {
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(1000000);
+        if(itemValue != null){
+            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(itemName,itemValue));
+        }else{
+            NullValueFilteringItem notNullFilteringItem= new NullValueFilteringItem(itemName);
+            notNullFilteringItem.reverseCondition();
+            queryParameters.setDefaultFilteringItem(notNullFilteringItem);
+        }
+        try {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.AttributesViewKindClass,queryParameters,null);
+                queryCql = queryCql.replace("(operationResult:`"+RealmConstant.AttributesViewKindClass+"`)",
+                        "(operationResult:`"+RealmConstant.AttributesViewKindClass+"`) - [r:`"+RealmConstant.Kind_MetaConfigItemsStorageRelationClass+"`] -> (metaConfig:`"+RealmConstant.MetaConfigItemsStorageClass+"`)");
+                queryCql = queryCql.replace("WHERE operationResult.","WHERE metaConfig.");
+                logger.debug("Generated Cypher Statement: {}", queryCql);
+                GetListAttributesViewKindTransformer getListAttributesViewKindTransformer =
+                        new GetListAttributesViewKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object attributesViewKindsRes = workingGraphOperationExecutor.executeWrite(getListAttributesViewKindTransformer,queryCql);
+                return attributesViewKindsRes != null ? (List<AttributesViewKind>) attributesViewKindsRes : null;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public AttributeKind getAttributeKind(String attributeKindUID) {
         if(attributeKindUID == null){
             return null;
@@ -396,15 +429,33 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
     @Override
     public List<AttributeKind> getAttributeKindsByMetaConfigItemMatch(String itemName, Object itemValue) {
-
-
-
-
-
-
-
-
-        return List.of();
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(1000000);
+        if(itemValue != null){
+            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(itemName,itemValue));
+        }else{
+            NullValueFilteringItem notNullFilteringItem= new NullValueFilteringItem(itemName);
+            notNullFilteringItem.reverseCondition();
+            queryParameters.setDefaultFilteringItem(notNullFilteringItem);
+        }
+        try {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.AttributeKindClass,queryParameters,null);
+                queryCql = queryCql.replace("(operationResult:`"+RealmConstant.AttributeKindClass+"`)",
+                        "(operationResult:`"+RealmConstant.AttributeKindClass+"`) - [r:`"+RealmConstant.Kind_MetaConfigItemsStorageRelationClass+"`] -> (metaConfig:`"+RealmConstant.MetaConfigItemsStorageClass+"`)");
+                queryCql = queryCql.replace("WHERE operationResult.","WHERE metaConfig.");
+                logger.debug("Generated Cypher Statement: {}", queryCql);
+                GetListAttributeKindTransformer getListAttributeKindTransformer = new GetListAttributeKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object attributeKindsRes = workingGraphOperationExecutor.executeWrite(getListAttributeKindTransformer,queryCql);
+                return attributeKindsRes != null ? (List<AttributeKind>) attributeKindsRes : null;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override

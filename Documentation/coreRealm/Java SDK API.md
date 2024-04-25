@@ -155,6 +155,16 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public List<AttributesViewKind> getAttributesViewKinds(String attributesViewKindName, String attributesViewKindDesc, AttributesViewKind.AttributesViewKindDataForm attributesViewKindDataForm);
 
     /**
+     * 根据输入的自定义配置项内容，匹配条件查询属性视图类型对象
+     *
+     * @param itemName String 需要查询的自定义配置项名称
+     * @param itemValue Object 需要查询的的自定义配置项值,如该值输入非空,则执行精确值匹配。如该值输入为空,则忽略具体值,执行自定义配置项存在查询
+     *
+     * @return 属性视图类型对象列表
+     */
+    public List<AttributesViewKind> getAttributesViewKindsByMetaConfigItemMatch(String itemName,Object itemValue);
+
+    /**
      * 根据对象唯一ID获取属性类型对象
      *
      * @param attributeKindUID String 需要获取的属性类型唯一ID
@@ -167,7 +177,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * 根据输入的自定义配置项内容，匹配条件查询属性类型对象
      *
      * @param itemName String 需要查询的自定义配置项名称
-     * @param itemValue Object 需要查询的的自定义配置项值
+     * @param itemValue Object 需要查询的的自定义配置项值,如该值输入非空,则执行精确值匹配。如该值输入为空,则忽略具体值,执行自定义配置项存在查询
      *
      * @return 属性类型对象列表
      */
