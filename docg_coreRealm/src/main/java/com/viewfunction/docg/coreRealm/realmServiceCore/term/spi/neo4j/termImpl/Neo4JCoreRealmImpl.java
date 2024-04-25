@@ -395,6 +395,19 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
+    public List<AttributeKind> getAttributeKindsByMetaConfigItemMatch(String itemName, Object itemValue) {
+
+
+
+
+
+
+
+
+        return List.of();
+    }
+
+    @Override
     public RelationKind getRelationKind(String relationKindName) {
         if(relationKindName == null){
             return null;

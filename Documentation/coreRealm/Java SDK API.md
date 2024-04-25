@@ -164,6 +164,16 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public AttributeKind getAttributeKind(String attributeKindUID);
 
     /**
+     * 根据输入的自定义配置项内容，匹配条件查询属性类型对象
+     *
+     * @param itemName String 需要查询的自定义配置项名称
+     * @param itemValue Object 需要查询的的自定义配置项值
+     *
+     * @return 属性类型对象列表
+     */
+    public List<AttributeKind> getAttributeKindsByMetaConfigItemMatch(String itemName,Object itemValue);
+
+    /**
      * 创建新的属性类型
      *
      * @param attributeKindName String 需要创建的属性类型名称，能够与已有属性类型重名,非空输入值

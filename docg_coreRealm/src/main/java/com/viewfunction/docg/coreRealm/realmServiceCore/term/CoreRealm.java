@@ -152,6 +152,16 @@ public interface CoreRealm {
     public List<AttributeKind> getAttributeKinds(String attributeKindName,String attributeKindDesc,AttributeDataType attributeDataType);
 
     /**
+     * 根据输入的自定义配置项内容，匹配条件查询属性类型对象
+     *
+     * @param itemName String 需要查询的自定义配置项名称
+     * @param itemValue Object 需要查询的的自定义配置项值
+     *
+     * @return 属性类型对象列表
+     */
+    public List<AttributeKind> getAttributeKindsByMetaConfigItemMatch(String itemName,Object itemValue);
+
+    /**
      * 根据名称获取关系类型对象
      *
      * @param relationKindName String 需要获取的关系类型名称
