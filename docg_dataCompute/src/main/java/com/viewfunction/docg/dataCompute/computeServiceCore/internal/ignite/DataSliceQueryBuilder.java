@@ -24,60 +24,6 @@ public class DataSliceQueryBuilder {
         DSLContext create = DSL.using((Connection) null, SQLDialect.SQL99);
         Query query = null;
         if(queryParameters != null){
-            SelectConditionStep selectConditionStep = null;
-
-            FilteringItem defaultFilteringItem = queryParameters.getDefaultFilteringItem();
-            List<FilteringItem> andFilteringItemList = queryParameters.getAndFilteringItemsList();
-            List<FilteringItem> orFilteringItemList = queryParameters.getOrFilteringItemsList();
-            if (defaultFilteringItem == null) {
-                if ((andFilteringItemList != null && andFilteringItemList.size() > 0) ||
-                        (orFilteringItemList != null && orFilteringItemList.size() > 0)) {
-                    logger.error("Default Filtering Item is required");
-                    DataSliceQueryStructureException e = new DataSliceQueryStructureException();
-                    e.setCauseMessage("Default Filtering Item is required");
-                    throw e;
-                }
-            }else{
-                Condition defaultCondition = generateQueryCondition(defaultFilteringItem);
-                if(andFilteringItemList != null && andFilteringItemList.size() > 0){
-                    for(FilteringItem currentAndFilteringItem:andFilteringItemList){
-                        Condition currentAndCondition = generateQueryCondition(currentAndFilteringItem);
-                        if(currentAndCondition != null){
-                            defaultCondition = defaultCondition.and(currentAndCondition);
-                        }
-                    }
-                }
-                if(orFilteringItemList != null && orFilteringItemList.size() > 0){
-                    for(FilteringItem currentOrFilteringItem:orFilteringItemList){
-                        Condition currentOrCondition = generateQueryCondition(currentOrFilteringItem);
-                        if(currentOrCondition != null){
-                            defaultCondition = defaultCondition.or(currentOrCondition);
-                        }
-                    }
-                }
-
-                if(queryParameters.isDistinctMode()){
-                    selectConditionStep = create.selectDistinct(field("*")).from(table(dataSliceName)).where(defaultCondition);
-                }else{
-                    selectConditionStep = create.select(field("*")).from(table(dataSliceName)).where(defaultCondition);
-                }
-
-                List<SortingItem> sortingItemList = queryParameters.getSortingItems();
-                if(sortingItemList != null && sortingItemList.size() > 0){
-                    for(SortingItem currentSortingItem:sortingItemList){
-                        String fieldName = currentSortingItem.getAttributeName();
-                        QueryParameters.SortingLogic sortingLogic = currentSortingItem.getSortingLogic();
-                        switch (sortingLogic){
-                            case ASC:
-                                selectConditionStep.orderBy(field(fieldName).asc());
-                                break;
-                            case DESC:
-                                selectConditionStep.orderBy(field(fieldName).desc());
-                        }
-                    }
-                }
-            }
-
             int startPage = queryParameters.getStartPage();
             int endPage = queryParameters.getEndPage();
             int pageSize = queryParameters.getPageSize();
@@ -136,8 +82,69 @@ public class DataSliceQueryBuilder {
                 limitRecordNumber = defaultReturnRecordNumber;
             }
 
-            selectConditionStep.limit(limitRecordNumber).offset(skipRecordNumber);
+            SelectConditionStep selectConditionStep = null;
 
+            FilteringItem defaultFilteringItem = queryParameters.getDefaultFilteringItem();
+            List<FilteringItem> andFilteringItemList = queryParameters.getAndFilteringItemsList();
+            List<FilteringItem> orFilteringItemList = queryParameters.getOrFilteringItemsList();
+            if (defaultFilteringItem == null) {
+                if ((andFilteringItemList != null && andFilteringItemList.size() > 0) ||
+                        (orFilteringItemList != null && orFilteringItemList.size() > 0)) {
+                    logger.error("Default Filtering Item is required");
+                    DataSliceQueryStructureException e = new DataSliceQueryStructureException();
+                    e.setCauseMessage("Default Filtering Item is required");
+                    throw e;
+                }else{
+                    if(queryParameters.isDistinctMode()){
+                        query = create.selectDistinct(field("*")).from(table(dataSliceName)).limit(limitRecordNumber).offset(skipRecordNumber);
+                    }else{
+                        query = create.select(field("*")).from(table(dataSliceName)).limit(limitRecordNumber).offset(skipRecordNumber);
+                    }
+                    String sql = query.getSQL(ParamType.NAMED_OR_INLINED);
+                    logger.debug("Generated SQL Statement: {}", sql);
+                    return sql;
+                }
+            }else{
+                Condition defaultCondition = generateQueryCondition(defaultFilteringItem);
+                if(andFilteringItemList != null && andFilteringItemList.size() > 0){
+                    for(FilteringItem currentAndFilteringItem:andFilteringItemList){
+                        Condition currentAndCondition = generateQueryCondition(currentAndFilteringItem);
+                        if(currentAndCondition != null){
+                            defaultCondition = defaultCondition.and(currentAndCondition);
+                        }
+                    }
+                }
+                if(orFilteringItemList != null && orFilteringItemList.size() > 0){
+                    for(FilteringItem currentOrFilteringItem:orFilteringItemList){
+                        Condition currentOrCondition = generateQueryCondition(currentOrFilteringItem);
+                        if(currentOrCondition != null){
+                            defaultCondition = defaultCondition.or(currentOrCondition);
+                        }
+                    }
+                }
+
+                if(queryParameters.isDistinctMode()){
+                    selectConditionStep = create.selectDistinct(field("*")).from(table(dataSliceName)).where(defaultCondition);
+                }else{
+                    selectConditionStep = create.select(field("*")).from(table(dataSliceName)).where(defaultCondition);
+                }
+
+                List<SortingItem> sortingItemList = queryParameters.getSortingItems();
+                if(sortingItemList != null && sortingItemList.size() > 0){
+                    for(SortingItem currentSortingItem:sortingItemList){
+                        String fieldName = currentSortingItem.getAttributeName();
+                        QueryParameters.SortingLogic sortingLogic = currentSortingItem.getSortingLogic();
+                        switch (sortingLogic){
+                            case ASC:
+                                selectConditionStep.orderBy(field(fieldName).asc());
+                                break;
+                            case DESC:
+                                selectConditionStep.orderBy(field(fieldName).desc());
+                        }
+                    }
+                }
+            }
+            selectConditionStep.limit(limitRecordNumber).offset(skipRecordNumber);
             query = selectConditionStep.getQuery();
         }else{
             query = create.select(field("*")).from(table(dataSliceName));
