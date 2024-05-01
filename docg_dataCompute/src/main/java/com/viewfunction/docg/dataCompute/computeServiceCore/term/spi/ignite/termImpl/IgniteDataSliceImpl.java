@@ -328,6 +328,13 @@ public class IgniteDataSliceImpl implements IgniteDataSlice {
         if(entities != null && entities.size()>0){
             QueryEntity mainQueryEntity = entities.iterator().next();
             Set<String> keysField = mainQueryEntity.getKeyFields();
+            if(keysField == null){
+                keysField = new HashSet<>();
+            }
+            String singleKeyFieldName = mainQueryEntity.getKeyFieldName();
+            if(singleKeyFieldName != null){
+                keysField.add(singleKeyFieldName);
+            }
             return keysField;
         }
         return null;
