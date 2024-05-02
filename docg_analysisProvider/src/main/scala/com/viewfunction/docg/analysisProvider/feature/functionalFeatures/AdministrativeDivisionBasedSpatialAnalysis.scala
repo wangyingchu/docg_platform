@@ -10,12 +10,14 @@ import com.viewfunction.docg.analysisProvider.fundamental.spatial.{GeospatialSca
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScaleLevel.GeospatialScaleLevel
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredicateType.SpatialPredicateType
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.{CoreRealmOperationUtil, MassDataOperationUtil}
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.{CoreRealmOperationUtil}
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.{AdministrativeDivisionSpatialCalculateRequest, SpatialCommonConfig}
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.DataSliceOperationUtil.getDataSlicePropertyType
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.{DataSliceOperationConstant, DataSliceOperationUtil, ResponseDataSourceTech}
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlicePropertyType
+import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.util.MassDataOperationUtil
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSlicePropertyType
 import org.apache.spark.api.java.function.ForeachPartitionFunction
+
 import org.apache.spark.sql.{DataFrame, Row}
 
 import java.util

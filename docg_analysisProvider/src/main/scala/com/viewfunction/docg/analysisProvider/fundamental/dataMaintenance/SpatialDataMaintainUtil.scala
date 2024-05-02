@@ -5,12 +5,13 @@ import com.viewfunction.docg.analysisProvider.fundamental.dataMaintenance
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.{AttributeDataType, AttributeKind}
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JAttributeKindImpl
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.exception.{DataSliceExistException, DataSlicePropertiesStructureException}
+import com.viewfunction.docg.dataCompute.computeServiceCore.exception.{DataSliceExistException, DataSlicePropertiesStructureException}
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScaleLevel.{CountryLevel, GeospatialScaleLevel, GlobalLevel, LocalLevel}
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialAnalysisConstant
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion.GeospatialScaleGrade
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlice, DataSlicePropertyType}
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlice}
+import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSlicePropertyType
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
 import org.geotools.data.shapefile.ShapefileDataStore
 import org.geotools.data.simple.{SimpleFeatureCollection, SimpleFeatureIterator, SimpleFeatureSource}
