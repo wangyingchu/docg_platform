@@ -3,8 +3,8 @@ package com.viewfunction.docg.dataCompute.dataSliceTest;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
-import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSlicePropertyType;
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceOperationResult;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceOperationResult;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil;
 
 import java.util.HashMap;

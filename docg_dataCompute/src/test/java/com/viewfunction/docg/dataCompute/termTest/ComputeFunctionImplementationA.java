@@ -1,6 +1,6 @@
 package com.viewfunction.docg.dataCompute.termTest;
 
-import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termImpl.BaseIgniteComputeFunction;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.spi.ignite.termImpl.BaseIgniteComputeFunction;
 import org.apache.ignite.IgniteAtomicReference;
 import org.apache.ignite.IgniteQueue;
 

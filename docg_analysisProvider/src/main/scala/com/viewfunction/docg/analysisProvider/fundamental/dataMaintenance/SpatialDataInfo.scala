@@ -1,6 +1,6 @@
 package com.viewfunction.docg.analysisProvider.fundamental.dataMaintenance
 
-import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSlicePropertyType
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType
 
 import java.util
 

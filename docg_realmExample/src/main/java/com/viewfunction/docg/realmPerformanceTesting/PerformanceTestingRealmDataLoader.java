@@ -16,8 +16,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceQueryResult;
-import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.exception.ComputeGridNotActiveException;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceQueryResult;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.internal.ignite.exception.ComputeGridNotActiveException;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -217,7 +217,7 @@ public class PerformanceTestingRealmDataLoader {
         List<RelationEntityValue> relationEntityValueList = new ArrayList<>();
         try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
             DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
-            DataSliceQueryResult dataSliceQueryResult = targetDataSlice.queryDataRecords((com.viewfunction.docg.dataCompute.computeServiceCore.analysis.query.QueryParameters) null);
+            DataSliceQueryResult dataSliceQueryResult = targetDataSlice.queryDataRecords((com.viewfunction.docg.dataCompute.dataComputeServiceCore.analysis.query.QueryParameters) null);
             for(Map<String,Object> currentData:dataSliceQueryResult.getResultRecords()){
                 RelationEntityValue currentRelationEntityValue = new RelationEntityValue();
                 currentRelationEntityValue.setFromConceptionEntityUID(currentData.get("FIRMDATA__REALMGLOBALUID").toString());
@@ -241,7 +241,7 @@ public class PerformanceTestingRealmDataLoader {
         List<RelationEntityValue> relationEntityValueList = new ArrayList<>();
         try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
             DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
-            DataSliceQueryResult dataSliceQueryResult = targetDataSlice.queryDataRecords((com.viewfunction.docg.dataCompute.computeServiceCore.analysis.query.QueryParameters) null);
+            DataSliceQueryResult dataSliceQueryResult = targetDataSlice.queryDataRecords((com.viewfunction.docg.dataCompute.dataComputeServiceCore.analysis.query.QueryParameters) null);
             for(Map<String,Object> currentData:dataSliceQueryResult.getResultRecords()){
                 RelationEntityValue currentRelationEntityValue = new RelationEntityValue();
                 currentRelationEntityValue.setFromConceptionEntityUID(currentData.get("FIRMDATA__REALMGLOBALUID").toString());

@@ -1,6 +1,6 @@
 package com.viewfunction.docg.dataCompute.termTest;
 
-import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termImpl.BaseIgniteFixInputTypeComputeLogic;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.spi.ignite.termImpl.BaseIgniteFixInputTypeComputeLogic;
 
 
 public class FixInputTypeComputeLogicA extends BaseIgniteFixInputTypeComputeLogic<Double,String> {

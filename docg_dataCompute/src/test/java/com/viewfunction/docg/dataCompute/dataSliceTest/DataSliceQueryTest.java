@@ -2,10 +2,10 @@ package com.viewfunction.docg.dataCompute.dataSliceTest;
 
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
-import com.viewfunction.docg.dataCompute.computeServiceCore.analysis.query.QueryParameters;
-import com.viewfunction.docg.dataCompute.computeServiceCore.analysis.query.filteringItem.*;
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceMetaInfo;
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceQueryResult;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.analysis.query.filteringItem.*;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceMetaInfo;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceQueryResult;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,11 +1,10 @@
 package com.viewfunction.docg.dataCompute.termTest;
 
-import com.viewfunction.docg.dataCompute.computeServiceCore.term.*;
-import com.viewfunction.docg.dataCompute.computeServiceCore.util.factory.ComputeGridTermFactory;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.*;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.factory.ComputeGridTermFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 public class ComputeService_LogicTest {
 

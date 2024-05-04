@@ -4,9 +4,9 @@ import com.viewfunction.docg.analysisProvider.feature.communication.messagePaylo
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.ResponseDataSourceTech.ResponseDataSourceTech
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlice}
-import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.util.MassDataOperationUtil
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceOperationResult
-import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSlicePropertyType
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.internal.ignite.util.MassDataOperationUtil
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceOperationResult
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType
 import org.apache.spark.sql.types.DataTypes
 
 import java.util
@@ -55,7 +55,7 @@ object DataSliceOperationUtil {
 
     //commit below for temp..... need modify quickly
     //val dataSliceOperationResult:DataSliceOperationResult = MassDataOperationUtil.massInsertSliceData(dataServiceInvoker,dataSliceName,dataList.asInstanceOf[util.List[util.Map[String,Object]]],
-    //  dataSliceProperties,DataSliceOperationConstant.TempResponseDataSlicePK,massDataOperationParallelism.toInt)
+    //dataSliceProperties,DataSliceOperationConstant.TempResponseDataSlicePK,massDataOperationParallelism.toInt)
   }
 
   def getDataSlicePropertyType(propertyType:String,responseDataSourceTech:ResponseDataSourceTech):DataSlicePropertyType = {

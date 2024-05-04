@@ -1,15 +1,15 @@
 package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService;
 
-import com.viewfunction.docg.dataCompute.computeServiceCore.analysis.query.QueryParameters;
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceOperationResult;
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceQueryResult;
-import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.DataSliceQueryBuilder;
-import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSlicePropertiesStructureException;
-import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSliceQueryStructureException;
-import com.viewfunction.docg.dataCompute.computeServiceCore.exception.DataSliceDataException;
-import com.viewfunction.docg.dataCompute.computeServiceCore.payload.DataSliceMetaInfo;
-import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSliceAtomicityMode;
-import com.viewfunction.docg.dataCompute.computeServiceCore.term.DataSliceStoreMode;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceOperationResult;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceQueryResult;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.internal.ignite.DataSliceQueryBuilder;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.exception.DataSlicePropertiesStructureException;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.exception.DataSliceQueryStructureException;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.exception.DataSliceDataException;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceMetaInfo;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSliceAtomicityMode;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSliceStoreMode;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.cache.CacheMode;

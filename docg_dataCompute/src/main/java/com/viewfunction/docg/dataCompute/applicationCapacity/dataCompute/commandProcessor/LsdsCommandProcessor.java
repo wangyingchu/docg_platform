@@ -1,8 +1,8 @@
 package com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.commandProcessor;
 
 import com.beust.jcommander.JCommander;
-import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.util.UnitIgniteOperationUtil;
-import com.viewfunction.docg.dataCompute.computeServiceCore.internal.ignite.util.UnitOperationResult;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.internal.ignite.util.UnitIgniteOperationUtil;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.internal.ignite.util.UnitOperationResult;
 import com.viewfunction.docg.dataCompute.consoleApplication.feature.BaseCommandProcessor;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;

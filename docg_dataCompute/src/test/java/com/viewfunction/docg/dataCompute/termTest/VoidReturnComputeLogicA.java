@@ -1,6 +1,6 @@
 package com.viewfunction.docg.dataCompute.termTest;
 
-import com.viewfunction.docg.dataCompute.computeServiceCore.term.spi.ignite.termImpl.BaseIgniteVoidReturnComputeLogic;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.spi.ignite.termImpl.BaseIgniteVoidReturnComputeLogic;
 import org.apache.ignite.IgniteAtomicLong;
 
 public class VoidReturnComputeLogicA extends BaseIgniteVoidReturnComputeLogic {
