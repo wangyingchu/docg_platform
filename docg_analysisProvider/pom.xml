@@ -15,7 +15,7 @@
         <flink.version>1.17.1</flink.version>
         <datasyslab.geotools.version>1.5.1-28.2</datasyslab.geotools.version>
         <geotools.version>26.4</geotools.version>
-        <sedona.version>1.4.1</sedona.version>
+        <sedona.version>1.5.1</sedona.version>
         <akka.version>2.7.0</akka.version>
     </properties>
 
