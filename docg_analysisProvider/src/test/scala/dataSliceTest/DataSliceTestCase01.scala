@@ -1,6 +1,6 @@
 package dataSliceTest
 
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlicePropertyType
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker
 
 import java.util

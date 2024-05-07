@@ -3,10 +3,10 @@ package analysisExample
 import com.viewfunction.docg.analysisProvider.feature.common.{GlobalDataAccessor, ResultSetConvertor}
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
-import ml.sparkling.graph.api.operators.measures.VertexMeasureConfiguration
+//import ml.sparkling.graph.api.operators.measures.VertexMeasureConfiguration
 import org.apache.spark.graphx.{Edge, Graph, PartitionStrategy, VertexId}
 import org.apache.spark.rdd.RDD
-import ml.sparkling.graph.operators.OperatorsDSL._
+//import ml.sparkling.graph.operators.OperatorsDSL._
 
 import java.sql.ResultSet
 import java.util.Date
@@ -55,6 +55,8 @@ object GraphAnalysisExample {
     println(networkGraph.vertices.getClass)
     println(networkGraph.triangleCount().numVertices)
 
+    //need modify below logic for matching spark 3.5 method change
+    /*
     val adamicAdarResult = networkGraph.adamicAdar()
     adamicAdarResult.vertices.take(20).foreach(item=>{
       println(item._2)
@@ -74,6 +76,9 @@ object GraphAnalysisExample {
     eee.vertices.take(20).foreach(println(_))
     val fff = networkGraph2.commonNeighbours()
     fff.edges.take(20).foreach(println(_))
+    */
+
+
     globalDataAccessor.close()
   }
 }

@@ -10,8 +10,8 @@ import com.viewfunction.docg.analysisProvider.fundamental.spatial.{GeospatialSca
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion.GeospatialScaleGrade
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlicePropertyType}
-
+import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType
 import java.util
 import scala.collection.mutable
 
