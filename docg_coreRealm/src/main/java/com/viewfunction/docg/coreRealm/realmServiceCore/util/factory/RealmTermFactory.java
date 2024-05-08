@@ -3,8 +3,6 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.util.factory;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.arcadedb.termImpl.ArcadeDBCoreRealmImpl;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.arcadedb.util.ArcadeDBCoreRealmSystemUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JCoreRealmImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.util.Neo4JCoreRealmSystemUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
@@ -27,8 +25,6 @@ public class RealmTermFactory {
                 exception.setCauseMessage("Current Neo4J storage implements doesn't support multi Realm");
                 throw exception;
             }
-        }else if(CoreRealmStorageImplTech.ARCADEDB.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
-            return new ArcadeDBCoreRealmImpl(coreRealmName);
         }else{
             return null;
         }
@@ -37,8 +33,6 @@ public class RealmTermFactory {
     public static CoreRealm getDefaultCoreRealm(){
         if(CoreRealmStorageImplTech.NEO4J.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
             return Neo4JCoreRealmSystemUtil.getDefaultCoreRealm();
-        }else if(CoreRealmStorageImplTech.ARCADEDB.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
-            return ArcadeDBCoreRealmSystemUtil.getDefaultCoreRealm();
         }else{
             return null;
         }
@@ -47,8 +41,6 @@ public class RealmTermFactory {
     public static Set<String> listCoreRealms() throws CoreRealmFunctionNotSupportedException{
         if(CoreRealmStorageImplTech.NEO4J.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
             return Neo4JCoreRealmSystemUtil.listCoreRealms();
-        }else if(CoreRealmStorageImplTech.ARCADEDB.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
-            return ArcadeDBCoreRealmSystemUtil.listCoreRealms();
         }else{
             return null;
         }
@@ -57,8 +49,6 @@ public class RealmTermFactory {
     public static CoreRealm createCoreRealm(String coreRealmName) throws CoreRealmServiceRuntimeException, CoreRealmFunctionNotSupportedException {
         if(CoreRealmStorageImplTech.NEO4J.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
             return Neo4JCoreRealmSystemUtil.createCoreRealm(coreRealmName);
-        }else if(CoreRealmStorageImplTech.ARCADEDB.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
-            return ArcadeDBCoreRealmSystemUtil.createCoreRealm(coreRealmName);
         }else{
             return null;
         }
