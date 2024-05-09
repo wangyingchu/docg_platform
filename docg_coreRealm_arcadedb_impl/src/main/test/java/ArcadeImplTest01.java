@@ -2,13 +2,13 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunct
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
-import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.ADB_RealmTermFactory;
 
 public class ArcadeImplTest01 {
 
     public static void main(String[] args) throws CoreRealmServiceRuntimeException, CoreRealmFunctionNotSupportedException {
 
-        CoreRealm defaultCoreRealm = RealmTermFactory.getDefaultCoreRealm();
+        CoreRealm defaultCoreRealm = ADB_RealmTermFactory.getDefaultCoreRealm();
         //
 
        // System.out.println(defaultCoreRealm.getCoreRealmName());
