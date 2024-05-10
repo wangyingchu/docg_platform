@@ -671,6 +671,19 @@ public class ClassificationTest {
         Assert.assertEquals(relatedClassification.getClassificationDesc(),"classification3DescUPD");
         Assert.assertEquals(coreRealm.getClassification(relatedClassification.getClassificationName()).getClassificationDesc(),"classification3DescUPD");
 
+        Classification childClassificationForRename = relatedClassification.createChildClassification("childClassificationForRename","childClassificationForRenameDesc");
+        boolean renameResult = childClassificationForRename.updateClassificationName("NOT_EXIST_NAME");
+        Assert.assertTrue(renameResult);
+        Assert.assertEquals(childClassificationForRename.getClassificationName(),"NOT_EXIST_NAME");
+
+        boolean exceptionShouldBeCaught2 = false;
+        try{
+            childClassificationForRename.updateClassificationName("NOT_EXIST_NAME");
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught2 = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught2);
+
         coreRealm.closeGlobalSession();
     }
 }

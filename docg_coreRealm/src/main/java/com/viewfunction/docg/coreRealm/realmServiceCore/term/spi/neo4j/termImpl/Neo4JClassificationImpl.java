@@ -52,6 +52,37 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
         return this.classificationUID;
     }
 
+    @Override
+    public boolean updateClassificationName(String classificationNewName) throws CoreRealmServiceRuntimeException {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            Classification renamedClassification = getClassificationByName(workingGraphOperationExecutor,classificationNewName);
+            if(renamedClassification != null){
+                logger.error("Classification with name {} already exist.", classificationNewName);
+                CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+                exception.setCauseMessage("Classification with name "+classificationNewName+" already exist.");
+                throw exception;
+            }else{
+                Map<String,Object> attributeDataMap = new HashMap<>();
+                attributeDataMap.put(RealmConstant._NameProperty,classificationNewName);
+
+                String updateCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.classificationUID),attributeDataMap);
+                GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._NameProperty);
+                Object updateResultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,updateCql);
+                CommonOperationUtil.updateEntityMetaAttributes(workingGraphOperationExecutor,this.classificationUID,false);
+                AttributeValue resultAttributeValue =  updateResultRes != null ? (AttributeValue) updateResultRes : null;
+                if(resultAttributeValue != null && resultAttributeValue.getAttributeValue().toString().equals(classificationNewName)){
+                    this.classificationName = classificationNewName;
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
     public String getCoreRealmName() {
         return this.coreRealmName;
     }

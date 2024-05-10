@@ -33,6 +33,15 @@ public interface Classification extends MetaAttributeFeatureSupportable, Attribu
     public String getClassificationUID();
 
     /**
+     * 更新当前分类名称。如当前系统中不存在与 classificationNewName 值同名的分类，则更新当前分类名称。否则抛出核心领域运行时异常
+     *
+     * @param classificationNewName String 新的分类名称
+     *
+     * @return 如操作成功，返回结果为 true，如当前系统中已经存在需要更新的分类的同名
+     */
+    public boolean updateClassificationName(String classificationNewName) throws CoreRealmServiceRuntimeException;
+
+    /**
      * 更新当前分类描述
      *
      * @param classificationDesc String 新的分类描述
