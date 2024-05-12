@@ -3,6 +3,8 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.feature;
 import java.util.Date;
 
 public interface MetaAttributeFeatureSupportable {
+    //向最美好的前途，哪怕是漫长的路
+
     /**
      * 获取当前对象创建时间
      *
