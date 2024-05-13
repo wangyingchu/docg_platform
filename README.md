@@ -39,7 +39,7 @@ DOCG 数据分析平台本质上就是这样的一个 **多源异构的信息存
 3.  通过在各种不同数据管理领域模型之间建立业务关联，使IT系统在数据层面上再现真实世界中复杂的业务关系（如时间关联，地理空间关联等）。进而利用各种高阶数据分析算法对数据进行有效率，有针对性的分析。
 
 
-####  <span style="color:#0074D9;"> 使用 DDD 领域驱动设计概念设计 DOCG 数据分析平台的核心能力应用逻辑</span>
+####  <span style="color:#0074D9;"> 使用 DDD 领域驱动设计实现 DOCG 数据分析平台的核心领域模型建模核</span>
 
 为了实现 **建模（Modeling）**这一核心特征，需要提出一套相应的领域模型概念，使 DOCG 数据分析平台能够以统一的逻辑和术语来兼容表述各类行业领域的所有不同业务信息，进而实现其 **抽象定义**，**真实映射** 和 **孪生分析** 的核心数据处理能力。DOCG 数据分析平台的业务模型使用以下的主要术语来描述实现一个业务领域模型所需要的各种对象的概念。通过组合使用这些对象的功能，可以实现针对特定领域模型的全部数据管理与分析相关的业务需求。
 
@@ -74,7 +74,7 @@ DOCG 数据分析平台本质上就是这样的一个 **多源异构的信息存
 
 - [DOCG 数据分析平台核心领域模型概念详细说明]: Documentation/modeling/modeling.md
 
-- [DOCG 数据分析平台核心领域模型 SDK 详细说明]: Documentation/coreRealm/JavaSDK_API.md
+- [DOCG 数据分析平台核心领域模型 CoreRealm SDK 详细说明]: Documentation/coreRealm/JavaSDK_API.md
 
 - [DOCG 数据分析平台领域模型数据管理工作台]: Documentation/sysAdmin/sysadminConsole.md
 
@@ -214,11 +214,3 @@ CIM 数据平台旨在对 CIM 数据的对象定义、实例管理、对象关�
 
 
 
-
-
-
-
-
-
-
-<img src="/media/wangychu/NSStorage1/GIT/DOCG/docg_platform/Documentation/intro/DOCG-Component-WholePicture.jpg" style="zoom: 50%;" />
