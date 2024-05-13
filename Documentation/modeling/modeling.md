@@ -41,9 +41,15 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
 
 **地理空间刻度事件**（*GeospatialScaleEvent*）：代表一个常规概念实体在特定地理位置上的与空间相关的事件。一个常规概念实体通过一个唯一的地理空间刻度事件与一个特定的表述该地理位置所属行政区划的地理空间刻度实体相关联，来表述概念实体在特定地理位置上的业务信息。
 
-
-
 #### ➜ 概念交互逻辑 
+
+###### *领域模型概念交互规则说明*
+
+核心领域模型中各个术语代表的对象间的基本交互关系说明如下：
+
+<img src="documentPic/coreRealmScope.jpg" alt="image" style="zoom:12.5%;" />
+
+<center>核心领域概念交互逻辑</center>
 
 1. 一个概念类型（*ConceptionKind*）可以和不限数量的属性视图类型（*AttributesViewKind*）相关联，这些关联定义了一个概念类型中所能表述的所有不同业务类型的属性的集合。
 
@@ -60,16 +66,6 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
 7. 在业务领域模型中可以为任意两个指定的概念类型（*ConceptionKind*）指定一个特定的关系类型（*RelationKind*）。从而能够在创建概念实体（*ConceptionEntity*）时自动的创建该关系类型的关系实体。通过访问任何概念实体（*ConceptionEntity*）均可获取到与其相关联的所有关系实体（*RelationEntity*），进而获取到通过该关系实体与其相关的另一个领域模型中的概念实体。
 
 8. 通过使用分类（*Classification*）这一概念来表述业务领域模型中需要进行全局分析的各类业务维度（例如时间，空间等）。在一个领域模型中可以定义任意数量的分类。领域模型中的所有概念类型（*ConceptionKind*）、概念实体（*ConceptionEntity*）、关系类型（*RelationKind*）、属性视图类型（*AttributesViewKind*）和*属性类型*（*AttributeKind*）均可使用任何关系类型与这些分类建立关联关系。
-
-
-###### *领域模型概念交互规则说明*
-
-核心领域模型中各个术语代表的对象间的基本交互关系说明如下：
-
-<img src="documentPic/coreRealmScope.jpg" alt="image" style="zoom:12.5%;" />
-
-<center>核心领域概念交互逻辑</center>
-
 
 ###### *领域模型概念 ER关系说明*
 
