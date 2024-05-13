@@ -2,7 +2,7 @@
 
 ***
 
-# <span style="color:#CE0000;"> DOCG  </span> 数据分析平台概叙
+# <span style="color:#CE0000;"> DOCG  </span> 数据分析平台概述
 
 ##### ➜ 摘要 
 
