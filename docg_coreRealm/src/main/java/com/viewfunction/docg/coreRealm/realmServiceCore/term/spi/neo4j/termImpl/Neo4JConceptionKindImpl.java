@@ -1829,10 +1829,16 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     private String generateRelationMatchCQLPart(String conceptionEntityCqlAlias,RelationMatchingItem relationMatchingItem,RelationMatchParameters.MatchingLogic matchLogic){
-        if(relationMatchingItem != null && relationMatchingItem.getRelatedConceptionKind() != null && relationMatchingItem.getRelationKind() != null && relationMatchingItem.getRelationDirection() != null){
-            String _CQLPart = "("+conceptionEntityCqlAlias+")-[:`"+relationMatchingItem.getRelationKind()+"`]-(:`"+relationMatchingItem.getRelatedConceptionKind()+"`)";
+        if(relationMatchingItem != null && relationMatchingItem.getRelationKind() != null && relationMatchingItem.getRelationDirection() != null){
+            String _CQLPart = "";
+            if(relationMatchingItem.getRelatedConceptionKind() != null){
+                _CQLPart = "("+conceptionEntityCqlAlias+")-[:`"+relationMatchingItem.getRelationKind()+"`]-(:`"+relationMatchingItem.getRelatedConceptionKind()+"`)";
+            }else{
+                _CQLPart = "("+conceptionEntityCqlAlias+")-[:`"+relationMatchingItem.getRelationKind()+"`]-()";
+            }
+
             switch (relationMatchingItem.getRelationDirection()){
-                case FROM -> _CQLPart = _CQLPart.replace("]-(:","]->(:");
+                case FROM -> _CQLPart = _CQLPart.replace("]-(","]->(");
                 case TO -> _CQLPart = _CQLPart.replace(")-[:",")<-[:");
             }
             if(relationMatchingItem.isReversedCondition()){
