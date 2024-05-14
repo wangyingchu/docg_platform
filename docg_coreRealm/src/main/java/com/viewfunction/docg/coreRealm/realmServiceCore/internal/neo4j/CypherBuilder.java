@@ -1501,7 +1501,22 @@ public class CypherBuilder {
                 }
             }
         } else {
-            statement = Cypher.match(m).returning(m).limit(defaultReturnRecordNumber).build();
+            Expression returnedFunctionValue2 = null;
+            if (cypherFunctionType != null) {
+                switch (cypherFunctionType) {
+                    case COUNT:
+                        returnedFunctionValue2 = Functions.count(m);
+                        break;
+                    case ID:
+                        returnedFunctionValue2 = Functions.id(m);
+                        break;
+                }
+            }
+            if(returnedFunctionValue2 != null){
+                statement = Cypher.match(m).returning(returnedFunctionValue2).build();
+            }else{
+                statement = Cypher.match(m).returning(m).limit(defaultReturnRecordNumber).build();
+            }
         }
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}", rel);

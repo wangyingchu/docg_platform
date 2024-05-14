@@ -515,14 +515,11 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
        return null;
     }
 
-
-
-
-
     @Override
     public Long countEntitiesWithRelationsMatch(AttributesParameters attributesParameters, boolean isDistinctMode, RelationMatchParameters relationMatchParameters) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+        QueryParameters queryParameters = null;
         if (attributesParameters != null) {
-            QueryParameters queryParameters = new QueryParameters();
+            queryParameters = new QueryParameters();
             queryParameters.setDistinctMode(isDistinctMode);
             queryParameters.setResultNumber(100000000);
             queryParameters.setDefaultFilteringItem(attributesParameters.getDefaultFilteringItem());
@@ -536,53 +533,51 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
                     queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.OR);
                 }
             }
-            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-            try{
-                String queryCql = CypherBuilder.matchNodesWithQueryParameters(this.conceptionKindName,queryParameters, CypherBuilder.CypherFunctionType.COUNT);
-
-                if(relationMatchParameters != null && relationMatchParameters.getDefaultMatchingItem() != null){
-                    RelationMatchingItem defaultRelationMatchingItem = relationMatchParameters.getDefaultMatchingItem();
-                    RelationMatchParameters.MatchingLogic defaultMatchingLogic = relationMatchParameters.getDefaultRelationMatchingLogic();
-                    List<RelationMatchingItem> orRelationMatchingItemList = relationMatchParameters.getOrRelationMatchingItemList();
-                    List<RelationMatchingItem> andRelationMatchingItemList = relationMatchParameters.getAndRelationMatchingItemList();
-
-                    String relationMatchCQL = generateRelationMatchCQLPart(CypherBuilder.operationResultName,defaultRelationMatchingItem,null);
-
-                    for(RelationMatchingItem currentRelationMatchingItem:andRelationMatchingItemList){
-                        relationMatchCQL = relationMatchCQL + generateRelationMatchCQLPart(CypherBuilder.operationResultName,currentRelationMatchingItem, RelationMatchParameters.MatchingLogic.AND);
-                    }
-
-                    for(RelationMatchingItem currentRelationMatchingItem:orRelationMatchingItemList){
-                        relationMatchCQL = relationMatchCQL + generateRelationMatchCQLPart(CypherBuilder.operationResultName,currentRelationMatchingItem, RelationMatchParameters.MatchingLogic.OR);
-                    }
-
-                    if(queryCql.contains("WHERE")){
-                        String relationMatchFullCQL = " AND " + relationMatchCQL;
-                        switch (defaultMatchingLogic){
-                            case AND -> relationMatchFullCQL = " AND " + relationMatchCQL;
-                            case OR -> relationMatchFullCQL = " OR " + relationMatchCQL;
-                        }
-                        queryCql = queryCql.replace(" RETURN ",relationMatchFullCQL+" RETURN ");
-                    }else{
-                        String relationMatchFullCQL = " WHERE " + relationMatchCQL;
-                        queryCql = queryCql.replace(" RETURN ",relationMatchFullCQL+" RETURN ");
-                    }
-                    logger.debug("Generated Cypher Statement: {}", queryCql);
-                }
-
-                GetLongFormatAggregatedReturnValueTransformer GetLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
-                Object queryRes = workingGraphOperationExecutor.executeRead(GetLongFormatAggregatedReturnValueTransformer,queryCql);
-                if(queryRes != null){
-                    return (Long)queryRes;
-                }
-            }finally {
-                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-            }
-            return null;
-
-        }else{
-            return countConceptionEntities();
         }
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(this.conceptionKindName,queryParameters, CypherBuilder.CypherFunctionType.COUNT);
+
+            if(relationMatchParameters != null && relationMatchParameters.getDefaultMatchingItem() != null){
+                RelationMatchingItem defaultRelationMatchingItem = relationMatchParameters.getDefaultMatchingItem();
+                RelationMatchParameters.MatchingLogic defaultMatchingLogic = relationMatchParameters.getDefaultRelationMatchingLogic();
+                List<RelationMatchingItem> orRelationMatchingItemList = relationMatchParameters.getOrRelationMatchingItemList();
+                List<RelationMatchingItem> andRelationMatchingItemList = relationMatchParameters.getAndRelationMatchingItemList();
+
+                String relationMatchCQL = generateRelationMatchCQLPart(CypherBuilder.operationResultName,defaultRelationMatchingItem,null);
+
+                for(RelationMatchingItem currentRelationMatchingItem:andRelationMatchingItemList){
+                    relationMatchCQL = relationMatchCQL + generateRelationMatchCQLPart(CypherBuilder.operationResultName,currentRelationMatchingItem, RelationMatchParameters.MatchingLogic.AND);
+                }
+
+                for(RelationMatchingItem currentRelationMatchingItem:orRelationMatchingItemList){
+                    relationMatchCQL = relationMatchCQL + generateRelationMatchCQLPart(CypherBuilder.operationResultName,currentRelationMatchingItem, RelationMatchParameters.MatchingLogic.OR);
+                }
+
+                if(queryCql.contains("WHERE")){
+                    String relationMatchFullCQL = " AND " + relationMatchCQL;
+                    switch (defaultMatchingLogic){
+                        case AND -> relationMatchFullCQL = " AND " + relationMatchCQL;
+                        case OR -> relationMatchFullCQL = " OR " + relationMatchCQL;
+                    }
+                    queryCql = queryCql.replace(" RETURN ",relationMatchFullCQL+" RETURN ");
+                }else{
+                    String relationMatchFullCQL = " WHERE " + relationMatchCQL;
+                    queryCql = queryCql.replace(" RETURN ",relationMatchFullCQL+" RETURN ");
+                }
+                logger.debug("Generated Cypher Statement: {}", queryCql);
+            }
+
+            GetLongFormatAggregatedReturnValueTransformer GetLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
+            Object queryRes = workingGraphOperationExecutor.executeRead(GetLongFormatAggregatedReturnValueTransformer,queryCql);
+            if(queryRes != null){
+                return (Long)queryRes;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return null;
     }
 
     @Override
