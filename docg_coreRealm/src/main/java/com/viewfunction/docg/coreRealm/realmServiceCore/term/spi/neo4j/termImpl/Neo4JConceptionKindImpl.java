@@ -703,21 +703,86 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         return null;
     }
 
-
-
-
     @Override
     public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByViewKindsWithRelationsMatch(List<String> attributesViewKindNames, QueryParameters exploreParameters, RelationMatchParameters relationMatchParameters) throws CoreRealmServiceEntityExploreException {
+        if(attributesViewKindNames != null && attributesViewKindNames.size()>0){
+            List<AttributesViewKind> resultRealAttributesViewKindList = new ArrayList<>();
+            for(String currentTargetViewKindName:attributesViewKindNames){
+                List<AttributesViewKind> currentAttributesViewKinds = getContainsAttributesViewKinds(currentTargetViewKindName);
+                if(currentAttributesViewKinds != null){
+                    resultRealAttributesViewKindList.addAll(currentAttributesViewKinds);
+                }
+            }
+            List<AttributeKind> allResultTargetAttributeKindList = new ArrayList<>();
+            for(AttributesViewKind resultAttributesViewKind:resultRealAttributesViewKindList){
+                List<AttributeKind> currentAttributeKinds = resultAttributesViewKind.getContainsAttributeKinds();
+                if(currentAttributeKinds != null){
+                    allResultTargetAttributeKindList.addAll(currentAttributeKinds);
+                }
+            }
+            List<String> targetAttributeKindNameList = filterSingleValueAttributeKindNames(allResultTargetAttributeKindList);
+            return getSingleValueEntityAttributesByAttributeNamesWithRelationsMatch(targetAttributeKindNameList,exploreParameters,relationMatchParameters);
+        }
         return null;
     }
 
     @Override
     public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNamesWithRelationsMatch(List<String> attributeNames, QueryParameters exploreParameters, RelationMatchParameters relationMatchParameters) throws CoreRealmServiceEntityExploreException {
+        if(attributeNames != null && attributeNames.size()>0){
+            CommonConceptionEntitiesAttributesRetrieveResultImpl commonConceptionEntitiesAttributesRetrieveResultImpl
+                    = new CommonConceptionEntitiesAttributesRetrieveResultImpl();
+            commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setQueryParameters(exploreParameters);
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try {
+                String queryCql = CypherBuilder.matchAttributesWithQueryParameters(this.conceptionKindName,exploreParameters,attributeNames);
+
+                if(relationMatchParameters != null && relationMatchParameters.getDefaultMatchingItem() != null){
+                    RelationMatchingItem defaultRelationMatchingItem = relationMatchParameters.getDefaultMatchingItem();
+                    RelationMatchParameters.MatchingLogic defaultMatchingLogic = relationMatchParameters.getDefaultRelationMatchingLogic();
+                    List<RelationMatchingItem> orRelationMatchingItemList = relationMatchParameters.getOrRelationMatchingItemList();
+                    List<RelationMatchingItem> andRelationMatchingItemList = relationMatchParameters.getAndRelationMatchingItemList();
+
+                    String relationMatchCQL = generateRelationMatchCQLPart(CypherBuilder.operationResultName,defaultRelationMatchingItem,null);
+
+                    for(RelationMatchingItem currentRelationMatchingItem:andRelationMatchingItemList){
+                        relationMatchCQL = relationMatchCQL + generateRelationMatchCQLPart(CypherBuilder.operationResultName,currentRelationMatchingItem, RelationMatchParameters.MatchingLogic.AND);
+                    }
+
+                    for(RelationMatchingItem currentRelationMatchingItem:orRelationMatchingItemList){
+                        relationMatchCQL = relationMatchCQL + generateRelationMatchCQLPart(CypherBuilder.operationResultName,currentRelationMatchingItem, RelationMatchParameters.MatchingLogic.OR);
+                    }
+
+                    if(queryCql.contains("WHERE")){
+                        String relationMatchFullCQL = " AND " + relationMatchCQL;
+                        switch (defaultMatchingLogic){
+                            case AND -> relationMatchFullCQL = " AND " + relationMatchCQL;
+                            case OR -> relationMatchFullCQL = " OR " + relationMatchCQL;
+                        }
+                        queryCql = queryCql.replace(" RETURN ",relationMatchFullCQL+" RETURN ");
+                    }else{
+                        String relationMatchFullCQL = " WHERE " + relationMatchCQL;
+                        queryCql = queryCql.replace(" RETURN ",relationMatchFullCQL+" RETURN ");
+                    }
+                    logger.debug("Generated Cypher Statement: {}", queryCql);
+                }
+
+                List<AttributeKind> containsAttributesKinds = getContainsSingleValueAttributeKinds(workingGraphOperationExecutor);
+                GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer =
+                        new GetListConceptionEntityValueTransformer(attributeNames,containsAttributesKinds);
+                Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
+                if(resEntityRes != null){
+                    List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
+                    commonConceptionEntitiesAttributesRetrieveResultImpl.addConceptionEntitiesAttributes(resultEntitiesValues);
+                    commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultEntitiesValues.size());
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            commonConceptionEntitiesAttributesRetrieveResultImpl.finishEntitiesRetrieving();
+            return commonConceptionEntitiesAttributesRetrieveResultImpl;
+        }
         return null;
     }
-
-
-
 
     @Override
     public boolean attachAttributesViewKind(String attributesViewKindUID) throws CoreRealmServiceRuntimeException {
