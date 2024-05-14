@@ -1,33 +1,37 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
+
 public class RelationMatchingItem {
 
-    private RelationKindMatchLogic relationKindMatchLogic;
+    private String relatedConceptionKind;
+    private String relationKind;
+    private RelationDirection relationDirection;
+    private boolean isLogicReversed = false;
 
-    private RelationMatchParameters.MatchingLogic matchingLogic;
-
-    public RelationMatchingItem(RelationKindMatchLogic relationKindMatchLogic,RelationMatchParameters.MatchingLogic matchingLogic){
-        this.relationKindMatchLogic = relationKindMatchLogic;
-        this.matchingLogic = matchingLogic;
+    public RelationMatchingItem(String relationKind,RelationDirection relationDirection,String relatedConceptionKind){
+        this.relationKind = relationKind;
+        this.relationDirection = relationDirection;
+        this.relatedConceptionKind = relatedConceptionKind;
     }
 
-    public RelationKindMatchLogic getRelationKindMatchLogic() {
-        return relationKindMatchLogic;
+    public String getRelatedConceptionKind() {
+        return relatedConceptionKind;
     }
 
-    public void setRelationKindMatchLogic(RelationKindMatchLogic relationKindMatchLogic) {
-        this.relationKindMatchLogic = relationKindMatchLogic;
+    public String getRelationKind() {
+        return relationKind;
     }
 
-    public RelationMatchParameters.MatchingLogic getMatchingLogic() {
-        return matchingLogic;
+    public RelationDirection getRelationDirection() {
+        return relationDirection;
     }
 
-    public void setMatchingLogic(RelationMatchParameters.MatchingLogic matchingLogic) {
-        this.matchingLogic = matchingLogic;
+    public void reversedCondition(){
+        this.isLogicReversed = !this.isLogicReversed;
     }
 
-    public void reversedCondition(){}
-
-    public boolean isReversedCondition(){return true;}
+    public boolean isReversedCondition(){
+        return isLogicReversed;
+    }
 }

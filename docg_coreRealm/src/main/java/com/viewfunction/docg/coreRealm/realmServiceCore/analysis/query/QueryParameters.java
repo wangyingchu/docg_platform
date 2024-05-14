@@ -71,7 +71,7 @@ public class QueryParameters {
     }
 
     public void addFilteringItem(FilteringItem filteringItem, FilteringLogic filteringLogic) {
-    if (this.defaultFilteringItem == null) {
+        if (this.defaultFilteringItem == null) {
             this.defaultFilteringItem = filteringItem;
         } else {
             switch (filteringLogic) {

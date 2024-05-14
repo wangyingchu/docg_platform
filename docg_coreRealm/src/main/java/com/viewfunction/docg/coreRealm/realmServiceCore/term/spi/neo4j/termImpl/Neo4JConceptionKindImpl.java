@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationMatchParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationMatchingItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.NullValueFilteringItem;
@@ -34,7 +35,9 @@ import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -518,7 +521,68 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
     @Override
     public Long countEntitiesWithRelationsMatch(AttributesParameters attributesParameters, boolean isDistinctMode, RelationMatchParameters relationMatchParameters) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
-        return 0l;
+        if (attributesParameters != null) {
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setDistinctMode(isDistinctMode);
+            queryParameters.setResultNumber(100000000);
+            queryParameters.setDefaultFilteringItem(attributesParameters.getDefaultFilteringItem());
+            if (attributesParameters.getAndFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getAndFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.AND);
+                }
+            }
+            if (attributesParameters.getOrFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getOrFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.OR);
+                }
+            }
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String queryCql = CypherBuilder.matchNodesWithQueryParameters(this.conceptionKindName,queryParameters, CypherBuilder.CypherFunctionType.COUNT);
+
+                if(relationMatchParameters != null && relationMatchParameters.getDefaultMatchingItem() != null){
+                    RelationMatchingItem defaultRelationMatchingItem = relationMatchParameters.getDefaultMatchingItem();
+                    RelationMatchParameters.MatchingLogic defaultMatchingLogic = relationMatchParameters.getDefaultRelationMatchingLogic();
+                    List<RelationMatchingItem> orRelationMatchingItemList = relationMatchParameters.getOrRelationMatchingItemList();
+                    List<RelationMatchingItem> andRelationMatchingItemList = relationMatchParameters.getAndRelationMatchingItemList();
+
+                    String relationMatchCQL = generateRelationMatchCQLPart(CypherBuilder.operationResultName,defaultRelationMatchingItem,null);
+
+                    for(RelationMatchingItem currentRelationMatchingItem:andRelationMatchingItemList){
+                        relationMatchCQL = relationMatchCQL + generateRelationMatchCQLPart(CypherBuilder.operationResultName,currentRelationMatchingItem, RelationMatchParameters.MatchingLogic.AND);
+                    }
+
+                    for(RelationMatchingItem currentRelationMatchingItem:orRelationMatchingItemList){
+                        relationMatchCQL = relationMatchCQL + generateRelationMatchCQLPart(CypherBuilder.operationResultName,currentRelationMatchingItem, RelationMatchParameters.MatchingLogic.OR);
+                    }
+
+                    if(queryCql.contains("WHERE")){
+                        String relationMatchFullCQL = " AND " + relationMatchCQL;
+                        switch (defaultMatchingLogic){
+                            case AND -> relationMatchFullCQL = " AND " + relationMatchCQL;
+                            case OR -> relationMatchFullCQL = " OR " + relationMatchCQL;
+                        }
+                        queryCql = queryCql.replace(" RETURN ",relationMatchFullCQL+" RETURN ");
+                    }else{
+                        String relationMatchFullCQL = " WHERE " + relationMatchCQL;
+                        queryCql = queryCql.replace(" RETURN ",relationMatchFullCQL+" RETURN ");
+                    }
+                    logger.debug("Generated Cypher Statement: {}", queryCql);
+                }
+
+                GetLongFormatAggregatedReturnValueTransformer GetLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
+                Object queryRes = workingGraphOperationExecutor.executeRead(GetLongFormatAggregatedReturnValueTransformer,queryCql);
+                if(queryRes != null){
+                    return (Long)queryRes;
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            return null;
+
+        }else{
+            return countConceptionEntities();
+        }
     }
 
     @Override
@@ -1762,6 +1826,27 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
             }
         }
         return singleValueAttributeKindNames;
+    }
+
+    private String generateRelationMatchCQLPart(String conceptionEntityCqlAlias,RelationMatchingItem relationMatchingItem,RelationMatchParameters.MatchingLogic matchLogic){
+        if(relationMatchingItem != null && relationMatchingItem.getRelatedConceptionKind() != null && relationMatchingItem.getRelationKind() != null && relationMatchingItem.getRelationDirection() != null){
+            String _CQLPart = "("+conceptionEntityCqlAlias+")-[:`"+relationMatchingItem.getRelationKind()+"`]-(:`"+relationMatchingItem.getRelatedConceptionKind()+"`)";
+            switch (relationMatchingItem.getRelationDirection()){
+                case FROM -> _CQLPart = _CQLPart.replace("]-(:","]->(:");
+                case TO -> _CQLPart = _CQLPart.replace(")-[:",")<-[:");
+            }
+            if(relationMatchingItem.isReversedCondition()){
+                _CQLPart = "not("+_CQLPart+")";
+            }
+            if(matchLogic != null){
+                switch (matchLogic){
+                    case AND -> _CQLPart = " AND "+_CQLPart;
+                    case OR -> _CQLPart = " OR "+_CQLPart;
+                }
+            }
+            return _CQLPart;
+        }
+        return null;
     }
 
     private boolean checkRelationEntitiesExist(GraphOperationExecutor workingGraphOperationExecutor,String sourceConceptionKindName,
