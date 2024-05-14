@@ -3,6 +3,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl
 import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationMatchParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.NullValueFilteringItem;
@@ -511,6 +512,24 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
        return null;
     }
 
+
+
+
+
+    @Override
+    public Long countEntitiesWithRelationsMatch(AttributesParameters attributesParameters, boolean isDistinctMode, RelationMatchParameters relationMatchParameters) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+        return 0l;
+    }
+
+    @Override
+    public ConceptionEntitiesRetrieveResult getEntitiesWithRelationsMatch(QueryParameters queryParameters, RelationMatchParameters relationMatchParameters) throws CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
+
+
+
+
     @Override
     public ConceptionEntity getEntityByUID(String conceptionEntityUID) {
         if (conceptionEntityUID != null) {
@@ -580,6 +599,22 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         }
         return null;
     }
+
+
+
+
+    @Override
+    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByViewKindsWithRelationsMatch(List<String> attributesViewKindNames, QueryParameters exploreParameters, RelationMatchParameters relationMatchParameters) throws CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
+    @Override
+    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNamesWithRelationsMatch(List<String> attributeNames, QueryParameters exploreParameters, RelationMatchParameters relationMatchParameters) throws CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
+
+
 
     @Override
     public boolean attachAttributesViewKind(String attributesViewKindUID) throws CoreRealmServiceRuntimeException {

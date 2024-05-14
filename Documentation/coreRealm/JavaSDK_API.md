@@ -753,6 +753,27 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public ConceptionEntitiesRetrieveResult getEntities(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
 
     /**
+     * 计算符合实体过滤条件，并且与指定的概念类型的实体通过特定的关系类型能够关联匹配的当前概念类型的概念实体对象数量
+     *
+     * @param attributesParameters AttributesParameters 查询过滤条件
+     * @param isDistinctMode boolean 是否不允许重复数据
+     * @param relationMatchParameters RelationMatchParameters 概念实体关联关系的匹配条件
+     *
+     * @return 概念实体数量
+     */
+    public Long countEntitiesWithRelationsMatch(AttributesParameters attributesParameters,boolean isDistinctMode, RelationMatchParameters relationMatchParameters) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
+
+    /**
+     * 查询符合实体过滤条件，并且与指定的概念类型的实体通过特定的关系类型能够关联匹配的当前概念类型的概念实体对象
+     *
+     * @param queryParameters QueryParameters 概念实体查询过滤条件
+     * @param relationMatchParameters RelationMatchParameters 概念实体关联关系的匹配条件
+     *
+     * @return 概念实体查询结果集
+     */
+    public ConceptionEntitiesRetrieveResult getEntitiesWithRelationsMatch(QueryParameters queryParameters, RelationMatchParameters relationMatchParameters) throws CoreRealmServiceEntityExploreException;
+
+    /**
      * 根据唯一ID获取当前概念类型的概念实体对象
      *
      * @param conceptionEntityUID String 需要获取的概念实体唯一ID
@@ -780,6 +801,26 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 概念实体属性查询结果集
      */
     public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNames(List<String> attributeNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 查询符合实体过滤条件，并且与指定的概念类型的实体通过特定的关系类型能够关联匹配的当前概念类型的概念实体对象,并根据输入的 SINGLE_VALUE 数据存储结构的属性视图类型列表，合并其中包含的属性类型返回相应的属性值
+     *
+     * @param attributesViewKindNames List<String> 属性视图类型列表
+     * @param exploreParameters QueryParameters 查询过滤条件
+     *
+     * @return 概念实体属性查询结果集
+     */
+    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByViewKindsWithRelationsMatch(List<String> attributesViewKindNames, QueryParameters exploreParameters, RelationMatchParameters relationMatchParameters) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 查询符合实体过滤条件，并且与指定的概念类型的实体通过特定的关系类型能够关联匹配的当前概念类型的概念实体对象,并根据输入的属性类型返回相应的属性值
+     *
+     * @param attributeNames List<String> 属性类型列表
+     * @param exploreParameters QueryParameters 查询过滤条件
+     *
+     * @return 概念实体属性查询结果集
+     */
+    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNamesWithRelationsMatch(List<String> attributeNames, QueryParameters exploreParameters, RelationMatchParameters relationMatchParameters) throws CoreRealmServiceEntityExploreException;
 
     /**
      * 为当前概念类型附加属性视图类型
