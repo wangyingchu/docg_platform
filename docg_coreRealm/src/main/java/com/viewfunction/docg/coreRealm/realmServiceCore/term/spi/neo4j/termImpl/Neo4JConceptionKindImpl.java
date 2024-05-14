@@ -582,12 +582,56 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
     @Override
     public ConceptionEntitiesRetrieveResult getEntitiesWithRelationsMatch(QueryParameters queryParameters, RelationMatchParameters relationMatchParameters) throws CoreRealmServiceEntityExploreException {
-        return null;
+        CommonConceptionEntitiesRetrieveResultImpl commonConceptionEntitiesRetrieveResultImpl = new CommonConceptionEntitiesRetrieveResultImpl();
+        commonConceptionEntitiesRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(this.conceptionKindName,queryParameters,null);
+
+            if(relationMatchParameters != null && relationMatchParameters.getDefaultMatchingItem() != null){
+                RelationMatchingItem defaultRelationMatchingItem = relationMatchParameters.getDefaultMatchingItem();
+                RelationMatchParameters.MatchingLogic defaultMatchingLogic = relationMatchParameters.getDefaultRelationMatchingLogic();
+                List<RelationMatchingItem> orRelationMatchingItemList = relationMatchParameters.getOrRelationMatchingItemList();
+                List<RelationMatchingItem> andRelationMatchingItemList = relationMatchParameters.getAndRelationMatchingItemList();
+
+                String relationMatchCQL = generateRelationMatchCQLPart(CypherBuilder.operationResultName,defaultRelationMatchingItem,null);
+
+                for(RelationMatchingItem currentRelationMatchingItem:andRelationMatchingItemList){
+                    relationMatchCQL = relationMatchCQL + generateRelationMatchCQLPart(CypherBuilder.operationResultName,currentRelationMatchingItem, RelationMatchParameters.MatchingLogic.AND);
+                }
+
+                for(RelationMatchingItem currentRelationMatchingItem:orRelationMatchingItemList){
+                    relationMatchCQL = relationMatchCQL + generateRelationMatchCQLPart(CypherBuilder.operationResultName,currentRelationMatchingItem, RelationMatchParameters.MatchingLogic.OR);
+                }
+
+                if(queryCql.contains("WHERE")){
+                    String relationMatchFullCQL = " AND " + relationMatchCQL;
+                    switch (defaultMatchingLogic){
+                        case AND -> relationMatchFullCQL = " AND " + relationMatchCQL;
+                        case OR -> relationMatchFullCQL = " OR " + relationMatchCQL;
+                    }
+                    queryCql = queryCql.replace(" RETURN ",relationMatchFullCQL+" RETURN ");
+                }else{
+                    String relationMatchFullCQL = " WHERE " + relationMatchCQL;
+                    queryCql = queryCql.replace(" RETURN ",relationMatchFullCQL+" RETURN ");
+                }
+                logger.debug("Generated Cypher Statement: {}", queryCql);
+            }
+
+            GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(this.conceptionKindName,
+                    this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object queryRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
+            if(queryRes != null){
+                List<ConceptionEntity> resultConceptionEntityList = (List<ConceptionEntity>)queryRes;
+                commonConceptionEntitiesRetrieveResultImpl.addConceptionEntities(resultConceptionEntityList);
+                commonConceptionEntitiesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultConceptionEntityList.size());
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        commonConceptionEntitiesRetrieveResultImpl.finishEntitiesRetrieving();
+        return commonConceptionEntitiesRetrieveResultImpl;
     }
-
-
-
-
 
     @Override
     public ConceptionEntity getEntityByUID(String conceptionEntityUID) {
