@@ -78,5 +78,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
 
 ###### *○ 领域模型概念实体示例说明*
 
-<img src="documentPic/conceptionEntitiesExample.jpg" alt="image" style="zoom:37.%;" />
+下图是一个核心领域模型的应用示例。该示例展示了三个概念实体，一个概念实体间的关联关系（关系实体），以及类型定义，实体等与时间，地理空间以及分类的交互状态。
+
+<img src="documentPic/conceptionEntitiesExample.jpg" alt="image" />
 
