@@ -78,7 +78,21 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
 
 ###### *○ 领域模型概念实体示例说明*
 
-下图是一个核心领域模型的应用示例。该示例展示了三个概念实体，一个概念实体间的关联关系（关系实体），以及类型定义，实体等与时间，地理空间以及分类的交互状态。
+下图是一个核心领域模型的应用示例。该示例展示了三个概念实体，一个概念实体间的关联关系（关系实体），以及类型定义，实体等与时间，地理空间以及分类的交互状态：
+
+- *ConceptionEntity1 是 概念类型 ConceptionKindB 的概念实体，ConceptionEntity2  是 概念类型  ConceptionKindA 的概念实体*
+
+- *ConceptionEntity3 是 多态概念实体，同时属于概念类型  ConceptionKindA  与 ConceptionKindB*
+
+- *ConceptionEntity1 与 ConceptionEntity2 实体间 有一个关联关系，对应的关系实体为 RelationEntity1，其所属概念类型为 RelationKindA*
+
+- *RelationKindA， ConceptionKindB，ConceptionEntity1 与 ConceptionEntity3  都和不同的分类有关联关系*
+
+- *ConceptionEntity1 和 ConceptionEntity2 与特定的地理空间区域中的地理空间刻度实体有关联关系，该关联的业务含义通过地理空间刻度事件的形式表达*
+
+- *ConceptionEntity2 和 ConceptionEntity3 与特定的时间流上的时间刻度实体有关联关系，该关联的业务含义通过时间刻度事件的形式表达*
+
+  
 
 <img src="documentPic/conceptionEntitiesExample.jpg" alt="image" />
 
