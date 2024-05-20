@@ -456,6 +456,55 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
+    public EntitiesOperationResult purgeExclusiveEntities() throws CoreRealmServiceRuntimeException {
+        try{
+            CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+
+            String cql = "MATCH (node:`"+this.conceptionKindName+"`) WHERE size(apoc.node.labels(node))>1 \n" +
+                    "          REMOVE node:`"+this.conceptionKindName+"` \n" +
+                    "          RETURN count(node) AS total;";
+            logger.debug("Generated Cypher Statement: {}", cql);
+            DataTransformer dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()){
+                        Record resultRecord = result.next();
+                        if(resultRecord.containsKey("total")){
+                            long deletedRecordCount = resultRecord.get("total").asLong();
+                            long currentSuccessOperationCount = commonEntitiesOperationResultImpl.getOperationStatistics().getSuccessItemsCount();
+                            commonEntitiesOperationResultImpl.getOperationStatistics().setSuccessItemsCount(deletedRecordCount+currentSuccessOperationCount);
+                        }
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeWrite(dataTransformer, cql);
+
+            /*
+            CALL apoc.periodic.iterate(
+              'MATCH (n:TestLoad) RETURN n',
+              'DETACH DELETE n',
+              {batchSize:100000, iterateList:true})
+             */
+            //return : "batches"│"total"│"timeTaken"│"committedOperations"│"failedOperations"│"failedBatches"│"retries"│"errorMessages"│"batch"│"operations"
+            cql = "CALL apoc.periodic.iterate(\n" +
+                    "          'MATCH (n:`"+this.conceptionKindName+"`) RETURN n',\n" +
+                    "          'DETACH DELETE n',\n" +
+                    "          {batchSize:100000, iterateList:true})";
+            logger.debug("Generated Cypher Statement: {}", cql);
+            workingGraphOperationExecutor.executeWrite(dataTransformer, cql);
+            commonEntitiesOperationResultImpl.getOperationStatistics().
+                    setOperationSummary("purgeExclusiveEntities operation for conceptionKind "+this.conceptionKindName+" success.");
+
+            commonEntitiesOperationResultImpl.finishEntitiesOperation();
+            return commonEntitiesOperationResultImpl;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
     public Long countEntities(AttributesParameters attributesParameters,boolean isDistinctMode) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
         if (attributesParameters != null) {
             QueryParameters queryParameters = new QueryParameters();

@@ -159,6 +159,13 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
     public EntitiesOperationResult purgeAllEntities() throws CoreRealmServiceRuntimeException;
 
     /**
+     * 删除当前概念类型的所有独享的概念实体，如目标概念实体同时属于其他的概念类型，将其从本概念类型中撤出，但不删除实体
+     *
+     * @return 实体对象操作返回结果
+     */
+    public EntitiesOperationResult purgeExclusiveEntities() throws CoreRealmServiceRuntimeException;
+
+    /**
      * 计算符合过滤条件的当前概念类型的概念实体对象数量
      *
      * @param attributesParameters AttributesParameters 查询过滤条件
