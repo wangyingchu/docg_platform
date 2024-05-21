@@ -115,6 +115,16 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public boolean removeConceptionKind(String conceptionKindName,boolean deleteExistEntities) throws CoreRealmServiceRuntimeException;
 
     /**
+     * 根据输入的自定义配置项内容，匹配条件查询概念类型对象
+     *
+     * @param itemName String 需要查询的自定义配置项名称
+     * @param itemValue Object 需要查询的的自定义配置项值,如该值输入非空,则执行精确值匹配。如该值输入为空,则忽略具体值,执行自定义配置项存在查询
+     *
+     * @return 概念类型对象列表
+     */
+    public List<ConceptionKind> getConceptionKindsByMetaConfigItemMatch(String itemName,Object itemValue);
+
+    /**
      * 根据对象唯一ID获取属性视图类型对象
      *
      * @param attributesViewKindUID String 需要获取的属性视图类型唯一ID
@@ -254,6 +264,16 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 如果操作成功返回 true
      */
     public boolean removeRelationKind(String relationKindName, boolean deleteExistEntities) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 根据输入的自定义配置项内容，匹配条件查询关系类型对象
+     *
+     * @param itemName String 需要查询的自定义配置项名称
+     * @param itemValue Object 需要查询的的自定义配置项值,如该值输入非空,则执行精确值匹配。如该值输入为空,则忽略具体值,执行自定义配置项存在查询
+     *
+     * @return 关系类型对象列表
+     */
+    public List<RelationKind> getRelationKindsByMetaConfigItemMatch(String itemName,Object itemValue);
 
      /**
      * 根据输入条件查询关系附着规则类型对象,所有查询条件均为可选输入，各个查询条件精确匹配输入值，互相间为 AND 的组合关系

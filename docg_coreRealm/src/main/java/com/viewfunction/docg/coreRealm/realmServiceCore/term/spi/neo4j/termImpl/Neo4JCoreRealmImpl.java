@@ -161,6 +161,17 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
+    public List<ConceptionKind> getConceptionKindsByMetaConfigItemMatch(String itemName, Object itemValue) {
+
+
+
+
+
+
+        return List.of();
+    }
+
+    @Override
     public AttributesViewKind getAttributesViewKind(String attributesViewKindUID) {
         if(attributesViewKindUID == null){
             return null;
@@ -555,6 +566,19 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
         }
+    }
+
+    @Override
+    public List<RelationKind> getRelationKindsByMetaConfigItemMatch(String itemName, Object itemValue) {
+
+
+
+
+
+
+
+
+        return List.of();
     }
 
     @Override
