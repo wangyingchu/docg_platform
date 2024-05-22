@@ -162,13 +162,34 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
     @Override
     public List<ConceptionKind> getConceptionKindsByMetaConfigItemMatch(String itemName, Object itemValue) {
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(1000000);
+        if(itemValue != null){
+            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(itemName,itemValue));
+        }else{
+            NullValueFilteringItem notNullFilteringItem= new NullValueFilteringItem(itemName);
+            notNullFilteringItem.reverseCondition();
+            queryParameters.setDefaultFilteringItem(notNullFilteringItem);
+        }
+        try {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.ConceptionKindClass,queryParameters,null);
+                queryCql = queryCql.replace("(operationResult:`"+RealmConstant.ConceptionKindClass+"`)",
+                        "(operationResult:`"+RealmConstant.ConceptionKindClass+"`) - [r:`"+RealmConstant.Kind_MetaConfigItemsStorageRelationClass+"`] -> (metaConfig:`"+RealmConstant.MetaConfigItemsStorageClass+"`)");
+                queryCql = queryCql.replace("WHERE operationResult.","WHERE metaConfig.");
+                logger.debug("Generated Cypher Statement: {}", queryCql);
 
-
-
-
-
-
-        return List.of();
+                GetListConceptionKindTransformer getListConceptionKindTransformer = new GetListConceptionKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object attributesViewKindsRes = workingGraphOperationExecutor.executeWrite(getListConceptionKindTransformer,queryCql);
+                return attributesViewKindsRes != null ? (List<ConceptionKind>) attributesViewKindsRes : null;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override
@@ -570,15 +591,34 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
     @Override
     public List<RelationKind> getRelationKindsByMetaConfigItemMatch(String itemName, Object itemValue) {
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(1000000);
+        if(itemValue != null){
+            queryParameters.setDefaultFilteringItem(new EqualFilteringItem(itemName,itemValue));
+        }else{
+            NullValueFilteringItem notNullFilteringItem= new NullValueFilteringItem(itemName);
+            notNullFilteringItem.reverseCondition();
+            queryParameters.setDefaultFilteringItem(notNullFilteringItem);
+        }
+        try {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.RelationKindClass,queryParameters,null);
+                queryCql = queryCql.replace("(operationResult:`"+RealmConstant.RelationKindClass+"`)",
+                        "(operationResult:`"+RealmConstant.RelationKindClass+"`) - [r:`"+RealmConstant.Kind_MetaConfigItemsStorageRelationClass+"`] -> (metaConfig:`"+RealmConstant.MetaConfigItemsStorageClass+"`)");
+                queryCql = queryCql.replace("WHERE operationResult.","WHERE metaConfig.");
+                logger.debug("Generated Cypher Statement: {}", queryCql);
 
-
-
-
-
-
-
-
-        return List.of();
+                GetListRelationKindTransformer getListRelationKindTransformer = new GetListRelationKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object attributesViewKindsRes = workingGraphOperationExecutor.executeWrite(getListRelationKindTransformer,queryCql);
+                return attributesViewKindsRes != null ? (List<RelationKind>) attributesViewKindsRes : null;
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override

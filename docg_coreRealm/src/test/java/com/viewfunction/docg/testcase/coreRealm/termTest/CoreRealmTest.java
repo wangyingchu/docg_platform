@@ -69,6 +69,23 @@ public class CoreRealmTest {
         Assert.assertNotNull(((Neo4JConceptionKindImpl)_ConceptionKind01).getConceptionKindUID());
         Assert.assertEquals(((Neo4JConceptionKindImpl)_ConceptionKind01).getCoreRealmName(), PropertiesHandler.getPropertyValue(PropertiesHandler.DEFAULT_REALM_NAME));
 
+        List<ConceptionKind> conceptionKindsList = coreRealm.getConceptionKindsByMetaConfigItemMatch("configItemA",100);
+        Assert.assertNotNull(conceptionKindsList);
+        Assert.assertEquals(conceptionKindsList.size(),0);
+        _ConceptionKind01.addOrUpdateMetaConfigItem("configItemA",100);
+        conceptionKindsList = coreRealm.getConceptionKindsByMetaConfigItemMatch("configItemA",100);
+        Assert.assertEquals(conceptionKindsList.size(),1);
+        Assert.assertEquals(conceptionKindsList.get(0).getConceptionKindName(),"kind01");
+        _ConceptionKind02.addOrUpdateMetaConfigItem("configItemA",100);
+        conceptionKindsList = coreRealm.getConceptionKindsByMetaConfigItemMatch("configItemA",100);
+        Assert.assertEquals(conceptionKindsList.size(),2);
+        conceptionKindsList = coreRealm.getConceptionKindsByMetaConfigItemMatch("configItemA",100000);
+        Assert.assertEquals(conceptionKindsList.size(),0);
+        _ConceptionKind01.deleteMetaConfigItem("configItemA");
+        _ConceptionKind02.deleteMetaConfigItem("configItemA");
+        conceptionKindsList = coreRealm.getConceptionKindsByMetaConfigItemMatch("configItemA",100);
+        Assert.assertEquals(conceptionKindsList.size(),0);
+
         AttributesViewKind attributesViewKind01 = coreRealm.createAttributesViewKind("attributesViewKind01","attributesViewKind01Desc",null);
         Assert.assertNotNull(attributesViewKind01);
         Assert.assertNotNull(attributesViewKind01.getAttributesViewKindUID());
@@ -155,6 +172,19 @@ public class CoreRealmTest {
         Assert.assertNotNull(targetRelationKind01);
         Assert.assertEquals(targetRelationKind01.getRelationKindName(),"relationKind01");
         Assert.assertEquals(targetRelationKind01.getRelationKindDesc(),"relationKind01Desc");
+
+        List<RelationKind> relationKindsList = coreRealm.getRelationKindsByMetaConfigItemMatch("configItemA",200);
+        Assert.assertNotNull(relationKindsList);
+        Assert.assertEquals(relationKindsList.size(),0);
+        targetRelationKind01.addOrUpdateMetaConfigItem("configItemA",200);
+        relationKindsList = coreRealm.getRelationKindsByMetaConfigItemMatch("configItemA",200);
+        Assert.assertEquals(relationKindsList.size(),1);
+        Assert.assertEquals(relationKindsList.get(0).getRelationKindName(),"relationKind01");
+        relationKindsList = coreRealm.getRelationKindsByMetaConfigItemMatch("configItemA",100000);
+        Assert.assertEquals(relationKindsList.size(),0);
+        targetRelationKind01.deleteMetaConfigItem("configItemA");
+        relationKindsList = coreRealm.getRelationKindsByMetaConfigItemMatch("configItemA",200);
+        Assert.assertEquals(relationKindsList.size(),0);
 
         targetRelationKind01 = coreRealm.getRelationKind("relationKind01+NotExist");
         Assert.assertNull(targetRelationKind01);
