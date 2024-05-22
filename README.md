@@ -105,12 +105,9 @@ DOCG 数据分析平台旨在对核心领域模型数据的概念类型定义、
 
 2. 基于图数据模型的特点以及图论算法的支持，对多维度条件下的关联信息查找和发现提供了比传统关系模型**更加强大的功能支持以及更加快捷的性能支持**。
 
+<img src="Documentation/intro/documentPic/DOCGModel2Graph.jpg" />
 
-
-
-
-
-
+<center>图数据结构实现领域模型实体</center>
 
 
 
