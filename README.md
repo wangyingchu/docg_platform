@@ -80,10 +80,9 @@ DOCG 数据分析平台本质上就是这样的一个 **多源异构的信息存
 以下是相关技术信息的详细内容介绍：
 
 - [DOCG 数据分析平台核心领域模型概念详细说明](./Documentation/modeling/modeling.md)
-
 - [DOCG 数据分析平台核心领域模型 CoreRealm SDK 详细说明](./Documentation/coreRealm/JavaSDK_API.md)
-
 - [DOCG 数据分析平台领域模型数据管理工作台](./Documentation/sysAdmin/sysadminConsole.md)
+
 
 
 
@@ -109,8 +108,6 @@ DOCG 数据分析平台旨在对核心领域模型数据的概念类型定义、
 
 <center>图数据结构实现领域模型实体</center>
 
-
-
 以下是使用图数据库技术研发实现 DOCG 数据分析平台核心领域模型的核心策略:
 
 - 通过使用图数据库来构建 DOCG 核心领域模型中的各个逻辑组件，实现灵活的概念模型与关联关系定义。
@@ -126,9 +123,20 @@ DOCG 数据分析平台旨在对核心领域模型数据的概念类型定义、
 - 通过在各种不同 DOCG 概念类型之间建立业务关联关系映射，使IT系统在数据层面上再现真实世界中复杂的业务关联（如时空一体化分析等），从而对数据进行有效率有针对性的分析。
 
    
-
 ### § 领域知识图谱
 
+<img src="Documentation/intro/documentPic/knowledgeGraph.png" />
+
+<center>知识图谱 EDA 探索性数据分析</center>
+
+
+
+<img src="Documentation/intro/documentPic/knowledgeGraph_2.png" />
+
+<center>知识图谱实体1度关系展开</center>
+
+
+### § 关联性数据分析
 
 ####  <span style="color:#0074D9;"> ○  在基于图数据库技术的 DOCG 数据分析平台上执行高阶知识图谱数据分析</span>
 
@@ -146,15 +154,24 @@ DOCG 数据分析平台旨在对核心领域模型数据的概念类型定义、
 
 
 
-### § 关联性数据分析
-
-
 
 ### § 时空一体化分析
 
 时间与空间要素是实现城市场景多源数据融合的有效手段
 
 时间，空间 和常规属性是所有智慧城市中业务数据本身固有的三种基本要素，是反映业务数据实体的状态和演变过程的重要组成部分。尽管不同来源中的数据使用的表达形式和技术实现方式各不相同，但在语义上是相同的。在知识图谱中通过使用时间和空间要素做为桥梁，可以将各种不同来源的数据有效的融合在一起。
+
+
+<img src="Documentation/intro/documentPic/GeospatialRegionUI.png" />
+
+<center>地理空间区域管理</center>
+
+
+
+<img src="Documentation/intro/documentPic/TimeFlowUI.png" />
+
+<center>时间轴管理</center>
+
 
 ### § 实时内存计算
 
