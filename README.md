@@ -165,17 +165,12 @@ DOCG 数据分析平台通过使用核心领域模型建模创建的数据网络
 
 利用知识图谱提供的技术能力，可以使用数字孪生的方式，通过在不同类型的实体数据间定义各种类型的关联关系映射来完全再现特定业务领域的各个业务环节之间的相互关联并展开有针对性的业务关系分析。例如在面向城市建设与管理类应用的城市数据领域知识图谱中完成如下分析任务：
 
-- 分析和一个建设工程相似的其他数据对象（关联到同一个企事业单位的其他数据）
+- 分析和一个建设工程相似的其他数据对象（关联到同一个企事业单位的其他数据）<img src="Documentation/intro/documentPic/relationAnys01.jpg" style="zoom:50%;" />
 
-  <img src="Documentation/intro/documentPic/relationAnys01.jpg" style="zoom:50%;" />
-  
-- 分析一个机械装备和一个建设工程项目之间的最短路径的关联关系
+- 分析一个机械装备和一个建设工程项目之间的最短路径的关联关系<img src="Documentation/intro/documentPic/relationAnys02.jpg" style="zoom:50%;" />
 
-  <img src="Documentation/intro/documentPic/relationAnys02.jpg" style="zoom:50%;" />
-  
-- 从一个建设工程出发，探索性的分析它与各类其他对象之间的关联关系
+- 从一个建设工程出发，探索性的分析它与各类其他对象之间的关联关系<img src="Documentation/intro/documentPic/relationAnys03.jpg" style="zoom:50%;" />
 
-<img src="Documentation/intro/documentPic/relationAnys03.jpg" style="zoom:50%;" />
 
 
 在 DOCG 数据分析平台中，所有的 概念实体（*ConceptionEntity*） 均可以通过关联关系与其他的概念实体相互联接。通过将任意的概念实体作为分析起点，均可以执行面向局部图谱的关联关系分析与可视化展示。以下示例展示了使用 DOCG 数据分析平台操作界面执行微观层面关联关系分析的方法：
@@ -199,14 +194,35 @@ DOCG 数据分析平台通过使用核心领域模型建模创建的数据网络
 
 时间与空间要素是实现城市场景多源数据融合的有效手段
 
-时间，空间 和常规属性是所有智慧城市中业务数据本身固有的三种基本要素，是反映业务数据实体的状态和演变过程的重要组成部分。尽管不同来源中的数据使用的表达形式和技术实现方式各不相同，但在语义上是相同的。在知识图谱中通过使用时间和空间要素做为桥梁，可以将各种不同来源的数据有效的融合在一起。
+时间，空间和常规属性是所有智慧城市中业务数据本身固有的三种基本要素，是反映业务数据实体的状态和演变过程的重要组成部分。尽管不同来源中的数据使用的表达形式和技术实现方式各不相同，但在语义上是相同的。在知识图谱中通过使用时间和空间要素做为桥梁，可以将各种不同来源的数据有效的融合在一起。
 
+
+
+<img src="Documentation/intro/documentPic/timeAndGeo01.jpg" style="zoom:100%;" /><img src="Documentation/intro/documentPic/timeAndGeo02.jpg"/>
+
+
+
+通过将不同数据节点中的时间和空间属性标准化并相互关联，能够执行传统上只能由 ArcGIS 类型的空间分析软件执行的空间分析计算。并且进一步的能够在这些空间分析算法中集成时间分析和普通的业务分析。进而提供了综合的 时空一体化分析能力。
+
+使用场景示例：
+
+招商选址 - 规划地块查询，供热点，道路和供水管道数据。使用空间查询算法找出所有在周围1000米内有供热点，距离道路小于300米，距离供水管小于100米，且用地性质为商业用地，面积大于10000平米的地块。
+LBS高级查询 - 查询在指定路口半径500米范围内的所有城市部件。
+危险源分析 - 查找出自2010年到2015间年海淀区所有新建的层高超过30层，周边100米内坐落有危险源（加油站，储气站等），距离消防设施超过1KM，建设方是富力地产的建筑。
+合规性分析 - 根据2010年的中关村软件园规划数据，从2012年开始，查询五年内每年新建成且在合法规划片区之外的建筑物。
+
+
+
+
+####  <span style="color:#0074D9;"> ○  使用空间要素构建城市知识图谱</span>
 
 <img src="Documentation/intro/documentPic/GeospatialRegionUI.png" />
 
 <center>地理空间区域管理</center>
 
 
+
+####  <span style="color:#0074D9;"> ○  使用时间要素构建城市知识图谱</span>
 
 <img src="Documentation/intro/documentPic/TimeFlowUI.png" />
 
