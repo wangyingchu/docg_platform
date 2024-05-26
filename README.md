@@ -211,6 +211,38 @@ DOCG 数据分析平台通过使用核心领域模型建模创建的数据网络
 
 ####  <span style="color:#0074D9;"> ○  使用空间要素构建城市知识图谱</span>
 
+<img src="Documentation/intro/documentPic/geoGrapData.jpg" style="zoom:50%;" />
+<center>时空城市知识图谱可视化城市地理空间局部</center>
+
+1. 
+   结合全球与中国的行政区划设计，在知识图谱的图数据库中建立特殊的代表不同行政区划粒度的节点类型
+
+   GS_CountryRegion ：国家地区节点
+   GS_Province ：省级节点
+   GS_Prefecture ：地级节点
+   GS_County ：县级节点
+   GS_Township ：乡级节点
+   GS_Village ：村级节点
+
+2. 在知识图谱的图数据库中建立特殊的代表不同地理空间之间联系的关系类型
+
+   GS_SpatialContains ：包含下一级空间节点
+   GS_SpatialIdentical ：相同的空间节点
+   GS_SpatialAdjacency ：相邻的空间节点
+
+3. 根据业务需要的地理空间范围，结合使用GIS空间地理数据与空间关系计算功能，构建各个粒度的地理空间节点并相互建立空间关联，构成全局统一的地理空间行政管理体系
+
+4. 获取具有 GIS 地理空间属性的各类业务数据，在图数据库中按照业务分类创建数据节点，通过 GIS 空间关系计算功能，在数据节点与行政区划节点和其他数据节点之间建立空间关联关系，构成城市知识图谱的空间形态
+
+
+
+
+
+
+
+
+
+
 <img src="Documentation/intro/documentPic/GeospatialRegionUI.png" />
 
 <center>地理空间区域管理</center>
@@ -218,6 +250,31 @@ DOCG 数据分析平台通过使用核心领域模型建模创建的数据网络
 
 
 ####  <span style="color:#0074D9;"> ○  使用时间要素构建城市知识图谱</span>
+
+<img src="Documentation/intro/documentPic/timeFlowGrapData.jpg" style="zoom:50%;" />
+<center>时空城市知识图谱时间轴片段</center>
+
+
+1. 1.知识图谱的图数据库中建立特殊的代表不同时间粒度的节点类型
+
+   1. TS_Year ：年时间节点
+   2. TS_Month ：月时间节点
+   3. TS_Day ：日时间节点
+   4. TS_Hour ：小时时间节点
+   5. TS_Minute ：分钟时间节点
+
+2. 在知识图谱的图数据库中建立特殊的代表不同时间之间联系的关系类型
+
+   1. TS_Contains ：包含下一级时间节点
+   2. TS_NextIs：同级的下一个时间节点
+   3. TS_FirstChildIs：下一级的第一个时间节点
+   4. TS_LastChildIs：下一级的最后一个时间节点
+
+3. 根据业务需要的时间范围创建各个粒度的时间节点并相互建立时间关联关系，构成全局统一的时间轴
+
+4. 获取具有时间属性的各类业务数据，在图数据库中按照业务分类创建数据节点，在数据节点与时间轴上对应的时间节点之间建立时间关联关系，构成城市知识图谱的时间形态
+
+   
 
 <img src="Documentation/intro/documentPic/TimeFlowUI.png" />
 
