@@ -141,7 +141,7 @@ DOCG 数据分析平台旨在对核心领域模型数据的概念类型定义、
 
 DOCG 数据分析平台通过使用核心领域模型建模创建的数据网络，天然就是一个面向特定业务目标的行业领域知识图谱。通过使用 概念类型（*ConceptionKind*），概念实体（*ConceptionEntity*），关系类型（*RelationKind*），关系实体（*RelationEntity*）以及 属性类型（*AttributeKind*）等核心模型概念，使用者能够以面向业务描述的理解方式，根据真实场景以数字镜像（数字孪生）的方式简洁、透明的         定义出能够真实反映实际业务的领域知识图谱。
 
-通过持续不断的在不同的领域定义并完善相关的领域知识图谱，并将这些图谱按真实世界的逻辑融合起来，即可得到一个<span style="color:#0074D9;"> **能够持续不断的自我成长，自我完善，自我演化，并不断产生新的深层知识的大型跨领域知识图谱**</span>  。 
+通过持续不断的在不同的领域定义并完善相关的领域知识图谱，并将这些图谱按真实世界的逻辑融合起来，即可得到一个<span style="color:#0074D9;"> **能够持续自我成长，自我完善，自我演化，并不断产生新的深层知识的大型跨领域知识图谱**</span>  。 
 
 <img src="Documentation/intro/documentPic/domainStructure3.jpg" style="zoom:50%;" />
 
@@ -151,24 +151,43 @@ DOCG 数据分析平台通过使用核心领域模型建模创建的数据网络
 
 ### § 关联性数据分析
 
-####  <span style="color:#0074D9;"> ○  在基于图数据库技术的 DOCG 数据分析平台上执行高阶知识图谱数据分析</span>
-
-在使用图数据库技术的 DOCG 数据分析平台中导入各类业务数据并完成数据关联后，实质上形成了一个业务领域的知识图谱。通过使用该知识图谱，可以完成复杂的关联关系分析功能，从观察粒度看主要有两种分析途径：
+在使用图数据库技术的 DOCG 数据分析平台中导入各类业务数据并完成数据关联后，实质上形成了一个业务领域的知识图谱。通过使用该知识图谱，可以完成基于关联关系拓扑的复杂分析与展示功能。从观察粒度看针对知识图谱主要有两种分析途径：
 
 - 微观层面：通过针对单个（或若干个）节点对象的关联关系分析，来发现局部数据中的知识信息，常用领域为EDA（探索性数据分析），推荐引擎（相似性分析），关联性查找（最短路径分析，关联性分析等）。
 
-<img src="Documentation/intro/documentPic/knowledgeGraph.png" />
+- 宏观层面：使用知识图谱技术，通过对图谱中所有或大量的节点对象和关系对象执行高阶知识图谱分析分析算法（PageRank，Triangle Count，Connected Components，Label Propagation等），来发现数据中整体性，规律性的全局知识。例如基于度分布的中枢节点发现，基于最大连通图的社区发现，基于三角计算的关系衡量，基于随机游走的用户属性传播等。
 
-<center>知识图谱 EDA 探索性数据分析</center>
-
-- 宏观层面：使用知识图谱技术，通过对图谱中所有或大量的节点对象和关系对象执行图论分析算法（PageRank，Triangle Count，Connected Components，Label Propagation等），来发现数据中整体性，规律性的全局知识。例如基于度分布的中枢节点发现，基于最大连通图的社区发现，基于三角计算的关系衡量，基于随机游走的用户属性传播等。
-
-<img src="Documentation/intro/documentPic/knowledgeGraph_2.png" />
-
-<center>知识图谱实体1度关系展开</center>
+在 DOCG 数据分析平台中，有丰富的数据分析工具（SDK / API）与操作界面能够用来完成针对上述两种途径的数据分析与展示。
 
 
 
+####  <span style="color:#0074D9;"> ○  在基于图数据库技术的 DOCG 数据分析平台上执行微观层面关联关系分析</span>
+
+利用知识图谱提供的技术能力，可以使用数字孪生的方式，通过在不同类型的实体数据间定义各种类型的关联关系映射来完全再现特定业务领域的各个业务环节之间的相互关联并展开有针对性的业务关系分析。例如在面向城市建设与管理类应用的城市数据领域知识图谱中完成如下分析任务：
+
+- 分析和一个建设工程相似的其他数据对象（关联到同一个企事业单位的其他数据）
+
+  <img src="Documentation/intro/documentPic/relationAnys01.jpg" style="zoom:50%;" />
+- 分析一个机械装备和一个建设工程项目之间的最短路径的关联关系
+
+  <img src="Documentation/intro/documentPic/relationAnys02.jpg" style="zoom:50%;" />
+- 从一个建设工程出发，探索性的分析它与各类其他对象之间的关联关系
+
+<img src="Documentation/intro/documentPic/relationAnys03.jpg" style="zoom:50%;" />
+
+在 DOCG 数据分析平台中，所有的 概念实体（*ConceptionEntity*） 均可以通过关联关系与其他的概念实体相互联接。通过将任意的概念实体作为分析起点，均可以执行面向局部图谱的关联关系分析与可视化展示。以下示例展示了使用 DOCG 数据分析平台操作界面执行微观层面关联关系分析的方法：
+
+<img src="Documentation/intro/documentPic/knowledgeGraph.png" style="zoom:25%;" />
+
+<center>从任意概念实体出发执行知识图谱 EDA 探索性数据分析</center>
+
+<img src="Documentation/intro/documentPic/knowledgeGraph_2.png" style="zoom:25%;" />
+
+<center>从任意概念实体出发执行知识图谱实体1度关系展开</center>
+
+
+
+####  <span style="color:#0074D9;"> ○  在基于图数据库技术的 DOCG 数据分析平台上执行高阶知识图谱数据分析</span>
 
 
 
