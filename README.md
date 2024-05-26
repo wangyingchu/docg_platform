@@ -168,12 +168,15 @@ DOCG 数据分析平台通过使用核心领域模型建模创建的数据网络
 - 分析和一个建设工程相似的其他数据对象（关联到同一个企事业单位的其他数据）
 
   <img src="Documentation/intro/documentPic/relationAnys01.jpg" style="zoom:50%;" />
+  
 - 分析一个机械装备和一个建设工程项目之间的最短路径的关联关系
 
   <img src="Documentation/intro/documentPic/relationAnys02.jpg" style="zoom:50%;" />
+  
 - 从一个建设工程出发，探索性的分析它与各类其他对象之间的关联关系
 
 <img src="Documentation/intro/documentPic/relationAnys03.jpg" style="zoom:50%;" />
+
 
 在 DOCG 数据分析平台中，所有的 概念实体（*ConceptionEntity*） 均可以通过关联关系与其他的概念实体相互联接。通过将任意的概念实体作为分析起点，均可以执行面向局部图谱的关联关系分析与可视化展示。以下示例展示了使用 DOCG 数据分析平台操作界面执行微观层面关联关系分析的方法：
 
