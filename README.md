@@ -336,18 +336,20 @@ DOCG 数据分析平台利用核心领域模型以及图数据库技术的特性
 
 ### § 实时内存计算
 
-
 知识图谱的构建遵循知识抽取、知识融合、知识加工、知识应用的基本流程。从海量结构化和非结构化数据中进行实体、关系、属性和事件的信息提取，通过本体和实体对齐、指代消解解决多种类型的数据冲突问题，完成知识融合。将知识存储到知识库中，最后进行进一步的知识推理和图谱应用。
 
 
 
+<img src="Documentation/intro/documentPic/DOCG-Component-WholePicture.jpg" style="zoom:33%;" />
+
+<center> DOCG 数据分析平台实时内存计算功能架构</center>
 
 
 ####  <span style="color:#0074D9;"> ○ 数据计算网格</span>
 
 以下是相关技术信息的详细内容介绍：
 
-- [DOCG 数据分析平台核心领域模型 可分析图应用说明](./Documentation/dataCompute/Java SDK API.md)
+- [DOCG 数据分析平台 Data Compute 应用指南](./Documentation/dataCompute/Java SDK API.md)
 
 
 
@@ -360,4 +362,15 @@ DOCG 数据分析平台利用核心领域模型以及图数据库技术的特性
 
 
 
-<img src="Documentation/intro/documentPic/graph_01.png" style="zoom:12.5%;" />
+
+
+
+
+
+
+
+
+
+
+
+<img src="Documentation/intro/documentPic/graph_01.png" style="zoom:6.25%;" />
