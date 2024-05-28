@@ -345,10 +345,18 @@ DOCG 数据分析平台利用核心领域模型以及图数据库技术的特性
 
 ####  <span style="color:#0074D9;"> ○ 数据计算网格</span>
 
+以下是相关技术信息的详细内容介绍：
+
+- [DOCG 数据分析平台核心领域模型 可分析图应用说明](./Documentation/dataCompute/Java SDK API.md)
 
 
 
 ####  <span style="color:#0074D9;"> ○ 时空一体化数据分析服务</span>
+
+以下是相关技术信息的详细内容介绍：
+
+- [DOCG 数据分析平台 Data Analysis provider 应用指南](./Documentation/dataAnalysis/usageGuide.md)
+
 
 
 
