@@ -336,24 +336,41 @@ DOCG 数据分析平台利用核心领域模型以及图数据库技术的特性
 
 ### § 实时内存计算
 
-知识图谱的构建遵循知识抽取、知识融合、知识加工、知识应用的基本流程。从海量结构化和非结构化数据中进行实体、关系、属性和事件的信息提取，通过本体和实体对齐、指代消解解决多种类型的数据冲突问题，完成知识融合。将知识存储到知识库中，最后进行进一步的知识推理和图谱应用。
+DOCG 数据分析平台具有 **OLTP** 类联机事务处理与 **OLAP** 类联机数据分析双重能力。使用中可以通过 docg_coreRealm 模块的 ***CoreRealm SDK*** 执行与实时业务处理相关的数据操作，产生的各类数据变更会存储在底层的图数据库集群中，并根据分析需求动态的同步到由 docg_dataCompute 模块提供的待分析数据分布式内存缓存中。之后在 OLAP 类数据分析场景中，可以联合使用  docg_dataCompute 模块的 ***DataCompute SDK*** ，docg_coreRealm 模块的 ***CoreRealm SDK*** 和  docg_analysisProvider 模块的 ***DataAnalysis SDK***  执行基于 Spark，实时内存与领域模型技术的 图计算，平面地理空间分析，时间轴分析，机器学习分析与常规的业务数据查询分析。
 
-
+各个不同模块在数据分析场景的作用与交互关系说明如下：
 
 <img src="Documentation/intro/documentPic/DOCG-Component-WholePicture.jpg" style="zoom:33%;" />
 
-<center> DOCG 数据分析平台实时内存计算功能架构</center>
+<center> DOCG 数据分析平台实时内存计算功能模块交互</center>
+
 
 
 ####  <span style="color:#0074D9;"> ○ 数据计算网格</span>
+
+DOCG 数据分析平台的 docg_dataCompute 模块的 ***DataCompute SDK*** 提供基于实时内存查询技术的高速数据缓存操作所需的各类 API。该 SDK 结合使用DataSlice 数据切片概念与 DOCG 数据分析平台的概念术语构建了统一的基于领域模型概念的数据缓存操作模型，将所有的数据透明的存储在后端的分布式内存存储节点集群中。该SDK使用 Java 技术开发 。
 
 以下是相关技术信息的详细内容介绍：
 
 - [DOCG 数据分析平台 Data Compute 应用指南](./Documentation/dataCompute/Java SDK API.md)
 
+  
+
+
+####  <span style="color:#0074D9;"> ○ 知识图谱数据管理</span>
+
+DOCG 数据分析平台的 docg_realmKnowledgeManage 模块提供基于图数据库、消息队列与规则引擎技术的自动化业务数据自动关联功能。该模块使用知识管理的概念来分项实现复杂业务数据的关联关系管理操作。知识图谱的构建遵循知识抽取、知识融合、知识加工、知识应用的基本流程。从海量结构化和非结构化数据中进行实体、关系、属性和事件的信息提取，通过本体和实体对齐、指代消解解决多种类型的数据冲突问题，完成知识融合。将知识存储到知识库中，最后进行进一步的知识推理和图谱应用。
+
+以下是相关技术信息的详细内容介绍：
+
+- [DOCG 数据分析平台 知识图谱数据管理 应用指南](./Documentation/realmKnowledgeManage/usageGuide.md)
+
+  
 
 
 ####  <span style="color:#0074D9;"> ○ 时空一体化数据分析服务</span>
+
+DOCG 数据分析平台的 docg_analysisProvider 模块提供基于领域模型概念的图数据分析，平面地理空间分析，时间轴分析，机器学习分析与常规的业务数据查询分析等功能。
 
 以下是相关技术信息的详细内容介绍：
 
