@@ -192,6 +192,17 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
+            String modifyConceptionEntityLabelCQL = "MATCH (n:`"+originalConceptionKindName+"`) SET n:`"+newConceptionKindName+"`";
+
+            DataTransformer dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    System.out.println(result);
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeWrite(dataTransformer,modifyConceptionEntityLabelCQL);
+
             Map<String,Object> attributeDataMap = new HashMap<>();
 
             attributeDataMap.put(RealmConstant._NameProperty, newConceptionKindName);
@@ -203,18 +214,10 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._NameProperty);
             Object updateResultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,updateCql);
             CommonOperationUtil.updateEntityMetaAttributes(workingGraphOperationExecutor,originalConceptionKindUID,false);
-
-            String modifyConceptionEntityLabelCQL = "MATCH (n:`"+originalConceptionKindName+"`) SET n:`"+newConceptionKindName+"`";
-
-
-
-
             AttributeValue resultAttributeValue =  updateResultRes != null ? (AttributeValue) updateResultRes : null;
             if(resultAttributeValue != null && resultAttributeValue.getAttributeValue().toString().equals(newConceptionKindName)){
 
-
             }else{
-
             }
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
