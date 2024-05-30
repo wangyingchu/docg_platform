@@ -161,11 +161,64 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
-    public ConceptionKind renameConceptionKind(String originalConceptionKindName, String newConceptionKindName, String newConceptionKindDesc) throws CoreRealmFunctionNotSupportedException {
+    public ConceptionKind renameConceptionKind(String originalConceptionKindName, String newConceptionKindName, String newConceptionKindDesc) throws CoreRealmServiceRuntimeException {
+        if(originalConceptionKindName == null){
+            logger.error("original Conception KindName is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("original ConceptionKind Name is required.");
+            throw exception;
+        }
+        if(newConceptionKindName == null){
+            logger.error("new ConceptionKind Name is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("new ConceptionKind Name is required.");
+            throw exception;
+        }
+        ConceptionKind originalConceptionKind =this.getConceptionKind(originalConceptionKindName);
+        if(originalConceptionKind == null){
+            logger.error("CoreRealm does not contains ConceptionKind with name {}.", originalConceptionKindName);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("CoreRealm does not contains ConceptionKind with name " + originalConceptionKindName + ".");
+            throw exception;
+        }
+        String originalConceptionKindUID = ((Neo4JConceptionKindImpl)originalConceptionKind).getConceptionKindUID();
+        ConceptionKind newConceptionKind =this.getConceptionKind(newConceptionKindName);
+        if(newConceptionKind == null){
+            logger.error("CoreRealm already contains ConceptionKind with name {}.", newConceptionKindName);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("CoreRealm already contains ConceptionKind with name " + newConceptionKindName + ".");
+            throw exception;
+        }
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            Map<String,Object> attributeDataMap = new HashMap<>();
+
+            attributeDataMap.put(RealmConstant._NameProperty, newConceptionKindName);
+            if(newConceptionKindDesc != null){
+                attributeDataMap.put(RealmConstant._DescProperty, newConceptionKindDesc);
+            }
+
+            String updateCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(originalConceptionKindUID),attributeDataMap);
+            GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._NameProperty);
+            Object updateResultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,updateCql);
+            CommonOperationUtil.updateEntityMetaAttributes(workingGraphOperationExecutor,originalConceptionKindUID,false);
+
+            String modifyConceptionEntityLabelCQL = "MATCH (n:`"+originalConceptionKindName+"`) SET n:`"+newConceptionKindName+"`";
 
 
 
 
+            AttributeValue resultAttributeValue =  updateResultRes != null ? (AttributeValue) updateResultRes : null;
+            if(resultAttributeValue != null && resultAttributeValue.getAttributeValue().toString().equals(newConceptionKindName)){
+
+
+            }else{
+
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
         return null;
     }
 

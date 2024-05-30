@@ -81,7 +81,7 @@ public interface CoreRealm {
      * @return 概念类型对象
      */
     public ConceptionKind renameConceptionKind(String originalConceptionKindName,String newConceptionKindName,String newConceptionKindDesc)
-            throws CoreRealmFunctionNotSupportedException;
+            throws CoreRealmServiceRuntimeException;
 
     /**
      * 根据输入的自定义配置项内容，匹配条件查询概念类型对象

@@ -122,7 +122,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @return 概念类型对象
      */
-    public ConceptionKind renameConceptionKind(String originalConceptionKindName,String newConceptionKindName,String newConceptionKindDesc) throws CoreRealmFunctionNotSupportedException;
+    public ConceptionKind renameConceptionKind(String originalConceptionKindName,String newConceptionKindName,String newConceptionKindDesc) throws CoreRealmServiceRuntimeException;
 
     /**
      * 根据输入的自定义配置项内容，匹配条件查询概念类型对象
