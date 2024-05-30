@@ -101,8 +101,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @return 概念类型对象
      */
-    public ConceptionKind createConceptionKind(String conceptionKindName,String conceptionKindDesc,String parentConceptionKindName)
-            throws CoreRealmFunctionNotSupportedException;
+    public ConceptionKind createConceptionKind(String conceptionKindName,String conceptionKindDesc,String parentConceptionKindName) throws CoreRealmFunctionNotSupportedException;
 
     /**
      * 根据名称删除概念类型
@@ -113,6 +112,17 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 如果操作成功返回 true
      */
     public boolean removeConceptionKind(String conceptionKindName,boolean deleteExistEntities) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 重命名指定的概念类型名称及描述，操作完成后该类型下所有的概念实体的类型名称均会改为新的类型名称
+     *
+     * @param originalConceptionKindName String 原概念类型名称，必须为已存在概念类型,非空输入值
+     * @param newConceptionKindName String 需要修改为的概念类型名称，不能与已有概念类型重名,非空输入值
+     * @param newConceptionKindDesc String 需要修改为的概念类型描述
+     *
+     * @return 概念类型对象
+     */
+    public ConceptionKind renameConceptionKind(String originalConceptionKindName,String newConceptionKindName,String newConceptionKindDesc) throws CoreRealmFunctionNotSupportedException;
 
     /**
      * 根据输入的自定义配置项内容，匹配条件查询概念类型对象

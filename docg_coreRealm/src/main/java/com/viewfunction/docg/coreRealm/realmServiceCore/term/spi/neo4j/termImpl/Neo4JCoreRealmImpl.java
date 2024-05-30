@@ -161,6 +161,15 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
+    public ConceptionKind renameConceptionKind(String originalConceptionKindName, String newConceptionKindName, String newConceptionKindDesc) throws CoreRealmFunctionNotSupportedException {
+
+
+
+
+        return null;
+    }
+
+    @Override
     public List<ConceptionKind> getConceptionKindsByMetaConfigItemMatch(String itemName, Object itemValue) {
         QueryParameters queryParameters = new QueryParameters();
         queryParameters.setResultNumber(1000000);
