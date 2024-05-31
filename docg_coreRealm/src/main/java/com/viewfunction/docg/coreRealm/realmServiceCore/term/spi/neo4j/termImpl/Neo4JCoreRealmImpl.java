@@ -618,6 +618,23 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         throw exception;
     }
 
+
+
+
+
+
+    @Override
+    public boolean renameRelationKind(String originalRelationKindName, String newRelationKindName, String newRelationKindDesc) throws CoreRealmServiceRuntimeException {
+        return false;
+    }
+
+
+
+
+
+
+
+
     @Override
     public boolean removeRelationKind(String relationKindName, boolean deleteExistEntities) throws CoreRealmServiceRuntimeException {
         if(relationKindName == null){

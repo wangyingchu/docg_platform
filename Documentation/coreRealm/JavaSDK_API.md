@@ -265,6 +265,18 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public RelationKind createRelationKind(String relationKindName,String relationKindDesc,String parentRelationKindName)
             throws CoreRealmFunctionNotSupportedException;
 
+     /**
+     * 重命名指定的关系类型名称及描述，操作完成后该类型下所有的关系实体的类型名称均会改为新的类型名称
+     *
+     * @param originalRelationKindName String 原关系类型名称，必须为已存在概念类型,非空输入值
+     * @param newRelationKindName String 需要修改为的关系类型名称，不能与已有关系类型重名,非空输入值
+     * @param newRelationKindDesc String 需要修改为的关系类型描述
+     *
+     * @return 如果操作成功返回 true
+     */
+    public boolean renameRelationKind(String originalRelationKindName,String newRelationKindName,String newRelationKindDesc)
+            throws CoreRealmServiceRuntimeException;
+
     /**
      * 根据名称删除关系类型
      *
