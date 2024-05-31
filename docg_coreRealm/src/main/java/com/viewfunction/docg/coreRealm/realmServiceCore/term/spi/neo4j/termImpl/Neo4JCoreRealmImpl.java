@@ -163,7 +163,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     @Override
     public boolean renameConceptionKind(String originalConceptionKindName, String newConceptionKindName, String newConceptionKindDesc) throws CoreRealmServiceRuntimeException {
         if(originalConceptionKindName == null){
-            logger.error("original Conception KindName is required.");
+            logger.error("original Conception Kind Name is required.");
             CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
             exception.setCauseMessage("original ConceptionKind Name is required.");
             throw exception;
@@ -618,22 +618,79 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         throw exception;
     }
 
-
-
-
-
-
     @Override
     public boolean renameRelationKind(String originalRelationKindName, String newRelationKindName, String newRelationKindDesc) throws CoreRealmServiceRuntimeException {
-        return false;
+        if(originalRelationKindName == null){
+            logger.error("original RelationKind Name is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("original RelationKind Name is required.");
+            throw exception;
+        }
+        if(newRelationKindName == null){
+            logger.error("new RelationKind Name is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("new RelationKind Name is required.");
+            throw exception;
+        }
+
+        RelationKind originalRelationKind = this.getRelationKind(originalRelationKindName);
+        if(originalRelationKind == null){
+            logger.error("CoreRealm does not contains RelationKind with name {}.", originalRelationKindName);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("CoreRealm does not contains RelationKind with name " + originalRelationKindName + ".");
+            throw exception;
+        }
+        String originalRelationKindUID = ((Neo4JRelationKindImpl)originalRelationKind).getRelationKindUID();
+        RelationKind newRelationKind = this.getRelationKind(newRelationKindName);
+        if(newRelationKind != null){
+            logger.error("CoreRealm already contains RelationKind with name {}.", newRelationKindName);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("CoreRealm already contains RelationKind with name " + newRelationKindName + ".");
+            throw exception;
+        }
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+
+
+/*
+            String modifyConceptionEntityLabelCQL = "MATCH (n:`"+originalConceptionKindName+"`) SET n:`"+newConceptionKindName+"` REMOVE n:`"+originalConceptionKindName+"`";
+            logger.debug("Generated Cypher Statement: {}", modifyConceptionEntityLabelCQL);
+            DataTransformer dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    System.out.println(result);
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeWrite(dataTransformer,modifyConceptionEntityLabelCQL);
+*/
+
+
+
+
+
+            Map<String,Object> attributeDataMap = new HashMap<>();
+            attributeDataMap.put(RealmConstant._NameProperty, newRelationKindName);
+            if(newRelationKindDesc != null){
+                attributeDataMap.put(RealmConstant._DescProperty, newRelationKindDesc);
+            }
+
+            String updateCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(originalRelationKindUID),attributeDataMap);
+            GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._NameProperty);
+            Object updateResultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,updateCql);
+            CommonOperationUtil.updateEntityMetaAttributes(workingGraphOperationExecutor,originalRelationKindUID,false);
+
+            AttributeValue resultAttributeValue =  updateResultRes != null ? (AttributeValue) updateResultRes : null;
+            if(resultAttributeValue != null && resultAttributeValue.getAttributeValue().toString().equals(newRelationKindName)){
+                return true;
+            }else{
+                return false;
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
-
-
-
-
-
-
-
 
     @Override
     public boolean removeRelationKind(String relationKindName, boolean deleteExistEntities) throws CoreRealmServiceRuntimeException {
