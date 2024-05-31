@@ -481,6 +481,8 @@ public class CoreRealmTest {
 
         ConceptionKind _ConceptionKindForRenameAfter = coreRealm.getConceptionKind("ConceptionKindForRenameAfterOpe");
         Assert.assertNotNull(_ConceptionKindForRenameAfter);
+        Assert.assertEquals(_ConceptionKindForRenameAfter.getConceptionKindName(),"ConceptionKindForRenameAfterOpe");
+        Assert.assertEquals(_ConceptionKindForRenameAfter.getConceptionKindDesc(),"ConceptionKindForRenameAfterOpeDesc");
         Assert.assertEquals(_ConceptionKindForRenameAfter.countConceptionEntities().longValue(),1000);
 
         Assert.assertNull(coreRealm.getConceptionKind("ConceptionKindForRename"));
