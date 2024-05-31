@@ -161,7 +161,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
     }
 
     @Override
-    public ConceptionKind renameConceptionKind(String originalConceptionKindName, String newConceptionKindName, String newConceptionKindDesc) throws CoreRealmServiceRuntimeException {
+    public boolean renameConceptionKind(String originalConceptionKindName, String newConceptionKindName, String newConceptionKindDesc) throws CoreRealmServiceRuntimeException {
         if(originalConceptionKindName == null){
             logger.error("original Conception KindName is required.");
             CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
@@ -182,8 +182,8 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             throw exception;
         }
         String originalConceptionKindUID = ((Neo4JConceptionKindImpl)originalConceptionKind).getConceptionKindUID();
-        ConceptionKind newConceptionKind =this.getConceptionKind(newConceptionKindName);
-        if(newConceptionKind == null){
+        ConceptionKind newConceptionKind = this.getConceptionKind(newConceptionKindName);
+        if(newConceptionKind != null){
             logger.error("CoreRealm already contains ConceptionKind with name {}.", newConceptionKindName);
             CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
             exception.setCauseMessage("CoreRealm already contains ConceptionKind with name " + newConceptionKindName + ".");
@@ -192,8 +192,8 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
-            String modifyConceptionEntityLabelCQL = "MATCH (n:`"+originalConceptionKindName+"`) SET n:`"+newConceptionKindName+"`";
-
+            String modifyConceptionEntityLabelCQL = "MATCH (n:`"+originalConceptionKindName+"`) SET n:`"+newConceptionKindName+"` REMOVE n:`"+originalConceptionKindName+"`";
+            logger.debug("Generated Cypher Statement: {}", modifyConceptionEntityLabelCQL);
             DataTransformer dataTransformer = new DataTransformer() {
                 @Override
                 public Object transformResult(Result result) {
@@ -214,15 +214,16 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._NameProperty);
             Object updateResultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,updateCql);
             CommonOperationUtil.updateEntityMetaAttributes(workingGraphOperationExecutor,originalConceptionKindUID,false);
+
             AttributeValue resultAttributeValue =  updateResultRes != null ? (AttributeValue) updateResultRes : null;
             if(resultAttributeValue != null && resultAttributeValue.getAttributeValue().toString().equals(newConceptionKindName)){
-
+                return true;
             }else{
+                return false;
             }
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
-        return null;
     }
 
     @Override

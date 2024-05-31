@@ -3,11 +3,7 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeKindMetaInfo;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionKindCorrelationInfo;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntityStatisticsInfo;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.KindMetaInfo;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributesViewKindMetaInfo;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JTimeFlowImpl;
@@ -19,7 +15,10 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CoreRealmTest {
 
@@ -460,5 +459,31 @@ public class CoreRealmTest {
         List<AttributeKindMetaInfo> attributeKindMetaInfoList = coreRealm.getAttributeKindsMetaInfo();
         Assert.assertNotNull(attributeKindMetaInfoList);
         Assert.assertTrue(attributeKindMetaInfoList.size()>0);
+
+        ConceptionKind _ConceptionKindForRename = coreRealm.createConceptionKind("ConceptionKindForRename","ConceptionKindForRenameDesc");
+
+        Map<String,Object> newEntityValueMap= new HashMap<>();
+        newEntityValueMap.put("prop1",Long.parseLong("12345"));
+        List<ConceptionEntityValue> conceptionEntityValueList = new ArrayList<>();
+        for(int i =0 ;i<1000;i++){
+            ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValueMap);
+            conceptionEntityValueList.add(conceptionEntityValue);
+        }
+
+        _ConceptionKindForRename.newEntities(conceptionEntityValueList,false);
+
+        _ConceptionKindForRename = coreRealm.getConceptionKind("ConceptionKindForRename");
+        Assert.assertNotNull(_ConceptionKindForRename);
+        Assert.assertEquals(_ConceptionKindForRename.countConceptionEntities().longValue(),1000);
+
+        boolean renameResult = coreRealm.renameConceptionKind("ConceptionKindForRename","ConceptionKindForRenameAfterOpe","ConceptionKindForRenameAfterOpeDesc");
+        Assert.assertTrue(renameResult);
+
+        ConceptionKind _ConceptionKindForRenameAfter = coreRealm.getConceptionKind("ConceptionKindForRenameAfterOpe");
+        Assert.assertNotNull(_ConceptionKindForRenameAfter);
+        Assert.assertEquals(_ConceptionKindForRenameAfter.countConceptionEntities().longValue(),1000);
+
+        Assert.assertNull(coreRealm.getConceptionKind("ConceptionKindForRename"));
+        coreRealm.removeConceptionKind("ConceptionKindForRenameAfterOpe",true);
     }
 }

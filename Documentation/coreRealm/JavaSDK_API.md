@@ -120,9 +120,9 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @param newConceptionKindName String 需要修改为的概念类型名称，不能与已有概念类型重名,非空输入值
      * @param newConceptionKindDesc String 需要修改为的概念类型描述
      *
-     * @return 概念类型对象
+     * @return 如果操作成功返回 true
      */
-    public ConceptionKind renameConceptionKind(String originalConceptionKindName,String newConceptionKindName,String newConceptionKindDesc) throws CoreRealmServiceRuntimeException;
+    public boolean renameConceptionKind(String originalConceptionKindName,String newConceptionKindName,String newConceptionKindDesc) throws CoreRealmServiceRuntimeException;
 
     /**
      * 根据输入的自定义配置项内容，匹配条件查询概念类型对象

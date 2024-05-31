@@ -78,9 +78,9 @@ public interface CoreRealm {
      * @param newConceptionKindName String 需要修改为的概念类型名称，不能与已有概念类型重名,非空输入值
      * @param newConceptionKindDesc String 需要修改为的概念类型描述
      *
-     * @return 概念类型对象
+     * @return 如果操作成功返回 true
      */
-    public ConceptionKind renameConceptionKind(String originalConceptionKindName,String newConceptionKindName,String newConceptionKindDesc)
+    public boolean renameConceptionKind(String originalConceptionKindName,String newConceptionKindName,String newConceptionKindDesc)
             throws CoreRealmServiceRuntimeException;
 
     /**
