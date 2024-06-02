@@ -651,11 +651,12 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
-
-
-/*
-            String modifyConceptionEntityLabelCQL = "MATCH (n:`"+originalConceptionKindName+"`) SET n:`"+newConceptionKindName+"` REMOVE n:`"+originalConceptionKindName+"`";
-            logger.debug("Generated Cypher Statement: {}", modifyConceptionEntityLabelCQL);
+            //https://neo4j.com/docs/apoc/current/graph-refactoring/set-relationship-type/
+            String modifyRelationEntityTypeCQL = "MATCH ()-[rel:`"+originalRelationKindName+"`]->()\n" +
+                    "CALL apoc.refactor.setType(rel, '`"+newRelationKindName+"`')\n" +
+                    "YIELD input, output\n" +
+                    "RETURN input, output";
+            logger.debug("Generated Cypher Statement: {}", modifyRelationEntityTypeCQL);
             DataTransformer dataTransformer = new DataTransformer() {
                 @Override
                 public Object transformResult(Result result) {
@@ -663,12 +664,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                     return null;
                 }
             };
-            workingGraphOperationExecutor.executeWrite(dataTransformer,modifyConceptionEntityLabelCQL);
-*/
-
-
-
-
+            workingGraphOperationExecutor.executeWrite(dataTransformer,modifyRelationEntityTypeCQL);
 
             Map<String,Object> attributeDataMap = new HashMap<>();
             attributeDataMap.put(RealmConstant._NameProperty, newRelationKindName);
