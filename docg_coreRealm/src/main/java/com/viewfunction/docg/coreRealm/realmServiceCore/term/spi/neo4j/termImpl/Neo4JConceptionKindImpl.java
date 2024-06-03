@@ -1914,7 +1914,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
                             Neo4JConceptionEntityImpl neo4jConceptionEntityImpl =
                                     new Neo4JConceptionEntityImpl(resultConceptionKindName,conceptionEntityUID);
                             neo4jConceptionEntityImpl.setAllConceptionKindNames(allConceptionKindNames);
-                            neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+                            neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
                             conceptionEntitySet.add(neo4jConceptionEntityImpl);
                         }
                     }

@@ -653,7 +653,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         try {
             //https://neo4j.com/docs/apoc/current/graph-refactoring/set-relationship-type/
             String modifyRelationEntityTypeCQL = "MATCH ()-[rel:`"+originalRelationKindName+"`]->()\n" +
-                    "CALL apoc.refactor.setType(rel, '`"+newRelationKindName+"`')\n" +
+                    "CALL apoc.refactor.setType(rel, '"+newRelationKindName+"')\n" +
                     "YIELD input, output\n" +
                     "RETURN input, output";
             logger.debug("Generated Cypher Statement: {}", modifyRelationEntityTypeCQL);

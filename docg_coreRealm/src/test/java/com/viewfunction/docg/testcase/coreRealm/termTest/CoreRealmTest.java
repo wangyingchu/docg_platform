@@ -15,10 +15,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CoreRealmTest {
 
@@ -460,7 +457,8 @@ public class CoreRealmTest {
         Assert.assertNotNull(attributeKindMetaInfoList);
         Assert.assertTrue(attributeKindMetaInfoList.size()>0);
 
-        ConceptionKind _ConceptionKindForRename = coreRealm.createConceptionKind("ConceptionKindForRename","ConceptionKindForRenameDesc");
+        coreRealm.createConceptionKind("ConceptionKindForRename","ConceptionKindForRenameDesc");
+        ConceptionKind _ConceptionKindForRename =coreRealm.getConceptionKind("ConceptionKindForRename");
 
         Map<String,Object> newEntityValueMap= new HashMap<>();
         newEntityValueMap.put("prop1",Long.parseLong("12345"));
@@ -476,6 +474,16 @@ public class CoreRealmTest {
         Assert.assertNotNull(_ConceptionKindForRename);
         Assert.assertEquals(_ConceptionKindForRename.countConceptionEntities().longValue(),1000);
 
+        for(int i=0;i<100;i++){
+            Set<ConceptionEntity> conceptionEntities =  _ConceptionKindForRename.getRandomEntities(2);
+            Iterator<ConceptionEntity> entitiesItor = conceptionEntities.iterator();
+            ConceptionEntity firstEntity = entitiesItor.next();
+            ConceptionEntity secondEntity = entitiesItor.next();
+            firstEntity.attachFromRelation(secondEntity.getConceptionEntityUID(),"RelationKindForRenameA",null,true);
+        }
+
+
+
         boolean renameResult = coreRealm.renameConceptionKind("ConceptionKindForRename","ConceptionKindForRenameAfterOpe","ConceptionKindForRenameAfterOpeDesc");
         Assert.assertTrue(renameResult);
 
@@ -484,14 +492,15 @@ public class CoreRealmTest {
         Assert.assertEquals(_RelationKindForRenameBefore.getRelationKindName(),"RelationKindForRenameA");
         Assert.assertEquals(_RelationKindForRenameBefore.getRelationKindDesc(),"RelationKindForRenameDescA");
 
+        long relationEntitiesCount = _RelationKindForRenameBefore.countRelationEntities();
+        Assert.assertEquals(relationEntitiesCount,100);
+
+
         ConceptionKind _ConceptionKindForRenameAfter = coreRealm.getConceptionKind("ConceptionKindForRenameAfterOpe");
         Assert.assertNotNull(_ConceptionKindForRenameAfter);
         Assert.assertEquals(_ConceptionKindForRenameAfter.getConceptionKindName(),"ConceptionKindForRenameAfterOpe");
         Assert.assertEquals(_ConceptionKindForRenameAfter.getConceptionKindDesc(),"ConceptionKindForRenameAfterOpeDesc");
         Assert.assertEquals(_ConceptionKindForRenameAfter.countConceptionEntities().longValue(),1000);
-
-        Assert.assertNull(coreRealm.getConceptionKind("ConceptionKindForRename"));
-        coreRealm.removeConceptionKind("ConceptionKindForRenameAfterOpe",true);
 
         boolean renameRelationKindResult = coreRealm.renameRelationKind("RelationKindForRenameA","RelationKindForRenameB","RelationKindForRenamebDesc");
         Assert.assertTrue(renameRelationKindResult);
@@ -501,6 +510,12 @@ public class CoreRealmTest {
         Assert.assertNotNull(_RelationKindForRenameBAfter);
         Assert.assertEquals(_RelationKindForRenameBAfter.getRelationKindName(),"RelationKindForRenameB");
         Assert.assertEquals(_RelationKindForRenameBAfter.getRelationKindDesc(),"RelationKindForRenamebDesc");
+
+        relationEntitiesCount = _RelationKindForRenameBAfter.countRelationEntities();
+        Assert.assertEquals(relationEntitiesCount,100);
+
+        Assert.assertNull(coreRealm.getConceptionKind("ConceptionKindForRename"));
+        coreRealm.removeConceptionKind("ConceptionKindForRenameAfterOpe",true);
 
         coreRealm.removeRelationKind("RelationKindForRenameB",true);
     }
