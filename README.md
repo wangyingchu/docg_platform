@@ -197,6 +197,8 @@ DOCG 数据分析平台通过使用核心领域模型建模创建的数据网络
 - 所有结对最短路径(*All Pairs Shortest Path , APSP*)和单源最短路径(*SingleSource Shortest Path,SSSP*):用于查找所有节点对之间的最短路径,或从选定节点到所有其他所有节点的最短路径。
 - 最小生成树(*Minimum Spanning Tree , MST*):用于找到一个连接树结构,在这个结构中,从指定节点访问所有节点的成本最小 。
 - 随机行走(*Random Walk*):它是机器学习工作流或其他图算法的一个有用的预处理/采样步骤。
+<img src="Documentation/intro/documentPic/graphAlg_02.jpg" style="zoom:50%;" />
+<center>最短路径算法识别最优物流运输途径</center>
 
 
 
@@ -211,7 +213,8 @@ DOCG 数据分析平台通过使用核心领域模型建模创建的数据网络
 - 特征向量中心性算法：一种度量节点传递影响的算法。来自高分节点的关系比来自低分节点的连接对节点得分的贡献更大。高特征向量得分意味着一个节点连接到许多本身得分较高的节点。
 
 - PageRank 算法：根据输入关系的数量和相应源节点的重要性来测量图中每个节点的重要性。
-
+<img src="Documentation/intro/documentPic/graphAlg_01.jpg" style="zoom:75%;" />
+<center>中介中心性算法识别关键交通节点</center>
 
 
 
