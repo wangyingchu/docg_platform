@@ -291,13 +291,22 @@ DOCG 数据分析平台利用核心领域模型以及图数据库技术的特性
 
 <center>时空领域知识图谱可视化地理空间局部</center>
 
+ 
 
-
- 下图展示了 DOCG 数据分析平台操作界面的地理空间区域管理功能：
+下图展示了 DOCG 数据分析平台操作界面的地理空间区域管理功能：
 
 <img src="Documentation/intro/documentPic/GeospatialRegionUI.png" />
 
 <center>地理空间区域管理</center>
+
+
+
+下图展示了 DOCG 数据分析平台操作界面中概念实体的地理空间属性信息：
+
+<img src="Documentation/intro/documentPic/geoInfoOfEntity.png" />
+
+<center>概念实体地理空间信息</center>
+
 
 
 
@@ -335,6 +344,14 @@ DOCG 数据分析平台利用核心领域模型以及图数据库技术的特性
 <img src="Documentation/intro/documentPic/TimeFlowUI.png" />
 
 <center>时间流管理</center>
+
+
+
+下图展示了 DOCG 数据分析平台操作界面中概念实体的时间流相关事件信息：
+
+<img src="Documentation/intro/documentPic/timelineInfoOfEntity.png" />
+
+<center>概念实体时间流事件信息</center>
 
 
 
@@ -379,6 +396,12 @@ DOCG 数据分析平台的 docg_analysisProvider 模块提供基于领域模型�
 以下是相关技术信息的详细内容介绍：
 
 - [DOCG 数据分析平台 Data Analysis provider 应用指南](./Documentation/dataAnalysis/usageGuide.md)
+
+
+
+
+
+
 
 
 
