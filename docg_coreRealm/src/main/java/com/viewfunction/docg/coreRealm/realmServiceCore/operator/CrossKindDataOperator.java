@@ -80,7 +80,7 @@ public interface CrossKindDataOperator {
      * @param topologySimilarityComputeDirection TopologySimilarityComputeDirection 计算使用的关系方向
      * @param relationKindForCompute String 计算使用的关系类型，如为空则基于现存的所有关系进行计算
      *
-     * @return double 类型的相似度数值
+     * @return double 概念实体的相似度数值
      */
     public Double computeConceptionEntityPairTopologySimilarity(String conceptionEntityAUID,String conceptionEntityBUID,
                                                                 TopologySimilarityComputeAlgorithm topologySimilarityComputeAlgorithm,
