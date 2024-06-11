@@ -200,6 +200,10 @@ DOCG 数据分析平台通过使用核心领域模型建模创建的数据网络
 <img src="Documentation/intro/documentPic/graphAlg_02.jpg" style="zoom:50%;" />
 <center>最短路径算法识别最优物流运输途径</center>
 
+<img src="Documentation/intro/documentPic/graphPath1.jpg" />
+
+<center>最小生成树算法识别最短的管道巡检路线</center>
+
 
 
 **中心性算法（*Centrality*）** 用于判断网络中节点的重要程度,最常用的中心性算法包括:
