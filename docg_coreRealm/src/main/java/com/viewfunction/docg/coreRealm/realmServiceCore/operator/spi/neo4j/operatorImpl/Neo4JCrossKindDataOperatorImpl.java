@@ -1150,7 +1150,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                     case TWO_WAY -> relationMatchingPart = "-" + relationTypePart + "-";
                 }
             }
-            String queryCql = "MATCH (classification:DOCG_Classification)" + relationMatchingPart + "(conceptionKind:DOCG_ConceptionKind) " + classificationsFilter + " RETURN classification,r, conceptionKind LIMIT 1000000000";
+            String queryCql = "MATCH (classification:"+RealmConstant.ClassificationClass+")" + relationMatchingPart + "(conceptionKind:"+RealmConstant.ConceptionKindClass+") " + classificationsFilter + " RETURN classification,r, conceptionKind LIMIT 1000000000";
             logger.debug("Generated Cypher Statement: {}", queryCql);
 
             Map<String,List<ConceptionKind>> resultMap = new HashMap<>();
