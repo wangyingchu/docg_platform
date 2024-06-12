@@ -21,8 +21,12 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityVa
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntitiesSequence;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionKindImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
+import org.neo4j.driver.types.Node;
+import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1125,8 +1129,70 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public Map<String, List<ConceptionKind>> getClassificationsDirectRelatedConceptionKinds(Set<String> classificationNames, String relationKindName, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException {
-        return Map.of();
+    public Map<String, List<ConceptionKind>> getClassificationsDirectRelatedConceptionKinds(Set<String> classificationNames, String relationKindName, RelationDirection relationDirection){
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            String classificationsFilter = "";
+            if (classificationNames != null && !classificationNames.isEmpty()) {
+                classificationsFilter = "WHERE classification.name IN " + convertStringSetToCypherValue(classificationNames);
+            }
+            String relationTypePart = "[r]";
+            if (relationKindName != null) {
+                relationTypePart = "[r:`" + relationKindName + "`]";
+            }
+            String relationMatchingPart = "";
+            if (relationDirection == null) {
+                relationMatchingPart = "-" + relationTypePart + "-";
+            } else {
+                switch (relationDirection) {
+                    case FROM -> relationMatchingPart = "-" + relationTypePart + "->";
+                    case TO -> relationMatchingPart = "<-" + relationTypePart + "-";
+                    case TWO_WAY -> relationMatchingPart = "-" + relationTypePart + "-";
+                }
+            }
+            String queryCql = "MATCH (classification:DOCG_Classification)" + relationMatchingPart + "(conceptionKind:DOCG_ConceptionKind) " + classificationsFilter + " RETURN classification,r, conceptionKind LIMIT 1000000000";
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+
+            Map<String,List<ConceptionKind>> resultMap = new HashMap<>();
+
+            DataTransformer dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    while(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        Node classificationNode = nodeRecord.get("classification").asNode();
+                        Relationship relation = nodeRecord.get("r").asRelationship();
+                        Node conceptionKindNode = nodeRecord.get("conceptionKind").asNode();
+
+                        String classificationName = classificationNode.get(RealmConstant._NameProperty).asString();
+                        if(!resultMap.containsKey(classificationName)){
+                            List<ConceptionKind> conceptionKindList = new ArrayList<>();
+                            resultMap.put(classificationName,conceptionKindList);
+                        }
+
+                        List<ConceptionKind> currentClassificationList = resultMap.get(classificationName);
+
+                        long conceptionKindNodeUID = conceptionKindNode.id();
+                        String coreRealmName = coreRealm.getCoreRealmName();
+                        String conceptionKindName = conceptionKindNode.get(RealmConstant._NameProperty).asString();
+                        String conceptionKindDesc = null;
+                        if(conceptionKindNode.get(RealmConstant._DescProperty) != null){
+                            conceptionKindDesc = conceptionKindNode.get(RealmConstant._DescProperty).asString();
+                        }
+                        String conceptionKindUID = ""+conceptionKindNodeUID;
+                        Neo4JConceptionKindImpl neo4JConceptionKindImpl =
+                                new Neo4JConceptionKindImpl(coreRealmName,conceptionKindName,conceptionKindDesc,conceptionKindUID);
+                        neo4JConceptionKindImpl.setGlobalGraphOperationExecutor(graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                        currentClassificationList.add(neo4JConceptionKindImpl);
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeRead(dataTransformer,queryCql);
+            return resultMap;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
@@ -1197,5 +1263,20 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             threadReturnDataMap.put("SUCCESSUIDS_"+currentThreadName,remainEntityUIDList);
             graphOperationExecutor.close();
         }
+    }
+
+    private String convertStringSetToCypherValue(Set<String> stringSet){
+        StringBuffer sb = new StringBuffer();
+        sb.append("[");
+        Iterator<String> valueItor = stringSet.iterator();
+        while(valueItor.hasNext()){
+            String value = valueItor.next();
+            sb.append("'"+value+"'");
+            if(valueItor.hasNext()){
+                sb.append(",");
+            }
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }

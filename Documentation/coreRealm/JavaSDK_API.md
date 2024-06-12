@@ -5212,12 +5212,13 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
     /**
      * 获取与分类名称集合中的各项分类自身直接关联的概念类型对象信息
      *
-     * @param relationKindName String 关联的关系类型名称
-     * @param relationDirection RelationDirection 关联的关系方向
+     * @param classificationNames Set<String> 目标分类名称,如集合为空或为 null 值,则返回所有分类相关概念类型信息
+     * @param relationKindName String 关联的关系类型名称,如为 null 值,则忽略关系类型名称的过滤约束
+     * @param relationDirection RelationDirection 关联的关系方向,如为 null 值,则忽略关系方向的过滤约束
      *
      * @return 分类名称与相关概念类型对象列表的映射表
      */
-    public Map<String,List<ConceptionKind>> getClassificationsDirectRelatedConceptionKinds(Set<String> classificationNames,String relationKindName, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException;
+    public Map<String,List<ConceptionKind>> getClassificationsDirectRelatedConceptionKinds(Set<String> classificationNames,String relationKindName, RelationDirection relationDirection);
 
 ```
 
