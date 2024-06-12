@@ -116,26 +116,26 @@ public interface Classification extends MetaAttributeFeatureSupportable, Attribu
     public boolean removeChildClassification(String classificationName) throws CoreRealmServiceRuntimeException;
 
     /**
-     * 获取与当前分类关联的概念分类对象
+     * 获取与当前分类关联的概念类型对象
      *
      * @param relationKindName String 关联的关系类型名称
      * @param relationDirection RelationDirection 关联的关系方向
      * @param includeOffspringClassifications boolean 是否获取后代分类关联的数据
      * @param offspringLevel int 包含的后代分类层级数
      *
-     * @return 概念分类对象列表
+     * @return 概念类型对象列表
      */
     public List<ConceptionKind> getRelatedConceptionKinds(String relationKindName, RelationDirection relationDirection, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException;
 
     /**
-     * 获取与当前分类关联的关系分类对象
+     * 获取与当前分类关联的关系类型对象
      *
      * @param relationKindName String 关联的关系类型名称
      * @param relationDirection RelationDirection 关联的关系方向
      * @param includeOffspringClassifications boolean 是否获取后代分类关联的数据
      * @param offspringLevel int 包含的后代分类层级数
      *
-     * @return 关系分类对象列表
+     * @return 关系类型对象列表
      */
     public List<RelationKind> getRelatedRelationKinds(String relationKindName, RelationDirection relationDirection, boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException;
 

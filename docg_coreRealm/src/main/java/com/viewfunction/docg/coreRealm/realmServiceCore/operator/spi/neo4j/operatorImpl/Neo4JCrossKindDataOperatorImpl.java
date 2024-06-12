@@ -3,6 +3,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.oper
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.PathEntitiesSequenceMatchPattern;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
@@ -18,6 +19,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntity
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntitiesSequence;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
@@ -1115,6 +1117,16 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
         return resultRelationEntityList;
+    }
+
+    @Override
+    public Set<PathEntitiesSequence> getPathEntitiesSequences(PathEntitiesSequenceMatchPattern sequenceMatchPattern) throws CoreRealmServiceRuntimeException {
+        return Set.of();
+    }
+
+    @Override
+    public Map<String, List<ConceptionKind>> getClassificationsDirectRelatedConceptionKinds(Set<String> classificationNames, String relationKindName, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException {
+        return Map.of();
     }
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {

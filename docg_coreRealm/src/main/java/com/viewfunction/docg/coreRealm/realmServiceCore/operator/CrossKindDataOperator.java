@@ -9,6 +9,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperatio
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntitiesSequence;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 
@@ -305,4 +306,21 @@ public interface CrossKindDataOperator {
      * @return 符合条件的路径实体序列集合
      */
     public Set<PathEntitiesSequence> getPathEntitiesSequences(PathEntitiesSequenceMatchPattern sequenceMatchPattern) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取与分类名称集合中的各项分类自身直接关联的概念类型对象信息
+     *
+     * @param relationKindName String 关联的关系类型名称
+     * @param relationDirection RelationDirection 关联的关系方向
+     *
+     * @return 分类名称与相关概念类型对象列表的映射表
+     */
+    public Map<String,List<ConceptionKind>> getClassificationsDirectRelatedConceptionKinds(Set<String> classificationNames,String relationKindName, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException;
+
+
+
+
+
+
+
 }

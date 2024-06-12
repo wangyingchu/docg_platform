@@ -1946,26 +1946,26 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public boolean removeChildClassification(String classificationName) throws CoreRealmServiceRuntimeException;
 
     /**
-     * 获取与当前分类关联的概念分类对象
+     * 获取与当前分类关联的概念类型对象
      *
      * @param relationKindName String 关联的关系类型名称
      * @param relationDirection RelationDirection 关联的关系方向
      * @param includeOffspringClassifications boolean 是否获取后代分类关联的数据
      * @param offspringLevel int 包含的后代分类层级数
      *
-     * @return 概念分类对象列表
+     * @return 概念类型对象列表
      */
     public List<ConceptionKind> getRelatedConceptionKinds(String relationKindName, RelationDirection relationDirection,boolean includeOffspringClassifications,int offspringLevel) throws CoreRealmServiceRuntimeException;
 
     /**
-     * 获取与当前分类关联的关系分类对象
+     * 获取与当前分类关联的关系类型对象
      *
      * @param relationKindName String 关联的关系类型名称
      * @param relationDirection RelationDirection 关联的关系方向
      * @param includeOffspringClassifications boolean 是否获取后代分类关联的数据
      * @param offspringLevel int 包含的后代分类层级数
      *
-     * @return 关系分类对象列表
+     * @return 关系类型对象列表
      */
     public List<RelationKind> getRelatedRelationKinds(String relationKindName, RelationDirection relationDirection,boolean includeOffspringClassifications,int offspringLevel) throws CoreRealmServiceRuntimeException;
 
@@ -5208,6 +5208,17 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 符合条件的路径实体序列集合
      */
     public Set<PathEntitiesSequence> getPathEntitiesSequences(PathEntitiesSequenceMatchPattern sequenceMatchPattern) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取与分类名称集合中的各项分类自身直接关联的概念类型对象信息
+     *
+     * @param relationKindName String 关联的关系类型名称
+     * @param relationDirection RelationDirection 关联的关系方向
+     *
+     * @return 分类名称与相关概念类型对象列表的映射表
+     */
+    public Map<String,List<ConceptionKind>> getClassificationsDirectRelatedConceptionKinds(Set<String> classificationNames,String relationKindName, RelationDirection relationDirection) throws CoreRealmServiceRuntimeException;
+
 ```
 
 ###### ↳ SystemMaintenanceOperator
