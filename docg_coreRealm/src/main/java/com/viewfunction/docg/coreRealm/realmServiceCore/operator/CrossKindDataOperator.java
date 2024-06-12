@@ -304,5 +304,5 @@ public interface CrossKindDataOperator {
      *
      * @return 符合条件的路径实体序列集合
      */
-    public Set<PathEntitiesSequence> getPathEntitiesSequences(PathEntitiesSequenceMatchPattern sequenceMatchPattern);
+    public Set<PathEntitiesSequence> getPathEntitiesSequences(PathEntitiesSequenceMatchPattern sequenceMatchPattern) throws CoreRealmServiceRuntimeException;
 }

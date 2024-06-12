@@ -5200,6 +5200,14 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      */
     public List<RelationEntity> createBiDirectionRelationsByConceptionEntityUIDs(List<String> conceptionEntityUIDs, String relationKind, Map<String,Object> relationAttributes,boolean repeatable) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
 
+    /**
+     * 获取符合匹配模式的路径实体序列集合
+     *
+     * @param sequenceMatchPattern PathEntitiesSequenceMatchPattern 目标路径实体序列的查询匹配规则
+     *
+     * @return 符合条件的路径实体序列集合
+     */
+    public Set<PathEntitiesSequence> getPathEntitiesSequences(PathEntitiesSequenceMatchPattern sequenceMatchPattern) throws CoreRealmServiceRuntimeException;
 ```
 
 ###### ↳ SystemMaintenanceOperator
