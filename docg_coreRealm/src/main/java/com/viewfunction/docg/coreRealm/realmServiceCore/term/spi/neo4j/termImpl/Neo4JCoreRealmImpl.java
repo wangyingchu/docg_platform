@@ -1470,8 +1470,10 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                         Record nodeRecord = result.next();
                         String relationKindName = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._NameProperty).asString();
                         String relationKindDesc = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._DescProperty).asString();
-                        ZonedDateTime createDate = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._createDateProperty).asZonedDateTime();
-                        ZonedDateTime lastModifyDate = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._lastModifyDateProperty).asZonedDateTime();
+                        ZonedDateTime createDate = nodeRecord.containsKey(CypherBuilder.operationResultName+"."+RealmConstant._createDateProperty) ?
+                                nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._createDateProperty).asZonedDateTime() : null;
+                        ZonedDateTime lastModifyDate = nodeRecord.containsKey(CypherBuilder.operationResultName+"."+RealmConstant._lastModifyDateProperty) ?
+                                nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._lastModifyDateProperty).asZonedDateTime() : null;
                         String dataOrigin = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._dataOriginProperty).asString();
                         long conceptionKindUID = nodeRecord.get("id("+CypherBuilder.operationResultName+")").asLong();
                         String creatorId = nodeRecord.containsKey(CypherBuilder.operationResultName+"."+RealmConstant._creatorIdProperty) ?
@@ -1506,12 +1508,16 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                                     entityKind, EntityStatisticsInfo.kindType.RelationKind, true, entityCount);
                         }else{
                             if(relationKindMetaDataMap.containsKey(entityKind)){
+                                ZonedDateTime createDate = relationKindMetaDataMap.get(entityKind).containsKey(RealmConstant._createDateProperty) ?
+                                                (ZonedDateTime) (relationKindMetaDataMap.get(entityKind).get(RealmConstant._createDateProperty)) : null;
+                                ZonedDateTime lastModifyDate = relationKindMetaDataMap.get(entityKind).containsKey(RealmConstant._lastModifyDateProperty) ?
+                                        (ZonedDateTime) (relationKindMetaDataMap.get(entityKind).get(RealmConstant._lastModifyDateProperty)) : null;
                                 currentEntityStatisticsInfo = new EntityStatisticsInfo(
                                         entityKind, EntityStatisticsInfo.kindType.RelationKind, false, entityCount,
                                         relationKindMetaDataMap.get(entityKind).get(RealmConstant._DescProperty).toString(),
                                         relationKindMetaDataMap.get(entityKind).get("RelationKindUID").toString(),
-                                        (ZonedDateTime) (relationKindMetaDataMap.get(entityKind).get(RealmConstant._createDateProperty)),
-                                        (ZonedDateTime) (relationKindMetaDataMap.get(entityKind).get(RealmConstant._lastModifyDateProperty)),
+                                        createDate,
+                                        lastModifyDate,
                                         relationKindMetaDataMap.get(entityKind).get(RealmConstant._creatorIdProperty).toString(),
                                         relationKindMetaDataMap.get(entityKind).get(RealmConstant._dataOriginProperty).toString()
                                 );
@@ -1526,12 +1532,16 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                     for(String currentKindName :allConceptionKindNameSet ){
                         if(!conceptionKindsNameWithDataList.contains(currentKindName)){
                             //当前 ConceptionKind 中无数据，需要手动添加信息
+                            ZonedDateTime createDate = relationKindMetaDataMap.get(currentKindName).containsKey(RealmConstant._createDateProperty) ?
+                                    (ZonedDateTime) (relationKindMetaDataMap.get(currentKindName).get(RealmConstant._createDateProperty)) : null;
+                            ZonedDateTime lastModifyDate = relationKindMetaDataMap.get(currentKindName).containsKey(RealmConstant._lastModifyDateProperty) ?
+                                    (ZonedDateTime) (relationKindMetaDataMap.get(currentKindName).get(RealmConstant._lastModifyDateProperty)) : null;
                             EntityStatisticsInfo currentEntityStatisticsInfo = new EntityStatisticsInfo(
                                     currentKindName, EntityStatisticsInfo.kindType.ConceptionKind, false, 0,
                                     relationKindMetaDataMap.get(currentKindName).get(RealmConstant._DescProperty).toString(),
                                     relationKindMetaDataMap.get(currentKindName).get("RelationKindUID").toString(),
-                                    (ZonedDateTime) (relationKindMetaDataMap.get(currentKindName).get(RealmConstant._createDateProperty)),
-                                    (ZonedDateTime) (relationKindMetaDataMap.get(currentKindName).get(RealmConstant._lastModifyDateProperty)),
+                                    createDate,
+                                    lastModifyDate,
                                     relationKindMetaDataMap.get(currentKindName).get(RealmConstant._creatorIdProperty).toString(),
                                     relationKindMetaDataMap.get(currentKindName).get(RealmConstant._dataOriginProperty).toString()
                             );
