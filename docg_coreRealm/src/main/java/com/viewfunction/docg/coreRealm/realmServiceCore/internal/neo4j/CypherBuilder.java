@@ -171,10 +171,10 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingAndReturn ongoingReadingAndReturn;
         switch (cypherFunctionType) {
             case COUNT:
-                ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.returning(Functions.count(m));
+                ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.returning(Cypher.count(m));
                 break;
             case ID:
-                ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.returning(Functions.id(m));
+                ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.returning(Functions2.id(m));
                 break;
             default:
                 ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.returning(m);
@@ -220,7 +220,7 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingAndReturn ongoingReadingAndReturn;
         switch (cypherFunctionType) {
             case COUNT:
-                ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.detachDelete(m).returning(Functions.count(m));
+                ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.detachDelete(m).returning(Cypher.count(m));
                 break;
             default:
                 ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.detachDelete(m).returning(m);
@@ -262,7 +262,7 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (propertyFunctionType) {
             case ID:
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(m).isEqualTo(Cypher.literalOf(propertyValue)));
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(m).isEqualTo(Cypher.literalOf(propertyValue)));
                 break;
             default:
         }
@@ -285,16 +285,16 @@ public class CypherBuilder {
                     break;
                 case EXISTS:
                     if (ongoingReadingWithWhere != null) {
-                        statement = ongoingReadingWithWhere.returning(Functions.exists(m.property(additionalPropertyName))).build();
+                        statement = ongoingReadingWithWhere.returning(Cypher.exists(m.property(additionalPropertyName))).build();
                     } else {
-                        statement = ongoingReadingWithoutWhere.returning(Functions.exists(m.property(additionalPropertyName))).build();
+                        statement = ongoingReadingWithoutWhere.returning(Cypher.exists(m.property(additionalPropertyName))).build();
                     }
                     break;
                 case LABEL:
                     if (ongoingReadingWithWhere != null) {
-                        statement = ongoingReadingWithWhere.returning(Functions.labels(m)).build();
+                        statement = ongoingReadingWithWhere.returning(Cypher.labels(m)).build();
                     } else {
-                        statement = ongoingReadingWithoutWhere.returning(Functions.labels(m)).build();
+                        statement = ongoingReadingWithoutWhere.returning(Cypher.labels(m)).build();
                     }
             }
         } else {
@@ -324,7 +324,7 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (propertyFunctionType) {
             case ID:
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(m).isEqualTo(Cypher.literalOf(propertyValue)));
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(m).isEqualTo(Cypher.literalOf(propertyValue)));
                 break;
             default:
         }
@@ -347,9 +347,9 @@ public class CypherBuilder {
                     break;
                 case EXISTS:
                     if (ongoingReadingWithWhere != null) {
-                        statement = ongoingReadingWithWhere.detachDelete(m).returning(Functions.exists(m.property(additionalPropertyName))).build();
+                        statement = ongoingReadingWithWhere.detachDelete(m).returning(Cypher.exists(m.property(additionalPropertyName))).build();
                     } else {
-                        statement = ongoingReadingWithoutWhere.detachDelete(m).returning(Functions.exists(m.property(additionalPropertyName))).build();
+                        statement = ongoingReadingWithoutWhere.detachDelete(m).returning(Cypher.exists(m.property(additionalPropertyName))).build();
                     }
             }
         } else {
@@ -380,7 +380,7 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (propertyFunctionType) {
             case ID:
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(m).in(Cypher.listOf(listLiteralValue)));
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(m).in(Cypher.listOf(listLiteralValue)));
                 break;
             default:
         }
@@ -401,7 +401,7 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (propertyFunctionType) {
             case ID:
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(m).isEqualTo(Cypher.literalOf(propertyValue)));
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(m).isEqualTo(Cypher.literalOf(propertyValue)));
                 break;
             default:
         }
@@ -428,7 +428,7 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (propertyFunctionType) {
             case ID:
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(r).isEqualTo(Cypher.literalOf(propertyValue)));
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(r).isEqualTo(Cypher.literalOf(propertyValue)));
                 break;
             default:
         }
@@ -453,7 +453,7 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (propertyFunctionType) {
             case ID:
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(m).isEqualTo(Cypher.literalOf(propertyValue)));
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(m).isEqualTo(Cypher.literalOf(propertyValue)));
                 break;
             default:
         }
@@ -506,7 +506,7 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (propertyFunctionType) {
             case ID:
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(m).isEqualTo(Cypher.literalOf(propertyValue)));
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(m).isEqualTo(Cypher.literalOf(propertyValue)));
                 break;
             default:
         }
@@ -532,7 +532,7 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (propertyFunctionType) {
             case ID:
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(r).isEqualTo(Cypher.literalOf(propertyValue)));
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(r).isEqualTo(Cypher.literalOf(propertyValue)));
                 break;
             default:
         }
@@ -585,7 +585,7 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (propertyFunctionType) {
             case ID:
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(m).isEqualTo(Cypher.literalOf(propertyValue)));
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(m).isEqualTo(Cypher.literalOf(propertyValue)));
                 break;
             default:
         }
@@ -613,7 +613,7 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (propertyFunctionType) {
             case ID:
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(r).isEqualTo(Cypher.literalOf(propertyValue)));
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(r).isEqualTo(Cypher.literalOf(propertyValue)));
                 break;
             default:
         }
@@ -653,7 +653,7 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (sourcePropertyFunctionType) {
             case ID:
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
                 break;
             default:
         }
@@ -714,7 +714,7 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (sourcePropertyFunctionType) {
             case ID:
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
                 break;
             default:
         }
@@ -752,9 +752,9 @@ public class CypherBuilder {
         switch (sourcePropertyFunctionType) {
             case ID:
                 if(sourcePropertyValue instanceof List){
-                    ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).in(Cypher.literalOf(sourcePropertyValue)));
+                    ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(sourceNode).in(Cypher.literalOf(sourcePropertyValue)));
                 }else{
-                    ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
+                    ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
                 }
                 break;
             default:
@@ -811,9 +811,9 @@ public class CypherBuilder {
         switch (sourcePropertyFunctionType) {
             case ID:
                 if(sourcePropertyValue instanceof List){
-                    ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).in(Cypher.literalOf(sourcePropertyValue)));
+                    ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(sourceNode).in(Cypher.literalOf(sourcePropertyValue)));
                 }else{
-                    ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
+                    ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
                 }
                 break;
             default:
@@ -1013,7 +1013,7 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (propertyFunctionType) {
             case ID:
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(relation).isEqualTo(Cypher.literalOf(propertyValue)));
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(relation).isEqualTo(Cypher.literalOf(propertyValue)));
                 break;
             default:
         }
@@ -1036,9 +1036,9 @@ public class CypherBuilder {
                     break;
                 case EXISTS:
                     if (ongoingReadingWithWhere != null) {
-                        statement = ongoingReadingWithWhere.delete(relation).returning(Functions.exists(relation.property(additionalPropertyName))).build();
+                        statement = ongoingReadingWithWhere.delete(relation).returning(Cypher.exists(relation.property(additionalPropertyName))).build();
                     } else {
-                        statement = ongoingReadingWithoutWhere.delete(relation).returning(Functions.exists(relation.property(additionalPropertyName))).build();
+                        statement = ongoingReadingWithoutWhere.delete(relation).returning(Cypher.exists(relation.property(additionalPropertyName))).build();
                     }
             }
         } else {
@@ -1070,7 +1070,7 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (propertyFunctionType) {
             case ID:
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(relation).isEqualTo(Cypher.literalOf(propertyValue)));
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(relation).isEqualTo(Cypher.literalOf(propertyValue)));
                 break;
             default:
         }
@@ -1093,16 +1093,16 @@ public class CypherBuilder {
                     break;
                 case EXISTS:
                     if (ongoingReadingWithWhere != null) {
-                        statement = ongoingReadingWithWhere.returningDistinct(Functions.exists(relation.property(additionalPropertyName))).build();
+                        statement = ongoingReadingWithWhere.returningDistinct(Cypher.exists(relation.property(additionalPropertyName))).build();
                     } else {
-                        statement = ongoingReadingWithoutWhere.returningDistinct(Functions.exists(relation.property(additionalPropertyName))).build();
+                        statement = ongoingReadingWithoutWhere.returningDistinct(Cypher.exists(relation.property(additionalPropertyName))).build();
                     }
                     break;
                 case LABEL:
                     if (ongoingReadingWithWhere != null) {
-                        statement = ongoingReadingWithWhere.returningDistinct(Functions.type(relation)).build();
+                        statement = ongoingReadingWithWhere.returningDistinct(Cypher.type(relation)).build();
                     } else {
-                        statement = ongoingReadingWithoutWhere.returningDistinct(Functions.type(relation)).build();
+                        statement = ongoingReadingWithoutWhere.returningDistinct(Cypher.type(relation)).build();
                     }
             }
         } else {
@@ -1135,7 +1135,7 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (propertyFunctionType) {
             case ID:
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(m).in(Cypher.listOf(listLiteralValue)));
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(m).in(Cypher.listOf(listLiteralValue)));
                 break;
             default:
         }
@@ -1160,7 +1160,7 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (sourcePropertyFunctionType) {
             case ID:
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
                 break;
             default:
         }
@@ -1297,7 +1297,7 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (sourcePropertyFunctionType) {
             case ID:
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
                 break;
             default:
         }
@@ -1346,10 +1346,10 @@ public class CypherBuilder {
         if (cypherFunctionType != null) {
             switch (cypherFunctionType) {
                 case COUNT:
-                    returnedFunctionValue = Functions.count(m);
+                    returnedFunctionValue = Cypher.count(m);
                     break;
                 case ID:
-                    returnedFunctionValue = Functions.id(m);
+                    returnedFunctionValue = Functions2.id(m);
                     break;
             }
         }
@@ -1505,10 +1505,10 @@ public class CypherBuilder {
             if (cypherFunctionType != null) {
                 switch (cypherFunctionType) {
                     case COUNT:
-                        returnedFunctionValue2 = Functions.count(m);
+                        returnedFunctionValue2 = Cypher.count(m);
                         break;
                     case ID:
-                        returnedFunctionValue2 = Functions.id(m);
+                        returnedFunctionValue2 = Functions2.id(m);
                         break;
                 }
             }
@@ -1544,7 +1544,7 @@ public class CypherBuilder {
             returnPropertyArray[i] = m.property(returnProperties.get(i).trim());
         }
 
-        returnPropertyArray[returnProperties.size()] = Functions.id(m);
+        returnPropertyArray[returnProperties.size()] = Functions2.id(m);
 
         if (queryParameters != null) {
             int skipRecordNumber = 0;
@@ -1720,7 +1720,7 @@ public class CypherBuilder {
         StatementBuilder.OngoingReadingWithWhere ongoingReadingWithWhere = null;
         switch (sourcePropertyFunctionType) {
             case ID:
-                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
+                ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
                 break;
             default:
         }
@@ -1738,7 +1738,7 @@ public class CypherBuilder {
                     statement = ongoingReadingWithWhere.returningDistinct(resultRelationship).build();
                     break;
                 case COUNT_NODE:
-                    statement = ongoingReadingWithWhere.returning(Functions.countDistinct(resultNodes)).build();
+                    statement = ongoingReadingWithWhere.returning(Cypher.countDistinct(resultNodes)).build();
                     break;
                 case COUNT_RELATION:
                     statement = ongoingReadingWithWhere.returningDistinct(Functions2.count(resultRelationship)).build();
@@ -1756,7 +1756,7 @@ public class CypherBuilder {
                     statement = ongoingReadingWithoutWhere.returningDistinct(resultRelationship).build();
                     break;
                 case COUNT_NODE:
-                    statement = ongoingReadingWithoutWhere.returning(Functions.countDistinct(resultNodes)).build();
+                    statement = ongoingReadingWithoutWhere.returning(Cypher.countDistinct(resultNodes)).build();
                     break;
                 case COUNT_RELATION:
                     statement = ongoingReadingWithoutWhere.returningDistinct(Functions2.count(resultRelationship)).build();
@@ -1843,9 +1843,9 @@ public class CypherBuilder {
         switch (sourcePropertyFunctionType) {
             case ID:
                 if(ongoingReadingWithWhere != null){
-                    ongoingReadingWithWhere = ongoingReadingWithWhere.and(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
+                    ongoingReadingWithWhere = ongoingReadingWithWhere.and(Functions2.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
                 }else{
-                    ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
+                    ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(sourceNode).isEqualTo(Cypher.literalOf(sourcePropertyValue)));
                 }
                 break;
             default:
@@ -1995,9 +1995,9 @@ public class CypherBuilder {
                     break;
                 case COUNT_NODE:
                     if(isDistinctMode){
-                        ongoingReadingAndReturn = ongoingReadingWithWhere.returning(Functions.countDistinct(resultNodes));
+                        ongoingReadingAndReturn = ongoingReadingWithWhere.returning(Cypher.countDistinct(resultNodes));
                     }else{
-                        ongoingReadingAndReturn = ongoingReadingWithWhere.returning(Functions.count(resultNodes));
+                        ongoingReadingAndReturn = ongoingReadingWithWhere.returning(Cypher.count(resultNodes));
                     }
                     break;
                 case COUNT_RELATION:
@@ -2029,9 +2029,9 @@ public class CypherBuilder {
                     break;
                 case COUNT_NODE:
                     if(isDistinctMode){
-                        ongoingReadingAndReturn = ongoingReadingWithoutWhere.returning(Functions.countDistinct(resultNodes));
+                        ongoingReadingAndReturn = ongoingReadingWithoutWhere.returning(Cypher.countDistinct(resultNodes));
                     }else{
-                        ongoingReadingAndReturn = ongoingReadingWithoutWhere.returning(Functions.count(resultNodes));
+                        ongoingReadingAndReturn = ongoingReadingWithoutWhere.returning(Cypher.count(resultNodes));
                     }
                     break;
                 case COUNT_RELATION:
@@ -2118,13 +2118,13 @@ public class CypherBuilder {
             switch (nodePropertyFunctionType) {
                 case ID:
                     if (sourceNodeProperty != null) {
-                        ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).isEqualTo(Cypher.literalOf(Long.parseLong(sourceNodeProperty))));
+                        ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(sourceNode).isEqualTo(Cypher.literalOf(Long.parseLong(sourceNodeProperty))));
                     }
                     if (targetNodeProperty != null) {
                         if (ongoingReadingWithWhere != null) {
-                            ongoingReadingWithWhere = ongoingReadingWithWhere.and(Functions.id(targetNode).isEqualTo(Cypher.literalOf(Long.parseLong(targetNodeProperty))));
+                            ongoingReadingWithWhere = ongoingReadingWithWhere.and(Functions2.id(targetNode).isEqualTo(Cypher.literalOf(Long.parseLong(targetNodeProperty))));
                         } else {
-                            ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(targetNode).isEqualTo(Cypher.literalOf(Long.parseLong(targetNodeProperty))));
+                            ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(targetNode).isEqualTo(Cypher.literalOf(Long.parseLong(targetNodeProperty))));
                         }
                     }
                     break;
@@ -2352,22 +2352,22 @@ public class CypherBuilder {
             StatisticalAndEvaluable.StatisticFunction currentStatisticFunction = currentNumericalAttributeStatisticCondition.getStatisticFunction();
             switch(currentStatisticFunction){
                 case AVG:
-                    currentStatisticFunctionValue = Functions.avg(m.property(currentKey));
+                    currentStatisticFunctionValue = Cypher.avg(m.property(currentKey));
                     break;
                 case MAX:
-                    currentStatisticFunctionValue = Functions.max(m.property(currentKey));
+                    currentStatisticFunctionValue = Cypher.max(m.property(currentKey));
                     break;
                 case MIN:
-                    currentStatisticFunctionValue = Functions.min(m.property(currentKey));
+                    currentStatisticFunctionValue = Cypher.min(m.property(currentKey));
                     break;
                 case SUM:
-                    currentStatisticFunctionValue = Functions.sum(m.property(currentKey));
+                    currentStatisticFunctionValue = Cypher.sum(m.property(currentKey));
                     break;
                 case COUNT:
-                    currentStatisticFunctionValue = Functions.count(m.property(currentKey));
+                    currentStatisticFunctionValue = Cypher.count(m.property(currentKey));
                     break;
                 case STDEV:
-                    currentStatisticFunctionValue = Functions.stDev(m.property(currentKey));
+                    currentStatisticFunctionValue = Cypher.stDev(m.property(currentKey));
                     break;
             }
             returnedFunctionValue[currentStatisticConditionIndex] = currentStatisticFunctionValue;
@@ -2442,22 +2442,22 @@ public class CypherBuilder {
             StatisticalAndEvaluable.StatisticFunction currentStatisticFunction = currentNumericalAttributeStatisticCondition.getStatisticFunction();
             switch(currentStatisticFunction){
                 case AVG:
-                    currentStatisticFunctionValue = Functions.avg(relations.property(currentKey));
+                    currentStatisticFunctionValue = Cypher.avg(relations.property(currentKey));
                     break;
                 case MAX:
-                    currentStatisticFunctionValue = Functions.max(relations.property(currentKey));
+                    currentStatisticFunctionValue = Cypher.max(relations.property(currentKey));
                     break;
                 case MIN:
-                    currentStatisticFunctionValue = Functions.min(relations.property(currentKey));
+                    currentStatisticFunctionValue = Cypher.min(relations.property(currentKey));
                     break;
                 case SUM:
-                    currentStatisticFunctionValue = Functions.sum(relations.property(currentKey));
+                    currentStatisticFunctionValue = Cypher.sum(relations.property(currentKey));
                     break;
                 case COUNT:
-                    currentStatisticFunctionValue = Functions.count(relations.property(currentKey));
+                    currentStatisticFunctionValue = Cypher.count(relations.property(currentKey));
                     break;
                 case STDEV:
-                    currentStatisticFunctionValue = Functions.stDev(relations.property(currentKey));
+                    currentStatisticFunctionValue = Cypher.stDev(relations.property(currentKey));
                     break;
             }
             returnedFunctionValue[currentStatisticConditionIndex] = currentStatisticFunctionValue;
@@ -2761,7 +2761,7 @@ public class CypherBuilder {
                 }
             } else {
                 if(originalConceptionEntitiesUIDList != null){
-                    ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).in(Cypher.literalOf(originalConceptionEntitiesUIDList)))
+                    ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(Functions2.id(sourceNode).in(Cypher.literalOf(originalConceptionEntitiesUIDList)))
                             .and(CommonOperationUtil.getQueryCondition(resultNodes, defaultFilteringItem));
                 }else{
                     ongoingReadingWithWhere = ongoingReadingWithoutWhere.where(CommonOperationUtil.getQueryCondition(resultNodes, defaultFilteringItem));
@@ -2805,7 +2805,7 @@ public class CypherBuilder {
             }
         }else{
             if(originalConceptionEntitiesUIDList != null){
-                statement = ongoingReadingWithoutWhere.where(Functions.id(sourceNode).in(Cypher.literalOf(originalConceptionEntitiesUIDList)))
+                statement = ongoingReadingWithoutWhere.where(Functions2.id(sourceNode).in(Cypher.literalOf(originalConceptionEntitiesUIDList)))
                         .returning(resultNodes).build();
             }else{
                 statement = ongoingReadingWithoutWhere.returning(resultNodes).build();
@@ -2833,9 +2833,9 @@ public class CypherBuilder {
         for(int i = 0; i < returnProperties.size(); i++){
             returnPropertyArray[i] = m.property(returnProperties.get(i).trim());
         }
-        returnPropertyArray[returnProperties.size()] = Functions.id(m);
+        returnPropertyArray[returnProperties.size()] = Functions2.id(m);
 
-        Statement statement = Cypher.match(m).where(Functions.id(m).in(Cypher.literalOf(nodeIdValueList))).returningDistinct(returnPropertyArray).build();
+        Statement statement = Cypher.match(m).where(Functions2.id(m).in(Cypher.literalOf(nodeIdValueList))).returningDistinct(returnPropertyArray).build();
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
@@ -2850,7 +2850,7 @@ public class CypherBuilder {
         Node targetNode = Cypher.anyNode();
         Relationship r =  sourceNode.relationshipBetween(targetNode).named(operationResultName);;
 
-        Statement statement = Cypher.match(r).where(Functions.id(r).in(Cypher.literalOf(nodeIdValueList))).returningDistinct(r).build();
+        Statement statement = Cypher.match(r).where(Functions2.id(r).in(Cypher.literalOf(nodeIdValueList))).returningDistinct(r).build();
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
@@ -2971,7 +2971,7 @@ public class CypherBuilder {
                 idx ++;
             }
             Statement statement = Cypher.match(sourceNode).set(propertyOperationArray)
-                    .returning(Functions.count(sourceNode))
+                    .returning(Cypher.count(sourceNode))
                     .build();
             String rel = cypherRenderer.render(statement);
             logger.debug("Generated Cypher Statement: {}", rel);

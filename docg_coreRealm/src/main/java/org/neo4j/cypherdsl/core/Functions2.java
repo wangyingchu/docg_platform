@@ -1,9 +1,10 @@
 package org.neo4j.cypherdsl.core;
 
-import static org.apiguardian.api.API.Status.*;
-
 import org.apiguardian.api.API;
+import org.jetbrains.annotations.NotNull;
 import org.neo4j.cypherdsl.core.utils.Assertions;
+
+import static org.apiguardian.api.API.Status.EXPERIMENTAL;
 
 @API(status = EXPERIMENTAL, since = "1.0")
 public final class Functions2 {
@@ -147,6 +148,14 @@ public final class Functions2 {
             }
         };
         return FunctionInvocation.create(countFunctionDefinition,expression);
+    }
+
+    public static @NotNull FunctionInvocation id(@NotNull Node node) {
+        return Functions.id(node);
+    }
+
+    public static @NotNull FunctionInvocation id(@NotNull Relationship relationship) {
+        return Functions.id(relationship);
     }
 
     private Functions2() {}

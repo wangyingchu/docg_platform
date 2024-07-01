@@ -740,17 +740,17 @@ public class CommonOperationUtil {
             String uidValue = currentFilteringItem.getUidValue();
             if(filteringItem.isReversedCondition()){
                 if(targetPropertyContainer instanceof Node){
-                    return Functions.id((Node)targetPropertyContainer).isNotEqualTo(Cypher.literalOf(Long.parseLong(uidValue)));
+                    return Functions2.id((Node)targetPropertyContainer).isNotEqualTo(Cypher.literalOf(Long.parseLong(uidValue)));
                 }
                 if(targetPropertyContainer instanceof Relationship){
-                    return Functions.id((Relationship)targetPropertyContainer).isNotEqualTo(Cypher.literalOf(Long.parseLong(uidValue)));
+                    return Functions2.id((Relationship)targetPropertyContainer).isNotEqualTo(Cypher.literalOf(Long.parseLong(uidValue)));
                 }
             }else{
                 if(targetPropertyContainer instanceof Node){
-                    return Functions.id((Node)targetPropertyContainer).isEqualTo(Cypher.literalOf(Long.parseLong(uidValue)));
+                    return Functions2.id((Node)targetPropertyContainer).isEqualTo(Cypher.literalOf(Long.parseLong(uidValue)));
                 }
                 if(targetPropertyContainer instanceof Relationship){
-                    return Functions.id((Relationship)targetPropertyContainer).isEqualTo(Cypher.literalOf(Long.parseLong(uidValue)));
+                    return Functions2.id((Relationship)targetPropertyContainer).isEqualTo(Cypher.literalOf(Long.parseLong(uidValue)));
                 }
             }
         }
@@ -763,9 +763,9 @@ public class CommonOperationUtil {
             }
             Literal[] listLiteralValue = generateListLiteralValue(uidsValueList);
             if(filteringItem.isReversedCondition()){
-                return Functions.id((Node)targetPropertyContainer).in(Cypher.listOf(listLiteralValue)).not();
+                return Functions2.id((Node)targetPropertyContainer).in(Cypher.listOf(listLiteralValue)).not();
             }else{
-                return Functions.id((Node)targetPropertyContainer).in(Cypher.listOf(listLiteralValue));
+                return Functions2.id((Node)targetPropertyContainer).in(Cypher.listOf(listLiteralValue));
             }
         }
         return null;
