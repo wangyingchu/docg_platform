@@ -192,7 +192,9 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
-            String modifyConceptionEntityLabelCQL = "MATCH (n:`"+originalConceptionKindName+"`) SET n:`"+newConceptionKindName+"` REMOVE n:`"+originalConceptionKindName+"`";
+            //https://neo4j.com/labs/apoc/4.1/overview/apoc.periodic/apoc.periodic.iterate/
+            String modifyConceptionEntityLabelCQL =
+                    "CALL apoc.periodic.iterate(\"MATCH (n:`"+originalConceptionKindName+"`) SET n:`"+newConceptionKindName+"` REMOVE n:`"+originalConceptionKindName+"`\",\"\",{batchSize:10000,parallel:true})";
             logger.debug("Generated Cypher Statement: {}", modifyConceptionEntityLabelCQL);
             DataTransformer dataTransformer = new DataTransformer() {
                 @Override
