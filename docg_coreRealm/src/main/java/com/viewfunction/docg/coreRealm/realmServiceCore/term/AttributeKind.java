@@ -66,4 +66,11 @@ public interface AttributeKind extends MetaConfigItemFeatureSupportable, MetaAtt
      * @return 概念类型对象列表
      */
     public List<ConceptionKind> getContainerConceptionKinds();
+
+    /**
+     * 获取所有通过属性视图类型中转而包含当前属性类型的关系类型对象
+     *
+     * @return 关系类型对象列表
+     */
+    public List<RelationKind> getContainerRelationKinds();
 }

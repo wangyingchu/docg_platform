@@ -2,17 +2,11 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListAttributesViewKindTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionKindTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleAttributeValueTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JAttributeKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
@@ -198,6 +192,28 @@ public class Neo4JAttributeKindImpl implements Neo4JAttributeKind {
             GetListConceptionKindTransformer getListConceptionKindTransformer = new GetListConceptionKindTransformer(this.coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object conceptionKindsRes = workingGraphOperationExecutor.executeWrite(getListConceptionKindTransformer,conceptionKindListQuery);
             return conceptionKindsRes != null ? (List<ConceptionKind>) conceptionKindsRes : null;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public List<RelationKind> getContainerRelationKinds() {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            /*
+            "MATCH (attributeKind:DOCG_AttributeKind)<-[DOCG_ViewContainsAttributeKindIs]- " +
+            "(attributesViewKind:DOCG_AttributesViewKind)<-[DOCG_RelationContainsViewKindIs]-(relationKind:DOCG_RelationKind) " +
+            "WHERE id(attributeKind) = 40710969 RETURN DISTINCT relationKind as operationResult LIMIT 1000000";
+            */
+            String conceptionKindListQuery = "MATCH (attributeKind:"+RealmConstant.AttributeKindClass+")<-["+RealmConstant.AttributesViewKind_AttributeKindRelationClass+"]- " +
+                    "(attributesViewKind:"+RealmConstant.AttributesViewKindClass+")<-["+RealmConstant.RelationKind_AttributesViewKindRelationClass+"]-(relationKind:"+RealmConstant.RelationKindClass+") " +
+                    "WHERE id(attributeKind) = "+this.attributeKindUID+" RETURN DISTINCT relationKind as "+CypherBuilder.operationResultName+" LIMIT 1000000";
+            logger.debug("Generated Cypher Statement: {}", conceptionKindListQuery);
+
+            GetListRelationKindTransformer getListRelationKindTransformer = new GetListRelationKindTransformer(this.coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object relationKindsRes = workingGraphOperationExecutor.executeWrite(getListRelationKindTransformer,conceptionKindListQuery);
+            return relationKindsRes != null ? (List<RelationKind>) relationKindsRes : null;
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }

@@ -356,6 +356,22 @@ public class Neo4JAttributesViewKindImpl implements Neo4JAttributesViewKind {
         }
     }
 
+    @Override
+    public List<RelationKind> getContainerRelationKinds() {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.matchRelatedNodesFromSpecialStartNodes(
+                    CypherBuilder.CypherFunctionType.ID, Long.parseLong(attributesViewKindUID),
+                    RealmConstant.RelationKindClass,RealmConstant.RelationKind_AttributesViewKindRelationClass,RelationDirection.FROM, null);
+
+            GetListRelationKindTransformer getListRelationKindTransformer = new GetListRelationKindTransformer(this.coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object relationKindsRes = workingGraphOperationExecutor.executeWrite(getListRelationKindTransformer,queryCql);
+            return relationKindsRes != null ? (List<RelationKind>) relationKindsRes : null;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
     //internal graphOperationExecutor management logic
     private GraphOperationExecutorHelper graphOperationExecutorHelper;
 

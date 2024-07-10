@@ -17,6 +17,7 @@ public class AttributesViewKindTest {
 
     private static String testRealmName = "UNIT_TEST_Realm";
     private static String testConceptionKindName = "TestConceptionKindB";
+    private static String testRelationKindName = "TestRelationKindC";
 
     @BeforeTest
     public void initData(){
@@ -114,6 +115,13 @@ public class AttributesViewKindTest {
         removeAttributeTypeRes = targetAttributesViewKind.detachAttributeKind(attributeKind03.getAttributeKindUID());
         Assert.assertFalse(removeAttributeTypeRes);
 
+        List<ConceptionKind> clist0 = attributeKind02.getContainerConceptionKinds();
+        List<RelationKind> rlist0 = attributeKind02.getContainerRelationKinds();
+        Assert.assertNotNull(clist0);
+        Assert.assertEquals(clist0.size(),0);
+        Assert.assertNotNull(rlist0);
+        Assert.assertEquals(rlist0.size(),0);
+
         List<ConceptionKind> containerConceptionKindList = targetAttributesViewKind.getContainerConceptionKinds();
         Assert.assertNotNull(containerConceptionKindList);
         Assert.assertEquals(containerConceptionKindList.size(),0);
@@ -133,6 +141,10 @@ public class AttributesViewKindTest {
         boolean attachAttributesViewKindRes = _ConceptionKind01.attachAttributesViewKind(targetAttributesViewKind.getAttributesViewKindUID());
         Assert.assertTrue(attachAttributesViewKindRes);
 
+        clist0 = attributeKind02.getContainerConceptionKinds();
+        Assert.assertNotNull(clist0);
+        Assert.assertEquals(clist0.size(),1);
+
         containerConceptionKindList = targetAttributesViewKind.getContainerConceptionKinds();
         Assert.assertNotNull(containerConceptionKindList);
         Assert.assertEquals(containerConceptionKindList.size(),1);
@@ -145,6 +157,50 @@ public class AttributesViewKindTest {
         containerConceptionKindList = targetAttributesViewKind.getContainerConceptionKinds();
         Assert.assertNotNull(containerConceptionKindList);
         Assert.assertEquals(containerConceptionKindList.size(),0);
+
+        clist0 = attributeKind02.getContainerConceptionKinds();
+        Assert.assertNotNull(clist0);
+        Assert.assertEquals(clist0.size(),0);
+
+        List<RelationKind> containerRelationKindList = targetAttributesViewKind.getContainerRelationKinds();
+        Assert.assertNotNull(containerRelationKindList);
+        Assert.assertEquals(containerRelationKindList.size(),0);
+
+        RelationKind _RelationKind01 = coreRealm.getRelationKind(testRelationKindName);
+        if(_RelationKind01 != null){
+            coreRealm.removeRelationKind(testRelationKindName,true);
+        }
+        _RelationKind01 = coreRealm.getRelationKind(testRelationKindName);
+        if(_RelationKind01 == null){
+            _RelationKind01 = coreRealm.createRelationKind(testRelationKindName,"TestRelationKindBDesc+中文描述");
+            Assert.assertNotNull(_RelationKind01);
+            Assert.assertEquals(_RelationKind01.getRelationKindName(),testRelationKindName);
+            Assert.assertEquals(_RelationKind01.getRelationKindDesc(),"TestRelationKindBDesc+中文描述");
+        }
+
+        boolean attachAttributesViewKindRes2 = _RelationKind01.attachAttributesViewKind(targetAttributesViewKind.getAttributesViewKindUID());
+        Assert.assertTrue(attachAttributesViewKindRes2);
+
+        rlist0 = attributeKind02.getContainerRelationKinds();
+        Assert.assertNotNull(rlist0);
+        Assert.assertEquals(rlist0.size(),1);
+
+        containerRelationKindList = targetAttributesViewKind.getContainerRelationKinds();
+        Assert.assertNotNull(containerRelationKindList);
+        Assert.assertEquals(containerRelationKindList.size(),1);
+        Assert.assertEquals(containerRelationKindList.get(0).getRelationKindName(),testRelationKindName);
+        Assert.assertEquals(containerRelationKindList.get(0).getRelationKindDesc(),"TestRelationKindBDesc+中文描述");
+
+        boolean detachAttributesViewKindRes2 = _RelationKind01.detachAttributesViewKind(targetAttributesViewKind.getAttributesViewKindUID());
+        Assert.assertTrue(detachAttributesViewKindRes2);
+
+        containerRelationKindList = targetAttributesViewKind.getContainerRelationKinds();
+        Assert.assertNotNull(containerRelationKindList);
+        Assert.assertEquals(containerRelationKindList.size(),0);
+
+        rlist0 = attributeKind02.getContainerRelationKinds();
+        Assert.assertNotNull(rlist0);
+        Assert.assertEquals(rlist0.size(),0);
 
         targetAttributesViewKind.detachAttributeKind(attributeKind02.getAttributeKindUID());
         targetAttributesViewKind.detachAttributeKind(attributeKind03.getAttributeKindUID());

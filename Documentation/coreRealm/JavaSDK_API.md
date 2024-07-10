@@ -1592,7 +1592,14 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @return 概念类型对象列表
      */
-    public List<ConceptionKind> getContainerConceptionKinds();   
+    public List<ConceptionKind> getContainerConceptionKinds();
+
+    /**
+     * 获取所有包含当前属性视图类型的关系类型对象
+     *
+     * @return 关系类型对象列表
+     */
+    public List<RelationKind> getContainerRelationKinds();
 ```
 ###### ↳ AttributeKind
 
@@ -1656,6 +1663,13 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 概念类型对象列表
      */
     public List<ConceptionKind> getContainerConceptionKinds();
+
+    /**
+     * 获取所有通过属性视图类型中转而包含当前属性类型的关系类型对象
+     *
+     * @return 关系类型对象列表
+     */
+    public List<RelationKind> getContainerRelationKinds();
 ```
 
 ###### ↳ RelationAttachKind
