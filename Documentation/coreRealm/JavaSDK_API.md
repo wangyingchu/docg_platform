@@ -1234,6 +1234,16 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public EntitiesOperationResult purgeAllRelationEntities() throws CoreRealmServiceRuntimeException;  
 
     /**
+     * 查询符合过滤条件的当前概念类型的关系实体对象,并根据输入的 SINGLE_VALUE 数据存储结构的属性视图类型列表，合并其中包含的属性类型返回相应的属性值
+     *
+     * @param attributesViewKindNames List<String> 属性视图类型列表
+     * @param exploreParameters QueryParameters 查询过滤条件
+     *
+     * @return 关系实体属性查询结果集
+     */
+    public RelationEntitiesAttributesRetrieveResult getEntityAttributesByViewKinds(List<String> attributesViewKindNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException;
+
+    /**
      * 查询符合过滤条件的当前关系类型的关系实体对象,并根据输入的属性类型返回相应的属性值
      *
      * @param attributeNames List<String> 属性类型列表

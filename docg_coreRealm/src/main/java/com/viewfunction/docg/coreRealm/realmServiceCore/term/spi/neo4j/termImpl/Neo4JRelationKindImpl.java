@@ -225,6 +225,29 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
     }
 
     @Override
+    public RelationEntitiesAttributesRetrieveResult getEntityAttributesByViewKinds(List<String> attributesViewKindNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException {
+        if(attributesViewKindNames != null && attributesViewKindNames.size()>0){
+            List<AttributesViewKind> resultRealAttributesViewKindList = new ArrayList<>();
+            for(String currentTargetViewKindName:attributesViewKindNames){
+                List<AttributesViewKind> currentAttributesViewKinds = getContainsAttributesViewKinds(currentTargetViewKindName);
+                if(currentAttributesViewKinds != null){
+                    resultRealAttributesViewKindList.addAll(currentAttributesViewKinds);
+                }
+            }
+            List<AttributeKind> allResultTargetAttributeKindList = new ArrayList<>();
+            for(AttributesViewKind resultAttributesViewKind:resultRealAttributesViewKindList){
+                List<AttributeKind> currentAttributeKinds = resultAttributesViewKind.getContainsAttributeKinds();
+                if(currentAttributeKinds != null){
+                    allResultTargetAttributeKindList.addAll(currentAttributeKinds);
+                }
+            }
+            List<String> targetAttributeKindNameList = filterSingleValueAttributeKindNames(allResultTargetAttributeKindList);
+            return getEntityAttributesByAttributeNames(targetAttributeKindNameList,exploreParameters);
+        }
+        return null;
+    }
+
+    @Override
     public RelationEntitiesAttributesRetrieveResult getEntityAttributesByAttributeNames(List<String> attributeNames, QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException {
         if(attributeNames != null && attributeNames.size()>0){
             CommonRelationEntitiesAttributesRetrieveResultImpl commonRelationEntitiesAttributesRetrieveResultImpl =
@@ -1015,6 +1038,23 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
         GetListAttributeKindTransformer getListAttributeKindTransformer = new GetListAttributeKindTransformer(RealmConstant.AttributeKindClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
         Object attributeKindsRes = workingGraphOperationExecutor.executeWrite(getListAttributeKindTransformer,queryCql);
         return attributeKindsRes != null ? (List<AttributeKind>) attributeKindsRes : null;
+    }
+
+    private List<String> filterSingleValueAttributeKindNames(List<AttributeKind> targetAttributeKindList){
+        List<String> singleValueAttributeKindNames = new ArrayList<>();
+        List<AttributeKind> singleValueAttributesKindsList = getContainsSingleValueAttributeKinds();
+
+        List<String> singleValueAttributesKindNamesList = new ArrayList<>();
+        for(AttributeKind currentAttributeKind:singleValueAttributesKindsList){
+            singleValueAttributesKindNamesList.add(currentAttributeKind.getAttributeKindName());
+        }
+        for(AttributeKind currentTargetAttributeKind:targetAttributeKindList){
+            String currentAttributeKindName = currentTargetAttributeKind.getAttributeKindName();
+            if(singleValueAttributesKindNamesList.contains(currentAttributeKindName)){
+                singleValueAttributeKindNames.add(currentAttributeKindName);
+            }
+        }
+        return singleValueAttributeKindNames;
     }
 
     //internal graphOperationExecutor management logic
