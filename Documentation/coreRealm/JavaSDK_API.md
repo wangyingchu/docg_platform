@@ -1387,6 +1387,56 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 操作执行状况的统计结果
      */
     public EntitiesOperationStatistics duplicateEntityAttribute(String originalAttributeName, String newAttributeName) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 为当前关系类型附加属性视图类型
+     *
+     * @param attributesViewKindUID String 需要附加的属性视图类型唯一ID
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean attachAttributesViewKind(String attributesViewKindUID) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取当前关系类型附加的全部属性视图类型
+     *
+     * @return 属性视图类型对象列表
+     */
+    public List<AttributesViewKind> getContainsAttributesViewKinds();
+
+    /**
+     * 获取当前关系类型附加的全部符合名称查询条件的属性视图类型
+     *
+     * @param attributesViewKindName String 需要返回的属性视图类型名称，本查询的数值匹配规则为 Equal 匹配
+     *
+     * @return 属性视图类型对象列表
+     */
+    public List<AttributesViewKind> getContainsAttributesViewKinds(String attributesViewKindName);
+
+    /**
+     * 从当前关系类型上移除已经附加的属性视图类型
+     *
+     * @param attributesViewKindUID String 需要移除的属性视图类型唯一ID
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean detachAttributesViewKind(String attributesViewKindUID) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取当前关系类型包含的全部 SINGLE_VALUE 数据存储结构的属性视图类型中包含的属性类型
+     *
+     * @return 属性类型对象列表
+     */
+    public List<AttributeKind> getContainsSingleValueAttributeKinds();
+
+    /**
+     * 获取当前关系类型包含的全部符合名称查询条件的 SINGLE_VALUE 数据存储结构的属性视图类型中包含的属性类型
+     *
+     * @param attributeKindName String 需要返回的属性类型名称，本查询的数值匹配规则为 Equal 匹配
+     *
+     * @return 属性类型对象列表
+     */
+    public List<AttributeKind> getContainsSingleValueAttributeKinds(String attributeKindName);
 ```
 ###### ↳ AttributesViewKind
 ---

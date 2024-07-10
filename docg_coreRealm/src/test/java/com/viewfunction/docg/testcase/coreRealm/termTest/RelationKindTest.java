@@ -237,6 +237,105 @@ public class RelationKindTest {
         Assert.assertEquals(_RelationKind01.getRelationKindDesc(),"TestRelationKindADesc+中文描述UPD");
         Assert.assertEquals(coreRealm.getRelationKind("RelationKind0001ForTest").getRelationKindDesc(),"TestRelationKindADesc+中文描述UPD");
 
+        List<AttributesViewKind> containedAttributesViewKindsList = _RelationKind01.getContainsAttributesViewKinds();
+        Assert.assertNotNull(containedAttributesViewKindsList);
+        Assert.assertEquals(containedAttributesViewKindsList.size(),0);
+
+        AttributesViewKind attributesViewKindToAdd01 = coreRealm.createAttributesViewKind("targetAttributesViewKindToAdd01_forRel","targetAttributesViewKindToAdd01Desc_forRel",null);
+
+        boolean addAttributesViewKindResult = _RelationKind01.attachAttributesViewKind(attributesViewKindToAdd01.getAttributesViewKindUID());
+        Assert.assertTrue(addAttributesViewKindResult);
+        addAttributesViewKindResult = _RelationKind01.attachAttributesViewKind(attributesViewKindToAdd01.getAttributesViewKindUID());
+        Assert.assertTrue(addAttributesViewKindResult);
+        addAttributesViewKindResult = _RelationKind01.attachAttributesViewKind(null);
+        Assert.assertFalse(addAttributesViewKindResult);
+
+        boolean exceptionShouldBeCaught = false;
+        try{
+            _RelationKind01.attachAttributesViewKind("445566778");
+        }catch(CoreRealmServiceRuntimeException e){
+            exceptionShouldBeCaught = true;
+        }
+        Assert.assertTrue(exceptionShouldBeCaught);
+
+        containedAttributesViewKindsList = _RelationKind01.getContainsAttributesViewKinds();
+        Assert.assertNotNull(containedAttributesViewKindsList);
+        Assert.assertEquals(containedAttributesViewKindsList.size(),1);
+
+        Assert.assertEquals(containedAttributesViewKindsList.get(0).getAttributesViewKindName(),"targetAttributesViewKindToAdd01_forRel");
+        Assert.assertEquals(containedAttributesViewKindsList.get(0).getAttributesViewKindDesc(),"targetAttributesViewKindToAdd01Desc_forRel");
+        Assert.assertEquals(containedAttributesViewKindsList.get(0).getAttributesViewKindUID(),attributesViewKindToAdd01.getAttributesViewKindUID());
+        Assert.assertEquals(containedAttributesViewKindsList.get(0).getAttributesViewKindDataForm(), AttributesViewKind.AttributesViewKindDataForm.SINGLE_VALUE);
+
+        AttributesViewKind attributesViewKindToAdd02 = coreRealm.createAttributesViewKind("targetAttributesViewKindToAdd02_forRel",
+                "targetAttributesViewKindToAdd02Desc",AttributesViewKind.AttributesViewKindDataForm.LIST_VALUE);
+        addAttributesViewKindResult = _RelationKind01.attachAttributesViewKind(attributesViewKindToAdd02.getAttributesViewKindUID());
+        Assert.assertTrue(addAttributesViewKindResult);
+
+        containedAttributesViewKindsList = _RelationKind01.getContainsAttributesViewKinds();
+        Assert.assertNotNull(containedAttributesViewKindsList);
+        Assert.assertEquals(containedAttributesViewKindsList.size(),2);
+
+        List<AttributesViewKind> targetAttributesViewKindList = _RelationKind01.getContainsAttributesViewKinds("targetAttributesViewKindToAdd02_forRel");
+        Assert.assertNotNull(targetAttributesViewKindList);
+        Assert.assertNotNull(targetAttributesViewKindList.get(0));
+        Assert.assertEquals(targetAttributesViewKindList.get(0).getAttributesViewKindName(),"targetAttributesViewKindToAdd02_forRel");
+        Assert.assertEquals(targetAttributesViewKindList.get(0).getAttributesViewKindDesc(),"targetAttributesViewKindToAdd02Desc");
+        Assert.assertEquals(targetAttributesViewKindList.get(0).getAttributesViewKindUID(),attributesViewKindToAdd02.getAttributesViewKindUID());
+        Assert.assertEquals(targetAttributesViewKindList.get(0).getAttributesViewKindDataForm(), AttributesViewKind.AttributesViewKindDataForm.LIST_VALUE);
+
+        List<AttributeKind> attributeKindList = _RelationKind01.getContainsSingleValueAttributeKinds();
+        Assert.assertNotNull(attributeKindList);
+        Assert.assertEquals(attributeKindList.size(),0);
+
+        AttributeKind attributeKind01 = coreRealm.createAttributeKind("attributeKind01","attributeKind01Desc", AttributeDataType.BOOLEAN);
+        Assert.assertNotNull(attributeKind01);
+
+        boolean attachAttributeKindRes = attributesViewKindToAdd02.attachAttributeKind(attributeKind01.getAttributeKindUID());
+        Assert.assertTrue(attachAttributeKindRes);
+
+        attributeKindList = _RelationKind01.getContainsSingleValueAttributeKinds();
+        Assert.assertNotNull(attributeKindList);
+        Assert.assertEquals(attributeKindList.size(),0);
+
+        AttributeKind attributeKind02 = coreRealm.createAttributeKind("attributeKind02","attributeKind02Desc", AttributeDataType.TIMESTAMP);
+        Assert.assertNotNull(attributeKind02);
+
+        attachAttributeKindRes = attributesViewKindToAdd01.attachAttributeKind(attributeKind02.getAttributeKindUID());
+        Assert.assertTrue(attachAttributeKindRes);
+
+        attributeKindList = _RelationKind01.getContainsSingleValueAttributeKinds();
+        Assert.assertNotNull(attributeKindList);
+        Assert.assertEquals(attributeKindList.size(),1);
+        Assert.assertNotNull(attributeKindList.get(0).getAttributeKindUID());
+        Assert.assertEquals(attributeKindList.get(0).getAttributeKindName(),"attributeKind02");
+        Assert.assertEquals(attributeKindList.get(0).getAttributeKindDesc(),"attributeKind02Desc");
+        Assert.assertEquals(attributeKindList.get(0).getAttributeDataType(),AttributeDataType.TIMESTAMP);
+
+        attributeKindList = _RelationKind01.getContainsSingleValueAttributeKinds("attributeKind02");
+        Assert.assertNotNull(attributeKindList);
+        Assert.assertEquals(attributeKindList.size(),1);
+        Assert.assertNotNull(attributeKindList.get(0).getAttributeKindUID());
+        Assert.assertEquals(attributeKindList.get(0).getAttributeKindName(),"attributeKind02");
+        Assert.assertEquals(attributeKindList.get(0).getAttributeKindDesc(),"attributeKind02Desc");
+        Assert.assertEquals(attributeKindList.get(0).getAttributeDataType(),AttributeDataType.TIMESTAMP);
+
+        attributeKindList = _RelationKind01.getContainsSingleValueAttributeKinds("attributeKind02+NotExist");
+        Assert.assertNotNull(attributeKindList);
+        Assert.assertEquals(attributeKindList.size(),0);
+
+        targetAttributesViewKindList = _RelationKind01.getContainsAttributesViewKinds("targetAttributesViewKindNotExist");
+        Assert.assertEquals(targetAttributesViewKindList.size(),0);
+
+        targetAttributesViewKindList = _RelationKind01.getContainsAttributesViewKinds("targetAttributesViewKindToAdd02_forRel");
+        boolean removeViewKindResult = _RelationKind01.detachAttributesViewKind(targetAttributesViewKindList.get(0).getAttributesViewKindUID());
+        Assert.assertTrue(removeViewKindResult);
+        removeViewKindResult = _RelationKind01.detachAttributesViewKind(targetAttributesViewKindList.get(0).getAttributesViewKindUID());
+        Assert.assertFalse(removeViewKindResult);
+
+        targetAttributesViewKindList = _RelationKind01.getContainsAttributesViewKinds("targetAttributesViewKindToAdd02_forRel");
+        Assert.assertEquals(targetAttributesViewKindList.size(),0);
+
         coreRealm.closeGlobalSession();
     }
 }
