@@ -347,6 +347,7 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      */
     public ConceptionEntitiesRetrieveResult getEntitiesByDirectRelations(String relationKind,RelationDirection
             relationDirection,String aimConceptionKind,QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
+
     /**
      * 根据采样率获取部分概念实体数据并统计其中包含的属性分布统计信息
      *
