@@ -12,7 +12,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <spark.version>3.5.1</spark.version>
-        <flink.version>1.17.1</flink.version>
+        <flink.version>1.20.0</flink.version>
         <datasyslab.geotools.version>1.5.1-28.2</datasyslab.geotools.version>
         <geotools.version>26.4</geotools.version>
         <sedona.version>1.6.0</sedona.version>
