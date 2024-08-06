@@ -15,7 +15,7 @@
         <flink.version>1.17.1</flink.version>
         <datasyslab.geotools.version>1.5.1-28.2</datasyslab.geotools.version>
         <geotools.version>26.4</geotools.version>
-        <sedona.version>1.5.1</sedona.version>
+        <sedona.version>1.6.0</sedona.version>
         <akka.version>2.7.0</akka.version>
     </properties>
 
@@ -73,27 +73,39 @@
         </dependency>
         -->
 
+        <!-- https://mvnrepository.com/artifact/org.apache.sedona/sedona-common -->
+        <dependency>
+            <groupId>org.apache.sedona</groupId>
+            <artifactId>sedona-common</artifactId>
+            <version>${sedona.version}</version>
+        </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.apache.sedona/sedona-spark-common-3.5 -->
+        <dependency>
+            <groupId>org.apache.sedona</groupId>
+            <artifactId>sedona-spark-common-3.5_2.12</artifactId>
+            <version>1.6.0</version>
+        </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.apache.sedona/sedona-sql-3.4 -->
+        <dependency>
+            <groupId>org.apache.sedona</groupId>
+            <artifactId>sedona-sql-3.4_2.12</artifactId>
+            <version>1.4.1</version>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.sedona</groupId>
             <artifactId>sedona-spark-shaded-3.5_2.12</artifactId>
-            <version>1.5.1</version>
+            <version>${sedona.version}</version>
         </dependency>
-        <!-- Optional: https://mvnrepository.com/artifact/org.datasyslab/geotools-wrapper -->
-        <!-- https://mvnrepository.com/artifact/org.datasyslab/geotools-wrapper -->
+        <!-- Optional: https://mvnrepository.com/artifact/org.datasyslab/geotools-wrapper
         <dependency>
             <groupId>org.datasyslab</groupId>
             <artifactId>geotools-wrapper</artifactId>
-            <version>1.5.1-28.2</version>
+            <version>1.6.0-28.2</version>
         </dependency>
-
-
-
-
-
-
+        -->
 
         <!-- https://mvnrepository.com/artifact/org.locationtech.jts/jts-core -->
         <dependency>
@@ -141,6 +153,28 @@
             <artifactId>akka-cluster-tools_2.12</artifactId>
             <version>${akka.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor-typed_2.12</artifactId>
+            <version>${akka.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-cluster-typed_2.12</artifactId>
+            <version>${akka.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-serialization-jackson_2.12</artifactId>
+            <version>${akka.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.belerweb</groupId>
+            <artifactId>pinyin4j</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.twitter/chill-akka -->
         <dependency>
             <groupId>com.twitter</groupId>
