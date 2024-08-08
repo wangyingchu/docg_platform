@@ -13,13 +13,16 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityVa
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonConceptionEntitiesAttributesRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.internal.ignite.exception.ComputeGridNotActiveException;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.exception.ComputeGridException;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.exception.DataSliceExistException;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.exception.DataSlicePropertiesStructureException;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceMetaInfo;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceOperationResult;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.ComputeGrid;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataService;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlice;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.factory.ComputeGridTermFactory;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.configuration.IgniteConfiguration;
@@ -54,19 +57,21 @@ public class CoreRealmOperationUtil {
             igniteConfiguration.setClientMode(true);
             igniteConfiguration.setIgniteInstanceName("DataSliceCreateThread_"+new Date().getTime());
             Ignite invokerIgnite =Ignition.start(igniteConfiguration);
-            try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance(invokerIgnite)){
-                DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceRealName);
+
+            ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
+            try(DataService dataService = targetComputeGrid.getDataService()){
+                DataSlice targetDataSlice = dataService.getDataSlice(dataSliceRealName);
                 if(targetDataSlice == null){
                     List<String> pkList = new ArrayList<>();
                     pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
-                    dataServiceInvoker.createGridDataSlice(dataSliceRealName,dataSliceRealGroup,dataSlicePropertyMap,pkList);
+                    dataService.createGridDataSlice(dataSliceRealName,dataSliceRealGroup,dataSlicePropertyMap,pkList);
                 }else{
                     return null;
                 }
-            } catch (ComputeGridNotActiveException e) {
-                e.printStackTrace();
+            } catch (ComputeGridException e) {
+                throw new RuntimeException(e);
             } catch (Exception e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
 
             if(conceptionKindPropertiesList.size() > 0){
@@ -99,19 +104,20 @@ public class CoreRealmOperationUtil {
         List<String> conceptionKindPropertiesList = new ArrayList<>();
         conceptionKindPropertiesList.addAll(propertyNameSet);
 
-        try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
-            DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceRealName);
+        ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
+        try(DataService dataService = targetComputeGrid.getDataService()){
+            DataSlice targetDataSlice = dataService.getDataSlice(dataSliceRealName);
             if(targetDataSlice != null){
-                dataServiceInvoker.eraseDataSlice(dataSliceRealName);
+                dataService.eraseDataSlice(dataSliceRealName);
             }
             dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID,DataSlicePropertyType.STRING);
             List<String> pkList = new ArrayList<>();
             pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
-            dataServiceInvoker.createGridDataSlice(dataSliceRealName,dataSliceRealGroup,dataSlicePropertyMap,pkList);
-        } catch (ComputeGridNotActiveException e) {
-            e.printStackTrace();
+            dataService.createGridDataSlice(dataSliceRealName,dataSliceRealGroup,dataSlicePropertyMap,pkList);
+        } catch (ComputeGridException e) {
+            throw new RuntimeException(e);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         QueryParameters executedQueryParameters;
@@ -221,23 +227,24 @@ public class CoreRealmOperationUtil {
         igniteConfiguration.setClientMode(true);
         igniteConfiguration.setIgniteInstanceName("DataSliceConfirmThread_"+new Date().getTime());
         Ignite invokerIgnite =Ignition.start(igniteConfiguration);
-        try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance(invokerIgnite)){
-            DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+        ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
+        try(DataService dataService = targetComputeGrid.getDataService()){
+            DataSlice targetDataSlice = dataService.getDataSlice(dataSliceName);
             DataSliceMetaInfo dataSliceMetaInfo = targetDataSlice.getDataSliceMetaInfo();
             int successDataCount = dataSliceMetaInfo.getPrimaryDataCount() + dataSliceMetaInfo.getBackupDataCount();
             dataSliceOperationResult.setSuccessItemsCount(successDataCount);
             dataSliceOperationResult.setFailItemsCount(totalResultConceptionEntitiesCount-successDataCount);
-        } catch (ComputeGridNotActiveException e) {
-            e.printStackTrace();
+        } catch (ComputeGridException e) {
+            throw new RuntimeException(e);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         dataSliceOperationResult.finishOperation();
         dataSliceOperationResult.setOperationSummary("Load ConceptionKind Entities To DataSlice Operation");
         return dataSliceOperationResult;
     }
 
-    public static DataSliceOperationResult loadConceptionKindEntitiesToDataSlice(DataServiceInvoker dataServiceInvoker,String conceptionKindName, List<String> attributeNamesList,QueryParameters queryParameters, String dataSliceName,boolean useConceptionEntityUIDAsPK,int degreeOfParallelism) {
+    public static DataSliceOperationResult loadConceptionKindEntitiesToDataSlice(DataService dataService,String conceptionKindName, List<String> attributeNamesList,QueryParameters queryParameters, String dataSliceName,boolean useConceptionEntityUIDAsPK,int degreeOfParallelism) {
         DataSliceOperationResult dataSliceOperationResult = new DataSliceOperationResult();
 
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
@@ -271,7 +278,7 @@ public class CoreRealmOperationUtil {
             e.printStackTrace();
         }
 
-        DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+        DataSlice targetDataSlice = dataService.getDataSlice(dataSliceName);
         DataSliceMetaInfo dataSliceMetaInfo = targetDataSlice.getDataSliceMetaInfo();
         int successDataCount = dataSliceMetaInfo.getPrimaryDataCount() + dataSliceMetaInfo.getBackupDataCount();
         dataSliceOperationResult.setSuccessItemsCount(successDataCount);
@@ -282,22 +289,7 @@ public class CoreRealmOperationUtil {
         return dataSliceOperationResult;
     }
 
-
-
-
     public static DataSliceOperationResult syncInnerDataKindEntitiesToDataSlice(DataService dataService,
-                                                                                String innerDataKindName, String dataSliceGroup,
-                                                                                List<AttributeKind> containsAttributesKinds,
-                                                                                QueryParameters queryParameters, String dataSliceName, boolean useConceptionEntityUIDAsPK, int degreeOfParallelism) {
-
-        return null;
-    }
-
-
-
-
-
-    public static DataSliceOperationResult syncInnerDataKindEntitiesToDataSlice(DataServiceInvoker dataServiceInvoker,
                                                                                 String innerDataKindName,String dataSliceGroup,
                                                                                 List<AttributeKind> containsAttributesKinds,
                                                                                 QueryParameters queryParameters, String dataSliceName,boolean useConceptionEntityUIDAsPK,int degreeOfParallelism) {
@@ -365,17 +357,17 @@ public class CoreRealmOperationUtil {
         igniteConfiguration.setClientMode(true);
         igniteConfiguration.setIgniteInstanceName("DataSliceCreateThread_"+new Date().getTime());
         Ignite invokerIgnite =Ignition.start(igniteConfiguration);
-        try(DataServiceInvoker dataServiceInvokerForCreate = DataServiceInvoker.getInvokerInstance(invokerIgnite)){
-            DataSlice targetDataSlice = dataServiceInvokerForCreate.getDataSlice(dataSliceName);
-            if(targetDataSlice == null){
+        try {
+            DataSlice targetDataSlice = dataService.getDataSlice(dataSliceName);
+            if(targetDataSlice == null) {
                 List<String> pkList = new ArrayList<>();
                 pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
-                dataServiceInvokerForCreate.createGridDataSlice(dataSliceName,dataSliceGroup,dataSlicePropertyMap,pkList);
+                dataService.createGridDataSlice(dataSliceName,dataSliceGroup,dataSlicePropertyMap,pkList);
             }
-        } catch (ComputeGridNotActiveException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (DataSliceExistException e) {
+            throw new RuntimeException(e);
+        } catch (DataSlicePropertiesStructureException e) {
+            throw new RuntimeException(e);
         }
 
         try{
@@ -421,7 +413,7 @@ public class CoreRealmOperationUtil {
             e.printStackTrace();
         }
 
-        DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+        DataSlice targetDataSlice = dataService.getDataSlice(dataSliceName);
         DataSliceMetaInfo dataSliceMetaInfo = targetDataSlice.getDataSliceMetaInfo();
         int successDataCount = dataSliceMetaInfo.getPrimaryDataCount() + dataSliceMetaInfo.getBackupDataCount();
         dataSliceOperationResult.setSuccessItemsCount(successDataCount);
@@ -431,7 +423,7 @@ public class CoreRealmOperationUtil {
         return dataSliceOperationResult;
     }
 
-    public static DataSliceOperationResult loadInnerDataKindEntitiesToDataSlice(DataServiceInvoker dataServiceInvoker,String innerDataKindName, List<AttributeKind> containsAttributesKinds,QueryParameters queryParameters, String dataSliceName,boolean useConceptionEntityUIDAsPK,int degreeOfParallelism) {
+    public static DataSliceOperationResult loadInnerDataKindEntitiesToDataSlice(DataService dataService,String innerDataKindName, List<AttributeKind> containsAttributesKinds,QueryParameters queryParameters, String dataSliceName,boolean useConceptionEntityUIDAsPK,int degreeOfParallelism) {
         DataSliceOperationResult dataSliceOperationResult = new DataSliceOperationResult();
         int totalResultConceptionEntitiesCount = 0;
         try {
@@ -481,7 +473,7 @@ public class CoreRealmOperationUtil {
             e.printStackTrace();
         }
 
-        DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+        DataSlice targetDataSlice = dataService.getDataSlice(dataSliceName);
         DataSliceMetaInfo dataSliceMetaInfo = targetDataSlice.getDataSliceMetaInfo();
         int successDataCount = dataSliceMetaInfo.getPrimaryDataCount() + dataSliceMetaInfo.getBackupDataCount();
         dataSliceOperationResult.setSuccessItemsCount(successDataCount);
@@ -492,7 +484,7 @@ public class CoreRealmOperationUtil {
         return dataSliceOperationResult;
     }
 
-    public static DataSliceOperationResult loadRelationKindEntitiesToDataSlice(DataServiceInvoker dataServiceInvoker,String relationKindName, List<String> attributeNamesList,QueryParameters queryParameters, String dataSliceName,boolean useConceptionEntityUIDAsPK,int degreeOfParallelism) {
+    public static DataSliceOperationResult loadRelationKindEntitiesToDataSlice(DataService dataService,String relationKindName, List<String> attributeNamesList,QueryParameters queryParameters, String dataSliceName,boolean useConceptionEntityUIDAsPK,int degreeOfParallelism) {
         DataSliceOperationResult dataSliceOperationResult = new DataSliceOperationResult();
 
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
@@ -525,7 +517,7 @@ public class CoreRealmOperationUtil {
             e.printStackTrace();
         }
 
-        DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+        DataSlice targetDataSlice = dataService.getDataSlice(dataSliceName);
         DataSliceMetaInfo dataSliceMetaInfo = targetDataSlice.getDataSliceMetaInfo();
         int successDataCount = dataSliceMetaInfo.getPrimaryDataCount() + dataSliceMetaInfo.getBackupDataCount();
         dataSliceOperationResult.setSuccessItemsCount(successDataCount);
@@ -544,21 +536,23 @@ public class CoreRealmOperationUtil {
         List<String> conceptionKindPropertiesList = new ArrayList<>();
         conceptionKindPropertiesList.addAll(propertyNameSet);
 
-        try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
-            DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+
+        ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
+        try(DataService dataService = targetComputeGrid.getDataService()){
+            DataSlice targetDataSlice = dataService.getDataSlice(dataSliceName);
             if(targetDataSlice != null){
-                dataServiceInvoker.eraseDataSlice(dataSliceName);
+                dataService.eraseDataSlice(dataSliceName);
             }
             dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID,DataSlicePropertyType.STRING);
             if(targetDataSlice == null){
                 List<String> pkList = new ArrayList<>();
                 pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
-                dataServiceInvoker.createGridDataSlice(dataSliceName,dataSliceGroupName+"_CONCEPTION",dataSlicePropertyMap,pkList);
+                dataService.createGridDataSlice(dataSliceName,dataSliceGroupName+"_CONCEPTION",dataSlicePropertyMap,pkList);
             }
-        } catch (ComputeGridNotActiveException e) {
-            e.printStackTrace();
+        } catch (ComputeGridException e) {
+            throw new RuntimeException(e);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return loadConceptionKindEntitiesToDataSlice(conceptionKindName,conceptionKindPropertiesList,queryParameters,dataSliceName,true,degreeOfParallelism);
     }
@@ -594,8 +588,9 @@ public class CoreRealmOperationUtil {
             igniteConfiguration.setIgniteInstanceName("DataSliceInsertDataThread_"+threadId);
             Ignite invokerIgnite =Ignition.start(igniteConfiguration);
 
-            try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance(invokerIgnite)){
-                DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(this.dataSliceName);
+            ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
+            try(DataService dataService = targetComputeGrid.getDataService()){
+                DataSlice targetDataSlice = dataService.getDataSlice(dataSliceName);
                 DataSliceOperationResult dataSliceOperationResult = targetDataSlice.addDataRecords(this.sliceDataProperties,sliceDataRowsDataList);
                 System.out.println("--------------------------------------");
                 System.out.println("Execution result of : "+"DataSliceInsertDataThread_"+threadId);
@@ -605,7 +600,7 @@ public class CoreRealmOperationUtil {
                 System.out.println(dataSliceOperationResult.getSuccessItemsCount());
                 System.out.println(dataSliceOperationResult.getFailItemsCount());
                 System.out.println("--------------------------------------");
-            } catch (ComputeGridNotActiveException e) {
+            } catch (ComputeGridException e) {
                 e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -646,8 +641,9 @@ public class CoreRealmOperationUtil {
             igniteConfiguration.setIgniteInstanceName("DataSliceInsertRelationThread_"+threadId);
             Ignite invokerIgnite =Ignition.start(igniteConfiguration);
 
-            try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance(invokerIgnite)){
-                DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(this.dataSliceName);
+            ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
+            try(DataService dataService = targetComputeGrid.getDataService()){
+                DataSlice targetDataSlice = dataService.getDataSlice(dataSliceName);
                 DataSliceOperationResult dataSliceOperationResult = targetDataSlice.addDataRecords(this.sliceDataProperties,sliceDataRowsDataList);
                 System.out.println("--------------------------------------");
                 System.out.println("Execution result of : "+"DataSliceInsertRelationThread_"+threadId);
@@ -657,7 +653,7 @@ public class CoreRealmOperationUtil {
                 System.out.println(dataSliceOperationResult.getSuccessItemsCount());
                 System.out.println(dataSliceOperationResult.getFailItemsCount());
                 System.out.println("--------------------------------------");
-            } catch (ComputeGridNotActiveException e) {
+            } catch (ComputeGridException e) {
                 e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -707,8 +703,9 @@ public class CoreRealmOperationUtil {
             igniteConfiguration.setIgniteInstanceName("DataSliceInsertConceptionEntitiesThread_"+threadId);
             Ignite invokerIgnite =Ignition.start(igniteConfiguration);
 
-            try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance(invokerIgnite)){
-                DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(this.dataSliceName);
+            ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
+            try(DataService dataService = targetComputeGrid.getDataService()){
+                DataSlice targetDataSlice = dataService.getDataSlice(dataSliceName);
                 DataSliceOperationResult dataSliceOperationResult = targetDataSlice.addDataRecords(this.sliceDataProperties,sliceDataRowsDataList);
                 this.dataSliceOperationResultsList.add(dataSliceOperationResult);
                 System.out.println("--------------------------------------");
@@ -719,7 +716,7 @@ public class CoreRealmOperationUtil {
                 System.out.println(dataSliceOperationResult.getSuccessItemsCount());
                 System.out.println(dataSliceOperationResult.getFailItemsCount());
                 System.out.println("--------------------------------------");
-            } catch (ComputeGridNotActiveException e) {
+            } catch (ComputeGridException e) {
                 e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();

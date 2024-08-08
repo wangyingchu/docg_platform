@@ -3,10 +3,9 @@ package com.viewfunction.docg.analysisProvider.fundamental.dataSlice
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.ResponseDataSourceTech.ResponseDataSourceTech
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlice}
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.internal.ignite.util.MassDataOperationUtil
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceOperationResult
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.{DataService, DataSlice, DataSlicePropertyType}
 import org.apache.spark.sql.types.DataTypes
 
 import java.util
@@ -15,7 +14,7 @@ object DataSliceOperationUtil {
 
   val massDataOperationParallelism = AnalysisProviderApplicationUtil.getApplicationProperty("massDataOperationParallelism")
 
-  def createDataSliceAccordingToResponseDataSourceTech(dataServiceInvoker:DataServiceInvoker, dataSliceName:String, dataSliceGroup:String,
+  def createDataSliceAccordingToResponseDataSourceTech(dataService:DataService, dataSliceName:String, dataSliceGroup:String,
                                                        dataSlicePropertiesDefinitions:java.util.Map[String,String], responseDataSourceTech:ResponseDataSourceTech):Unit = {
     val dataSlicePK:java.util.ArrayList[String] = new java.util.ArrayList[String]()
     dataSlicePK.add(DataSliceOperationConstant.TempResponseDataSlicePK)
@@ -30,10 +29,10 @@ object DataSliceOperationUtil {
       dataSliceProperties.add(propertyName)
     })
     dataSlicePropertyMap.put(DataSliceOperationConstant.TempResponseDataSlicePK,DataSlicePropertyType.STRING)
-    val resultDataSlice:DataSlice = dataServiceInvoker.createGridDataSlice(dataSliceName,dataSliceGroup,dataSlicePropertyMap,dataSlicePK)
+    val resultDataSlice:DataSlice = dataService.createGridDataSlice(dataSliceName,dataSliceGroup,dataSlicePropertyMap,dataSlicePK)
   }
 
-  def syncDataSliceFromResponseDataset(dataServiceInvoker:DataServiceInvoker, dataSliceName:String, dataSliceGroup:String,
+  def syncDataSliceFromResponseDataset(dataService:DataService, dataSliceName:String, dataSliceGroup:String,
                                        responseDataset:ResponseDataset, responseDataSourceTech:ResponseDataSourceTech):Unit = {
     val dataSlicePropertiesDefinitions:java.util.Map[String,String] = responseDataset.getPropertiesInfo
     val dataSlicePK:java.util.ArrayList[String] = new java.util.ArrayList[String]()
@@ -49,13 +48,13 @@ object DataSliceOperationUtil {
       dataSliceProperties.add(propertyName)
     })
     dataSlicePropertyMap.put(DataSliceOperationConstant.TempResponseDataSlicePK,DataSlicePropertyType.STRING)
-    val resultDataSlice:DataSlice = dataServiceInvoker.createGridDataSlice(dataSliceName,dataSliceGroup,dataSlicePropertyMap,dataSlicePK)
+    val resultDataSlice:DataSlice = dataService.createGridDataSlice(dataSliceName,dataSliceGroup,dataSlicePropertyMap,dataSlicePK)
     val dataList: java.util.ArrayList[java.util.HashMap[String,Object]]  = responseDataset.getDataList
     //Need modify to fit in new data compute structure change
 
     //commit below for temp..... need modify quickly
-    //val dataSliceOperationResult:DataSliceOperationResult = MassDataOperationUtil.massInsertSliceData(dataServiceInvoker,dataSliceName,dataList.asInstanceOf[util.List[util.Map[String,Object]]],
-    //dataSliceProperties,DataSliceOperationConstant.TempResponseDataSlicePK,massDataOperationParallelism.toInt)
+    val dataSliceOperationResult:DataSliceOperationResult = MassDataOperationUtil.massInsertSliceData(dataService,dataSliceName,dataList.asInstanceOf[util.List[util.Map[String,Object]]],
+    dataSliceProperties,DataSliceOperationConstant.TempResponseDataSlicePK,massDataOperationParallelism.toInt)
   }
 
   def getDataSlicePropertyType(propertyType:String,responseDataSourceTech:ResponseDataSourceTech):DataSlicePropertyType = {
