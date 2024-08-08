@@ -15,10 +15,11 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceMetaInfo;
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType;
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceOperationResult;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.internal.ignite.exception.ComputeGridNotActiveException;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceMetaInfo;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceOperationResult;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataService;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.configuration.IgniteConfiguration;
@@ -280,6 +281,21 @@ public class CoreRealmOperationUtil {
         dataSliceOperationResult.setOperationSummary("Load ConceptionKind Entities To DataSlice Operation");
         return dataSliceOperationResult;
     }
+
+
+
+
+    public static DataSliceOperationResult syncInnerDataKindEntitiesToDataSlice(DataService dataService,
+                                                                                String innerDataKindName, String dataSliceGroup,
+                                                                                List<AttributeKind> containsAttributesKinds,
+                                                                                QueryParameters queryParameters, String dataSliceName, boolean useConceptionEntityUIDAsPK, int degreeOfParallelism) {
+
+        return null;
+    }
+
+
+
+
 
     public static DataSliceOperationResult syncInnerDataKindEntitiesToDataSlice(DataServiceInvoker dataServiceInvoker,
                                                                                 String innerDataKindName,String dataSliceGroup,
