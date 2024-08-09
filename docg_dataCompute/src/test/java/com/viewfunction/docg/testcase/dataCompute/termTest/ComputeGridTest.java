@@ -48,5 +48,6 @@ public class ComputeGridTest {
 
         Set<DataSliceMetaInfo> dataSliceMetaInfoSet = computeGrid.listDataSlice();
         Assert.assertNotNull(dataSliceMetaInfoSet);
+        Assert.assertEquals(dataSliceMetaInfoSet.size(),0);
     }
 }
