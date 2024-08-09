@@ -18,11 +18,9 @@ import org.apache.ignite.cache.CacheMode;
 import org.apache.ignite.cache.affinity.rendezvous.RendezvousAffinityFunction;
 import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.apache.ignite.configuration.CacheConfiguration;
+import org.apache.ignite.configuration.IgniteConfiguration;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class IgniteDataServiceImpl implements IgniteDataService {
 
@@ -33,7 +31,15 @@ public class IgniteDataServiceImpl implements IgniteDataService {
 
     public void openServiceSession() throws ComputeGridNotActiveException {
         Ignition.setClientMode(true);
-        this.invokerIgnite = Ignition.start(DataComputeConfigurationHandler.getDataComputeIgniteConfigurationFilePath());
+
+        // use this logic to avoid create already exist ignite nodes has same name
+        IgniteConfiguration igniteConfiguration= new IgniteConfiguration();
+        igniteConfiguration.setClientMode(true);
+        igniteConfiguration.setIgniteInstanceName("DOCG_DATA_COMPUTE_CLIENT_"+new Date().getTime());
+        this.invokerIgnite = Ignition.start(igniteConfiguration);
+
+        //IgniteConfiguration IgniteConfiguration = DataComputeConfigurationHandler.getDataComputeIgniteConfigurationFilePath();
+        //this.invokerIgnite = Ignition.start(DataComputeConfigurationHandler.getDataComputeIgniteConfigurationFilePath());
         UnitIgniteOperationUtil.checkGridActiveStatus(this.invokerIgnite);
     }
 
