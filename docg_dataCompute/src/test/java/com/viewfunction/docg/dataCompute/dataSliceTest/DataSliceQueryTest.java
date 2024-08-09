@@ -1,11 +1,12 @@
 package com.viewfunction.docg.dataCompute.dataSliceTest;
 
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.analysis.query.filteringItem.*;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceMetaInfo;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceQueryResult;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.ComputeGrid;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataService;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.factory.ComputeGridTermFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +15,9 @@ import java.util.Map;
 public class DataSliceQueryTest {
 
     public static void main(String args[]) throws Exception {
-
-        try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
-            DataSlice targetDataSlice = dataServiceInvoker.getDataSlice("RoadWeatherRecords");
+        ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
+        try (DataService dataService = targetComputeGrid.getDataService()) {
+            com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlice targetDataSlice = dataService.getDataSlice("RoadWeatherRecords");
             DataSliceMetaInfo dataSliceMetaInfo = targetDataSlice.getDataSliceMetaInfo();
             System.out.println(dataSliceMetaInfo.getPrimaryDataCount());
 
@@ -25,9 +26,9 @@ public class DataSliceQueryTest {
             System.out.println(dataSliceQueryResult.getStartTime());
             System.out.println(dataSliceQueryResult.getFinishTime());
             System.out.println(dataSliceQueryResult.getOperationSummary());
-            List<Map<String,Object>> recordResult = dataSliceQueryResult.getResultRecords();
+            List<Map<String, Object>> recordResult = dataSliceQueryResult.getResultRecords();
             System.out.println(recordResult.size());
-            for(Map<String,Object> currentRecord: recordResult){
+            for (Map<String, Object> currentRecord : recordResult) {
                 System.out.println(currentRecord);
             }
 
@@ -37,7 +38,7 @@ public class DataSliceQueryTest {
             valueList.add(Double.valueOf("66.65"));
             valueList.add(Double.valueOf("65.77"));
 
-            FilteringItem filteringItem = new EqualFilteringItem("AIRTEMPERATURE",66.65);
+            FilteringItem filteringItem = new EqualFilteringItem("AIRTEMPERATURE", 66.65);
             //FilteringItem filteringItem = new BetweenFilteringItem("AirTemperature",Double.valueOf("65.66"),Double.valueOf("65.77"));
             //FilteringItem filteringItem = new GreaterThanFilteringItem("AirTemperature",66.65);
             //FilteringItem filteringItem = new GreaterThanEqualFilteringItem("AirTemperature",66.65);
@@ -54,19 +55,19 @@ public class DataSliceQueryTest {
             //filteringItem.reverseCondition();
             queryParameters.setDefaultFilteringItem(filteringItem);
 
-            FilteringItem andFilteringItem1 = new GreaterThanFilteringItem("ROADSURFACETEMPERATURE",80.0);
+            FilteringItem andFilteringItem1 = new GreaterThanFilteringItem("ROADSURFACETEMPERATURE", 80.0);
             queryParameters.addFilteringItem(andFilteringItem1, QueryParameters.FilteringLogic.AND);
 
             List<Object> valueList2 = new ArrayList<>();
             valueList2.add("AuroraBridge");
             valueList2.add("MagnoliaBridge");
-            FilteringItem andFilteringItem2 = new InValueFilteringItem("STATIONNAME",valueList2);
+            FilteringItem andFilteringItem2 = new InValueFilteringItem("STATIONNAME", valueList2);
             queryParameters.addFilteringItem(andFilteringItem2, QueryParameters.FilteringLogic.AND);
 
-            FilteringItem orFilteringItem1 = new EqualFilteringItem("REALMGLOBALUID","8150050");
+            FilteringItem orFilteringItem1 = new EqualFilteringItem("REALMGLOBALUID", "8150050");
             queryParameters.addFilteringItem(orFilteringItem1, QueryParameters.FilteringLogic.OR);
 
-            FilteringItem orFilteringItem2 = new LessThanEqualFilteringItem("AirTemperature",66.65);
+            FilteringItem orFilteringItem2 = new LessThanEqualFilteringItem("AirTemperature", 66.65);
             queryParameters.addFilteringItem(orFilteringItem2, QueryParameters.FilteringLogic.OR);
 
             //queryParameters.setResultNumber(50000);
@@ -80,7 +81,6 @@ public class DataSliceQueryTest {
 
             DataSliceQueryResult dataSliceQueryResult2 = targetDataSlice.queryDataRecords(queryParameters);
             System.out.println(dataSliceQueryResult2.getResultRecords().size());
-
         }
     }
 }

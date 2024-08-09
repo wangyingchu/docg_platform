@@ -1,12 +1,11 @@
 package com.viewfunction.docg.dataCompute.dataSliceTest;
 
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.exception.ComputeGridException;
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.internal.ignite.exception.ComputeGridNotActiveException;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceDetailInfo;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceOperationResult;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.ComputeGrid;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataService;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlice;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.factory.ComputeGridTermFactory;
 import org.apache.ignite.Ignition;
@@ -37,7 +36,9 @@ public class DataSliceTest {
     }
 
     private static void massDataInsertTest(){
-        try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
+        ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
+        try(DataService dataService = targetComputeGrid.getDataService()){
+
             Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
             dataSlicePropertyMap.put("property1",DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put("property2",DataSlicePropertyType.INT);
@@ -47,14 +48,13 @@ public class DataSliceTest {
             pkList.add("property1");
             pkList.add("property2");
 
-            DataSlice targetDataSlice = dataServiceInvoker.createGridDataSlice("gridDataSlice1","sliceGroup1",dataSlicePropertyMap,pkList);
+            DataSlice targetDataSlice = dataService.createGridDataSlice("gridDataSlice1","sliceGroup1",dataSlicePropertyMap,pkList);
 
             System.out.println(targetDataSlice);
             System.out.println(targetDataSlice.getDataSliceMetaInfo().getDataSliceName());
             System.out.println(targetDataSlice.getDataSliceMetaInfo().getStoreBackupNumber());
             System.out.println(targetDataSlice.getDataSliceMetaInfo().getSliceGroupName());
-            System.out.println(dataServiceInvoker.listDataSlices());
-
+            System.out.println(dataService.listDataSliceNames());
 
             List<Map<String,Object>> dataList = new ArrayList<>();
             for(int i=0;i<10000000;i++) {
@@ -69,25 +69,16 @@ public class DataSliceTest {
             List<String> propertyList = new ArrayList<>();
             propertyList.add("property1");propertyList.add("property2");propertyList.add("property3");propertyList.add("property4");
 
-
             DataSliceOperationResult addResult = targetDataSlice.addDataRecords(propertyList,dataList);
             System.out.println(addResult.getSuccessItemsCount());
 
-
-
             System.out.println("========================");
             System.out.println("========================");
             System.out.println("========================");
-
-
-
-
-
-
-        } catch (ComputeGridNotActiveException e) {
-            throw new RuntimeException(e);
+        } catch (ComputeGridException e) {
+            e.printStackTrace();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
@@ -106,8 +97,8 @@ public class DataSliceTest {
 
             Object result = igniteClient.query(new SqlFieldsQuery("select NONHEAP_MEMORY_COMMITED from NODE_METRICS ")
                     .setSchema("SYS")).getAll().iterator().next().get(0);
-System.out.println(result.getClass());
-System.out.println(result);
+            System.out.println(result.getClass());
+            System.out.println(result);
 
             result = igniteClient.query(new SqlFieldsQuery("select name, value from SYS.METRICS")
                     .setSchema("SYS")).getAll().iterator().next().get(0);

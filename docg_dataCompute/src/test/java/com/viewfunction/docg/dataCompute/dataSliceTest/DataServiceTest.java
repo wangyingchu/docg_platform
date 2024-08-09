@@ -1,9 +1,12 @@
 package com.viewfunction.docg.dataCompute.dataSliceTest;
 
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.exception.ComputeGridException;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceOperationResult;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.ComputeGrid;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataService;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlice;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.factory.ComputeGridTermFactory;
 
 import java.util.*;
 
@@ -11,7 +14,9 @@ public class DataServiceTest {
 
     public static void main(String args[]) throws Exception {
 
-        try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
+
+        ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
+        try(DataService dataService = targetComputeGrid.getDataService()){
 
             //add record
             Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
@@ -22,17 +27,12 @@ public class DataServiceTest {
             List<String> pkList = new ArrayList<>();
             pkList.add("property1");
             pkList.add("property2");
-            DataSlice targetDataSlice = dataServiceInvoker.createPerUnitDataSlice("gridDataSlice1","sliceGroup1",dataSlicePropertyMap,pkList);
+            DataSlice targetDataSlice = dataService.createPerUnitDataSlice("gridDataSlice1","sliceGroup1",dataSlicePropertyMap,pkList);
             System.out.println(targetDataSlice);
             System.out.println(targetDataSlice.getDataSliceMetaInfo().getDataSliceName());
             System.out.println(targetDataSlice.getDataSliceMetaInfo().getStoreBackupNumber());
             System.out.println(targetDataSlice.getDataSliceMetaInfo().getSliceGroupName());
-            System.out.println(dataServiceInvoker.listDataSlices());
-
-
-
-
-
+            System.out.println(dataService.listDataSliceNames());
 
             //DataSlice targetDataSlice0 = dataServiceInvoker.getDataSlice("gridDataSlice1");
 
@@ -46,8 +46,7 @@ public class DataServiceTest {
                 System.out.println(addResult);
             }
 
-
-            DataSlice targetDataSlice2 = dataServiceInvoker.getDataSlice("gridDataSlice1");
+            DataSlice targetDataSlice2 = dataService.getDataSlice("gridDataSlice1");
             Map<String, Object> dataPropertiesValue = new HashMap<>();
             /*
 
@@ -122,13 +121,6 @@ public class DataServiceTest {
             System.out.println(targetDataSlice2.getDataSliceMetaInfo().getSliceGroupName());
             System.out.println(dataServiceInvoker.listDataSlices());
 */
-
-
-
-
-
-
-
             /*
 
             for(int i=0;i<10;i++) {
@@ -196,20 +188,16 @@ public class DataServiceTest {
             System.out.println(addResult);
             */
 
-
-
-
-
             /*
             targetDataSlice.addDataRecords(null);
             targetDataSlice = dataServiceInvoker.getDataSlice("gridDataSlice2");
             targetDataSlice.addDataRecords(null);
             targetDataSlice = dataServiceInvoker.getDataSlice("gridDataSlice2");
             */
-
-
-
-
+        } catch (ComputeGridException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

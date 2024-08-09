@@ -1,14 +1,14 @@
 package com.viewfunction.docg.dataCompute.dataSliceTest;
 
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.exception.DataSliceExistException;
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.exception.DataSlicePropertiesStructureException;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.exception.ComputeGridException;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.internal.ignite.ComputeGridObserver;
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.internal.ignite.exception.ComputeGridNotActiveException;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataComputeUnitMetaInfo;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceDetailInfo;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceMetaInfo;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.ComputeGrid;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataService;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.factory.ComputeGridTermFactory;
 
 import java.util.*;
 
@@ -16,7 +16,6 @@ public class DataServiceObserverTest {
 
     public static void main(String[] args){
         //initDataSlice();
-
         ComputeGridObserver computeGridObserver = ComputeGridObserver.getObserverInstance();
         Set<DataComputeUnitMetaInfo> dataComputeUnitMetaInfoSet = computeGridObserver.listDataComputeUnit();
         Set<DataSliceMetaInfo> dataSliceMetaInfoSet = computeGridObserver.listDataSlice();
@@ -54,7 +53,8 @@ public class DataServiceObserverTest {
     }
 
     private static void initDataSlice(){
-        try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
+        ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
+        try(DataService dataService = targetComputeGrid.getDataService()){
             Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
 
             dataSlicePropertyMap.put("property1",DataSlicePropertyType.BOOLEAN);
@@ -76,16 +76,12 @@ public class DataServiceObserverTest {
             List<String> pkList = new ArrayList<>();
             pkList.add("property1");
             pkList.add("property2");
-            dataServiceInvoker.createPerUnitDataSlice("gridDataSliceA","sliceGroup1",dataSlicePropertyMap,pkList);
-            dataServiceInvoker.createGridDataSlice("gridDataSliceB","sliceGroup1",dataSlicePropertyMap,pkList);
-        } catch (DataSliceExistException e) {
-            throw new RuntimeException(e);
-        } catch (DataSlicePropertiesStructureException e) {
-            throw new RuntimeException(e);
-        } catch (ComputeGridNotActiveException e) {
-            throw new RuntimeException(e);
+            dataService.createPerUnitDataSlice("gridDataSliceA","sliceGroup1",dataSlicePropertyMap,pkList);
+            dataService.createGridDataSlice("gridDataSliceB","sliceGroup1",dataSlicePropertyMap,pkList);
+        } catch (ComputeGridException e) {
+            e.printStackTrace();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 }

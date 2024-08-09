@@ -1,11 +1,13 @@
 package com.viewfunction.docg.dataCompute.dataSliceTest;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil;
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.internal.ignite.exception.ComputeGridNotActiveException;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.exception.ComputeGridException;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.ComputeGrid;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataService;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlice;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.factory.ComputeGridTermFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,8 +25,9 @@ public class CoreRealmConceptionLoadTest {
     private static final String AirTemperature = "airTemperature";
 
     public static void main(String[] args){
-        try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
-            DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(RoadWeatherInformationStationsRecordsConceptionType);
+        ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
+        try(DataService dataService = targetComputeGrid.getDataService()){
+            DataSlice targetDataSlice = dataService.getDataSlice(RoadWeatherInformationStationsRecordsConceptionType);
 
             if(targetDataSlice == null){
                 Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
@@ -39,9 +42,9 @@ public class CoreRealmConceptionLoadTest {
                 List<String> pkList = new ArrayList<>();
                 pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
 
-                dataServiceInvoker.createGridDataSlice(RoadWeatherInformationStationsRecordsConceptionType,"defaultSliceGroup",dataSlicePropertyMap,pkList);
+                dataService.createGridDataSlice(RoadWeatherInformationStationsRecordsConceptionType,"defaultSliceGroup",dataSlicePropertyMap,pkList);
             }
-        } catch (ComputeGridNotActiveException e) {
+        } catch (ComputeGridException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
