@@ -1,17 +1,15 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="DOCG DataCompute test suite">
-    <test verbose="1" name="RealmTermFactoryTest">
+    <test verbose="1" name="ComputeGridTest">
         <classes>
             <class name="com.viewfunction.docg.testcase.dataCompute.termTest.ComputeGridTest"/>
         </classes>
     </test>
 
-    <!--
-    <test verbose="2" name="CoreRealmTest">
+    <test verbose="2" name="DataServiceTest">
         <classes>
-            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.CoreRealmTest"/>
+            <class name="com.viewfunction.docg.testcase.dataCompute.termTest.DataServiceTest"/>
         </classes>
     </test>
-   -->
 
 </suite>
