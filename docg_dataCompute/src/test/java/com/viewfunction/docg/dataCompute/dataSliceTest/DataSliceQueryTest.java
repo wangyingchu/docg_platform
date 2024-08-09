@@ -6,6 +6,7 @@ import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSlic
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceQueryResult;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.ComputeGrid;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataService;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlice;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.factory.ComputeGridTermFactory;
 
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class DataSliceQueryTest {
     public static void main(String args[]) throws Exception {
         ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
         try (DataService dataService = targetComputeGrid.getDataService()) {
-            com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlice targetDataSlice = dataService.getDataSlice("RoadWeatherRecords");
+            DataSlice targetDataSlice = dataService.getDataSlice("RoadWeatherRecords");
             DataSliceMetaInfo dataSliceMetaInfo = targetDataSlice.getDataSliceMetaInfo();
             System.out.println(dataSliceMetaInfo.getPrimaryDataCount());
 

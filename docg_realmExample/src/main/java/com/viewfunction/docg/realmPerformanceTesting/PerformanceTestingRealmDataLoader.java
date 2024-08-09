@@ -14,10 +14,12 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceQueryResult;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.internal.ignite.exception.ComputeGridNotActiveException;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.ComputeGrid;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataService;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlice;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.factory.ComputeGridTermFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -215,8 +217,9 @@ public class PerformanceTestingRealmDataLoader {
 
     private static void  linkCountyGeoData(String dataSliceName){
         List<RelationEntityValue> relationEntityValueList = new ArrayList<>();
-        try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
-            DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+        ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
+        try(DataService dataService = targetComputeGrid.getDataService()){
+            DataSlice targetDataSlice = dataService.getDataSlice(dataSliceName);
             DataSliceQueryResult dataSliceQueryResult = targetDataSlice.queryDataRecords((com.viewfunction.docg.dataCompute.dataComputeServiceCore.analysis.query.QueryParameters) null);
             for(Map<String,Object> currentData:dataSliceQueryResult.getResultRecords()){
                 RelationEntityValue currentRelationEntityValue = new RelationEntityValue();
@@ -239,8 +242,9 @@ public class PerformanceTestingRealmDataLoader {
 
     private static void  linkTownshipGeoData(String dataSliceName){
         List<RelationEntityValue> relationEntityValueList = new ArrayList<>();
-        try(DataServiceInvoker dataServiceInvoker = DataServiceInvoker.getInvokerInstance()){
-            DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+        ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
+        try(DataService dataService = targetComputeGrid.getDataService()){
+            DataSlice targetDataSlice = dataService.getDataSlice(dataSliceName);
             DataSliceQueryResult dataSliceQueryResult = targetDataSlice.queryDataRecords((com.viewfunction.docg.dataCompute.dataComputeServiceCore.analysis.query.QueryParameters) null);
             for(Map<String,Object> currentData:dataSliceQueryResult.getResultRecords()){
                 RelationEntityValue currentRelationEntityValue = new RelationEntityValue();
@@ -251,12 +255,12 @@ public class PerformanceTestingRealmDataLoader {
                 currentRelationEntityValue.setEntityAttributesValue(geospatialCodePropertyDataMap);
                 relationEntityValueList.add(currentRelationEntityValue);
             }
+
         } catch (ComputeGridNotActiveException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         Map<String,Object> attachGeoResult =
                 BatchDataOperationUtil.batchAttachGeospatialScaleEvents(relationEntityValueList,null,"firmLocatedAtTownship",null, GeospatialRegion.GeospatialScaleGrade.TOWNSHIP,16);
         System.out.println(attachGeoResult);

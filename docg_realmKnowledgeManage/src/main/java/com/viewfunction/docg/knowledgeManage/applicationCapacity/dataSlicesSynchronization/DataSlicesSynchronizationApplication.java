@@ -1,9 +1,12 @@
 package com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization;
 
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.exception.ComputeGridException;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.exception.DataSliceExistException;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.exception.DataSlicePropertiesStructureException;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.internal.ignite.exception.ComputeGridNotActiveException;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.ComputeGrid;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataService;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.factory.ComputeGridTermFactory;
 import com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization.commandProcessor.DataSlicesSyncCommandProcessorFactory;
 import com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization.dataSlicesSync.DataSliceSyncUtil;
 import com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization.dataSlicesSync.GeneralDataSliceEntityValueOperationsMessageHandler;
@@ -29,7 +32,7 @@ public class DataSlicesSynchronizationApplication implements BaseApplication {
     private ExecutorService executorService;
     private Map<Object,Object> commandContextDataMap;
     private CommonObjectsMessageReceiver commonObjectsMessageReceiver;
-    private DataServiceInvoker dataServiceInvoker;
+    private DataService dataService;
 
     @Override
     public boolean isDaemonApplication() {
@@ -42,7 +45,7 @@ public class DataSlicesSynchronizationApplication implements BaseApplication {
         String syncGeospatialRegionDataFlag = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.syncGeospatialRegionData");
         if(Boolean.parseBoolean(syncGeospatialRegionDataFlag)){
             try {
-                DataSliceSyncUtil.syncGeospatialRegionData(dataServiceInvoker);
+                DataSliceSyncUtil.syncGeospatialRegionData(dataService);
             } catch (DataSliceExistException e) {
                 throw new RuntimeException(e);
             } catch (DataSlicePropertiesStructureException e) {
@@ -53,10 +56,10 @@ public class DataSlicesSynchronizationApplication implements BaseApplication {
         String launchSyncAtStartupFlag = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.launchSyncAtStartup");
         if(Boolean.parseBoolean(launchSyncAtStartupFlag)){
             //Batch load data into data slices by per defined rules
-            DataSliceSyncUtil.batchSyncPerDefinedDataSlices(dataServiceInvoker);
+            DataSliceSyncUtil.batchSyncPerDefinedDataSlices(dataService);
         }
         //Start real time data sync process
-        GeneralDataSliceEntityValueOperationsMessageHandler generalDataSliceEntityValueOperationsMessageHandler = new GeneralDataSliceEntityValueOperationsMessageHandler(this.commandContextDataMap,this.dataServiceInvoker);
+        GeneralDataSliceEntityValueOperationsMessageHandler generalDataSliceEntityValueOperationsMessageHandler = new GeneralDataSliceEntityValueOperationsMessageHandler(this.commandContextDataMap,this.dataService);
         try {
             commonObjectsMessageReceiver = new CommonObjectsMessageReceiver(generalDataSliceEntityValueOperationsMessageHandler);
         } catch (ConfigurationErrorException e) {
@@ -90,10 +93,13 @@ public class DataSlicesSynchronizationApplication implements BaseApplication {
         this.commandContextDataMap = new ConcurrentHashMap<>();
         this.commandContextDataMap.put(APPLICATION_START_TIME,new Date());
         try {
-            this.dataServiceInvoker = DataServiceInvoker.getInvokerInstance();
+            ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
+            this.dataService = targetComputeGrid.getDataService();
         } catch (ComputeGridNotActiveException e) {
             e.printStackTrace();
             return false;
+        } catch (ComputeGridException e) {
+            throw new RuntimeException(e);
         }
         return true;
     }
@@ -106,9 +112,9 @@ public class DataSlicesSynchronizationApplication implements BaseApplication {
         if(executorService != null){
             executorService.shutdown();
         }
-        if(dataServiceInvoker != null){
+        if(dataService != null){
             try {
-                dataServiceInvoker.close();
+                dataService.close();
             } catch (Exception e) {
                 e.printStackTrace();
                 return false;

@@ -1,7 +1,7 @@
 package dataSliceTest
 
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.{ComputeGrid, DataService, DataSlicePropertyType}
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.factory.ComputeGridTermFactory
 
 import java.util
 import java.util.Date
@@ -12,14 +12,15 @@ import scala.collection.mutable.ArrayBuffer
 object DataSliceTestCase01{
 
   def main(args:Array[String]):Unit ={
-    val memoryTableServiceInvoker:DataServiceInvoker =  DataServiceInvoker.getInvokerInstance
+    val computeGrid:ComputeGrid = ComputeGridTermFactory.getComputeGrid
+    val dataService:DataService = computeGrid.getDataService
     val newMemoryTableName = "TestMemoryTable01"+ new Date().getTime
-    memoryTableCreate(memoryTableServiceInvoker,newMemoryTableName)
-    memoryTableCRUD(memoryTableServiceInvoker,newMemoryTableName)
-    memoryTableServiceInvoker.close()
+    memoryTableCreate(dataService,newMemoryTableName)
+    memoryTableCRUD(dataService,newMemoryTableName)
+    dataService.close()
   }
 
-  def memoryTableCreate(memoryTableServiceInvoker:DataServiceInvoker, memoryTableName:String):Unit={
+  def memoryTableCreate(dataService:DataService, memoryTableName:String):Unit={
     println("======== memoryTableCreate Start ===")
     val tablePropertiesDefineMap: java.util.Map[String, DataSlicePropertyType] = mutable.HashMap(
       "property1" -> DataSlicePropertyType.STRING,
@@ -29,7 +30,7 @@ object DataSliceTestCase01{
     ).asJava
 
     val pkList: java.util.List[String] = ArrayBuffer("property2").asJava
-    val memoryTable = memoryTableServiceInvoker.createGridDataSlice(memoryTableName,"MemoryTableGroup01",tablePropertiesDefineMap,pkList)
+    val memoryTable = dataService.createGridDataSlice(memoryTableName,"MemoryTableGroup01",tablePropertiesDefineMap,pkList)
     println(memoryTable.getDataSliceMetaInfo.getDataSliceName)
     println(memoryTable.getDataSliceMetaInfo.getBackupDataCount)
     println(memoryTable.getDataSliceMetaInfo.getTotalDataCount)
@@ -39,9 +40,9 @@ object DataSliceTestCase01{
     println("======== memoryTableCreate Finish ===")
   }
 
-  def memoryTableCRUD(memoryTableServiceInvoker:DataServiceInvoker, memoryTableName:String):Unit={
+  def memoryTableCRUD(dataService:DataService, memoryTableName:String):Unit={
     println("======== memoryTableCRUD Start ===")
-    val memoryTable = memoryTableServiceInvoker.getDataSlice(memoryTableName)
+    val memoryTable = dataService.getDataSlice(memoryTableName)
     memoryTable.emptyDataSlice()
     //C
     val dataRecordsList = new util.ArrayList[util.Map[String, AnyRef]]

@@ -2,8 +2,9 @@ package com.viewfunction.docg.analysisProvider.feature.common
 
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScaleLevel.{CountryLevel, GeospatialScaleLevel, GlobalLevel, LocalLevel}
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.{DataServiceInvoker, DataSlice}
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.{ComputeGrid, DataService, DataSlice}
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.factory.ComputeGridTermFactory
 import org.apache.sedona.sql.utils.SedonaSQLRegistrator
 import org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
 import org.apache.spark.graphx.{Edge, VertexId}
@@ -16,8 +17,8 @@ import java.sql.{DriverManager, ResultSet}
 
 class GlobalDataAccessor (private val sessionName:String, private val masterLocation:String){
 
-  val dataServiceInvoker = DataServiceInvoker.getInvokerInstance()
-
+  val computeGrid:ComputeGrid = ComputeGridTermFactory.getComputeGrid
+  val dataService:DataService = computeGrid.getDataService
   val sparkExecutorCores = AnalysisProviderApplicationUtil.getApplicationProperty("sparkExecutorCores")
   val sparkDefaultParallelism = AnalysisProviderApplicationUtil.getApplicationProperty("sparkDefaultParallelism")
   val sparkExecutorMemory = AnalysisProviderApplicationUtil.getApplicationProperty("sparkExecutorMemory")
@@ -197,20 +198,20 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
   }
 
   def getDataSlice(dataSliceName:String): DataSlice = {
-    _getDataSliceServiceInvoker().getDataSlice(dataSliceName)
+    _getDataService().getDataSlice(dataSliceName)
   }
 
   def close():Unit={
     sparkSession.close()
-    _getDataSliceServiceInvoker().close()
+    _getDataService().close()
   }
 
   def getSparkSession(): SparkSession = {
     sparkSession
   }
 
-  def _getDataSliceServiceInvoker():DataServiceInvoker = {
-    dataServiceInvoker
+  def _getDataService():DataService = {
+    dataService
   }
 
   def _getDataFrameFromSparkSQL(dataFrameName:String, dataFrameSQL:String):DataFrame = {

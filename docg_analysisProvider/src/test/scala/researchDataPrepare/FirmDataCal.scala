@@ -10,7 +10,7 @@ import com.viewfunction.docg.analysisProvider.fundamental.spatial.{GeospatialSca
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion.GeospatialScaleGrade
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker
+
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType
 import java.util
 import scala.collection.mutable
@@ -20,7 +20,7 @@ object FirmDataCal extends App{
   val sparkApplicationName = AnalysisProviderApplicationUtil.getApplicationProperty("sparkApplicationName")
   val sparkMasterLocation = AnalysisProviderApplicationUtil.getApplicationProperty("sparkMasterLocation")
   val globalDataAccessor = new GlobalDataAccessor(sparkApplicationName,sparkMasterLocation)
-  val dataServiceInvoker = globalDataAccessor._getDataSliceServiceInvoker()
+  val dataService = globalDataAccessor._getDataService()
   val spatialDataMaintainUtil = new SpatialDataMaintainUtil
   val spatialQueryMetaFunction = new SpatialQueryMetaFunction
 
@@ -75,18 +75,18 @@ object FirmDataCal extends App{
     val syncPropertiesMapping = new util.HashMap[String,DataSlicePropertyType]
     syncPropertiesMapping.put("name",DataSlicePropertyType.STRING)
     val resultDataSlice =
-      spatialDataMaintainUtil.syncGeospatialConceptionKindToDataSlice(dataServiceInvoker,
+      spatialDataMaintainUtil.syncGeospatialConceptionKindToDataSlice(dataService,
         "Firm","firmData","defaultGroup",syncPropertiesMapping,GeospatialScaleLevel.CountryLevel)
     println(resultDataSlice.getDataSliceMetaInfo.getDataSliceName)
     println(resultDataSlice.getDataSliceMetaInfo.getTotalDataCount)
   }
 
   def loadSpatialDataSlice():Unit={
-    spatialDataMaintainUtil.syncGeospatialRegionToDataSlice(dataServiceInvoker)
-    val _CONTINENT_DataSlice = spatialDataMaintainUtil.getGeospatialRegionDataSlice(dataServiceInvoker,GeospatialScaleGrade.CONTINENT)
+    spatialDataMaintainUtil.syncGeospatialRegionToDataSlice(dataService)
+    val _CONTINENT_DataSlice = spatialDataMaintainUtil.getGeospatialRegionDataSlice(dataService,GeospatialScaleGrade.CONTINENT)
     println(_CONTINENT_DataSlice.getDataSliceMetaInfo.getDataSliceName)
     println(_CONTINENT_DataSlice.getDataSliceMetaInfo.getTotalDataCount)
-    val _VILLAGE_DataSlice = spatialDataMaintainUtil.getGeospatialRegionDataSlice(dataServiceInvoker,GeospatialScaleGrade.VILLAGE)
+    val _VILLAGE_DataSlice = spatialDataMaintainUtil.getGeospatialRegionDataSlice(dataService,GeospatialScaleGrade.VILLAGE)
     println(_VILLAGE_DataSlice.getDataSliceMetaInfo.getDataSliceName)
     println(_VILLAGE_DataSlice.getDataSliceMetaInfo.getTotalDataCount)
   }

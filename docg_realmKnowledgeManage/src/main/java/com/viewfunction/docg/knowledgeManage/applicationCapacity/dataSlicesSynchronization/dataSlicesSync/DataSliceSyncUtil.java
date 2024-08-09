@@ -5,12 +5,12 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JAttributeKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataSlice;
 import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.exception.DataSliceDataException;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.exception.DataSliceExistException;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.exception.DataSlicePropertiesStructureException;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataService;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlice;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType;
 import com.viewfunction.docg.knowledgeManage.consoleApplication.util.ApplicationLauncherUtil;
 
@@ -22,7 +22,7 @@ import java.util.*;
 
 public class DataSliceSyncUtil {
 
-    public static void syncGeospatialRegionData(DataServiceInvoker dataServiceInvoker) throws DataSliceExistException, DataSlicePropertiesStructureException {
+    public static void syncGeospatialRegionData(DataService dataService) throws DataSliceExistException, DataSlicePropertiesStructureException {
         String dataSliceGroupName = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.dataSliceGroup");
         String dataSyncPerLoadResultNumber = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.dataSyncPerLoadResultNumber");
         String degreeOfParallelismNumber = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.degreeOfParallelism");
@@ -31,7 +31,7 @@ public class DataSliceSyncUtil {
         List<String> pkList = new ArrayList<>();
         pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
         try {
-            DataSlice targetCountryRegionDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleCountryRegionEntityClass);
+            DataSlice targetCountryRegionDataSlice = dataService.getDataSlice(RealmConstant.GeospatialScaleCountryRegionEntityClass);
             Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
             dataSlicePropertyMap.put("Alpha_2Code",DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put("Alpha_3Code",DataSlicePropertyType.STRING);
@@ -50,15 +50,15 @@ public class DataSliceSyncUtil {
             dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryContent, DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID, DataSlicePropertyType.STRING);
             if (targetCountryRegionDataSlice == null) {
-                dataServiceInvoker.createGridDataSlice(RealmConstant.GeospatialScaleCountryRegionEntityClass, dataSliceGroupName, dataSlicePropertyMap, pkList);
+                dataService.createGridDataSlice(RealmConstant.GeospatialScaleCountryRegionEntityClass, dataSliceGroupName, dataSlicePropertyMap, pkList);
             }
             QueryParameters queryParameters = new QueryParameters();
             queryParameters.setResultNumber(dataSyncPerLoadResultNum);
             List<AttributeKind> containsAttributesKinds = buildAttributeKindList(dataSlicePropertyMap);
-            CoreRealmOperationUtil.loadInnerDataKindEntitiesToDataSlice(dataServiceInvoker,RealmConstant.GeospatialScaleCountryRegionEntityClass,containsAttributesKinds,
+            CoreRealmOperationUtil.loadInnerDataKindEntitiesToDataSlice(dataService,RealmConstant.GeospatialScaleCountryRegionEntityClass,containsAttributesKinds,
                     queryParameters,RealmConstant.GeospatialScaleCountryRegionEntityClass,true,degreeOfParallelismNum);
 
-            DataSlice targetProvinceDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleProvinceEntityClass);
+            DataSlice targetProvinceDataSlice = dataService.getDataSlice(RealmConstant.GeospatialScaleProvinceEntityClass);
             dataSlicePropertyMap = new HashMap<>();
             dataSlicePropertyMap.put("ISO3166_1Alpha_2Code",DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put("ISO3166_2SubDivisionCode",DataSlicePropertyType.STRING);
@@ -81,13 +81,13 @@ public class DataSliceSyncUtil {
             dataSlicePropertyMap.put(RealmConstant._GeospatialCLGeometryContent,DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID, DataSlicePropertyType.STRING);
             if (targetProvinceDataSlice == null) {
-                dataServiceInvoker.createGridDataSlice(RealmConstant.GeospatialScaleProvinceEntityClass, dataSliceGroupName, dataSlicePropertyMap, pkList);
+                dataService.createGridDataSlice(RealmConstant.GeospatialScaleProvinceEntityClass, dataSliceGroupName, dataSlicePropertyMap, pkList);
             }
             containsAttributesKinds = buildAttributeKindList(dataSlicePropertyMap);
-            CoreRealmOperationUtil.loadInnerDataKindEntitiesToDataSlice(dataServiceInvoker,RealmConstant.GeospatialScaleProvinceEntityClass,containsAttributesKinds,
+            CoreRealmOperationUtil.loadInnerDataKindEntitiesToDataSlice(dataService,RealmConstant.GeospatialScaleProvinceEntityClass,containsAttributesKinds,
                     queryParameters,RealmConstant.GeospatialScaleProvinceEntityClass,true,degreeOfParallelismNum);
 
-            DataSlice targetPrefectureDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScalePrefectureEntityClass);
+            DataSlice targetPrefectureDataSlice = dataService.getDataSlice(RealmConstant.GeospatialScalePrefectureEntityClass);
             dataSlicePropertyMap = new HashMap<>();
             dataSlicePropertyMap.put("ChinaParentDivisionCode",DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put("ChinaDivisionCode",DataSlicePropertyType.STRING);
@@ -107,37 +107,37 @@ public class DataSliceSyncUtil {
             dataSlicePropertyMap.put(RealmConstant.GeospatialChineseNameProperty,DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID, DataSlicePropertyType.STRING);
             if (targetPrefectureDataSlice == null) {
-                dataServiceInvoker.createGridDataSlice(RealmConstant.GeospatialScalePrefectureEntityClass, dataSliceGroupName, dataSlicePropertyMap, pkList);
+                dataService.createGridDataSlice(RealmConstant.GeospatialScalePrefectureEntityClass, dataSliceGroupName, dataSlicePropertyMap, pkList);
             }
             containsAttributesKinds = buildAttributeKindList(dataSlicePropertyMap);
-            CoreRealmOperationUtil.loadInnerDataKindEntitiesToDataSlice(dataServiceInvoker,RealmConstant.GeospatialScalePrefectureEntityClass,containsAttributesKinds,
+            CoreRealmOperationUtil.loadInnerDataKindEntitiesToDataSlice(dataService,RealmConstant.GeospatialScalePrefectureEntityClass,containsAttributesKinds,
                     queryParameters,RealmConstant.GeospatialScalePrefectureEntityClass,true,degreeOfParallelismNum);
 
-            DataSlice targetCountyDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleCountyEntityClass);
+            DataSlice targetCountyDataSlice = dataService.getDataSlice(RealmConstant.GeospatialScaleCountyEntityClass);
             dataSlicePropertyMap.put("ChinaPrefectureName",DataSlicePropertyType.STRING);
             if (targetCountyDataSlice == null) {
-                dataServiceInvoker.createGridDataSlice(RealmConstant.GeospatialScaleCountyEntityClass, dataSliceGroupName, dataSlicePropertyMap, pkList);
+                dataService.createGridDataSlice(RealmConstant.GeospatialScaleCountyEntityClass, dataSliceGroupName, dataSlicePropertyMap, pkList);
             }
             containsAttributesKinds = buildAttributeKindList(dataSlicePropertyMap);
-            CoreRealmOperationUtil.loadInnerDataKindEntitiesToDataSlice(dataServiceInvoker,RealmConstant.GeospatialScaleCountyEntityClass,containsAttributesKinds,
+            CoreRealmOperationUtil.loadInnerDataKindEntitiesToDataSlice(dataService,RealmConstant.GeospatialScaleCountyEntityClass,containsAttributesKinds,
                     queryParameters,RealmConstant.GeospatialScaleCountyEntityClass,true,degreeOfParallelismNum);
 
-            DataSlice targetTownshipDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleTownshipEntityClass);
+            DataSlice targetTownshipDataSlice = dataService.getDataSlice(RealmConstant.GeospatialScaleTownshipEntityClass);
             dataSlicePropertyMap.put("ChinaCountyName",DataSlicePropertyType.STRING);
             if (targetTownshipDataSlice == null) {
-                dataServiceInvoker.createGridDataSlice(RealmConstant.GeospatialScaleTownshipEntityClass, dataSliceGroupName, dataSlicePropertyMap, pkList);
+                dataService.createGridDataSlice(RealmConstant.GeospatialScaleTownshipEntityClass, dataSliceGroupName, dataSlicePropertyMap, pkList);
             }
             containsAttributesKinds = buildAttributeKindList(dataSlicePropertyMap);
-            CoreRealmOperationUtil.loadInnerDataKindEntitiesToDataSlice(dataServiceInvoker,RealmConstant.GeospatialScaleTownshipEntityClass,containsAttributesKinds,
+            CoreRealmOperationUtil.loadInnerDataKindEntitiesToDataSlice(dataService,RealmConstant.GeospatialScaleTownshipEntityClass,containsAttributesKinds,
                     queryParameters,RealmConstant.GeospatialScaleTownshipEntityClass,true,degreeOfParallelismNum);
 
-            DataSlice targetVillageDataSlice = dataServiceInvoker.getDataSlice(RealmConstant.GeospatialScaleVillageEntityClass);
+            DataSlice targetVillageDataSlice = dataService.getDataSlice(RealmConstant.GeospatialScaleVillageEntityClass);
             dataSlicePropertyMap.put("ChinaTownshipName",DataSlicePropertyType.STRING);
             if (targetVillageDataSlice == null) {
-                dataServiceInvoker.createGridDataSlice(RealmConstant.GeospatialScaleVillageEntityClass, dataSliceGroupName, dataSlicePropertyMap, pkList);
+                dataService.createGridDataSlice(RealmConstant.GeospatialScaleVillageEntityClass, dataSliceGroupName, dataSlicePropertyMap, pkList);
             }
             containsAttributesKinds = buildAttributeKindList(dataSlicePropertyMap);
-            CoreRealmOperationUtil.loadInnerDataKindEntitiesToDataSlice(dataServiceInvoker,RealmConstant.GeospatialScaleVillageEntityClass,containsAttributesKinds,
+            CoreRealmOperationUtil.loadInnerDataKindEntitiesToDataSlice(dataService,RealmConstant.GeospatialScaleVillageEntityClass,containsAttributesKinds,
                     queryParameters,RealmConstant.GeospatialScaleVillageEntityClass,true,degreeOfParallelismNum);
         } catch (DataSliceExistException e) {
             e.printStackTrace();
@@ -146,7 +146,7 @@ public class DataSliceSyncUtil {
         }
     }
 
-    public static void batchSyncPerDefinedDataSlices(DataServiceInvoker dataServiceInvoker) {
+    public static void batchSyncPerDefinedDataSlices(DataService dataService) {
         String dataSliceGroupName = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.dataSliceGroup");
         String dataSyncPerLoadResultNumber = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.dataSyncPerLoadResultNumber");
         String degreeOfParallelismNumber = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.degreeOfParallelism");
@@ -207,7 +207,7 @@ public class DataSliceSyncUtil {
         Set<String> conceptionKindsSet = conceptionKindDataPropertiesMap.keySet();
         try {
             for(String currentConceptionKind : conceptionKindsSet){
-                DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(currentConceptionKind);
+                DataSlice targetDataSlice = dataService.getDataSlice(currentConceptionKind);
                 if (targetDataSlice == null) {
                     List<DataPropertyInfo> kindDataPropertyInfoList = conceptionKindDataPropertiesMap.get(currentConceptionKind);
                     Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
@@ -219,7 +219,7 @@ public class DataSliceSyncUtil {
                     dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID, DataSlicePropertyType.STRING);
                     List<String> pkList = new ArrayList<>();
                     pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
-                    dataServiceInvoker.createGridDataSlice(currentConceptionKind, dataSliceGroupName+"_CONCEPTION", dataSlicePropertyMap, pkList);
+                    dataService.createGridDataSlice(currentConceptionKind, dataSliceGroupName+"_CONCEPTION", dataSlicePropertyMap, pkList);
                 }
             }
 
@@ -233,7 +233,7 @@ public class DataSliceSyncUtil {
                 }
                 QueryParameters queryParameters = new QueryParameters();
                 queryParameters.setResultNumber(dataSyncPerLoadResultNum);
-                CoreRealmOperationUtil.loadConceptionKindEntitiesToDataSlice(dataServiceInvoker,currentConceptionKind, conceptionKindPropertiesList,
+                CoreRealmOperationUtil.loadConceptionKindEntitiesToDataSlice(dataService,currentConceptionKind, conceptionKindPropertiesList,
                         queryParameters, currentConceptionKind, true, degreeOfParallelismNum);
             }
         } catch (DataSliceExistException e) {
@@ -245,7 +245,7 @@ public class DataSliceSyncUtil {
         Set<String> relationKindsSet = relationKindDataPropertiesMap.keySet();
         try {
             for(String currentRelationKind : relationKindsSet){
-                DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(currentRelationKind);
+                DataSlice targetDataSlice = dataService.getDataSlice(currentRelationKind);
                 if (targetDataSlice == null) {
                     List<DataPropertyInfo> kindDataPropertyInfoList = relationKindDataPropertiesMap.get(currentRelationKind);
                     Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
@@ -259,7 +259,7 @@ public class DataSliceSyncUtil {
                     dataSlicePropertyMap.put(CoreRealmOperationUtil.RelationToEntityUID, DataSlicePropertyType.STRING);
                     List<String> pkList = new ArrayList<>();
                     pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
-                    dataServiceInvoker.createGridDataSlice(currentRelationKind, dataSliceGroupName+"_RELATION", dataSlicePropertyMap, pkList);
+                    dataService.createGridDataSlice(currentRelationKind, dataSliceGroupName+"_RELATION", dataSlicePropertyMap, pkList);
                 }
             }
 
@@ -273,7 +273,7 @@ public class DataSliceSyncUtil {
                 }
                 QueryParameters queryParameters = new QueryParameters();
                 queryParameters.setResultNumber(dataSyncPerLoadResultNum);
-                CoreRealmOperationUtil.loadRelationKindEntitiesToDataSlice(dataServiceInvoker,currentRelationKind, relationKindPropertiesList,
+                CoreRealmOperationUtil.loadRelationKindEntitiesToDataSlice(dataService,currentRelationKind, relationKindPropertiesList,
                         queryParameters, currentRelationKind, true, degreeOfParallelismNum);
             }
         } catch (DataSliceExistException e) {
@@ -337,8 +337,8 @@ public class DataSliceSyncUtil {
         }
     }
 
-    public static void deleteDataFromSlice(DataServiceInvoker dataServiceInvoker,String dataSliceName,String dataPK){
-        DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+    public static void deleteDataFromSlice(DataService dataService,String dataSliceName,String dataPK){
+        DataSlice targetDataSlice = dataService.getDataSlice(dataSliceName);
         if(targetDataSlice != null){
             try {
                 Map<String,Object> dataPKPropertiesValue = new HashMap<>();
@@ -352,8 +352,8 @@ public class DataSliceSyncUtil {
         }
     }
 
-    public static void updateDataInSlice(DataServiceInvoker dataServiceInvoker,String dataSliceName,String dataPK,Map<String,Object> entityProperties){
-        DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+    public static void updateDataInSlice(DataService dataService,String dataSliceName,String dataPK,Map<String,Object> entityProperties){
+        DataSlice targetDataSlice = dataService.getDataSlice(dataSliceName);
         if(targetDataSlice != null && entityProperties!= null){
             try {
                 entityProperties.put(CoreRealmOperationUtil.RealmGlobalUID,dataPK);
@@ -366,9 +366,9 @@ public class DataSliceSyncUtil {
         }
     }
 
-    public static void createDataInSlice(DataServiceInvoker dataServiceInvoker,String dataSliceName,String dataPK,
+    public static void createDataInSlice(DataService dataService,String dataSliceName,String dataPK,
                                          Map<String,Object> entityProperties,Map<String, List<DataPropertyInfo>> kindDataPropertiesMap,String dataSliceType){
-        DataSlice targetDataSlice = dataServiceInvoker.getDataSlice(dataSliceName);
+        DataSlice targetDataSlice = dataService.getDataSlice(dataSliceName);
         try {
             if(targetDataSlice == null){
                 String dataSliceGroupName = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.dataSliceGroup");
@@ -382,7 +382,7 @@ public class DataSliceSyncUtil {
                 dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID, DataSlicePropertyType.STRING);
                 List<String> pkList = new ArrayList<>();
                 pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
-                dataServiceInvoker.createGridDataSlice(dataSliceName, dataSliceGroupName+dataSliceType, dataSlicePropertyMap, pkList);
+                dataService.createGridDataSlice(dataSliceName, dataSliceGroupName+dataSliceType, dataSlicePropertyMap, pkList);
             }
             if(entityProperties!= null){
                 entityProperties.put(CoreRealmOperationUtil.RealmGlobalUID,dataPK);

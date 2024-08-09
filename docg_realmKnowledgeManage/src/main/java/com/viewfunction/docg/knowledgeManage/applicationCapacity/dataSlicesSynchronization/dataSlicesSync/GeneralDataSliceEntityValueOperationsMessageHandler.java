@@ -3,7 +3,7 @@ package com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSync
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.dataService.DataServiceInvoker;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataService;
 import com.viewfunction.docg.knowledgeManage.applicationCapacity.dataSlicesSynchronization.DataSlicesSynchronizationApplication;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.CommonObjectsPayloadContent;
 import com.viewfunction.docg.knowledgeManage.applicationService.eventStreaming.kafka.payload.CommonObjectsPayloadMetaInfo;
@@ -42,9 +42,9 @@ public class GeneralDataSliceEntityValueOperationsMessageHandler extends CommonO
     private long SYNC_LISTENING_START_TIME_LONG_VALUE;
     private Map<String, List<DataPropertyInfo>> conceptionKindDataPropertiesMap;
     private Map<String,List<DataPropertyInfo>> relationKindDataPropertiesMap;
-    private DataServiceInvoker dataServiceInvoker;
+    private DataService dataService;
 
-    public GeneralDataSliceEntityValueOperationsMessageHandler(Map<Object,Object> commandContextDataMap,DataServiceInvoker dataServiceInvoker){
+    public GeneralDataSliceEntityValueOperationsMessageHandler(Map<Object,Object> commandContextDataMap, DataService dataService){
         this.commandContextDataMap = commandContextDataMap;
         this.objectMapper = new ObjectMapper();
         this.targetPayloadClassification = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.payloadClassification") != null ?
@@ -52,7 +52,7 @@ public class GeneralDataSliceEntityValueOperationsMessageHandler extends CommonO
         this.targetPayloadType = ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.payloadType") != null ?
                 ApplicationLauncherUtil.getApplicationInfoPropertyValue("DataSlicesSynchronization.payloadType").trim() : null;
         this.SYNC_LISTENING_START_TIME_LONG_VALUE = ((Date)this.commandContextDataMap.get(DataSlicesSynchronizationApplication.SYNC_LISTENING_START_TIME)).getTime();
-        this.dataServiceInvoker = dataServiceInvoker;
+        this.dataService = dataService;
         setUpEntityKindsMetaInfo();
     }
 
@@ -159,37 +159,37 @@ public class GeneralDataSliceEntityValueOperationsMessageHandler extends CommonO
 
     private void doDeleteConceptionEntity(String targetEntityKind,String targetEntityUID){
         if(conceptionKindDataPropertiesMap.containsKey(targetEntityKind)){
-            DataSliceSyncUtil.deleteDataFromSlice(this.dataServiceInvoker,targetEntityKind,targetEntityUID);
+            DataSliceSyncUtil.deleteDataFromSlice(this.dataService,targetEntityKind,targetEntityUID);
         }
     }
 
     private void doDeleteRelationEntity(String targetEntityKind,String targetEntityUID){
         if(relationKindDataPropertiesMap.containsKey(targetEntityKind)){
-            DataSliceSyncUtil.deleteDataFromSlice(this.dataServiceInvoker,targetEntityKind,targetEntityUID);
+            DataSliceSyncUtil.deleteDataFromSlice(this.dataService,targetEntityKind,targetEntityUID);
         }
     }
 
     private void doCreateConceptionEntity(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){
         if(conceptionKindDataPropertiesMap.containsKey(targetEntityKind)){
-            DataSliceSyncUtil.createDataInSlice(this.dataServiceInvoker,targetEntityKind,targetEntityUID,entityProperties,conceptionKindDataPropertiesMap,"_CONCEPTION");
+            DataSliceSyncUtil.createDataInSlice(this.dataService,targetEntityKind,targetEntityUID,entityProperties,conceptionKindDataPropertiesMap,"_CONCEPTION");
         }
     }
 
     private void doCreateRelationEntity(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){
         if(relationKindDataPropertiesMap.containsKey(targetEntityKind)){
-            DataSliceSyncUtil.createDataInSlice(this.dataServiceInvoker,targetEntityKind,targetEntityUID,entityProperties,relationKindDataPropertiesMap,"_RELATION");
+            DataSliceSyncUtil.createDataInSlice(this.dataService,targetEntityKind,targetEntityUID,entityProperties,relationKindDataPropertiesMap,"_RELATION");
         }
     }
 
     private void doUpdateConceptionEntityProperty(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){
         if(conceptionKindDataPropertiesMap.containsKey(targetEntityKind)){
-            DataSliceSyncUtil.updateDataInSlice(this.dataServiceInvoker,targetEntityKind,targetEntityUID,entityProperties);
+            DataSliceSyncUtil.updateDataInSlice(this.dataService,targetEntityKind,targetEntityUID,entityProperties);
         }
     }
 
     private void doUpdateRelationEntityProperty(String targetEntityKind,String targetEntityUID,Map<String,Object> entityProperties){
         if(relationKindDataPropertiesMap.containsKey(targetEntityKind)){
-            DataSliceSyncUtil.updateDataInSlice(this.dataServiceInvoker,targetEntityKind,targetEntityUID,entityProperties);
+            DataSliceSyncUtil.updateDataInSlice(this.dataService,targetEntityKind,targetEntityUID,entityProperties);
         }
     }
 
