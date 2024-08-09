@@ -15,7 +15,7 @@ public class DataServiceTest {
     @BeforeTest
     public void initData(){
         System.out.println("--------------------------------------------------");
-        System.out.println("Init unit test data for ComputeGridTest");
+        System.out.println("Init unit test data for DataServiceTest");
         System.out.println("--------------------------------------------------");
     }
 
