@@ -10,7 +10,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityVa
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceOperationResult
-import com.viewfunction.docg.dataCompute.applicationCapacity.dataCompute.dataComputeUnit.util.CoreRealmOperationUtil
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.common.CoreRealmOperationUtil
 import org.apache.spark.sql.Row
 
 import java.util
