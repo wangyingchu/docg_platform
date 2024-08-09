@@ -1,0 +1,17 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="DOCG DataCompute test suite">
+    <test verbose="1" name="RealmTermFactoryTest">
+        <classes>
+            <class name="com.viewfunction.docg.testcase.dataCompute.termTest.ComputeGridTest"/>
+        </classes>
+    </test>
+
+    <!--
+    <test verbose="2" name="CoreRealmTest">
+        <classes>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.CoreRealmTest"/>
+        </classes>
+    </test>
+   -->
+
+</suite>
