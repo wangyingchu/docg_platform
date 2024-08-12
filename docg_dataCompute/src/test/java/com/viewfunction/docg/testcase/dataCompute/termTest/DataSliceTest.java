@@ -72,15 +72,29 @@ public class DataSliceTest {
             Assert.assertEquals(dataSliceMetaInfo1.getDataSliceName(),testDataSliceName);
 
             DataSliceDetailInfo dataSliceDetailInfo1 =targetComputeGrid.getDataSliceDetail(testDataSliceName);
-
             Assert.assertEquals(dataSliceDetailInfo1.getPrimaryDataCount(),100000);
             Assert.assertEquals(dataSliceDetailInfo1.getPrimaryKeyPropertiesNames().size(),2);
             Assert.assertTrue(dataSliceDetailInfo1.getPrimaryKeyPropertiesNames().contains("property1".toUpperCase()));
             Assert.assertTrue(dataSliceDetailInfo1.getPrimaryKeyPropertiesNames().contains("property2".toUpperCase()));
 
+            Map<String, Object> dataPropertiesValue0 = new HashMap<>();
+            dataPropertiesValue0.put("property1", "DataProperty1Value" + new Date().getTime());
+            dataPropertiesValue0.put("property2", 1);
+            dataPropertiesValue0.put("property3", 1238.999d);
+            dataPropertiesValue0.put("property4", "PROP$VALUE+"+100001);
+            boolean addDataResult = targetDataSlice.addDataRecord(dataPropertiesValue0);
+            Assert.assertTrue(addDataResult);
 
+            Map<String, Object> dataPropertiesValue1 = new HashMap<>();
+            dataPropertiesValue1.put("property1", "DataProperty1Value" + new Date().getTime());
+            dataPropertiesValue1.put("property2", 2);
+            dataPropertiesValue1.put("property3", 1238.999d);
+            dataPropertiesValue1.put("property4", "PROP$VALUE+"+100001);
+            addDataResult = targetDataSlice.addDataRecord(dataPropertiesValue1);
+            Assert.assertTrue(addDataResult);
 
-
+            dataSliceDetailInfo1 =targetComputeGrid.getDataSliceDetail(testDataSliceName);
+            Assert.assertEquals(dataSliceDetailInfo1.getPrimaryDataCount(),100002);
 
             dataService.eraseDataSlice(testDataSliceName);
             targetDataSlice = dataService.getDataSlice(testDataSliceName);
