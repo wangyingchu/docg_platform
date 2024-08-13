@@ -132,10 +132,89 @@ public class DataSliceTest {
             Assert.assertEquals(resultData.get("property3".toUpperCase()),1238.999d);
             Assert.assertEquals(resultData.get("property4".toUpperCase()),"PROP$VALUE+"+100001);
 
+            dataPropertiesValue1.put("property3", 6666.666d);
+            boolean updateResult = targetDataSlice.updateDataRecord(dataPropertiesValue1);
+            Assert.assertTrue(updateResult);
+
+            resultData = targetDataSlice.getDataRecordByPrimaryKeys(dataPropertiesValue2);
+            Assert.assertNotNull(resultData);
+            Assert.assertEquals(resultData.size(),4);
+            Assert.assertEquals(resultData.get("property3".toUpperCase()),6666.666d);
+
+            dataSliceMetaInfo1 = targetDataSlice.getDataSliceMetaInfo();
+            Assert.assertEquals(dataSliceMetaInfo1.getPrimaryDataCount(),100002);
+
+            dataPropertiesValue1.put("property3", 9999.999d);
+            boolean addOrUpdateResult = targetDataSlice.addOrUpdateDataRecord(dataPropertiesValue1);
+            Assert.assertTrue(addOrUpdateResult);
+
+            resultData = targetDataSlice.getDataRecordByPrimaryKeys(dataPropertiesValue2);
+            Assert.assertNotNull(resultData);
+            Assert.assertEquals(resultData.size(),4);
+            Assert.assertEquals(resultData.get("property3".toUpperCase()),9999.999d);
+
+            dataSliceMetaInfo1 = targetDataSlice.getDataSliceMetaInfo();
+            Assert.assertEquals(dataSliceMetaInfo1.getPrimaryDataCount(),100002);
+
+            Map<String, Object> dataPropertiesValue4 = new HashMap<>();
+            dataPropertiesValue4.put("property1", "DataProperty1Value" + dateTimestampStr2);
+            dataPropertiesValue4.put("property2", 3);
+            dataPropertiesValue4.put("property3", 3333.333d);
+
+            addOrUpdateResult = targetDataSlice.addOrUpdateDataRecord(dataPropertiesValue4);
+            Assert.assertTrue(addOrUpdateResult);
+
+            dataSliceMetaInfo1 = targetDataSlice.getDataSliceMetaInfo();
+            Assert.assertEquals(dataSliceMetaInfo1.getPrimaryDataCount(),100003);
+
+            dataPropertiesValue4.remove("property3");
+            resultData = targetDataSlice.getDataRecordByPrimaryKeys(dataPropertiesValue4);
+            Assert.assertNotNull(resultData);
+            Assert.assertNull(resultData.get("property4".toUpperCase()));
+            Assert.assertEquals(resultData.get("property3".toUpperCase()),3333.333d);
+
+            boolean deleteRecordResult = targetDataSlice.deleteDataRecord(dataPropertiesValue4);
+            Assert.assertTrue(deleteRecordResult);
+
+            dataSliceMetaInfo1 = targetDataSlice.getDataSliceMetaInfo();
+            Assert.assertEquals(dataSliceMetaInfo1.getPrimaryDataCount(),100002);
+
+            resultData = targetDataSlice.getDataRecordByPrimaryKeys(dataPropertiesValue4);
+            Assert.assertNull(resultData);
 
 
+            dataPropertiesValue1.remove("property3");
+            dataPropertiesValue1.remove("property4");
 
+            dataPropertiesValue2.remove("property3");
+            dataPropertiesValue2.remove("property4");
 
+            List<Map<String,Object>> deleteKeyList = new ArrayList<>();
+            deleteKeyList.add(dataPropertiesValue1);
+            deleteKeyList.add(dataPropertiesValue2);
+
+            Map<String, Object> dataPropertiesValueNotExist = new HashMap<>();
+            dataPropertiesValueNotExist.put("property1", "DataProperty1Value" + "NOTEXIST");
+            dataPropertiesValueNotExist.put("property2", 2);
+
+            deleteKeyList.add(dataPropertiesValueNotExist);
+
+            DataSliceOperationResult deleteDataSliceOperationResult = targetDataSlice.deleteDataRecords(deleteKeyList);
+            Assert.assertNotNull(deleteDataSliceOperationResult);
+            Assert.assertEquals(deleteDataSliceOperationResult.getSuccessItemsCount(),2);
+            Assert.assertEquals(deleteDataSliceOperationResult.getFailItemsCount(),1);
+
+            Assert.assertNull(deleteDataSliceOperationResult.getStartTime());
+            Assert.assertNull(deleteDataSliceOperationResult.getFinishTime());
+            Assert.assertNull(deleteDataSliceOperationResult.getOperationSummary());
+
+            dataSliceMetaInfo1 = targetDataSlice.getDataSliceMetaInfo();
+            Assert.assertEquals(dataSliceMetaInfo1.getPrimaryDataCount(),100000);
+
+            targetDataSlice.emptyDataSlice();
+
+            dataSliceMetaInfo1 = targetDataSlice.getDataSliceMetaInfo();
+            Assert.assertEquals(dataSliceMetaInfo1.getPrimaryDataCount(),0);
 
             dataService.eraseDataSlice(testDataSliceName);
             targetDataSlice = dataService.getDataSlice(testDataSliceName);
