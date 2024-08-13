@@ -182,12 +182,11 @@ public class DataSliceTest {
             resultData = targetDataSlice.getDataRecordByPrimaryKeys(dataPropertiesValue4);
             Assert.assertNull(resultData);
 
+            //dataPropertiesValue1.remove("property3");
+            //dataPropertiesValue1.remove("property4");
 
-            dataPropertiesValue1.remove("property3");
-            dataPropertiesValue1.remove("property4");
-
-            dataPropertiesValue2.remove("property3");
-            dataPropertiesValue2.remove("property4");
+            //dataPropertiesValue2.remove("property3");
+            //dataPropertiesValue2.remove("property4");
 
             List<Map<String,Object>> deleteKeyList = new ArrayList<>();
             deleteKeyList.add(dataPropertiesValue1);
