@@ -7,10 +7,7 @@ import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSlic
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceMetaInfo;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceOperationResult;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceQueryResult;
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.ComputeGrid;
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataService;
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlice;
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.*;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.factory.ComputeGridTermFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
@@ -73,6 +70,10 @@ public class DataSliceTest {
             DataSliceMetaInfo dataSliceMetaInfo1 = targetDataSlice.getDataSliceMetaInfo();
             Assert.assertEquals(dataSliceMetaInfo1.getPrimaryDataCount(),100000);
             Assert.assertEquals(dataSliceMetaInfo1.getDataSliceName(),testDataSliceName);
+            Assert.assertEquals(dataSliceMetaInfo1.getDataStoreMode(), DataSliceStoreMode.PerUnit);
+            Assert.assertEquals(dataSliceMetaInfo1.getAtomicityMode(),DataSliceAtomicityMode.ATOMIC);
+            Assert.assertEquals(dataSliceMetaInfo1.getBackupDataCount(),0);
+            Assert.assertEquals(dataSliceMetaInfo1.getTotalDataCount(),100000);
 
             DataSliceDetailInfo dataSliceDetailInfo1 =targetComputeGrid.getDataSliceDetail(testDataSliceName);
             Assert.assertEquals(dataSliceDetailInfo1.getPrimaryDataCount(),100000);
@@ -104,6 +105,15 @@ public class DataSliceTest {
             QueryParameters queryParameters = new QueryParameters();
             queryParameters.setDefaultFilteringItem(new EqualFilteringItem("property1", "DataProperty1Value" + dateTimestampStr1));
             DataSliceQueryResult dataSliceQueryResult = targetDataSlice.queryDataRecords(queryParameters);
+            Assert.assertNotNull(dataSliceQueryResult);
+            Assert.assertEquals(dataSliceQueryResult.getResultRecords().size(),1);
+            Assert.assertNotNull(dataSliceQueryResult.getStartTime());
+            Assert.assertNotNull(dataSliceQueryResult.getFinishTime());
+            Assert.assertNotNull(dataSliceQueryResult.getOperationSummary());
+            Assert.assertNotNull(dataSliceQueryResult.getQueryLogic());
+
+            String queryLogic = dataSliceQueryResult.getQueryLogic();
+            dataSliceQueryResult = targetDataSlice.queryDataRecords(queryLogic);
             Assert.assertNotNull(dataSliceQueryResult);
             Assert.assertEquals(dataSliceQueryResult.getResultRecords().size(),1);
             Assert.assertNotNull(dataSliceQueryResult.getStartTime());
