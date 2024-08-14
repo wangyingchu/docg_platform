@@ -182,20 +182,19 @@ public class DataSliceTest {
             resultData = targetDataSlice.getDataRecordByPrimaryKeys(dataPropertiesValue4);
             Assert.assertNull(resultData);
 
-            //dataPropertiesValue1.remove("property3");
-            //dataPropertiesValue1.remove("property4");
-
-            //dataPropertiesValue2.remove("property3");
-            //dataPropertiesValue2.remove("property4");
-
             List<Map<String,Object>> deleteKeyList = new ArrayList<>();
-            deleteKeyList.add(dataPropertiesValue1);
-            deleteKeyList.add(dataPropertiesValue2);
+            Map<String, Object> dataKeyPropertiesValueForDelete1 = new HashMap<>();
+            dataKeyPropertiesValueForDelete1.put("property1",dataPropertiesValue1.get("property1"));
+            dataKeyPropertiesValueForDelete1.put("property2",dataPropertiesValue1.get("property2"));
+            Map<String, Object> dataKeyPropertiesValueForDelete2 = new HashMap<>();
+            dataKeyPropertiesValueForDelete2.put("property1",dataPropertiesValue0.get("property1"));
+            dataKeyPropertiesValueForDelete2.put("property2",dataPropertiesValue0.get("property2"));
+            deleteKeyList.add(dataKeyPropertiesValueForDelete1);
+            deleteKeyList.add(dataKeyPropertiesValueForDelete2);
 
             Map<String, Object> dataPropertiesValueNotExist = new HashMap<>();
             dataPropertiesValueNotExist.put("property1", "DataProperty1Value" + "NOTEXIST");
             dataPropertiesValueNotExist.put("property2", 2);
-
             deleteKeyList.add(dataPropertiesValueNotExist);
 
             DataSliceOperationResult deleteDataSliceOperationResult = targetDataSlice.deleteDataRecords(deleteKeyList);
@@ -203,9 +202,9 @@ public class DataSliceTest {
             Assert.assertEquals(deleteDataSliceOperationResult.getSuccessItemsCount(),2);
             Assert.assertEquals(deleteDataSliceOperationResult.getFailItemsCount(),1);
 
-            Assert.assertNull(deleteDataSliceOperationResult.getStartTime());
-            Assert.assertNull(deleteDataSliceOperationResult.getFinishTime());
-            Assert.assertNull(deleteDataSliceOperationResult.getOperationSummary());
+            Assert.assertNotNull(deleteDataSliceOperationResult.getStartTime());
+            Assert.assertNotNull(deleteDataSliceOperationResult.getFinishTime());
+            Assert.assertNotNull(deleteDataSliceOperationResult.getOperationSummary());
 
             dataSliceMetaInfo1 = targetDataSlice.getDataSliceMetaInfo();
             Assert.assertEquals(dataSliceMetaInfo1.getPrimaryDataCount(),100000);
