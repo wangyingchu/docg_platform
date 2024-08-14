@@ -5,18 +5,14 @@
             <class name="com.viewfunction.docg.testcase.dataCompute.termTest.ComputeGridTest"/>
         </classes>
     </test>
-
-    <!--
     <test verbose="2" name="DataServiceTest">
         <classes>
             <class name="com.viewfunction.docg.testcase.dataCompute.termTest.DataServiceTest"/>
         </classes>
     </test>
--->
     <test verbose="2" name="DataSliceTest">
         <classes>
             <class name="com.viewfunction.docg.testcase.dataCompute.termTest.DataSliceTest"/>
         </classes>
     </test>
-
 </suite>
