@@ -10,9 +10,14 @@
             <class name="com.viewfunction.docg.testcase.dataCompute.termTest.DataServiceTest"/>
         </classes>
     </test>
-    <test verbose="2" name="DataSliceTest">
+    <test verbose="3" name="DataSliceTest">
         <classes>
             <class name="com.viewfunction.docg.testcase.dataCompute.termTest.DataSliceTest"/>
+        </classes>
+    </test>
+    <test verbose="4" name="DataSliceQueryTest">
+        <classes>
+            <class name="com.viewfunction.docg.testcase.dataCompute.termTest.DataSliceQueryTest"/>
         </classes>
     </test>
 </suite>

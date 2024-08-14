@@ -8,6 +8,7 @@ import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePr
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.common.CoreRealmOperationUtil;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.factory.ComputeGridTermFactory;
 import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ import java.util.Map;
 
 public class DataSliceQueryTest {
 
-    private static final String RoadWeatherInformationStationsRecordsConceptionType = "RoadWeatherRecords";
+    private static final String RoadWeatherInformationStationsRecordsDataSlice = "RoadWeatherRecords";
     private static final String StationName = "stationName";
     private static final String StationLocation = "stationLocation";
     private static final String RecordDateTime = "dateTime";
@@ -32,7 +33,7 @@ public class DataSliceQueryTest {
 
         ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
         try(DataService dataService = targetComputeGrid.getDataService()){
-            DataSlice targetDataSlice = dataService.getDataSlice(RoadWeatherInformationStationsRecordsConceptionType);
+            DataSlice targetDataSlice = dataService.getDataSlice(RoadWeatherInformationStationsRecordsDataSlice);
 
             if(targetDataSlice == null){
                 Map<String, DataSlicePropertyType> dataSlicePropertyMap = new HashMap<>();
@@ -47,9 +48,21 @@ public class DataSliceQueryTest {
                 List<String> pkList = new ArrayList<>();
                 pkList.add(CoreRealmOperationUtil.RealmGlobalUID);
 
-                dataService.createGridDataSlice(RoadWeatherInformationStationsRecordsConceptionType,"defaultSliceGroup",dataSlicePropertyMap,pkList);
+                dataService.createGridDataSlice(RoadWeatherInformationStationsRecordsDataSlice,"defaultSliceGroup",dataSlicePropertyMap,pkList);
             }
         } catch (ComputeGridException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testDataSliceQueryFunction() throws ComputeGridException {
+        ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
+        try(DataService dataService = targetComputeGrid.getDataService()){
+            dataService.eraseDataSlice(RoadWeatherInformationStationsRecordsDataSlice);
+        }catch (ComputeGridException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
