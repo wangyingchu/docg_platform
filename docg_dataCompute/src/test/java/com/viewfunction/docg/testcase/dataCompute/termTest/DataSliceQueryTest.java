@@ -232,6 +232,40 @@ public class DataSliceQueryTest {
             }
             Assert.assertTrue(exceptionThrown);
 
+            filteringItem = new SimilarFilteringItem("STATIONNAME","Bridge", SimilarFilteringItem.MatchingType.EndWith);
+            queryParameters.setDefaultFilteringItem(filteringItem);
+            dataSliceQueryResult2 = targetDataSlice.queryDataRecords(queryParameters);
+            resultRecordsList = dataSliceQueryResult2.getResultRecords();
+            Assert.assertEquals(resultRecordsList.size(),6750);
+            for (Map<String, Object> currentRecord : resultRecordsList) {
+                String sTATIONNAME = currentRecord.get("STATIONNAME".toUpperCase()).toString();
+                //System.out.println(sTATIONNAME);
+                Assert.assertTrue(sTATIONNAME.endsWith("Bridge"));
+            }
+
+            filteringItem = new SimilarFilteringItem("STATIONNAME","Magno", SimilarFilteringItem.MatchingType.BeginWith);
+            queryParameters.setDefaultFilteringItem(filteringItem);
+            dataSliceQueryResult2 = targetDataSlice.queryDataRecords(queryParameters);
+            resultRecordsList = dataSliceQueryResult2.getResultRecords();
+            Assert.assertEquals(resultRecordsList.size(),3393);
+            for (Map<String, Object> currentRecord : resultRecordsList) {
+                String sTATIONNAME = currentRecord.get("STATIONNAME".toUpperCase()).toString();
+                //System.out.println(sTATIONNAME);
+                Assert.assertTrue(sTATIONNAME.startsWith("Magno"));
+            }
+
+            filteringItem = new SimilarFilteringItem("STATIONNAME","SWMy", SimilarFilteringItem.MatchingType.Contain);
+            queryParameters.setDefaultFilteringItem(filteringItem);
+            dataSliceQueryResult2 = targetDataSlice.queryDataRecords(queryParameters);
+            resultRecordsList = dataSliceQueryResult2.getResultRecords();
+            Assert.assertEquals(resultRecordsList.size(),3389);
+            for (Map<String, Object> currentRecord : resultRecordsList) {
+                String sTATIONNAME = currentRecord.get("STATIONNAME".toUpperCase()).toString();
+                //System.out.println(sTATIONNAME);
+                Assert.assertTrue(sTATIONNAME.contains("SWMy"));
+                Assert.assertTrue(!sTATIONNAME.startsWith("SWMy"));
+                Assert.assertTrue(!sTATIONNAME.endsWith("SWMy"));
+            }
 
 
 
@@ -240,7 +274,12 @@ public class DataSliceQueryTest {
 
 
 
-            //System.out.println(dataSliceQueryResult2.getResultRecords().size());
+
+
+
+
+
+            System.out.println(dataSliceQueryResult2.getResultRecords().size());
 
 
 
