@@ -9,14 +9,17 @@ import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSlic
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.ComputeGrid;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataService;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlice;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.factory.ComputeGridTermFactory;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class DataSliceQueryTest {
 
@@ -33,7 +36,7 @@ public class DataSliceQueryTest {
         System.out.println("--------------------------------------------------");
         System.out.println("Init unit test data for DataSliceQueryTest");
         System.out.println("--------------------------------------------------");
-/*
+
         ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
         try(DataService dataService = targetComputeGrid.getDataService()){
             DataSlice targetDataSlice = dataService.getDataSlice(RoadWeatherInformationStationsRecordsDataSlice);
@@ -87,8 +90,6 @@ public class DataSliceQueryTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
- */
     }
 
     @Test
@@ -267,37 +268,67 @@ public class DataSliceQueryTest {
                 Assert.assertTrue(!sTATIONNAME.endsWith("SWMy"));
             }
 
+            filteringItem = new EqualFilteringItem("AIRTEMPERATURE", 66.65);
+            queryParameters.setDefaultFilteringItem(filteringItem);
 
+            FilteringItem andFilteringItem1 = new GreaterThanFilteringItem("ROADSURFACETEMPERATURE", 80.0);
+            queryParameters.addFilteringItem(andFilteringItem1, QueryParameters.FilteringLogic.AND);
 
+            List<Object> valueList2 = new ArrayList<>();
+            valueList2.add("AuroraBridge");
+            valueList2.add("MagnoliaBridge");
+            FilteringItem andFilteringItem2 = new InValueFilteringItem("STATIONNAME", valueList2);
+            queryParameters.addFilteringItem(andFilteringItem2, QueryParameters.FilteringLogic.AND);
 
+            FilteringItem orFilteringItem1 = new LessThanFilteringItem("AirTemperature", 66.65);
+            queryParameters.addFilteringItem(orFilteringItem1, QueryParameters.FilteringLogic.OR);
 
+            queryParameters.setDistinctMode(true);
+            queryParameters.addSortingAttribute("AirTemperature", QueryParameters.SortingLogic.ASC);
 
+            dataSliceQueryResult2 = targetDataSlice.queryDataRecords(queryParameters);
+            //select distinct * from RoadWeatherRecords where ((AIRTEMPERATURE = 66.65 and ROADSURFACETEMPERATURE > 80.0 and STATIONNAME in ('AuroraBridge', 'MagnoliaBridge')) or AirTemperature < 66.65) order by AirTemperature asc limit 50000 offset 0
+            resultRecordsList = dataSliceQueryResult2.getResultRecords();
+            Assert.assertEquals(resultRecordsList.size(),13198);
+            for (Map<String, Object> currentRecord : resultRecordsList) {
+                String AirTemperature = currentRecord.get("STATIONNAME".toUpperCase()).toString();
+                double airTEMPERATUREValue = Double.parseDouble(currentRecord.get("airTEMPERATURE".toUpperCase()).toString());
+                //System.out.println(airTEMPERATUREValue);
+                //Assert.assertTrue(airTEMPERATUREValue<=66.65);
+                if(airTEMPERATUREValue==66.65){
+                    double _ROADSURFACETEMPERATUREValue = Double.parseDouble(currentRecord.get("ROADSURFACETEMPERATURE".toUpperCase()).toString());
+                    String _STATIONNAME = currentRecord.get("STATIONNAME".toUpperCase()).toString();
+                    //System.out.println(_STATIONNAME);
+                    //System.out.println(airTEMPERATUREValue);
+                    Assert.assertTrue((_STATIONNAME.equals("AuroraBridge") | _STATIONNAME.equals("MagnoliaBridge")));
+                    Assert.assertTrue(_ROADSURFACETEMPERATUREValue >80.0);
+                }else{
+                    Assert.assertTrue(airTEMPERATUREValue <66.65);
+                }
+            }
 
+            for(int i=0;i<resultRecordsList.size()-1;i++){
+                Map<String, Object> currentRecord = resultRecordsList.get(i);
+                Map<String, Object> nextRecord = resultRecordsList.get(i+1);
+                double airTEMPERATUREValue_current = Double.parseDouble(currentRecord.get("airTEMPERATURE".toUpperCase()).toString());
+                double airTEMPERATUREValue_next = Double.parseDouble(nextRecord.get("airTEMPERATURE".toUpperCase()).toString());
+                Assert.assertTrue(airTEMPERATUREValue_current <=airTEMPERATUREValue_next);
+            }
 
+            queryParameters.setResultNumber(350);
+            dataSliceQueryResult2 = targetDataSlice.queryDataRecords(queryParameters);
+            resultRecordsList = dataSliceQueryResult2.getResultRecords();
+            Assert.assertEquals(resultRecordsList.size(),350);
 
+            queryParameters.setResultNumber(50000);
+            queryParameters.setStartPage(40);
+            queryParameters.setEndPage(60);
+            queryParameters.setPageSize(10);
+            dataSliceQueryResult2 = targetDataSlice.queryDataRecords(queryParameters);
+            resultRecordsList = dataSliceQueryResult2.getResultRecords();
+            Assert.assertEquals(resultRecordsList.size(),200);
 
-
-
-
-            System.out.println(dataSliceQueryResult2.getResultRecords().size());
-
-
-
-
-
-            //queryParameters.setStartPage(40);
-            //queryParameters.setEndPage(60);
-            //queryParameters.setPageSize(10);
-            //queryParameters.setDistinctMode(true);
-
-            //queryParameters.addSortingAttribute("AirTemperature", QueryParameters.SortingLogic.ASC);
-            //queryParameters.addSortingAttribute("REALMGLOBALUID", QueryParameters.SortingLogic.DESC);
-
-            //dataService.eraseDataSlice(RoadWeatherInformationStationsRecordsDataSlice);
-
-
-
-
+            dataService.eraseDataSlice(RoadWeatherInformationStationsRecordsDataSlice);
         }catch (ComputeGridException e) {
             e.printStackTrace();
         } catch (Exception e) {
