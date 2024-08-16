@@ -1983,15 +1983,25 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
     private String generateRelationMatchCQLPart(String conceptionEntityCqlAlias,RelationMatchingItem relationMatchingItem,RelationMatchParameters.MatchingLogic matchLogic){
         if(relationMatchingItem != null && relationMatchingItem.getRelationKind() != null && relationMatchingItem.getRelationDirection() != null){
+            String relationJumpStepStr=null;
+            if(relationMatchingItem.getRelationJump() == null){
+                // not define jump step, using *
+                relationJumpStepStr="*]";
+            }else if(relationMatchingItem.getRelationJump() == 1){
+                relationJumpStepStr="]";
+            }else{
+                relationJumpStepStr="*"+relationMatchingItem.getRelationJump()+"]";
+            }
+
             String _CQLPart = "";
             if(relationMatchingItem.getRelatedConceptionKind() != null){
-                _CQLPart = "("+conceptionEntityCqlAlias+")-[:`"+relationMatchingItem.getRelationKind()+"`]-(:`"+relationMatchingItem.getRelatedConceptionKind()+"`)";
+                _CQLPart = "("+conceptionEntityCqlAlias+")-[:`"+relationMatchingItem.getRelationKind()+"`"+relationJumpStepStr+"-(:`"+relationMatchingItem.getRelatedConceptionKind()+"`)";
             }else{
-                _CQLPart = "("+conceptionEntityCqlAlias+")-[:`"+relationMatchingItem.getRelationKind()+"`]-()";
+                _CQLPart = "("+conceptionEntityCqlAlias+")-[:`"+relationMatchingItem.getRelationKind()+"`"+relationJumpStepStr+"-()";
             }
 
             switch (relationMatchingItem.getRelationDirection()){
-                case FROM -> _CQLPart = _CQLPart.replace("]-(","]->(");
+                case FROM -> _CQLPart = _CQLPart.replace(relationJumpStepStr+"-(",relationJumpStepStr+"->(");
                 case TO -> _CQLPart = _CQLPart.replace(")-[:",")<-[:");
             }
             if(relationMatchingItem.isReversedCondition()){
