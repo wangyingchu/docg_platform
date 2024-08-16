@@ -5,16 +5,16 @@ import com.viewfunction.docg.dataCompute.dataComputeServiceCore.internal.ignite.
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.*;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.spi.ignite.termInf.IgniteComputeFunction;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.spi.ignite.termInf.IgniteComputeService;
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.config.DataComputeConfigurationHandler;
-
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCompute;
 import org.apache.ignite.IgniteServices;
 import org.apache.ignite.Ignition;
+import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.lang.IgniteFuture;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 public class IgniteComputeServiceImpl implements IgniteComputeService {
 
@@ -24,7 +24,14 @@ public class IgniteComputeServiceImpl implements IgniteComputeService {
 
     public void openServiceSession() throws ComputeGridNotActiveException {
         Ignition.setClientMode(true);
-        this.invokerIgnite = Ignition.start(DataComputeConfigurationHandler.getDataComputeIgniteConfigurationFilePath());
+
+        // use this logic to avoid create already exist ignite nodes has same name
+        IgniteConfiguration igniteConfiguration= new IgniteConfiguration();
+        igniteConfiguration.setClientMode(true);
+        igniteConfiguration.setIgniteInstanceName("DOCG_DATA_COMPUTE_CLIENT_"+new Date().getTime());
+        this.invokerIgnite = Ignition.start(igniteConfiguration);
+        //this.invokerIgnite = Ignition.start(DataComputeConfigurationHandler.getDataComputeIgniteConfigurationFilePath());
+
         UnitIgniteOperationUtil.checkGridActiveStatus(this.invokerIgnite);
     }
 

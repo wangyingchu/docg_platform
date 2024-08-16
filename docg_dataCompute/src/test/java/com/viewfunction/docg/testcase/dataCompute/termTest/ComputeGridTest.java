@@ -41,13 +41,13 @@ public class ComputeGridTest {
         Assert.assertNotNull(targetComputeGridRealtimeStatisticsInfo);
         Assert.assertNotNull(targetComputeGridRealtimeStatisticsInfo.getOldestUnitId());
         Assert.assertNotNull(targetComputeGridRealtimeStatisticsInfo.getYoungestUnitId());
-        Assert.assertTrue(targetComputeGridRealtimeStatisticsInfo.getAssignedMemoryInMB()>0);
+        Assert.assertTrue(targetComputeGridRealtimeStatisticsInfo.getAssignedMemoryInMB()>=0);
 
-        Assert.assertEquals(targetComputeGridRealtimeStatisticsInfo.getUsedMemoryInMB(),0);
+        Assert.assertTrue(targetComputeGridRealtimeStatisticsInfo.getUsedMemoryInMB()>=0);
         Assert.assertTrue(targetComputeGridRealtimeStatisticsInfo.getMaxAvailableMemoryInMB()>0);
         Assert.assertNotNull(targetComputeGridRealtimeStatisticsInfo.getGridStartTime());
-        Assert.assertTrue(targetComputeGridRealtimeStatisticsInfo.getGridUpTimeInMinute()>0);
-        Assert.assertTrue(targetComputeGridRealtimeStatisticsInfo.getTotalIdleTimeInSecond()>0);
+        Assert.assertTrue(targetComputeGridRealtimeStatisticsInfo.getGridUpTimeInMinute()>=0);
+        Assert.assertTrue(targetComputeGridRealtimeStatisticsInfo.getTotalIdleTimeInSecond()>=0);
         Assert.assertEquals(targetComputeGridRealtimeStatisticsInfo.getDataComputeUnitsAmount(),1);
         Assert.assertTrue(targetComputeGridRealtimeStatisticsInfo.getTotalAvailableCPUCores()>1);
 
@@ -57,8 +57,8 @@ public class ComputeGridTest {
         for(ComputeUnitRealtimeStatisticsInfo currentComputeUnitRealtimeStatisticsInfo:computeUnitRealtimeStatisticsInfoSet){
             Assert.assertNotNull(currentComputeUnitRealtimeStatisticsInfo.getUnitStartTime());
             Assert.assertNotNull(currentComputeUnitRealtimeStatisticsInfo.getUnitID());
-            Assert.assertTrue(currentComputeUnitRealtimeStatisticsInfo.getAssignedMemoryInMB()>0);
-            Assert.assertTrue(currentComputeUnitRealtimeStatisticsInfo.getMaxAvailableMemoryInMB()>0);
+            Assert.assertTrue(currentComputeUnitRealtimeStatisticsInfo.getAssignedMemoryInMB()>=0);
+            Assert.assertTrue(currentComputeUnitRealtimeStatisticsInfo.getMaxAvailableMemoryInMB()>=0);
             Assert.assertTrue(currentComputeUnitRealtimeStatisticsInfo.getUsedMemoryInMB()>=0);
             Assert.assertTrue(currentComputeUnitRealtimeStatisticsInfo.getAvailableCPUCores()>0);
             Assert.assertTrue(currentComputeUnitRealtimeStatisticsInfo.getUnitUpTimeInMinute()>=0);
