@@ -6,9 +6,7 @@ import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.ComputeServ
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.ValueReturnComputeLogic;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.VoidReturnComputeLogic;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.factory.ComputeGridTermFactory;
-import com.viewfunction.docg.testcase.dataCompute.termTest.computeServiceLogic.FixInputTypeComputeLogicA;
-import com.viewfunction.docg.testcase.dataCompute.termTest.computeServiceLogic.ValueReturnComputeLogicA;
-import com.viewfunction.docg.testcase.dataCompute.termTest.computeServiceLogic.VoidReturnComputeLogicA;
+import com.viewfunction.docg.testcase.dataCompute.termTest.computeServiceLogic.*;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -105,5 +103,27 @@ public class ComputeServiceTest {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
+        //doDeploy
+        targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
+        try(ComputeService computeService = targetComputeGrid.getComputeService()){
+            ComputeFunctionImplementationA computeFunctionImplementationA = new ComputeFunctionImplementationA();
+            computeService.deployGridComputeFunction("testFunction1",computeFunctionImplementationA);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        //doInvoke
+        targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
+        try(ComputeService computeService = targetComputeGrid.getComputeService()){
+            ComputeFunctionA computeFunctionA = computeService.getComputeFunction("testFunction1", ComputeFunctionA.class);
+            String result = computeFunctionA.doSomeThing("hello world");
+            System.out.println(result);
+            Assert.assertNotNull(result);
+            Assert.assertEquals(result,"compute some thing -> hello world");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
