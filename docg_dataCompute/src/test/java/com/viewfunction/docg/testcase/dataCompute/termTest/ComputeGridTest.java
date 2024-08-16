@@ -37,11 +37,39 @@ public class ComputeGridTest {
         DataService dataService = computeGrid.getDataService();
         Assert.assertNotNull(dataService);
 
-        ComputeGridRealtimeStatisticsInfo computeGridRealtimeStatisticsInfo = computeGrid.getGridRealtimeStatisticsInfo();
-        Assert.assertNotNull(computeGridRealtimeStatisticsInfo);
+        ComputeGridRealtimeStatisticsInfo targetComputeGridRealtimeStatisticsInfo = computeGrid.getGridRealtimeStatisticsInfo();
+        Assert.assertNotNull(targetComputeGridRealtimeStatisticsInfo);
+        Assert.assertNotNull(targetComputeGridRealtimeStatisticsInfo.getOldestUnitId());
+        Assert.assertNotNull(targetComputeGridRealtimeStatisticsInfo.getYoungestUnitId());
+        Assert.assertTrue(targetComputeGridRealtimeStatisticsInfo.getAssignedMemoryInMB()>0);
+
+        Assert.assertEquals(targetComputeGridRealtimeStatisticsInfo.getUsedMemoryInMB(),0);
+        Assert.assertTrue(targetComputeGridRealtimeStatisticsInfo.getMaxAvailableMemoryInMB()>0);
+        Assert.assertNotNull(targetComputeGridRealtimeStatisticsInfo.getGridStartTime());
+        Assert.assertTrue(targetComputeGridRealtimeStatisticsInfo.getGridUpTimeInMinute()>0);
+        Assert.assertTrue(targetComputeGridRealtimeStatisticsInfo.getTotalIdleTimeInSecond()>0);
+        Assert.assertEquals(targetComputeGridRealtimeStatisticsInfo.getDataComputeUnitsAmount(),1);
+        Assert.assertTrue(targetComputeGridRealtimeStatisticsInfo.getTotalAvailableCPUCores()>1);
 
         Set<ComputeUnitRealtimeStatisticsInfo> computeUnitRealtimeStatisticsInfoSet = computeGrid.getComputeUnitsRealtimeStatisticsInfo();
         Assert.assertNotNull(computeUnitRealtimeStatisticsInfoSet);
+
+        for(ComputeUnitRealtimeStatisticsInfo currentComputeUnitRealtimeStatisticsInfo:computeUnitRealtimeStatisticsInfoSet){
+            Assert.assertNotNull(currentComputeUnitRealtimeStatisticsInfo.getUnitStartTime());
+            Assert.assertNotNull(currentComputeUnitRealtimeStatisticsInfo.getUnitID());
+            Assert.assertTrue(currentComputeUnitRealtimeStatisticsInfo.getAssignedMemoryInMB()>0);
+            Assert.assertTrue(currentComputeUnitRealtimeStatisticsInfo.getMaxAvailableMemoryInMB()>0);
+            Assert.assertTrue(currentComputeUnitRealtimeStatisticsInfo.getUsedMemoryInMB()>=0);
+            Assert.assertTrue(currentComputeUnitRealtimeStatisticsInfo.getAvailableCPUCores()>0);
+            Assert.assertTrue(currentComputeUnitRealtimeStatisticsInfo.getUnitUpTimeInMinute()>=0);
+            Assert.assertTrue(currentComputeUnitRealtimeStatisticsInfo.getTotalIdleTimeInSecond()>=0);
+            Assert.assertTrue(currentComputeUnitRealtimeStatisticsInfo.getTotalBusyTimeInSecond()>=0);
+            Assert.assertTrue(currentComputeUnitRealtimeStatisticsInfo.getAverageCPULoadPercentage()>=0);
+            Assert.assertTrue(currentComputeUnitRealtimeStatisticsInfo.getCurrentCPULoadPercentage()>=0);
+            Assert.assertTrue(currentComputeUnitRealtimeStatisticsInfo.getIdleTimePercentage()>=0);
+            Assert.assertTrue(currentComputeUnitRealtimeStatisticsInfo.getBusyTimePercentage()>=0);
+            Assert.assertTrue(currentComputeUnitRealtimeStatisticsInfo.getCurrentIdleTimeInSecond()>=0);
+        }
 
         Set<DataComputeUnitMetaInfo> dataComputeUnitMetaInfoSet = computeGrid.listDataComputeUnit();
         Assert.assertNotNull(dataComputeUnitMetaInfoSet);
