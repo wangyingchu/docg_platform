@@ -4,6 +4,8 @@ import com.viewfunction.docg.dataCompute.dataComputeServiceCore.exception.Comput
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.ComputeGrid;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.ComputeService;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.factory.ComputeGridTermFactory;
+import com.viewfunction.docg.testcase.dataCompute.termTest.computeServiceLogic.ComputeFunctionA;
+import com.viewfunction.docg.testcase.dataCompute.termTest.computeServiceLogic.ComputeFunctionImplementationA;
 
 public class ComputeService_FunctionTest {
 

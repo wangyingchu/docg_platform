@@ -2,6 +2,9 @@ package com.viewfunction.docg.dataCompute.termTest;
 
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.*;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.factory.ComputeGridTermFactory;
+import com.viewfunction.docg.testcase.dataCompute.termTest.computeServiceLogic.FixInputTypeComputeLogicA;
+import com.viewfunction.docg.testcase.dataCompute.termTest.computeServiceLogic.ValueReturnComputeLogicA;
+import com.viewfunction.docg.testcase.dataCompute.termTest.computeServiceLogic.VoidReturnComputeLogicA;
 
 import java.util.ArrayList;
 import java.util.Collection;

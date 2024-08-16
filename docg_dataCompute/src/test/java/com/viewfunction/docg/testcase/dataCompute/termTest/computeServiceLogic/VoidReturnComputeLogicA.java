@@ -1,4 +1,4 @@
-package com.viewfunction.docg.dataCompute.termTest;
+package com.viewfunction.docg.testcase.dataCompute.termTest.computeServiceLogic;
 
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.spi.ignite.termImpl.BaseIgniteVoidReturnComputeLogic;
 import org.apache.ignite.IgniteAtomicLong;

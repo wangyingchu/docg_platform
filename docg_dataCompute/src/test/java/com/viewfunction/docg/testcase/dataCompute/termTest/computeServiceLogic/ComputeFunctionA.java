@@ -1,4 +1,4 @@
-package com.viewfunction.docg.dataCompute.termTest;
+package com.viewfunction.docg.testcase.dataCompute.termTest.computeServiceLogic;
 
 public interface ComputeFunctionA {
 
