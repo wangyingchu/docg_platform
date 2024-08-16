@@ -25,4 +25,9 @@
             <class name="com.viewfunction.docg.testcase.dataCompute.termTest.ComputeServiceTest"/>
         </classes>
     </test>
+    <test verbose="6" name="ComputeGridObserverTest">
+        <classes>
+            <class name="com.viewfunction.docg.testcase.dataCompute.termTest.ComputeGridObserverTest"/>
+        </classes>
+    </test>
 </suite>
