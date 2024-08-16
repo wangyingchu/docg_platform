@@ -5,10 +5,9 @@ import com.viewfunction.docg.dataCompute.dataComputeServiceCore.internal.ignite.
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataComputeUnitMetaInfo;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceDetailInfo;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceMetaInfo;
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.ComputeGrid;
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataService;
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.*;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.factory.ComputeGridTermFactory;
+import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -62,46 +61,66 @@ public class ComputeGridObserverTest {
         DataSliceDetailInfo dataSliceDetailInfo = computeGridObserver.getDataSliceDetail("gridDataSliceA");
         computeGridObserver.closeObserveSession();
         for(DataSliceMetaInfo currentDataSliceMetaInfo : dataSliceMetaInfoSet){
-            System.out.println(currentDataSliceMetaInfo.getDataSliceName());
-            System.out.println(currentDataSliceMetaInfo.getAtomicityMode());
-            System.out.println(currentDataSliceMetaInfo.getBackupDataCount());
-            System.out.println(currentDataSliceMetaInfo.getDataStoreMode());
-            System.out.println(currentDataSliceMetaInfo.getPrimaryDataCount());
-            System.out.println(currentDataSliceMetaInfo.getSliceGroupName());
-            System.out.println(currentDataSliceMetaInfo.getStoreBackupNumber());
-            System.out.println(currentDataSliceMetaInfo.getTotalDataCount());
-            System.out.println("**************************");
+            Assert.assertNotNull(currentDataSliceMetaInfo.getDataSliceName());
+            Assert.assertNotNull(currentDataSliceMetaInfo.getDataStoreMode());
+            Assert.assertEquals(currentDataSliceMetaInfo.getAtomicityMode(), DataSliceAtomicityMode.ATOMIC);
+            Assert.assertEquals(currentDataSliceMetaInfo.getBackupDataCount(),0);
+            if(currentDataSliceMetaInfo.getDataSliceName().equals("gridDataSliceA")){
+                Assert.assertEquals(currentDataSliceMetaInfo.getDataStoreMode(), DataSliceStoreMode.PerUnit);
+            }
+            if(currentDataSliceMetaInfo.getDataSliceName().equals("gridDataSliceB")){
+                Assert.assertEquals(currentDataSliceMetaInfo.getDataStoreMode(), DataSliceStoreMode.Grid);
+            }
+            Assert.assertEquals(currentDataSliceMetaInfo.getPrimaryDataCount(),0);
+            Assert.assertEquals(currentDataSliceMetaInfo.getSliceGroupName(),"\"SLICEGROUP1\"");
+            Assert.assertEquals(currentDataSliceMetaInfo.getTotalDataCount(),0);
         }
         for(DataComputeUnitMetaInfo currentDataComputeUnitMetaInfo : dataComputeUnitMetaInfoSet){
-            System.out.println(currentDataComputeUnitMetaInfo.getUnitID());
-            System.out.println(currentDataComputeUnitMetaInfo.getUnitType());
-            System.out.println(currentDataComputeUnitMetaInfo.getUnitHostNames());
-            System.out.println(currentDataComputeUnitMetaInfo.getUnitIPAddresses());
-            System.out.println(currentDataComputeUnitMetaInfo.getIsClientUnit());
-            System.out.println("==========================");
+            Assert.assertNotNull(currentDataComputeUnitMetaInfo.getUnitID());
+            Assert.assertEquals(currentDataComputeUnitMetaInfo.getUnitType(),"SERVICE_UNIT");
+            Assert.assertNotNull(currentDataComputeUnitMetaInfo.getUnitHostNames());
+            Assert.assertFalse(currentDataComputeUnitMetaInfo.getUnitHostNames().isEmpty());
+            Assert.assertNotNull(currentDataComputeUnitMetaInfo.getUnitIPAddresses());
+            Assert.assertFalse(currentDataComputeUnitMetaInfo.getUnitIPAddresses().isEmpty());
+            Assert.assertFalse(currentDataComputeUnitMetaInfo.getIsClientUnit());
         }
 
-        System.out.println(dataSliceDetailInfo.getDataSliceName());
-        System.out.println(dataSliceDetailInfo.getSliceGroupName());
-        System.out.println(dataSliceDetailInfo.getStoreBackupNumber());
-        System.out.println(dataSliceDetailInfo.getPrimaryDataCount());
-        System.out.println(dataSliceDetailInfo.getBackupDataCount());
-        System.out.println(dataSliceDetailInfo.getTotalDataCount());
-        System.out.println(dataSliceDetailInfo.getAtomicityMode());
-        System.out.println(dataSliceDetailInfo.getDataStoreMode());
-        System.out.println(dataSliceDetailInfo.getPropertiesDefinition());
+        Assert.assertEquals(dataSliceDetailInfo.getDataSliceName(),"gridDataSliceA");
+        Assert.assertEquals(dataSliceDetailInfo.getDataStoreMode(),DataSliceStoreMode.PerUnit);
+        Assert.assertEquals(dataSliceDetailInfo.getAtomicityMode(), DataSliceAtomicityMode.ATOMIC);
+        Assert.assertEquals(dataSliceDetailInfo.getPrimaryDataCount(),0);
+        Assert.assertEquals(dataSliceDetailInfo.getTotalDataCount(),0);
+        Assert.assertNotNull(dataSliceDetailInfo.getPropertiesDefinition());
+        Assert.assertEquals(dataSliceDetailInfo.getPropertiesDefinition().size(),15);
+
+        List<String> propertyList = new ArrayList<>();
+        propertyList.add("property1".toUpperCase());
+        propertyList.add("property2".toUpperCase());
+        propertyList.add("property3".toUpperCase());
+        propertyList.add("property4".toUpperCase());
+        propertyList.add("property5".toUpperCase());
+        propertyList.add("property6".toUpperCase());
+        propertyList.add("property7".toUpperCase());
+        propertyList.add("property8".toUpperCase());
+        propertyList.add("property9".toUpperCase());
+        propertyList.add("property10".toUpperCase());
+        propertyList.add("property11".toUpperCase());
+        propertyList.add("property12".toUpperCase());
+        propertyList.add("property13".toUpperCase());
+        propertyList.add("property14".toUpperCase());
+        propertyList.add("property15".toUpperCase());
+        for(String currentDataSlicePropertyName : dataSliceDetailInfo.getPropertiesDefinition().keySet()){
+            Assert.assertTrue(propertyList.contains(currentDataSlicePropertyName));
+        }
 
         ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
         try(DataService dataService = targetComputeGrid.getDataService()){
-
             dataService.eraseDataSlice("gridDataSliceA");
             dataService.eraseDataSlice("gridDataSliceB");
-
         }catch (ComputeGridException e) {
             e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }
