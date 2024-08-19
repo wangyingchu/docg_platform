@@ -2,9 +2,7 @@ package com.viewfunction.docg.testcase.dataCompute.termTest;
 
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.exception.ComputeGridException;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.internal.ignite.ComputeGridObserver;
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataComputeUnitMetaInfo;
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceDetailInfo;
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceMetaInfo;
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.*;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.*;
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.factory.ComputeGridTermFactory;
 import org.testng.Assert;
@@ -59,6 +57,8 @@ public class ComputeGridObserverTest {
         Set<DataComputeUnitMetaInfo> dataComputeUnitMetaInfoSet = computeGridObserver.listDataComputeUnit();
         Set<DataSliceMetaInfo> dataSliceMetaInfoSet = computeGridObserver.listDataSlice();
         DataSliceDetailInfo dataSliceDetailInfo = computeGridObserver.getDataSliceDetail("gridDataSliceA");
+        ComputeGridRealtimeStatisticsInfo computeGridRealtimeStatisticsInfo = computeGridObserver.getGridRealtimeStatisticsInfo();
+        Set<ComputeUnitRealtimeStatisticsInfo> computeUnitRealtimeStatisticsInfoSet = computeGridObserver.getComputeUnitsRealtimeStatisticsInfo();
         computeGridObserver.closeObserveSession();
         for(DataSliceMetaInfo currentDataSliceMetaInfo : dataSliceMetaInfoSet){
             Assert.assertNotNull(currentDataSliceMetaInfo.getDataSliceName());
@@ -122,5 +122,24 @@ public class ComputeGridObserverTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        Assert.assertNotNull(computeGridRealtimeStatisticsInfo);
+        Assert.assertNotNull(computeGridRealtimeStatisticsInfo.getGridStartTime());
+        Assert.assertTrue(computeGridRealtimeStatisticsInfo.getDataComputeUnitsAmount()>=1);
+        Assert.assertNotNull(computeGridRealtimeStatisticsInfo.getYoungestUnitId());
+        Assert.assertNotNull(computeGridRealtimeStatisticsInfo.getOldestUnitId());
+        Assert.assertTrue(computeGridRealtimeStatisticsInfo.getTotalAvailableCPUCores()>0);
+
+        Assert.assertNotNull(computeUnitRealtimeStatisticsInfoSet);
+        Assert.assertTrue(computeUnitRealtimeStatisticsInfoSet.size() >= 1);
+        ComputeUnitRealtimeStatisticsInfo firstComputeUnitRealtimeStatisticsInfo = computeUnitRealtimeStatisticsInfoSet.iterator().next();
+        Assert.assertNotNull(firstComputeUnitRealtimeStatisticsInfo);
+
+        Assert.assertTrue(firstComputeUnitRealtimeStatisticsInfo.getAvailableCPUCores()>0);
+        Assert.assertTrue(firstComputeUnitRealtimeStatisticsInfo.getAverageCPULoadPercentage()>0);
+        Assert.assertTrue(firstComputeUnitRealtimeStatisticsInfo.getBusyTimePercentage()>0);
+        Assert.assertNotNull(firstComputeUnitRealtimeStatisticsInfo.getUnitID());
+        Assert.assertNotNull(firstComputeUnitRealtimeStatisticsInfo.getUnitStartTime());
+        Assert.assertTrue(firstComputeUnitRealtimeStatisticsInfo.getMaxAvailableMemoryInMB()>0);
     }
 }
