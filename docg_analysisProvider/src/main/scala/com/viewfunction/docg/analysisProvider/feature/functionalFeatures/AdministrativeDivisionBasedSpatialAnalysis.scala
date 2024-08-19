@@ -214,7 +214,7 @@ object AdministrativeDivisionBasedSpatialAnalysis {
     if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.STREAM_BACK)){
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DATA_SLICE)){
       val dataSliceName:String = analyseResponse.getResponseUUID
-      DataSliceOperationUtil.createDataSliceAccordingToResponseDataSourceTech(globalDataAccessor.dataServiceInvoker,dataSliceName,DataSliceOperationConstant.AnalysisResponseDataFormGroup,propertiesInfo,ResponseDataSourceTech.SPARK)
+      DataSliceOperationUtil.createDataSliceAccordingToResponseDataSourceTech(globalDataAccessor.dataService,dataSliceName,DataSliceOperationConstant.AnalysisResponseDataFormGroup,propertiesInfo,ResponseDataSourceTech.SPARK)
 
       val dataSliceProperties:java.util.ArrayList[String] = new java.util.ArrayList[String]()
       dataSliceProperties.add(DataSliceOperationConstant.TempResponseDataSlicePK)
@@ -222,7 +222,7 @@ object AdministrativeDivisionBasedSpatialAnalysis {
         dataSliceProperties.add(propertyName)
       })
 
-      val xx = globalDataAccessor.dataServiceInvoker
+      val xx = globalDataAccessor.dataService
 
       dataFrame.foreachPartition(new ForeachPartitionFunction[Row] {
         override def call(iterator: util.Iterator[Row]): Unit = {
