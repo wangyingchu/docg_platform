@@ -10,9 +10,9 @@ object GlobalDataAccessorTestCase01 extends App{
   val globalDataAccessor = new GlobalDataAccessor(sparkApplicationName,sparkMasterLocation)
 
 
-  val dataSliceServiceInvoker = globalDataAccessor._getDataSliceServiceInvoker()
+  val dataSliceService = globalDataAccessor.dataService
 
-  dataSliceServiceInvoker.listDataSlices().forEach(println(_))
+  dataSliceService.listDataSliceNames().forEach(println(_))
 
 
   /*
