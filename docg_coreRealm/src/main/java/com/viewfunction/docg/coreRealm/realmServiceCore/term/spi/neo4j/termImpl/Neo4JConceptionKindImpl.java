@@ -1,10 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
 import com.google.common.collect.Lists;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationMatchParameters;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationMatchingItem;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.NullValueFilteringItem;
@@ -683,28 +680,55 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public ConceptionEntitiesRetrieveResult getEntitiesWithClassificationsAttached(QueryParameters queryParameters, Set<RelationMatchParameters> classificationAttachParametersSet) throws CoreRealmServiceEntityExploreException {
+    public ConceptionEntitiesRetrieveResult getEntitiesWithClassificationsAttached(QueryParameters queryParameters, Set<ClassificationAttachParameters> classificationAttachParametersSet) throws CoreRealmServiceEntityExploreException {
         CommonConceptionEntitiesRetrieveResultImpl commonConceptionEntitiesRetrieveResultImpl = new CommonConceptionEntitiesRetrieveResultImpl();
         commonConceptionEntitiesRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
+            //base queryCQL
             String queryCql = CypherBuilder.matchNodesWithQueryParameters(this.conceptionKindName,queryParameters,null);
 
+            /*
+            MATCH (result:Station)-[:LINK]-> (:DOCG_Classification{name: 'xxx'})
+            MATCH (result:Station)-[:LINK]-> (:DOCG_Classification)-[classificationPLink1:DOCG_ParentClassificationIs]->+(:DOCG_Classification {name: 'xxx'})
+            MATCH (result:Station)<-[:LINK]-(:DOCG_Classification{name: 'yyy'})
+            MATCH (result:Station)<-[:LINK]-(:DOCG_Classification)-[classificationPLink2:DOCG_ParentClassificationIs]->+(:DOCG_Classification {name: 'yyy'})
+            RETURN result
+            */
+            StringBuilder classificationsQueryPart = new StringBuilder();
             if(classificationAttachParametersSet != null && classificationAttachParametersSet.size() > 0){
+                int classificationIdx = 0;
+                for(ClassificationAttachParameters currentRelationMatchParameters:classificationAttachParametersSet) {
+                    String classificationName = currentRelationMatchParameters.getAttachedClassification();
+                    RelationDirection relationDirection = currentRelationMatchParameters.getRelationDirection();
+                    String currentClassificationQueryPart= "(c"+classificationIdx+":"+RealmConstant.ClassificationClass+" {name: '"+classificationName+"'})";
 
-
-
-
-
-
-
-
-
-
-
-
-
+                    String relationKind = currentRelationMatchParameters.getRelationKind();
+                    boolean isOffspringAttach = currentRelationMatchParameters.isOffspringAttach();
+                    if(isOffspringAttach){
+                        switch(relationDirection){
+                            case FROM ->
+                                    classificationsQueryPart.append("MATCH ("+CypherBuilder.operationResultName+":`"+this.conceptionKindName+"`)-[:"+relationKind+"]->(:"+RealmConstant.ClassificationClass+")-[classificationPLink"+classificationIdx+":"+RealmConstant.Classification_ClassificationRelationClass+"]->+"+currentClassificationQueryPart);
+                            case TO ->
+                                    classificationsQueryPart.append("MATCH ("+CypherBuilder.operationResultName+":`"+this.conceptionKindName+"`)<-[:"+relationKind+"]-(:"+RealmConstant.ClassificationClass+")-[classificationPLink"+classificationIdx+":"+RealmConstant.Classification_ClassificationRelationClass+"]->+"+currentClassificationQueryPart);
+                            case TWO_WAY ->
+                                    classificationsQueryPart.append("MATCH ("+CypherBuilder.operationResultName+":`"+this.conceptionKindName+"`)-[:"+relationKind+"]-(:"+RealmConstant.ClassificationClass+")-[classificationPLink"+classificationIdx+":"+RealmConstant.Classification_ClassificationRelationClass+"]->+"+currentClassificationQueryPart);
+                        }
+                    }else{
+                        switch(relationDirection){
+                            case FROM -> classificationsQueryPart.append("MATCH ("+CypherBuilder.operationResultName+":`"+this.conceptionKindName+"`)-[:"+relationKind+"]->"+currentClassificationQueryPart);
+                            case TO -> classificationsQueryPart.append("MATCH ("+CypherBuilder.operationResultName+":`"+this.conceptionKindName+"`)<-[:"+relationKind+"]-"+currentClassificationQueryPart);
+                            case TWO_WAY -> classificationsQueryPart.append("MATCH ("+CypherBuilder.operationResultName+":`"+this.conceptionKindName+"`)-[:"+relationKind+"]-"+currentClassificationQueryPart);
+                        }
+                    }
+                    classificationsQueryPart.append("\n");
+                }
             }
+
+            //MATCH (operationResult:`+this.conceptionKindName+`) WHERE ......
+            queryCql = queryCql.replace("MATCH ("+CypherBuilder.operationResultName+":`"+this.conceptionKindName+"`)",classificationsQueryPart.toString());
+            logger.debug("Generated Cypher Statement: {}", queryCql);
 
             GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(this.conceptionKindName,
                     this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());

@@ -7,7 +7,7 @@ public class ClassificationAttachParameters {
     private String attachedClassification;
     private String relationKind;
     private RelationDirection relationDirection;
-    private boolean allowOffspringAttach = false;
+    private boolean offspringAttach = false;
 
     public ClassificationAttachParameters(){
 
@@ -37,11 +37,11 @@ public class ClassificationAttachParameters {
         this.relationDirection = relationDirection;
     }
 
-    public boolean isAllowOffspringAttach() {
-        return allowOffspringAttach;
+    public boolean isOffspringAttach() {
+        return offspringAttach;
     }
 
-    public void setAllowOffspringAttach(boolean allowOffspringAttach) {
-        this.allowOffspringAttach = allowOffspringAttach;
+    public void setOffspringAttach(boolean offspringAttach) {
+        this.offspringAttach = offspringAttach;
     }
 }

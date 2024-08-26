@@ -3,6 +3,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationMatchParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.ClassificationAttachParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
@@ -209,11 +210,11 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      * 查询符合实体过滤条件，并且与指定的分类通过特定的关系类型能够附着匹配的当前概念类型的概念实体对象
      *
      * @param queryParameters QueryParameters 概念实体查询过滤条件
-     * @param classificationAttachParametersSet Set<RelationMatchParameters> 概念实体附着分类的匹配条件
+     * @param classificationAttachParametersSet Set<ClassificationAttachParameters> 概念实体附着分类的匹配条件
      *
      * @return 概念实体查询结果集
      */
-    public ConceptionEntitiesRetrieveResult getEntitiesWithClassificationsAttached(QueryParameters queryParameters, Set<RelationMatchParameters> classificationAttachParametersSet) throws CoreRealmServiceEntityExploreException;
+    public ConceptionEntitiesRetrieveResult getEntitiesWithClassificationsAttached(QueryParameters queryParameters, Set<ClassificationAttachParameters> classificationAttachParametersSet) throws CoreRealmServiceEntityExploreException;
 
     /**
      * 根据唯一ID获取当前概念类型的概念实体对象
