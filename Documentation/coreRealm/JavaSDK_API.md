@@ -823,6 +823,16 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public ConceptionEntitiesRetrieveResult getEntitiesWithRelationsMatch(QueryParameters queryParameters, RelationMatchParameters relationMatchParameters) throws CoreRealmServiceEntityExploreException;
 
     /**
+     * 查询符合实体过滤条件，并且通过特定的关系类型附着在指定的分类上的当前概念类型的概念实体对象
+     *
+     * @param queryParameters QueryParameters 概念实体查询过滤条件
+     * @param classificationAttachParametersSet Set<ClassificationAttachParameters> 概念实体附着分类的匹配条件
+     *
+     * @return 概念实体查询结果集
+     */
+    public ConceptionEntitiesRetrieveResult getEntitiesWithClassificationsAttached(QueryParameters queryParameters, Set<ClassificationAttachParameters> classificationAttachParametersSet) throws CoreRealmServiceEntityExploreException;
+
+	/**
      * 根据唯一ID获取当前概念类型的概念实体对象
      *
      * @param conceptionEntityUID String 需要获取的概念实体唯一ID

@@ -703,7 +703,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
                     String classificationName = currentRelationMatchParameters.getAttachedClassification();
                     RelationDirection relationDirection = currentRelationMatchParameters.getRelationDirection();
                     String currentClassificationQueryPart= "(c"+classificationIdx+":"+RealmConstant.ClassificationClass+" {name: '"+classificationName+"'})";
-
+                    classificationIdx++;
                     String relationKind = currentRelationMatchParameters.getRelationKind();
                     boolean isOffspringAttach = currentRelationMatchParameters.isOffspringAttach();
                     if(isOffspringAttach){
@@ -724,10 +724,9 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
                     }
                     classificationsQueryPart.append("\n");
                 }
+                //MATCH (operationResult:`+this.conceptionKindName+`) WHERE ......
+                queryCql = queryCql.replace("MATCH ("+CypherBuilder.operationResultName+":`"+this.conceptionKindName+"`)",classificationsQueryPart.toString());
             }
-
-            //MATCH (operationResult:`+this.conceptionKindName+`) WHERE ......
-            queryCql = queryCql.replace("MATCH ("+CypherBuilder.operationResultName+":`"+this.conceptionKindName+"`)",classificationsQueryPart.toString());
             logger.debug("Generated Cypher Statement: {}", queryCql);
 
             GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(this.conceptionKindName,
