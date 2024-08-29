@@ -9,9 +9,15 @@ public class ClassificationAttachParameters {
     private RelationDirection relationDirection;
     private boolean offspringAttach = false;
 
-    public ClassificationAttachParameters(){
-
+    public ClassificationAttachParameters(String attachedClassification,String relationKind,
+                                          RelationDirection relationDirection,boolean offspringAttach){
+        this.attachedClassification = attachedClassification;
+        this.relationKind = relationKind;
+        this.relationDirection = relationDirection;
+        this.offspringAttach = offspringAttach;
     }
+
+    public ClassificationAttachParameters(){}
 
     public String getAttachedClassification() {
         return attachedClassification;
