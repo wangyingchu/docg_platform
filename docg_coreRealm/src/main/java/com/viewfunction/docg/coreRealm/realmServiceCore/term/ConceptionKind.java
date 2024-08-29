@@ -199,9 +199,20 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      * @param queryParameters QueryParameters 概念实体查询过滤条件
      * @param relationMatchParameters RelationMatchParameters 概念实体关联关系的匹配条件
      *
-     * @return 概念实体查询结果集
+     * @return 概念实体数量
      */
     public ConceptionEntitiesRetrieveResult getEntitiesWithRelationsMatch(QueryParameters queryParameters, RelationMatchParameters relationMatchParameters) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 查询符合实体过滤条件，并且通过特定的关系类型附着在指定的分类上的当前概念类型的概念实体对象数量
+     *
+     * @param attributesParameters AttributesParameters 概念实体查询过滤条件
+     * @param isDistinctMode boolean 是否不允许重复数据
+     * @param classificationAttachParametersSet Set<ClassificationAttachParameters> 概念实体附着分类的匹配条件
+     *
+     * @return 概念实体查询结果集
+     */
+    public Long countEntitiesWithClassificationsAttached(AttributesParameters attributesParameters, boolean isDistinctMode,Set<ClassificationAttachParameters> classificationAttachParametersSet) throws CoreRealmServiceEntityExploreException;
 
     /**
      * 查询符合实体过滤条件，并且通过特定的关系类型附着在指定的分类上的当前概念类型的概念实体对象
@@ -212,6 +223,18 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      * @return 概念实体查询结果集
      */
     public ConceptionEntitiesRetrieveResult getEntitiesWithClassificationsAttached(QueryParameters queryParameters, Set<ClassificationAttachParameters> classificationAttachParametersSet) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 查询符合实体过滤条件，并且通过特定的关系类型附着在指定的分类上的当前概念类型的概念实体对象数量
+     *
+     * @param attributesParameters AttributesParameters 概念实体查询过滤条件
+     * @param isDistinctMode boolean 是否不允许重复数据
+     * @param classificationAttachParametersSet Set<ClassificationAttachParameters> 概念实体附着分类的匹配条件
+     * @param fixConceptionEntityAttachParameters FixConceptionEntityAttachParameters 目标概念实体必须同时附着的另一固定概念实体的匹配条件
+     *
+     * @return 概念实体查询结果集
+     */
+    public Long countEntitiesWithClassificationsAttached(AttributesParameters attributesParameters, boolean isDistinctMode, Set<ClassificationAttachParameters> classificationAttachParametersSet, FixConceptionEntityAttachParameters fixConceptionEntityAttachParameters) throws CoreRealmServiceEntityExploreException;
 
     /**
      * 查询符合实体过滤条件，并且通过特定的关系类型附着在指定的分类上的当前概念类型的概念实体对象
