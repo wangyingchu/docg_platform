@@ -20,6 +20,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonConceptionEntitiesAttributesRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonConceptionEntitiesRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonTimeScaleEventsRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JConceptionKind;
@@ -2187,6 +2188,36 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         entitiesOperationStatistics.setSuccessItemsCount(successItemCount);
         entitiesOperationStatistics.setOperationSummary("attachGeospatialScaleEventsByEntityGeometryContent operation success");
         return entitiesOperationStatistics;
+    }
+
+    @Override
+    public TimeScaleEventsRetrieveResult getAttachedTimeScaleEvents(QueryParameters queryParameters) {
+        try {
+            CommonTimeScaleEventsRetrieveResultImpl commonTimeScaleEventsRetrieveResultImpl = new CommonTimeScaleEventsRetrieveResultImpl();
+            commonTimeScaleEventsRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.TimeScaleEventClass,queryParameters,null);
+            queryCql = queryCql.replace("(operationResult:`"+RealmConstant.TimeScaleEventClass+"`)","(:`"+this.conceptionKindName+"`)-[:`"+RealmConstant.TimeScale_AttachToRelationClass+"`]->(operationResult:`"+RealmConstant.TimeScaleEventClass+"`)");
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+
+            try{
+                GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+                GetListTimeScaleEventTransformer getListTimeScaleEventTransformer = new GetListTimeScaleEventTransformer(null,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object queryRes = workingGraphOperationExecutor.executeRead(getListTimeScaleEventTransformer,queryCql);
+                if(queryRes != null){
+                    List<TimeScaleEvent> res = (List<TimeScaleEvent>)queryRes;
+                    commonTimeScaleEventsRetrieveResultImpl.addTimeScaleEvents(res);
+                    commonTimeScaleEventsRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(res.size());
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            commonTimeScaleEventsRetrieveResultImpl.finishEntitiesRetrieving();
+            return commonTimeScaleEventsRetrieveResultImpl;
+
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private long executeEntitiesOperationWithCountResponse(String cql){

@@ -44,7 +44,8 @@ public class GetListTimeScaleEventTransformer  implements DataTransformer<List<T
                 String eventComment = resultNode.get(RealmConstant._TimeScaleEventComment).asString();
                 String timeScaleGrade = resultNode.get(RealmConstant._TimeScaleEventScaleGrade).asString();
                 LocalDateTime referTime = resultNode.get(RealmConstant._TimeScaleEventReferTime).asLocalDateTime();
-                Neo4JTimeScaleEventImpl neo4JTimeScaleEventImpl = new Neo4JTimeScaleEventImpl(timeFlowName,eventComment,referTime,getTimeScaleGrade(timeScaleGrade),timeScaleEventUID);
+                String currentTimeFlowName = timeFlowName != null ? timeFlowName : resultNode.get(RealmConstant._TimeScaleEventTimeFlow).asString();;
+                Neo4JTimeScaleEventImpl neo4JTimeScaleEventImpl = new Neo4JTimeScaleEventImpl(currentTimeFlowName,eventComment,referTime,getTimeScaleGrade(timeScaleGrade),timeScaleEventUID);
                 neo4JTimeScaleEventImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
                 timeScaleEventList.add(neo4JTimeScaleEventImpl);
             }

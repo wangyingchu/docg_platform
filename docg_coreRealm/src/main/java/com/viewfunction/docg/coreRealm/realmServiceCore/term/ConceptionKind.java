@@ -578,4 +578,13 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
     public EntitiesOperationStatistics attachGeospatialScaleEventsByEntityGeometryContent(QueryParameters queryParameters,GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel,
                                                                     GeospatialScaleCalculable.SpatialPredicateType spatialPredicateType, GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade,
                                                                     String geospatialRegionName,String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException;
+
+    /**
+     * 获取当前概念类型实体对象上附着的时间刻度事件
+     *
+     * @param queryParameters QueryParameters 时间刻度事件查询条件
+     *
+     * @return 时间刻度事件返回结果集
+     */
+    public TimeScaleEventsRetrieveResult getAttachedTimeScaleEvents(QueryParameters queryParameters);
 }
