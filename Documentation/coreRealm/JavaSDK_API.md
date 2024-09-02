@@ -1198,6 +1198,17 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 时间刻度事件返回结果集
      */
     public TimeScaleEventsRetrieveResult getAttachedTimeScaleEvents(QueryParameters queryParameters);
+
+    /**
+     * 计算符合过滤条件的当前概念类型实体对象上附着的时间刻度事件数量
+     *
+     * @param attributesParameters AttributesParameters 时间刻度事件查询条件
+     * @param isDistinctMode boolean 是否不允许重复数据
+     *
+     * @return 时间刻度事件数量
+     */
+    public Long countAttachedTimeScaleEvents(AttributesParameters attributesParameters,boolean isDistinctMode) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
+
 ```
 ###### ↳ RelationKind
 
