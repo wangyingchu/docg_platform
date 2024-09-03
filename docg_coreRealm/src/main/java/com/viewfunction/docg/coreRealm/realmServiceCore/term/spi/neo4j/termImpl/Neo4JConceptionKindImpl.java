@@ -2289,6 +2289,77 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         return null;
     }
 
+    @Override
+    public GeospatialScaleEventsRetrieveResult getAttachedGeospatialScaleEvents(QueryParameters queryParameters) {
+        try {
+            CommonGeospatialScaleEventsRetrieveResultImpl commonGeospatialScaleEventsRetrieveResultImpl = new CommonGeospatialScaleEventsRetrieveResultImpl();
+            commonGeospatialScaleEventsRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleEventClass,queryParameters,null);
+            queryCql = queryCql.replace("(operationResult:`"+RealmConstant.GeospatialScaleEventClass+"`)","(:`"+this.conceptionKindName+"`)-[:`"+RealmConstant.GeospatialScale_AttachToRelationClass+"`]->(operationResult:`"+RealmConstant.GeospatialScaleEventClass+"`)");
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+
+            try{
+                GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+                GetListGeospatialScaleEventTransformer getListGeospatialScaleEventTransformer = new GetListGeospatialScaleEventTransformer(null,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object queryRes = workingGraphOperationExecutor.executeRead(getListGeospatialScaleEventTransformer,queryCql);
+                if(queryRes != null){
+                    List<GeospatialScaleEvent> res = (List<GeospatialScaleEvent>)queryRes;
+                    commonGeospatialScaleEventsRetrieveResultImpl.addGeospatialScaleEvents(res);
+                    commonGeospatialScaleEventsRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(res.size());
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            commonGeospatialScaleEventsRetrieveResultImpl.finishEntitiesRetrieving();
+            return commonGeospatialScaleEventsRetrieveResultImpl;
+
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Long countAttachedGeospatialScaleEvents(AttributesParameters attributesParameters, boolean isDistinctMode) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+        QueryParameters queryParameters = null;
+        if (attributesParameters != null) {
+            queryParameters = new QueryParameters();
+            queryParameters.setDistinctMode(isDistinctMode);
+            queryParameters.setResultNumber(100000000);
+            queryParameters.setDefaultFilteringItem(attributesParameters.getDefaultFilteringItem());
+            if (attributesParameters.getAndFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getAndFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.AND);
+                }
+            }
+            if (attributesParameters.getOrFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getOrFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.OR);
+                }
+            }
+        }
+
+        try {
+            CommonTimeScaleEventsRetrieveResultImpl commonTimeScaleEventsRetrieveResultImpl = new CommonTimeScaleEventsRetrieveResultImpl();
+            commonTimeScaleEventsRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleEventClass,queryParameters,CypherBuilder.CypherFunctionType.COUNT);
+            queryCql = queryCql.replace("(operationResult:`"+RealmConstant.GeospatialScaleEventClass+"`)","(:`"+this.conceptionKindName+"`)-[:`"+RealmConstant.GeospatialScale_AttachToRelationClass+"`]->(operationResult:`"+RealmConstant.GeospatialScaleEventClass+"`)");
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
+            Object countConceptionEntitiesRes = workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer, queryCql);
+            if (countConceptionEntitiesRes == null) {
+                throw new CoreRealmServiceRuntimeException();
+            } else {
+                return (Long) countConceptionEntitiesRes;
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     private long executeEntitiesOperationWithCountResponse(String cql){
         long operationResultCount = 0;
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();

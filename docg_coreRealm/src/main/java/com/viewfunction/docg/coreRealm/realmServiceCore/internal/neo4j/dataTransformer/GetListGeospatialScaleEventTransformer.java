@@ -41,9 +41,8 @@ public class GetListGeospatialScaleEventTransformer implements DataTransformer<L
                 String eventComment = resultNode.get(RealmConstant._GeospatialScaleEventComment).asString();
                 String geospatialScaleGrade = resultNode.get(RealmConstant._GeospatialScaleEventScaleGrade).asString();
                 String referLocation = resultNode.get(RealmConstant._GeospatialScaleEventReferLocation).asString();
-                String geospatialRegion = resultNode.get(RealmConstant._GeospatialScaleEventGeospatialRegion).asString();
-
-                Neo4JGeospatialScaleEventImpl neo4JGeospatialScaleEventImpl = new Neo4JGeospatialScaleEventImpl(geospatialRegion,eventComment,referLocation,getGeospatialScaleGrade(geospatialScaleGrade.trim()),geospatialScaleEventUID);
+                String currentTimeFlowName = geospatialRegionName != null ? geospatialRegionName : resultNode.get(RealmConstant._GeospatialScaleEventGeospatialRegion).asString();
+                Neo4JGeospatialScaleEventImpl neo4JGeospatialScaleEventImpl = new Neo4JGeospatialScaleEventImpl(currentTimeFlowName,eventComment,referLocation,getGeospatialScaleGrade(geospatialScaleGrade.trim()),geospatialScaleEventUID);
                 neo4JGeospatialScaleEventImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
                 geospatialScaleEventList.add(neo4JGeospatialScaleEventImpl);
             }

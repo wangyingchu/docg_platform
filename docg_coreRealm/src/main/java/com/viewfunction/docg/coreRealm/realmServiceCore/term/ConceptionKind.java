@@ -606,4 +606,23 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      * @return 时间刻度事件数量
      */
     public Long countAttachedTimeScaleEvents(AttributesParameters attributesParameters,boolean isDistinctMode) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取当前概念类型实体对象上附着的地理空间刻度事件
+     *
+     * @param queryParameters QueryParameters 地理空间刻度事件查询条件
+     *
+     * @return 地理空间刻度事件返回结果集
+     */
+    public GeospatialScaleEventsRetrieveResult getAttachedGeospatialScaleEvents(QueryParameters queryParameters);
+
+    /**
+     * 计算符合过滤条件的当前概念类型实体对象上附着的地理空间刻度事件数量
+     *
+     * @param attributesParameters AttributesParameters 地理空间刻度事件查询条件
+     * @param isDistinctMode boolean 是否不允许重复数据
+     *
+     * @return 地理空间刻度事件数量
+     */
+    public Long countAttachedGeospatialScaleEvents(AttributesParameters attributesParameters,boolean isDistinctMode) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
 }
