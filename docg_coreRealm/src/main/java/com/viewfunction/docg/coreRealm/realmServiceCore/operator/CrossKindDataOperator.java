@@ -2,11 +2,10 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.operator;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.PathEntitiesSequenceMatchPattern;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntitiesSequence;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
@@ -317,4 +316,25 @@ public interface CrossKindDataOperator {
      * @return 分类名称与相关概念类型对象列表的映射表
      */
     public Map<String,List<ConceptionKind>> getClassificationsDirectRelatedConceptionKinds(Set<String> classificationNames,String relationKindName, RelationDirection relationDirection);
+
+    /**
+     * 输入一组概念实体的唯一值ID，获取与这些概念类型实体对象上附着的时间刻度事件与概念实体配对
+     *
+     ** @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
+     * @param queryParameters QueryParameters 时间刻度事件查询条件
+     *
+     * @return 时间刻度实体与概念类型实体配对返回结果集
+     */
+    public TimeScaleEventAndConceptionEntityPairRetrieveResult getAttachedTimeScaleEventAndConceptionEntityPairs(List<String> conceptionEntityUIDs,QueryParameters queryParameters);
+
+    /**
+     * 输入一组概念实体的唯一值ID，获取与这些概念类型实体对象上附着的时间刻度事件与概念实体配对数量
+     *
+     * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
+     * @param attributesParameters AttributesParameters 时间刻度事件查询条件
+     * @param isDistinctMode boolean 是否不允许重复数据
+     *
+     * @return 时间刻度事件数量
+     */
+    public Long countAttachedTimeScaleEvents(List<String> conceptionEntityUIDs,AttributesParameters attributesParameters,boolean isDistinctMode) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
 }

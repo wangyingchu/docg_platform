@@ -14,11 +14,10 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonTimeScaleEventAndConceptionEntityPairRetrieveResultImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonTimeScaleEventsRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntitiesSequence;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionKindImpl;
@@ -1193,6 +1192,90 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
+    }
+
+    @Override
+    public TimeScaleEventAndConceptionEntityPairRetrieveResult getAttachedTimeScaleEventAndConceptionEntityPairs(List<String> conceptionEntityUIDs, QueryParameters queryParameters) {
+        try {
+            CommonTimeScaleEventAndConceptionEntityPairRetrieveResultImpl commonTimeScaleDataPairRetrieveResultImpl = new CommonTimeScaleEventAndConceptionEntityPairRetrieveResultImpl();
+            commonTimeScaleDataPairRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.TimeScaleEventClass,queryParameters,null);
+            String conceptionEntitiesUIDQueryPart = "id(conceptionEntity) IN " + conceptionEntityUIDs.toString();
+            queryCql = queryCql.replace("(operationResult:`"+RealmConstant.TimeScaleEventClass+"`)","(conceptionEntity)-[:`"+RealmConstant.TimeScale_AttachToRelationClass+"`]->(operationResult:`"+RealmConstant.TimeScaleEventClass+"`)");
+            if(queryCql.contains("WHERE")){
+                queryCql = queryCql.replace("WHERE","WHERE "+conceptionEntitiesUIDQueryPart+" AND");
+            }else{
+                queryCql = queryCql.replace("RETURN","WHERE "+conceptionEntitiesUIDQueryPart+" RETURN");
+            }
+            queryCql = queryCql.replace("RETURN "+CypherBuilder.operationResultName,"RETURN "+CypherBuilder.operationResultName+",conceptionEntity");
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+
+            try{
+                GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+                GetListTimeScaleEventAndConceptionEntityPairTransformer getListTimeScaleEventAndConceptionEntityPairTransformer = new GetListTimeScaleEventAndConceptionEntityPairTransformer(null,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object queryRes = workingGraphOperationExecutor.executeRead(getListTimeScaleEventAndConceptionEntityPairTransformer,queryCql);
+                if(queryRes != null){
+                    List<TimeScaleEventAndConceptionEntityPair> res = (List<TimeScaleEventAndConceptionEntityPair>)queryRes;
+                    commonTimeScaleDataPairRetrieveResultImpl.addTimeScaleDataPairs(res);
+                    commonTimeScaleDataPairRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(res.size());
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            commonTimeScaleDataPairRetrieveResultImpl.finishEntitiesRetrieving();
+            return commonTimeScaleDataPairRetrieveResultImpl;
+
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Long countAttachedTimeScaleEvents(List<String> conceptionEntityUIDs, AttributesParameters attributesParameters, boolean isDistinctMode) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+        QueryParameters queryParameters = null;
+        if (attributesParameters != null) {
+            queryParameters = new QueryParameters();
+            queryParameters.setDistinctMode(isDistinctMode);
+            queryParameters.setResultNumber(100000000);
+            queryParameters.setDefaultFilteringItem(attributesParameters.getDefaultFilteringItem());
+            if (attributesParameters.getAndFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getAndFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.AND);
+                }
+            }
+            if (attributesParameters.getOrFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getOrFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.OR);
+                }
+            }
+        }
+
+        try {
+            CommonTimeScaleEventsRetrieveResultImpl commonTimeScaleEventsRetrieveResultImpl = new CommonTimeScaleEventsRetrieveResultImpl();
+            commonTimeScaleEventsRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+            String conceptionEntitiesUIDQueryPart = "id(conceptionEntity) IN " + conceptionEntityUIDs.toString();
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.TimeScaleEventClass,queryParameters,CypherBuilder.CypherFunctionType.COUNT);
+            queryCql = queryCql.replace("(operationResult:`"+RealmConstant.TimeScaleEventClass+"`)","(conceptionEntity)-[:`"+RealmConstant.TimeScale_AttachToRelationClass+"`]->(operationResult:`"+RealmConstant.TimeScaleEventClass+"`)");
+            if(queryCql.contains("WHERE")){
+                queryCql = queryCql.replace("WHERE","WHERE "+conceptionEntitiesUIDQueryPart+" AND");
+            }else{
+                queryCql = queryCql.replace("RETURN","WHERE "+conceptionEntitiesUIDQueryPart+" RETURN");
+            }
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
+            Object countConceptionEntitiesRes = workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer, queryCql);
+            if (countConceptionEntitiesRes == null) {
+                throw new CoreRealmServiceRuntimeException();
+            } else {
+                return (Long) countConceptionEntitiesRes;
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
