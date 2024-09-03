@@ -2191,6 +2191,17 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
+    public TimeScaleDataPairRetrieveResult getAttachedTimeScaleDataPairs(QueryParameters queryParameters) {
+
+
+
+
+
+
+        return null;
+    }
+
+    @Override
     public TimeScaleEventsRetrieveResult getAttachedTimeScaleEvents(QueryParameters queryParameters) {
         try {
             CommonTimeScaleEventsRetrieveResultImpl commonTimeScaleEventsRetrieveResultImpl = new CommonTimeScaleEventsRetrieveResultImpl();
