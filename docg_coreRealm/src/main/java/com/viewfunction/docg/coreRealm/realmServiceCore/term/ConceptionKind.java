@@ -584,9 +584,9 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      *
      * @param queryParameters QueryParameters 时间刻度事件查询条件
      *
-     * @return 时间刻度数据配对返回结果集
+     * @return 时间刻度实体与概念类型实体配对返回结果集
      */
-    public TimeScaleDataPairRetrieveResult getAttachedTimeScaleDataPairs(QueryParameters queryParameters);
+    public TimeScaleEventAndConceptionEntityPairRetrieveResult getAttachedTimeScaleEventAndConceptionEntityPairs(QueryParameters queryParameters);
 
     /**
      * 获取当前概念类型实体对象上附着的时间刻度事件
