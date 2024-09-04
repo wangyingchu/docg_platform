@@ -608,6 +608,15 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
     public Long countAttachedTimeScaleEvents(AttributesParameters attributesParameters,boolean isDistinctMode) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
 
     /**
+     * 获取当前概念类型实体对象上附着的地理空间刻度事件与概念实体配对
+     *
+     * @param queryParameters QueryParameters 地理空间刻度事件查询条件
+     *
+     * @return 地理空间刻度事件与概念实体配对返回结果集
+     */
+    public GeospatialScaleEventAndConceptionEntityPairRetrieveResult getAttachedGeospatialScaleEventAndConceptionEntityPairs(QueryParameters queryParameters);
+
+    /**
      * 获取当前概念类型实体对象上附着的地理空间刻度事件
      *
      * @param queryParameters QueryParameters 地理空间刻度事件查询条件
