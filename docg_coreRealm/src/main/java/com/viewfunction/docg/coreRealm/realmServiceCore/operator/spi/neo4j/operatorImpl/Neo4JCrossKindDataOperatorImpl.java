@@ -1216,7 +1216,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                 Object queryRes = workingGraphOperationExecutor.executeRead(getListTimeScaleEventAndConceptionEntityPairTransformer,queryCql);
                 if(queryRes != null){
                     List<TimeScaleEventAndConceptionEntityPair> res = (List<TimeScaleEventAndConceptionEntityPair>)queryRes;
-                    commonTimeScaleDataPairRetrieveResultImpl.addTimeScaleDataPairs(res);
+                    commonTimeScaleDataPairRetrieveResultImpl.addTimeScaleEventAndConceptionEntityPairs(res);
                     commonTimeScaleDataPairRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(res.size());
                 }
             }finally {

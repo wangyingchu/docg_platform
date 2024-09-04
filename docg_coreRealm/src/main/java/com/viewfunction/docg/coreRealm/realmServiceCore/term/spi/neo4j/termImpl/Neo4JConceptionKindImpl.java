@@ -2203,7 +2203,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
                 Object queryRes = workingGraphOperationExecutor.executeRead(getListTimeScaleEventAndConceptionEntityPairTransformer,queryCql);
                 if(queryRes != null){
                     List<TimeScaleEventAndConceptionEntityPair> res = (List<TimeScaleEventAndConceptionEntityPair>)queryRes;
-                    commonTimeScaleDataPairRetrieveResultImpl.addTimeScaleDataPairs(res);
+                    commonTimeScaleDataPairRetrieveResultImpl.addTimeScaleEventAndConceptionEntityPairs(res);
                     commonTimeScaleDataPairRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(res.size());
                 }
             }finally {
@@ -2286,6 +2286,11 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         } catch (CoreRealmServiceEntityExploreException e) {
             e.printStackTrace();
         }
+        return null;
+    }
+
+    @Override
+    public GeospatialScaleEventAndConceptionEntityPairRetrieveResult getAttachedGeospatialScaleEventAndConceptionEntityPairs(QueryParameters queryParameters) {
         return null;
     }
 

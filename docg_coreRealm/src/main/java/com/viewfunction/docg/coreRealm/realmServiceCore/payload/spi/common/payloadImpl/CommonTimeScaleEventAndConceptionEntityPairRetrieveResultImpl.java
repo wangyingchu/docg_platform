@@ -23,7 +23,7 @@ public class CommonTimeScaleEventAndConceptionEntityPairRetrieveResultImpl imple
         this.entitiesRetrieveStatistics.setFinishTime(new Date());
     }
 
-    public void addTimeScaleDataPairs(List<TimeScaleEventAndConceptionEntityPair> timeScaleEventAndConceptionEntityPairList){
+    public void addTimeScaleEventAndConceptionEntityPairs(List<TimeScaleEventAndConceptionEntityPair> timeScaleEventAndConceptionEntityPairList){
         this.timeScaleEventAndConceptionEntityPairList.addAll(timeScaleEventAndConceptionEntityPairList);
     }
 
