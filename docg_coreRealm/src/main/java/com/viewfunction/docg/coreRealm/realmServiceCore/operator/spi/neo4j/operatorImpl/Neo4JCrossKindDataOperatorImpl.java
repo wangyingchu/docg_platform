@@ -16,6 +16,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.Grap
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonEntitiesOperationResultImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonGeospatialScaleEventAndConceptionEntityPairRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonTimeScaleEventAndConceptionEntityPairRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonTimeScaleEventsRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntitiesSequence;
@@ -1257,6 +1258,87 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             String conceptionEntitiesUIDQueryPart = "id(conceptionEntity) IN " + conceptionEntityUIDs.toString();
             String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.TimeScaleEventClass,queryParameters,CypherBuilder.CypherFunctionType.COUNT);
             queryCql = queryCql.replace("(operationResult:`"+RealmConstant.TimeScaleEventClass+"`)","(conceptionEntity)-[:`"+RealmConstant.TimeScale_AttachToRelationClass+"`]->(operationResult:`"+RealmConstant.TimeScaleEventClass+"`)");
+            if(queryCql.contains("WHERE")){
+                queryCql = queryCql.replace("WHERE","WHERE "+conceptionEntitiesUIDQueryPart+" AND");
+            }else{
+                queryCql = queryCql.replace("RETURN","WHERE "+conceptionEntitiesUIDQueryPart+" RETURN");
+            }
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
+            Object countConceptionEntitiesRes = workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer, queryCql);
+            if (countConceptionEntitiesRes == null) {
+                throw new CoreRealmServiceRuntimeException();
+            } else {
+                return (Long) countConceptionEntitiesRes;
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public GeospatialScaleEventAndConceptionEntityPairRetrieveResult getAttachedGeospatialScaleEventAndConceptionEntityPairs(List<String> conceptionEntityUIDs, QueryParameters queryParameters) {
+        try {
+            CommonGeospatialScaleEventAndConceptionEntityPairRetrieveResultImpl commonGeospatialScaleEventAndConceptionEntityPairRetrieveResultImpl = new CommonGeospatialScaleEventAndConceptionEntityPairRetrieveResultImpl();
+            commonGeospatialScaleEventAndConceptionEntityPairRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleEventClass,queryParameters,null);
+            String conceptionEntitiesUIDQueryPart = "id(conceptionEntity) IN " + conceptionEntityUIDs.toString();
+            queryCql = queryCql.replace("(operationResult:`"+RealmConstant.GeospatialScaleEventClass+"`)","(conceptionEntity)-[:`"+RealmConstant.GeospatialScale_AttachToRelationClass+"`]->(operationResult:`"+RealmConstant.GeospatialScaleEventClass+"`)");
+            if(queryCql.contains("WHERE")){
+                queryCql = queryCql.replace("WHERE","WHERE "+conceptionEntitiesUIDQueryPart+" AND");
+            }else{
+                queryCql = queryCql.replace("RETURN","WHERE "+conceptionEntitiesUIDQueryPart+" RETURN");
+            }
+            queryCql = queryCql.replace("RETURN "+CypherBuilder.operationResultName,"RETURN "+CypherBuilder.operationResultName+",conceptionEntity");
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+
+            try{
+                GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+                GetListGeospatialScaleEventAndConceptionEntityPairTransformer getListGeospatialScaleEventAndConceptionEntityPairTransformer = new GetListGeospatialScaleEventAndConceptionEntityPairTransformer(null,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object queryRes = workingGraphOperationExecutor.executeRead(getListGeospatialScaleEventAndConceptionEntityPairTransformer,queryCql);
+                if(queryRes != null){
+                    List<GeospatialScaleEventAndConceptionEntityPair> res = (List<GeospatialScaleEventAndConceptionEntityPair>)queryRes;
+                    commonGeospatialScaleEventAndConceptionEntityPairRetrieveResultImpl.addGeospatialScaleEventAndConceptionEntityPairs(res);
+                    commonGeospatialScaleEventAndConceptionEntityPairRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(res.size());
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            commonGeospatialScaleEventAndConceptionEntityPairRetrieveResultImpl.finishEntitiesRetrieving();
+            return commonGeospatialScaleEventAndConceptionEntityPairRetrieveResultImpl;
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Long countAttachedGeospatialScaleEvents(List<String> conceptionEntityUIDs, AttributesParameters attributesParameters, boolean isDistinctMode) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+        QueryParameters queryParameters = null;
+        if (attributesParameters != null) {
+            queryParameters = new QueryParameters();
+            queryParameters.setDistinctMode(isDistinctMode);
+            queryParameters.setResultNumber(100000000);
+            queryParameters.setDefaultFilteringItem(attributesParameters.getDefaultFilteringItem());
+            if (attributesParameters.getAndFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getAndFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.AND);
+                }
+            }
+            if (attributesParameters.getOrFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getOrFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.OR);
+                }
+            }
+        }
+
+        try {
+            String conceptionEntitiesUIDQueryPart = "id(conceptionEntity) IN " + conceptionEntityUIDs.toString();
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleEventClass,queryParameters,CypherBuilder.CypherFunctionType.COUNT);
+            queryCql = queryCql.replace("(operationResult:`"+RealmConstant.GeospatialScaleEventClass+"`)","(conceptionEntity)-[:`"+RealmConstant.GeospatialScale_AttachToRelationClass+"`]->(operationResult:`"+RealmConstant.GeospatialScaleEventClass+"`)");
             if(queryCql.contains("WHERE")){
                 queryCql = queryCql.replace("WHERE","WHERE "+conceptionEntitiesUIDQueryPart+" AND");
             }else{

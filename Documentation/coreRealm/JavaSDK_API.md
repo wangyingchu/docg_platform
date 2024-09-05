@@ -5414,6 +5414,28 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 时间刻度事件数量
      */
     public Long countAttachedTimeScaleEvents(List<String> conceptionEntityUIDs,AttributesParameters attributesParameters,boolean isDistinctMode) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
+
+    /**
+     * 输入一组概念实体的唯一值ID，获取与这些概念类型实体对象上附着的地理空间刻度事件与概念实体配对
+     *
+     ** @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
+     * @param queryParameters QueryParameters 地理空间刻度事件查询条件
+     *
+     * @return 地理空间刻度事件实体与概念类型实体配对返回结果集
+     */
+    public GeospatialScaleEventAndConceptionEntityPairRetrieveResult getAttachedGeospatialScaleEventAndConceptionEntityPairs(List<String> conceptionEntityUIDs,QueryParameters queryParameters);
+
+    /**
+     * 输入一组概念实体的唯一值ID，获取与这些概念类型实体对象上附着的地理空间刻度事件与概念实体配对数量
+     *
+     * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
+     * @param attributesParameters AttributesParameters 地理空间刻度事件查询条件
+     * @param isDistinctMode boolean 是否不允许重复数据
+     *
+     * @return 地理空间刻度事件数量
+     */
+    public Long countAttachedGeospatialScaleEvents(List<String> conceptionEntityUIDs,AttributesParameters attributesParameters,boolean isDistinctMode) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
+
 ```
 
 ###### ↳ SystemMaintenanceOperator
