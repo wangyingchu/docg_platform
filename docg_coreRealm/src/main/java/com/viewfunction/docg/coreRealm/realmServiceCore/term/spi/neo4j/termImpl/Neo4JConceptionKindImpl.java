@@ -2291,6 +2291,31 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
     @Override
     public GeospatialScaleEventAndConceptionEntityPairRetrieveResult getAttachedGeospatialScaleEventAndConceptionEntityPairs(QueryParameters queryParameters) {
+        try {
+            CommonGeospatialScaleEventAndConceptionEntityPairRetrieveResultImpl commonGeospatialScaleEventAndConceptionEntityPairRetrieveResultImpl = new CommonGeospatialScaleEventAndConceptionEntityPairRetrieveResultImpl();
+            commonGeospatialScaleEventAndConceptionEntityPairRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.GeospatialScaleEventClass,queryParameters,null);
+            queryCql = queryCql.replace("(operationResult:`"+RealmConstant.GeospatialScaleEventClass+"`)","(conceptionEntity:`"+this.conceptionKindName+"`)-[:`"+RealmConstant.GeospatialScale_AttachToRelationClass+"`]->(operationResult:`"+RealmConstant.GeospatialScaleEventClass+"`)");
+            queryCql = queryCql.replace("RETURN "+CypherBuilder.operationResultName,"RETURN "+CypherBuilder.operationResultName+",conceptionEntity");
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+
+            try{
+                GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+                GetListGeospatialScaleEventAndConceptionEntityPairTransformer getListGeospatialScaleEventAndConceptionEntityPairTransformer = new GetListGeospatialScaleEventAndConceptionEntityPairTransformer(null,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object queryRes = workingGraphOperationExecutor.executeRead(getListGeospatialScaleEventAndConceptionEntityPairTransformer,queryCql);
+                if(queryRes != null){
+                    List<GeospatialScaleEventAndConceptionEntityPair> res = (List<GeospatialScaleEventAndConceptionEntityPair>)queryRes;
+                    commonGeospatialScaleEventAndConceptionEntityPairRetrieveResultImpl.addGeospatialScaleEventAndConceptionEntityPairs(res);
+                    commonGeospatialScaleEventAndConceptionEntityPairRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(res.size());
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            commonGeospatialScaleEventAndConceptionEntityPairRetrieveResultImpl.finishEntitiesRetrieving();
+            return commonGeospatialScaleEventAndConceptionEntityPairRetrieveResultImpl;
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 

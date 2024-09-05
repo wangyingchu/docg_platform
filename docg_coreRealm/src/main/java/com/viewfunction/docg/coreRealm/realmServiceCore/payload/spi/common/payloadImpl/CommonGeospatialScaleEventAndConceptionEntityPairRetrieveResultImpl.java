@@ -29,11 +29,11 @@ public class CommonGeospatialScaleEventAndConceptionEntityPairRetrieveResultImpl
 
     @Override
     public List<GeospatialScaleEventAndConceptionEntityPair> getGeospatialScaleEventAndConceptionEntityPairs() {
-        return List.of();
+        return this.geospatialScaleEventAndConceptionEntityPairList;
     }
 
     @Override
     public EntitiesRetrieveStatistics getOperationStatistics() {
-        return null;
+        return this.entitiesRetrieveStatistics;
     }
 }
