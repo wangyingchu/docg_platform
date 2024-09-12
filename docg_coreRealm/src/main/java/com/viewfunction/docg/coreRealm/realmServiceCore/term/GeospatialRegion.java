@@ -258,4 +258,13 @@ public interface GeospatialRegion {
      * @return 目标地理空间刻度实体对象列表
      */
     public List<GeospatialScaleEntity> listGeospatialScaleEntities(GeospatialScaleGrade geospatialScaleGrade,GeospatialProperty geospatialProperty,String propertyValue);
+
+    /**
+     * 根据唯一ID获取与当前地理空间区域范围相关的地理空间事件对象
+     *
+     * @param geospatialScaleEventUID String 需要获取的地理空间事件对象唯一ID
+     *
+     * @return 地理空间事件对象
+     */
+    public GeospatialScaleEvent getGeospatialScaleEventByUID(String geospatialScaleEventUID);
 }

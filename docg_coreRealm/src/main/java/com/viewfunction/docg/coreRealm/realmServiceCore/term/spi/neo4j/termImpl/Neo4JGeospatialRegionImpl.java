@@ -7,15 +7,13 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListGeospatialScaleEntityTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetLongFormatReturnValueTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleGeospatialScaleEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GeospatialScaleOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GeospatialRegionRuntimeStatistics;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.GeospatialRegionSummaryStatistics;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEvent;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JGeospatialRegion;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
@@ -764,6 +762,25 @@ public class Neo4JGeospatialRegionImpl implements Neo4JGeospatialRegion {
             } finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
+        }
+        return null;
+    }
+
+    @Override
+    public GeospatialScaleEvent getGeospatialScaleEventByUID(String geospatialScaleEventUID) {
+        String queryCql =
+                "MATCH (docg_GeospatialScaleEvent:DOCG_GeospatialScaleEvent{DOCG_GeospatialScaleEventGeospatialRegion:\""+getGeospatialRegionName()+"\"}) WHERE id(docg_GeospatialScaleEvent) = "+geospatialScaleEventUID+" RETURN docg_GeospatialScaleEvent as operationResult";
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            GetSingleGeospatialScaleEventTransformer getSingleGeospatialScaleEventTransformer =
+                    new GetSingleGeospatialScaleEventTransformer(getGeospatialRegionName(),graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object queryRes = workingGraphOperationExecutor.executeRead(getSingleGeospatialScaleEventTransformer,queryCql);
+            if(queryRes != null){
+                return (GeospatialScaleEvent)queryRes;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
         return null;
     }
