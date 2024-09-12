@@ -5,10 +5,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetLinkedListTimeScaleEntityTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetLongFormatReturnValueTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleTimeScaleEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.TimeScaleOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeFlowRuntimeStatistics;
@@ -17,6 +14,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleMoment;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.InheritanceTree;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEvent;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JTimeFlow;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
@@ -995,6 +993,25 @@ public class Neo4JTimeFlowImpl implements Neo4JTimeFlow {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
         return timeFlowSummaryStatistics;
+    }
+
+    @Override
+    public TimeScaleEvent getTimeScaleEventByUID(String timeScaleEventUID) {
+        String queryCql =
+                "MATCH (docg_TimeScaleEvent:DOCG_TimeScaleEvent{DOCG_TimeScaleEventTimeFlow:\""+getTimeFlowName()+"\"}) WHERE id(docg_TimeScaleEvent) = "+timeScaleEventUID+" RETURN docg_TimeScaleEvent as operationResult";
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            GetSingleTimeScaleEventTransformer getSingleTimeScaleEventTransformer =
+                    new GetSingleTimeScaleEventTransformer(getTimeFlowName(),graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object queryRes = workingGraphOperationExecutor.executeRead(getSingleTimeScaleEventTransformer,queryCql);
+            if(queryRes != null){
+                return (TimeScaleEvent)queryRes;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return null;
     }
 
     private TimeScaleEntity getSpecialTimeScaleEntity(TimeScaleMoment timeScaleMoment,TimeScaleGrade timeScaleGrade){

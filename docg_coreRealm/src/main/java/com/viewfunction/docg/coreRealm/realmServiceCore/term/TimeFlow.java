@@ -316,4 +316,13 @@ public interface TimeFlow {
      * @return 时间流相关数据概要统计信息
      */
     public TimeFlowSummaryStatistics getTimeFlowSummaryStatistics();
+
+    /**
+     * 根据唯一ID获取当与前时间流相关的时间刻度事件对象
+     *
+     * @param timeScaleEventUID String 需要获取的时间刻度事件对象唯一ID
+     *
+     * @return 时间刻度事件对象
+     */
+    public TimeScaleEvent getTimeScaleEventByUID(String timeScaleEventUID);
 }
