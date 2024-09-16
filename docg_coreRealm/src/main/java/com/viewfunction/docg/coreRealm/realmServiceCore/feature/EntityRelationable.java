@@ -16,6 +16,17 @@ import java.util.Map;
 import java.util.Set;
 
 public interface EntityRelationable {
+    /*
+        三界 四洲
+        无所求 不可救
+        长夜 今朝
+        是非黑白 颠倒
+        有情 众生
+        爱恨贪嗔生死 交织
+        因缘 果报 忘不了
+        人欲 便是 天道
+     */
+
     /**
      关联传播停止逻辑,
      AT 表示只返回 jumpNumber 指定跳数的实体，
