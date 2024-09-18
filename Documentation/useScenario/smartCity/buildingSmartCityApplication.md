@@ -21,36 +21,46 @@
 
 #### ※ 导入GIS数据构建数据底座底层城市基础设施信息模型
 
-GIS 地理空间数据是构建智慧城市基底信息常用的数据来源。使用已有的 GIS 数据可以轻易的构建出大规模的城市基础设施信息模型。DOCG  平台内建对 SHP（ESRI shape）格式地理信息数据导入的能力。支持全球，全国以及局部三种不同空间尺度的地理信息数据的直接导入，能够直接将 SHP 数据导入领域模型中的概念类型定义中，并保持全部的业务属性与地理空间属性。
+GIS 地理空间数据是构建智慧城市基底信息常用的数据来源。使用已有的 GIS 数据可以轻易的构建出大规模的城市基础设施信息模型。DOCG  平台内建对 SHP（ESRI shape）格式地理信息数据导入的能力。支持全球，全国以及局部三种不同空间尺度的地理信息数据的直接导入，能够直接将 SHP 数据导入领域模型中的概念类型定义中，并保持全部的业务属性与地理空间属性。除各类常规属性的检索查询应用外，从 SHP 数据转化生成的概念实体数据能够参与 DOCG 平台中的全部地理空间分析计算应用。
 
-<img src="GIS_level1.png" style="zoom:25%;" />
-<img src="GIS_level2.png" style="zoom:25%;" />
-<img src="GIS_level3.png" style="zoom:25%;" />
+从 DOCG 数据分析平台的用户界面中可以通过以下步骤导入 GIS 数据，下文以导入北京市 *水系-湖，库* 数据为例 :
 
+1. 在<span style="color:#0074D9;"> *Conception Kind 概念类型数据管理* </span>  界面中点击  [*创建概念类型* ] 按钮 创建 概念类型  **RiverSystem-Surface ( 水系-湖，库 ) **
 
+2. 在概念类型定义列表中选中概念类型 RiverSystem-Surface，点击  [*配置概念类型定义* ] 按钮，打开  <span style="color:#0074D9;"> *概念类型配置* </span>  界面
 
+3. 点击  [*导入概念实体数据* ] -》 [*SHP格式数据* ] 按钮，选择并上传 zip 格式的 SHP 数据压缩包，即可将 SHP 文件中的全部地理空间数据作为概念实体导入概念类型 RiverSystem-Surface
 
+以下为相关界面操作截图：
 
-
-
-
-
-
-
-
-
-
-DOCG 数据分析平台是一个技术领先的<span style="color:#0074D9;"> **综合数据分析与 AI 算法平台**</span>。
+###### 概念类型数据管理界面
+<div style="text-align:left;">
+    <img src="ConceptionKindDataManage.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/>
+</div>
 
 
 
+###### 概念类型配置界面
 
-
-
+<div style="text-align:left;">
+    <img src="ImportSHP.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/>
+</div>
 
 
 
 
+<div style="text-align:left;">
+    <img src="RiverSystemEntity.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/>
+</div>
+
+
+<div style="text-align:left;">
+    <img src="AllRiverSystemEntities.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/>
+</div>
+
+
+
+从 DOCG 数据分析平台的用户界面中可以通过以下步骤导入 GIS 数据，下文以导入北京市 *水系-湖，库* 数据为例
 
 
 
@@ -58,6 +68,14 @@ DOCG 数据分析平台是一个技术领先的<span style="color:#0074D9;"> **�
 
 
 
+
+
+
+<div style="display: flex;">
+    <img src="GIS_level1.png" alt="Image 1" style="margin-right: 2px;zoom:12.5%;">
+    <img src="GIS_level2.png" alt="Image 2" style="margin-right: 1px;zoom:12.5%;"">
+    <img src="GIS_level3.png" alt="Image 3" style="margin-left: 1px;zoom:12.5%;">
+</div>
 
 
 
