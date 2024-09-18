@@ -23,13 +23,9 @@
 
 GIS 地理空间数据是构建智慧城市基底信息常用的数据来源。使用已有的 GIS 数据可以轻易的构建出大规模的城市基础设施信息模型。DOCG  平台内建对 SHP（ESRI shape）格式地理信息数据导入的能力。支持全球，全国以及局部三种不同空间尺度的地理信息数据的直接导入，能够直接将 SHP 数据导入领域模型中的概念类型定义中，并保持全部的业务属性与地理空间属性。
 
-
-
-
-
-![](GIS_level1.png)
-![](GIS_level2.png)
-![](GIS_level3.png)
+<img src="GIS_level1.png" style="zoom:25%;" />
+<img src="GIS_level2.png" style="zoom:25%;" />
+<img src="GIS_level3.png" style="zoom:25%;" />
 
 
 
