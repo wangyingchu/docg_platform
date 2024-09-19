@@ -19,7 +19,10 @@
 
 
 
+
 #### ※ 导入GIS数据构建数据底座底层城市基础设施信息模型
+
+##### <span style="color:#0074D9;"> 利用 GIS 数据源构建城市数据底座基底信息</span>
 
 GIS 地理空间数据是构建智慧城市基底信息常用的数据来源。使用已有的 GIS 数据可以轻易的构建出大规模的城市基础设施信息模型。DOCG  平台内建对 SHP（ESRI shape）格式地理信息数据导入的能力。支持全球，全国以及局部三种不同空间尺度的地理信息数据的直接导入，能够直接将 SHP 数据导入领域模型中的概念类型定义中，并保持全部的业务属性与地理空间属性。除各类常规属性的检索查询应用外，从 SHP 数据转化生成的概念实体数据能够参与 DOCG 平台中的全部地理空间分析计算应用。
 
@@ -35,47 +38,79 @@ GIS 地理空间数据是构建智慧城市基底信息常用的数据来源。�
 
 ###### 概念类型数据管理界面
 <div style="text-align:left;">
-    <img src="ConceptionKindDataManage.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/>
+    <img src="ConceptionKindDataManage.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
 </div>
-
-
 
 ###### 概念类型配置界面
 
 <div style="text-align:left;">
-    <img src="ImportSHP.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/>
+    <img src="ImportSHP.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
 </div>
 
+由 SHP 文件数据源创建生成的概念实体天然具有 **WKT** 格式的 GIS 地理信息，可以在 DOCG 平台的 <span style="color:#0074D9;"> *概念实体详情* </span>  界面中直接显示
 
-
-
+###### 概念实体详情界面
 <div style="text-align:left;">
-    <img src="RiverSystemEntity.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/>
+    <img src="RiverSystemEntity.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
 </div>
 
+也可以在 <span style="color:#0074D9;"> *概念实体空间数据展示* </span>  界面中查看概念类型 **RiverSystem-Surface ( 水系-湖，库 ) ** 中全量数据的地理空间信息
 
+###### 概念实体空间数据展示界面
 <div style="text-align:left;">
-    <img src="AllRiverSystemEntities.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/>
+    <img src="AllRiverSystemEntities.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
 </div>
 
 
+通过上文介绍方式依次导入下列 SHP 格式的北京市城市要素数据，即可构建出一个北京市的城市基础设施数字底座。
 
-从 DOCG 数据分析平台的用户界面中可以通过以下步骤导入 GIS 数据，下文以导入北京市 *水系-湖，库* 数据为例
+<table>
+<tr>
+<td>北京市DEM高程数据</td><td>北京市城市用地类型</td><td>北京市公园绿地</td><td>北京市地铁站</td><td>北京市地铁线</td><td>北京市水系数据</td>
+</tr>
+<tr>
+<td>北京市道路数据</td><td>北京市铁路数据</td><td>北京建筑轮廓</td><td>北京市土壤类型</td><td>北京市湿地自然保护区</td><td>北京市交通设施服务</td>
+</tr><tr>
+<td>北京市住宿服务</td><td>北京市体育休闲服务</td><td>北京市公共设施</td><td>北京市公司企业</td><td>北京市医疗保健服务</td><td>北京市商务住宅</td>
+</tr>
+<tr>
+<td>北京市地名地址信息</td><td>北京市室内设施</td><td>北京市政府机构及社会团体</td><td>北京市生活服务</td><td>北京市科教文化服务</td><td>北京市购物服务</td>
+</tr>
+<tr>
+<td>北京市通行设施</td><td>北京市道路附属设施</td><td>北京市金融保险服务</td><td>北京市风景名胜</td><td>北京市餐饮服务</td><td></td>
+</tr>
+</table>
 
 
-
-
-
-
-
-
-
+下图是从宏观到微观分三个不同尺度将全部城市基础设施数字底座中的地理信息数据统一显示的可视化示意：
 
 <div style="display: flex;">
     <img src="GIS_level1.png" alt="Image 1" style="margin-right: 2px;zoom:12.5%;">
     <img src="GIS_level2.png" alt="Image 2" style="margin-right: 1px;zoom:12.5%;"">
     <img src="GIS_level3.png" alt="Image 3" style="margin-left: 1px;zoom:12.5%;">
 </div>
+
+
+##### <span style="color:#0074D9;"> 通过空间计算构建城市基础要素的关联</span>
+
+由统一空间坐标系下的 SHP 文件数据源导入创建的各类概念类型实体都具有标准的地理空间属性信息。通过使用 DOCG 平台提供的内置全局地理空间计算分析功能，可以对这些概念类型实体执行空间计算，并根据计算结果构建不同概念实体之间的业务关联。DOCG 平台支持各种类型的 **空间投影**(*Contains,Intersects,Within,Equals,Crosses,Touches,Overlaps,Disjoint,Cover,CoveredBy*)  计算、**空间几何**计算、**空间距离**计算、**缓冲区**计算以及 **KNN** 计算。下文以**地铁线路** 和 **地铁站点** 的概念实体数据为例，介绍使用空间计算构建业务关系的操作。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
