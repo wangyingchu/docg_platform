@@ -93,27 +93,38 @@ GIS 地理空间数据是构建智慧城市基底信息常用的数据来源。�
 
 ##### <span style="color:#0074D9;"> 通过空间计算构建城市基础要素的关联</span>
 
-由统一空间坐标系下的 SHP 文件数据源导入创建的各类概念类型实体都具有标准的地理空间属性信息。通过使用 DOCG 平台提供的内置全局地理空间计算分析功能，可以对这些概念类型实体执行空间计算，并根据计算结果构建不同概念实体之间的业务关联。DOCG 平台支持各种类型的 **空间投影**(*Contains,Intersects,Within,Equals,Crosses,Touches,Overlaps,Disjoint,Cover,CoveredBy*)  计算、**空间几何**计算、**空间距离**计算、**缓冲区**计算以及 **KNN** 计算。下文以**地铁线路** 和 **地铁站点** 的概念实体数据为例，介绍使用空间计算构建业务关系的操作。
+由统一空间坐标系下的 SHP 文件数据源导入创建的各类概念类型实体都具有标准的地理空间属性信息。通过使用 DOCG 平台提供的内置全局地理空间计算分析功能，可以对这些概念类型实体执行空间计算，并根据计算结果构建不同概念实体之间的业务关联。DOCG 平台支持各种类型的 **空间投影**(*Contains,Intersects,Within,Equals,Crosses,Touches,Overlaps,Disjoint,Cover,CoveredBy*)  计算、**空间几何**计算、**空间距离**计算、**缓冲区**计算以及 **KNN** 计算功能。下文代码以**地铁线路** 和 **地铁站点** 的概念实体数据为例，介绍使用 DOCG  Java SDK 提供的标准空间计算API 构建业务关系的操作:
 
+```java
+CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+//获取地铁线路的概念类型对象        
+ConceptionKind lineKind = coreRealm.getConceptionKind("SubWay-Line");
+//查询 "7号线二期" 地铁线路的概念实体
+QueryParameters queryParameters = new QueryParameters();
+queryParameters.setDefaultFilteringItem(new EqualFilteringItem("Line","7号线二期"));
+ConceptionEntitiesRetrieveResult conceptionEntitiesRetrieveResult = lineKind.getEntities(queryParameters);
+List<ConceptionEntity> conceptionEntityList = conceptionEntitiesRetrieveResult.getConceptionEntities();
+for(ConceptionEntity currentLine:conceptionEntityList){
+    //在全球尺度 WGS84坐标系 下计算查询 与地铁"7号线二期"线路概念实体空间相交的全部地铁站点（概念类型为SubWay-Station）概念实体
+    List<ConceptionEntity> stationEntitiesList = currentLine.getSpatialPredicateMatchedConceptionEntities("SubWay-Station",null, GeospatialScaleCalculable.SpatialPredicateType.Intersects, GeospatialScaleCalculable.SpatialScaleLevel.Global);            
+    for(ConceptionEntity currentConceptionEntity:stationEntitiesList){
+        	//在所有查询到的地铁站点概念实体与 "7号线二期"线路概念实体之间建立名称为 CanAccessSubWayLine(可进出地铁线路)的业务关联关系 
+            currentLine.attachToRelation(currentConceptionEntity.getConceptionEntityUID(),"CanAccessSubWayLine",null,false);
+    }
+}
+```
 
+以上简单的代码片段即可通过空间计算构建出概念实体间的实体业务关联，产生的关联关系数据可在 DOCG 平台的 <span style="color:#0074D9;"> *概念实体详情* </span>  界面中实时显示：
 
+###### 地铁"7号线二期"线路概念实体数据关联网络图展示界面
+<div style="text-align:left;">
+    <img src="SubwaylineRelationToplogic1.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
+</div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+###### 地铁"7号线二期"线路概念实体全量一度关系3维蒲公英图展示界面
+<div style="text-align:left;">
+    <img src="SubwaylineRelationToplogic2.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
+</div>
 
 
 
