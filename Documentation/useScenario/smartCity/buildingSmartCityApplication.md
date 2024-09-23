@@ -62,6 +62,16 @@ GIS 地理空间数据是构建智慧城市基底信息常用的数据来源。�
 </div>
 
 
+除了通过操作界面单次导入外，DOCG 平台开发 SDK 还提供了 导入 GIS 数据的 API。通过 API 可以实现批量 GIS 数据的规模化快速导入，以下是 GIS 数据导入 API 的操作示例： 
+
+```java
+//将 UTF-8 编码的 北京市交通设施服务 GIS全量数据导入到概念类型 TransportationFacility 中
+GeospatialOperationUtil.importSHPDataDirectlyToConceptionKind("TransportationFacility",false,
+                new File("/media/GIS_DATA/矢量数据/北京市POI/ShapeFile/北京市_交通设施服务.shp"),"UTF-8");
+```
+
+
+
 通过上文介绍方式依次导入下列 SHP 格式的北京市城市要素数据，即可构建出一个北京市的城市基础设施数字底座。
 
 <table>
