@@ -161,7 +161,11 @@ for(ConceptionEntity currentLine:conceptionEntityList){
 
 #### ※ 导入 BIM 建筑信息模型数据构建数据底座中层业务运行支撑要素模型
 
+BIM 信息模型做为建筑数据的载体
 
+<div style="text-align:left;">
+    <img src="BuildingMoldingInfo.jpg" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
+</div>
 
 <div style="text-align:right;">
     <img src="hero-visual.svg" alt="Your Image" style="display: block; margin-left: auto; margin-right: 0;zoom:25%;"/>
