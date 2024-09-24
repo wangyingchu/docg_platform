@@ -148,9 +148,13 @@ for(ConceptionEntity currentLine:conceptionEntityList){
 </div>
 
 
+在链接地理空间区域操作执行完毕后，即可在 DOCG 数据分析平台的 <span style="color:#0074D9;"> *概念实体详情* </span>  用户界面中展示概念实体的地理空间区域链接信息
 
+###### 地铁"8号线四期"线路概念实体的地理空间区域链接展示界面
 
-
+<div style="text-align:left;">
+    <img src="ConceptionEntityGeoLinkInfo.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
+</div>
 
 
 
