@@ -20,7 +20,7 @@
 
 
 
-#### ※ 导入GIS数据构建数据底座底层城市基础设施信息模型
+#### ※ 导入 GIS 地理信息数据构建数据底座底层城市基础设施信息模型
 
 ##### <span style="color:#0074D9;"> 利用 GIS 数据源构建城市数据底座基底信息</span>
 
@@ -41,7 +41,7 @@ GIS 地理空间数据是构建智慧城市基底信息常用的数据来源。�
     <img src="ConceptionKindDataManage.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
 </div>
 
-###### 概念类型配置界面
+###### 概念类型配置界面:导入 SHP格式的地理信息数据
 
 <div style="text-align:left;">
     <img src="ImportSHP.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
@@ -130,35 +130,36 @@ for(ConceptionEntity currentLine:conceptionEntityList){
 <div style="text-align:left;">
     <img src="SubwaylineRelationToplogic1.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
 </div>
-
 ###### 地铁"7号线二期"线路概念实体全量一度关系3维蒲公英图展示界面
+
 <div style="text-align:left;">
     <img src="SubwaylineRelationToplogic2.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
 </div>
-
-
 在 DOCG 平台中内置了全球的基于行政区划 (**CONTINENT[洲际]**、**COUNTRY_REGION[国家，地区]**、**PROVINCE[省级]**、**PREFECTURE[地级]**、**COUNTY[县级]**、**TOWNSHIP[乡级]**、**VILLAGE[村级]**) 组织的特殊地理空间区域实体数据，任意具有地理信息属性的概念实体均可以通过标准的用户界面或 SDK API 链接到指定的行政区划对象中。下文以**地铁线路** 概念类型为例，介绍使用 DOCG 数据分析平台的用户界面执行链接地理空间区域的操作:
 
 1. 在概念类型定义列表中选中概念类型 Subway-Line，点击  [*配置概念类型定义* ] 按钮，打开 <span style="color:#0074D9;"> *概念类型配置* </span>  界面
 
 2. 点击  [*链接时空信息* ] -》 [*链接至地理空间区域* ]  -》 [*根据概念实体地理空间计算链接* ] 按钮，选择相应的运算参数，即可将概念类型下的全部概念实体链接到符合空间计算条件的地理空间区域实体上。在本示例的操作中，通过空间计算，将所有的地铁线路概念实体链接到了各个线路穿行过的街道、镇、乡级地理空间区域中。
 
+###### 概念类型配置界面：执行全部概念实体与地理空间区域的链接操作
 <div style="text-align:left;">
     <img src="LinkToGeoEntities.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
 </div>
-
-
-在链接地理空间区域操作执行完毕后，即可在 DOCG 数据分析平台的 <span style="color:#0074D9;"> *概念实体详情* </span>  用户界面中展示概念实体的地理空间区域链接信息
+在链接地理空间区域操作执行完毕后，即可直接在 DOCG 数据分析平台的 <span style="color:#0074D9;"> *概念实体详情* </span>  用户界面中显示概念实体的地理空间区域链接信息。
 
 ###### 地铁"8号线四期"线路概念实体的地理空间区域链接展示界面
 
 <div style="text-align:left;">
     <img src="ConceptionEntityGeoLinkInfo.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
 </div>
+除了具有链接到地理空间区域的能力外，具有内置地理信息数据的概念类型实体还可以与 DOCG 平台内置的地理空间区域（行政区划实体数据）执行各种地理空间计算分析操作，下图展示了在 DOCG 数据分析平台的 <span style="color:#0074D9;"> *概念实体详情* </span>  用户界面中使用此种空间计算能力执行地理空间区域查询的操作：
+###### 在地铁"8号线四期"线路概念实体上通过空间计算功能查询该线路穿行过的乡（街道）级行政区划的地理空间区域
+<div style="text-align:left;">
+    <img src="ConceptionEntityGeoCaclue.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
+</div>
 
 
-
-
+#### ※ 导入 BIM 建筑信息模型数据构建数据底座中层业务运行支撑要素模型
 
 
 
