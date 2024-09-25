@@ -159,6 +159,46 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
+    public EntitiesOperationStatistics setRelationEntitiesAttributesByUIDs(List<String> relationEntityUIDs, Map<String, Object> attributes) throws CoreRealmServiceEntityExploreException {
+        if(relationEntityUIDs == null || relationEntityUIDs.size() < 1){
+            logger.error("At least one relation entity UID is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("At least one relation entity UID is required");
+            throw e;
+        }
+        if(attributes == null || attributes.isEmpty()){
+            logger.error("At least one attribute value is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("At least one attribute value is required");
+            throw e;
+        }
+
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.setRelationKindProperties("NOT_EXIST_RELATION_KIND",attributes);
+            String queryByUIDListPart = "MATCH (source)-["+CypherBuilder.operationResultName+"]->(target) WHERE id("+CypherBuilder.operationResultName+") IN "+relationEntityUIDs.toString()+"\n";
+            String queryByUIDsCql =queryCql.replace("MATCH (sourceNode)-["+CypherBuilder.operationResultName+":`NOT_EXIST_RELATION_KIND`]->(targetNode)",queryByUIDListPart);
+            logger.debug("Generated Cypher Statement: {}", queryByUIDsCql);
+
+            GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
+            Object queryRes = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer,queryByUIDsCql);
+            if(queryRes != null) {
+                Long operationResult =(Long)queryRes;
+                entitiesOperationStatistics.setFinishTime(new Date());
+                entitiesOperationStatistics.setSuccessItemsCount(operationResult);
+                entitiesOperationStatistics.setOperationSummary("setRelationEntitiesAttributesByUIDs operation success");
+                return entitiesOperationStatistics;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        entitiesOperationStatistics.setFinishTime(new Date());
+        return entitiesOperationStatistics;
+    }
+
+    @Override
     public List<ConceptionEntity> getConceptionEntitiesByUIDs(List<String> conceptionEntityUIDs) throws CoreRealmServiceEntityExploreException {
         if(conceptionEntityUIDs == null || conceptionEntityUIDs.size() < 1){
             logger.error("At least one conception entity UID is required");
@@ -180,6 +220,46 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
+    }
+
+    @Override
+    public EntitiesOperationStatistics setConceptionEntitiesAttributesByUIDs(List<String> conceptionEntityUIDs, Map<String, Object> attributes) throws CoreRealmServiceEntityExploreException {
+        if(conceptionEntityUIDs == null || conceptionEntityUIDs.size() < 1){
+            logger.error("At least one conception entity UID is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("At least one conception entity UID is required");
+            throw e;
+        }
+        if(attributes == null || attributes.isEmpty()){
+            logger.error("At least one attribute value is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("At least one attribute value is required");
+            throw e;
+        }
+
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.setConceptionKindProperties("NOT_EXIST_CONCEPTION_KIND",attributes);
+            String queryByUIDListPart = "MATCH ("+CypherBuilder.operationResultName+") WHERE id("+CypherBuilder.operationResultName+") IN " + conceptionEntityUIDs.toString()+"\n";
+            String queryByUIDsCql =queryCql.replace("MATCH ("+CypherBuilder.operationResultName+":`NOT_EXIST_CONCEPTION_KIND`)",queryByUIDListPart);
+            logger.debug("Generated Cypher Statement: {}", queryByUIDsCql);
+
+            GetLongFormatAggregatedReturnValueTransformer GetLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
+            Object queryRes = workingGraphOperationExecutor.executeWrite(GetLongFormatAggregatedReturnValueTransformer,queryByUIDsCql);
+            if(queryRes != null) {
+                Long operationResult =(Long)queryRes;
+                entitiesOperationStatistics.setFinishTime(new Date());
+                entitiesOperationStatistics.setSuccessItemsCount(operationResult);
+                entitiesOperationStatistics.setOperationSummary("setConceptionEntitiesAttributesByUIDs operation success");
+                return entitiesOperationStatistics;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        entitiesOperationStatistics.setFinishTime(new Date());
+        return entitiesOperationStatistics;
     }
 
     @Override

@@ -5144,15 +5144,6 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
     public List<RelationEntity> getRelationsOfConceptionEntityPair(List<String> conceptionEntityPairUIDs) throws CoreRealmServiceEntityExploreException;
 
     /**
-     * 输入一组关系实体的唯一值ID，返回所有匹配的关系实体数据
-     *
-     * @param relationEntityUIDs List<String> 关系实体唯一值ID列表
-     *
-     * @return 匹配的关系实体对象列表
-     */
-    public List<RelationEntity> getRelationEntitiesByUIDs(List<String> relationEntityUIDs) throws CoreRealmServiceEntityExploreException;
-
-	/**
      * 输入一组概念实体的唯一值ID，查询并删除所有包含其中的概念实体两两间的关系实体数据
      *
      * @param conceptionEntityPairUIDs List<String> 概念实体唯一值ID列表
@@ -5163,6 +5154,25 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
     public long removeRelationsOfConceptionEntityPair(List<String> conceptionEntityPairUIDs,String relationKind) throws CoreRealmServiceEntityExploreException;
 
     /**
+     * 输入一组关系实体的唯一值ID，返回所有匹配的关系实体数据
+     *
+     * @param relationEntityUIDs List<String> 关系实体唯一值ID列表
+     *
+     * @return 匹配的关系实体对象列表
+     */
+    public List<RelationEntity> getRelationEntitiesByUIDs(List<String> relationEntityUIDs) throws CoreRealmServiceEntityExploreException;
+
+	/**
+     * 输入一组关系实体的唯一值ID，设置所有匹配的关系实体的指定的属性，如属性不存在新增属性，如属性已经存在，则用新的值覆盖原有属性
+     *
+     * @param relationEntityUIDs List<String> 关系实体唯一值ID列表
+     * @param attributes Map<String, Object> 需要添加的所有属性
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics setRelationEntitiesAttributesByUIDs(List<String> relationEntityUIDs,Map<String, Object> attributes) throws CoreRealmServiceEntityExploreException;
+
+    /**
      * 输入一组概念实体的唯一值ID，返回所有匹配的概念实体数据
      *
      * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
@@ -5170,6 +5180,16 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 匹配的概念实体对象列表
      */
     public List<ConceptionEntity> getConceptionEntitiesByUIDs(List<String> conceptionEntityUIDs) throws CoreRealmServiceEntityExploreException;
+
+     /**
+     * 输入一组概念实体的唯一值ID，设置所有匹配的概念实体的指定的属性，如属性不存在新增属性，如属性已经存在，则用新的值覆盖原有属性
+     *
+     * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
+     * @param attributes Map<String, Object> 需要添加的所有属性
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics setConceptionEntitiesAttributesByUIDs(List<String> conceptionEntityUIDs,Map<String, Object> attributes) throws CoreRealmServiceEntityExploreException;
 
     /**
      * 基于图网络的拓扑关联计算两个概念实体的相似度
