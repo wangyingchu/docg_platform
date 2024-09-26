@@ -159,13 +159,36 @@ for(ConceptionEntity currentLine:conceptionEntityList){
 </div>
 
 
+
+
 #### ※ 导入 BIM 建筑信息模型数据构建数据底座中层业务运行支撑要素模型
+##### <span style="color:#0074D9;"> 实现BIM数据的数模分离并与 GIS 数据相融合</span>
+BIM（Building Information Modeling）技术是一种应用于工程设计、建造、管理的数据化工具，通过对建筑的数据化、信息化模型整合，在项目策划、运行和维护的全生命周期过程中进行共享和传递，使工程技术人员对各种建筑信息作出正确理解和高效应对，为设计团队以及包括建筑、运营单位在内的各方建设主体提供协同工作的基础，在提高生产效率、节约成本和缩短工期方面发挥重要作用。
 
-BIM 信息模型做为建筑数据的载体
 
+###### 通过 BIM 模型为核心媒介融合各类不同领域与阶段的外部数据
 <div style="text-align:left;">
-    <img src="BuildingMoldingInfo.jpg" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
+    <img src="BimModleingDataStructure.jpg" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
 </div>
+
+
+BIM 模型文件中包含海量的称为构件的基本构成元素，每一个构件都包含有属性类的数据信息以及描述空间状况的模型信息。DOCG 数据平台能够解析 BIM 模型文件，将全部的构件转化为概念实体存储在相应的概念类型中。通过特殊的数模分离技术，将 BIM 构件中的数据信息转化为概念实体常规属性，将 BIM 构件中的模型信息转换为 **WKT** 格式的 GIS 地理信息数据。通过该技术处理，能够实现将 BIM 与 GIS 来源的数据在同一套技术体系与数据存储体系下执行统一的全局地理空间计算分析的能力。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <div style="text-align:right;">
     <img src="hero-visual.svg" alt="Your Image" style="display: block; margin-left: auto; margin-right: 0;zoom:25%;"/>
