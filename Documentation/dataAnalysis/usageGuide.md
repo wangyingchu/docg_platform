@@ -7,3 +7,6 @@
 #### ➜ 概述 
 
 ![image](dataAnalysis.jpg)
+
+
+<img src="spatialChart.webp" alt="image" style="zoom:50%;" />
