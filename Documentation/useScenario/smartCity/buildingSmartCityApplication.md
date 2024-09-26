@@ -1,3 +1,5 @@
+
+
 ###### Data Ocean & Cloud Graph  数海云图
 
 ***
@@ -30,7 +32,7 @@ GIS 地理空间数据是构建智慧城市基底信息常用的数据来源。�
 
 1. 在<span style="color:#0074D9;"> *Conception Kind 概念类型数据管理* </span>  界面中点击  [*创建概念类型* ] 按钮 创建 概念类型  **RiverSystem-Surface ( 水系-湖，库 ) **
 
-2. 在概念类型定义列表中选中概念类型 RiverSystem-Surface，点击  [*配置概念类型定义* ] 按钮，打开  <span style="color:#0074D9;"> *概念类型配置* </span>  界面
+2. 在概念类型定义列表中选中概念类型 RiverSystem-Surface，点击  [*配置概念类型定义* ] 按钮，打开 <span style="color:#0074D9;"> *概念类型配置* </span> 界面
 
 3. 点击  [*导入概念实体数据* ] -》 [*SHP格式数据* ] 按钮，选择并上传 zip 格式的 SHP 数据压缩包，即可将 SHP 文件中的全部地理空间数据作为概念实体导入概念类型 RiverSystem-Surface
 
@@ -172,23 +174,31 @@ BIM（Building Information Modeling）技术是一种应用于工程设计、建
 </div>
 
 
-BIM 模型文件中包含海量的称为构件的基本构成元素，每一个构件都包含有属性类的数据信息以及描述空间状况的模型信息。DOCG 数据平台能够解析 BIM 模型文件，将全部的构件转化为概念实体存储在相应的概念类型中。通过特殊的数模分离技术，将 BIM 构件中的数据信息转化为概念实体常规属性，将 BIM 构件中的模型信息转换为 **WKT** 格式的 GIS 地理信息数据。通过该技术处理，能够实现将 BIM 与 GIS 来源的数据在同一套技术体系与数据存储体系下执行统一的全局地理空间计算分析的能力。
+BIM 模型文件中包含海量的称为构件的基本构成元素，每一个构件都包含有属性类的<span style="color:#0074D9;"> *数据信息* </span>以及描述空间状况的<span style="color:#0074D9;"> *模型信息* </span>。DOCG 数据平台能够解析 BIM 模型文件，将全部的构件转化为概念实体存储在相应的概念类型中。通过特殊的<span style="color:#0074D9;"> *数模分离* </span>技术，将 BIM 构件中的数据信息转化为概念实体常规属性，将 BIM 构件中的模型信息转换为 **WKT** 格式的 GIS 地理信息数据。通过该技术处理，能够实现将 BIM 与 GIS 来源的数据在同一套数据存储与数据分析技术体系下执行统一的全局地理空间计算分析的能力。下文中展示了将一个机场单层建筑空间的 BIM 文件转换为名称为 **AirportBuildingSpace-F02** 的概念类型并将全部 BIM 构件存储为概念实体后可以在 DOCG 数据分析平台用户界面中执行的一些相关操作的示例：
 
+###### BIM 文件中的构件能够转化为常规的概念类型中的实体，并在常规的数据属性查询与分析中直接使用 BIM 构件中的属性类数据信息
 
+<div style="text-align:left;">
+    <img src="BimFileToConceptionKinds.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
+</div>
 
+######  BIM 模型构件生成的概念实体中自动包含有从 BIM 构件中生成的空间信息，该空间信息的坐标系与内容可以与由其他来源产生的地理空间数据相互兼容 
 
+<div style="text-align:left;">
+    <img src="BimFileGisLayout.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
+</div>
 
+######  由 BIM 构件生成的概念实体具有与常规概念实体完全相同的能力
+<div style="text-align:left;">
+    <img src="BimElementToCinceptionEntity.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
+</div>
 
+######  在由 BIM 构件生成的概念实体上能够执行常规空间计算功能（查询该建筑空间所在的乡、街道级行政区划的地理空间区域）
+<div style="text-align:left;">
+    <img src="BIMElementGisCacul.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
+</div>
 
-
-
-
-
-
-
-
-
-
+##### <span style="color:#0074D9;"> 实现BIM数据的数模分离并与 GIS 数据相融合</span>
 
 <div style="text-align:right;">
     <img src="hero-visual.svg" alt="Your Image" style="display: block; margin-left: auto; margin-right: 0;zoom:25%;"/>
