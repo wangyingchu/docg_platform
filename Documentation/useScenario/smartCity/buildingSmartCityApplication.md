@@ -198,6 +198,43 @@ BIM 模型文件中包含海量的称为构件的基本构成元素，每一个�
     <img src="BIMElementGisCacul.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
 </div>
 
+通过上文介绍方式依次导入下列 BIM 模型文件的机场内部建筑与设备设施数据，即可构建出支持机场相关业务运行操作的数字底座中层智慧建筑应用的局部信息模型。
+
+<table>
+<tr>
+<td>登机桥活动端</td><td>机场建筑空间</td><td>机场行李分拣转盘</td><td>机场行李提取转盘</td>
+</tr>
+<tr>
+<td>机场值机柜台</td><td>登机口</td><td>特种设备-电梯井</td><td>飞机停机位</td>
+</tr><tr>
+<td>机场开闭站</td><td>机场变压器</td><td>登机门</td><td>机场家具设备设施</td>
+</tr>
+<tr>
+<td>流向节点</td><td>固定登机桥</td><td>机场变（配）电室</td><td></td>
+</tr>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ##### <span style="color:#0074D9;"> 实现BIM数据的数模分离并与 GIS 数据相融合</span>
 
 <div style="text-align:right;">
