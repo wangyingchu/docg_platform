@@ -210,14 +210,23 @@ BIM 模型文件中包含海量的称为构件的基本构成元素，每一个�
 <td>机场开闭站</td><td>机场变压器</td><td>登机门</td><td>机场家具设备设施</td>
 </tr>
 <tr>
-<td>流向节点</td><td>固定登机桥</td><td>机场变（配）电室</td><td></td>
+<td>人流动线流向控制节点</td><td>固定登机桥</td><td>机场变（配）电室</td><td></td>
 </tr>
 </table>
 
 
+
 ##### <span style="color:#0074D9;"> 通过空间计算关联 BIM 与GIS 数据源产生的概念实体</span>
 
-由经过数模分离技术后导入的 由统一空间坐标系下的 SHP 文件数据源导入创建的各类概念类型实体都具有标准的地理空间属性信息。通过使用 DOCG 平台提供的内置全局地理空间计算分析功能，可以对这些概念类型实体执行空间计算，并根据计算结果构建不同概念实体之间的业务关联。DOCG 平台支持各种类型的 **空间投影**(*Contains,Intersects,Within,Equals,Crosses,Touches,Overlaps,Disjoint,Cover,CoveredBy*)  计算、**空间几何**计算、**空间距离**计算、**缓冲区**计算以及 **KNN** 计算功能。下文代码以**地铁线路** 和 **地铁站点** 的概念实体数据为例，介绍使用 DOCG  Java SDK 提供的标准空间计算API 构建业务关系的操作:
+经过数模分离技术处理后导入 DOCG 平台的 BIM 构件概念实体上的建筑空间信息被直接转化为了 **WKT** 格式的 GIS 地理信息数据。因此可以通过 DOCG 平台的空间计算能力与任意其他具有空间信息的概念实体进行空间分析，并根据分析结果建立需要的实体关联。例如下图的示例中通过空间计算建立了机场航站楼内一个 *固定登机桥* 与 *登机桥活动端* 和 *登机门* 之间基于空间相邻确定的业务逻辑的上下游联动关系。
+######  BIM 构件生成的 固定登机桥 实体 和与其空间相连的 登机桥活动端 以及 登机门
+<div style="text-align:left;">
+    <img src="AirportBIMDataLinkIng.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
+</div>
+将源自 BIM 构件与源自 GIS 城市要素信息的概念实体通过空间计算为依据建立起成体系的关联关系后，可以消除在智慧城市和 TOD 类业务应用中面临的一个主要技术障碍： <span style="color:#0074D9;"> **GIS 与 BIM 数据分别对应建筑室外与室内两个领域，两者数据技术上无法联通，无法建立融合统一室内外空间数据的综合应用**</span> 。在解决了室内外空间数据的统一融合问题后，能够处理很多当前技术上难以有效解决的业务需求，以下以机场的运营为场景举两个示例：
+
+| <img src="AirportBuildingRelation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>多少是多少 |
+| :----------------------------------------------------------- |
 
 
 
