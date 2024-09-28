@@ -31,38 +31,71 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
 
     public default TimeScaleEvent attachTimeScaleEvent(long dateTime, String eventComment, Map<String, Object> eventData,
                                                        TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException {
+        return attachTimeScaleEvent(dateTime,eventComment,eventData,timeScaleGrade,null);
+    }
+
+    public default TimeScaleEvent attachTimeScaleEvent(long dateTime, String eventComment, Map<String, Object> eventData,
+                                                       TimeFlow.TimeScaleGrade timeScaleGrade,String eventAdditionalConceptionKind) throws CoreRealmServiceRuntimeException {
         Instant instant = Instant.ofEpochMilli(dateTime);
         LocalDateTime timeStamp = LocalDateTime.ofInstant(instant,zone);
-        return attachTimeScaleEventInnerLogic(RealmConstant._defaultTimeFlowName,getReferTime(timeStamp,timeScaleGrade),eventComment,eventData,timeScaleGrade);
+        return attachTimeScaleEventInnerLogic(RealmConstant._defaultTimeFlowName,getReferTime(timeStamp,timeScaleGrade),eventComment,eventData,timeScaleGrade,eventAdditionalConceptionKind);
     }
 
     public default TimeScaleEvent attachTimeScaleEvent(String timeFlowName,long dateTime, String eventComment, Map<String, Object> eventData,
                                                        TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException {
+        return attachTimeScaleEvent(timeFlowName,dateTime,eventComment,eventData,timeScaleGrade,null);
+    }
+
+    public default TimeScaleEvent attachTimeScaleEvent(String timeFlowName,long dateTime, String eventComment, Map<String, Object> eventData,
+                                                       TimeFlow.TimeScaleGrade timeScaleGrade,String eventAdditionalConceptionKind) throws CoreRealmServiceRuntimeException {
         Instant instant = Instant.ofEpochMilli(dateTime);
         LocalDateTime timeStamp = LocalDateTime.ofInstant(instant,zone);
-        return attachTimeScaleEventInnerLogic(timeFlowName,getReferTime(timeStamp,timeScaleGrade),eventComment,eventData,timeScaleGrade);
+        return attachTimeScaleEventInnerLogic(timeFlowName,getReferTime(timeStamp,timeScaleGrade),eventComment,eventData,timeScaleGrade,eventAdditionalConceptionKind);
     }
 
     public default TimeScaleEvent attachTimeScaleEvent(LocalDateTime dateTime, String eventComment, Map<String, Object> eventData,
                                                        TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException {
-        return attachTimeScaleEventInnerLogic(RealmConstant._defaultTimeFlowName,getReferTime(dateTime,timeScaleGrade),eventComment,eventData,timeScaleGrade);
+        return attachTimeScaleEvent(dateTime,eventComment,eventData,timeScaleGrade,null);
+    }
+
+    public default TimeScaleEvent attachTimeScaleEvent(LocalDateTime dateTime, String eventComment, Map<String, Object> eventData,
+                                                       TimeFlow.TimeScaleGrade timeScaleGrade,String eventAdditionalConceptionKind) throws CoreRealmServiceRuntimeException {
+        return attachTimeScaleEventInnerLogic(RealmConstant._defaultTimeFlowName,getReferTime(dateTime,timeScaleGrade),eventComment,eventData,timeScaleGrade,eventAdditionalConceptionKind);
     }
 
     public default TimeScaleEvent attachTimeScaleEvent(String timeFlowName,LocalDateTime dateTime, String eventComment, Map<String, Object> eventData,
                                                        TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException {
-        return attachTimeScaleEventInnerLogic(timeFlowName,getReferTime(dateTime,timeScaleGrade),eventComment,eventData,timeScaleGrade);
+        return attachTimeScaleEvent(timeFlowName,dateTime,eventComment,eventData,timeScaleGrade,null);
+    }
+
+    public default TimeScaleEvent attachTimeScaleEvent(String timeFlowName,LocalDateTime dateTime, String eventComment, Map<String, Object> eventData,
+                                                       TimeFlow.TimeScaleGrade timeScaleGrade,String eventAdditionalConceptionKind) throws CoreRealmServiceRuntimeException {
+        return attachTimeScaleEventInnerLogic(timeFlowName,getReferTime(dateTime,timeScaleGrade),eventComment,eventData,timeScaleGrade,eventAdditionalConceptionKind);
     }
 
     public default TimeScaleEvent attachTimeScaleEvent(LocalDate date, String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException {
-        return attachTimeScaleEventInnerLogic(RealmConstant._defaultTimeFlowName,getReferTime(date,TimeFlow.TimeScaleGrade.DAY),eventComment,eventData,TimeFlow.TimeScaleGrade.DAY);
+        return attachTimeScaleEvent(date,eventComment,eventData,null);
+    }
+
+    public default TimeScaleEvent attachTimeScaleEvent(LocalDate date, String eventComment, Map<String, Object> eventData,String eventAdditionalConceptionKind) throws CoreRealmServiceRuntimeException {
+        return attachTimeScaleEventInnerLogic(RealmConstant._defaultTimeFlowName,getReferTime(date,TimeFlow.TimeScaleGrade.DAY),eventComment,eventData,TimeFlow.TimeScaleGrade.DAY,eventAdditionalConceptionKind);
     }
 
     public default TimeScaleEvent attachTimeScaleEvent(String timeFlowName,LocalDate date, String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException {
-        return attachTimeScaleEventInnerLogic(timeFlowName,getReferTime(date,TimeFlow.TimeScaleGrade.DAY),eventComment,eventData,TimeFlow.TimeScaleGrade.DAY);
+        return attachTimeScaleEvent(timeFlowName,date,eventComment,eventData,null);
+    }
+
+    public default TimeScaleEvent attachTimeScaleEvent(String timeFlowName,LocalDate date, String eventComment, Map<String, Object> eventData,String eventAdditionalConceptionKind) throws CoreRealmServiceRuntimeException {
+        return attachTimeScaleEventInnerLogic(timeFlowName,getReferTime(date,TimeFlow.TimeScaleGrade.DAY),eventComment,eventData,TimeFlow.TimeScaleGrade.DAY,eventAdditionalConceptionKind);
     }
 
     public default TimeScaleEvent attachTimeScaleEventByTimeScaleEntityUID(String timeScaleEntityUID, String eventComment,
                                                                    Map<String, Object> eventData) throws CoreRealmServiceRuntimeException{
+        return attachTimeScaleEventByTimeScaleEntityUID(timeScaleEntityUID,eventComment,eventData,null);
+    }
+
+    public default TimeScaleEvent attachTimeScaleEventByTimeScaleEntityUID(String timeScaleEntityUID, String eventComment,
+                                                                           Map<String, Object> eventData,String eventAdditionalConceptionKind) throws CoreRealmServiceRuntimeException{
         if(this.getEntityUID() != null & timeScaleEntityUID != null){
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try{
@@ -126,7 +159,9 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
                 propertiesMap.put(RealmConstant._TimeScaleEventComment,eventComment);
                 propertiesMap.put(RealmConstant._TimeScaleEventScaleGrade,""+timeScaleGrade);
                 propertiesMap.put(RealmConstant._TimeScaleEventTimeFlow,timeFlowName);
-                String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.TimeScaleEventClass}, propertiesMap);
+                String[] eventEntityLabelArray = eventAdditionalConceptionKind == null ? new String[]{RealmConstant.TimeScaleEventClass}:
+                        new String[]{RealmConstant.TimeScaleEventClass,eventAdditionalConceptionKind};
+                String createCql = CypherBuilder.createLabeledNodeWithProperties(eventEntityLabelArray, propertiesMap);
                 logger.debug("Generated Cypher Statement: {}", createCql);
                 getSingleConceptionEntityTransformer =
                         new GetSingleConceptionEntityTransformer(RealmConstant.TimeScaleEventClass, workingGraphOperationExecutor);
@@ -342,7 +377,7 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
     }
 
     private TimeScaleEvent attachTimeScaleEventInnerLogic(String timeFlowName,LocalDateTime dateTime, String eventComment,
-                                                       Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException {
+                                                       Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade,String eventAdditionalConceptionKind) throws CoreRealmServiceRuntimeException {
         if(this.getEntityUID() != null){
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try{
@@ -352,7 +387,9 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
                 propertiesMap.put(RealmConstant._TimeScaleEventComment,eventComment);
                 propertiesMap.put(RealmConstant._TimeScaleEventScaleGrade,""+timeScaleGrade);
                 propertiesMap.put(RealmConstant._TimeScaleEventTimeFlow,timeFlowName);
-                String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.TimeScaleEventClass}, propertiesMap);
+                String[] eventEntityLabelArray = eventAdditionalConceptionKind == null ? new String[]{RealmConstant.TimeScaleEventClass}:
+                        new String[]{RealmConstant.TimeScaleEventClass,eventAdditionalConceptionKind};
+                String createCql = CypherBuilder.createLabeledNodeWithProperties(eventEntityLabelArray, propertiesMap);
                 logger.debug("Generated Cypher Statement: {}", createCql);
                 GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
                         new GetSingleConceptionEntityTransformer(RealmConstant.TimeScaleEventClass, workingGraphOperationExecutor);
