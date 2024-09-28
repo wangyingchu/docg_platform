@@ -103,11 +103,21 @@ public interface Neo4JGeospatialScaleFeatureSupportable extends GeospatialScaleF
 
     public default GeospatialScaleEvent attachGeospatialScaleEvent(String geospatialCode, String eventComment,
                                                                    Map<String, Object> eventData) throws CoreRealmServiceRuntimeException{
-        return attachGeospatialScaleEventInnerLogic(RealmConstant._defaultGeospatialRegionName,geospatialCode,eventComment,eventData);
+        return attachGeospatialScaleEvent(geospatialCode,eventComment,eventData,null);
+    }
+
+    public default GeospatialScaleEvent attachGeospatialScaleEvent(String geospatialCode, String eventComment,
+                                                                   Map<String, Object> eventData,String eventAdditionalConceptionKind) throws CoreRealmServiceRuntimeException{
+        return attachGeospatialScaleEventInnerLogic(RealmConstant._defaultGeospatialRegionName,geospatialCode,eventComment,eventData,eventAdditionalConceptionKind);
     }
 
     public default GeospatialScaleEvent attachGeospatialScaleEventByGeospatialScaleEntityUID(String geospatialScaleEntityUID,
                                                                                              String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException{
+        return attachGeospatialScaleEventByGeospatialScaleEntityUID(geospatialScaleEntityUID,eventComment,eventData,null);
+    }
+
+    public default GeospatialScaleEvent attachGeospatialScaleEventByGeospatialScaleEntityUID(String geospatialScaleEntityUID,
+                                     String eventComment, Map<String, Object> eventData,String eventAdditionalConceptionKind) throws CoreRealmServiceRuntimeException{
         if(this.getEntityUID() != null & geospatialScaleEntityUID != null){
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try{
@@ -133,7 +143,9 @@ public interface Neo4JGeospatialScaleFeatureSupportable extends GeospatialScaleF
                 propertiesMap.put(RealmConstant._GeospatialScaleEventComment,eventComment);
                 propertiesMap.put(RealmConstant._GeospatialScaleEventScaleGrade,eventGeospatialScaleGrade);
                 propertiesMap.put(RealmConstant._GeospatialScaleEventGeospatialRegion,geospatialRegionName);
-                String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.GeospatialScaleEventClass}, propertiesMap);
+                String[] eventEntityLabelArray = eventAdditionalConceptionKind == null ? new String[]{RealmConstant.GeospatialScaleEventClass}:
+                        new String[]{RealmConstant.GeospatialScaleEventClass,eventAdditionalConceptionKind};
+                String createCql = CypherBuilder.createLabeledNodeWithProperties(eventEntityLabelArray, propertiesMap);
                 logger.debug("Generated Cypher Statement: {}", createCql);
                 getSingleConceptionEntityTransformer =
                         new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleEventClass, workingGraphOperationExecutor);
@@ -157,7 +169,12 @@ public interface Neo4JGeospatialScaleFeatureSupportable extends GeospatialScaleF
 
     public default GeospatialScaleEvent attachGeospatialScaleEvent(String geospatialRegionName,String geospatialCode,
                                                                    String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException{
-        return attachGeospatialScaleEventInnerLogic(geospatialRegionName,geospatialCode,eventComment,eventData);
+        return attachGeospatialScaleEvent(geospatialRegionName,geospatialCode,eventComment,eventData,null);
+    }
+
+    public default GeospatialScaleEvent attachGeospatialScaleEvent(String geospatialRegionName,String geospatialCode,
+                                                                   String eventComment, Map<String, Object> eventData,String eventAdditionalConceptionKind) throws CoreRealmServiceRuntimeException{
+        return attachGeospatialScaleEventInnerLogic(geospatialRegionName,geospatialCode,eventComment,eventData,eventAdditionalConceptionKind);
     }
 
     public default boolean detachGeospatialScaleEvent(String geospatialScaleEventUID) throws CoreRealmServiceRuntimeException{
@@ -319,7 +336,7 @@ public interface Neo4JGeospatialScaleFeatureSupportable extends GeospatialScaleF
     }
 
     private GeospatialScaleEvent attachGeospatialScaleEventInnerLogic(String geospatialRegionName,String geospatialCode,
-                                                                      String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException {
+                                                                      String eventComment, Map<String, Object> eventData,String eventAdditionalConceptionKind) throws CoreRealmServiceRuntimeException {
         if(this.getEntityUID() != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
             try{
@@ -349,7 +366,10 @@ public interface Neo4JGeospatialScaleFeatureSupportable extends GeospatialScaleF
                 propertiesMap.put(RealmConstant._GeospatialScaleEventComment,eventComment);
                 propertiesMap.put(RealmConstant._GeospatialScaleEventScaleGrade,eventGeospatialScaleGrade);
                 propertiesMap.put(RealmConstant._GeospatialScaleEventGeospatialRegion,geospatialRegionName);
-                String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.GeospatialScaleEventClass}, propertiesMap);
+
+                String[] eventEntityLabelArray = eventAdditionalConceptionKind == null ? new String[]{RealmConstant.GeospatialScaleEventClass}:
+                        new String[]{RealmConstant.GeospatialScaleEventClass,eventAdditionalConceptionKind};
+                String createCql = CypherBuilder.createLabeledNodeWithProperties(eventEntityLabelArray, propertiesMap);
                 logger.debug("Generated Cypher Statement: {}", createCql);
                 getSingleConceptionEntityTransformer =
                         new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleEventClass, workingGraphOperationExecutor);

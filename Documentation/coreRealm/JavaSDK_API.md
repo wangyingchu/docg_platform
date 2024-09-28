@@ -3824,6 +3824,43 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public GeospatialScaleEvent attachGeospatialScaleEventByGeospatialScaleEntityUID(String geospatialScaleEntityUID, String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException;
 
     /**
+     * 为当前对象在默认地理空间区域上附加地理空间刻度事件
+     *
+     * @param geospatialCode String 地理空间刻度实体全局空间编码
+     * @param eventComment String 事件备注
+     * @param eventData Map<String, Object> 事件数据
+     * @param eventAdditionalConceptionKind String 新建地理空间刻度事件同时属于的常规概念类型名称
+     *
+     * @return 如操作成功，返回结果为相应地理空间刻度事件
+     */
+    public GeospatialScaleEvent attachGeospatialScaleEvent(String geospatialCode, String eventComment, Map<String, Object> eventData,String eventAdditionalConceptionKind) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 为当前对象在默认地理空间区域上附加地理空间刻度事件
+     *
+     * @param geospatialRegionName String 指定地理空间区域名称
+     * @param geospatialCode String 地理空间刻度实体全局空间编码
+     * @param eventComment String 事件备注
+     * @param eventData Map<String, Object> 事件数据
+     * @param eventAdditionalConceptionKind String 新建地理空间刻度事件同时属于的常规概念类型名称
+     *
+     * @return 如操作成功，返回结果为相应地理空间刻度事件
+     */
+    public GeospatialScaleEvent attachGeospatialScaleEvent(String geospatialRegionName,String geospatialCode, String eventComment, Map<String, Object> eventData,String eventAdditionalConceptionKind) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 在当前对象与指定地理空间刻度实体之间附加地理空间刻度事件
+     *
+     * @param geospatialScaleEntityUID String 地理空间刻度实体唯一ID
+     * @param eventComment String 事件备注
+     * @param eventData Map<String, Object> 事件数据
+     * @param eventAdditionalConceptionKind String 新建地理空间刻度事件同时属于的常规概念类型名称
+     *
+     * @return 如操作成功，返回结果为相应地理空间刻度事件对象
+     */
+    public GeospatialScaleEvent attachGeospatialScaleEventByGeospatialScaleEntityUID(String geospatialScaleEntityUID, String eventComment, Map<String, Object> eventData,String eventAdditionalConceptionKind) throws CoreRealmServiceRuntimeException;
+
+    /**
      * 删除当前对象上关联的指定地理空间刻度事件
      *
      * @param geospatialScaleEventUID String 地理空间刻度事件唯一ID
