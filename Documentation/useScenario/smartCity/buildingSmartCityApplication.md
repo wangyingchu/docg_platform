@@ -164,7 +164,7 @@ for(ConceptionEntity currentLine:conceptionEntityList){
 
 
 #### ※ 导入 BIM 建筑信息模型数据构建数据底座中层业务运行支撑要素模型
-##### <span style="color:#0074D9;"> 实现BIM数据的数模分离并与 GIS 数据相融合</span>
+##### <span style="color:#0074D9;"> 实现 BIM 数据的数模分离并与 GIS 数据相融合</span>
 BIM（Building Information Modeling）技术是一种应用于工程设计、建造、管理的数据化工具，通过对建筑的数据化、信息化模型整合，在项目策划、运行和维护的全生命周期过程中进行共享和传递，使工程技术人员对各种建筑信息作出正确理解和高效应对，为设计团队以及包括建筑、运营单位在内的各方建设主体提供协同工作的基础，在提高生产效率、节约成本和缩短工期方面发挥重要作用。
 
 
@@ -216,7 +216,7 @@ BIM 模型文件中包含海量的称为构件的基本构成元素，每一个�
 
 
 
-##### <span style="color:#0074D9;"> 通过空间计算关联 BIM 与GIS 数据源产生的概念实体</span>
+##### <span style="color:#0074D9;"> 通过空间计算关联 BIM 与 GIS 数据源产生的概念实体</span>
 
 经过数模分离技术处理后导入 DOCG 平台的 BIM 构件概念实体上的建筑空间信息被直接转化为了 **WKT** 格式的 GIS 地理信息数据。因此可以通过 DOCG 平台的空间计算能力与任意其他具有空间信息的概念实体进行空间分析，并根据分析结果建立需要的实体关联。例如下图的示例中通过空间计算建立了机场航站楼内一个 *固定登机桥* 与 *登机桥活动端* 和 *登机门* 之间基于空间相邻确定的业务逻辑的上下游联动关系。
 ######  BIM 构件生成的 固定登机桥 实体 和与其空间相连的 登机桥活动端 以及 登机门
@@ -225,16 +225,30 @@ BIM 模型文件中包含海量的称为构件的基本构成元素，每一个�
 </div>
 将源自 BIM 构件与源自 GIS 城市要素信息的概念实体通过空间计算为依据建立起成体系的关联关系后，可以消除在智慧城市和 TOD 类业务应用中面临的一个主要技术障碍： <span style="color:#0074D9;"> **GIS 与 BIM 数据分别对应建筑室外与室内两个领域，两者数据技术上无法联通，无法建立融合统一室内外空间数据的综合应用**</span> 。在解决了室内外空间数据的统一融合问题后，能够处理很多当前技术上难以有效解决的业务需求，以下以机场的运营为场景举两个示例：
 
-| <img src="AirportBuildingRelation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>多少是多少 |
+######  机场飞行区与航站楼基于空间关系的综合业务应用
+<table>
+<tr>
+<td> <img src="AirportBuildingRelation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;width:800px;"/></td><td>在常规的机场业务运营与组织结构中，机场飞行区与航站楼是两个并行的独立业务单元。受限于传统的 IT 信息系统提供的技术能力， 缺乏适合的应用场景与应用方能够将两者的数据结合，实现业务的深度融合与创新。XXXXXXXXXXXXXXXXXXXXX XXXXXXXXXXxx XXXXXXXXXXXx XXXXXXXXXXXX XX</td>
+</tr>
+</table>
+
+
+
+
+
+
+
+
+
+######  航站楼与城市交通设施基于空间关系的综合业务应用
+
+| <img src="AirportBuildingAndRailwayStation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>多少是多少 |
 | :----------------------------------------------------------- |
 
 
 
 
 
-<div style="text-align:left;">
-    <img src="AirportBuildingRelation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/><img src="AirportBuildingAndRailwayStation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
-</div>
 
 
 
@@ -244,11 +258,6 @@ BIM 模型文件中包含海量的称为构件的基本构成元素，每一个�
 
 
 
-
-
-
-
-##### <span style="color:#0074D9;"> 实现BIM数据的数模分离并与 GIS 数据相融合</span>
 
 <div style="text-align:right;">
     <img src="hero-visual.svg" alt="Your Image" style="display: block; margin-left: auto; margin-right: 0;zoom:25%;"/>
