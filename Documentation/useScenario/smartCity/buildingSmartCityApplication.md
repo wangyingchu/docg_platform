@@ -228,7 +228,7 @@ BIM 模型文件中包含海量的称为构件的基本构成元素，每一个�
 ######  机场飞行区与航站楼基于空间关系的综合业务应用
 <table>
 <tr>
-<td> <img src="AirportBuildingRelation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;width:800px;"/></td><td>在常规的机场业务运营与组织结构中，机场飞行区与航站楼是两个并行的独立业务单元。受限于传统的 IT 信息系统提供的技术能力， 缺乏适合的应用场景与应用方能够将两者的数据结合，实现业务的深度融合与创新。XXXXXXXXXXXXXXXXXXXXX XXXXXXXXXXxx XXXXXXXXXXXx XXXXXXXXXXXX XX</td>
+<td width="1000"> <img src="AirportBuildingRelation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td>在常规的机场业务运营与组织结构中，机场飞行区与航站楼是两个并行的独立业务单元。受限于传统的 IT 信息系统提供的技术能力， 缺乏适合的应用场景与应用角色能够将两者的数据结合，实现业务的深度融合与创新。通过空间计算能力建立飞行区的飞机停机位、道路与</td>
 </tr>
 </table>
 
