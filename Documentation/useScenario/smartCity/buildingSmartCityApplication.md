@@ -228,33 +228,19 @@ BIM 模型文件中包含海量的称为构件的基本构成元素，每一个�
 ######  机场飞行区与航站楼基于空间关系的综合业务应用
 <table>
 <tr>
-<td width="1000"> <img src="AirportBuildingRelation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td>在常规的机场业务运营与组织结构中，机场飞行区与航站楼是两个并行的独立业务单元。受限于传统的 IT 信息系统提供的技术能力， 缺乏适合的应用场景与应用角色能够将两者的数据结合，实现业务的深度融合与创新。通过空间计算能力建立飞行区的飞机停机位、道路与</td>
+<td width="900"> <img src="AirportBuildingRelation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;">〇 在常规的机场业务运营与组织架构中，机场飞行区与航站楼是两个并行的独立业务单元。受限于传统的 IT 信息系统提供的技术能力， 缺乏适合的应用场景与应用角色能够将两者的数据结合进而实现业务的深度融合与创新。通过空间计算能力建立飞行区的飞机停机位、道路与航站楼的登机桥固定端、登机门以及人流动线等概念实体之间的空间相邻关系，能够在航班值机，航班接机等业务场景提供跨越业务单元的全域信息支持。</td>
+</tr>
+</table>
+
+######  机场航站楼与城市交通设施基于空间关系的综合业务应用
+<table>
+<tr>
+<td width="900"> <img src="AirportBuildingAndRailwayStation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;">〇 机场作为一个大型的城市交通设施关键节点，其精确有效的运营依赖于对机场建筑内部的人流状况的准确掌握。机场客流量与城市整体的实时交通运行状况息息相关，但是目前的技术手段并不能在建筑空间出入口与交通通道接泊点这样的细颗粒度层级实现精确到人流级的城市交通状况与建筑空间的信息共享。通过空间计算能力建立机场出入口、停车场等航站楼内部建筑概念实体与地铁出站口，高铁出站口、城市道路路口等城市交通设施概念实体的空间连接关系，能够实现建筑空间内部单点的精确人流数据统计与分析。</td>
 </tr>
 </table>
 
 
-
-
-
-
-
-
-
-######  航站楼与城市交通设施基于空间关系的综合业务应用
-
-| <img src="AirportBuildingAndRailwayStation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>多少是多少 |
-| :----------------------------------------------------------- |
-
-
-
-
-
-
-
-
-
-
-
+♠♣♧♡♥❤❥❣♂♀✲☀☼☾☽◐◑☺☻☎☏✿❀№↑↓←→√×÷★℃℉°◆◇⊙■□△▽¿½☯✡㍿卍卐♂♀✚〓㎡♪♫♩♬㊚㊛囍㊒㊖Φ♀♂‖$@*&#※卍卐Ψ♫♬♭♩♪♯♮⌒¶∮‖€￡¥$§
 
 
 
