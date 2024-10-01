@@ -244,6 +244,13 @@ BIM 模型文件中包含海量的称为构件的基本构成元素，每一个�
 
 
 #### ※ 接入实时动态业务数据构建数据底座上层业务应用领域模型
+##### <span style="color:#0074D9;"> 接入外部应用系统数据创建业务领域模型</span>
+
+
+
+##### <span style="color:#0074D9;"> 通过时空关联实现业务领域模型与智慧城市数据底座的融合</span>
+
+通过导入 GIS 和 BIM 类型的城市级与建筑级数据概念实体并建立业务空间
 
 
 
@@ -252,8 +259,25 @@ BIM 模型文件中包含海量的称为构件的基本构成元素，每一个�
 
 
 
+#### ※ 使用 DOCG 数据平台 TOD 案例介绍
 
+<table>
+<tr>
+<td width="900"> <img src="AirportPowerMamagement.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;">◇ xxxxxx。</td>
+</tr>
+</table>
 
+<table>
+<tr>
+<td width="900"> <img src="AirportPeopleFlowCompute.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;">◇ xxxxxx。</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<td width="900"> <img src="AirportResourceUsageAnaly.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;">◇ xxxxxx。</td>
+</tr>
+</table>
 
 
 
