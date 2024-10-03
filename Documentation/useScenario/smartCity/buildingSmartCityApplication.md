@@ -24,7 +24,7 @@
 
 #### ※ 导入 GIS 地理信息数据构建数据底座底层城市基础设施信息模型
 
-##### <span style="color:#0074D9;"> 利用 GIS 数据源构建城市数据底座基底信息</span>
+##### <span style="color:#0074D9;"> □ 利用 GIS 数据源构建城市数据底座基底信息</span>
 
 GIS 地理空间数据是构建智慧城市基底信息常用的数据来源。使用已有的 GIS 数据可以轻易的构建出大规模的城市基础设施信息模型。DOCG  平台内建对 SHP（ESRI shape）格式地理信息数据导入的能力。支持全球，全国以及局部三种不同空间尺度的地理信息数据的直接导入，能够直接将 SHP 数据导入领域模型中的概念类型定义中，并保持全部的业务属性与地理空间属性。除各类常规属性的检索查询应用外，从 SHP 数据转化生成的概念实体数据能够参与 DOCG 平台中的全部地理空间分析计算应用。
 
@@ -103,7 +103,7 @@ GeospatialOperationUtil.importSHPDataDirectlyToConceptionKind("TransportationFac
 </div>
 
 
-##### <span style="color:#0074D9;"> 通过空间计算构建城市基础要素的关联</span>
+##### <span style="color:#0074D9;"> □ 通过空间计算构建城市基础要素的关联</span>
 
 由统一空间坐标系下的 SHP 文件数据源导入创建的各类概念类型实体都具有标准的地理空间属性信息。通过使用 DOCG 平台提供的内置全局地理空间计算分析功能，可以对这些概念类型实体执行空间计算，并根据计算结果构建不同概念实体之间的业务关联。DOCG 平台支持各种类型的 **空间投影**(*Contains,Intersects,Within,Equals,Crosses,Touches,Overlaps,Disjoint,Cover,CoveredBy*)  计算、**空间几何**计算、**空间距离**计算、**缓冲区**计算以及 **KNN** 计算功能。下文代码以**地铁线路** 和 **地铁站点** 的概念实体数据为例，介绍使用 DOCG  Java SDK 提供的标准空间计算API 构建业务关系的操作:
 
@@ -164,7 +164,7 @@ for(ConceptionEntity currentLine:conceptionEntityList){
 
 
 #### ※ 导入 BIM 建筑信息模型数据构建数据底座中层业务运行支撑要素模型
-##### <span style="color:#0074D9;"> 实现 BIM 数据的数模分离并与 GIS 数据相融合</span>
+##### <span style="color:#0074D9;"> □ 实现 BIM 数据的数模分离并与 GIS 数据相融合</span>
 BIM（Building Information Modeling）技术是一种应用于工程设计、建造、管理的数据化工具，通过对建筑的数据化、信息化模型整合，在项目策划、运行和维护的全生命周期过程中进行共享和传递，使工程技术人员对各种建筑信息作出正确理解和高效应对，为设计团队以及包括建筑、运营单位在内的各方建设主体提供协同工作的基础，在提高生产效率、节约成本和缩短工期方面发挥重要作用。
 
 
@@ -216,7 +216,7 @@ BIM 模型文件中包含海量的称为构件的基本构成元素，每一个�
 
 
 
-##### <span style="color:#0074D9;"> 通过空间计算关联 BIM 与 GIS 数据源产生的概念实体</span>
+##### <span style="color:#0074D9;"> □ 通过空间计算关联 BIM 与 GIS 数据源产生的概念实体</span>
 
 经过数模分离技术处理后导入 DOCG 平台的 BIM 构件概念实体上的建筑空间信息被直接转化为了 **WKT** 格式的 GIS 地理信息数据。因此可以通过 DOCG 平台的空间计算能力与任意其他具有空间信息的概念实体进行空间分析，并根据分析结果建立需要的实体关联。例如下图的示例中通过空间计算建立了机场航站楼内一个 *固定登机桥* 与 *登机桥活动端* 和 *登机门* 之间基于空间相邻确定的业务逻辑的上下游联动关系。
 ######  BIM 构件生成的 固定登机桥 实体 和与其空间相连的 登机桥活动端 以及 登机门
@@ -244,11 +244,21 @@ BIM 模型文件中包含海量的称为构件的基本构成元素，每一个�
 
 
 #### ※ 接入实时动态业务数据构建数据底座上层业务应用领域模型
-##### <span style="color:#0074D9;"> 接入外部应用系统数据创建业务领域模型</span>
+##### <span style="color:#0074D9;"> □ 接入外部应用系统数据创建业务领域模型</span>
+
+DOCG 数据平台使用图数据库技术作为底层核心数据存储系统
 
 
 
-##### <span style="color:#0074D9;"> 通过时空关联实现业务领域模型与智慧城市数据底座的融合</span>
+
+
+
+
+
+
+
+
+##### <span style="color:#0074D9;"> □ 通过时空关联实现业务领域模型与智慧城市数据底座的融合</span>
 
 通过导入 GIS 和 BIM 类型的城市级与建筑级数据概念实体并建立业务空间
 
@@ -259,25 +269,34 @@ BIM 模型文件中包含海量的称为构件的基本构成元素，每一个�
 
 
 
-#### ※ 使用 DOCG 数据平台 TOD 案例介绍
+#### ※ 使用 DOCG 数据平台构建的智慧城市数字底座在 TOD 方向的应用案例介绍
 
+######  机场航站楼基于航班联动的能源管理
 <table>
 <tr>
 <td width="900"> <img src="AirportPowerMamagement.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;">◇ xxxxxx。</td>
 </tr>
 </table>
 
+######  机场航站楼运行期实时动线人流分析
 <table>
 <tr>
 <td width="900"> <img src="AirportPeopleFlowCompute.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;">◇ xxxxxx。</td>
 </tr>
 </table>
 
+######  机场航站楼运行期实时运行资源使用状况分析评估
 <table>
 <tr>
 <td width="900"> <img src="AirportResourceUsageAnaly.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;">◇ xxxxxx。</td>
 </tr>
 </table>
+
+
+
+
+
+
 
 
 
