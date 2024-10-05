@@ -295,9 +295,9 @@ BatchDataOperationUtil.batchAddNewEntities("FlightExecution",conceptionEntityVal
 </div>
 
 
-##### <span style="color:#0074D9;"> □ 通过时空关联实现业务领域模型与智慧城市数据底座的融合</span>
+##### <span style="color:#0074D9;"> □ 通过时间关联实现业务领域模型与智慧城市数据底座的融合</span>
 
-通过导入 GIS 和 BIM 类型的城市级与建筑级数据概念实体并建立业务空间
+通过在<span style="color:#0074D9;"> *由外部应用系统数据接入的概念实体* </span>与<span style="color:#0074D9;"> *由 GIS 或 BIM 数据导入的城市数据底座静态基底概念实体* </span>之间创建由业务驱动的关联关系，可以将业务领域模型中的数据与智慧城市数据底座初步融合。此外还可以在 **时间** 与 **地理空间** 维度实现业务领域模型数据与智慧城市数据底座的融合。地理空间维度的融合方式与上文已经介绍的 GIS 类数据的导入方式相同。下文介绍使用时间轴关联方式的时间维度业务领域模型数据融合。
 
 
 
