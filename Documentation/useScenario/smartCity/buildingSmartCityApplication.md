@@ -105,7 +105,7 @@ GeospatialOperationUtil.importSHPDataDirectlyToConceptionKind("TransportationFac
 
 ##### <span style="color:#0074D9;"> □ 通过空间计算构建城市基础要素的关联</span>
 
-由统一空间坐标系下的 SHP 文件数据源导入创建的各类概念类型实体都具有标准的地理空间属性信息。通过使用 DOCG 平台提供的内置全局地理空间计算分析功能，可以对这些概念类型实体执行空间计算，并根据计算结果构建不同概念实体之间的业务关联。DOCG 平台支持各种类型的 **空间投影**(*Contains,Intersects,Within,Equals,Crosses,Touches,Overlaps,Disjoint,Cover,CoveredBy*)  计算、**空间几何**计算、**空间距离**计算、**缓冲区**计算以及 **KNN** 计算功能。下文代码以**地铁线路** 和 **地铁站点** 的概念实体数据为例，介绍使用 DOCG  Java SDK 提供的标准空间计算API 构建业务关系的操作:
+由统一空间坐标系下的 SHP 文件数据源导入创建的各类概念类型实体都具有标准的地理空间属性信息。通过使用 DOCG 平台提供的内置全局地理空间计算分析功能，可以对这些概念类型实体执行空间计算，并根据计算结果构建不同概念实体之间的业务关联。DOCG 平台支持各种类型的 **空间投影**(*Contains,Intersects,Within,Equals,Crosses,Touches,Overlaps,Disjoint,Cover,CoveredBy*)  计算、**空间几何** 计算、**空间距离** 计算、**缓冲区** 计算以及 **KNN** 计算功能。下文代码以 **地铁线路** 和 **地铁站点** 的概念实体数据为例，介绍使用 DOCG  Java SDK 提供的标准空间计算API 构建业务关系的操作:
 
 ```java
 CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
@@ -219,7 +219,7 @@ BIM 模型文件中包含海量的称为构件的基本构成元素，每一个�
 ##### <span style="color:#0074D9;"> □ 通过空间计算关联 BIM 与 GIS 数据源产生的概念实体</span>
 
 经过数模分离技术处理后导入 DOCG 平台的 BIM 构件概念实体上的建筑空间信息被直接转化为了 **WKT** 格式的 GIS 地理信息数据。因此可以通过 DOCG 平台的空间计算能力与任意其他具有空间信息的概念实体进行空间分析，并根据分析结果建立需要的实体关联。例如下图的示例中通过空间计算建立了机场航站楼内一个 *固定登机桥* 与 *登机桥活动端* 和 *登机门* 之间基于空间相邻确定的业务逻辑的上下游联动关系。
-######  BIM 构件生成的 固定登机桥 实体 和与其空间相连的 登机桥活动端 以及 登机门
+######  BIM 构件生成的 固定登机桥 概念实体 和与其空间相连的 登机桥活动端 以及 登机门 概念实体
 <div style="text-align:left;">
     <img src="AirportBIMDataLinkIng.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
 </div>
@@ -228,7 +228,7 @@ BIM 模型文件中包含海量的称为构件的基本构成元素，每一个�
 ######  机场飞行区与航站楼基于空间关系的综合业务应用
 <table>
 <tr>
-<td width="900"> <img src="AirportBuildingRelation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;">◇ 在常规的机场业务运营与组织架构中，机场飞行区与航站楼是两个并行的独立业务单元。受限于传统的 IT 信息系统提供的技术能力， 缺乏适合的应用场景与应用角色能够将两者的数据结合进而实现业务的深度融合与创新。通过空间计算能力建立飞行区的飞机停机位、道路与航站楼的登机桥固定端、登机门以及人流动线等概念实体之间的空间相邻关系，能够在航班值机，航班接机等业务场景提供跨越业务单元的全域信息支持。</td>
+<td width="900"> <img src="AirportBuildingRelation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;" width="400">◇ 在常规的机场业务运营与组织架构中，机场飞行区与航站楼是两个并行的独立业务单元。受限于传统的 IT 信息系统提供的技术能力， 缺乏适合的应用场景与应用角色能够将两者的数据结合进而实现业务的深度融合与创新。通过空间计算能力建立飞行区的飞机停机位、道路与航站楼的登机桥固定端、登机门以及人流动线等概念实体之间的空间相邻关系，能够在航班值机，航班接机等业务场景提供跨越业务单元的全域信息支持。</td>
 </tr>
 </table>
 
@@ -236,7 +236,7 @@ BIM 模型文件中包含海量的称为构件的基本构成元素，每一个�
 ######  机场航站楼与城市交通设施基于空间关系的综合业务应用
 <table>
 <tr>
-<td width="900"> <img src="AirportBuildingAndRailwayStation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;">◇ 机场作为一个大型的城市交通设施关键节点，其精确有效的运营依赖于对机场建筑内部的人流状况的准确掌握。机场客流量与城市整体的实时交通运行状况息息相关，但是目前的技术手段并不能在建筑空间出入口与交通通道接泊点这样的细颗粒度层级实现精确到人流级的城市交通状况与建筑空间的信息共享。通过空间计算能力建立机场出入口、停车场等航站楼内部建筑概念实体与地铁出站口，高铁出站口、城市道路路口等城市交通设施概念实体的空间连接关系，能够实现建筑空间内部单点的精确人流数据统计与分析。</td>
+<td width="900"> <img src="AirportBuildingAndRailwayStation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;" width="400">◇ 机场作为一个大型的城市交通设施关键节点，其精确有效的运营依赖于对机场建筑内部的人流状况的准确掌握。机场客流量与城市整体的实时交通运行状况息息相关，但是目前的技术手段并不能在建筑空间出入口与交通通道接泊点这样的细颗粒度层级实现精确到人流级的城市交通状况与建筑空间的信息共享。通过空间计算能力建立机场出入口、停车场等航站楼内部建筑概念实体与地铁出站口，高铁出站口、城市道路路口等城市交通设施概念实体的空间连接关系，能够实现建筑空间内部单点的精确人流数据统计与分析。</td>
 </tr>
 </table>
 
@@ -246,31 +246,43 @@ BIM 模型文件中包含海量的称为构件的基本构成元素，每一个�
 #### ※ 接入实时动态业务数据构建数据底座上层业务应用领域模型
 ##### <span style="color:#0074D9;"> □ 接入外部应用系统数据创建业务领域模型</span>
 
-DOCG 数据平台使用图数据库技术作为底层核心数据存储系统，使用数字孪生领域模型的方式管理数据，能够实现灵活的业务模型与关联关系定义，可以非常便捷的直接导入已有外部业务系统中的数据。根据目标外部业务系统的数据存储形态，DOCG 数据平台可以通过使用外部数据集成工具的方式直接将外部业务系统数据库中的库表结构映射为领域模型，并将数据库内容复制存储入 DOCG 平台中，从而迅速的构建出针对特定业务场景的全域信息模型。构建完成后可以通过 企业 ESB总线、消息服务、业务数据接口调用或数据库增量数据同步等多种技术手段持续性的扩展，更新全域信息模型中的数据信息，支撑 DOCG 平台 数字孪生化领域知识图谱的持续生长。
+DOCG 数据平台使用图数据库技术作为底层核心数据存储系统，使用数字孪生领域模型的方式管理数据，能够实现灵活的业务模型与关联关系定义，可以非常便捷的直接导入已有外部业务系统中的数据。根据目标外部业务系统的数据存储形态，DOCG 数据平台可以通过使用外部数据集成工具的方式直接将外部业务系统数据库中的库表结构映射为领域模型，并将数据库内容复制存储入 DOCG 平台中，从而迅速的构建出针对特定业务场景的全域信息模型。构建完成后可以通过 企业 ESB 总线、消息服务、业务数据接口调用 或 数据库增量数据同步等多种技术手段持续性的扩展，更新全域信息模型中的数据信息，支撑 DOCG 平台数据底座中领域知识图谱的持续生长。下文以接入一个机场航班信息系统数据为例介绍构建数据底座上层业务应用领域模型的过程：
+
+航班信息系统中的数据记录一个机场每日的航班起降执飞情况，主要由三个业务对象组成：
+
+- **Flight ( 航班）**：航空公司为旅客提供计划的飞行服务，包括起飞、飞行和降落等环节。航班通常按照一定的计划和时间表进行安排，以确保旅客的出行顺利进行。航班的具体信息包括航班号、起飞时间、起飞地点、目的地等。
+- **FlightExecution ( 航班执飞）**： 根据航班的飞行计划执行一次飞行任务的过程。航空公司通过航班执飞为旅客提供真实的飞行服务。
+- **FlightExecutionRoute ( 航班执飞航段）**：航段指一次航空运输中，从一个起点飞往一个终点的航行阶段。一个航班可能包含多个航段，即从起点到中途停靠点（中转站）的航段和从中转站到终点的航段。
+
+在机场航班信息系统的数据组成中，数据量最大，包含信息最多的业务对象是 **FlightExecution ( 航班执飞）**，该对象中包含大量的航班飞行计划的静态信息（航班号，航班起飞降落目的地，航班计划飞行时间等）以及与数据底座中时间与空间维度相关的实时运营信息（实际执飞时间，执飞航空器，起降跑道，停机位等）。以下是其中的部分示例：
+
+- **静态信息**： Owner（承运人)，FlightIdentity（航班号），Registration（飞机编号）， AirlineICode（航司编号）， （FlightTerminalID）航站楼，FlightScheduledDateTime（计划飞行时间 ，OriginAirport（起飞机场）
+- **动态信息**： EstimatedLandingDateTime（预计着陆时间)，ActualLandingDateTime（实际着陆时间)，AircraftCode（机型编号），Airbridges（登机桥），BaggageReclaims（行李转盘），StandID（飞机停机位），RunwayID（跑道 编号）
+
+
+
+从 DOCG 数据分析平台中可以通过以下步骤接入数据 :
+
+1. 在 DOCG 数据分析平台用户界面的 <span style="color:#0074D9;">*Conception Kind 概念类型数据管理*</span>  界面中点击  [*创建概念类型* ] 按钮 分别创建 概念类型  **Flight  ( 航班 ) **、**FlightExecution  ( 航班执飞 ) ** 和 **FlightExecutionRoute ( 航班执飞航段）**。
+
+2. 使用数据集成工具（例如 Apache Hop 或 Neo4J ETL）将航班信息系统关系数据库中的数据表 Flight ，FlightExecution ，FlightExecutionRoute 中的内容导入 DOCG 平台的图数据库中。如无法直接访问数据库表内容，可以通过使用 DOCG 平台的 Java SDK 提供的标准数据存取API 执行数据入库操作:
+```java
+CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+//获取地铁线路的概念类型对象        
+ConceptionKind lineKind = coreRealm.getConceptionKind("SubWay-Line");
+//查询 "7号线二期" 地铁线路的概念实体
+```
+3. 在 DOCG 数据分析平台用户界面中创建关系类型和关系关联配置，执行关系创建:
 
 
 
 
 
-Flight ( 航班 )   FlightExecution ( 航班执飞 )        FlightExecutionIATARoute ( 航班执飞航段 )
 
-
-
-Owner        EstimatedLandingDateTime             TurnID          FlightIdentity （航班号）
-
-FlightScheduledDateTime  
-
-Registration 飞机编号   AirlineIATACode 航司编号    Airbridges  ScheduledOnBlockDateTime
-
-AircraftTerminalID    AircraftICAOCode （机型编号）   EstimatedOnBlockDateTime  PublicOnBlockDateTime
-
-IATAOriginAirport    ActualLandingDateTime
-
-
-
-BaggageReclaims 行李转盘   StandID 飞机停机位  RunwayID 跑道      FlightTerminalID 航站楼
-
-
+######  代表航班 CZ3109 的一次航班执飞的概念实体 和与其业务相连的 航班、飞机停机位、行李转盘 以及 航班执飞航段概念实体
+<div style="text-align:left;">
+    <img src="FlightExecution.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
+</div>
 
 ##### <span style="color:#0074D9;"> □ 通过时空关联实现业务领域模型与智慧城市数据底座的融合</span>
 
