@@ -263,26 +263,37 @@ DOCG 数据平台使用图数据库技术作为底层核心数据存储系统，
 
 从 DOCG 数据分析平台中可以通过以下步骤接入数据 :
 
-1. 在 DOCG 数据分析平台用户界面的 <span style="color:#0074D9;">*Conception Kind 概念类型数据管理*</span>  界面中点击  [*创建概念类型* ] 按钮 分别创建 概念类型  **Flight  ( 航班 ) **、**FlightExecution  ( 航班执飞 ) ** 和 **FlightExecutionRoute ( 航班执飞航段）**。
+1. 在 DOCG 数据分析平台用户界面的 <span style="color:#0074D9;">*Conception Kind 概念类型数据管理*</span>  面板中点击  [*创建概念类型* ] 按钮 分别创建 概念类型  **Flight  ( 航班 ) **、**FlightExecution  ( 航班执飞 ) ** 和 **FlightExecutionRoute ( 航班执飞航段）**。
 
-2. 使用数据集成工具（例如 Apache Hop 或 Neo4J ETL）将航班信息系统关系数据库中的数据表 Flight ，FlightExecution ，FlightExecutionRoute 中的内容导入 DOCG 平台的图数据库中。如无法直接访问数据库表内容，可以通过使用 DOCG 平台的 Java SDK 提供的标准数据存取API 执行数据入库操作:
+2. 使用数据集成工具（例如 Apache Hop 或 Neo4J ETL）将航班信息系统关系数据库中的数据表 Flight ，FlightExecution ，FlightExecutionRoute 中的内容导入 DOCG 平台的图数据库中。如无法直接访问数据库表内容，可以通过使用 DOCG 平台的 Java SDK 提供的标准数据存取API 执行数据入库操作，以下代码以 FlightExecution 数据示例:
 ```java
-CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
-//获取地铁线路的概念类型对象        
-ConceptionKind lineKind = coreRealm.getConceptionKind("SubWay-Line");
-//查询 "7号线二期" 地铁线路的概念实体
+//通过适当的方式获取关系数据库表 FlightExecution 的数据结果集，每一条数据记录的全量数据以 Map<String,Object> 的形式表示，全量数据存储在List中
+List<Map<String,Object>> flightExecutionDatabaseReultsetList = ......
+//创建批量 DOCG 入库所需数据列表    
+List<ConceptionEntityValue> conceptionEntityValuesList = new ArrayList<>();
+//关系数据库表数据内容加入 DOCG 入库用数据列表
+for(Map<String,Object> currentDataRow:flightExecutionDatabaseReultsetList){
+    ConceptionEntityValue currentConceptionEntityValue = new ConceptionEntityValue();
+    currentConceptionEntityValue.setEntityAttributesValue(currentDataRow);
+    conceptionEntityValuesList.add(currentConceptionEntityValue);
+}
+//以高CPU使用率的方式将全量数据导入 DOCG 平台 中的 FlightExecution 概念类型中
+BatchDataOperationUtil.batchAddNewEntities("FlightExecution",conceptionEntityValuesList,CPUUsageRate.High);
 ```
-3. 在 DOCG 数据分析平台用户界面中创建关系类型和关系关联配置，执行关系创建:
+3. 在 DOCG 数据分析平台用户界面 <span style="color:#0074D9;">*Relation Kind 关系类型数据管理*</span>  面板中点击  [*创建关系类型* ] 按钮 分别创建 关系类型  *AlreadyServicedFlightExecution ( 航班已执行执飞 )* 、*ComposeFlightExecutionFlightPath ( 组成航班执飞航迹 )*、*ResourceServiceFlightExecution ( 资源服务航班执飞 )*  和 *AlreadyServicedShareFlightExecution ( 共享航班已执行执飞 )*。根据真实的业务状况，使用适当的关系类型定义来配置关联关系规则，定义概念类型 **FlightExecution** 与 其他机场运行相关概念类型之间的业务关系。
+######  概念类型 FlightExecution 与其他概念类型之间的实时关联关系
+<div style="display: flex;">
+    <img src="RelationConfig1.png" alt="Image 1" style="margin-right: 2px;zoom:37.5%;">
+    <img src="RelationConfig2.png" alt="Image 3" style="margin-left: 1px;zoom:37.5%;">
+</div>
 
-
-
-
-
+4. 在 DOCG 数据分析平台用户界面中执行关系类型 *AlreadyServicedFlightExecution ( 航班已执行执飞 )* 、*ComposeFlightExecutionFlightPath ( 组成航班执飞航迹 )*、*ResourceServiceFlightExecution ( 资源服务航班执飞 )*  和 *AlreadyServicedShareFlightExecution ( 共享航班已执行执飞 )*  中的关联关系规则定义， DOCG 系统会根据规则定义中的属性匹配逻辑自动建立所有概念实体之间的关系实体。
 
 ######  代表航班 CZ3109 的一次航班执飞的概念实体 和与其业务相连的 航班、飞机停机位、行李转盘 以及 航班执飞航段概念实体
 <div style="text-align:left;">
     <img src="FlightExecution.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
 </div>
+
 
 ##### <span style="color:#0074D9;"> □ 通过时空关联实现业务领域模型与智慧城市数据底座的融合</span>
 
