@@ -4,7 +4,7 @@
 
 ***
 
-# <span style="color:#CE0000;"> DOCG </span> 数据分析平台快速构建智慧城市数据底座（TOD应用方向）
+# <span style="color:#CE0000;"> DOCG </span> 数据分析平台快速构建智慧城市数据底座（TOD 相关应用）
 
 ##### ◎ 摘要 
 
@@ -17,7 +17,7 @@
 ##### 1. 通过将城市 GIS 数据导入 DOCG 领域模型构建数据底座底层城市基础设施信息模型
 ##### 2. 通过将大型机场 BIM 数据导入 DOCG 领域模型构建中层智慧建筑应用支持信息模型
 ##### 3. 通过将大型机场 动态业务数据 实时导入领域模型构建上层业务应用信息模型
-#####  4. 综合应用已经构建的城市数据底座与 DOCG 平台的分析能力创建 示例 TOD类智慧城市应用
+#####  4. 综合利用已经构建的城市数据底座与 DOCG 平台的分析能力支持 TOD 相关智慧城市应用
 
 
 
@@ -161,8 +161,6 @@ for(ConceptionEntity currentLine:conceptionEntityList){
 </div>
 
 
-
-
 #### ※ 导入 BIM 建筑信息模型数据构建数据底座中层业务运行支撑要素模型
 ##### <span style="color:#0074D9;"> □ 实现 BIM 数据的数模分离并与 GIS 数据相融合</span>
 BIM（Building Information Modeling）技术是一种应用于工程设计、建造、管理的数据化工具，通过对建筑的数据化、信息化模型整合，在项目策划、运行和维护的全生命周期过程中进行共享和传递，使工程技术人员对各种建筑信息作出正确理解和高效应对，为设计团队以及包括建筑、运营单位在内的各方建设主体提供协同工作的基础，在提高生产效率、节约成本和缩短工期方面发挥重要作用。
@@ -241,8 +239,6 @@ BIM 模型文件中包含海量的称为构件的基本构成元素，每一个�
 </table>
 
 
-
-
 #### ※ 接入实时动态业务数据构建数据底座上层业务应用领域模型
 ##### <span style="color:#0074D9;"> □ 接入外部应用系统数据创建业务领域模型</span>
 
@@ -258,8 +254,6 @@ DOCG 数据平台使用图数据库技术作为底层核心数据存储系统，
 
 - **静态信息**： Owner（承运人)，FlightIdentity（航班号），Registration（飞机编号）， AirlineICode（航司编号）， FlightTerminalID（航站楼编号），FlightScheduledDateTime（计划飞行时间） ，OriginAirport（起飞机场） 等
 - **动态信息**： EstimatedLandingDateTime（预计着陆时间)，ActualLandingDateTime（实际着陆时间)，AircraftCode（机型编号），Airbridges（登机桥），BaggageReclaims（行李转盘），StandID（飞机停机位），RunwayID（跑道 编号） 等
-
-
 
 从 DOCG 数据分析平台中可以通过以下步骤接入数据 :
 
@@ -323,8 +317,6 @@ DOCG 数据分析平台利用核心领域模型以及图数据库技术的特性
 <div style="text-align:left;">
     <img src="TimeLineViewLinkedEntity.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
 </div>
-
-
 
 
 #### ※ 使用 DOCG 数据平台构建的智慧城市数字底座在 TOD 方向的应用案例介绍
