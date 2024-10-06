@@ -297,11 +297,32 @@ BatchDataOperationUtil.batchAddNewEntities("FlightExecution",conceptionEntityVal
 
 ##### <span style="color:#0074D9;"> □ 通过时间关联实现业务领域模型与智慧城市数据底座的融合</span>
 
-通过在<span style="color:#0074D9;"> *由外部应用系统数据接入的概念实体* </span>与<span style="color:#0074D9;"> *由 GIS 或 BIM 数据导入的城市数据底座静态基底概念实体* </span>之间创建由业务驱动的关联关系，可以将业务领域模型中的数据与智慧城市数据底座初步融合。此外还可以在 **时间** 与 **地理空间** 维度实现业务领域模型数据与智慧城市数据底座的融合。地理空间维度的融合方式与上文已经介绍的 GIS 类数据的导入方式相同。下文介绍使用时间轴关联方式的时间维度业务领域模型数据融合。
+通过在<span style="color:#0074D9;"> *由外部应用系统数据接入的概念实体* </span>与<span style="color:#0074D9;"> *由 GIS 或 BIM 数据导入的城市数据底座静态基底概念实体* </span>之间创建由业务驱动的关联关系，可以将业务领域模型中的数据与智慧城市数据底座初步融合。此外还可以在 **时间** 与 **地理空间** 维度实现业务领域模型数据与智慧城市数据底座的融合。地理空间维度的数据融合方式与前文已经介绍的 GIS 类数据的导入方式相同。下文介绍使用 **时间轴关联方式** 的时间维度业务领域模型数据融合。
 
+DOCG 数据分析平台利用核心领域模型以及图数据库技术的特性，在数据底座的图数据库中建立了特殊的代表不同时间粒度的特殊概念类型：**TS_Year** （年时间节点）、**TS_Month**（月时间节点）、**TS_Day**（日时间节点） 、**TS_Hour**（小时时间节点） 、**TS_Minute**（分钟时间节点） 以及特殊的代表不同时间之间联系的关系类型：**TS_Contains**（包含下一级时间节点）、**TS_NextIs**（同级的下一个时间节点）、**TS_FirstChildIs**（下一级的第一个时间节点）、**TS_LastChildIs**（下一级的最后一个时间节点），通过在上述时间粒度概念类型中创建所需的时间概念实体并用适当的时间联系关系类型将这些概念实体相互关联，既可获得指定时间范围的时间轴。
+######  时间轴在1953年9月的展开片段
+<div style="text-align:left;">
+    <img src="Timeline.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
+</div>
+在 DOCG 平台中可以通过标准的用户界面或 SDK API 根据概念类型的指定时间类属性值将概念实体链接到时间流（轴）的对应时间实体中。下文以**航班执飞** 概念类型为例，介绍使用 DOCG 数据分析平台的用户界面执行链接时间流的操作:
 
+1. 在概念类型定义列表中选中概念类型 FlightExecution，点击  [*配置概念类型定义* ] 按钮，打开 <span style="color:#0074D9;"> *概念类型配置* </span>  界面
 
+2. 点击  [*链接时空信息* ] -》 [*链接至时间流* ]  -》 [*根据单一时间属性链接* ] 按钮，选择所需的时间事件属性名称、时间事件的粒度以及业务描述所需的时间事件备注即可将概念类型下的全部概念实体链接到符合时间计算条件的时间流实体上。在本示例的操作中，通过时间计算，将所有的航班执飞概念实体根据属性 ActualTakeOffDateTime 的值链接到了时间流中的 分钟（MINUTE）级时间实体中。
 
+###### 概念类型配置界面：执行全部概念实体与时间流（时间轴）的链接操作
+<div style="text-align:left;">
+    <img src="LinkToTimeline.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
+</div>
+在链接时间流操作执行完毕后，即可直接在 DOCG 数据分析平台的 <span style="color:#0074D9;"> *概念实体详情* </span>  用户界面中显示概念实体的时间流链接信息。
+###### 一个 航班执飞 概念实体的时间流链接展示界面
+<div style="text-align:left;">
+    <img src="TimeLineLinkStatus.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
+</div>
+###### 该时间流链接信息也可以直接在时间轴的相应时间实体上显示
+<div style="text-align:left;">
+    <img src="TimeLineViewLinkedEntity.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
+</div>
 
 
 
