@@ -14,10 +14,10 @@
 
 智慧城市数据底座是智慧城市建设的基础和核心，它犹如城市的 “大脑”，负责处理和分析海量的城市数据。这些数据来自城市的各个方面，包括交通、环境、能源、公共设施、社会治安等。通过对这些数据的深入挖掘和分析，可以更加准确地了解城市的运行状况，预测未来发展趋势，制定科学合理的政策和措施。**CIM** (City Information Modeling) 城市信息模型是目前构建城市数据底座的一个主要方式。CIM 城市信息模型是一个概念与方法的理论集成，把城市各类多源异构数据以多种形式整体组织成一个和实体城市全息镜像的城市体系信息模型。它由城市主体的建筑物出发，基于空间关系的关联性，将基础的地理信息、空间坐标系统与具体的城市空间格局应用相结合，形成了以地理信息系统（**GIS**）为底层基础，以建筑信息模型（**BIM**）为中层填充，以数字孪生（**Digital Twin**）技术、物联网（**IoT**）技术为抓手，将城市空间维度的地上地下、室内室外、时间维度的过往历史、当前现状和可期未来的多维信息模型数据和城市感知数据相融合的数字空间城市部件要素信息有机综合体。DOCG 数据分析平台具有构建一个 CIM 模式智慧城市数据底座的全部技术能力。本文通过以下步骤建立一个小型的城市数据底座，并结合一个大型机场的建筑信息与运营信息，介绍一个典型的TOD类的应用场景。
 
-##### 1. 通过将城市 GIS 数据导入 DOCG 领域模型构建数据底座底层城市基础设施信息模型
-##### 2. 通过将大型机场 BIM 数据导入 DOCG 领域模型构建中层智慧建筑应用支持信息模型
-##### 3. 通过将大型机场 动态业务数据 实时导入领域模型构建上层业务应用信息模型
-#####  4. 综合利用已经构建的城市数据底座与 DOCG 平台的分析能力支持 TOD 相关智慧城市应用
+1.  **通过将城市 GIS 数据导入 DOCG 领域模型构建数据底座底层城市基础设施信息模型**
+2.  **通过将大型机场 BIM 数据导入 DOCG 领域模型构建中层智慧建筑应用支持信息模型**
+3.  **通过将大型机场 动态业务数据 实时导入领域模型构建上层业务应用信息模型**
+4.  **综合利用已经构建的城市数据底座与 DOCG 平台的分析能力支持 TOD 相关智慧城市应用**
 
 
 
@@ -38,12 +38,12 @@ GIS 地理空间数据是构建智慧城市基底信息常用的数据来源。�
 
 以下为相关界面操作截图：
 
-###### 概念类型数据管理界面
+<span style="color:#777777;"> **概念类型数据管理界面** </span>
+
 <div style="text-align:left;">
     <img src="ConceptionKindDataManage.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
 </div>
-
-###### 概念类型配置界面:导入 SHP格式的地理信息数据
+<span style="color:#777777;"> **概念类型配置界面:导入 SHP格式的地理信息数据** </span>
 
 <div style="text-align:left;">
     <img src="ImportSHP.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
@@ -51,14 +51,16 @@ GIS 地理空间数据是构建智慧城市基底信息常用的数据来源。�
 
 由 SHP 文件数据源创建生成的概念实体天然具有 **WKT** 格式的 GIS 地理信息，可以在 DOCG 平台的 <span style="color:#0074D9;"> *概念实体详情* </span>  界面中直接显示
 
-###### 概念实体详情界面
+<span style="color:#777777;"> **概念实体详情界面** </span>
+
 <div style="text-align:left;">
     <img src="RiverSystemEntity.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
 </div>
 
 也可以在 <span style="color:#0074D9;"> *概念实体空间数据展示* </span>  界面中查看概念类型 **RiverSystem-Surface ( 水系-湖，库 ) ** 中全量数据的地理空间信息
 
-###### 概念实体空间数据展示界面
+<span style="color:#777777;"> **概念实体空间数据展示界面** </span>
+
 <div style="text-align:left;">
     <img src="AllRiverSystemEntities.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
 </div>
@@ -128,11 +130,12 @@ for(ConceptionEntity currentLine:conceptionEntityList){
 
 以上简单的代码片段即可通过空间计算构建出概念实体间的实体业务关联，产生的关联关系数据可在 DOCG 平台的 <span style="color:#0074D9;"> *概念实体详情* </span>  界面中实时显示：
 
-###### 地铁"7号线二期"线路概念实体数据关联网络图展示界面
+<span style="color:#777777;"> **地铁"7号线二期"线路概念实体数据关联网络图展示界面** </span>
+
 <div style="text-align:left;">
     <img src="SubwaylineRelationToplogic1.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
 </div>
-###### 地铁"7号线二期"线路概念实体全量一度关系3维蒲公英图展示界面
+<span style="color:#777777;"> **地铁"7号线二期"线路概念实体全量一度关系3维蒲公英图展示界面** </span>
 
 <div style="text-align:left;">
     <img src="SubwaylineRelationToplogic2.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
@@ -143,19 +146,22 @@ for(ConceptionEntity currentLine:conceptionEntityList){
 
 2. 点击  [*链接时空信息* ] -》 [*链接至地理空间区域* ]  -》 [*根据概念实体地理空间计算链接* ] 按钮，选择相应的运算参数，即可将概念类型下的全部概念实体链接到符合空间计算条件的地理空间区域实体上。在本示例的操作中，通过空间计算，将所有的地铁线路概念实体链接到了各个线路穿行过的街道、镇、乡级地理空间区域中。
 
-###### 概念类型配置界面：执行全部概念实体与地理空间区域的链接操作
+<span style="color:#777777;"> **概念类型配置界面：执行全部概念实体与地理空间区域的链接操作** </span>
+
 <div style="text-align:left;">
     <img src="LinkToGeoEntities.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
 </div>
 在链接地理空间区域操作执行完毕后，即可直接在 DOCG 数据分析平台的 <span style="color:#0074D9;"> *概念实体详情* </span>  用户界面中显示概念实体的地理空间区域链接信息。
 
-###### 地铁"8号线四期"线路概念实体的地理空间区域链接展示界面
+<span style="color:#777777;"> **地铁"8号线四期"线路概念实体的地理空间区域链接展示界面** </span>
 
 <div style="text-align:left;">
     <img src="ConceptionEntityGeoLinkInfo.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
 </div>
 除了具有链接到地理空间区域的能力外，具有内置地理信息数据的概念类型实体还可以与 DOCG 平台内置的地理空间区域（行政区划实体数据）执行各种地理空间计算分析操作，下图展示了在 DOCG 数据分析平台的 <span style="color:#0074D9;"> *概念实体详情* </span>  用户界面中使用此种空间计算能力执行地理空间区域查询的操作：
-###### 在地铁"8号线四期"线路概念实体上通过空间计算功能查询该线路穿行过的乡（街道）级行政区划的地理空间区域
+
+<span style="color:#777777;"> **在地铁"8号线四期"线路概念实体上通过空间计算功能查询该线路穿行过的乡（街道）级行政区划的地理空间区域** </span>
+
 <div style="text-align:left;">
     <img src="ConceptionEntityGeoCaclue.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
 </div>
@@ -165,8 +171,8 @@ for(ConceptionEntity currentLine:conceptionEntityList){
 ##### <span style="color:#0074D9;"> □ 实现 BIM 数据的数模分离并与 GIS 数据相融合</span>
 BIM（Building Information Modeling）技术是一种应用于工程设计、建造、管理的数据化工具，通过对建筑的数据化、信息化模型整合，在项目策划、运行和维护的全生命周期过程中进行共享和传递，使工程技术人员对各种建筑信息作出正确理解和高效应对，为设计团队以及包括建筑、运营单位在内的各方建设主体提供协同工作的基础，在提高生产效率、节约成本和缩短工期方面发挥重要作用。
 
+<span style="color:#777777;"> **通过 BIM 模型为核心媒介融合各类不同领域与阶段的外部数据** </span>
 
-###### 通过 BIM 模型为核心媒介融合各类不同领域与阶段的外部数据
 <div style="text-align:left;">
     <img src="BimModleingDataStructure.jpg" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
 </div>
@@ -174,24 +180,23 @@ BIM（Building Information Modeling）技术是一种应用于工程设计、建
 
 BIM 模型文件中包含海量的称为构件的基本构成元素，每一个构件都包含有属性类的<span style="color:#0074D9;"> *数据信息* </span>以及描述空间状况的<span style="color:#0074D9;"> *模型信息* </span>。DOCG 数据平台能够解析 BIM 模型文件，将全部的构件转化为概念实体存储在相应的概念类型中。通过特殊的<span style="color:#0074D9;"> *数模分离* </span>技术，将 BIM 构件中的数据信息转化为概念实体常规属性，将 BIM 构件中的模型信息转换为 **WKT** 格式的 GIS 地理信息数据。通过该技术处理，能够实现将 BIM 与 GIS 来源的数据在同一套数据存储与数据分析技术体系下执行统一的全局地理空间计算分析的能力。下文中展示了将一个机场单层建筑空间的 BIM 文件转换为名称为 **AirportBuildingSpace-F02** 的概念类型并将全部 BIM 构件存储为概念实体后可以在 DOCG 数据分析平台用户界面中执行的一些相关操作的示例：
 
-###### BIM 文件中的构件能够转化为常规的概念类型中的实体，并在常规的数据属性查询与分析中直接使用 BIM 构件中的属性类数据信息
+<span style="color:#777777;"> **BIM 文件中的构件能够转化为常规的概念类型中的实体，并在常规的数据属性查询与分析中直接使用 BIM 构件中的属性类数据信息** </span>
 
 <div style="text-align:left;">
     <img src="BimFileToConceptionKinds.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
 </div>
-
-######  BIM 模型构件生成的概念实体中自动包含有从 BIM 构件中生成的空间信息，该空间信息的坐标系与内容可以与由其他来源产生的地理空间数据相互兼容 
+<span style="color:#777777;"> **BIM 模型构件生成的概念实体中自动包含有从 BIM 构件中生成的空间信息，该空间信息的坐标系与内容可以与由其他来源产生的地理空间数据相互兼容** </span>
 
 <div style="text-align:left;">
     <img src="BimFileGisLayout.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
 </div>
+<span style="color:#777777;"> **由 BIM 构件生成的概念实体具有与常规概念实体完全相同的能力** </span>
 
-######  由 BIM 构件生成的概念实体具有与常规概念实体完全相同的能力
 <div style="text-align:left;">
     <img src="BimElementToCinceptionEntity.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
 </div>
+<span style="color:#777777;"> **在由 BIM 构件生成的概念实体上能够执行常规空间计算功能（查询该建筑空间所在的乡、街道级行政区划的地理空间区域）** </span>
 
-######  在由 BIM 构件生成的概念实体上能够执行常规空间计算功能（查询该建筑空间所在的乡、街道级行政区划的地理空间区域）
 <div style="text-align:left;">
     <img src="BIMElementGisCacul.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
 </div>
@@ -217,13 +222,16 @@ BIM 模型文件中包含海量的称为构件的基本构成元素，每一个�
 ##### <span style="color:#0074D9;"> □  通过空间计算关联 BIM 与 GIS 数据源产生的概念实体</span>
 
 经过数模分离技术处理后导入 DOCG 平台的 BIM 构件概念实体上的建筑空间信息被直接转化为了 **WKT** 格式的 GIS 地理信息数据。因此可以通过 DOCG 平台的空间计算能力与任意其他具有空间信息的概念实体进行空间分析，并根据分析结果建立需要的实体关联。例如下图的示例中通过空间计算建立了机场航站楼内一个 *固定登机桥* 与 *登机桥活动端* 和 *登机门* 之间基于空间相邻确定的业务逻辑的上下游联动关系。
-######  BIM 构件生成的 固定登机桥 概念实体 和与其空间相连的 登机桥活动端 以及 登机门 概念实体
+
+<span style="color:#777777;"> **BIM 构件生成的 固定登机桥 概念实体 和与其空间相连的 登机桥活动端 以及 登机门 概念实体** </span>
+
 <div style="text-align:left;">
     <img src="AirportBIMDataLinkIng.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
 </div>
 将源自 BIM 构件与源自 GIS 城市要素信息的概念实体以空间计算为依据建立起成体系的关联关系后，可以消除在智慧城市和 TOD 类业务应用中面临的一个主要技术障碍： <span style="color:#0074D9;"> **GIS 与 BIM 数据分别对应建筑室外与室内两个领域，两者数据技术上无法联通，无法建立融合统一室内外空间数据的综合应用**</span> 。在解决了室内外空间数据的统一融合问题后，能够处理很多当前技术上难以有效解决的业务需求，以下以机场的运营为场景举两个示例：
 
-######  机场飞行区与航站楼基于空间关系的综合业务应用
+<span style="color:#777777;"> **机场飞行区与航站楼基于空间关系的综合业务应用** </span>
+
 <table>
 <tr>
 <td width="900"> <img src="AirportBuildingRelation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;" width="400">◇ 在常规的机场业务运营与组织架构中，机场飞行区与航站楼是两个并行的独立业务单元。受限于传统的 IT 信息系统提供的技术能力， 缺乏适合的应用场景与应用角色能够将两者的数据结合进而实现业务的深度融合与创新。通过空间计算能力建立飞行区的飞机停机位、道路与航站楼的登机桥固定端、登机门以及人流动线等概念实体之间的空间相邻关系，能够在航班值机，航班接机等业务场景提供跨越业务单元的全域信息支持。</td>
@@ -231,7 +239,8 @@ BIM 模型文件中包含海量的称为构件的基本构成元素，每一个�
 </table>
 
 
-######  机场航站楼与城市交通设施基于空间关系的综合业务应用
+<span style="color:#777777;"> **机场航站楼与城市交通设施基于空间关系的综合业务应用** </span>
+
 <table>
 <tr>
 <td width="900"> <img src="AirportBuildingAndRailwayStation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;" width="400">◇ 机场作为一个大型的城市交通设施关键节点，其精确有效的运营依赖于对机场建筑内部的人流状况的准确掌握。机场客流量与城市整体的实时交通运行状况息息相关，但是目前的技术手段并不能在建筑空间出入口与交通通道接泊点这样的细颗粒度层级实现精确到人流级的城市交通状况与建筑空间的信息共享。通过空间计算能力建立机场出入口、停车场等航站楼内部建筑概念实体与地铁出站口，高铁出站口、城市道路路口等城市交通设施概念实体的空间连接关系，能够实现建筑空间内部单点的精确人流数据统计与分析。</td>
@@ -275,7 +284,9 @@ for(Map<String,Object> currentDataRow:flightExecutionDatabaseReultsetList){
 BatchDataOperationUtil.batchAddNewEntities("FlightExecution",conceptionEntityValuesList,CPUUsageRate.High);
 ```
 3. 在 DOCG 数据分析平台用户界面 <span style="color:#0074D9;">*Relation Kind 关系类型数据管理*</span>  面板中点击  [*创建关系类型* ] 按钮 分别创建 关系类型  *AlreadyServicedFlightExecution ( 航班已执行执飞 )* 、*ComposeFlightExecutionFlightPath ( 组成航班执飞航迹 )*、*ResourceServiceFlightExecution ( 资源服务航班执飞 )*  和 *AlreadyServicedShareFlightExecution ( 共享航班已执行执飞 )*。根据真实的业务状况，使用适当的关系类型定义来配置关联关系规则，定义概念类型 **FlightExecution** 与 其他机场运行相关概念类型之间的业务关系。
-######  概念类型 FlightExecution 与其他概念类型之间的实时关联关系
+
+<span style="color:#777777;"> **概念类型 FlightExecution 与其他概念类型之间的实时关联关系** </span>
+
 <div style="display: flex;">
     <img src="RelationConfig1.png" alt="Image 1" style="margin-right: 2px;zoom:37.5%;">
     <img src="RelationConfig2.png" alt="Image 3" style="margin-left: 1px;zoom:37.5%;">
@@ -283,7 +294,8 @@ BatchDataOperationUtil.batchAddNewEntities("FlightExecution",conceptionEntityVal
 
 4. 在 DOCG 数据分析平台用户界面中执行关系类型 *AlreadyServicedFlightExecution ( 航班已执行执飞 )* 、*ComposeFlightExecutionFlightPath ( 组成航班执飞航迹 )*、*ResourceServiceFlightExecution ( 资源服务航班执飞 )*  和 *AlreadyServicedShareFlightExecution ( 共享航班已执行执飞 )*  中的关联关系规则定义， DOCG 系统会根据规则定义中的属性匹配逻辑自动建立所有概念实体之间的关系实体。
 
-######  代表航班 CZ3109 的一次航班执飞的概念实体 和与其业务相连的 航班、飞机停机位、行李转盘 以及 航班执飞航段概念实体
+<span style="color:#777777;"> **代表航班 CZ3109 的一次航班执飞的概念实体 和与其业务相连的 航班、飞机停机位、行李转盘 以及 航班执飞航段概念实体** </span>
+
 <div style="text-align:left;">
     <img src="FlightExecution.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
 </div>
@@ -294,7 +306,9 @@ BatchDataOperationUtil.batchAddNewEntities("FlightExecution",conceptionEntityVal
 通过在<span style="color:#0074D9;"> *由外部应用系统数据接入的概念实体* </span>与<span style="color:#0074D9;"> *由 GIS 或 BIM 数据导入的城市数据底座静态基底概念实体* </span>之间创建由业务驱动的关联关系，可以将业务领域模型中的数据与智慧城市数据底座初步融合。此外还可以在 **时间** 与 **地理空间** 维度实现业务领域模型数据与智慧城市数据底座的融合。地理空间维度的数据融合方式与前文已经介绍的 GIS 类数据的导入方式相同。下文介绍使用 **时间轴关联方式** 的时间维度业务领域模型数据融合。
 
 DOCG 数据分析平台利用核心领域模型以及图数据库技术的特性，在数据底座的图数据库中建立了特殊的代表不同时间粒度的特殊概念类型：**TS_Year** （年时间节点）、**TS_Month**（月时间节点）、**TS_Day**（日时间节点） 、**TS_Hour**（小时时间节点） 、**TS_Minute**（分钟时间节点） 以及特殊的代表不同时间之间联系的关系类型：**TS_Contains**（包含下一级时间节点）、**TS_NextIs**（同级的下一个时间节点）、**TS_FirstChildIs**（下一级的第一个时间节点）、**TS_LastChildIs**（下一级的最后一个时间节点），通过在上述时间粒度概念类型中创建所需的时间概念实体并用适当的时间联系关系类型将这些概念实体相互关联，既可获得指定时间范围的时间轴。
-######  时间轴在1953年9月的展开片段
+
+<span style="color:#777777;"> **时间轴在1953年9月的展开片段** </span>
+
 <div style="text-align:left;">
     <img src="Timeline.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
 </div>
@@ -304,16 +318,20 @@ DOCG 数据分析平台利用核心领域模型以及图数据库技术的特性
 
 2. 点击  [*链接时空信息* ] -》 [*链接至时间流* ]  -》 [*根据单一时间属性链接* ] 按钮，选择所需的时间事件属性名称、时间事件的粒度以及业务描述所需的时间事件备注即可将概念类型下的全部概念实体链接到符合时间计算条件的时间流实体上。在本示例的操作中，通过时间计算，将所有的航班执飞概念实体根据属性 ActualTakeOffDateTime 的值链接到了时间流中的 分钟（MINUTE）级时间实体中。
 
-###### 概念类型配置界面：执行全部概念实体与时间流（时间轴）的链接操作
+<span style="color:#777777;"> **概念类型配置界面：执行全部概念实体与时间流（时间轴）的链接操作** </span>
+
 <div style="text-align:left;">
     <img src="LinkToTimeline.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
 </div>
 在链接时间流操作执行完毕后，即可直接在 DOCG 数据分析平台的 <span style="color:#0074D9;"> *概念实体详情* </span>  用户界面中显示概念实体的时间流链接信息。
-###### 一个 航班执飞 概念实体的时间流链接展示界面
+
+<span style="color:#777777;"> **一个 航班执飞 概念实体的时间流链接展示界面** </span>
+
 <div style="text-align:left;">
     <img src="TimeLineLinkStatus.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
 </div>
-###### 该时间流链接信息也可以直接在时间轴的相应时间实体上显示
+<span style="color:#777777;"> **该时间流链接信息也可以直接在时间轴的相应时间实体上显示** </span>
+
 <div style="text-align:left;">
     <img src="TimeLineViewLinkedEntity.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:50%;"/>
 </div>
@@ -337,7 +355,8 @@ DOCG 数据分析平台利用核心领域模型以及图数据库技术的特性
 6. 根据各个时间点对应的人流运动轨迹上的位置，获取相关位置的各类运行资源设备的能源控制单元，并在时间点到达时启动或设定相关设备设施保持在正常能源消耗状态下运行。
 7. 根据计算，在当次航班执飞结束并且全部乘客依次离开人流运动轨迹上的相关运行资源设备设施服务空间范围后，再次将设备设施关闭或保持在最低能源消耗状态下运行。
 
-######  机场航站楼基于航班联动的能源管理
+<span style="color:#777777;"> **机场航站楼基于航班联动的能源管理** </span>
+
 <table>
 <tr>
 <td width="900"> <img src="AirportPowerMamagement.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;">◇ xxxxxx。</td>
@@ -352,15 +371,17 @@ DOCG 数据分析平台利用核心领域模型以及图数据库技术的特性
 
 
 
+<span style="color:#777777;"> **机场航站楼运行期实时动线人流分析** </span>
 
-######  机场航站楼运行期实时动线人流分析
 <table>
 <tr>
 <td width="900"> <img src="AirportPeopleFlowCompute.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;">◇ xxxxxx。</td>
 </tr>
 </table>
+######  
 
-######  机场航站楼运行期实时运行资源使用状况分析评估
+<span style="color:#777777;"> **机场航站楼运行期实时运行资源使用状况分析评估** </span>
+
 <table>
 <tr>
 <td width="900"> <img src="AirportResourceUsageAnaly.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;">◇ xxxxxx。</td>
