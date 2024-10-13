@@ -234,18 +234,20 @@ BIM 模型文件中包含海量的称为构件的基本构成元素，每一个�
 
 <table>
 <tr>
-<td width="900"> <img src="AirportBuildingRelation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;" width="400">◇ 在常规的机场业务运营与组织架构中，机场飞行区与航站楼是两个并行的独立业务单元。受限于传统的 IT 信息系统提供的技术能力， 缺乏适合的应用场景与应用角色能够将两者的数据结合进而实现业务的深度融合与创新。通过空间计算能力建立飞行区的飞机停机位、道路与航站楼的登机桥固定端、登机门以及人流动线等概念实体之间的空间相邻关系，能够在航班值机，航班接机等业务场景提供跨越业务单元的全域信息支持。</td>
+<td width="900"> <img src="AirportBuildingRelation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;" width="260">◇ 在常规的机场业务运营与组织架构中，机场飞行区与航站楼是两个并行的独立业务单元。受限于传统的 IT 信息系统提供的技术能力， 缺乏适合的应用场景与应用角色能够将两者的数据结合进而实现业务的深度融合与创新。通过空间计算能力建立飞行区的飞机停机位、道路与航站楼的登机桥固定端、登机门以及人流动线等概念实体之间的空间相邻关系，能够在航班值机，航班接机等业务场景提供跨越业务单元的全域信息支持。</td>
 </tr>
 </table>
+
 
 
 <span style="color:#777777;"> **机场航站楼与城市交通设施基于空间关系的综合业务应用** </span>
 
 <table>
 <tr>
-<td width="900"> <img src="AirportBuildingAndRailwayStation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;" width="400">◇ 机场作为一个大型的城市交通设施关键节点，其精确有效的运营依赖于对机场建筑内部的人流状况的准确掌握。机场客流量与城市整体的实时交通运行状况息息相关，但是目前的技术手段并不能在建筑空间出入口与交通通道接泊点这样的细颗粒度层级实现精确到人流级的城市交通状况与建筑空间的信息共享。通过空间计算能力建立机场出入口、停车场等航站楼内部建筑概念实体与地铁出站口，高铁出站口、城市道路路口等城市交通设施概念实体的空间连接关系，能够实现建筑空间内部单点的精确人流数据统计与分析。</td>
+<td width="900"> <img src="AirportBuildingAndRailwayStation.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;" width="260">◇ 机场作为一个大型的城市交通设施关键节点，其精确有效的运营依赖于对机场建筑内部的人流状况的准确掌握。机场客流量与城市整体的实时交通运行状况息息相关，但是目前的技术手段并不能在建筑空间出入口与交通通道接泊点这样的细颗粒度层级实现精确到人流级的城市交通状况与建筑空间的信息共享。通过空间计算能力建立机场出入口、停车场等航站楼内部建筑概念实体与地铁出站口，高铁出站口、城市道路路口等城市交通设施概念实体的空间连接关系，能够实现建筑空间内部单点的精确人流数据统计与分析。</td>
 </tr>
 </table>
+
 
 
 #### ※ 接入实时动态业务数据构建数据底座上层业务应用领域模型
@@ -359,7 +361,7 @@ DOCG 数据分析平台利用核心领域模型以及图数据库技术的特性
 
 <table>
 <tr>
-<td width="900"> <img src="AirportPowerMamagement.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;">◇ xxxxxx。</td>
+<td width="900"> <img src="AirportPowerMamagement.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;" width="400">◇ xxxxxx。</td>
 </tr>
 </table>
 
@@ -378,16 +380,20 @@ DOCG 数据分析平台利用核心领域模型以及图数据库技术的特性
 
 <table>
 <tr>
-<td width="900"> <img src="AirportPeopleFlowCompute.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;">◇ xxxxxx。</td>
+<td width="900"> <img src="AirportPeopleFlowCompute.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;" width="260">◇ 根据一次航班执飞的实时数据，获取到该航班落地后的停机机位。由机位出发依次获取相关的 活动登机桥-> 固定登机桥->登机门->登机口->人流动线->行李提取转盘->机场出口 等一系列基于空间连接的慢行活力人流的具体空间位置。以慢行活力人流实际路径和航班的最大乘客数量为输入参数，使用乘客群体移动速度与模式的评估算法，从航班实际落地时刻起按照业务所需的采样频率周期性的计算各个采样时间点动线上的人流分布情况。</td>
 </tr>
 </table>
-<span style="color:#777777;"> **机场航站楼运行期实时运行资源使用状况分析评估** </span>
+
+
+
+<span style="color:#777777;"> **机场航站楼运行期实时服务资源使用状况分析评估** </span>
 
 <table>
 <tr>
-<td width="900"> <img src="AirportResourceUsageAnaly.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;">◇ xxxxxx。</td>
+<td width="900"> <img src="AirportResourceUsageAnaly.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;"/></td><td style="font-size:16px;" width="260">◇ 将到港与离港的所有人流动线数据叠加，能够获得航站楼内部全域实时人流分布状况数据。结合使用该人流分布数据与航站楼运营服务资源（例如座椅，饮水机，卫生间，充电杆等）的使用率评估算法（例如使用空间缓冲区算法计算卫生间周边可能的人员数量，再结合人员卫生间使用状况经验公式计算卫生间在特定时段的使用率），可以实时获取到运行期航站楼内部的全部服务资源使用状态，标识出服务紧张的设备设施并迅速采取应对措施。</td>
 </tr>
 </table>
+
 
 
 
