@@ -130,7 +130,7 @@ for(ConceptionEntity currentLine:conceptionEntityList){
 
 以上简单的代码片段即可通过空间计算构建出概念实体间的实体业务关联，产生的关联关系数据可在 DOCG 平台的 <span style="color:#0074D9;"> *概念实体详情* </span>  界面中实时显示：
 
-<span style="color:#777777;"> **地铁"7号线二期"线路概念实体数据关联网络图展示界面** </span>
+<span style="color:#777777;"> **地铁"7号线二期"线路概念实体数据关联网络图展示界面 (显示了部分与 7号线二期线路 关联的其他概念实体)** </span>
 
 <div style="text-align:left;">
     <img src="SubwaylineRelationToplogic1.png" alt="Your Image" style="display: block; margin-left: 0; margin-right: auto;zoom:25%;"/>
