@@ -1,10 +1,8 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer;
 
 import com.google.common.collect.Lists;
-
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.EntitiesPath;
-
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionEntityImpl;
@@ -14,10 +12,7 @@ import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
 import org.neo4j.driver.types.Relationship;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class GetListEntitiesPathTransformer implements DataTransformer<List<EntitiesPath>>{
 
@@ -31,6 +26,7 @@ public class GetListEntitiesPathTransformer implements DataTransformer<List<Enti
     @Override
     public List<EntitiesPath> transformResult(Result result) {
         List<EntitiesPath> entitiesPathList = new ArrayList<>();
+        Map<String,List<String>> conceptionEntitiesConceptionKindsMap = new HashMap<>();
         while(result.hasNext()){
             Record currentRecord = result.next();
             org.neo4j.driver.types.Path currentPath = currentRecord.get("path").asPath();
@@ -58,6 +54,9 @@ public class GetListEntitiesPathTransformer implements DataTransformer<List<Enti
                 List<String> allConceptionKindNames = Lists.newArrayList(currentNode.labels());
                 long nodeUID = currentNode.id();
                 String conceptionEntityUID = ""+nodeUID;
+                if(!conceptionEntitiesConceptionKindsMap.containsKey(conceptionEntityUID)){
+                    conceptionEntitiesConceptionKindsMap.put(conceptionEntityUID,allConceptionKindNames);
+                }
                 Neo4JConceptionEntityImpl neo4jConceptionEntityImpl =
                         new Neo4JConceptionEntityImpl(allConceptionKindNames.get(0),conceptionEntityUID);
                 neo4jConceptionEntityImpl.setAllConceptionKindNames(allConceptionKindNames);
@@ -75,6 +74,8 @@ public class GetListEntitiesPathTransformer implements DataTransformer<List<Enti
                 String toEntityUID = ""+resultRelationship.endNodeId();
                 Neo4JRelationEntityImpl neo4jRelationEntityImpl =
                         new Neo4JRelationEntityImpl(relationType,relationEntityUID,fromEntityUID,toEntityUID);
+                neo4jRelationEntityImpl.setFromEntityConceptionKindList(conceptionEntitiesConceptionKindsMap.get(fromEntityUID));
+                neo4jRelationEntityImpl.setToEntityConceptionKindList(conceptionEntitiesConceptionKindsMap.get(toEntityUID));
                 neo4jRelationEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
                 pathRelationEntities.add(neo4jRelationEntityImpl);
             }
