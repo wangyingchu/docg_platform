@@ -13,9 +13,7 @@ import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
 import org.neo4j.driver.types.Relationship;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class GetSingleEntitiesSpanningTreeTransformer implements DataTransformer<EntitiesSpanningTree>{
 
@@ -34,6 +32,7 @@ public class GetSingleEntitiesSpanningTreeTransformer implements DataTransformer
         List<RelationEntity> treeRelationEntities = new ArrayList<>();
         List<String> treeConceptionEntityUIDList = new ArrayList<>();
         List<String> treeRelationEntityUIDList = new ArrayList<>();
+        Map<String,List<String>> conceptionEntitiesConceptionKindsMap = new HashMap<>();
 
         while(result.hasNext()){
             Record currentRecord = result.next();
@@ -51,6 +50,9 @@ public class GetSingleEntitiesSpanningTreeTransformer implements DataTransformer
                 List<String> allConceptionKindNames = Lists.newArrayList(currentNode.labels());
                 long nodeUID = currentNode.id();
                 String conceptionEntityUID = ""+nodeUID;
+                if(!conceptionEntitiesConceptionKindsMap.containsKey(conceptionEntityUID)){
+                    conceptionEntitiesConceptionKindsMap.put(conceptionEntityUID,allConceptionKindNames);
+                }
                 if(!treeConceptionEntityUIDList.contains(conceptionEntityUID)){
                     treeConceptionEntityUIDList.add(conceptionEntityUID);
                     Neo4JConceptionEntityImpl neo4jConceptionEntityImpl =
@@ -73,6 +75,8 @@ public class GetSingleEntitiesSpanningTreeTransformer implements DataTransformer
                     String toEntityUID = ""+resultRelationship.endNodeId();
                     Neo4JRelationEntityImpl neo4jRelationEntityImpl =
                             new Neo4JRelationEntityImpl(relationType,relationEntityUID,fromEntityUID,toEntityUID);
+                    neo4jRelationEntityImpl.setFromEntityConceptionKindList(conceptionEntitiesConceptionKindsMap.get(fromEntityUID));
+                    neo4jRelationEntityImpl.setToEntityConceptionKindList(conceptionEntitiesConceptionKindsMap.get(toEntityUID));
                     neo4jRelationEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
                     treeRelationEntities.add(neo4jRelationEntityImpl);
                 }
