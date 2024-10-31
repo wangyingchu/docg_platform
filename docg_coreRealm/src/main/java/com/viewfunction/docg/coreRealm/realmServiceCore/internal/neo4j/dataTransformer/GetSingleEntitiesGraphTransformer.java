@@ -13,7 +13,9 @@ import org.neo4j.driver.types.Node;
 import org.neo4j.driver.types.Relationship;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GetSingleEntitiesGraphTransformer implements DataTransformer<EntitiesGraph>{
 
@@ -25,6 +27,7 @@ public class GetSingleEntitiesGraphTransformer implements DataTransformer<Entiti
 
     @Override
     public EntitiesGraph transformResult(Result result) {
+        Map<String,List<String>> conceptionEntitiesConceptionKindsMap = new HashMap<>();
         if(result.hasNext()){
             Record currentRecord = result.next();
             List<Object> nodeObjectList =  currentRecord.get("nodes").asList();
@@ -40,6 +43,9 @@ public class GetSingleEntitiesGraphTransformer implements DataTransformer<Entiti
                     List<String> allConceptionKindNames = Lists.newArrayList(currentNode.labels());
                     long nodeUID = currentNode.id();
                     String conceptionEntityUID = ""+nodeUID;
+                    if(!conceptionEntitiesConceptionKindsMap.containsKey(conceptionEntityUID)){
+                        conceptionEntitiesConceptionKindsMap.put(conceptionEntityUID,allConceptionKindNames);
+                    }
                     Neo4JConceptionEntityImpl neo4jConceptionEntityImpl =
                             new Neo4JConceptionEntityImpl(allConceptionKindNames.get(0),conceptionEntityUID);
                     neo4jConceptionEntityImpl.setAllConceptionKindNames(allConceptionKindNames);
@@ -58,6 +64,8 @@ public class GetSingleEntitiesGraphTransformer implements DataTransformer<Entiti
                     String toEntityUID = ""+resultRelationship.endNodeId();
                     Neo4JRelationEntityImpl neo4jRelationEntityImpl =
                             new Neo4JRelationEntityImpl(relationType,relationEntityUID,fromEntityUID,toEntityUID);
+                    neo4jRelationEntityImpl.setFromEntityConceptionKindList(conceptionEntitiesConceptionKindsMap.get(fromEntityUID));
+                    neo4jRelationEntityImpl.setToEntityConceptionKindList(conceptionEntitiesConceptionKindsMap.get(toEntityUID));
                     neo4jRelationEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
                     graphRelationEntities.add(neo4jRelationEntityImpl);
                     entitiesGraph.countRelationKindsData(relationType);
