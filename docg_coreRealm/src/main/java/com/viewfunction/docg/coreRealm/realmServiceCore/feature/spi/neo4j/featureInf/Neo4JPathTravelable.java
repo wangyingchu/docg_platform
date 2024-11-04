@@ -26,7 +26,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
     enum PathEntityType {ConceptionEntity , RelationEntity}
 
     default public List<EntitiesPath> expandPath(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,
-                                                 List<ConceptionKindMatchLogic> conceptionKindMatchLogics, int minJump, int maxJump){
+                                                 List<ConceptionKindMatchLogic> conceptionKindMatchLogics, int minJump, int maxJump,Integer resultPathUpperLimit){
         /*
         Example:
         https://neo4j.com/labs/apoc/4.1/graph-querying/expand-paths/#path-expander-paths-procedure-overview
@@ -46,6 +46,9 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                 "YIELD path\n" +
                 "RETURN path, length(path) AS hops\n" +
                 "ORDER BY hops;";
+        if(resultPathUpperLimit != null && resultPathUpperLimit > 0){
+            cypherProcedureString = cypherProcedureString.replace(";"," LIMIT "+resultPathUpperLimit.intValue()+";");
+        }
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
         if(this.getEntityUID() != null) {
@@ -62,7 +65,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
     }
 
     default public EntitiesGraph expandGraph(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,
-                                                List<ConceptionKindMatchLogic> conceptionKindMatchLogics,boolean containsSelf,int maxJump){
+                                                List<ConceptionKindMatchLogic> conceptionKindMatchLogics,boolean containsSelf,int maxJump,Integer resultConceptionEntitiesUpperLimit){
         /*
         Example:
         https://neo4j.com/labs/apoc/4.1/graph-querying/expand-subgraph/
@@ -91,6 +94,9 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                 "})\n" +
                 "YIELD nodes, relationships\n" +
                 "RETURN nodes, relationships;";
+        if(resultConceptionEntitiesUpperLimit != null && resultConceptionEntitiesUpperLimit > 0){
+            cypherProcedureString = cypherProcedureString.replace(";"," LIMIT "+resultConceptionEntitiesUpperLimit.intValue()+";");
+        }
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
         if(this.getEntityUID() != null) {
@@ -107,7 +113,7 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
     }
 
     default public EntitiesSpanningTree expandSpanningTree(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,
-                                                           List<ConceptionKindMatchLogic> conceptionKindMatchLogics,int maxJump){
+                                                           List<ConceptionKindMatchLogic> conceptionKindMatchLogics,int maxJump,Integer resultConceptionEntitiesUpperLimit){
         /*
         Example:
         https://neo4j.com/labs/apoc/4.1/graph-querying/expand-spanning-tree/
@@ -134,6 +140,9 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                 "})\n" +
                 "YIELD path\n" +
                 "RETURN path;";
+        if(resultConceptionEntitiesUpperLimit != null && resultConceptionEntitiesUpperLimit > 0){
+            cypherProcedureString = cypherProcedureString.replace(";"," LIMIT "+resultConceptionEntitiesUpperLimit.intValue()+";");
+        }
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
         if(this.getEntityUID() != null) {

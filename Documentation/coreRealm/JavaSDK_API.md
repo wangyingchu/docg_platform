@@ -4070,10 +4070,12 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @param conceptionKindMatchLogics List<ConceptionKindMatchLogic> 路径上允许的概念类型名称与搜索规则
      * @param minJump int 路径展开的最小跳数
      * @param maxJump int 路径展开的最大跳数
+     * @param resultPathUpperLimit Integer 返回的结果数据中包含的路径数量上限，如输入 null 或小于等于0的数值则不限制返回路径数量上限
      *
      * @return 符合条件的实体路径列表
      */
-    public List<EntitiesPath> expandPath(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,List<ConceptionKindMatchLogic> conceptionKindMatchLogics, int minJump, int maxJump);
+    public List<EntitiesPath> expandPath(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,List<ConceptionKindMatchLogic> conceptionKindMatchLogics, int minJump, int maxJump,Integer resultPathUpperLimit);
+
     /**
      * 从当前实体对象出发展开成图
      *
@@ -4082,10 +4084,11 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @param conceptionKindMatchLogics List<ConceptionKindMatchLogic> 图中允许的概念类型名称与搜索规则
      * @param containsSelf boolean 是否在图中包含当前对象自身
      * @param maxJump int 图展开的最大跳数
+     * @param resultConceptionEntitiesUpperLimit Integer 返回的结果数据中包含的概念实体数量上限，如输入 null 或小于等于0的数值则不限制返回实体数量上限
      *
      * @return 符合条件的实体组成的图
      */
-    public EntitiesGraph expandGraph(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,List<ConceptionKindMatchLogic> conceptionKindMatchLogics,boolean containsSelf,int maxJump);
+    public EntitiesGraph expandGraph(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,List<ConceptionKindMatchLogic> conceptionKindMatchLogics,boolean containsSelf,int maxJump,Integer resultConceptionEntitiesUpperLimit);
 
     /**
      * 从当前实体对象出发展开成生成树
@@ -4094,10 +4097,11 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @param defaultDirectionForNoneRelationKindMatch RelationDirection 未输入目标关系类型名称与关系方向组合时使用的全局关系方向，必须为 RelationDirection.FROM 或 RelationDirection.TO
      * @param conceptionKindMatchLogics List<ConceptionKindMatchLogic> 图中允许的概念类型名称与搜索规则
      * @param maxJump int 生成树径展开的最大跳数
+     * @param resultConceptionEntitiesUpperLimit Integer 返回的结果数据中包含的概念实体数量上限，如输入 null 或小于等于0的数值则不限制返回实体数量上限
      *
      * @return 符合条件的实体组成的生成树
      */
-    public EntitiesSpanningTree expandSpanningTree(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,List<ConceptionKindMatchLogic> conceptionKindMatchLogics, int maxJump);
+    public EntitiesSpanningTree expandSpanningTree(List<RelationKindMatchLogic> relationKindMatchLogics, RelationDirection defaultDirectionForNoneRelationKindMatch,List<ConceptionKindMatchLogic> conceptionKindMatchLogics, int maxJump,Integer resultConceptionEntitiesUpperLimit);
 
     /**
      * 使用高级自定义参数从当前实体对象出发展开路径
