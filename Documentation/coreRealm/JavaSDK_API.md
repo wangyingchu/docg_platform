@@ -5605,6 +5605,24 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      */
     public Long countAttachedGeospatialScaleEvents(List<String> conceptionEntityUIDs,AttributesParameters attributesParameters,boolean isDistinctMode) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
 
+    /**
+     * 输入一组概念实体的唯一值ID和对应的属性信息，批量更新各个概念实体对应的属性信息值
+     *
+     * @param conceptionEntityUIDAndAttributesMap Map<String,Map<String,Object>> 概念实体唯一值ID与该概念实体中需要更新的属性信息映射
+     *
+     * @return 更新概念实体属性操作的执行结果统计
+     */
+    public EntitiesOperationResult updateSingleValueConceptionEntityAttributesByUIDs(Map<String,Map<String,Object>> conceptionEntityUIDAndAttributesMap) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 输入一组关系实体的唯一值ID和对应的属性信息，批量更新各个关系实体对应的属性信息值
+     *
+     * @param relationEntityUIDAndAttributesMap Map<String,Map<String,Object>> 关系实体唯一值ID与该关系实体中需要更新的属性信息映射
+     *
+     * @return 更新关系实体属性操作的执行结果统计
+     */
+    public EntitiesOperationResult updateSingleValueRelationEntityAttributesByUIDs(Map<String,Map<String,Object>> relationEntityUIDAndAttributesMap) throws CoreRealmServiceEntityExploreException;
+
 ```
 
 ###### ↳ SystemMaintenanceOperator

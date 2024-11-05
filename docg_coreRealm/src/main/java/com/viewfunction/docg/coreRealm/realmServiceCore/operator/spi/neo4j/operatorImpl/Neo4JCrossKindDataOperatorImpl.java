@@ -1440,6 +1440,16 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         return null;
     }
 
+    @Override
+    public EntitiesOperationResult updateSingleValueConceptionEntityAttributesByUIDs(Map<String, Map<String, Object>> conceptionEntityUIDAndAttributesMap) throws CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
+    @Override
+    public EntitiesOperationResult updateSingleValueRelationEntityAttributesByUIDs(Map<String, Map<String, Object>> relationEntityUIDAndAttributesMap) throws CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }
