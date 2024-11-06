@@ -131,6 +131,44 @@ public class CrossKindDataOperatorTest {
             Assert.assertTrue(currentConceptionEntityValue.getEntityAttributesValue().containsKey(("prop2")));
         }
 
+        Map<String, Map<String, Object>> conceptionEntityUIDAndAttributesMap = new HashMap<>();
+
+        Map<String,Object> conceptionEntity1ValueMap = new HashMap<>();
+        conceptionEntity1ValueMap.put("conceptionEntity1Prop1",1000);
+        conceptionEntity1ValueMap.put("conceptionEntity1Prop2","STRING1");
+        conceptionEntityUIDAndAttributesMap.put(conceptionEntityValueList.get(0).getConceptionEntityUID(),conceptionEntity1ValueMap);
+
+        Map<String,Object> conceptionEntity2ValueMap = new HashMap<>();
+        conceptionEntity2ValueMap.put("conceptionEntity2Prop1",2000);
+        conceptionEntity2ValueMap.put("conceptionEntity2Prop2","STRING2");
+        conceptionEntityUIDAndAttributesMap.put(conceptionEntityValueList.get(1).getConceptionEntityUID(),conceptionEntity2ValueMap);
+
+        EntitiesOperationResult entitiesOperationResult1 = targetCrossKindDataOperator.updateSingleValueConceptionEntityAttributesByUIDs(conceptionEntityUIDAndAttributesMap);
+        Assert.assertEquals(entitiesOperationResult1.getOperationStatistics().getSuccessItemsCount(),2);
+        Assert.assertEquals(entitiesOperationResult1.getOperationStatistics().getFailItemsCount(),0);
+        Assert.assertNotNull(entitiesOperationResult1.getOperationStatistics().getStartTime());
+        Assert.assertNotNull(entitiesOperationResult1.getOperationStatistics().getFinishTime());
+        Assert.assertNotNull(entitiesOperationResult1.getOperationStatistics().getOperationSummary());
+        Assert.assertTrue(entitiesOperationResult1.getSuccessEntityUIDs().contains(conceptionEntityValueList.get(0).getConceptionEntityUID()));
+        Assert.assertTrue(entitiesOperationResult1.getSuccessEntityUIDs().contains(conceptionEntityValueList.get(1).getConceptionEntityUID()));
+
+        List<String> targetEntityUIDList = new ArrayList<>();
+        targetEntityUIDList.add(conceptionEntityValueList.get(0).getConceptionEntityUID());
+        targetEntityUIDList.add(conceptionEntityValueList.get(1).getConceptionEntityUID());
+        List<ConceptionEntity> resultConceptionEntities = targetCrossKindDataOperator.getConceptionEntitiesByUIDs(targetEntityUIDList);
+        Assert.assertEquals(resultConceptionEntities.size(),2);
+
+        for(ConceptionEntity currentConceptionEntity:resultConceptionEntities){
+            if(currentConceptionEntity.getConceptionEntityUID().equals(conceptionEntityValueList.get(0).getConceptionEntityUID())){
+                Assert.assertEquals((Long) (currentConceptionEntity.getAttribute("conceptionEntity1Prop1").getAttributeValue()),1000);
+                Assert.assertEquals(currentConceptionEntity.getAttribute("conceptionEntity1Prop2").getAttributeValue().toString(),"STRING1");
+            }
+            if(currentConceptionEntity.getConceptionEntityUID().equals(conceptionEntityValueList.get(1).getConceptionEntityUID())){
+                Assert.assertEquals((Long) (currentConceptionEntity.getAttribute("conceptionEntity2Prop1").getAttributeValue()),2000);
+                Assert.assertEquals(currentConceptionEntity.getAttribute("conceptionEntity2Prop2").getAttributeValue().toString(),"STRING2");
+            }
+        }
+
         attributesNameList.add("propR1");
         attributesNameList.add("propR2");
         List<RelationEntityValue> relationEntityValueList = targetCrossKindDataOperator.getSingleValueRelationEntityAttributesByUIDs(relationUidList,attributesNameList);
@@ -143,6 +181,43 @@ public class CrossKindDataOperatorTest {
             Assert.assertTrue(relationUidList.contains(currentRelationEntityValue.getRelationEntityUID()));
             Assert.assertNotNull(currentRelationEntityValue.getFromConceptionEntityUID());
             Assert.assertNotNull(currentRelationEntityValue.getToConceptionEntityUID());
+        }
+
+        Map<String, Map<String, Object>> relationEntityUIDAndAttributesMap = new HashMap<>();
+        Map<String,Object> relationEntity1ValueMap = new HashMap<>();
+        relationEntity1ValueMap.put("relationEntity1Prop1",1000);
+        relationEntity1ValueMap.put("relationEntity1Prop2","STRING1");
+        relationEntityUIDAndAttributesMap.put(relationEntityValueList.get(0).getRelationEntityUID(),relationEntity1ValueMap);
+
+        Map<String,Object> relationEntity2ValueMap = new HashMap<>();
+        relationEntity2ValueMap.put("relationEntity2Prop1",2000);
+        relationEntity2ValueMap.put("relationEntity2Prop2","STRING2");
+        relationEntityUIDAndAttributesMap.put(relationEntityValueList.get(1).getRelationEntityUID(),relationEntity2ValueMap);
+
+        EntitiesOperationResult entitiesOperationResult2 = targetCrossKindDataOperator.updateSingleValueRelationEntityAttributesByUIDs(relationEntityUIDAndAttributesMap);
+        Assert.assertEquals(entitiesOperationResult2.getOperationStatistics().getSuccessItemsCount(),2);
+        Assert.assertEquals(entitiesOperationResult2.getOperationStatistics().getFailItemsCount(),0);
+        Assert.assertNotNull(entitiesOperationResult2.getOperationStatistics().getStartTime());
+        Assert.assertNotNull(entitiesOperationResult2.getOperationStatistics().getFinishTime());
+        Assert.assertNotNull(entitiesOperationResult2.getOperationStatistics().getOperationSummary());
+        Assert.assertTrue(entitiesOperationResult2.getSuccessEntityUIDs().contains(relationEntityValueList.get(0).getRelationEntityUID()));
+        Assert.assertTrue(entitiesOperationResult2.getSuccessEntityUIDs().contains(relationEntityValueList.get(1).getRelationEntityUID()));
+
+        targetEntityUIDList = new ArrayList<>();
+        targetEntityUIDList.add(relationEntityValueList.get(0).getRelationEntityUID());
+        targetEntityUIDList.add(relationEntityValueList.get(1).getRelationEntityUID());
+        List<RelationEntity> resultRelationEntities = targetCrossKindDataOperator.getRelationEntitiesByUIDs(targetEntityUIDList);
+        Assert.assertEquals(resultRelationEntities.size(),2);
+
+        for(RelationEntity currentRelationEntity:resultRelationEntities){
+            if(currentRelationEntity.getRelationEntityUID().equals(conceptionEntityValueList.get(0).getConceptionEntityUID())){
+                Assert.assertEquals((Long) (currentRelationEntity.getAttribute("relationEntity1Prop1").getAttributeValue()),1000);
+                Assert.assertEquals(currentRelationEntity.getAttribute("relationEntity1Prop2").getAttributeValue().toString(),"STRING1");
+            }
+            if(currentRelationEntity.getRelationEntityUID().equals(conceptionEntityValueList.get(1).getConceptionEntityUID())){
+                Assert.assertEquals((Long) (currentRelationEntity.getAttribute("relationEntity2Prop1").getAttributeValue()),2000);
+                Assert.assertEquals(currentRelationEntity.getAttribute("relationEntity2Prop2").getAttributeValue().toString(),"STRING2");
+            }
         }
 
         coreRealm.closeGlobalSession();

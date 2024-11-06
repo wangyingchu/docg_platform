@@ -1442,12 +1442,60 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
     @Override
     public EntitiesOperationResult updateSingleValueConceptionEntityAttributesByUIDs(Map<String, Map<String, Object>> conceptionEntityUIDAndAttributesMap) throws CoreRealmServiceEntityExploreException {
-        return null;
+        if(conceptionEntityUIDAndAttributesMap != null){
+            CommonEntitiesOperationResultImpl entitiesOperationResult= new CommonEntitiesOperationResultImpl();
+            List<String> successEntitiesUIDList = new ArrayList<>();
+            if(!conceptionEntityUIDAndAttributesMap.isEmpty()){
+                int conceptionEntitiesCount = conceptionEntityUIDAndAttributesMap.size();
+                int partitionCount = (int)conceptionEntitiesCount/1000;
+                if(partitionCount == 0){
+                    partitionCount = 1;
+                }
+                Set<String> conceptionEntitiesUIDSet = conceptionEntityUIDAndAttributesMap.keySet();
+                List<String> targetConceptionEntitiesUIDList = new ArrayList<>(conceptionEntitiesUIDSet);
+                List<List<String>> partitionedUIDLists = Lists.partition(targetConceptionEntitiesUIDList,partitionCount);
+                for(List<String> currentPartitionedUIDList : partitionedUIDLists){
+                    updateConceptionEntitiesAttributes(currentPartitionedUIDList,conceptionEntityUIDAndAttributesMap,successEntitiesUIDList);
+                }
+            }
+            entitiesOperationResult.getSuccessEntityUIDs().addAll(successEntitiesUIDList);
+            entitiesOperationResult.getOperationStatistics().setSuccessItemsCount(successEntitiesUIDList.size());
+            entitiesOperationResult.getOperationStatistics().setFailItemsCount(conceptionEntityUIDAndAttributesMap.size()-successEntitiesUIDList.size());
+            entitiesOperationResult.getOperationStatistics().setOperationSummary("updateSingleValueConceptionEntityAttributesByUIDs operation finished");
+            entitiesOperationResult.finishEntitiesOperation();
+            return entitiesOperationResult;
+        }else{
+            return null;
+        }
     }
 
     @Override
     public EntitiesOperationResult updateSingleValueRelationEntityAttributesByUIDs(Map<String, Map<String, Object>> relationEntityUIDAndAttributesMap) throws CoreRealmServiceEntityExploreException {
-        return null;
+        if(relationEntityUIDAndAttributesMap != null){
+            CommonEntitiesOperationResultImpl entitiesOperationResult= new CommonEntitiesOperationResultImpl();
+            List<String> successEntitiesUIDList = new ArrayList<>();
+            if(!relationEntityUIDAndAttributesMap.isEmpty()){
+                int relationEntitiesCount = relationEntityUIDAndAttributesMap.size();
+                int partitionCount = (int)relationEntitiesCount/1000;
+                if(partitionCount == 0){
+                    partitionCount = 1;
+                }
+                Set<String> relationEntitiesUIDSet = relationEntityUIDAndAttributesMap.keySet();
+                List<String> targetRelationEntitiesUIDList = new ArrayList<>(relationEntitiesUIDSet);
+                List<List<String>> partitionedUIDLists = Lists.partition(targetRelationEntitiesUIDList,partitionCount);
+                for(List<String> currentPartitionedUIDList : partitionedUIDLists){
+                    updateRelationEntitiesAttributes(currentPartitionedUIDList,relationEntityUIDAndAttributesMap,successEntitiesUIDList);
+                }
+            }
+            entitiesOperationResult.getSuccessEntityUIDs().addAll(successEntitiesUIDList);
+            entitiesOperationResult.getOperationStatistics().setSuccessItemsCount(successEntitiesUIDList.size());
+            entitiesOperationResult.getOperationStatistics().setFailItemsCount(relationEntityUIDAndAttributesMap.size()-successEntitiesUIDList.size());
+            entitiesOperationResult.getOperationStatistics().setOperationSummary("updateSingleValueRelationEntityAttributesByUIDs operation finished");
+            entitiesOperationResult.finishEntitiesOperation();
+            return entitiesOperationResult;
+        }else{
+            return null;
+        }
     }
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
@@ -1533,5 +1581,56 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         }
         sb.append("]");
         return sb.toString();
+    }
+
+    private void updateConceptionEntitiesAttributes(List<String> currentPartitionedUIDList,Map<String, Map<String, Object>> conceptionEntityUIDAndAttributesMap,List<String> successEntitiesUIDList){
+        String cypherProcedureString = "MATCH (targetNodes) WHERE id(targetNodes) IN " + currentPartitionedUIDList.toString()+"\n"+
+                "RETURN DISTINCT targetNodes as operationResult";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(null,
+                    this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object conceptionEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,cypherProcedureString);
+            if(conceptionEntityList != null){
+                List<ConceptionEntity> resultConceptionEntitiesList = (List<ConceptionEntity>)conceptionEntityList;
+                for(ConceptionEntity currentConceptionEntity:resultConceptionEntitiesList){
+                    if(conceptionEntityUIDAndAttributesMap != null && conceptionEntityUIDAndAttributesMap.containsKey(currentConceptionEntity.getConceptionEntityUID())){
+                        List<String> operationResult =  currentConceptionEntity.addNewOrUpdateAttributes(conceptionEntityUIDAndAttributesMap.get(currentConceptionEntity.getConceptionEntityUID()));
+                        if(successEntitiesUIDList!= null && !operationResult.isEmpty()){
+                            successEntitiesUIDList.add(currentConceptionEntity.getConceptionEntityUID());
+                        }
+                    }
+                }
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    private void updateRelationEntitiesAttributes(List<String> currentPartitionedUIDList,Map<String, Map<String, Object>> relationEntityUIDAndAttributesMap,List<String> successEntitiesUIDList){
+        String cypherProcedureString = "MATCH (source)-[r]->(target)\n" +
+                "WHERE id(r) IN "+currentPartitionedUIDList.toString()+"\n" +
+                "RETURN DISTINCT r as operationResult,source as sourceNode, target as targetNode";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListRelationEntityTransformer getListRelationEntityTransformer = new GetListRelationEntityTransformer(null,
+                    this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor(),false);
+            Object relationEntityList = workingGraphOperationExecutor.executeRead(getListRelationEntityTransformer,cypherProcedureString);
+            List<RelationEntity> resultRelationEntitiesList = (List<RelationEntity>)relationEntityList;
+            for(RelationEntity currentRelationEntity:resultRelationEntitiesList){
+                if(relationEntityUIDAndAttributesMap != null && relationEntityUIDAndAttributesMap.containsKey(currentRelationEntity.getRelationEntityUID())){
+                    List<String> operationResult =  currentRelationEntity.addNewOrUpdateAttributes(relationEntityUIDAndAttributesMap.get(currentRelationEntity.getRelationEntityUID()));
+                    if(successEntitiesUIDList!= null && !operationResult.isEmpty()){
+                        successEntitiesUIDList.add(currentRelationEntity.getRelationEntityUID());
+                    }
+                }
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 }
