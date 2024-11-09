@@ -89,13 +89,14 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                 "CALL apoc.path.subgraphAll(n, {\n" +
                 "relationshipFilter: \""+relationMatchLogicFullString+"\",\n" +
                 "labelFilter: \""+conceptionMatchLogicFullString+"\",\n" +
+                "limit: -1"+",\n" +
                 "minLevel: "+minLevelNumber+",\n" +
                 "maxLevel: "+maxLevelNumber+"\n" +
                 "})\n" +
                 "YIELD nodes, relationships\n" +
                 "RETURN nodes, relationships;";
         if(resultConceptionEntitiesUpperLimit != null && resultConceptionEntitiesUpperLimit > 0){
-            cypherProcedureString = cypherProcedureString.replace(";"," LIMIT "+resultConceptionEntitiesUpperLimit.intValue()+";");
+            cypherProcedureString = cypherProcedureString.replace("limit: -1","limit: "+resultConceptionEntitiesUpperLimit);
         }
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
@@ -135,13 +136,14 @@ public interface Neo4JPathTravelable extends PathTravelable,Neo4JKeyResourcesRet
                 "CALL apoc.path.spanningTree(n, {\n" +
                 "relationshipFilter: \""+relationMatchLogicFullString+"\",\n" +
                 "labelFilter: \""+conceptionMatchLogicFullString+"\",\n" +
+                "limit: -1"+",\n" +
                 "minLevel: "+minLevelNumber+",\n" +
                 "maxLevel: "+maxLevelNumber+"\n" +
                 "})\n" +
                 "YIELD path\n" +
                 "RETURN path;";
         if(resultConceptionEntitiesUpperLimit != null && resultConceptionEntitiesUpperLimit > 0){
-            cypherProcedureString = cypherProcedureString.replace(";"," LIMIT "+resultConceptionEntitiesUpperLimit.intValue()+";");
+            cypherProcedureString = cypherProcedureString.replace("limit: -1","limit: "+resultConceptionEntitiesUpperLimit);
         }
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
 
