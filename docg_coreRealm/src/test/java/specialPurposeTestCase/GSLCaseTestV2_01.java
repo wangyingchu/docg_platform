@@ -20,7 +20,7 @@ import java.util.Map;
 public class GSLCaseTestV2_01 {
     public static void main(String[] args) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
         //createConceptionKind();
-        //loadCSVEntities("/home/wangychu/.config/Neo4j Desktop/Application/relate-data/dbmss/dbms-0c5e0595-78cc-4566-9d8e-0a0495ee435e/import/");
+        loadCSVEntities("/media/wangychu/Application/Research_Data/CSV_DATA/GSL/GSL_Data/");
         //linkFederationOfIndustryAndCommerce();
         //linkFederationOfIndustryAndCommerceAndChamberOfCommerce();
         //linkFederationOfIndustryAndMember();
@@ -59,6 +59,7 @@ public class GSLCaseTestV2_01 {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         /* Define ConceptionKind */
         coreRealm.createConceptionKind("FederationOfIndustryAndCommerce","工商联");
+        /*
         coreRealm.createConceptionKind("FIC_HistoricalChangeTerm","工商联历史界次");
         coreRealm.createConceptionKind("ChamberOfCommerce","商会");
         coreRealm.createConceptionKind("EnterpriseMember","企业会员");
@@ -72,54 +73,54 @@ public class GSLCaseTestV2_01 {
         coreRealm.createConceptionKind("ChamberOfCommerceLeader","商会领导");
         coreRealm.createConceptionKind("ChamberOfCommerceLeaderDuty","商会领导职务");
         coreRealm.createConceptionKind("FICLeader","工商联领导");
-        coreRealm.createConceptionKind("FICLeaderSocialDuty","工商联领导社会职务");
+        coreRealm.createConceptionKind("FICLeaderSocialDuty","工商联领导社会职务");*/
     }
 
     private static void loadCSVEntities(String headerFileLocation){
         Map<String,String>  attributesMapping = BatchDataOperationUtil.getAttributesMappingFromHeaderCSV(headerFileLocation+"DWS_SH_INFO.csv");
-        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///DWS_SH_INFO.csv","ChamberOfCommerce",attributesMapping);
+        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///"+headerFileLocation+"DWS_SH_INFO.csv","ChamberOfCommerce",attributesMapping);
 
         attributesMapping = BatchDataOperationUtil.getAttributesMappingFromHeaderCSV(headerFileLocation+"DWS_ENTERPRISE_MEMBER_INFO.csv");
-        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///DWS_ENTERPRISE_MEMBER_INFO.csv","EnterpriseMember",attributesMapping);
+        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///"+headerFileLocation+"DWS_ENTERPRISE_MEMBER_INFO.csv","EnterpriseMember",attributesMapping);
 
         attributesMapping = BatchDataOperationUtil.getAttributesMappingFromHeaderCSV(headerFileLocation+"DWS_PERSONAL_MEMBER_INFO.csv");
-        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///DWS_PERSONAL_MEMBER_INFO.csv","IndividualMember",attributesMapping);
+        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///"+headerFileLocation+"DWS_PERSONAL_MEMBER_INFO.csv","IndividualMember",attributesMapping);
 
         attributesMapping = BatchDataOperationUtil.getAttributesMappingFromHeaderCSV(headerFileLocation+"DWS_ORGANIZATION_MEMBER_INFO.csv");
-        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///DWS_ORGANIZATION_MEMBER_INFO.csv","GroupMember",attributesMapping);
+        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///"+headerFileLocation+"DWS_ORGANIZATION_MEMBER_INFO.csv","GroupMember",attributesMapping);
 
         attributesMapping = BatchDataOperationUtil.getAttributesMappingFromHeaderCSV(headerFileLocation+"DWS_EXECUTIVE_BASIC_INFO.csv");
-        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///DWS_EXECUTIVE_BASIC_INFO.csv","Executive",attributesMapping);
+        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///"+headerFileLocation+"DWS_EXECUTIVE_BASIC_INFO.csv","Executive",attributesMapping);
 
         attributesMapping = BatchDataOperationUtil.getAttributesMappingFromHeaderCSV(headerFileLocation+"DWS_EXECUTIVE_COMMON_DUTY.csv");
-        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///DWS_EXECUTIVE_COMMON_DUTY.csv","ExecutiveCommonDuty",attributesMapping);
+        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///"+headerFileLocation+"DWS_EXECUTIVE_COMMON_DUTY.csv","ExecutiveCommonDuty",attributesMapping);
 
         attributesMapping = BatchDataOperationUtil.getAttributesMappingFromHeaderCSV(headerFileLocation+"DWS_EXECUTIVE_ENTERPRISE.csv");
-        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///DWS_EXECUTIVE_ENTERPRISE.csv","ExecutiveEnterprise",attributesMapping);
+        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///"+headerFileLocation+"DWS_EXECUTIVE_ENTERPRISE.csv","ExecutiveEnterprise",attributesMapping);
 
         attributesMapping = BatchDataOperationUtil.getAttributesMappingFromHeaderCSV(headerFileLocation+"DWS_EXECUTIVE_FIC_ELSE_DUTY.csv");
-        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///DWS_EXECUTIVE_FIC_ELSE_DUTY.csv","ExecutiveFicElseDuty",attributesMapping);
+        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///"+headerFileLocation+"DWS_EXECUTIVE_FIC_ELSE_DUTY.csv","ExecutiveFicElseDuty",attributesMapping);
 
         attributesMapping = BatchDataOperationUtil.getAttributesMappingFromHeaderCSV(headerFileLocation+"DWS_EXECUTIVE_HONOR.csv");
-        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///DWS_EXECUTIVE_HONOR.csv","ExecutiveHonor",attributesMapping);
+        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///"+headerFileLocation+"DWS_EXECUTIVE_HONOR.csv","ExecutiveHonor",attributesMapping);
 
         attributesMapping = BatchDataOperationUtil.getAttributesMappingFromHeaderCSV(headerFileLocation+"DWS_DIM_ORG.csv");
-        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///DWS_DIM_ORG.csv","FederationOfIndustryAndCommerce",attributesMapping);
+        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///"+headerFileLocation+"DWS_DIM_ORG.csv","FederationOfIndustryAndCommerce",attributesMapping);
 
         attributesMapping = BatchDataOperationUtil.getAttributesMappingFromHeaderCSV(headerFileLocation+"DWS_JG_GSL_INFO_DTL.csv");
-        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///DWS_JG_GSL_INFO_DTL.csv","FIC_HistoricalChangeTerm",attributesMapping);
+        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///"+headerFileLocation+"DWS_JG_GSL_INFO_DTL.csv","FIC_HistoricalChangeTerm",attributesMapping);
 
         attributesMapping = BatchDataOperationUtil.getAttributesMappingFromHeaderCSV(headerFileLocation+"DWS_SH_LEADER.csv");
-        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///DWS_SH_LEADER.csv","ChamberOfCommerceLeader",attributesMapping);
+        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///"+headerFileLocation+"DWS_SH_LEADER.csv","ChamberOfCommerceLeader",attributesMapping);
 
         attributesMapping = BatchDataOperationUtil.getAttributesMappingFromHeaderCSV(headerFileLocation+"DWS_SH_LEADER_DUTY.csv");
-        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///DWS_SH_LEADER_DUTY.csv","ChamberOfCommerceLeaderDuty",attributesMapping);
+        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///"+headerFileLocation+"DWS_SH_LEADER_DUTY.csv","ChamberOfCommerceLeaderDuty",attributesMapping);
 
         attributesMapping = BatchDataOperationUtil.getAttributesMappingFromHeaderCSV(headerFileLocation+"DWS_ORG_LEADER_INFO.csv");
-        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///DWS_ORG_LEADER_INFO.csv","FICLeader",attributesMapping);
+        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///"+headerFileLocation+"DWS_ORG_LEADER_INFO.csv","FICLeader",attributesMapping);
 
         attributesMapping = BatchDataOperationUtil.getAttributesMappingFromHeaderCSV(headerFileLocation+"DWS_ORG_LEADER_SOCIAL_DUTY.csv");
-        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///DWS_ORG_LEADER_SOCIAL_DUTY.csv","FICLeaderSocialDuty",attributesMapping);
+        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///"+headerFileLocation+"DWS_ORG_LEADER_SOCIAL_DUTY.csv","FICLeaderSocialDuty",attributesMapping);
     }
 
     private static void linkFederationOfIndustryAndCommerce(){
