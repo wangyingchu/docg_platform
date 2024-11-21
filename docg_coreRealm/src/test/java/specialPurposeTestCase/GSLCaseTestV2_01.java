@@ -48,7 +48,9 @@ public class GSLCaseTestV2_01 {
         //linkExecutiveEnterpriseDate();
         //linkExecutiveDate();
 
-        createCPCOrganizationForChamberOfCommerce();
+        //createCPCOrganizationForChamberOfCommerce();
+        //createCPCOrganizationForEnterpriseMember();
+        createCPCOrganizationForExecutiveEnterprise();
     }
 
     private static void createConceptionKind(){
@@ -520,6 +522,7 @@ public class GSLCaseTestV2_01 {
         resultAttributesNames.add("PROVINCE");
         resultAttributesNames.add("CITY");
         resultAttributesNames.add("COUNTY");
+        resultAttributesNames.add("ORG_ID");
         resultAttributesNames.add("SHID");
 
         resultAttributesNames.add("PARTY_ORG_FORM");
@@ -564,4 +567,82 @@ public class GSLCaseTestV2_01 {
         coreRealm.closeGlobalSession();
     }
 
+    private static void createCPCOrganizationForEnterpriseMember() throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        coreRealm.openGlobalSession();
+        ConceptionKind _ConceptionKind =coreRealm.getConceptionKind("EnterpriseMember");
+        QueryParameters queryParameters1 = new QueryParameters();
+        queryParameters1.setResultNumber(100000000);
+        queryParameters1.setDefaultFilteringItem(new EqualFilteringItem("IS_PARTY_ORGANIZATION","1"));
+
+        List<String> resultAttributesNames = new ArrayList<>();
+
+        resultAttributesNames.add("PROVINCE");
+        resultAttributesNames.add("CITY");
+        resultAttributesNames.add("COUNTY");
+        resultAttributesNames.add("ORG_ID");
+        resultAttributesNames.add("FIRM_ID");
+        resultAttributesNames.add("PARTY_ORGANIZATIO_FORM");
+
+        ConceptionEntitiesAttributesRetrieveResult _ConceptionEntitiesAttributesRetrieveResult =_ConceptionKind.getSingleValueEntityAttributesByAttributeNames(resultAttributesNames,queryParameters1);
+
+        ConceptionKind _ConceptionKind2 =coreRealm.getConceptionKind("CPC_Organization");
+        for(ConceptionEntityValue _ConceptionEntityValue : _ConceptionEntitiesAttributesRetrieveResult.getConceptionEntityValues()){
+            Map<String,Object> _ConceptionEntityDataMap = new HashMap<>();
+            Map<String, Object> sourceMap = _ConceptionEntityValue.getEntityAttributesValue();
+            if(sourceMap != null){
+                if(sourceMap.containsKey("PARTY_ORGANIZATIO_FORM")){
+                    String _PARTY_ORGANIZATIO_FORM = sourceMap.get("PARTY_ORGANIZATIO_FORM").toString();
+                    if(_PARTY_ORGANIZATIO_FORM.equals("1")){
+                        sourceMap.put("CPC_Organization_Form","独立党组织");
+                    }
+                    if(_PARTY_ORGANIZATIO_FORM.equals("2")){
+                        sourceMap.put("CPC_Organization_Form","联合党组织");
+                    }
+                }
+                _ConceptionEntityDataMap.putAll(sourceMap);
+                _ConceptionEntityDataMap.put("FOUNDED_BY","EnterpriseMember");
+            }
+            ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue();
+            conceptionEntityValue.setEntityAttributesValue(_ConceptionEntityDataMap);
+            ConceptionEntity newEntity = _ConceptionKind2.newEntity(conceptionEntityValue,false);
+            newEntity.attachFromRelation(_ConceptionEntityValue.getConceptionEntityUID(),"CPC_OrganizationFoundedBy",null,false);
+        }
+        coreRealm.closeGlobalSession();
+    }
+
+    private static void createCPCOrganizationForExecutiveEnterprise() throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        coreRealm.openGlobalSession();
+        ConceptionKind _ConceptionKind =coreRealm.getConceptionKind("ExecutiveEnterprise");
+        QueryParameters queryParameters1 = new QueryParameters();
+        queryParameters1.setResultNumber(100000000);
+        queryParameters1.setDefaultFilteringItem(new EqualFilteringItem("IS_PARTY_ORGANIZATION","1"));
+
+        List<String> resultAttributesNames = new ArrayList<>();
+
+        resultAttributesNames.add("PROVINCE");
+        resultAttributesNames.add("CITY");
+        resultAttributesNames.add("COUNTY");
+        resultAttributesNames.add("ORG_ID");
+        resultAttributesNames.add("ENTERPRISE_ID");
+        resultAttributesNames.add("PERSON_ID");
+
+        ConceptionEntitiesAttributesRetrieveResult _ConceptionEntitiesAttributesRetrieveResult =_ConceptionKind.getSingleValueEntityAttributesByAttributeNames(resultAttributesNames,queryParameters1);
+
+        ConceptionKind _ConceptionKind2 =coreRealm.getConceptionKind("CPC_Organization");
+        for(ConceptionEntityValue _ConceptionEntityValue : _ConceptionEntitiesAttributesRetrieveResult.getConceptionEntityValues()){
+            Map<String,Object> _ConceptionEntityDataMap = new HashMap<>();
+            Map<String, Object> sourceMap = _ConceptionEntityValue.getEntityAttributesValue();
+            if(sourceMap != null){
+                _ConceptionEntityDataMap.putAll(sourceMap);
+                _ConceptionEntityDataMap.put("FOUNDED_BY","ExecutiveEnterprise");
+            }
+            ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue();
+            conceptionEntityValue.setEntityAttributesValue(_ConceptionEntityDataMap);
+            ConceptionEntity newEntity = _ConceptionKind2.newEntity(conceptionEntityValue,false);
+            newEntity.attachFromRelation(_ConceptionEntityValue.getConceptionEntityUID(),"CPC_OrganizationFoundedBy",null,false);
+        }
+        coreRealm.closeGlobalSession();
+    }
 }
