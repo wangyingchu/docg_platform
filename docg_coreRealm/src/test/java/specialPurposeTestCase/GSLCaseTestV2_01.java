@@ -33,20 +33,17 @@ public class GSLCaseTestV2_01 {
         //linkSameExecutive();
         //need add  this logic MATCH p=(n1)-[r:IsSamePerson]->(n2) WHERE id(n1)=id(n2) delete r return count(r)
         //cleanSelfSamePersonLink();
-
-
-
-
-
-
-
-        linkFederationOfIndustryAndCommerceGeo();
+        //linkKindGeo("FederationOfIndustryAndCommerce","ADMINI_LEVEL","organizationAdministrativeAtDistrict","PROVINCE","CITY","COUNTY");
         //linkKindGeo("ChamberOfCommerce","CHAMBER_COMMERCE_LEVEL", "chamberServiceForDistrict","ORG_PROVINCE","ORG_CITY","ORG_COUNTY");
-        //linkKindGeo("EnterpriseMember","ADMINI_LEVEL","enterpriseLocatedAtDistrict","PROVINCE","CITY","COUNTY");
         //linkKindGeo("IndividualMember","ADMINI_LEVEL","personLocatedAtDistrict","PROVINCE","CITY","COUNTY");
         //linkKindGeo("GroupMember","ADMINI_LEVEL","organizationLocatedAtDistrict","PROVINCE","CITY","COUNTY");
         //linkKindGeo("Executive","ADMINI_LEVEL","personLocatedAtDistrict","PROVINCE","CITY","COUNTY");
         //linkKindGeo("ExecutiveEnterprise","ADMINI_LEVEL","enterpriseLocatedAtDistrict","PROVINCE","CITY","COUNTY");
+        //linkKindGeo("EnterpriseMember","ADMINI_LEVEL","enterpriseLocatedAtDistrict","PROVINCE","CITY","COUNTY");
+
+
+
+
         //linkEnterpriseMemberDate();
         //linkExecutiveEnterpriseDate();
         //linkIndividualMemberDate();
@@ -372,91 +369,6 @@ public class GSLCaseTestV2_01 {
 
     private static void cleanSelfSamePersonLink(){}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    private static void linkFederationOfIndustryAndCommerceGeo() throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
-        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
-        /*
-        coreRealm.createConceptionKind("FIC_TEMP","FIC_TEMPDesc");
-        //get FederationOfIndustryAndCommerceGeo
-        Map<String,String> attributesMapping = new HashMap<>();
-        attributesMapping.put("ORG_ID","ZZID");
-        attributesMapping.put("ORG_NAME","ZZMC");
-        attributesMapping.put("SHENG","SHENG");
-        attributesMapping.put("SHI","SHI");
-        attributesMapping.put("XIAN","XIAN");
-
-        attributesMapping.put("XZJB_NAME","XZJB_NAME");
-        attributesMapping.put("SHENG_NAME","SHENG_NAME");
-        attributesMapping.put("SHI_NAME","SHI_NAME");
-        attributesMapping.put("XIAN_NAME","XIAN_NAME");
-
-        boolean exeResult = BatchDataOperationUtil.importConceptionEntitiesFromCSV("TEMP_DWS_DIM_ORG.csv","FIC_TEMP",attributesMapping);
-        System.out.println(exeResult);
-
-        CrossKindDataOperator crossKindDataOperator = coreRealm.getCrossKindDataOperator();
-        List<String> attributesForFusionList = new ArrayList<>();
-        attributesForFusionList.add("SHENG");
-        attributesForFusionList.add("SHI");
-        attributesForFusionList.add("XIAN");
-        crossKindDataOperator.fuseConceptionKindsAttributes("FIC_TEMP","ORG_ID",attributesForFusionList,"FederationOfIndustryAndCommerce","ORG_ID");
-        coreRealm.removeConceptionKind("FIC_TEMP",true);
-        */
-
-        ConceptionKind conceptionKind = coreRealm.getConceptionKind("FederationOfIndustryAndCommerce");
-        QueryParameters queryParameters = new QueryParameters();
-        queryParameters.setResultNumber(10000000);
-
-        List<String> attributesNameList = new ArrayList<>();
-        attributesNameList.add("XIAN");
-        attributesNameList.add("SHI");
-        attributesNameList.add("SHENG");
-
-        ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributesRetrieveResult = conceptionKind.getSingleValueEntityAttributesByAttributeNames(attributesNameList,queryParameters);
-        List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributesRetrieveResult.getConceptionEntityValues();
-
-        Map<String,String> _XIANDataMap = new HashMap<>();
-        Map<String,String> _SHIDataMap = new HashMap<>();
-        Map<String,String> _SHENGDataMap = new HashMap<>();
-        for(ConceptionEntityValue conceptionEntityValue:conceptionEntityValueList){
-            Map<String,Object> attributesMap = conceptionEntityValue.getEntityAttributesValue();
-            if(attributesMap.containsKey("XIAN")){
-                _XIANDataMap.put(conceptionEntityValue.getConceptionEntityUID(),attributesMap.get("XIAN").toString());
-            }else if(attributesMap.containsKey("SHI")){
-                _SHIDataMap.put(conceptionEntityValue.getConceptionEntityUID(),attributesMap.get("SHI").toString());
-            }else {
-                if (attributesMap.containsKey("SHENG")){
-                    _SHENGDataMap.put(conceptionEntityValue.getConceptionEntityUID(),attributesMap.get("SHENG").toString());
-                }
-            }
-        }
-        System.out.println(_XIANDataMap.size());
-        System.out.println(_SHIDataMap.size());
-        System.out.println(_SHENGDataMap.size());
-
-        Map<String,Object> attachResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByGeospatialCode(_SHENGDataMap,"organizationAdministrativeAtDistrict",null,null, GeospatialRegion.GeospatialScaleGrade.PROVINCE,BatchDataOperationUtil.CPUUsageRate.Low);
-        System.out.println(attachResult);
-        attachResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByGeospatialCode(_SHIDataMap,"organizationAdministrativeAtDistrict",null,null, GeospatialRegion.GeospatialScaleGrade.PREFECTURE,BatchDataOperationUtil.CPUUsageRate.Low);
-        System.out.println(attachResult);
-        attachResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByGeospatialCode(_XIANDataMap,"organizationAdministrativeAtDistrict",null, null,GeospatialRegion.GeospatialScaleGrade.COUNTY,BatchDataOperationUtil.CPUUsageRate.Middle);
-        System.out.println(attachResult);
-    }
-
     private static void linkKindGeo(String kindName,String levelProperty,String eventComment,String provinceProperty,String cityProperty,String countyProperty) throws CoreRealmServiceEntityExploreException {
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         ConceptionKind conceptionKind = coreRealm.getConceptionKind(kindName);
@@ -477,29 +389,31 @@ public class GSLCaseTestV2_01 {
         Map<String,String> _SHENGDataMap = new HashMap<>();
         for(ConceptionEntityValue conceptionEntityValue:conceptionEntityValueList){
             Map<String,Object> attributesMap = conceptionEntityValue.getEntityAttributesValue();
-            String _ADMINI_LEVEL = attributesMap.get(levelProperty).toString();
-            if(_ADMINI_LEVEL.trim().equals("区县级")){
-                if(attributesMap.containsKey(countyProperty)){
+            if(attributesMap.containsKey(levelProperty)){
+                String _ADMINI_LEVEL = attributesMap.get(levelProperty).toString();
+                if(_ADMINI_LEVEL.trim().equals("区县级")){
+                    if(attributesMap.containsKey(countyProperty)){
+                        String cityName = "市辖区";
+                        if(attributesMap.containsKey(cityProperty)){
+                            cityName = attributesMap.get(cityProperty).toString();
+                        }
+
+                        String geoName = attributesMap.get(provinceProperty).toString()+"-"+cityName+"-"+attributesMap.get(countyProperty).toString();
+                        _XIANDataMap.put(conceptionEntityValue.getConceptionEntityUID(),geoName);}
+                }
+                if(_ADMINI_LEVEL.trim().equals("地市级")){
                     String cityName = "市辖区";
                     if(attributesMap.containsKey(cityProperty)){
                         cityName = attributesMap.get(cityProperty).toString();
                     }
-
-                    String geoName = attributesMap.get(provinceProperty).toString()+"-"+cityName+"-"+attributesMap.get(countyProperty).toString();
-                    _XIANDataMap.put(conceptionEntityValue.getConceptionEntityUID(),geoName);}
-            }
-            if(_ADMINI_LEVEL.trim().equals("地市级")){
-                String cityName = "市辖区";
-                if(attributesMap.containsKey(cityProperty)){
-                    cityName = attributesMap.get(cityProperty).toString();
+                    String geoName = attributesMap.get(provinceProperty).toString()+"-"+cityName;
+                    _SHIDataMap.put(conceptionEntityValue.getConceptionEntityUID(),geoName);
                 }
-                String geoName = attributesMap.get(provinceProperty).toString()+"-"+cityName;
-                _SHIDataMap.put(conceptionEntityValue.getConceptionEntityUID(),geoName);
-            }
 
-            if(_ADMINI_LEVEL.trim().equals("省级")){
-                if(!attributesMap.get(provinceProperty).equals("全国"));{
-                    _SHENGDataMap.put(conceptionEntityValue.getConceptionEntityUID(),attributesMap.get(provinceProperty).toString());
+                if(_ADMINI_LEVEL.trim().equals("省级")){
+                    if(!attributesMap.get(provinceProperty).equals("全国"));{
+                        _SHENGDataMap.put(conceptionEntityValue.getConceptionEntityUID(),attributesMap.get(provinceProperty).toString());
+                    }
                 }
             }
         }
@@ -507,11 +421,11 @@ public class GSLCaseTestV2_01 {
         System.out.println(_SHIDataMap.size());
         System.out.println(_SHENGDataMap.size());
 
-        Map<String,Object> attachResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByChineseNames(_SHENGDataMap,eventComment,null, null,GeospatialRegion.GeospatialScaleGrade.PROVINCE,BatchDataOperationUtil.CPUUsageRate.High);
+        Map<String,Object> attachResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByChineseNames(_SHENGDataMap,null,eventComment, null,GeospatialRegion.GeospatialScaleGrade.PROVINCE,BatchDataOperationUtil.CPUUsageRate.High);
         System.out.println(attachResult);
-        attachResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByChineseNames(_SHIDataMap,eventComment,null, null,GeospatialRegion.GeospatialScaleGrade.PREFECTURE,BatchDataOperationUtil.CPUUsageRate.High);
+        attachResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByChineseNames(_SHIDataMap,null, eventComment,null,GeospatialRegion.GeospatialScaleGrade.PREFECTURE,BatchDataOperationUtil.CPUUsageRate.High);
         System.out.println(attachResult);
-        attachResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByChineseNames(_XIANDataMap,eventComment,null, null,GeospatialRegion.GeospatialScaleGrade.COUNTY,BatchDataOperationUtil.CPUUsageRate.High);
+        attachResult = BatchDataOperationUtil.batchAttachGeospatialScaleEventsByChineseNames(_XIANDataMap,null, eventComment,null,GeospatialRegion.GeospatialScaleGrade.COUNTY,BatchDataOperationUtil.CPUUsageRate.High);
         System.out.println(attachResult);
     }
 
