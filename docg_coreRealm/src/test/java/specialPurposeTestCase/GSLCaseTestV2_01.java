@@ -44,13 +44,11 @@ public class GSLCaseTestV2_01 {
 
         //linkChamberOfCommerceDate();
         //linkIndividualMemberDate();
-
-
-
         //linkEnterpriseMemberDate();
         //linkExecutiveEnterpriseDate();
         //linkExecutiveDate();
 
+        createCPCOrganizationForChamberOfCommerce();
     }
 
     private static void createConceptionKind(){
@@ -67,6 +65,7 @@ public class GSLCaseTestV2_01 {
         coreRealm.createConceptionKind("ExecutiveEnterprise","执常委相关企业");
         coreRealm.createConceptionKind("ExecutiveFicElseDuty","执常委工商联职务");
         coreRealm.createConceptionKind("ExecutiveHonor","执常委荣誉");
+        coreRealm.createConceptionKind("CPC_Organization","中共党组织");
     }
 
     private static void createRelationKind(){
@@ -83,7 +82,7 @@ public class GSLCaseTestV2_01 {
         coreRealm.createRelationKind("HasFicElseDuty","拥有的其他职务");
         coreRealm.createRelationKind("IsSamePerson","是同一个人");
         coreRealm.createRelationKind("IsSameEnterprise","是同一个企业");
-
+        coreRealm.createRelationKind("CPC_OrganizationFoundedBy","建立了党组织");
     }
 
     private static void loadCSVEntities(String headerFileLocation){
@@ -515,40 +514,31 @@ public class GSLCaseTestV2_01 {
         queryParameters1.setDefaultFilteringItem(new EqualFilteringItem("IF_PARTY_ORGANIZATION","1"));
 
         List<String> resultAttributesNames = new ArrayList<>();
-        resultAttributesNames.add("ORG_SHENG");
-        resultAttributesNames.add("ORG_SHI");
-        resultAttributesNames.add("ORG_XIAN");
-        resultAttributesNames.add("ORG_XIANG");
-        resultAttributesNames.add("ORG_CUN");
-        resultAttributesNames.add("SHENG");
-        resultAttributesNames.add("SHI");
-        resultAttributesNames.add("XIAN");
+        resultAttributesNames.add("ORG_PROVINCE");
+        resultAttributesNames.add("ORG_CITY");
+        resultAttributesNames.add("ORG_COUNTY");
+        resultAttributesNames.add("PROVINCE");
+        resultAttributesNames.add("CITY");
+        resultAttributesNames.add("COUNTY");
         resultAttributesNames.add("SHID");
 
-
-
-
-
-
+        resultAttributesNames.add("PARTY_ORG_FORM");
+        resultAttributesNames.add("PARTY_SECRETARY");
+        resultAttributesNames.add("PARTY_MANAGEMENT");
+        resultAttributesNames.add("PARTY_ORG_FORM_CODE");
+        resultAttributesNames.add("SUPERIOR_PARTY_ORG");
+        resultAttributesNames.add("SUPERIOR_PARTY_ORG_CODE");
+        resultAttributesNames.add("PARTY_MEMBER_NUM");
+        resultAttributesNames.add("PARTY_ORG_ESTABLISHED_TIME");
 
         /*
         PARTY_MEMBER_NUM	0
-PARTY_ORG_FORM	联合党组织
-PARTY_ORG_FORM_CODE	DZZXS-02
-PARTY_SECRETARY
+        PARTY_ORG_FORM	联合党组织
+        PARTY_ORG_FORM_CODE	DZZXS-02
+        PARTY_SECRETARY
          */
 
-
-
-
-        resultAttributesNames.add("PARTY_MEMBER_NUM");
-        resultAttributesNames.add("PARTY_SECRETARY");
-        resultAttributesNames.add("PARTY_ORG_FORM");
-        resultAttributesNames.add("PARTY_ORG_FORM_CODE");
-        resultAttributesNames.add("SHDZZ_JLSJ");
-
         ConceptionEntitiesAttributesRetrieveResult _ConceptionEntitiesAttributesRetrieveResult =_ConceptionKind.getSingleValueEntityAttributesByAttributeNames(resultAttributesNames,queryParameters1);
-
         ConceptionKind _ConceptionKind2 =coreRealm.getConceptionKind("CPC_Organization");
         for(ConceptionEntityValue _ConceptionEntityValue : _ConceptionEntitiesAttributesRetrieveResult.getConceptionEntityValues()){
             Map<String,Object> _ConceptionEntityDataMap = new HashMap<>();
@@ -571,7 +561,6 @@ PARTY_SECRETARY
             ConceptionEntity newEntity = _ConceptionKind2.newEntity(conceptionEntityValue,false);
             newEntity.attachFromRelation(_ConceptionEntityValue.getConceptionEntityUID(),"CPC_OrganizationFoundedBy",null,false);
         }
-
         coreRealm.closeGlobalSession();
     }
 
