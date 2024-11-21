@@ -33,6 +33,7 @@ public class GSLCaseTestV2_01 {
         //linkSameExecutive();
         //need add  this logic MATCH p=(n1)-[r:IsSamePerson]->(n2) WHERE id(n1)=id(n2) delete r return count(r)
         //cleanSelfSamePersonLink();
+
         //linkKindGeo("FederationOfIndustryAndCommerce","ADMINI_LEVEL","organizationAdministrativeAtDistrict","PROVINCE","CITY","COUNTY");
         //linkKindGeo("ChamberOfCommerce","CHAMBER_COMMERCE_LEVEL", "chamberServiceForDistrict","ORG_PROVINCE","ORG_CITY","ORG_COUNTY");
         //linkKindGeo("IndividualMember","ADMINI_LEVEL","personLocatedAtDistrict","PROVINCE","CITY","COUNTY");
@@ -41,14 +42,15 @@ public class GSLCaseTestV2_01 {
         //linkKindGeo("ExecutiveEnterprise","ADMINI_LEVEL","enterpriseLocatedAtDistrict","PROVINCE","CITY","COUNTY");
         //linkKindGeo("EnterpriseMember","ADMINI_LEVEL","enterpriseLocatedAtDistrict","PROVINCE","CITY","COUNTY");
 
+        //linkChamberOfCommerceDate();
+        //linkIndividualMemberDate();
 
 
 
         //linkEnterpriseMemberDate();
         //linkExecutiveEnterpriseDate();
-        //linkIndividualMemberDate();
         //linkExecutiveDate();
-        //linkChamberOfCommerceDate();
+
     }
 
     private static void createConceptionKind(){
