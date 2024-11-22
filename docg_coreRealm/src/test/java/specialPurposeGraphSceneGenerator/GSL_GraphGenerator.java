@@ -54,6 +54,8 @@ public class GSL_GraphGenerator {
         //createCPCMember();
 
         //createPerson();
+
+        //loadFirmEntities("/media/wangychu/NSStorage1/Dev_Data/CSV_DATA/ChinaFirmData/");
     }
 
     private static void createConceptionKind(){
@@ -72,6 +74,7 @@ public class GSL_GraphGenerator {
         coreRealm.createConceptionKind("ExecutiveHonor","执常委荣誉");
         coreRealm.createConceptionKind("CPC_Organization","中共党组织");
         coreRealm.createConceptionKind("Person","个人");
+        coreRealm.createConceptionKind("Firm","企业");
     }
 
     private static void createRelationKind(){
@@ -700,5 +703,24 @@ public class GSL_GraphGenerator {
         } catch (CoreRealmServiceRuntimeException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static void loadFirmEntities(String headerFileLocation){
+        Map<String,String> attributesMapping = new HashMap<>();
+        attributesMapping.put("name","name");
+        attributesMapping.put("company_type","company_type");
+        attributesMapping.put("address","address");
+        attributesMapping.put("statu","statu");
+        attributesMapping.put("start_date","start_date");
+        attributesMapping.put("approved_time","approved_time");
+        attributesMapping.put("cate1","cate1");
+        attributesMapping.put("city","city");
+        attributesMapping.put("province","province");
+        attributesMapping.put("lat_wgs","lat_wgs");
+        attributesMapping.put("lng_wgs","lng_wgs");
+
+        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///"+headerFileLocation+"firm_2005.csv","Firm",attributesMapping,"\t");
+        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///"+headerFileLocation+"firm_2010.csv","Firm",attributesMapping,"\t");
+        BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///"+headerFileLocation+"firm_2015.csv","Firm",attributesMapping,"\t");
     }
 }
