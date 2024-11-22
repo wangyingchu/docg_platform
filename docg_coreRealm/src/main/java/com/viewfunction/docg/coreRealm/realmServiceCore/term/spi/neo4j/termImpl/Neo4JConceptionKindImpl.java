@@ -2398,17 +2398,19 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         }
         EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
         entitiesOperationStatistics.setStartTime(new Date());
-
-        String updateKindsCql = CypherBuilder.modifyLabelsWithLabelMatch(this.conceptionKindName, CypherBuilder.LabelOperationType.ADD,
-                CypherBuilder.CypherFunctionType.COUNT,newKindNames);
-
-
-
-
-
-
+        try{
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            String updateKindsCql = CypherBuilder.modifyLabelsWithLabelMatch(this.conceptionKindName, CypherBuilder.LabelOperationType.ADD,
+                    CypherBuilder.CypherFunctionType.COUNT,newKindNames);
+            GetLongFormatReturnValueTransformer getLongFormatReturnValueTransformer = new GetLongFormatReturnValueTransformer("count("+CypherBuilder.operationResultName+")");
+            Object queryRes = workingGraphOperationExecutor.executeWrite(getLongFormatReturnValueTransformer, updateKindsCql);
+            if(queryRes != null){
+                entitiesOperationStatistics.setSuccessItemsCount((Long)queryRes);
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
         entitiesOperationStatistics.setFinishTime(new Date());
-        //entitiesOperationStatistics.setSuccessItemsCount(successItemCount);
         entitiesOperationStatistics.setOperationSummary("joinConceptionKinds operation success");
         return entitiesOperationStatistics;
     }
@@ -2430,32 +2432,20 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
         EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
         entitiesOperationStatistics.setStartTime(new Date());
-
-
-
-
-
-
-
         try{
-
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-
             String[] kindNamesArray = new String[]{kindName};
-
             String updateKindsCql = CypherBuilder.modifyLabelsWithLabelMatch(this.conceptionKindName, CypherBuilder.LabelOperationType.REMOVE,
                     CypherBuilder.CypherFunctionType.COUNT,kindNamesArray);
-
-            //workingGraphOperationExecutor.executeWrite(dataTransformer, cql);
-
-
-
+            GetLongFormatReturnValueTransformer getLongFormatReturnValueTransformer = new GetLongFormatReturnValueTransformer("count("+CypherBuilder.operationResultName+")");
+            Object queryRes = workingGraphOperationExecutor.executeWrite(getLongFormatReturnValueTransformer, updateKindsCql);
+            if(queryRes != null){
+                entitiesOperationStatistics.setSuccessItemsCount((Long)queryRes);
+            }
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
-
         entitiesOperationStatistics.setFinishTime(new Date());
-        //entitiesOperationStatistics.setSuccessItemsCount(successItemCount);
         entitiesOperationStatistics.setOperationSummary("retreatFromConceptionKind operation success");
         return entitiesOperationStatistics;
     }
