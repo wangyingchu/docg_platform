@@ -524,6 +524,80 @@ public class CypherBuilder {
         return rel;
     }
 
+    public static String modifyLabelsWithLabelMatch(String labelName,LabelOperationType labelOperationType,CypherFunctionType cypherFunctionType,String[] labelsArray) {
+        Node m = Cypher.node(labelName).named(operationResultName);
+        StatementBuilder.OngoingReadingWithoutWhere currentOngoingReadingWithoutWhere = Cypher.match(m);
+        StatementBuilder.OngoingReadingAndReturn ongoingReadingAndReturn = null;
+        switch (cypherFunctionType) {
+            case COUNT:
+                ongoingReadingAndReturn = switch (labelOperationType) {
+                    case ADD -> currentOngoingReadingWithoutWhere.set(m, labelsArray).returning(Cypher.count(m));
+                    case REMOVE -> currentOngoingReadingWithoutWhere.remove(m, labelsArray).returning(Cypher.count(m));
+                };
+                break;
+            case ID:
+                ongoingReadingAndReturn = switch (labelOperationType) {
+                    case ADD -> currentOngoingReadingWithoutWhere.set(m, labelsArray).returning(Functions2.id(m));
+                    case REMOVE -> currentOngoingReadingWithoutWhere.remove(m, labelsArray).returning(Functions2.id(m));
+                };
+                break;
+            default:
+                ongoingReadingAndReturn = switch (labelOperationType) {
+                    case ADD -> currentOngoingReadingWithoutWhere.set(m, labelsArray).returning(m);
+                    case REMOVE -> currentOngoingReadingWithoutWhere.remove(m, labelsArray).returning(m);
+                };
+                break;
+        }
+        Statement statement = ongoingReadingAndReturn.build();
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        return rel;
+
+        /*
+
+        Node m = Cypher.node(labelName).named(operationResultName);
+        Statement statement = null;
+        switch(labelOperationType){
+            case ADD:
+                statement = Cypher.match(m).set(m,labelsArray).returning(operationResultName).build();
+                break;
+            case REMOVE:
+                statement = Cypher.match(m).remove(m,labelsArray).returning(operationResultName).build();
+                break;
+        }
+        String rel = cypherRenderer.render(statement);
+*/
+
+
+
+
+/*
+        StatementBuilder.OngoingReadingWithoutWhere currentOngoingReadingWithoutWhere = Cypher.match(m);
+        StatementBuilder.OngoingReadingAndReturn ongoingReadingAndReturn;
+        switch (cypherFunctionType) {
+            case COUNT:
+                ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.returning(Cypher.count(m));
+                break;
+            case ID:
+                ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.returning(Functions2.id(m));
+                break;
+            default:
+                ongoingReadingAndReturn = currentOngoingReadingWithoutWhere.returning(m);
+        }
+        Statement statement = ongoingReadingAndReturn.build();
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        */
+
+
+
+
+
+
+
+
+    }
+
     public static String setRelationPropertiesWithSingleValueEqual(CypherFunctionType propertyFunctionType, Object propertyValue, Map<String, Object> originalTargetPropertiesMap) {
         Node sourceNode = Cypher.anyNode().named(sourceNodeName);
         Node targetNodes = Cypher.anyNode().named(targetNodeName);

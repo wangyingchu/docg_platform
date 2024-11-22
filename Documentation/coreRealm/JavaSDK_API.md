@@ -1245,6 +1245,24 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 地理空间刻度事件数量
      */
     public Long countAttachedGeospatialScaleEvents(AttributesParameters attributesParameters,boolean isDistinctMode) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
+
+    /**
+     * 将当前概念类型全部实体对象加入更多的概念类型中
+     *
+     * @param newKindNames String[] 需要加入的概念类型列表
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics joinConceptionKinds(String[] newKindNames) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 将当前概念类型全部实体对象退出指定概念类型
+     *
+     * @param kindName String 需要退出的概念类型
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics retreatFromConceptionKind(String kindName) throws CoreRealmServiceRuntimeException;
 ```
 ###### ↳ RelationKind
 

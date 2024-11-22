@@ -2388,6 +2388,78 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         return null;
     }
 
+    @Override
+    public EntitiesOperationStatistics joinConceptionKinds(String[] newKindNames) throws CoreRealmServiceRuntimeException {
+        if(newKindNames == null || newKindNames.length == 0){
+            logger.error("At least one Conception Kind Name is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("At least one Conception Kind Name is required.");
+            throw exception;
+        }
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+
+        String updateKindsCql = CypherBuilder.modifyLabelsWithLabelMatch(this.conceptionKindName, CypherBuilder.LabelOperationType.ADD,
+                CypherBuilder.CypherFunctionType.COUNT,newKindNames);
+
+
+
+
+
+
+        entitiesOperationStatistics.setFinishTime(new Date());
+        //entitiesOperationStatistics.setSuccessItemsCount(successItemCount);
+        entitiesOperationStatistics.setOperationSummary("joinConceptionKinds operation success");
+        return entitiesOperationStatistics;
+    }
+
+    @Override
+    public EntitiesOperationStatistics retreatFromConceptionKind(String kindName) throws CoreRealmServiceRuntimeException {
+        if(kindName == null){
+            logger.error("Conception Kind Name is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("Conception Kind Name is required.");
+            throw exception;
+        }
+        if(kindName.equals(this.conceptionKindName)){
+            logger.error("Can't retreat from Self Conception Kind.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("Can't retreat from Self Conception Kind.");
+            throw exception;
+        }
+
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+
+
+
+
+
+
+
+        try{
+
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+
+            String[] kindNamesArray = new String[]{kindName};
+
+            String updateKindsCql = CypherBuilder.modifyLabelsWithLabelMatch(this.conceptionKindName, CypherBuilder.LabelOperationType.REMOVE,
+                    CypherBuilder.CypherFunctionType.COUNT,kindNamesArray);
+
+            //workingGraphOperationExecutor.executeWrite(dataTransformer, cql);
+
+
+
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+
+        entitiesOperationStatistics.setFinishTime(new Date());
+        //entitiesOperationStatistics.setSuccessItemsCount(successItemCount);
+        entitiesOperationStatistics.setOperationSummary("retreatFromConceptionKind operation success");
+        return entitiesOperationStatistics;
+    }
+
     private long executeEntitiesOperationWithCountResponse(String cql){
         long operationResultCount = 0;
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();

@@ -53,6 +53,7 @@ public class GSL_GraphGenerator {
         //createCPCOrganizationForExecutiveEnterprise();
         //createCPCMember();
 
+        createPerson();
     }
 
     private static void createConceptionKind(){
@@ -680,9 +681,18 @@ public class GSL_GraphGenerator {
         } catch (CoreRealmServiceRuntimeException e) {
             throw new RuntimeException(e);
         }
-
-
         coreRealm.closeGlobalSession();
+    }
 
+    private static void createPerson(){
+        String[] kindNamesArray = new String[]{"Person","Person2"};
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        ConceptionKind _ConceptionKind1 = coreRealm.getConceptionKind("Executive");
+        try {
+            _ConceptionKind1.joinConceptionKinds(kindNamesArray);
+            _ConceptionKind1.retreatFromConceptionKind("Person2");
+        } catch (CoreRealmServiceRuntimeException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
