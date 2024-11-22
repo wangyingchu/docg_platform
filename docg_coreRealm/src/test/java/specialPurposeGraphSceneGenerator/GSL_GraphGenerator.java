@@ -53,7 +53,7 @@ public class GSL_GraphGenerator {
         //createCPCOrganizationForExecutiveEnterprise();
         //createCPCMember();
 
-        createPerson();
+        //createPerson();
     }
 
     private static void createConceptionKind(){
@@ -71,6 +71,7 @@ public class GSL_GraphGenerator {
         coreRealm.createConceptionKind("ExecutiveFicElseDuty","执常委工商联职务");
         coreRealm.createConceptionKind("ExecutiveHonor","执常委荣誉");
         coreRealm.createConceptionKind("CPC_Organization","中共党组织");
+        coreRealm.createConceptionKind("Person","个人");
     }
 
     private static void createRelationKind(){
@@ -685,12 +686,17 @@ public class GSL_GraphGenerator {
     }
 
     private static void createPerson(){
-        String[] kindNamesArray = new String[]{"Person","Person2"};
+        String[] kindNamesArray = new String[]{"Person"};
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
         ConceptionKind _ConceptionKind1 = coreRealm.getConceptionKind("Executive");
+        ConceptionKind _ConceptionKind2 = coreRealm.getConceptionKind("IndividualMember");
         try {
-            _ConceptionKind1.joinConceptionKinds(kindNamesArray);
-            _ConceptionKind1.retreatFromConceptionKind("Person2");
+            EntitiesOperationStatistics entitiesOperationStatistics = _ConceptionKind1.joinConceptionKinds(kindNamesArray);
+            System.out.println(entitiesOperationStatistics.getOperationSummary());
+            System.out.println(entitiesOperationStatistics.getSuccessItemsCount());
+            entitiesOperationStatistics = _ConceptionKind2.joinConceptionKinds(kindNamesArray);
+            System.out.println(entitiesOperationStatistics.getOperationSummary());
+            System.out.println(entitiesOperationStatistics.getSuccessItemsCount());
         } catch (CoreRealmServiceRuntimeException e) {
             throw new RuntimeException(e);
         }
