@@ -1,4 +1,4 @@
-package specialPurposeTestCase;
+package specialPurposeGraphSceneGenerator;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GSLCaseTestV2_01 {
+public class GSL_GraphGenerator {
     public static void main(String[] args) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
         //createConceptionKind();
         //createRelationKind();
