@@ -10,10 +10,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.TemporalScaleCalculable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionEntityTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleRelationEntityTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleTimeScaleEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntitiesAttributesRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
@@ -392,14 +389,14 @@ public class BatchDataOperationUtil {
                 String timeEventUID = ((ConceptionEntity)newEntityRes).getConceptionEntityUID();
                 Map<String,Object> relationPropertiesMap = new HashMap<>();
                 CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
-                String createCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(conceptionEntityUID),Long.parseLong(timeEventUID), RealmConstant.TimeScale_AttachToRelationClass,relationPropertiesMap);
+                String createCql = CypherBuilder.createNodesRelationshipByIdsMatch(Long.parseLong(conceptionEntityUID),Long.parseLong(timeEventUID), RealmConstant.TimeScale_AttachToRelationClass,relationPropertiesMap);
                 GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
                         (RealmConstant.TimeScale_AttachToRelationClass,workingGraphOperationExecutor);
                 Object newRelationEntityRes = workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, createCql);
                 if(newRelationEntityRes != null){
                     String timeScaleEntityUID = getTimeScaleEntityUID(timeScaleEntitiesMetaInfoMapping,eventReferTime,realTimeFlowName, referTimeScaleGrade, workingGraphOperationExecutor);
                     if(timeScaleEntityUID != null){
-                        String linkToTimeScaleEntityCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(timeScaleEntityUID),Long.parseLong(timeEventUID),RealmConstant.TimeScale_TimeReferToRelationClass,relationPropertiesMap);
+                        String linkToTimeScaleEntityCql = CypherBuilder.createNodesRelationshipByIdsMatch(Long.parseLong(timeScaleEntityUID),Long.parseLong(timeEventUID),RealmConstant.TimeScale_TimeReferToRelationClass,relationPropertiesMap);
                         workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, linkToTimeScaleEntityCql);
                     }
                 }
@@ -420,34 +417,51 @@ public class BatchDataOperationUtil {
         TimeFlow.TimeScaleGrade referTimeScaleGrade = timeScaleGrade;
         try {
             LocalDateTime eventReferTime = LocalDateTime.parse(dateTime.toString(), formatter);
-
             propertiesMap.put(RealmConstant._TimeScaleEventReferTime, eventReferTime);
             propertiesMap.put(RealmConstant._TimeScaleEventComment,eventComment);
             propertiesMap.put(RealmConstant._TimeScaleEventScaleGrade,""+referTimeScaleGrade);
             String realTimeFlowName = timeFlowName != null ? timeFlowName : RealmConstant._defaultTimeFlowName;
             propertiesMap.put(RealmConstant._TimeScaleEventTimeFlow,realTimeFlowName);
 
-            String createEventCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.TimeScaleEventClass}, propertiesMap);
-            GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
-                    new GetSingleConceptionEntityTransformer(RealmConstant.TimeScaleEventClass, workingGraphOperationExecutor);
-            Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer, createEventCql);
-            if(newEntityRes != null) {
-                String timeEventUID = ((ConceptionEntity)newEntityRes).getConceptionEntityUID();
+            /* batch execute cypher example
+            CREATE (timeScaleEvent:`DOCG_TimeScaleEvent`) SET timeScaleEvent.DOCG_TimeScaleEventReferTime = localdatetime('2013-01-01T00:00:00'), timeScaleEvent.DOCG_TimeScaleEventScaleGrade = 'DAY', timeScaleEvent.dataOrigin = 'dataOrigin001', timeScaleEvent.lastModifyDate = datetime('2024-11-24T10:37:02.247185171+08:00[Asia/Shanghai]'), timeScaleEvent.DOCG_TimeScaleEventTimeFlow = 'DefaultTimeFlow', timeScaleEvent.createDate = datetime('2024-11-24T10:37:02.247185171+08:00[Asia/Shanghai]'), timeScaleEvent.DOCG_TimeScaleEventComment = 'chamberFoundedAt'
+            WITH timeScaleEvent
+            MATCH (conceptionEntity) WHERE id(conceptionEntity) = 692233 CREATE (conceptionEntity)-[attachToTimeScale:`DOCG_AttachToTimeScale` {dataOrigin: 'dataOrigin001', lastModifyDate: datetime('2024-11-24T10:37:02.247322451+08:00[Asia/Shanghai]'), createDate: datetime('2024-11-24T10:37:02.247322451+08:00[Asia/Shanghai]')}]->(timeScaleEvent)
+            WITH attachToTimeScale ,timeScaleEvent,conceptionEntity
+            MATCH (timeScaleEntity) WHERE id(timeScaleEntity) = 39823009 CREATE (timeScaleEntity)-[timeReferTo:`DOCG_TS_TimeReferTo` {dataOrigin: 'dataOrigin001', lastModifyDate: datetime('2024-11-24T10:37:02.247322451+08:00[Asia/Shanghai]'), createDate: datetime('2024-11-24T10:37:02.247322451+08:00[Asia/Shanghai]')}]->(timeScaleEvent) RETURN attachToTimeScale ,timeScaleEvent,conceptionEntity,timeReferTo,timeScaleEntity
+            */
+
+            String timeScaleEntityUID = getTimeScaleEntityUID(timeScaleEntitiesMetaInfoMapping,eventReferTime,realTimeFlowName, referTimeScaleGrade, workingGraphOperationExecutor);
+            if(timeScaleEntityUID!= null){
+                String createTimeScaleEventCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.TimeScaleEventClass}, propertiesMap);
+                createTimeScaleEventCql =
+                        createTimeScaleEventCql.replace("RETURN operationResult","").replaceAll("operationResult","timeScaleEvent");
+
                 Map<String,Object> relationPropertiesMap = new HashMap<>();
                 CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
-                String createCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(conceptionEntityUID),Long.parseLong(timeEventUID), RealmConstant.TimeScale_AttachToRelationClass,relationPropertiesMap);
-                GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
-                        (RealmConstant.TimeScale_AttachToRelationClass,workingGraphOperationExecutor);
-                Object newRelationEntityRes = workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, createCql);
-                if(newRelationEntityRes != null){
-                    String timeScaleEntityUID = getTimeScaleEntityUID(timeScaleEntitiesMetaInfoMapping,eventReferTime,realTimeFlowName, referTimeScaleGrade, workingGraphOperationExecutor);
-                    if(timeScaleEntityUID != null){
-                        String linkToTimeScaleEntityCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(timeScaleEntityUID),Long.parseLong(timeEventUID),RealmConstant.TimeScale_TimeReferToRelationClass,relationPropertiesMap);
-                        workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, linkToTimeScaleEntityCql);
-                    }
+                String createAttachToTimeScaleRelationshipCql = CypherBuilder.createNodesRelationshipBySingleIdMatch(Long.parseLong(conceptionEntityUID),"timeScaleEvent", RealmConstant.TimeScale_AttachToRelationClass,relationPropertiesMap);
+                createAttachToTimeScaleRelationshipCql =
+                        createAttachToTimeScaleRelationshipCql.replace("RETURN operationResult","").replaceAll("sourceNode","conceptionEntity").replaceAll("operationResult","attachToTimeScale");
+
+                String createTimeReferToRelationshipCql = CypherBuilder.createNodesRelationshipBySingleIdMatch(Long.parseLong(timeScaleEntityUID), "timeScaleEvent",RealmConstant.TimeScale_TimeReferToRelationClass,relationPropertiesMap);
+                createTimeReferToRelationshipCql = createTimeReferToRelationshipCql.replace("RETURN operationResult","").replaceAll("sourceNode","timeScaleEntity").replaceAll("operationResult","timeReferTo");
+
+                String mergedCql = createTimeScaleEventCql+"\n"+
+                        "WITH timeScaleEvent \n"+
+                        createAttachToTimeScaleRelationshipCql+"\n"+
+                        "WITH attachToTimeScale ,timeScaleEvent,conceptionEntity \n"+
+                        createTimeReferToRelationshipCql+ " RETURN attachToTimeScale ,timeScaleEvent,conceptionEntity,timeReferTo,timeScaleEntity";
+
+                logger.debug("Generated Cypher Statement: {}", mergedCql);
+
+                GetSingleTimeScaleEventEntirePathTransformer getSingleTimeScaleEventEntirePathTransformer = new GetSingleTimeScaleEventEntirePathTransformer();
+                Object operationRes = workingGraphOperationExecutor.executeWrite(getSingleTimeScaleEventEntirePathTransformer, mergedCql);
+                if(operationRes != null){
+                    return true;
+                }else{
+                    return false;
                 }
             }
-            return true;
         }catch(DateTimeParseException e){
             e.printStackTrace();
         }
@@ -617,7 +631,7 @@ public class BatchDataOperationUtil {
                             String sourceEntityUID = currentRelationEntityValue.getFromConceptionEntityUID();
                             String targetEntityUID = currentRelationEntityValue.getToConceptionEntityUID();
                             Map<String, Object> relationPropertiesValue = currentRelationEntityValue.getEntityAttributesValue();
-                            String attachRelationCQL = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(sourceEntityUID),Long.parseLong(targetEntityUID),this.relationKindName,relationPropertiesValue);
+                            String attachRelationCQL = CypherBuilder.createNodesRelationshipByIdsMatch(Long.parseLong(sourceEntityUID),Long.parseLong(targetEntityUID),this.relationKindName,relationPropertiesValue);
                             Object returnObj = graphOperationExecutor.executeWrite(getSingleRelationEntityTransformer,attachRelationCQL);
                             if(returnObj != null){
                                 successfulCount++;
