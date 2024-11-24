@@ -416,7 +416,12 @@ public class BatchDataOperationUtil {
         CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
         TimeFlow.TimeScaleGrade referTimeScaleGrade = timeScaleGrade;
         try {
-            LocalDateTime eventReferTime = LocalDateTime.parse(dateTime.toString(), formatter);
+            LocalDateTime eventReferTime = null;
+            if(timeScaleGrade.equals(TimeFlow.TimeScaleGrade.DAY)){
+                eventReferTime = LocalDate.parse(dateTime.toString(), formatter).atStartOfDay();
+            }else{
+                eventReferTime = LocalDateTime.parse(dateTime.toString(), formatter);
+            }
             propertiesMap.put(RealmConstant._TimeScaleEventReferTime, eventReferTime);
             propertiesMap.put(RealmConstant._TimeScaleEventComment,eventComment);
             propertiesMap.put(RealmConstant._TimeScaleEventScaleGrade,""+referTimeScaleGrade);

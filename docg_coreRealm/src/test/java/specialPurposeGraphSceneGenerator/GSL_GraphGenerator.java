@@ -56,6 +56,8 @@ public class GSL_GraphGenerator {
         //createPerson();
 
         //loadFirmEntities("/media/wangychu/NSStorage1/Dev_Data/CSV_DATA/ChinaFirmData/");
+
+        linkFirmDate_start_date();
     }
 
     private static void createConceptionKind(){
@@ -722,5 +724,24 @@ public class GSL_GraphGenerator {
         BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///"+headerFileLocation+"firm_2005.csv","Firm",attributesMapping,"\t");
         BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///"+headerFileLocation+"firm_2010.csv","Firm",attributesMapping,"\t");
         BatchDataOperationUtil.importConceptionEntitiesFromCSV("file:///"+headerFileLocation+"firm_2015.csv","Firm",attributesMapping,"\t");
+    }
+
+    private static void linkFirmDate_start_date(){
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        try {
+        ConceptionKind conceptionKind = coreRealm.getConceptionKind("Firm");
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(10000000);
+        List<String> attributeNamesList = new ArrayList<>();
+        attributeNamesList.add("start_date");
+        ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributeResult = conceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeNamesList,queryParameters);
+
+        List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        BatchDataOperationUtil.batchAttachTimeScaleEventsWithStringDateAttributeValue(conceptionEntityValueList,"start_date",null,"企业开业于",dtf,null, TimeFlow.TimeScaleGrade.DAY, BatchDataOperationUtil.CPUUsageRate.High);
+
+        } catch (CoreRealmServiceEntityExploreException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
