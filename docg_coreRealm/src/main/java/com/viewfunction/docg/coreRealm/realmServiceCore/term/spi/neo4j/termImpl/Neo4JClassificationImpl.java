@@ -251,7 +251,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
 
                     Map<String,Object> relationPropertiesMap = new HashMap<>();
                     CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
-                    String createRelationCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(childConceptionUID),Long.parseLong(parentConceptionUID),
+                    String createRelationCql = CypherBuilder.createNodesRelationshipByIdsMatch(Long.parseLong(childConceptionUID),Long.parseLong(parentConceptionUID),
                             RealmConstant.Classification_ClassificationRelationClass,relationPropertiesMap);
 
                     Object newRelationEntityRes = workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, createRelationCql);
@@ -352,7 +352,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
                         String parentConceptionUID = getClassificationUID();
                         Map<String,Object> relationPropertiesMap = new HashMap<>();
                         CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
-                        String createRelationCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(childConceptionUID),Long.parseLong(parentConceptionUID),
+                        String createRelationCql = CypherBuilder.createNodesRelationshipByIdsMatch(Long.parseLong(childConceptionUID),Long.parseLong(parentConceptionUID),
                                 RealmConstant.Classification_ClassificationRelationClass,relationPropertiesMap);
                         GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
                                 (RealmConstant.Classification_ClassificationRelationClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());

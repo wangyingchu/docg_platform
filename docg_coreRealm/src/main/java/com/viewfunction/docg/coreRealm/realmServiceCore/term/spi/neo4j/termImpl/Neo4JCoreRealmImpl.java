@@ -1002,7 +1002,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 String parentConceptionUID = ((Neo4JClassificationImpl)parentClassificationRes).getClassificationUID();
                 Map<String,Object> relationPropertiesMap = new HashMap<>();
                 CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
-                String createRelationCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(childConceptionUID),Long.parseLong(parentConceptionUID),
+                String createRelationCql = CypherBuilder.createNodesRelationshipByIdsMatch(Long.parseLong(childConceptionUID),Long.parseLong(parentConceptionUID),
                         RealmConstant.Classification_ClassificationRelationClass,relationPropertiesMap);
                 GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
                         (RealmConstant.Classification_ClassificationRelationClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());

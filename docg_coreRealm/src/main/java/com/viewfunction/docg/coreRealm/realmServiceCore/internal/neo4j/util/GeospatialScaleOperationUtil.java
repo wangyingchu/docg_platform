@@ -676,7 +676,7 @@ public class GeospatialScaleOperationUtil {
                         currentDivisionCodeInfo.getParentDivisionEntityUID() !=null &&
                         currentDivisionCodeInfo.getParentDivisionCode() !=null){
                     Map<String,Object> relationPropertiesMap = new HashMap<>();
-                    String linkToTimeScaleEntityCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(currentDivisionCodeInfo.getParentDivisionEntityUID()),Long.parseLong(currentDivisionCodeInfo.getDivisionEntityUID()),RealmConstant.GeospatialScale_SpatialContainsRelationClass,relationPropertiesMap);
+                    String linkToTimeScaleEntityCql = CypherBuilder.createNodesRelationshipByIdsMatch(Long.parseLong(currentDivisionCodeInfo.getParentDivisionEntityUID()),Long.parseLong(currentDivisionCodeInfo.getDivisionEntityUID()),RealmConstant.GeospatialScale_SpatialContainsRelationClass,relationPropertiesMap);
                     graphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, linkToTimeScaleEntityCql);
                 }
             }

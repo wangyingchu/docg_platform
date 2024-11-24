@@ -124,7 +124,7 @@ public class Neo4JAttributesViewKindImpl implements Neo4JAttributesViewKind {
 
                 Map<String,Object> relationPropertiesMap = properties != null ? properties:new HashMap<>();
                 CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
-                String createCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(attributesViewKindUID),Long.parseLong(attributeKindUID),
+                String createCql = CypherBuilder.createNodesRelationshipByIdsMatch(Long.parseLong(attributesViewKindUID),Long.parseLong(attributeKindUID),
                         RealmConstant.AttributesViewKind_AttributeKindRelationClass,relationPropertiesMap);
                 getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
                         (RealmConstant.AttributesViewKind_AttributeKindRelationClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());

@@ -876,7 +876,7 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
             }
             Map<String,Object> relationPropertiesMap = initRelationProperties != null ? initRelationProperties : new HashMap<>();
             CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
-            String createCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(sourceRelationableUID),Long.parseLong(targetRelationableUID),
+            String createCql = CypherBuilder.createNodesRelationshipByIdsMatch(Long.parseLong(sourceRelationableUID),Long.parseLong(targetRelationableUID),
                     relationKind,relationPropertiesMap);
             GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
                     (relationKind,getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
@@ -909,7 +909,7 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
         }
         Map<String,Object> relationPropertiesMap = initRelationProperties != null ? initRelationProperties : new HashMap<>();
         CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
-        String createCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(sourceRelationableUID),Long.parseLong(targetRelationableUID),
+        String createCql = CypherBuilder.createNodesRelationshipByIdsMatch(Long.parseLong(sourceRelationableUID),Long.parseLong(targetRelationableUID),
                 relationKind,relationPropertiesMap);
         GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
                 (relationKind,getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());

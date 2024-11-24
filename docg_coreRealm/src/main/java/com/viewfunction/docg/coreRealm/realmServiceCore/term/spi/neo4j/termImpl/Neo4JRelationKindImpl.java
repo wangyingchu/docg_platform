@@ -810,7 +810,7 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
 
                 Map<String,Object> relationPropertiesMap = new HashMap<>();
                 CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
-                String createCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(relationKindUID),Long.parseLong(attributesViewKindUID),
+                String createCql = CypherBuilder.createNodesRelationshipByIdsMatch(Long.parseLong(relationKindUID),Long.parseLong(attributesViewKindUID),
                         RealmConstant.RelationKind_AttributesViewKindRelationClass,relationPropertiesMap);
                 getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
                         (RealmConstant.RelationKind_AttributesViewKindRelationClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());

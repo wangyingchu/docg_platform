@@ -1050,7 +1050,7 @@ public class CypherBuilder {
         return rel;
     }
 
-    public static String createNodesRelationshipByIdMatch(Long sourceNodeId, Long targetNodeId, String relationKind, Map<String, Object> relationProperties) {
+    public static String createNodesRelationshipByIdsMatch(Long sourceNodeId, Long targetNodeId, String relationKind, Map<String, Object> relationProperties) {
         Node sourceNode = Cypher.anyNode().named(sourceNodeName);
         Node targetNode = Cypher.anyNode().named(targetNodeName);
         Relationship relation;
@@ -1063,6 +1063,40 @@ public class CypherBuilder {
         Statement statement = Cypher.match(sourceNode, targetNode).
                 where(sourceNode.internalId().isEqualTo(Cypher.literalOf(sourceNodeId))
                         .and(targetNode.internalId().isEqualTo(Cypher.literalOf(targetNodeId)))).create(relation).returning(relation).build();
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        return rel;
+    }
+
+    public static String createNodesRelationshipBySingleIdMatch(Long sourceNodeId, String targetNodeVariable, String relationKind, Map<String, Object> relationProperties) {
+        Node sourceNode = Cypher.anyNode().named(sourceNodeName);
+        Node targetNode = Cypher.anyNode().named(targetNodeVariable);
+        Relationship relation;
+        if (relationProperties != null && relationProperties.size() > 0) {
+            MapExpression targetMapExpression = Cypher.mapOf(CommonOperationUtil.generatePropertiesValueArray(relationProperties));
+            relation = sourceNode.relationshipTo(targetNode, relationKind).named(operationResultName).withProperties(targetMapExpression);
+        } else {
+            relation = sourceNode.relationshipTo(targetNode, relationKind).named(operationResultName);
+        }
+        Statement statement = Cypher.match(sourceNode, targetNode).
+                where(sourceNode.internalId().isEqualTo(Cypher.literalOf(sourceNodeId))).create(relation).returning(relation).build();
+        String rel = cypherRenderer.render(statement);
+        logger.debug("Generated Cypher Statement: {}", rel);
+        return rel;
+    }
+
+    public static String createNodesRelationshipBySingleIdMatch(String sourceNodeVariable, Long targetNodeId, String relationKind, Map<String, Object> relationProperties) {
+        Node sourceNode = Cypher.anyNode().named(sourceNodeVariable);
+        Node targetNode = Cypher.anyNode().named(targetNodeName);
+        Relationship relation;
+        if (relationProperties != null && relationProperties.size() > 0) {
+            MapExpression targetMapExpression = Cypher.mapOf(CommonOperationUtil.generatePropertiesValueArray(relationProperties));
+            relation = sourceNode.relationshipTo(targetNode, relationKind).named(operationResultName).withProperties(targetMapExpression);
+        } else {
+            relation = sourceNode.relationshipTo(targetNode, relationKind).named(operationResultName);
+        }
+        Statement statement = Cypher.match(sourceNode, targetNode).
+                where(targetNode.internalId().isEqualTo(Cypher.literalOf(targetNodeId))).create(relation).returning(relation).build();
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;

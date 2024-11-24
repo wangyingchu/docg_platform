@@ -1171,7 +1171,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
 
                 Map<String,Object> relationPropertiesMap = new HashMap<>();
                 CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
-                String createCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(conceptionKindUID),Long.parseLong(attributesViewKindUID),
+                String createCql = CypherBuilder.createNodesRelationshipByIdsMatch(Long.parseLong(conceptionKindUID),Long.parseLong(attributesViewKindUID),
                         RealmConstant.ConceptionKind_AttributesViewKindRelationClass,relationPropertiesMap);
                 getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
                         (RealmConstant.ConceptionKind_AttributesViewKindRelationClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());

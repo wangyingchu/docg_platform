@@ -149,7 +149,7 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
 
             Map<String,Object> relationPropertiesMap = new HashMap<>();
             CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
-            String linkCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(this.relationAttachKindUID),Long.parseLong(targetRelationAttachLinkLogic.getRelationAttachLinkLogicUID()),
+            String linkCql = CypherBuilder.createNodesRelationshipByIdsMatch(Long.parseLong(this.relationAttachKindUID),Long.parseLong(targetRelationAttachLinkLogic.getRelationAttachLinkLogicUID()),
                     RealmConstant.RelationAttachKind_RelationAttachLinkLogicRelationClass,relationPropertiesMap);
             GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
                     (RealmConstant.RelationAttachKind_RelationAttachLinkLogicRelationClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());

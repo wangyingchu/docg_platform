@@ -63,7 +63,7 @@ public interface Neo4JClassificationAttachable extends ClassificationAttachable,
                     }else{
                         Map<String,Object> relationPropertiesMap = relationData != null ? relationData : new HashMap<>();
                         CommonOperationUtil.generateEntityMetaAttributes(relationPropertiesMap);
-                        String createCql = CypherBuilder.createNodesRelationshipByIdMatch(Long.parseLong(sourceRelationableUID),Long.parseLong(targetRelationableUID),
+                        String createCql = CypherBuilder.createNodesRelationshipByIdsMatch(Long.parseLong(sourceRelationableUID),Long.parseLong(targetRelationableUID),
                                 relationKind,relationPropertiesMap);
                         Object newRelationEntityRes = workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, createCql);
                         if(newRelationEntityRes == null){
