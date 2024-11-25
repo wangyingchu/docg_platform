@@ -57,7 +57,8 @@ public class GSL_GraphGenerator {
 
         //loadFirmEntities("/media/wangychu/NSStorage1/Dev_Data/CSV_DATA/ChinaFirmData/");
 
-        linkFirmDate_start_date();
+        //linkFirmDate_start_date();
+        //linkFirmDate_approved_time();
     }
 
     private static void createConceptionKind(){
@@ -739,6 +740,25 @@ public class GSL_GraphGenerator {
         List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         BatchDataOperationUtil.batchAttachTimeScaleEventsWithStringDateAttributeValue(conceptionEntityValueList,"start_date",null,"企业开业于",dtf,null, TimeFlow.TimeScaleGrade.DAY, BatchDataOperationUtil.CPUUsageRate.High);
+
+        } catch (CoreRealmServiceEntityExploreException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void linkFirmDate_approved_time(){
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        try {
+            ConceptionKind conceptionKind = coreRealm.getConceptionKind("Firm");
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setResultNumber(10000000);
+            List<String> attributeNamesList = new ArrayList<>();
+            attributeNamesList.add("approved_time");
+            ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributeResult = conceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeNamesList,queryParameters);
+
+            List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            BatchDataOperationUtil.batchAttachTimeScaleEventsWithStringDateAttributeValue(conceptionEntityValueList,"approved_time",null,"最近一次注册信息变更于",dtf,null, TimeFlow.TimeScaleGrade.DAY, BatchDataOperationUtil.CPUUsageRate.Middle);
 
         } catch (CoreRealmServiceEntityExploreException e) {
             throw new RuntimeException(e);
