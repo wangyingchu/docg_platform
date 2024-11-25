@@ -59,6 +59,7 @@ public class GSL_GraphGenerator {
 
         //linkFirmDate_start_date();
         //linkFirmDate_approved_time();
+        createFirmGeoProperties();
     }
 
     private static void createConceptionKind(){
@@ -763,5 +764,55 @@ public class GSL_GraphGenerator {
         } catch (CoreRealmServiceEntityExploreException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static void createFirmGeoProperties(){
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+       // try {
+            ConceptionKind conceptionKind = coreRealm.getConceptionKind("Firm");
+
+             /*
+            DOCG_GS_GLGeometryContent	POINT (116.50784350522224 39.79072862448238)
+            DOCG_GS_GeometryType	POINT
+            DOCG_GS_GlobalCRSAID	EPSG:4326
+            */
+            /*
+                lat_wgs	31.887526
+                lng_wgs	117.306761
+                */
+            Map<String, Object> attributes = new HashMap<>();
+            attributes.put("DOCG_GS_GeometryType","POINT");
+            attributes.put("DOCG_GS_GlobalCRSAID","EPSG:4326");
+            try {
+                conceptionKind.setKindScopeAttributes(attributes);
+            } catch (CoreRealmServiceRuntimeException e) {
+                throw new RuntimeException(e);
+            }
+
+            /*
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setResultNumber(10000000);
+            ConceptionEntitiesRetrieveResult conceptionEntitiesRetrieveResult = conceptionKind.getEntities(queryParameters);
+            List<ConceptionEntity> resultConceptionEntities = conceptionEntitiesRetrieveResult.getConceptionEntities();
+
+            for(int i =0;i<resultConceptionEntities.size();i++){
+                System.out.println("-----------------------");
+                System.out.println(i);
+
+
+
+                ConceptionEntity currentConceptionEntity = resultConceptionEntities.get(i);
+                if(currentConceptionEntity.hasAttribute("lat_wgs")&&currentConceptionEntity.hasAttribute("lng_wgs")){
+                    String latWgs = currentConceptionEntity.getAttribute("lat_wgs").toString();
+                    String lngWgs = currentConceptionEntity.getAttribute("lng_wgs").toString();
+                    String entityPointWKT = "POINT ("+lngWgs+" "+latWgs+")";
+                    currentConceptionEntity.addOrUpdateGLGeometryContent(entityPointWKT);
+                }
+            }
+            */
+
+       // } catch (CoreRealmServiceEntityExploreException e) {
+        //    throw new RuntimeException(e);
+       // }
     }
 }
