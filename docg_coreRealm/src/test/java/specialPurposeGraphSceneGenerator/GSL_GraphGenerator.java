@@ -6,6 +6,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filtering
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.SimilarFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleCalculable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
@@ -59,7 +60,7 @@ public class GSL_GraphGenerator {
 
         //linkFirmDate_start_date();
         //linkFirmDate_approved_time();
-        createFirmGeoProperties();
+        //createFirmGeoProperties();
     }
 
     private static void createConceptionKind(){
@@ -768,51 +769,21 @@ public class GSL_GraphGenerator {
 
     private static void createFirmGeoProperties(){
         CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
-       // try {
+        try {
             ConceptionKind conceptionKind = coreRealm.getConceptionKind("Firm");
-
-             /*
-            DOCG_GS_GLGeometryContent	POINT (116.50784350522224 39.79072862448238)
-            DOCG_GS_GeometryType	POINT
-            DOCG_GS_GlobalCRSAID	EPSG:4326
-            */
-            /*
-                lat_wgs	31.887526
-                lng_wgs	117.306761
-                */
-            Map<String, Object> attributes = new HashMap<>();
-            attributes.put("DOCG_GS_GeometryType","POINT");
-            attributes.put("DOCG_GS_GlobalCRSAID","EPSG:4326");
-            try {
-                conceptionKind.setKindScopeAttributes(attributes);
-            } catch (CoreRealmServiceRuntimeException e) {
-                throw new RuntimeException(e);
-            }
-
-            /*
             QueryParameters queryParameters = new QueryParameters();
             queryParameters.setResultNumber(10000000);
-            ConceptionEntitiesRetrieveResult conceptionEntitiesRetrieveResult = conceptionKind.getEntities(queryParameters);
-            List<ConceptionEntity> resultConceptionEntities = conceptionEntitiesRetrieveResult.getConceptionEntities();
+            List<String> attributeNamesList = new ArrayList<>();
+            attributeNamesList.add("lat_wgs");
+            attributeNamesList.add("lng_wgs");
+            ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributeResult = conceptionKind.getSingleValueEntityAttributesByAttributeNames(attributeNamesList,queryParameters);
 
-            for(int i =0;i<resultConceptionEntities.size();i++){
-                System.out.println("-----------------------");
-                System.out.println(i);
-
-
-
-                ConceptionEntity currentConceptionEntity = resultConceptionEntities.get(i);
-                if(currentConceptionEntity.hasAttribute("lat_wgs")&&currentConceptionEntity.hasAttribute("lng_wgs")){
-                    String latWgs = currentConceptionEntity.getAttribute("lat_wgs").toString();
-                    String lngWgs = currentConceptionEntity.getAttribute("lng_wgs").toString();
-                    String entityPointWKT = "POINT ("+lngWgs+" "+latWgs+")";
-                    currentConceptionEntity.addOrUpdateGLGeometryContent(entityPointWKT);
-                }
-            }
-            */
-
-       // } catch (CoreRealmServiceEntityExploreException e) {
-        //    throw new RuntimeException(e);
-       // }
+            List<ConceptionEntityValue> conceptionEntityValueList = conceptionEntitiesAttributeResult.getConceptionEntityValues();
+            Map<String,Object> result = BatchDataOperationUtil.batchConvertConceptionKindAttributesToGeospatialPointGeometryContent("Firm",
+                    conceptionEntityValueList, GeospatialScaleCalculable.SpatialScaleLevel.Global,"EPSG:4326","lng_wgs","lat_wgs", BatchDataOperationUtil.CPUUsageRate.Middle);
+            System.out.println(result);
+        } catch (CoreRealmServiceEntityExploreException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

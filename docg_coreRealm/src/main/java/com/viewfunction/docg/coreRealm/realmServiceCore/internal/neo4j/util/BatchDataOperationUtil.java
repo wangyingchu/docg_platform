@@ -7,6 +7,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryPara
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleCalculable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.TemporalScaleCalculable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
@@ -1621,5 +1622,110 @@ public class BatchDataOperationUtil {
         entitiesOperationStatistics.setOperationSummary("exportConceptionEntitiesToCypher operation execute finish. conceptionKindName is "
                 +conceptionKindName+", cypherFileLocation is "+cypherFileLocation);
         return entitiesOperationStatistics;
+    }
+
+    public static Map<String,Object> batchConvertConceptionKindAttributesToGeospatialPointGeometryContent(String conceptionKindName, List<ConceptionEntityValue> conceptionEntityValueList,
+                             GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel, String geospatialCRSAID, String longitudeAttribute, String latitudeAttribute, CPUUsageRate _CPUUsageRate){
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        try {
+            ConceptionKind conceptionKind = coreRealm.getConceptionKind(conceptionKindName);
+            if(conceptionKind != null){
+                String spatialScaleGeometryContentPropertyName = null;
+                String spatialCRSAIDPropertyName = null;
+                switch(spatialScaleLevel){
+                    case Local:
+                        spatialScaleGeometryContentPropertyName = RealmConstant._GeospatialLLGeometryContent;
+                        spatialCRSAIDPropertyName = RealmConstant._GeospatialLocalCRSAID;
+                        break;
+                    case Global:
+                        spatialScaleGeometryContentPropertyName = RealmConstant._GeospatialGLGeometryContent;
+                        spatialCRSAIDPropertyName = RealmConstant._GeospatialGlobalCRSAID;
+                        break;
+                    case Country:
+                        spatialScaleGeometryContentPropertyName = RealmConstant._GeospatialCLGeometryContent;
+                        spatialCRSAIDPropertyName = RealmConstant._GeospatialCountryCRSAID;
+                        break;
+                }
+                Map<String, Object> attributes = new HashMap<>();
+                attributes.put(RealmConstant._GeospatialGeometryType,"POINT");
+                attributes.put(spatialCRSAIDPropertyName,geospatialCRSAID);
+                conceptionKind.setKindScopeAttributes(attributes);
+
+                int degreeOfParallelism = calculateRuntimeCPUCoresByUsageRate(_CPUUsageRate);
+                int singlePartitionSize = (conceptionEntityValueList.size()/degreeOfParallelism)+1;
+                List<List<ConceptionEntityValue>> rsList = Lists.partition(conceptionEntityValueList, singlePartitionSize);
+
+                Map<String,Object> threadReturnDataMap = new Hashtable<>();
+                threadReturnDataMap.put("StartTime", LocalDateTime.now());
+                ExecutorService executor = Executors.newFixedThreadPool(rsList.size());
+                for(List<ConceptionEntityValue> currentEntityPropertiesValueList:rsList){
+                    ConvertConceptionKindAttributesToGeospatialPointGeometryContentThread convertConceptionKindAttributesToGeospatialPointGeometryContentThread
+                            = new ConvertConceptionKindAttributesToGeospatialPointGeometryContentThread(
+                                    conceptionKindName,currentEntityPropertiesValueList,spatialScaleGeometryContentPropertyName,longitudeAttribute,latitudeAttribute,threadReturnDataMap);
+                    executor.execute(convertConceptionKindAttributesToGeospatialPointGeometryContentThread);
+                }
+                executor.shutdown();
+                try {
+                    executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MINUTES);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                threadReturnDataMap.put("FinishTime", LocalDateTime.now());
+                return threadReturnDataMap;
+            }
+        } catch (CoreRealmServiceRuntimeException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
+    private static class ConvertConceptionKindAttributesToGeospatialPointGeometryContentThread implements Runnable{
+
+        private String conceptionKindName;
+        private List<ConceptionEntityValue> conceptionEntityValueList;
+        private String spatialScaleGeometryContentPropertyName;
+        private String longitudeAttribute;
+        private String latitudeAttribute;
+        private Map<String,Object> threadReturnDataMap;
+
+        public ConvertConceptionKindAttributesToGeospatialPointGeometryContentThread(String conceptionKindName, List<ConceptionEntityValue> conceptionEntityValueList,
+                                       String spatialScaleGeometryContentPropertyName, String longitudeAttribute, String latitudeAttribute,Map<String,Object> threadReturnDataMap){
+            this.conceptionKindName = conceptionKindName;
+            this.conceptionEntityValueList = conceptionEntityValueList;
+            this.spatialScaleGeometryContentPropertyName = spatialScaleGeometryContentPropertyName;
+            this.longitudeAttribute = longitudeAttribute;
+            this.latitudeAttribute = latitudeAttribute;
+            this.threadReturnDataMap = threadReturnDataMap;
+        }
+
+        @Override
+        public void run() {
+            String currentThreadName = Thread.currentThread().getName();
+            long successfulCount = 0;
+            CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+            coreRealm.openGlobalSession();
+            if(this.conceptionEntityValueList!=null){
+
+                ConceptionKind conceptionKind = coreRealm.getConceptionKind(conceptionKindName);
+                for(ConceptionEntityValue currentConceptionEntityValue:this.conceptionEntityValueList){
+                    Map<String, Object> attributesValueMap = currentConceptionEntityValue.getEntityAttributesValue();
+                    if(attributesValueMap.containsKey(longitudeAttribute)&&attributesValueMap.containsKey(latitudeAttribute)){
+                        String conceptionEntityUID = currentConceptionEntityValue.getConceptionEntityUID();
+                        String latValue = attributesValueMap.get(latitudeAttribute).toString();
+                        String lngValue = attributesValueMap.get(longitudeAttribute).toString();
+                        String entityPointWKT = "POINT ("+lngValue+" "+latValue+")";
+                        ConceptionEntity targetConceptionEntity =conceptionKind.getEntityByUID(conceptionEntityUID);
+                        try {
+                            targetConceptionEntity.addAttribute(spatialScaleGeometryContentPropertyName,entityPointWKT);
+                            successfulCount++;
+                        } catch (CoreRealmServiceRuntimeException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }
+            threadReturnDataMap.put(currentThreadName,successfulCount);
+            coreRealm.closeGlobalSession();
+        }
     }
 }
