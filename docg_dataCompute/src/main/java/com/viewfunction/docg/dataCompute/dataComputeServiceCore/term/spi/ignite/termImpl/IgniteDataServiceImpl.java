@@ -35,7 +35,7 @@ public class IgniteDataServiceImpl implements IgniteDataService {
         // use this logic to avoid create already exist ignite nodes has same name
         IgniteConfiguration igniteConfiguration= new IgniteConfiguration();
         igniteConfiguration.setClientMode(true);
-        igniteConfiguration.setIgniteInstanceName("DOCG_DATA_COMPUTE_CLIENT_"+new Date().getTime());
+        igniteConfiguration.setIgniteInstanceName("DOCG_DATA_COMPUTE_CLIENT_"+UUID.randomUUID());
         this.invokerIgnite = Ignition.start(igniteConfiguration);
 
         //IgniteConfiguration IgniteConfiguration = DataComputeConfigurationHandler.getDataComputeIgniteConfigurationFilePath();

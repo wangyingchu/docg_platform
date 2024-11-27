@@ -55,7 +55,7 @@ public class CoreRealmOperationUtil {
             // use this logic to avoid create already exist ignite nodes has same name
             IgniteConfiguration igniteConfiguration= new IgniteConfiguration();
             igniteConfiguration.setClientMode(true);
-            igniteConfiguration.setIgniteInstanceName("DataSliceCreateThread_"+new Date().getTime());
+            igniteConfiguration.setIgniteInstanceName("DataSliceCreateThread_"+UUID.randomUUID());
             Ignite invokerIgnite =Ignition.start(igniteConfiguration);
 
             ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
@@ -73,6 +73,7 @@ public class CoreRealmOperationUtil {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+            invokerIgnite.close();
 
             if(conceptionKindPropertiesList.size() > 0){
                 QueryParameters executedQueryParameters;
@@ -225,7 +226,7 @@ public class CoreRealmOperationUtil {
         // use this logic to avoid create ready exist ignite nodes has same name
         IgniteConfiguration igniteConfiguration= new IgniteConfiguration();
         igniteConfiguration.setClientMode(true);
-        igniteConfiguration.setIgniteInstanceName("DataSliceConfirmThread_"+new Date().getTime());
+        igniteConfiguration.setIgniteInstanceName("DataSliceConfirmThread_"+UUID.randomUUID());
         Ignite invokerIgnite =Ignition.start(igniteConfiguration);
         ComputeGrid targetComputeGrid = ComputeGridTermFactory.getComputeGrid();
         try(DataService dataService = targetComputeGrid.getDataService()){
@@ -241,6 +242,7 @@ public class CoreRealmOperationUtil {
         }
         dataSliceOperationResult.finishOperation();
         dataSliceOperationResult.setOperationSummary("Load ConceptionKind Entities To DataSlice Operation");
+        invokerIgnite.close();
         return dataSliceOperationResult;
     }
 
@@ -355,7 +357,7 @@ public class CoreRealmOperationUtil {
         // use this logic to avoid create ready exist ignite nodes has same name
         IgniteConfiguration igniteConfiguration= new IgniteConfiguration();
         igniteConfiguration.setClientMode(true);
-        igniteConfiguration.setIgniteInstanceName("DataSliceCreateThread_"+new Date().getTime());
+        igniteConfiguration.setIgniteInstanceName("DataSliceCreateThread_"+UUID.randomUUID());
         Ignite invokerIgnite =Ignition.start(igniteConfiguration);
         try {
             DataSlice targetDataSlice = dataService.getDataSlice(dataSliceName);
@@ -369,6 +371,7 @@ public class CoreRealmOperationUtil {
         } catch (DataSlicePropertiesStructureException e) {
             throw new RuntimeException(e);
         }
+        invokerIgnite.close();
 
         try{
             CommonConceptionEntitiesAttributesRetrieveResultImpl commonConceptionEntitiesAttributesRetrieveResultImpl
@@ -605,6 +608,8 @@ public class CoreRealmOperationUtil {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            invokerIgnite.close();
         }
     }
 
@@ -658,6 +663,8 @@ public class CoreRealmOperationUtil {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            invokerIgnite.close();
         }
     }
 
@@ -721,6 +728,8 @@ public class CoreRealmOperationUtil {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            invokerIgnite.close();
         }
     }
 }
