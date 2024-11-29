@@ -15,7 +15,7 @@ WORKINGDIR=`/bin/pwd`
 for l in lib/*;
 do LIB=$WORKINGDIR/$l:"$LIB";
 done
-LIB="$WORKINGDIR/docg_dataCompute-0.1.0.jar":"$LIB"
+LIB="$WORKINGDIR/docg_dataCompute-1.0.0.jar":"$LIB"
 #echo $LIB
 #Add extedned jar here
 EXTENDCLASSPATH=.
