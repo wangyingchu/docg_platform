@@ -38,4 +38,5 @@ done
 --add-opens=java.base/java.nio=ALL-UNNAMED \
 --add-opens=java.base/java.util=ALL-UNNAMED \
 --add-opens=java.base/java.lang=ALL-UNNAMED \
+--add-opens=java.base/java.lang.invoke=ALL-UNNAMED \
 -cp $EXTENDCLASSPATH:$LIB "com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationLauncher"

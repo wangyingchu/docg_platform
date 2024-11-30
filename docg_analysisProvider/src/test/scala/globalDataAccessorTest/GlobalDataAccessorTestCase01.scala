@@ -9,22 +9,18 @@ object GlobalDataAccessorTestCase01 extends App{
   val sparkMasterLocation = AnalysisProviderApplicationUtil.getApplicationProperty("sparkMasterLocation")
   val globalDataAccessor = new GlobalDataAccessor(sparkApplicationName,sparkMasterLocation)
 
-
   val dataSliceService = globalDataAccessor.dataService
 
   dataSliceService.listDataSliceNames().forEach(println(_))
 
-
-  /*
-  val wetLandDataSlice = globalDataAccessor.getDataSlice("Streets")
-  println(wetLandDataSlice.getDataSliceMetaInfo.getTotalDataCount)
-
-  val targetDF = globalDataAccessor.getDataFrameFromDataSlice("Streets","defaultGroup")
-  targetDF.printSchema()
-  targetDF.take(50).foreach(println(_))
-  targetDF.persist()
-  */
-
+  val streetsDataSlice = globalDataAccessor.getDataSlice("Streets")
+  if(streetsDataSlice != null){
+    println(streetsDataSlice.getDataSliceMetaInfo.getTotalDataCount)
+    val targetDF = globalDataAccessor.getDataFrameFromDataSlice("Streets","defaultGroup")
+    targetDF.printSchema()
+    targetDF.take(100).foreach(println(_))
+    targetDF.persist()
+  }
 
   Thread.sleep(5000)
   globalDataAccessor.close()
