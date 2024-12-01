@@ -24,9 +24,9 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
 
         AdministrativeDivisionSpatialCalculateRequest administrativeDivisionSpatialCalculateRequest = new AdministrativeDivisionSpatialCalculateRequest();
 
-        administrativeDivisionSpatialCalculateRequest.setSubjectConception("firmData");
+        administrativeDivisionSpatialCalculateRequest.setSubjectConception("Firm");
         //administrativeDivisionSpatialCalculateRequest.setSampleValue(0.5);
-        administrativeDivisionSpatialCalculateRequest.setSampleValue(0.01);
+        administrativeDivisionSpatialCalculateRequest.setSampleValue(0.0001);
 
         String[] subjectReturnProperties = new String[1];
         subjectReturnProperties[0] = "name";
@@ -38,7 +38,7 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
         administrativeDivisionSpatialCalculateRequest.setAdministrativeDivisionReturnProperties(administrativeDivisionReturnProperties);
 
         administrativeDivisionSpatialCalculateRequest.setPredicateType(SpatialCommonConfig.PredicateType.Within);
-        administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.Township);
+        administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.Prefecture);
         //administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.County);
         administrativeDivisionSpatialCalculateRequest.setGeospatialScaleLevel(SpatialCommonConfig.GeospatialScaleLevel.GlobalLevel);
 
@@ -78,7 +78,7 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
                         System.out.println(datalist.size());
                         System.out.println(datalist.get(1000));
                         for(HashMap<String,Object> currentDataRow : datalist){
-                            //System.out.println(currentDataRow);
+                            System.out.println(currentDataRow);
                         }
                     }
 
@@ -100,9 +100,12 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
                     }
                 }
             };
-
+            System.out.println("BEFORE SEND MESSAGE");
             analysisProviderClient.sendAnalyseRequest(administrativeDivisionSpatialCalculateRequest,analyseResponseCallback,2000);
+            //analysisProviderClient.sendAnalyseRequest(administrativeDivisionSpatialCalculateRequest);
+            System.out.println("AFTER SEND MESSAGE");
 
+            //analysisProviderClient.closeSession();
         } catch (AnalysisEngineRuntimeException | ProviderClientInitException e) {
             e.printStackTrace();
         }

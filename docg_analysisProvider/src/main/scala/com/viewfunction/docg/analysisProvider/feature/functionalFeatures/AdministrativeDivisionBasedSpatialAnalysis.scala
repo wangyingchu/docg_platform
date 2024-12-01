@@ -14,10 +14,9 @@ import com.viewfunction.docg.analysisProvider.feature.communication.messagePaylo
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.DataSliceOperationUtil.getDataSlicePropertyType
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.{DataSliceOperationConstant, DataSliceOperationUtil, ResponseDataSourceTech}
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.internal.ignite.util.MassDataOperationUtil
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.DataSlicePropertyType
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.{DataSlice, DataSlicePropertyType}
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.common.CoreRealmOperationUtil
 import org.apache.spark.api.java.function.ForeachPartitionFunction
-
 import org.apache.spark.sql.{DataFrame, Row}
 
 import java.util
@@ -30,8 +29,11 @@ object AdministrativeDivisionBasedSpatialAnalysis {
   def doExecuteDataSliceAdministrativeDivisionSpatialCalculation(globalDataAccessor:GlobalDataAccessor,analyseResponse:AnalyseResponse,
                                                                administrativeDivisionSpatialCalculateRequest:AdministrativeDivisionSpatialCalculateRequest):
   com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset={
+    println("------------------------------------------------------------")
+    println("Start execute doExecuteDataSliceAdministrativeDivisionSpatialCalculation ...")
+    println("------------------------------------------------------------")
     val dataSlice = administrativeDivisionSpatialCalculateRequest.getSubjectConception
-    val sliceGroup = "defaultGroup"
+    val sliceGroup = "defaultSliceGroup"
     val sampleValue:Double = administrativeDivisionSpatialCalculateRequest.getSampleValue
 
     val subjectReturnProperties:Array[String] = administrativeDivisionSpatialCalculateRequest.getSubjectReturnProperties
@@ -115,6 +117,9 @@ object AdministrativeDivisionBasedSpatialAnalysis {
                                                                geospatialScaleLevel:GeospatialScaleLevel,
                                                                sampleValue:Double):
   com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
+    println("------------------------------------------------------------")
+    println("Start execute executeDataSliceAdministrativeDivisionSpatialCalculation ...")
+    println("------------------------------------------------------------")
 
     if(sampleValue<=0 | sampleValue>1){
       throw new AnalysisProviderRuntimeException("sampleValue should in (0,1] range")
@@ -135,8 +140,8 @@ object AdministrativeDivisionBasedSpatialAnalysis {
     val administrativeDivisionDataSlice = getAdministrativeDivisionDataSliceName(geospatialScaleGrade)
     val administrativeDivisionSpatialDFName = administrativeDivisionDataSlice+"_SPDF"
     val administrativeDivisionSpatialAttributeName = administrativeDivisionDataSlice+"_SPAttr"
-    //val administrativeDivisionSpatialDF =
-      globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(administrativeDivisionDataSlice,
+
+    globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(administrativeDivisionDataSlice,
         SpatialAnalysisConstant.GeospatialScaleDataSliceSystemGroup, dataSliceGeometryContent,administrativeDivisionSpatialDFName,administrativeDivisionSpatialAttributeName)
 
     val dataSliceAttributesBuffer = mutable.Buffer[String](CoreRealmOperationUtil.RealmGlobalUID)
@@ -155,6 +160,13 @@ object AdministrativeDivisionBasedSpatialAnalysis {
     val calculateResultDFName = "calculateResultJoinDF"
     val calculateResultDF =
       spatialQueryMetaFunction.spatialJoinQuery(globalDataAccessor,dataSlice_spatialQueryParam,spatialPredicateType,administrativeDivision_spatialQueryParam,calculateResultDFName)
+
+    //println("4444444444444444")
+    //println(calculateResultDF.count())
+
+    //println("-----------------")
+    //calculateResultDF.take(10).foreach(print(_))
+    //println("-----------------")
 
     val newNames = mutable.Buffer[String](dataSlice+"__"+CoreRealmOperationUtil.RealmGlobalUID)
     dataSliceAttributes.foreach(attribute=>{
@@ -203,27 +215,48 @@ object AdministrativeDivisionBasedSpatialAnalysis {
   }
 
   private def generateResultDataSet(globalDataAccessor:GlobalDataAccessor,dataFrame:DataFrame,analyseResponse:AnalyseResponse): com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
+    println("------------------------------------------------------------")
+    println("Start execute generateResultDataSet ...")
+    println("------------------------------------------------------------")
+
+    println("1111111111")
     val dataList = new java.util.ArrayList[java.util.HashMap[String,Object]]
     val structureFields =dataFrame.schema.fields
     val propertiesInfo = new java.util.HashMap[String,String]
     structureFields.foreach(item =>{
       propertiesInfo.put(item.name,item.dataType.typeName)
     })
-
+    println("22222222222222")
     val responseDataFormValue = analyseResponse.getResponseDataForm
     if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.STREAM_BACK)){
+      println("33333333333333A")
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DATA_SLICE)){
+      println("33333333333333B")
       val dataSliceName:String = analyseResponse.getResponseUUID
       DataSliceOperationUtil.createDataSliceAccordingToResponseDataSourceTech(globalDataAccessor.dataService,dataSliceName,DataSliceOperationConstant.AnalysisResponseDataFormGroup,propertiesInfo,ResponseDataSourceTech.SPARK)
-
+      println("444444444444444444")
       val dataSliceProperties:java.util.ArrayList[String] = new java.util.ArrayList[String]()
       dataSliceProperties.add(DataSliceOperationConstant.TempResponseDataSlicePK)
       propertiesInfo.forEach((propertyName,propertyType) =>{
         dataSliceProperties.add(propertyName)
       })
+      println("55555555555555")
 
-      val xx = globalDataAccessor.dataService
 
+
+
+
+
+
+
+
+
+
+
+      //val xx = globalDataAccessor.dataService
+      //var targetDataSlice: DataSlice = globalDataAccessor.getDataSlice(dataSliceName)
+
+      val allPartitionDataList = new java.util.ArrayList[java.util.HashMap[String,Object]]
       dataFrame.foreachPartition(new ForeachPartitionFunction[Row] {
         override def call(iterator: util.Iterator[Row]): Unit = {
 
@@ -233,15 +266,26 @@ object AdministrativeDivisionBasedSpatialAnalysis {
             structureFields.foreach(fieldStructure=>{
               currentItemMap.put(fieldStructure.name,row.get(row.fieldIndex(fieldStructure.name)).asInstanceOf[AnyRef])
             })
+            //targetDataSlice.addDataRecord(currentItemMap)
             currentPartitionDataList.add(currentItemMap)
           })
 
-          //MassDataOperationUtil.massInsertSliceData(xx,dataSliceName,currentPartitionDataList.asInstanceOf[util.List[util.Map[String,Object]]],dataSliceProperties,DataSliceOperationConstant.TempResponseDataSlicePK,10)
+          //println(dataSliceName)
+          //MassDataOperationUtil.massInsertSliceData(xx,dataSliceName,currentPartitionDataList.asInstanceOf[util.List[util.Map[String,Object]]],dataSliceProperties,DataSliceOperationConstant.TempResponseDataSlicePK,2)
           //println(xx)
 
-          println(currentPartitionDataList.size())
+          println(currentPartitionDataList)
+          allPartitionDataList.addAll(currentPartitionDataList)
+
+
         }
       })
+
+      println(allPartitionDataList)
+
+
+      DataSliceOperationUtil.syncDataSliceFromResponseDataset(globalDataAccessor.dataService,dataSliceName,DataSliceOperationConstant.AnalysisResponseDataFormGroup,null,ResponseDataSourceTech.SPARK)
+
 
       /*
       DataSliceOperationUtil.createDataSliceFromResponseDataset(globalDataAccessor.dataServiceInvoker,
