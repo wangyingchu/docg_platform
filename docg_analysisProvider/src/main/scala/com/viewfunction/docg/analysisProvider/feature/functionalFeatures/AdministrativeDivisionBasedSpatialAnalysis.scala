@@ -219,28 +219,26 @@ object AdministrativeDivisionBasedSpatialAnalysis {
     println("Start execute generateResultDataSet ...")
     println("------------------------------------------------------------")
 
-    println("1111111111")
     val dataList = new java.util.ArrayList[java.util.HashMap[String,Object]]
     val structureFields =dataFrame.schema.fields
     val propertiesInfo = new java.util.HashMap[String,String]
     structureFields.foreach(item =>{
       propertiesInfo.put(item.name,item.dataType.typeName)
     })
-    println("22222222222222")
     val responseDataFormValue = analyseResponse.getResponseDataForm
     if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.STREAM_BACK)){
-      println("33333333333333A")
+
+
+
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DATA_SLICE)){
-      println("33333333333333B")
       val dataSliceName:String = analyseResponse.getResponseUUID
       DataSliceOperationUtil.createDataSliceAccordingToResponseDataSourceTech(globalDataAccessor.dataService,dataSliceName,DataSliceOperationConstant.AnalysisResponseDataFormGroup,propertiesInfo,ResponseDataSourceTech.SPARK)
-      println("444444444444444444")
       val dataSliceProperties:java.util.ArrayList[String] = new java.util.ArrayList[String]()
       dataSliceProperties.add(DataSliceOperationConstant.TempResponseDataSlicePK)
       propertiesInfo.forEach((propertyName,propertyType) =>{
         dataSliceProperties.add(propertyName)
       })
-      println("55555555555555")
+
 
 
 
