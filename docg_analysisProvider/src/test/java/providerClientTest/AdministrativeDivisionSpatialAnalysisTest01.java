@@ -26,7 +26,7 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
 
         administrativeDivisionSpatialCalculateRequest.setSubjectConception("Firm");
         //administrativeDivisionSpatialCalculateRequest.setSampleValue(0.5);
-        administrativeDivisionSpatialCalculateRequest.setSampleValue(0.001);
+        administrativeDivisionSpatialCalculateRequest.setSampleValue(0.01);
 
         String[] subjectReturnProperties = new String[1];
         subjectReturnProperties[0] = "name";
