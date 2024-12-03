@@ -25,8 +25,7 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
         AdministrativeDivisionSpatialCalculateRequest administrativeDivisionSpatialCalculateRequest = new AdministrativeDivisionSpatialCalculateRequest();
 
         administrativeDivisionSpatialCalculateRequest.setSubjectConception("Firm");
-        //administrativeDivisionSpatialCalculateRequest.setSampleValue(0.5);
-        administrativeDivisionSpatialCalculateRequest.setSampleValue(0.01);
+        //administrativeDivisionSpatialCalculateRequest.setSampleValue(0.01);
 
         String[] subjectReturnProperties = new String[1];
         subjectReturnProperties[0] = "name";
@@ -38,8 +37,7 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
         administrativeDivisionSpatialCalculateRequest.setAdministrativeDivisionReturnProperties(administrativeDivisionReturnProperties);
 
         administrativeDivisionSpatialCalculateRequest.setPredicateType(SpatialCommonConfig.PredicateType.Within);
-        //administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.Prefecture);
-        administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.County);
+        administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.Township);
         administrativeDivisionSpatialCalculateRequest.setGeospatialScaleLevel(SpatialCommonConfig.GeospatialScaleLevel.GlobalLevel);
 
         administrativeDivisionSpatialCalculateRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.DATA_SLICE);
@@ -76,31 +74,18 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
                     System.out.println(propertiesInfoMap);
 
                     if(analyseResponse.getResponseDataForm().equals(AnalyseRequest.ResponseDataForm.STREAM_BACK)){
+                        System.out.println("STREAM_BACK");
                         System.out.println(datalist.size());
-                        System.out.println("XXXXXXXXXXXXXX");
                         for(HashMap<String,Object> currentDataRow : datalist){
                                 System.out.println(currentDataRow);
                         }
-                       // System.out.println(datalist.get(1000));
-                       // for(HashMap<String,Object> currentDataRow : datalist){
-                       //     System.out.println(currentDataRow);
-                       // }
                     }
 
                     if(analyseResponse.getResponseDataForm().equals(AnalyseRequest.ResponseDataForm.DATA_SLICE)){
-
-                        System.out.println("##################");
+                        System.out.println("DATA_SLICE");
                         System.out.println(responseDataset.getPropertiesInfo());
                         System.out.println(analyseResponse.getResponseUUID());
-
-
-
-                        // System.out.println(datalist.get(1000));
-                        // for(HashMap<String,Object> currentDataRow : datalist){
-                        //     System.out.println(currentDataRow);
-                        // }
                     }
-
 
                     try {
                         analysisProviderClient.closeSession();
@@ -122,9 +107,7 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
             };
             System.out.println("BEFORE SEND MESSAGE");
             analysisProviderClient.sendAnalyseRequest(administrativeDivisionSpatialCalculateRequest,analyseResponseCallback,2000);
-            //analysisProviderClient.sendAnalyseRequest(administrativeDivisionSpatialCalculateRequest);
             System.out.println("AFTER SEND MESSAGE");
-
             //analysisProviderClient.closeSession();
         } catch (AnalysisEngineRuntimeException | ProviderClientInitException e) {
             e.printStackTrace();
