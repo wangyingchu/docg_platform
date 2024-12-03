@@ -42,9 +42,8 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
         administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.County);
         administrativeDivisionSpatialCalculateRequest.setGeospatialScaleLevel(SpatialCommonConfig.GeospatialScaleLevel.GlobalLevel);
 
-        //administrativeDivisionSpatialCalculateRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.DATA_SLICE);
-
-        administrativeDivisionSpatialCalculateRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.STREAM_BACK);
+        administrativeDivisionSpatialCalculateRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.DATA_SLICE);
+        //administrativeDivisionSpatialCalculateRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.STREAM_BACK);
 
         try {
             System.out.println(new Date());
@@ -87,6 +86,21 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
                        //     System.out.println(currentDataRow);
                        // }
                     }
+
+                    if(analyseResponse.getResponseDataForm().equals(AnalyseRequest.ResponseDataForm.DATA_SLICE)){
+
+                        System.out.println("##################");
+                        System.out.println(responseDataset.getPropertiesInfo());
+                        System.out.println(analyseResponse.getResponseUUID());
+
+
+
+                        // System.out.println(datalist.get(1000));
+                        // for(HashMap<String,Object> currentDataRow : datalist){
+                        //     System.out.println(currentDataRow);
+                        // }
+                    }
+
 
                     try {
                         analysisProviderClient.closeSession();

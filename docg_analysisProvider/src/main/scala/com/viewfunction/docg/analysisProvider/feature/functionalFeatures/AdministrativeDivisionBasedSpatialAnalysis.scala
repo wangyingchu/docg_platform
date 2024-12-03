@@ -11,9 +11,10 @@ import com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScal
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredicateType.SpatialPredicateType
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.{AdministrativeDivisionSpatialCalculateRequest, SpatialCommonConfig}
-import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.DataSliceOperationUtil.getDataSlicePropertyType
+import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.DataSliceOperationUtil.{getDataSlicePropertyType, massDataOperationParallelism}
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.{DataSliceOperationConstant, DataSliceOperationUtil, ResponseDataSourceTech}
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.internal.ignite.util.MassDataOperationUtil
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceOperationResult
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.{DataSlice, DataSlicePropertyType}
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.common.CoreRealmOperationUtil
 import org.apache.spark.api.java.function.ForeachPartitionFunction
@@ -178,88 +179,34 @@ object AdministrativeDivisionBasedSpatialAnalysis {
     println(" Start execute generateResultDataSet ...")
     println("------------------------------------------------------------")
 
-    val dataList = new java.util.ArrayList[java.util.HashMap[String,Object]]
+    val responseDataList = new java.util.ArrayList[java.util.HashMap[String,Object]]
     val structureFields =dataFrame.schema.fields
     val propertiesInfo = new java.util.HashMap[String,String]
     structureFields.foreach(item =>{
       propertiesInfo.put(item.name,item.dataType.typeName)
     })
     val responseDataFormValue = analyseResponse.getResponseDataForm
-    if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.STREAM_BACK)){
-      val dataRowArray = dataFrame.collect()
-      dataRowArray.foreach(row=>{
-        val currentMap = new java.util.HashMap[String,Object]
-        dataList.add(currentMap)
-        structureFields.foreach(fieldStructure=>{
-          currentMap.put(fieldStructure.name,row.get(row.fieldIndex(fieldStructure.name)).asInstanceOf[AnyRef])
-        })
+    val responseDataset = new com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset(propertiesInfo,responseDataList)
+    analyseResponse.setResponseData(responseDataset)
+
+    val dataRowArray = dataFrame.collect()
+    dataRowArray.foreach(row=>{
+      val currentMap = new java.util.HashMap[String,Object]
+      responseDataList.add(currentMap)
+      structureFields.foreach(fieldStructure=>{
+        currentMap.put(fieldStructure.name,row.get(row.fieldIndex(fieldStructure.name)).asInstanceOf[AnyRef])
       })
+    })
+
+    if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.STREAM_BACK)){
+      //need do nothing
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DATA_SLICE)){
       val dataSliceName:String = analyseResponse.getResponseUUID
-      DataSliceOperationUtil.createDataSliceAccordingToResponseDataSourceTech(globalDataAccessor.dataService,dataSliceName,DataSliceOperationConstant.AnalysisResponseDataFormGroup,propertiesInfo,ResponseDataSourceTech.SPARK)
-      val dataSliceProperties:java.util.ArrayList[String] = new java.util.ArrayList[String]()
-      dataSliceProperties.add(DataSliceOperationConstant.TempResponseDataSlicePK)
-      propertiesInfo.forEach((propertyName,propertyType) =>{
-        dataSliceProperties.add(propertyName)
-      })
-
-
-
-
-
-
-
-
-
-
-
-
-
-      //val xx = globalDataAccessor.dataService
-      //var targetDataSlice: DataSlice = globalDataAccessor.getDataSlice(dataSliceName)
-
-      val allPartitionDataList = new java.util.ArrayList[java.util.HashMap[String,Object]]
-      dataFrame.foreachPartition(new ForeachPartitionFunction[Row] {
-        override def call(iterator: util.Iterator[Row]): Unit = {
-
-          val currentPartitionDataList = new java.util.ArrayList[java.util.HashMap[String,Object]]
-          iterator.forEachRemaining(row=>{
-            val currentItemMap = new java.util.HashMap[String,Object]
-            structureFields.foreach(fieldStructure=>{
-              currentItemMap.put(fieldStructure.name,row.get(row.fieldIndex(fieldStructure.name)).asInstanceOf[AnyRef])
-            })
-            //targetDataSlice.addDataRecord(currentItemMap)
-            currentPartitionDataList.add(currentItemMap)
-          })
-
-          //println(dataSliceName)
-          //MassDataOperationUtil.massInsertSliceData(xx,dataSliceName,currentPartitionDataList.asInstanceOf[util.List[util.Map[String,Object]]],dataSliceProperties,DataSliceOperationConstant.TempResponseDataSlicePK,2)
-          //println(xx)
-
-          println(currentPartitionDataList)
-          allPartitionDataList.addAll(currentPartitionDataList)
-
-
-        }
-      })
-
-      println(allPartitionDataList)
-
-
-      DataSliceOperationUtil.syncDataSliceFromResponseDataset(globalDataAccessor.dataService,dataSliceName,DataSliceOperationConstant.AnalysisResponseDataFormGroup,null,ResponseDataSourceTech.SPARK)
-
-
-      /*
-      DataSliceOperationUtil.createDataSliceFromResponseDataset(globalDataAccessor.dataServiceInvoker,
-        dataSliceName,DataSliceOperationConstant.AnalysisResponseDataFormGroup,responseDataset,responseDataSourceTech)
-      //clear datalist content
+      DataSliceOperationUtil.syncDataSliceFromResponseDataset(globalDataAccessor.dataService,dataSliceName,DataSliceOperationConstant.AnalysisResponseDataFormGroup,responseDataset,ResponseDataSourceTech.SPARK)
       responseDataset.clearDataList()
-      */
     }
 
-    val responseData = new com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset(propertiesInfo,dataList)
-    analyseResponse.setResponseData(responseData)
-    responseData
+    responseDataset
   }
 
   private def getGeospatialGeometryContent(geospatialScaleLevel:GeospatialScaleLevel):String = {
