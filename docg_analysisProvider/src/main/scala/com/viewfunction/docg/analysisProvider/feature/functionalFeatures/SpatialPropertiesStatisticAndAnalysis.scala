@@ -4,12 +4,13 @@ import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialCommonConfig.PredicateType
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialPropertiesAggregateStatisticRequest.{CalculationOperator, ObjectAggregationType}
-import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialPropertiesAggregateStatisticRequest
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.{SpatialCommonConfig, SpatialPropertiesAggregateStatisticRequest}
 import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredicateType.SpatialPredicateType
 import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial.{SpatialQueryMetaFunction, SpatialQueryParam}
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.DataSliceOperationConstant
-import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredicateType
+import com.viewfunction.docg.analysisProvider.fundamental.spatial.{SpatialPredicateType}
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
 import org.apache.spark.sql.{DataFrame, Row}
 import org.apache.spark.sql.functions.{avg, count, max, min, stddev, sum, variance}
 import org.apache.spark.sql.types.{DoubleType, StructField, StructType}
@@ -20,7 +21,6 @@ import scala.collection.mutable.ArrayBuffer
 object SpatialPropertiesStatisticAndAnalysis {
 
   var sliceGroupName = DataSliceOperationConstant.DefaultDataSliceGroup
-  val spatialValuePropertyName = "CIM_GLGEOMETRYCONTENT"
 
   def executeSpatialPropertiesAggregateStatistic(globalDataAccessor:GlobalDataAccessor,statisticRequest:SpatialPropertiesAggregateStatisticRequest):
   com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
@@ -46,7 +46,12 @@ object SpatialPropertiesStatisticAndAnalysis {
     if(statisticRequest.getSubjectGroup != null){
       sliceGroupName = statisticRequest.getSubjectGroup
     }
-    val subjectConceptionSpDF = globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(subjectConception,sliceGroupName,spatialValuePropertyName,subjectConceptionSpDFName,subjectConceptionSpatialAttributeName)
+    var spatialValueProperty = getGeospatialGeometryContent(SpatialCommonConfig.GeospatialScaleLevel.GlobalLevel)
+    if(statisticRequest.getGeospatialScaleLevel != null) {
+      spatialValueProperty = getGeospatialGeometryContent(statisticRequest.getGeospatialScaleLevel)
+    }
+
+    val subjectConceptionSpDF = globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(subjectConception,sliceGroupName,spatialValueProperty,subjectConceptionSpDFName,subjectConceptionSpatialAttributeName)
     //subjectConceptionSpDF.printSchema()
     val subjectConception_spatialQueryParam = spatial.SpatialQueryParam(subjectConceptionSpDFName,subjectConceptionSpatialAttributeName,mutable.Buffer[String](subjectIdentityProperty))
 
@@ -56,7 +61,7 @@ object SpatialPropertiesStatisticAndAnalysis {
     if(statisticRequest.getObjectGroup != null){
       sliceGroupName = statisticRequest.getObjectGroup
     }
-    val objectConceptionSpDF = globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(objectConception,sliceGroupName,spatialValuePropertyName,objectConceptionSpDFName,objectConceptionSpatialAttributeName)
+    val objectConceptionSpDF = globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(objectConception,sliceGroupName,spatialValueProperty,objectConceptionSpDFName,objectConceptionSpatialAttributeName)
     //objectConceptionSpDF.printSchema()
     val objectConception_spatialQueryParam = spatial.SpatialQueryParam(objectConceptionSpDFName,objectConceptionSpatialAttributeName,mutable.Buffer[String](objectCalculationProperty))
 
@@ -175,5 +180,18 @@ object SpatialPropertiesStatisticAndAnalysis {
     })
 
     new com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset(propertiesInfo,dataList)
+  }
+
+  private def getGeospatialGeometryContent(geospatialScaleLevel:SpatialCommonConfig.GeospatialScaleLevel):String = {
+    var runtimeGeometryContent:String = null
+    geospatialScaleLevel match {
+      case SpatialCommonConfig.GeospatialScaleLevel.GlobalLevel =>
+        runtimeGeometryContent = RealmConstant._GeospatialGLGeometryContent
+      case SpatialCommonConfig.GeospatialScaleLevel.CountryLevel =>
+        runtimeGeometryContent = RealmConstant._GeospatialCLGeometryContent
+      case SpatialCommonConfig.GeospatialScaleLevel.LocalLevel =>
+        runtimeGeometryContent = RealmConstant._GeospatialLLGeometryContent
+    }
+    runtimeGeometryContent
   }
 }

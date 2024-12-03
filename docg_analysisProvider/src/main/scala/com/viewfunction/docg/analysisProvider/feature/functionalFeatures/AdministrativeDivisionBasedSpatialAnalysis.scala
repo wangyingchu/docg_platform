@@ -27,8 +27,9 @@ import scala.collection.mutable.ArrayBuffer
 object AdministrativeDivisionBasedSpatialAnalysis {
 
   @throws(classOf[AnalysisProviderRuntimeException])
-  def doExecuteDataSliceAdministrativeDivisionSpatialCalculation(globalDataAccessor:GlobalDataAccessor,analyseResponse:AnalyseResponse,
-                                                               administrativeDivisionSpatialCalculateRequest:AdministrativeDivisionSpatialCalculateRequest):
+  def doExecuteDataSliceAdministrativeDivisionSpatialCalculation(globalDataAccessor:GlobalDataAccessor,
+                                                                 analyseResponse:AnalyseResponse,
+                                                                 administrativeDivisionSpatialCalculateRequest:AdministrativeDivisionSpatialCalculateRequest):
   com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset={
     println("------------------------------------------------------------")
     println(" Start execute doExecuteDataSliceAdministrativeDivisionSpatialCalculation ...")
@@ -178,7 +179,9 @@ object AdministrativeDivisionBasedSpatialAnalysis {
     generateResultDataSet(globalDataAccessor,dfRenamed,analyseResponse)
   }
 
-  private def generateResultDataSet(globalDataAccessor:GlobalDataAccessor,dataFrame:DataFrame,analyseResponse:AnalyseResponse): com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
+  private def generateResultDataSet(globalDataAccessor:GlobalDataAccessor,
+                                    dataFrame:DataFrame,analyseResponse:AnalyseResponse):
+  com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
     println("------------------------------------------------------------")
     println(" Start execute generateResultDataSet ...")
     println("------------------------------------------------------------")

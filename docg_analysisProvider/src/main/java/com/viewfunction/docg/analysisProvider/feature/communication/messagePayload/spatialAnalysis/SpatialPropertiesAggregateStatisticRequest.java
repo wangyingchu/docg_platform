@@ -35,6 +35,7 @@ public class SpatialPropertiesAggregateStatisticRequest extends AnalyseRequest {
 
     private CalculationOperator calculationOperator;
     private String statisticResultProperty;
+    private SpatialCommonConfig.GeospatialScaleLevel geospatialScaleLevel;
 
     public String getSubjectConception() {
         return subjectConception;
@@ -122,5 +123,13 @@ public class SpatialPropertiesAggregateStatisticRequest extends AnalyseRequest {
 
     public void setObjectGroup(String objectGroup) {
         this.objectGroup = objectGroup;
+    }
+
+    public SpatialCommonConfig.GeospatialScaleLevel getGeospatialScaleLevel() {
+        return geospatialScaleLevel;
+    }
+
+    public void setGeospatialScaleLevel(SpatialCommonConfig.GeospatialScaleLevel geospatialScaleLevel) {
+        this.geospatialScaleLevel = geospatialScaleLevel;
     }
 }
