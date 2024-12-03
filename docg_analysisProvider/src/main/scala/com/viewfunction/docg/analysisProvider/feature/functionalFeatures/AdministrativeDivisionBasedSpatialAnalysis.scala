@@ -34,7 +34,11 @@ object AdministrativeDivisionBasedSpatialAnalysis {
     println(" Start execute doExecuteDataSliceAdministrativeDivisionSpatialCalculation ...")
     println("------------------------------------------------------------")
     val dataSlice = administrativeDivisionSpatialCalculateRequest.getSubjectConception
-    val sliceGroup = "defaultSliceGroup"
+    var sliceGroup = DataSliceOperationConstant.DefaultDataSliceGroup
+    if(administrativeDivisionSpatialCalculateRequest.getSubjectGroup!= null){
+      sliceGroup = administrativeDivisionSpatialCalculateRequest.getSubjectGroup
+    }
+
     val sampleValue:Double = administrativeDivisionSpatialCalculateRequest.getSampleValue
 
     val subjectReturnProperties:Array[String] = administrativeDivisionSpatialCalculateRequest.getSubjectReturnProperties

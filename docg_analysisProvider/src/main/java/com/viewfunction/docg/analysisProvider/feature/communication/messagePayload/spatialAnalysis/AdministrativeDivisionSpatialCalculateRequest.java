@@ -6,6 +6,7 @@ import com.viewfunction.docg.analysisProvider.feature.communication.messagePaylo
 public class AdministrativeDivisionSpatialCalculateRequest extends AnalyseRequest {
 
     private String subjectConception;
+    private String subjectGroup;
     private String[] subjectReturnProperties;
     private String[] administrativeDivisionReturnProperties;
     private SpatialCommonConfig.PredicateType predicateType;
@@ -19,6 +20,14 @@ public class AdministrativeDivisionSpatialCalculateRequest extends AnalyseReques
 
     public void setSubjectConception(String subjectConception) {
         this.subjectConception = subjectConception;
+    }
+
+    public String getSubjectGroup() {
+        return subjectGroup;
+    }
+
+    public void setSubjectGroup(String subjectGroup) {
+        this.subjectGroup = subjectGroup;
     }
 
     public String[] getSubjectReturnProperties() {
