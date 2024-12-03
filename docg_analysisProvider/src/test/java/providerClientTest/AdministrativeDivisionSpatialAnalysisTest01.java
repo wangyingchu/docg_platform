@@ -26,7 +26,7 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
 
         administrativeDivisionSpatialCalculateRequest.setSubjectConception("Firm");
         //administrativeDivisionSpatialCalculateRequest.setSampleValue(0.5);
-        administrativeDivisionSpatialCalculateRequest.setSampleValue(0.0001);
+        administrativeDivisionSpatialCalculateRequest.setSampleValue(0.001);
 
         String[] subjectReturnProperties = new String[1];
         subjectReturnProperties[0] = "name";
@@ -38,11 +38,13 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
         administrativeDivisionSpatialCalculateRequest.setAdministrativeDivisionReturnProperties(administrativeDivisionReturnProperties);
 
         administrativeDivisionSpatialCalculateRequest.setPredicateType(SpatialCommonConfig.PredicateType.Within);
-        administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.Prefecture);
-        //administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.County);
+        //administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.Prefecture);
+        administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.County);
         administrativeDivisionSpatialCalculateRequest.setGeospatialScaleLevel(SpatialCommonConfig.GeospatialScaleLevel.GlobalLevel);
 
-        administrativeDivisionSpatialCalculateRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.DATA_SLICE);
+        //administrativeDivisionSpatialCalculateRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.DATA_SLICE);
+
+        administrativeDivisionSpatialCalculateRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.STREAM_BACK);
 
         try {
             System.out.println(new Date());
@@ -76,10 +78,14 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
 
                     if(analyseResponse.getResponseDataForm().equals(AnalyseRequest.ResponseDataForm.STREAM_BACK)){
                         System.out.println(datalist.size());
-                        System.out.println(datalist.get(1000));
+                        System.out.println("XXXXXXXXXXXXXX");
                         for(HashMap<String,Object> currentDataRow : datalist){
-                            System.out.println(currentDataRow);
+                                System.out.println(currentDataRow);
                         }
+                       // System.out.println(datalist.get(1000));
+                       // for(HashMap<String,Object> currentDataRow : datalist){
+                       //     System.out.println(currentDataRow);
+                       // }
                     }
 
                     try {

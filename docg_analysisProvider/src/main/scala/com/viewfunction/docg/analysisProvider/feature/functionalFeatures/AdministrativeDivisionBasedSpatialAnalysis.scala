@@ -30,7 +30,7 @@ object AdministrativeDivisionBasedSpatialAnalysis {
                                                                administrativeDivisionSpatialCalculateRequest:AdministrativeDivisionSpatialCalculateRequest):
   com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset={
     println("------------------------------------------------------------")
-    println("Start execute doExecuteDataSliceAdministrativeDivisionSpatialCalculation ...")
+    println(" Start execute doExecuteDataSliceAdministrativeDivisionSpatialCalculation ...")
     println("------------------------------------------------------------")
     val dataSlice = administrativeDivisionSpatialCalculateRequest.getSubjectConception
     val sliceGroup = "defaultSliceGroup"
@@ -118,7 +118,7 @@ object AdministrativeDivisionBasedSpatialAnalysis {
                                                                sampleValue:Double):
   com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
     println("------------------------------------------------------------")
-    println("Start execute executeDataSliceAdministrativeDivisionSpatialCalculation ...")
+    println(" Start execute executeDataSliceAdministrativeDivisionSpatialCalculation ...")
     println("------------------------------------------------------------")
 
     if(sampleValue<=0 | sampleValue>1){
@@ -161,13 +161,6 @@ object AdministrativeDivisionBasedSpatialAnalysis {
     val calculateResultDF =
       spatialQueryMetaFunction.spatialJoinQuery(globalDataAccessor,dataSlice_spatialQueryParam,spatialPredicateType,administrativeDivision_spatialQueryParam,calculateResultDFName)
 
-    //println("4444444444444444")
-    //println(calculateResultDF.count())
-
-    //println("-----------------")
-    //calculateResultDF.take(10).foreach(print(_))
-    //println("-----------------")
-
     val newNames = mutable.Buffer[String](dataSlice+"__"+CoreRealmOperationUtil.RealmGlobalUID)
     dataSliceAttributes.foreach(attribute=>{
       newNames += (dataSlice+"__"+attribute)
@@ -180,43 +173,9 @@ object AdministrativeDivisionBasedSpatialAnalysis {
     generateResultDataSet(globalDataAccessor,dfRenamed,analyseResponse)
   }
 
-  private def getGeospatialGeometryContent(geospatialScaleLevel:GeospatialScaleLevel):String = {
-    var runtimeGeometryContent:String = null
-    geospatialScaleLevel match {
-      case GeospatialScaleLevel.GlobalLevel =>
-        runtimeGeometryContent = RealmConstant._GeospatialGLGeometryContent
-      case GeospatialScaleLevel.CountryLevel =>
-        runtimeGeometryContent = RealmConstant._GeospatialCLGeometryContent
-      case GeospatialScaleLevel.LocalLevel =>
-        runtimeGeometryContent = RealmConstant._GeospatialLLGeometryContent
-    }
-    runtimeGeometryContent
-  }
-
-  private def getAdministrativeDivisionDataSliceName(geospatialScaleGrade:GeospatialScaleGrade):String = {
-    var runtimeAdministrativeDivisionDataSliceName:String = null
-    geospatialScaleGrade match {
-      case GeospatialScaleGrade.CONTINENT =>
-        runtimeAdministrativeDivisionDataSliceName = SpatialAnalysisConstant.GeospatialScaleContinentDataSlice
-      case GeospatialScaleGrade.COUNTRY_REGION =>
-        runtimeAdministrativeDivisionDataSliceName = SpatialAnalysisConstant.GeospatialScaleCountryRegionDataSlice
-      case GeospatialScaleGrade.PROVINCE =>
-        runtimeAdministrativeDivisionDataSliceName = SpatialAnalysisConstant.GeospatialScaleProvinceDataSlice
-      case GeospatialScaleGrade.PREFECTURE =>
-        runtimeAdministrativeDivisionDataSliceName = SpatialAnalysisConstant.GeospatialScalePrefectureDataSlice
-      case GeospatialScaleGrade.COUNTY =>
-        runtimeAdministrativeDivisionDataSliceName = SpatialAnalysisConstant.GeospatialScaleCountyDataSlice
-      case GeospatialScaleGrade.TOWNSHIP =>
-        runtimeAdministrativeDivisionDataSliceName = SpatialAnalysisConstant.GeospatialScaleTownshipDataSlice
-      case GeospatialScaleGrade.VILLAGE =>
-        runtimeAdministrativeDivisionDataSliceName = SpatialAnalysisConstant.GeospatialScaleVillageDataSlice
-    }
-    runtimeAdministrativeDivisionDataSliceName
-  }
-
   private def generateResultDataSet(globalDataAccessor:GlobalDataAccessor,dataFrame:DataFrame,analyseResponse:AnalyseResponse): com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
     println("------------------------------------------------------------")
-    println("Start execute generateResultDataSet ...")
+    println(" Start execute generateResultDataSet ...")
     println("------------------------------------------------------------")
 
     val dataList = new java.util.ArrayList[java.util.HashMap[String,Object]]
@@ -227,9 +186,14 @@ object AdministrativeDivisionBasedSpatialAnalysis {
     })
     val responseDataFormValue = analyseResponse.getResponseDataForm
     if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.STREAM_BACK)){
-
-
-
+      val dataRowArray = dataFrame.collect()
+      dataRowArray.foreach(row=>{
+        val currentMap = new java.util.HashMap[String,Object]
+        dataList.add(currentMap)
+        structureFields.foreach(fieldStructure=>{
+          currentMap.put(fieldStructure.name,row.get(row.fieldIndex(fieldStructure.name)).asInstanceOf[AnyRef])
+        })
+      })
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DATA_SLICE)){
       val dataSliceName:String = analyseResponse.getResponseUUID
       DataSliceOperationUtil.createDataSliceAccordingToResponseDataSourceTech(globalDataAccessor.dataService,dataSliceName,DataSliceOperationConstant.AnalysisResponseDataFormGroup,propertiesInfo,ResponseDataSourceTech.SPARK)
@@ -298,9 +262,37 @@ object AdministrativeDivisionBasedSpatialAnalysis {
     responseData
   }
 
-  def xxx(oopps:java.util.ArrayList[java.util.HashMap[String,Object]]):Unit = {
+  private def getGeospatialGeometryContent(geospatialScaleLevel:GeospatialScaleLevel):String = {
+    var runtimeGeometryContent:String = null
+    geospatialScaleLevel match {
+      case GeospatialScaleLevel.GlobalLevel =>
+        runtimeGeometryContent = RealmConstant._GeospatialGLGeometryContent
+      case GeospatialScaleLevel.CountryLevel =>
+        runtimeGeometryContent = RealmConstant._GeospatialCLGeometryContent
+      case GeospatialScaleLevel.LocalLevel =>
+        runtimeGeometryContent = RealmConstant._GeospatialLLGeometryContent
+    }
+    runtimeGeometryContent
+  }
 
-   // MassDataOperationUtil.massInsertSliceData(xx,dataSliceName,currentPartitionDataList.asInstanceOf[util.List[util.Map[String,Object]]],dataSliceProperties,DataSliceOperationConstant.TempResponseDataSlicePK,10)
-
+  private def getAdministrativeDivisionDataSliceName(geospatialScaleGrade:GeospatialScaleGrade):String = {
+    var runtimeAdministrativeDivisionDataSliceName:String = null
+    geospatialScaleGrade match {
+      case GeospatialScaleGrade.CONTINENT =>
+        runtimeAdministrativeDivisionDataSliceName = SpatialAnalysisConstant.GeospatialScaleContinentDataSlice
+      case GeospatialScaleGrade.COUNTRY_REGION =>
+        runtimeAdministrativeDivisionDataSliceName = SpatialAnalysisConstant.GeospatialScaleCountryRegionDataSlice
+      case GeospatialScaleGrade.PROVINCE =>
+        runtimeAdministrativeDivisionDataSliceName = SpatialAnalysisConstant.GeospatialScaleProvinceDataSlice
+      case GeospatialScaleGrade.PREFECTURE =>
+        runtimeAdministrativeDivisionDataSliceName = SpatialAnalysisConstant.GeospatialScalePrefectureDataSlice
+      case GeospatialScaleGrade.COUNTY =>
+        runtimeAdministrativeDivisionDataSliceName = SpatialAnalysisConstant.GeospatialScaleCountyDataSlice
+      case GeospatialScaleGrade.TOWNSHIP =>
+        runtimeAdministrativeDivisionDataSliceName = SpatialAnalysisConstant.GeospatialScaleTownshipDataSlice
+      case GeospatialScaleGrade.VILLAGE =>
+        runtimeAdministrativeDivisionDataSliceName = SpatialAnalysisConstant.GeospatialScaleVillageDataSlice
+    }
+    runtimeAdministrativeDivisionDataSliceName
   }
 }
