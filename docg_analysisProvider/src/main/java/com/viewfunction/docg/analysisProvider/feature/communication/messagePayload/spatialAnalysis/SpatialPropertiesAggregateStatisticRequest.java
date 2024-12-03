@@ -21,7 +21,9 @@ public class SpatialPropertiesAggregateStatisticRequest extends AnalyseRequest {
     }
 
     private String subjectConception;
+    private String subjectGroup;
     private String objectConception;
+    private String objectGroup;
     private SpatialCommonConfig.PredicateType predicateType;
 
     private String subjectIdentityProperty;
@@ -104,5 +106,21 @@ public class SpatialPropertiesAggregateStatisticRequest extends AnalyseRequest {
 
     public void setStatisticResultProperty(String statisticResultProperty) {
         this.statisticResultProperty = statisticResultProperty;
+    }
+
+    public String getSubjectGroup() {
+        return subjectGroup;
+    }
+
+    public void setSubjectGroup(String subjectGroup) {
+        this.subjectGroup = subjectGroup;
+    }
+
+    public String getObjectGroup() {
+        return objectGroup;
+    }
+
+    public void setObjectGroup(String objectGroup) {
+        this.objectGroup = objectGroup;
     }
 }
