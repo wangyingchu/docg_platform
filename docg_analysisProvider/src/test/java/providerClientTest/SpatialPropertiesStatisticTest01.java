@@ -21,17 +21,18 @@ public class SpatialPropertiesStatisticTest01 {
         analysisProviderClient.openSession();
 
         SpatialPropertiesAggregateStatisticRequest spatialPropertiesAggregateStatisticRequest = new SpatialPropertiesAggregateStatisticRequest();
-        spatialPropertiesAggregateStatisticRequest.setSubjectConception("CommunityReportingArea");
-        spatialPropertiesAggregateStatisticRequest.setObjectConception("TreeCanopy");
+        spatialPropertiesAggregateStatisticRequest.setGeospatialScaleLevel(SpatialCommonConfig.GeospatialScaleLevel.GlobalLevel);
+        spatialPropertiesAggregateStatisticRequest.setSubjectConception("GreenLand");
+        spatialPropertiesAggregateStatisticRequest.setObjectConception("AddressAndPlaceName");
         spatialPropertiesAggregateStatisticRequest.setPredicateType(SpatialCommonConfig.PredicateType.Contains);
 
-        spatialPropertiesAggregateStatisticRequest.setSubjectIdentityProperty("OBJECTID");
-        spatialPropertiesAggregateStatisticRequest.setSubjectCalculationProperty("SHAPE_AREA");
-        spatialPropertiesAggregateStatisticRequest.setObjectCalculationProperty("SHAPE_AREA");
-        spatialPropertiesAggregateStatisticRequest.setObjectAggregationType(SpatialPropertiesAggregateStatisticRequest.ObjectAggregationType.SUM);
+        spatialPropertiesAggregateStatisticRequest.setSubjectIdentityProperty("DOCG_REALMGLOBALUID");
+        //spatialPropertiesAggregateStatisticRequest.setSubjectCalculationProperty("NAME");
+        spatialPropertiesAggregateStatisticRequest.setObjectCalculationProperty("ID");
+        spatialPropertiesAggregateStatisticRequest.setObjectAggregationType(SpatialPropertiesAggregateStatisticRequest.ObjectAggregationType.COUNT);
 
-        spatialPropertiesAggregateStatisticRequest.setSubjectReturnProperties(new String[]{"GEN_ALIAS","NEIGHDIST","DETL_NAMES"});
-        spatialPropertiesAggregateStatisticRequest.setCalculationOperator(SpatialPropertiesAggregateStatisticRequest.CalculationOperator.Divide);
+        spatialPropertiesAggregateStatisticRequest.setSubjectReturnProperties(new String[]{"DOCG_REALMGLOBALUID","NAME","CODE"});
+        spatialPropertiesAggregateStatisticRequest.setCalculationOperator(SpatialPropertiesAggregateStatisticRequest.CalculationOperator.Add);
         spatialPropertiesAggregateStatisticRequest.setStatisticResultProperty("CalculationResult");
 
         try {
@@ -52,11 +53,10 @@ public class SpatialPropertiesStatisticTest01 {
                 @Override
                 public void onSuccessResponseReceived(AnalyseResponse analyseResponse) {
                     System.out.println(analyseResponse);
+                    System.out.println(analyseResponse.getRequestUUID());
                     System.out.println(analyseResponse.getResponseUUID());
                     System.out.println(analyseResponse.getResponseDateTime());
-                    System.out.println(analyseResponse.getRequestUUID());
                     System.out.println(analyseResponse.getResponseData());
-
 
                     ResponseDataset responseDataset = (ResponseDataset)analyseResponse.getResponseData();
                     Map<String,String> propertiesInfoMap =  responseDataset.getPropertiesInfo();

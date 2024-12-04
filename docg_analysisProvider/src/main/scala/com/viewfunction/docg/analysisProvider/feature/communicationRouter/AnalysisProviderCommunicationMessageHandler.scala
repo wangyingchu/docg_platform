@@ -33,7 +33,8 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
           senderActor.tell(analyseResponse,communicationActor)
         */
         case communicationMessage: SpatialPropertiesAggregateStatisticRequest =>
-          SpatialPropertiesStatisticAndAnalysis.executeSpatialPropertiesAggregateStatistic(globalDataAccessor,communicationMessage.asInstanceOf[SpatialPropertiesAggregateStatisticRequest])
+          SpatialPropertiesStatisticAndAnalysis.executeSpatialPropertiesAggregateStatistic(
+            globalDataAccessor,analyseResponse,communicationMessage.asInstanceOf[SpatialPropertiesAggregateStatisticRequest])
         case communicationMessage: AdministrativeDivisionSpatialCalculateRequest =>
           AdministrativeDivisionBasedSpatialAnalysis.doExecuteDataSliceAdministrativeDivisionSpatialCalculation(
               globalDataAccessor,analyseResponse,communicationMessage.asInstanceOf[AdministrativeDivisionSpatialCalculateRequest])
