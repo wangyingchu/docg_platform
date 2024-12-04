@@ -65,7 +65,7 @@ public class SpatialPropertiesStatisticTest01 {
                     for(HashMap<String,Object> currentDataRow : datalist){
                         System.out.println(currentDataRow);
                     }
-                    System.out.println();
+                    System.out.println(datalist.size());
                     System.out.println(propertiesInfoMap);
 
                     try {

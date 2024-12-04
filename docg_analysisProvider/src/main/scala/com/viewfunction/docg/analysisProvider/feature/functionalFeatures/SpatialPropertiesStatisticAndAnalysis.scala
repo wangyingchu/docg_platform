@@ -58,13 +58,6 @@ object SpatialPropertiesStatisticAndAnalysis {
 
     val subjectConceptionSpDF = globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(subjectConception,sliceGroupName,spatialValueProperty,subjectConceptionSpDFName,subjectConceptionSpatialAttributeName)
     //subjectConceptionSpDF.printSchema()
-    subjectConceptionSpDF.printSchema()
-
-    val subjectConceptionSpDFdataRowArray = subjectConceptionSpDF.take(1)
-    subjectConceptionSpDFdataRowArray.foreach(row =>{
-      println(row)
-    })
-
     val subjectConception_spatialQueryParam = spatial.SpatialQueryParam(subjectConceptionSpDFName,subjectConceptionSpatialAttributeName,mutable.Buffer[String](subjectIdentityProperty))
 
     //获取Object conception(客体) 空间dataframe
@@ -74,15 +67,7 @@ object SpatialPropertiesStatisticAndAnalysis {
       sliceGroupName = statisticRequest.getObjectGroup
     }
     val objectConceptionSpDF = globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(objectConception,sliceGroupName,spatialValueProperty,objectConceptionSpDFName,objectConceptionSpatialAttributeName)
-    objectConceptionSpDF.printSchema()
-
-    val objectConceptionSpDFArray = objectConceptionSpDF.take(1)
-    objectConceptionSpDFArray.foreach(row =>{
-      println(row)
-    })
-
-
-
+    //objectConceptionSpDF.printSchema()
     val objectConception_spatialQueryParam = spatial.SpatialQueryParam(objectConceptionSpDFName,objectConceptionSpatialAttributeName,mutable.Buffer[String](objectCalculationProperty))
 
     //执行主体客体见的空间join计算
@@ -106,16 +91,7 @@ object SpatialPropertiesStatisticAndAnalysis {
     }
 
     val subject_objectSpJoinDF = spatialQueryMetaFunction.spatialJoinQuery(globalDataAccessor,subjectConception_spatialQueryParam,spatialPredicateType,objectConception_spatialQueryParam,subject_objectSpJoinDFName)
-    subject_objectSpJoinDF.printSchema()
-
-
-    val subject_objectSpJoinDFArray = subject_objectSpJoinDF.take(20)
-    subject_objectSpJoinDFArray.foreach(row =>{
-      println(row)
-    })
-
-
-
+    //subject_objectSpJoinDF.printSchema()
 
     //统计主体空间相关的客体的计算属性的聚合值
     var subject_objectAggResultDF:DataFrame = null
@@ -139,37 +115,16 @@ object SpatialPropertiesStatisticAndAnalysis {
       case spatialAnalysis.SpatialPropertiesAggregateStatisticRequest.ObjectAggregationType.MIN =>
         subject_objectAggResultDF = subject_objectSpJoinDF.groupBy(subjectIdentityProperty).agg(min(objectCalculationProperty))
         aggregateColumnName = "min("+objectCalculationProperty+")"
-
       case spatialAnalysis.SpatialPropertiesAggregateStatisticRequest.ObjectAggregationType.VARIANCE =>
         subject_objectAggResultDF = subject_objectSpJoinDF.groupBy(subjectIdentityProperty).agg(variance(objectCalculationProperty))
         aggregateColumnName = "var_samp("+objectCalculationProperty+")"
     }
-
-
-    subject_objectAggResultDF.printSchema()
-
-
-    val subject_objectAggResultDFArray = subject_objectAggResultDF.take(10)
-    subject_objectAggResultDFArray.foreach(row =>{
-      println(row)
-    })
-
-
-
-
+    //subject_objectAggResultDF.printSchema()
 
     //join 初始主体 df，获取相关属性信息
     val mergedSubjectStaticResultDF = subject_objectAggResultDF.join(subjectConceptionSpDF,subjectIdentityProperty)
-    mergedSubjectStaticResultDF.printSchema()
+    //mergedSubjectStaticResultDF.printSchema()
 
-
-
-
-
-
-
-
-    println(8)
     //过滤所需的属性信息
     val propertiesList:ArrayBuffer[String] = ArrayBuffer[String](aggregateColumnName)
     if(subjectCalculationProperty != null){
@@ -181,14 +136,7 @@ object SpatialPropertiesStatisticAndAnalysis {
       })
     }
     val filterResDF = mergedSubjectStaticResultDF.select(subjectIdentityProperty,propertiesList:_*)
-    println(9)
-
-    filterResDF.printSchema()
-
-    val dataRowArray = filterResDF.take(10)
-    dataRowArray.foreach(row =>{
-      println(row)
-    })
+    //filterResDF.printSchema()
 
     //执行主体与客体的聚合统计值的数值计算
     if(subjectCalculationProperty != null && calculationOperator!= null && statisticResultProperty != null){
@@ -214,33 +162,13 @@ object SpatialPropertiesStatisticAndAnalysis {
         )
       )
       val calculationResultDF = globalDataAccessor.getSparkSession().createDataFrame(calculationResultRDD,schema)
-      println(calculationResultDF)
-      println(calculationResultDF.take(1))
+      //calculationResultDF.printSchema()
 
       val finalCalculatedDF = filterResDF.join(calculationResultDF,subjectIdentityProperty)
-      println(10)
-
-
-      println(finalCalculatedDF.take(1))
-
       //finalCalculatedDF.printSchema()
-
-      //finalCalculatedDF.collect()
-
-      val dataRowArray = finalCalculatedDF.collect()
-      dataRowArray.foreach(row =>{
-        val currentMap = new java.util.HashMap[String,Object]
-        //responseDataList.add(currentMap)
-        //structureFields.foreach(fieldStructure=>{
-       //   currentMap.put(fieldStructure.name,row.get(row.fieldIndex(fieldStructure.name)).asInstanceOf[AnyRef])
-       // })
-        println(row)
-
-      })
 
       generateResultDataSet(finalCalculatedDF.schema,finalCalculatedDF.collect(),analyseResponse)
     }else{
-      println(11)
       generateResultDataSet(filterResDF.schema,filterResDF.collect(),analyseResponse)
     }
   }
@@ -264,8 +192,7 @@ object SpatialPropertiesStatisticAndAnalysis {
         currentMap.put(fieldStructure.name,row.get(row.fieldIndex(fieldStructure.name)).asInstanceOf[AnyRef])
       })
     })
-println(propertiesInfo)
-    println(dataList)
+
     val responseDataset = new com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset(propertiesInfo,dataList)
     analyseResponse.setResponseData(responseDataset)
     responseDataset
