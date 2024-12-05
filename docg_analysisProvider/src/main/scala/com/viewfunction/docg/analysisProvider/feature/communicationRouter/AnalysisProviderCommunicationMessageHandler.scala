@@ -32,7 +32,7 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
     }
 
     if(analyseResponse!=null){
-      analyseResponse.generateMetaInfo()
+      analyseResponse.setResponseDateTime{123456}
       senderActor.tell(analyseResponse,communicationActor)
     }
   }

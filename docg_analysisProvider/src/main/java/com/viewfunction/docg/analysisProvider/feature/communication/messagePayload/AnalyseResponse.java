@@ -1,6 +1,5 @@
 package com.viewfunction.docg.analysisProvider.feature.communication.messagePayload;
 
-import java.util.Date;
 import java.util.UUID;
 
 public class AnalyseResponse {
@@ -36,21 +35,15 @@ public class AnalyseResponse {
         this.responseData = responseData;
     }
 
-    public boolean generateMetaInfo(){
-        if(this.responseUUID == null){
-            this.responseUUID = "R"+UUID.randomUUID().toString().replaceAll("-","");
-            responseDateTime = new Date().getTime() ;
-            return true;
-        }else{
-            return false;
-        }
-    }
-
     public AnalyseRequest.ResponseDataForm getResponseDataForm() {
         return responseDataForm;
     }
 
     public void setResponseDataForm(AnalyseRequest.ResponseDataForm responseDataForm) {
         this.responseDataForm = responseDataForm;
+    }
+
+    public void setResponseDateTime(long responseDateTime) {
+        this.responseDateTime = responseDateTime;
     }
 }
