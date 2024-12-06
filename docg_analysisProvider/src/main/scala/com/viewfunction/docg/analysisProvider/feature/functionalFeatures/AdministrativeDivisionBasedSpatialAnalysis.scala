@@ -186,14 +186,16 @@ object AdministrativeDivisionBasedSpatialAnalysis {
     println(" Start execute generateResultDataSet ...")
     println("------------------------------------------------------------")
 
-    val responseDataList = new java.util.ArrayList[java.util.HashMap[String,Object]]
     val structureFields =dataFrame.schema.fields
-    val propertiesInfo = new java.util.HashMap[String,String]
+    val propertiesMetaInfo = new java.util.HashMap[String,Object]
     structureFields.foreach(item =>{
-      propertiesInfo.put(item.name,item.dataType.typeName)
+      propertiesMetaInfo.put(item.name,item.dataType.typeName)
     })
-    val responseDataFormValue = analyseResponse.getResponseDataForm
-    val responseDataset = new com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset(propertiesInfo,responseDataList)
+    val propertiesInfoList = new java.util.ArrayList[java.util.HashMap[String,Object]]
+    propertiesInfoList.add(propertiesMetaInfo)
+
+    val responseDataList = new java.util.ArrayList[java.util.HashMap[String,Object]]
+    val responseDataset = new com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset(propertiesInfoList,responseDataList)
     analyseResponse.setResponseData(responseDataset)
 
     val dataRowArray = dataFrame.collect()
@@ -205,6 +207,7 @@ object AdministrativeDivisionBasedSpatialAnalysis {
       })
     })
 
+    val responseDataFormValue = analyseResponse.getResponseDataForm
     if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.STREAM_BACK)){
       //need do nothing
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DATA_SLICE)){

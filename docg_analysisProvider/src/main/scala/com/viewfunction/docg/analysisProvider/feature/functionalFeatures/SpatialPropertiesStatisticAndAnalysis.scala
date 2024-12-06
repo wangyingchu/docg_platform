@@ -15,7 +15,6 @@ import org.apache.spark.sql.{DataFrame, Row}
 import org.apache.spark.sql.functions.{avg, count, max, min, stddev, sum, variance}
 import org.apache.spark.sql.types.{DoubleType, StructField, StructType}
 
-import java.util.Date
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
@@ -184,14 +183,6 @@ object SpatialPropertiesStatisticAndAnalysis {
         currentMap.put(fieldStructure.name,row.get(row.fieldIndex(fieldStructure.name)).asInstanceOf[AnyRef])
       })
     })
-
-    val testdata = new java.util.HashMap[String,Object]
-    testdata.put("RequestUUID",analyseResponse.getRequestUUID)
-    testdata.put("ResponseUUID",analyseResponse.getResponseUUID)
-    testdata.put("ResponseDateTime",new Date)
-    testdata.put("ResponseDataForm",analyseResponse.getResponseDataForm)
-    testdata.put("int",Integer.valueOf(1000))
-    dataList.add(testdata)
 
     val propertiesMetaInfo = new java.util.HashMap[String,Object]
     structureFields.foreach(item =>{

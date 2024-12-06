@@ -1,15 +1,16 @@
 package com.viewfunction.docg.analysisProvider.feature.communication.messagePayload;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.UUID;
 
 public class AnalyseResponse implements Serializable {
 
     private String requestUUID;
     private String responseUUID;
-    private long responseDateTime;
     private Object responseData;
     private AnalyseRequest.ResponseDataForm responseDataForm;
+    private Date responseDateTime;
 
     public AnalyseResponse(String requestUUID){
         this.requestUUID = requestUUID;
@@ -22,10 +23,6 @@ public class AnalyseResponse implements Serializable {
 
     public String getResponseUUID(){
         return responseUUID;
-    }
-
-    public long getResponseDateTime(){
-        return responseDateTime;
     }
 
     public Object getResponseData() {
@@ -44,7 +41,11 @@ public class AnalyseResponse implements Serializable {
         this.responseDataForm = responseDataForm;
     }
 
-    public void setResponseDateTime(long responseDateTime) {
+    public Date getResponseDateTime() {
+        return responseDateTime;
+    }
+
+    public void setResponseDateTime(Date responseDateTime) {
         this.responseDateTime = responseDateTime;
     }
 }

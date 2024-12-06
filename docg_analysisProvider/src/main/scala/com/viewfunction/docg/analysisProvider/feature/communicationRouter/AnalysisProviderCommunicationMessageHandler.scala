@@ -19,7 +19,7 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
         analyseResponse.setResponseDataForm(communicationMessage.getResponseDataForm)
         val serviceDatetime = new Date
         println("################################################################")
-        println("Execute Analysis: "+communicationMessage.getRequestUUID + " at: " + serviceDatetime + "")
+        println("Service Analysis: "+communicationMessage.getRequestUUID + " at: " + serviceDatetime + "")
         println("################################################################")
     }
     if(analyseResponse!=null){
@@ -41,6 +41,7 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
     if(analyseResponse!=null){
       val responseDatetime = new Date
       val requestUUID = analyseResponse.getRequestUUID
+      analyseResponse.setResponseDateTime(responseDatetime)
       println("################################################################")
       println("Response Analysis: "+requestUUID+ " at: " + responseDatetime + "")
       println("################################################################")

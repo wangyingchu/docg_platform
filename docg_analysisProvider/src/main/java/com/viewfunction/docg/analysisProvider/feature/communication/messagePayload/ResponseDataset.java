@@ -9,10 +9,6 @@ public class ResponseDataset implements Serializable {
     private ArrayList<HashMap<String,Object>> dataList;
     private ArrayList<HashMap<String,Object>> propertiesInfoList;
 
-    public ResponseDataset(HashMap<String,String> propertiesInfo,ArrayList<HashMap<String,Object>> dataList){
-        this.setDataList(dataList);
-    }
-
     public ResponseDataset(ArrayList<HashMap<String,Object>> propertiesInfoList,ArrayList<HashMap<String,Object>> dataList){
         this.setDataList(dataList);
         this.setPropertiesInfoList(propertiesInfoList);

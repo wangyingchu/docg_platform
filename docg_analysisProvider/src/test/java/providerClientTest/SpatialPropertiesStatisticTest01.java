@@ -41,18 +41,7 @@ public class SpatialPropertiesStatisticTest01 {
             System.out.println(new Date());
             AnalyseResponseCallback analyseResponseCallback = new AnalyseResponseCallback() {
                 @Override
-                public void onResponseReceived(Object analyseResponseObject) {
-                    //System.out.println(analyseResponseObject);
-                    //System.out.println(new Date());
-/*
-                    try {
-                        analysisProviderClient.closeSession();
-                    } catch (ProviderClientInitException e) {
-                        e.printStackTrace();
-                    }
-
- */
-                }
+                public void onResponseReceived(Object analyseResponseObject) {}
 
                 @Override
                 public void onSuccessResponseReceived(AnalyseResponse analyseResponse) {
@@ -60,30 +49,19 @@ public class SpatialPropertiesStatisticTest01 {
                     System.out.println("ResponseDataForm: "+analyseResponse.getResponseDataForm());
                     System.out.println("RequestUUID: "+analyseResponse.getRequestUUID());
                     System.out.println("ResponseUUID: "+analyseResponse.getResponseUUID());
-                    System.out.println(new Date(analyseResponse.getResponseDateTime()));
                     System.out.println(analyseResponse.getResponseDateTime());
+
                     System.out.println(analyseResponse.getResponseData());
-
                     ResponseDataset responseDataset = (ResponseDataset)analyseResponse.getResponseData();
-                    //HashMap<String,String> propertiesInfoMap =  responseDataset.getPropertiesInfo();
-
-                   // Object objectInfoMap =  responseDataset.getPropertiesObjectInfo();
-                    //System.out.println((HashMap<String,Object>)objectInfoMap);
-
-
                     ArrayList<HashMap<String,Object>> datalist = responseDataset.getDataList();
 
                     for(HashMap<String,Object> currentDataRow : datalist){
                         System.out.println(currentDataRow);
                     }
+
                     System.out.println(datalist.size());
-
-                    //System.out.println(responseDataset.getPropertiesInfoList());
-
                     System.out.println( responseDataset.getPropertiesInfo());
 
-                    //System.out.println(propertiesInfoMap.keySet());
-                    //System.out.println(objectInfoMap.getClass());
                     try {
                         analysisProviderClient.closeSession();
                     } catch (ProviderClientInitException e) {
