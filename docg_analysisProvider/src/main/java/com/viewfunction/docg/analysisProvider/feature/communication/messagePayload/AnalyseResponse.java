@@ -1,8 +1,9 @@
 package com.viewfunction.docg.analysisProvider.feature.communication.messagePayload;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class AnalyseResponse {
+public class AnalyseResponse implements Serializable {
 
     private String requestUUID;
     private String responseUUID;

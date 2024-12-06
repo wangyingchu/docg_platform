@@ -6,6 +6,7 @@ import com.viewfunction.docg.analysisProvider.providerApplication.communication.
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.{AdministrativeDivisionSpatialCalculateRequest, SpatialPropertiesAggregateStatisticRequest}
 import com.viewfunction.docg.analysisProvider.feature.functionalFeatures.{AdministrativeDivisionBasedSpatialAnalysis, SpatialPropertiesStatisticAndAnalysis}
+import java.util.Date
 
 class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalDataAccessor) extends CommunicationMessageHandler{
   override def handleMessage(communicationMessage: Any, communicationActor: ActorRef, senderActor: ActorRef): Unit = {
@@ -16,15 +17,21 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
       case communicationMessage:AnalyseRequest =>
         analyseResponse = new AnalyseResponse(communicationMessage.getRequestUUID)
         analyseResponse.setResponseDataForm(communicationMessage.getResponseDataForm)
+        val serviceDatetime = new Date
+        println("################################################################")
+        println("Execute Analysis: "+communicationMessage.getRequestUUID + " at: " + serviceDatetime + "")
+        println("################################################################")
     }
     if(analyseResponse!=null){
       communicationMessage match {
         case communicationMessage: String =>
           println(s" $communicationMessage")
 
+
         case communicationMessage: SpatialPropertiesAggregateStatisticRequest =>
-          SpatialPropertiesStatisticAndAnalysis.executeSpatialPropertiesAggregateStatistic(
+          SpatialPropertiesStatisticAndAnalysis.doExecuteSpatialPropertiesAggregateStatistic(
             globalDataAccessor,analyseResponse,communicationMessage.asInstanceOf[SpatialPropertiesAggregateStatisticRequest])
+
         case communicationMessage: AdministrativeDivisionSpatialCalculateRequest =>
           AdministrativeDivisionBasedSpatialAnalysis.doExecuteDataSliceAdministrativeDivisionSpatialCalculation(
             globalDataAccessor,analyseResponse,communicationMessage.asInstanceOf[AdministrativeDivisionSpatialCalculateRequest])
@@ -32,7 +39,11 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
     }
 
     if(analyseResponse!=null){
-      analyseResponse.setResponseDateTime{123456}
+      val responseDatetime = new Date
+      val requestUUID = analyseResponse.getRequestUUID
+      println("################################################################")
+      println("Response Analysis: "+requestUUID+ " at: " + responseDatetime + "")
+      println("################################################################")
       senderActor.tell(analyseResponse,communicationActor)
     }
   }
