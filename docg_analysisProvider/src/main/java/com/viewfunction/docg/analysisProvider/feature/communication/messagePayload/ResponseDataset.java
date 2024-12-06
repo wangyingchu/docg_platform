@@ -3,16 +3,22 @@ package com.viewfunction.docg.analysisProvider.feature.communication.messagePayl
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class ResponseDataset implements Serializable {
 
     private ArrayList<HashMap<String,Object>> dataList;
-    private Map<String,String> propertiesInfo;
+    private HashMap<String,String> propertiesInfo;
 
-    public ResponseDataset(Map<String,String> propertiesInfo,ArrayList<HashMap<String,Object>> dataList){
+    private ArrayList<HashMap<String,Object>> propertiesInfoList;
+
+    public ResponseDataset(HashMap<String,String> propertiesInfo,ArrayList<HashMap<String,Object>> dataList){
         this.setDataList(dataList);
-        this.setPropertiesInfo(propertiesInfo);
+        //this.setPropertiesInfo(propertiesInfo);
+    }
+
+    public ResponseDataset(ArrayList<HashMap<String,Object>> propertiesInfoList,ArrayList<HashMap<String,Object>> dataList){
+        this.setDataList(dataList);
+        this.setPropertiesInfoList(propertiesInfoList);
     }
 
     public ArrayList<HashMap<String,Object>> getDataList() {
@@ -23,15 +29,25 @@ public class ResponseDataset implements Serializable {
         this.dataList = dataList;
     }
 
-    public Map<String, String> getPropertiesInfo() {
-        return propertiesInfo;
+    public HashMap<String, String> getPropertiesInfo() {
+
+        Object propertiesInfoObject = propertiesInfoList.get(0);
+        return (HashMap<String, String>)propertiesInfoObject;
     }
 
-    private void setPropertiesInfo(Map<String, String> propertiesInfo) {
-        this.propertiesInfo = propertiesInfo;
-    }
+    //private void setPropertiesInfo(HashMap<String, String> propertiesInfo) {
+    //    this.propertiesInfo = propertiesInfo;
+    //}
 
     public void clearDataList(){
         this.dataList.clear();
+    }
+
+    public ArrayList<HashMap<String, Object>> getPropertiesInfoList() {
+        return propertiesInfoList;
+    }
+
+    public void setPropertiesInfoList(ArrayList<HashMap<String, Object>> propertiesInfoList) {
+        this.propertiesInfoList = propertiesInfoList;
     }
 }

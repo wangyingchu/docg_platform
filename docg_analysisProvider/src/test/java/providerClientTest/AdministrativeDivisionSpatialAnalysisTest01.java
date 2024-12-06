@@ -7,25 +7,21 @@ import com.viewfunction.docg.analysisProvider.client.exception.ProviderClientIni
 import com.viewfunction.docg.analysisProvider.feature.communication.AnalyseResponseCallback;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseRequest;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseResponse;
-import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.AdministrativeDivisionSpatialCalculateRequest;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialCommonConfig;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 public class AdministrativeDivisionSpatialAnalysisTest01 {
 
     public static void main(String[] args) throws AnalyseRequestFormatException {
-        AnalysisProviderClient analysisProviderClient = new AnalysisProviderClient("127.0.0.1",9999);
+        AnalysisProviderClient analysisProviderClient = new AnalysisProviderClient("192.168.3.59",9900);
         analysisProviderClient.openSession();
 
         AdministrativeDivisionSpatialCalculateRequest administrativeDivisionSpatialCalculateRequest = new AdministrativeDivisionSpatialCalculateRequest();
 
         administrativeDivisionSpatialCalculateRequest.setSubjectConception("Firm");
-        administrativeDivisionSpatialCalculateRequest.setSampleValue(0.0001);
+        administrativeDivisionSpatialCalculateRequest.setSampleValue(0.00011);
 
         String[] subjectReturnProperties = new String[1];
         subjectReturnProperties[0] = "name";
@@ -37,8 +33,8 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
         administrativeDivisionSpatialCalculateRequest.setAdministrativeDivisionReturnProperties(administrativeDivisionReturnProperties);
 
         administrativeDivisionSpatialCalculateRequest.setPredicateType(SpatialCommonConfig.PredicateType.Within);
-        //administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.Township);
-        administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.County);
+        administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.Township);
+        //administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.Province);
         administrativeDivisionSpatialCalculateRequest.setGeospatialScaleLevel(SpatialCommonConfig.GeospatialScaleLevel.GlobalLevel);
 
         //administrativeDivisionSpatialCalculateRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.DATA_SLICE);
@@ -50,22 +46,33 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
                 @Override
                 public void onResponseReceived(Object analyseResponseObject) {
 
-                    System.out.println(new Date());
-                    System.out.println(analyseResponseObject);
+                    //System.out.println(new Date());
+                    //System.out.println(analyseResponseObject);
+
+
+                    System.out.println("onResponseReceived");
+
+                    /*
                     try {
                         analysisProviderClient.closeSession();
                     } catch (ProviderClientInitException e) {
                         e.printStackTrace();
                     }
+                    */
+
                 }
 
                 @Override
                 public void onSuccessResponseReceived(AnalyseResponse analyseResponse) {
-                    System.out.println(analyseResponse);
+
+                    System.out.println("onSuccessResponseReceived");
+
+                    System.out.println(analyseResponse.getRequestUUID());
                     System.out.println(analyseResponse.getResponseUUID());
-                    System.out.println(analyseResponse.getResponseDateTime());
-                    System.out.println(analyseResponse.getResponseData());
+                    //System.out.println(analyseResponse.getResponseDateTime());
+                   // System.out.println(analyseResponse.getResponseData());
                     System.out.println("===================");
+                    /*
                     System.out.println(analyseResponse.getRequestUUID());
                     System.out.println(analyseResponse.getResponseDataForm());
 
@@ -87,7 +94,7 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
                         System.out.println(responseDataset.getPropertiesInfo());
                         System.out.println(analyseResponse.getResponseUUID());
                     }
-
+*/
                     try {
                         analysisProviderClient.closeSession();
                     } catch (ProviderClientInitException e) {
@@ -97,8 +104,10 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
 
                 @Override
                 public void onFailureResponseReceived(Throwable throwable) {
-                    System.out.println(throwable);
-                    System.out.println(new Date());
+                    System.out.println("onFailureResponseReceived");
+
+                    //System.out.println(throwable);
+                    //System.out.println(new Date());
                     try {
                         analysisProviderClient.closeSession();
                     } catch (ProviderClientInitException e) {

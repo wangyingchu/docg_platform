@@ -15,20 +15,29 @@ import org.apache.spark.sql.{DataFrame, Row}
 import org.apache.spark.sql.functions.{avg, count, max, min, stddev, sum, variance}
 import org.apache.spark.sql.types.{DoubleType, StructField, StructType}
 
+import java.util.Date
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
+
+import java.lang.Integer
 
 object SpatialPropertiesStatisticAndAnalysis {
 
   var sliceGroupName = DataSliceOperationConstant.DefaultDataSliceGroup
 
-  def executeSpatialPropertiesAggregateStatistic(globalDataAccessor:GlobalDataAccessor,
+  def doExecuteSpatialPropertiesAggregateStatistic(globalDataAccessor:GlobalDataAccessor,
                                                  analyseResponse:AnalyseResponse,
                                                  statisticRequest:SpatialPropertiesAggregateStatisticRequest):
   com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
-    println("------------------------------------------------------------")
-    println(" Start execute executeSpatialPropertiesAggregateStatistic ...")
-    println("------------------------------------------------------------")
+    println()
+    println(" Start execute doExecuteSpatialPropertiesAggregateStatistic ...")
+
+
+
+    analyseResponse.setResponseDateTime(55667788)
+
+
+
     val objectConception = statisticRequest.getObjectConception
     val subjectConception = statisticRequest.getSubjectConception
     val predicateType:PredicateType = statisticRequest.getPredicateType
@@ -174,15 +183,9 @@ object SpatialPropertiesStatisticAndAnalysis {
   }
 
   def generateResultDataSet(dataStructure:StructType,dataRowArray:Array[Row],analyseResponse:AnalyseResponse): com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
-    println("------------------------------------------------------------")
     println(" Start execute generateResultDataSet ...")
-    println("------------------------------------------------------------")
-
     val structureFields = dataStructure.fields
-    val propertiesInfo = new java.util.HashMap[String,String]
-    structureFields.foreach(item =>{
-      propertiesInfo.put(item.name,item.dataType.typeName)
-    })
+
 
     val dataList = new java.util.ArrayList[java.util.HashMap[String,Object]]
     dataRowArray.foreach(row=>{
@@ -193,7 +196,29 @@ object SpatialPropertiesStatisticAndAnalysis {
       })
     })
 
-    val responseDataset = new com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset(propertiesInfo,dataList)
+    val testdata = new java.util.HashMap[String,Object]
+    testdata.put("RequestUUID",analyseResponse.getRequestUUID)
+    testdata.put("ResponseUUID",analyseResponse.getResponseUUID)
+    testdata.put("ResponseDateTime",new Date)
+    testdata.put("ResponseDataForm",analyseResponse.getResponseDataForm)
+    testdata.put("int",Integer.valueOf(1000))
+    dataList.add(testdata)
+
+    val propertiesInfo = new java.util.HashMap[String,String]
+
+    val metaInfo = new java.util.HashMap[String,Object]
+
+    structureFields.foreach(item =>{
+      propertiesInfo.put(item.name,item.dataType.typeName)
+      testdata.put(item.name,item.dataType.typeName)
+      metaInfo.put(item.name,item.dataType.typeName)
+    })
+
+    val metaInfoList = new java.util.ArrayList[java.util.HashMap[String,Object]]
+    metaInfoList.add(metaInfo)
+
+
+    val responseDataset = new com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset(metaInfoList,dataList)
     analyseResponse.setResponseData(responseDataset)
     responseDataset
   }

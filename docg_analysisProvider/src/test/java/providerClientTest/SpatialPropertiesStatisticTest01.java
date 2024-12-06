@@ -4,15 +4,15 @@ import com.viewfunction.docg.analysisProvider.client.AnalysisProviderClient;
 import com.viewfunction.docg.analysisProvider.client.exception.AnalysisEngineRuntimeException;
 import com.viewfunction.docg.analysisProvider.client.exception.ProviderClientInitException;
 import com.viewfunction.docg.analysisProvider.feature.communication.AnalyseResponseCallback;
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseRequest;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseResponse;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset;
-import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialPropertiesAggregateStatisticRequest;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialCommonConfig;
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialPropertiesAggregateStatisticRequest;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 public class SpatialPropertiesStatisticTest01 {
 
@@ -35,39 +35,55 @@ public class SpatialPropertiesStatisticTest01 {
         spatialPropertiesAggregateStatisticRequest.setCalculationOperator(SpatialPropertiesAggregateStatisticRequest.CalculationOperator.Add);
         spatialPropertiesAggregateStatisticRequest.setStatisticResultProperty("CalculationResult");
 
+        spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.STREAM_BACK);
+
         try {
             System.out.println(new Date());
             AnalyseResponseCallback analyseResponseCallback = new AnalyseResponseCallback() {
                 @Override
                 public void onResponseReceived(Object analyseResponseObject) {
-                    System.out.println(analyseResponseObject);
-                    System.out.println(new Date());
-
+                    //System.out.println(analyseResponseObject);
+                    //System.out.println(new Date());
+/*
                     try {
                         analysisProviderClient.closeSession();
                     } catch (ProviderClientInitException e) {
                         e.printStackTrace();
                     }
+
+ */
                 }
 
                 @Override
                 public void onSuccessResponseReceived(AnalyseResponse analyseResponse) {
                     System.out.println(analyseResponse);
-                    System.out.println(analyseResponse.getRequestUUID());
-                    System.out.println(analyseResponse.getResponseUUID());
+                    System.out.println("ResponseDataForm: "+analyseResponse.getResponseDataForm());
+                    System.out.println("RequestUUID: "+analyseResponse.getRequestUUID());
+                    System.out.println("ResponseUUID: "+analyseResponse.getResponseUUID());
+                    System.out.println(new Date(analyseResponse.getResponseDateTime()));
                     System.out.println(analyseResponse.getResponseDateTime());
                     System.out.println(analyseResponse.getResponseData());
 
                     ResponseDataset responseDataset = (ResponseDataset)analyseResponse.getResponseData();
-                    Map<String,String> propertiesInfoMap =  responseDataset.getPropertiesInfo();
+                    //HashMap<String,String> propertiesInfoMap =  responseDataset.getPropertiesInfo();
+
+                   // Object objectInfoMap =  responseDataset.getPropertiesObjectInfo();
+                    //System.out.println((HashMap<String,Object>)objectInfoMap);
+
+
                     ArrayList<HashMap<String,Object>> datalist = responseDataset.getDataList();
 
                     for(HashMap<String,Object> currentDataRow : datalist){
                         System.out.println(currentDataRow);
                     }
                     System.out.println(datalist.size());
-                    System.out.println(propertiesInfoMap);
 
+                    System.out.println(responseDataset.getPropertiesInfoList());
+
+                    System.out.println( responseDataset.getPropertiesInfo());
+
+                    //System.out.println(propertiesInfoMap.keySet());
+                    //System.out.println(objectInfoMap.getClass());
                     try {
                         analysisProviderClient.closeSession();
                     } catch (ProviderClientInitException e) {
