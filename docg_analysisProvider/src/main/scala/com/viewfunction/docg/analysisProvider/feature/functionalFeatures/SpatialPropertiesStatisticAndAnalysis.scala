@@ -19,8 +19,6 @@ import java.util.Date
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-import java.lang.Integer
-
 object SpatialPropertiesStatisticAndAnalysis {
 
   var sliceGroupName = DataSliceOperationConstant.DefaultDataSliceGroup
@@ -29,15 +27,7 @@ object SpatialPropertiesStatisticAndAnalysis {
                                                  analyseResponse:AnalyseResponse,
                                                  statisticRequest:SpatialPropertiesAggregateStatisticRequest):
   com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
-    println()
     println(" Start execute doExecuteSpatialPropertiesAggregateStatistic ...")
-
-
-
-    analyseResponse.setResponseDateTime(55667788)
-
-
-
     val objectConception = statisticRequest.getObjectConception
     val subjectConception = statisticRequest.getSubjectConception
     val predicateType:PredicateType = statisticRequest.getPredicateType
@@ -186,7 +176,6 @@ object SpatialPropertiesStatisticAndAnalysis {
     println(" Start execute generateResultDataSet ...")
     val structureFields = dataStructure.fields
 
-
     val dataList = new java.util.ArrayList[java.util.HashMap[String,Object]]
     dataRowArray.foreach(row=>{
       val currentMap = new java.util.HashMap[String,Object]
@@ -204,21 +193,15 @@ object SpatialPropertiesStatisticAndAnalysis {
     testdata.put("int",Integer.valueOf(1000))
     dataList.add(testdata)
 
-    val propertiesInfo = new java.util.HashMap[String,String]
-
-    val metaInfo = new java.util.HashMap[String,Object]
-
+    val propertiesMetaInfo = new java.util.HashMap[String,Object]
     structureFields.foreach(item =>{
-      propertiesInfo.put(item.name,item.dataType.typeName)
-      testdata.put(item.name,item.dataType.typeName)
-      metaInfo.put(item.name,item.dataType.typeName)
+      propertiesMetaInfo.put(item.name,item.dataType.typeName)
     })
 
-    val metaInfoList = new java.util.ArrayList[java.util.HashMap[String,Object]]
-    metaInfoList.add(metaInfo)
+    val propertiesInfoList = new java.util.ArrayList[java.util.HashMap[String,Object]]
+    propertiesInfoList.add(propertiesMetaInfo)
 
-
-    val responseDataset = new com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset(metaInfoList,dataList)
+    val responseDataset = new com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset(propertiesInfoList,dataList)
     analyseResponse.setResponseData(responseDataset)
     responseDataset
   }

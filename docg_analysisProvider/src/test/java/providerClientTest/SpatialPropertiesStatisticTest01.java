@@ -78,7 +78,7 @@ public class SpatialPropertiesStatisticTest01 {
                     }
                     System.out.println(datalist.size());
 
-                    System.out.println(responseDataset.getPropertiesInfoList());
+                    //System.out.println(responseDataset.getPropertiesInfoList());
 
                     System.out.println( responseDataset.getPropertiesInfo());
 
