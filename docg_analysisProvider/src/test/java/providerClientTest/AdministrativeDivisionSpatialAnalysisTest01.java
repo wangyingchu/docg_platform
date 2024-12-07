@@ -7,15 +7,18 @@ import com.viewfunction.docg.analysisProvider.client.exception.ProviderClientIni
 import com.viewfunction.docg.analysisProvider.feature.communication.AnalyseResponseCallback;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseRequest;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseResponse;
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.AdministrativeDivisionSpatialCalculateRequest;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialCommonConfig;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 public class AdministrativeDivisionSpatialAnalysisTest01 {
 
     public static void main(String[] args) throws AnalyseRequestFormatException {
-        AnalysisProviderClient analysisProviderClient = new AnalysisProviderClient("192.168.3.59",9900);
+        AnalysisProviderClient analysisProviderClient = new AnalysisProviderClient("127.0.0.1",9900);
         analysisProviderClient.openSession();
 
         AdministrativeDivisionSpatialCalculateRequest administrativeDivisionSpatialCalculateRequest = new AdministrativeDivisionSpatialCalculateRequest();
@@ -37,64 +40,36 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
         //administrativeDivisionSpatialCalculateRequest.setGeospatialScaleGrade(SpatialCommonConfig.GeospatialScaleGrade.Province);
         administrativeDivisionSpatialCalculateRequest.setGeospatialScaleLevel(SpatialCommonConfig.GeospatialScaleLevel.GlobalLevel);
 
-        //administrativeDivisionSpatialCalculateRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.DATA_SLICE);
-        administrativeDivisionSpatialCalculateRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.STREAM_BACK);
+        administrativeDivisionSpatialCalculateRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.DATA_SLICE);
+        //administrativeDivisionSpatialCalculateRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.STREAM_BACK);
 
         try {
             System.out.println(new Date());
             AnalyseResponseCallback analyseResponseCallback = new AnalyseResponseCallback() {
                 @Override
                 public void onResponseReceived(Object analyseResponseObject) {
-
-                    //System.out.println(new Date());
-                    //System.out.println(analyseResponseObject);
-
-
                     System.out.println("onResponseReceived");
-
-                    /*
-                    try {
-                        analysisProviderClient.closeSession();
-                    } catch (ProviderClientInitException e) {
-                        e.printStackTrace();
-                    }
-                    */
-
                 }
 
                 @Override
                 public void onSuccessResponseReceived(AnalyseResponse analyseResponse) {
+                    System.out.println(analyseResponse);
+                    System.out.println("ResponseDataForm: "+analyseResponse.getResponseDataForm());
+                    System.out.println("RequestUUID: "+analyseResponse.getRequestUUID());
+                    System.out.println("ResponseUUID: "+analyseResponse.getResponseUUID());
+                    System.out.println(analyseResponse.getResponseDateTime());
 
-                    System.out.println("onSuccessResponseReceived");
-
-                    System.out.println(analyseResponse.getRequestUUID());
-                    System.out.println(analyseResponse.getResponseUUID());
-                    //System.out.println(analyseResponse.getResponseDateTime());
-                   // System.out.println(analyseResponse.getResponseData());
-                    System.out.println("===================");
-                    /*
-                    System.out.println(analyseResponse.getRequestUUID());
-                    System.out.println(analyseResponse.getResponseDataForm());
-
+                    System.out.println(analyseResponse.getResponseData());
                     ResponseDataset responseDataset = (ResponseDataset)analyseResponse.getResponseData();
-                    Map<String,String> propertiesInfoMap =  responseDataset.getPropertiesInfo();
                     ArrayList<HashMap<String,Object>> datalist = responseDataset.getDataList();
-                    System.out.println(propertiesInfoMap);
 
-                    if(analyseResponse.getResponseDataForm().equals(AnalyseRequest.ResponseDataForm.STREAM_BACK)){
-                        System.out.println("STREAM_BACK");
-                        System.out.println(datalist.size());
-                        for(HashMap<String,Object> currentDataRow : datalist){
-                                System.out.println(currentDataRow);
-                        }
+                    for(HashMap<String,Object> currentDataRow : datalist){
+                        System.out.println(currentDataRow);
                     }
 
-                    if(analyseResponse.getResponseDataForm().equals(AnalyseRequest.ResponseDataForm.DATA_SLICE)){
-                        System.out.println("DATA_SLICE");
-                        System.out.println(responseDataset.getPropertiesInfo());
-                        System.out.println(analyseResponse.getResponseUUID());
-                    }
-*/
+                    System.out.println(datalist.size());
+                    System.out.println(responseDataset.getPropertiesInfo());
+
                     try {
                         analysisProviderClient.closeSession();
                     } catch (ProviderClientInitException e) {
