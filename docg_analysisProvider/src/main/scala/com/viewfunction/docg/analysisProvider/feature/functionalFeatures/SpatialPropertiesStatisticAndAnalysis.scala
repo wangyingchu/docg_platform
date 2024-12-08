@@ -131,7 +131,9 @@ object SpatialPropertiesStatisticAndAnalysis {
     }
     if(subjectReturnProperties!=null){
       subjectReturnProperties.foreach(propItem=>{
-        propertiesList += propItem
+        if(!propItem.equalsIgnoreCase(CoreRealmOperationUtil.RealmGlobalUID)){
+          propertiesList += propItem
+        }
       })
     }
     val filterResDF = mergedSubjectStaticResultDF.select(subjectIdentityProperty,propertiesList:_*)
