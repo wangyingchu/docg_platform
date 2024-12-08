@@ -139,7 +139,6 @@ object SpatialPropertiesStatisticAndAnalysis {
 
     val newNames = mutable.Buffer[String](CoreRealmOperationUtil.RealmGlobalUID)
     propertiesList.foreach(attribute=>{
-      println(attribute)
       var tempStr = attribute.replaceAll("\\(","__")
       tempStr = tempStr.replaceAll("\\)","")
         newNames += tempStr
