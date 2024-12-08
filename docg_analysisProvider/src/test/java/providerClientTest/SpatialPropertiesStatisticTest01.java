@@ -31,10 +31,11 @@ public class SpatialPropertiesStatisticTest01 {
         spatialPropertiesAggregateStatisticRequest.setObjectCalculationProperty("ID");
         spatialPropertiesAggregateStatisticRequest.setObjectAggregationType(SpatialPropertiesAggregateStatisticRequest.ObjectAggregationType.COUNT);
 
-        spatialPropertiesAggregateStatisticRequest.setSubjectReturnProperties(new String[]{"DOCG_REALMGLOBALUID","NAME","CODE"});
+        spatialPropertiesAggregateStatisticRequest.setSubjectReturnProperties(new String[]{"NAME","CODE"});
         spatialPropertiesAggregateStatisticRequest.setCalculationOperator(SpatialPropertiesAggregateStatisticRequest.CalculationOperator.Add);
         spatialPropertiesAggregateStatisticRequest.setStatisticResultProperty("CalculationResult");
 
+        //spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.DATA_SLICE);
         spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.STREAM_BACK);
 
         try {

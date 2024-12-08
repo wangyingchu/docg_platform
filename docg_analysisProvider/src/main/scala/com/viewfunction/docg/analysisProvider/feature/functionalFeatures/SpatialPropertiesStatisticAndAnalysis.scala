@@ -1,16 +1,17 @@
 package com.viewfunction.docg.analysisProvider.feature.functionalFeatures
 
-import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
+import com.viewfunction.docg.analysisProvider.feature.common.{GlobalDataAccessor, ResultDataSetUtil}
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.{AnalyseResponse, spatialAnalysis}
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialCommonConfig.PredicateType
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialPropertiesAggregateStatisticRequest.{CalculationOperator, ObjectAggregationType}
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.{SpatialCommonConfig, SpatialPropertiesAggregateStatisticRequest}
 import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredicateType.SpatialPredicateType
-import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial.{SpatialQueryMetaFunction, SpatialQueryParam}
+import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial.SpatialQueryMetaFunction
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.DataSliceOperationConstant
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredicateType
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.common.CoreRealmOperationUtil
 import org.apache.spark.sql.{DataFrame, Row}
 import org.apache.spark.sql.functions.{avg, count, max, min, stddev, sum, variance}
 import org.apache.spark.sql.types.{DoubleType, StructField, StructType}
@@ -136,6 +137,16 @@ object SpatialPropertiesStatisticAndAnalysis {
     val filterResDF = mergedSubjectStaticResultDF.select(subjectIdentityProperty,propertiesList:_*)
     //filterResDF.printSchema()
 
+    val newNames = mutable.Buffer[String](CoreRealmOperationUtil.RealmGlobalUID)
+    propertiesList.foreach(attribute=>{
+      println(attribute)
+      var tempStr = attribute.replaceAll("\\(","__")
+      tempStr = tempStr.replaceAll("\\)","")
+        newNames += tempStr
+      })
+
+    val resultDataSetUtil = new ResultDataSetUtil
+
     //执行主体与客体的聚合统计值的数值计算
     if(subjectCalculationProperty != null && calculationOperator!= null && statisticResultProperty != null){
       val calculationDF = filterResDF.select(subjectIdentityProperty,aggregateColumnName,subjectCalculationProperty)
@@ -165,36 +176,14 @@ object SpatialPropertiesStatisticAndAnalysis {
       val finalCalculatedDF = filterResDF.join(calculationResultDF,subjectIdentityProperty)
       //finalCalculatedDF.printSchema()
 
-      generateResultDataSet(finalCalculatedDF.schema,finalCalculatedDF.collect(),analyseResponse)
+      val dfRenamed = finalCalculatedDF.toDF(newNames: _*)
+      //dfRenamed.printSchema()
+      resultDataSetUtil.generateResultDataSet(globalDataAccessor,dfRenamed,analyseResponse)
     }else{
-      generateResultDataSet(filterResDF.schema,filterResDF.collect(),analyseResponse)
+      val dfRenamed = filterResDF.toDF(newNames: _*)
+      //dfRenamed.printSchema()
+      resultDataSetUtil.generateResultDataSet(globalDataAccessor,dfRenamed,analyseResponse)
     }
-  }
-
-  def generateResultDataSet(dataStructure:StructType,dataRowArray:Array[Row],analyseResponse:AnalyseResponse): com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
-    println(" Start execute generateResultDataSet ...")
-    val structureFields = dataStructure.fields
-
-    val dataList = new java.util.ArrayList[java.util.HashMap[String,Object]]
-    dataRowArray.foreach(row=>{
-      val currentMap = new java.util.HashMap[String,Object]
-      dataList.add(currentMap)
-      structureFields.foreach(fieldStructure=>{
-        currentMap.put(fieldStructure.name,row.get(row.fieldIndex(fieldStructure.name)).asInstanceOf[AnyRef])
-      })
-    })
-
-    val propertiesMetaInfo = new java.util.HashMap[String,Object]
-    structureFields.foreach(item =>{
-      propertiesMetaInfo.put(item.name,item.dataType.typeName)
-    })
-
-    val propertiesInfoList = new java.util.ArrayList[java.util.HashMap[String,Object]]
-    propertiesInfoList.add(propertiesMetaInfo)
-
-    val responseDataset = new com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset(propertiesInfoList,dataList)
-    analyseResponse.setResponseData(responseDataset)
-    responseDataset
   }
 
   private def getGeospatialGeometryContent(geospatialScaleLevel:SpatialCommonConfig.GeospatialScaleLevel):String = {

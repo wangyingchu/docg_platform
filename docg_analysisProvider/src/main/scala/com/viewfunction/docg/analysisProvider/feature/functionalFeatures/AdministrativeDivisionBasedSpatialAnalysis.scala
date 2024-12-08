@@ -1,7 +1,7 @@
 package com.viewfunction.docg.analysisProvider.feature.functionalFeatures
 
 import com.viewfunction.docg.analysisProvider.exception.AnalysisProviderRuntimeException
-import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
+import com.viewfunction.docg.analysisProvider.feature.common.{GlobalDataAccessor, ResultDataSetUtil}
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.{AnalyseRequest, AnalyseResponse, spatialAnalysis}
 import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial
 import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial.SpatialQueryMetaFunction
@@ -11,16 +11,9 @@ import com.viewfunction.docg.analysisProvider.fundamental.spatial.GeospatialScal
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredicateType.SpatialPredicateType
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.{AdministrativeDivisionSpatialCalculateRequest, SpatialCommonConfig}
-import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.DataSliceOperationUtil.{getDataSlicePropertyType, massDataOperationParallelism}
-import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.{DataSliceOperationConstant, DataSliceOperationUtil, ResponseDataSourceTech}
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.internal.ignite.util.MassDataOperationUtil
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.payload.DataSliceOperationResult
-import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.{DataSlice, DataSlicePropertyType}
+import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.DataSliceOperationConstant
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.common.CoreRealmOperationUtil
-import org.apache.spark.api.java.function.ForeachPartitionFunction
-import org.apache.spark.sql.{DataFrame, Row}
 
-import java.util
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
@@ -31,9 +24,8 @@ object AdministrativeDivisionBasedSpatialAnalysis {
                                                                  analyseResponse:AnalyseResponse,
                                                                  administrativeDivisionSpatialCalculateRequest:AdministrativeDivisionSpatialCalculateRequest):
   com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset={
-    println("------------------------------------------------------------")
     println(" Start execute doExecuteDataSliceAdministrativeDivisionSpatialCalculation ...")
-    println("------------------------------------------------------------")
+
     val dataSlice = administrativeDivisionSpatialCalculateRequest.getSubjectConception
     var sliceGroup = DataSliceOperationConstant.DefaultDataSliceGroup
     if(administrativeDivisionSpatialCalculateRequest.getSubjectGroup!= null){
@@ -123,9 +115,7 @@ object AdministrativeDivisionBasedSpatialAnalysis {
                                                                geospatialScaleLevel:GeospatialScaleLevel,
                                                                sampleValue:Double):
   com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
-    println("------------------------------------------------------------")
     println(" Start execute executeDataSliceAdministrativeDivisionSpatialCalculation ...")
-    println("------------------------------------------------------------")
 
     if(sampleValue<=0 | sampleValue>1){
       throw new AnalysisProviderRuntimeException("sampleValue should in (0,1] range")
@@ -176,47 +166,9 @@ object AdministrativeDivisionBasedSpatialAnalysis {
       newNames += (geospatialScaleGrade+"__"+attribute)
     })
     val dfRenamed = calculateResultDF.toDF(newNames: _*)
-    generateResultDataSet(globalDataAccessor,dfRenamed,analyseResponse)
-  }
 
-  private def generateResultDataSet(globalDataAccessor:GlobalDataAccessor,
-                                    dataFrame:DataFrame,analyseResponse:AnalyseResponse):
-  com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
-    println("------------------------------------------------------------")
-    println(" Start execute generateResultDataSet ...")
-    println("------------------------------------------------------------")
-
-    val structureFields =dataFrame.schema.fields
-    val propertiesMetaInfo = new java.util.HashMap[String,Object]
-    structureFields.foreach(item =>{
-      propertiesMetaInfo.put(item.name,item.dataType.typeName)
-    })
-    val propertiesInfoList = new java.util.ArrayList[java.util.HashMap[String,Object]]
-    propertiesInfoList.add(propertiesMetaInfo)
-
-    val responseDataList = new java.util.ArrayList[java.util.HashMap[String,Object]]
-    val responseDataset = new com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset(propertiesInfoList,responseDataList)
-    analyseResponse.setResponseData(responseDataset)
-
-    val dataRowArray = dataFrame.collect()
-    dataRowArray.foreach(row=>{
-      val currentMap = new java.util.HashMap[String,Object]
-      responseDataList.add(currentMap)
-      structureFields.foreach(fieldStructure=>{
-        currentMap.put(fieldStructure.name,row.get(row.fieldIndex(fieldStructure.name)).asInstanceOf[AnyRef])
-      })
-    })
-
-    val responseDataFormValue = analyseResponse.getResponseDataForm
-    if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.STREAM_BACK)){
-      //need do nothing
-    }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DATA_SLICE)){
-      val dataSliceName:String = analyseResponse.getResponseUUID
-      DataSliceOperationUtil.syncDataSliceFromResponseDataset(globalDataAccessor.dataService,dataSliceName,DataSliceOperationConstant.AnalysisResponseDataFormGroup,responseDataset,ResponseDataSourceTech.SPARK)
-      responseDataset.clearDataList()
-    }
-
-    responseDataset
+    val resultDataSetUtil = new ResultDataSetUtil
+    resultDataSetUtil.generateResultDataSet(globalDataAccessor,dfRenamed,analyseResponse)
   }
 
   private def getGeospatialGeometryContent(geospatialScaleLevel:GeospatialScaleLevel):String = {
