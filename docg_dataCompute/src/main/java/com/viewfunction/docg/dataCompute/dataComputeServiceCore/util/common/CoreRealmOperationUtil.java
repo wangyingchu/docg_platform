@@ -145,7 +145,9 @@ public class CoreRealmOperationUtil {
         for(String currentAttributeName : attributeNameSet){
             String conceptionKindAttributeName = sliceAndKindAttributeMapping.get(currentAttributeName);
             if(!conceptionKindAttributeName.equals(conceptionEntityUIDNameAlias)){
-                attributeNamesList.add(conceptionKindAttributeName);
+                if(!attributeNamesList.contains(conceptionKindAttributeName)){
+                    attributeNamesList.add(conceptionKindAttributeName);
+                }
             }
         }
 
