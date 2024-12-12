@@ -179,11 +179,11 @@ object SpatialPropertiesStatisticAndAnalysis {
 
       val dfRenamed = finalCalculatedDF.toDF(newNames: _*)
       //dfRenamed.printSchema()
-      resultDataSetUtil.generateResultDataSet(globalDataAccessor,dfRenamed,analyseResponse)
+      resultDataSetUtil.generateResultDataSet(globalDataAccessor,dfRenamed,analyseResponse,statisticRequest)
     }else{
       val dfRenamed = filterResDF.toDF(newNames: _*)
       //dfRenamed.printSchema()
-      resultDataSetUtil.generateResultDataSet(globalDataAccessor,dfRenamed,analyseResponse)
+      resultDataSetUtil.generateResultDataSet(globalDataAccessor,dfRenamed,analyseResponse,statisticRequest)
     }
   }
 

@@ -1,14 +1,16 @@
 package com.viewfunction.docg.analysisProvider.feature.communication.messagePayload;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class AnalyseRequest{
 
-    public enum ResponseDataForm {STREAM_BACK,DATA_SLICE}
+    public enum ResponseDataForm {STREAM_BACK,DATA_SLICE,CONCEPTION_KIND}
     private String uuid;
     private long requestDateTime;
     private ResponseDataForm responseDataForm;
+    private HashMap<String,Object> requestParameters;
 
     public String getRequestUUID(){
         return this.uuid;
@@ -37,5 +39,13 @@ public class AnalyseRequest{
 
     public void setResponseDataForm(ResponseDataForm responseDataForm) {
         this.responseDataForm = responseDataForm;
+    }
+
+    public HashMap<String, Object> getRequestParameters() {
+        return requestParameters;
+    }
+
+    public void setRequestParameters(HashMap<String, Object> requestParameters) {
+        this.requestParameters = requestParameters;
     }
 }

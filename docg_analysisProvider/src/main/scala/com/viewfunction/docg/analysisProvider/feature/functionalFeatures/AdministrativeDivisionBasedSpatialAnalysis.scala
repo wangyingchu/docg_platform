@@ -99,14 +99,15 @@ object AdministrativeDivisionBasedSpatialAnalysis {
         calGeospatialScaleLevel = GeospatialScaleLevel.LocalLevel
     }
 
-    executeDataSliceAdministrativeDivisionSpatialCalculation(globalDataAccessor,analyseResponse,dataSlice,sliceGroup,
-      calSubjectReturnProperties,calSpatialPredicateType,calGeospatialScaleGrade,
+    executeDataSliceAdministrativeDivisionSpatialCalculation(globalDataAccessor,analyseResponse,administrativeDivisionSpatialCalculateRequest,
+      dataSlice,sliceGroup,calSubjectReturnProperties,calSpatialPredicateType,calGeospatialScaleGrade,
       calAdministrativeDivisionReturnProperties,calGeospatialScaleLevel,sampleValue)
   }
 
   @throws(classOf[AnalysisProviderRuntimeException])
   def executeDataSliceAdministrativeDivisionSpatialCalculation(globalDataAccessor:GlobalDataAccessor,
                                                                analyseResponse:AnalyseResponse,
+                                                               administrativeDivisionSpatialCalculateRequest:AdministrativeDivisionSpatialCalculateRequest,
                                                                dataSlice:String,sliceGroup:String,
                                                                dataSliceAttributes: mutable.Buffer[String],
                                                                spatialPredicateType:SpatialPredicateType,
@@ -168,7 +169,7 @@ object AdministrativeDivisionBasedSpatialAnalysis {
     val dfRenamed = calculateResultDF.toDF(newNames: _*)
 
     val resultDataSetUtil = new ResultDataSetUtil
-    resultDataSetUtil.generateResultDataSet(globalDataAccessor,dfRenamed,analyseResponse)
+    resultDataSetUtil.generateResultDataSet(globalDataAccessor,dfRenamed,analyseResponse,administrativeDivisionSpatialCalculateRequest)
   }
 
   private def getGeospatialGeometryContent(geospatialScaleLevel:GeospatialScaleLevel):String = {

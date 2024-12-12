@@ -4,11 +4,14 @@ import com.viewfunction.docg.analysisProvider.feature.communication.messagePaylo
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.{DataSliceOperationConstant, DataSliceOperationUtil, ResponseDataSourceTech}
 import org.apache.spark.sql.DataFrame
 
+import java.util
+
 class ResultDataSetUtil {
 
   def generateResultDataSet(globalDataAccessor:GlobalDataAccessor,
                             dataFrame:DataFrame,
-                            analyseResponse:AnalyseResponse):
+                            analyseResponse:AnalyseResponse,
+                            analyseRequest:AnalyseRequest):
   com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
     println(" Start execute generateResultDataSet ...")
 
@@ -40,6 +43,10 @@ class ResultDataSetUtil {
       val dataSliceName:String = analyseResponse.getResponseUUID
       DataSliceOperationUtil.syncDataSliceFromResponseDataset(globalDataAccessor.dataService,dataSliceName,DataSliceOperationConstant.AnalysisResponseDataFormGroup,responseDataset,ResponseDataSourceTech.SPARK)
       responseDataset.clearDataList()
+    }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.CONCEPTION_KIND)){
+      val requestParameters:util.HashMap[String,AnyRef] = analyseRequest.getRequestParameters
+
+
     }
 
     responseDataset
