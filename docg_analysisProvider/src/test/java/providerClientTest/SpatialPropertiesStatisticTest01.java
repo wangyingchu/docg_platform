@@ -9,6 +9,7 @@ import com.viewfunction.docg.analysisProvider.feature.communication.messagePaylo
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialCommonConfig;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialPropertiesAggregateStatisticRequest;
+import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.CoreRealmOperationConstant;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,8 +37,10 @@ public class SpatialPropertiesStatisticTest01 {
         spatialPropertiesAggregateStatisticRequest.setStatisticResultProperty("CalculationResult");
 
         //spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.DATA_SLICE);
-        spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.STREAM_BACK);
-
+        spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.CONCEPTION_KIND);
+        HashMap<String,Object> map = new HashMap<>();
+        map.put(CoreRealmOperationConstant.ConceptionkindName(),"TestConceptionKindName");
+        spatialPropertiesAggregateStatisticRequest.setRequestParameters(map);
         try {
             System.out.println(new Date());
             AnalyseResponseCallback analyseResponseCallback = new AnalyseResponseCallback() {

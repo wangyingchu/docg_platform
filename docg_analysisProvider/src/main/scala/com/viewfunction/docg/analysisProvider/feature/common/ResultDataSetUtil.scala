@@ -1,6 +1,7 @@
 package com.viewfunction.docg.analysisProvider.feature.common
 
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.{AnalyseRequest, AnalyseResponse}
+import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.{CoreRealmOperationConstant, CoreRealmOperationUtil}
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.{DataSliceOperationConstant, DataSliceOperationUtil, ResponseDataSourceTech}
 import org.apache.spark.sql.DataFrame
 
@@ -44,11 +45,15 @@ class ResultDataSetUtil {
       DataSliceOperationUtil.syncDataSliceFromResponseDataset(globalDataAccessor.dataService,dataSliceName,DataSliceOperationConstant.AnalysisResponseDataFormGroup,responseDataset,ResponseDataSourceTech.SPARK)
       responseDataset.clearDataList()
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.CONCEPTION_KIND)){
-      val requestParameters:util.HashMap[String,AnyRef] = analyseRequest.getRequestParameters
-
-
+      if(analyseRequest.getRequestParameters != null){
+        val requestParameters:util.HashMap[String,AnyRef] = analyseRequest.getRequestParameters
+        if(requestParameters.containsKey(CoreRealmOperationConstant.ConceptionkindName)){
+          val targetConceptionKind:String = requestParameters.get(CoreRealmOperationConstant.ConceptionkindName).toString
+          CoreRealmOperationUtil.syncConceptionKindFromResponseDataset(targetConceptionKind,responseDataset)
+          responseDataset.clearDataList()
+        }
+      }
     }
-
     responseDataset
   }
 
