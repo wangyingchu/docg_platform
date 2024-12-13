@@ -1,6 +1,5 @@
 package com.viewfunction.docg.analysisProvider.feature.common
 
-import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialPropertiesAggregateStatisticRequest
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.{AnalyseRequest, AnalyseResponse}
 import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.{CoreRealmOperationConstant, CoreRealmOperationUtil}
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.{DataSliceOperationConstant, DataSliceOperationUtil, ResponseDataSourceTech}
