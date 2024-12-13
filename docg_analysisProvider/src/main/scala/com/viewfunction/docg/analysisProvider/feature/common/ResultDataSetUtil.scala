@@ -1,5 +1,6 @@
 package com.viewfunction.docg.analysisProvider.feature.common
 
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialPropertiesAggregateStatisticRequest
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.{AnalyseRequest, AnalyseResponse}
 import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.{CoreRealmOperationConstant, CoreRealmOperationUtil}
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.{DataSliceOperationConstant, DataSliceOperationUtil, ResponseDataSourceTech}
@@ -46,7 +47,7 @@ class ResultDataSetUtil {
       responseDataset.clearDataList()
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.CONCEPTION_KIND)){
       if(analyseRequest.getRequestParameters != null){
-        val requestParameters:util.HashMap[String,AnyRef] = analyseRequest.getRequestParameters
+        val requestParameters:util.HashMap[String,AnyRef] = analyseRequest.getRequestParameters.asInstanceOf[util.HashMap[String,AnyRef]]
         if(requestParameters.containsKey(CoreRealmOperationConstant.ConceptionkindName)){
           val targetConceptionKind:String = requestParameters.get(CoreRealmOperationConstant.ConceptionkindName).toString
           CoreRealmOperationUtil.syncConceptionKindFromResponseDataset(targetConceptionKind,responseDataset)

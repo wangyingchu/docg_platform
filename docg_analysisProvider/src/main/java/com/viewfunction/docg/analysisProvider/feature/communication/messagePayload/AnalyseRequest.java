@@ -10,7 +10,7 @@ public class AnalyseRequest{
     private String uuid;
     private long requestDateTime;
     private ResponseDataForm responseDataForm;
-    private HashMap<String,Object> requestParameters;
+    private Object requestParameters;
 
     public String getRequestUUID(){
         return this.uuid;
@@ -41,7 +41,7 @@ public class AnalyseRequest{
         this.responseDataForm = responseDataForm;
     }
 
-    public HashMap<String, Object> getRequestParameters() {
+    public Object getRequestParameters() {
         return requestParameters;
     }
 
