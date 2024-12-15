@@ -1,6 +1,7 @@
 package com.viewfunction.docg.analysisProvider.fundamental.coreRealm
 
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset
+import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.ConceptionEntitiesInsertMode.ConceptionEntitiesInsertMode
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue
@@ -13,7 +14,10 @@ object CoreRealmOperationUtil {
 
   val massDataOperationParallelism = AnalysisProviderApplicationUtil.getApplicationProperty("massDataOperationParallelism")
 
-  def syncConceptionKindFromResponseDataset(conceptionKindName:String, responseDataset:ResponseDataset):Unit = {
+  def syncConceptionKindFromResponseDataset(conceptionKindName:String,
+                                            responseDataset:ResponseDataset,
+                                            conceptionEntitiesInsertMode:ConceptionEntitiesInsertMode,
+                                            conceptionEntityPKAttributeName:String):Unit = {
     val coreRealm:CoreRealm = RealmTermFactory.getDefaultCoreRealm()
     try {
       coreRealm.openGlobalSession()
@@ -21,6 +25,11 @@ object CoreRealmOperationUtil {
       if(targetConceptionKind == null){
         targetConceptionKind = coreRealm.createConceptionKind(conceptionKindName,"AutoCreatedConceptionKind")
       }
+
+      if(conceptionEntitiesInsertMode.equals(ConceptionEntitiesInsertMode.CLEAN_INSERT)){
+        targetConceptionKind.purgeAllEntities();
+      }
+
       val dataList: java.util.ArrayList[java.util.HashMap[String,Object]]  = responseDataset.getDataList
       val conceptionEntityValueList = new java.util.ArrayList[ConceptionEntityValue]
       dataList.asScala.foreach(mapItem => {
@@ -28,9 +37,17 @@ object CoreRealmOperationUtil {
         conceptionEntityValueList.add(currentConceptionEntityValue)
       })
       if(dataList.size()> 50000){
-        BatchDataOperationUtil.batchAddNewEntities(conceptionKindName,conceptionEntityValueList,massDataOperationParallelism.toInt)
+        if(conceptionEntitiesInsertMode.equals(ConceptionEntitiesInsertMode.OVERWRITE)){
+          println(conceptionEntityPKAttributeName)
+        }else{
+          BatchDataOperationUtil.batchAddNewEntities(conceptionKindName,conceptionEntityValueList,massDataOperationParallelism.toInt)
+        }
       }else{
-        targetConceptionKind.newEntities(conceptionEntityValueList,false)
+        if(conceptionEntitiesInsertMode.equals(ConceptionEntitiesInsertMode.OVERWRITE)){
+          println(conceptionEntityPKAttributeName)
+        }else{
+          targetConceptionKind.newEntities(conceptionEntityValueList,false)
+        }
       }
     } finally {
       if (coreRealm != null) {

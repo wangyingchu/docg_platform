@@ -1,7 +1,7 @@
 package com.viewfunction.docg.analysisProvider.feature.common
 
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.{AnalyseRequest, AnalyseResponse}
-import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.{CoreRealmOperationConstant, CoreRealmOperationUtil}
+import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.{ConceptionEntitiesInsertMode, CoreRealmOperationConstant, CoreRealmOperationUtil}
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.{DataSliceOperationConstant, DataSliceOperationUtil, ResponseDataSourceTech}
 import org.apache.spark.sql.DataFrame
 
@@ -49,7 +49,25 @@ class ResultDataSetUtil {
         val requestParameters:util.HashMap[String,AnyRef] = analyseRequest.getRequestParameters.asInstanceOf[util.HashMap[String,AnyRef]]
         if(requestParameters.containsKey(CoreRealmOperationConstant.ConceptionkindName)){
           val targetConceptionKind:String = requestParameters.get(CoreRealmOperationConstant.ConceptionkindName).toString
-          CoreRealmOperationUtil.syncConceptionKindFromResponseDataset(targetConceptionKind,responseDataset)
+
+          var conceptionEntitiesInsertMode = ConceptionEntitiesInsertMode.APPEND
+          if(requestParameters.containsKey(CoreRealmOperationConstant.ConceptionEntitiesInsertMode)){
+            val requestInsertMode:String = requestParameters.get(CoreRealmOperationConstant.ConceptionEntitiesInsertMode).toString
+            if(ConceptionEntitiesInsertMode.CLEAN_INSERT.equals(requestInsertMode)){
+              conceptionEntitiesInsertMode = ConceptionEntitiesInsertMode.CLEAN_INSERT
+            }else if(ConceptionEntitiesInsertMode.OVERWRITE.equals(requestInsertMode)){
+              conceptionEntitiesInsertMode = ConceptionEntitiesInsertMode.OVERWRITE
+            }else if(ConceptionEntitiesInsertMode.APPEND.equals(requestInsertMode)){
+              conceptionEntitiesInsertMode = ConceptionEntitiesInsertMode.APPEND
+            }else{}
+          }
+
+          var conceptionEntityPKAttributeName:String = null
+          if(requestParameters.containsKey(CoreRealmOperationConstant.ConceptionEntityPKAttributeName)){
+            conceptionEntityPKAttributeName = requestParameters.get(CoreRealmOperationConstant.ConceptionEntityPKAttributeName).toString
+          }
+
+          CoreRealmOperationUtil.syncConceptionKindFromResponseDataset(targetConceptionKind,responseDataset,conceptionEntitiesInsertMode,conceptionEntityPKAttributeName)
           responseDataset.clearDataList()
         }
       }
