@@ -58,6 +58,8 @@ public class AdministrativeDivisionSpatialAnalysisTest01 {
                     System.out.println("RequestUUID: "+analyseResponse.getRequestUUID());
                     System.out.println("ResponseUUID: "+analyseResponse.getResponseUUID());
                     System.out.println(analyseResponse.getResponseDateTime());
+                    System.out.println(analyseResponse.getResponseCode());
+                    System.out.println(analyseResponse.getResponseSummary());
 
                     System.out.println(analyseResponse.getResponseData());
                     ResponseDataset responseDataset = (ResponseDataset)analyseResponse.getResponseData();
