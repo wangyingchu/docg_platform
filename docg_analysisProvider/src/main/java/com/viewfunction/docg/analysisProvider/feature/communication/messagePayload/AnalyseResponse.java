@@ -11,6 +11,8 @@ public class AnalyseResponse implements Serializable {
     private Object responseData;
     private AnalyseRequest.ResponseDataForm responseDataForm;
     private Date responseDateTime;
+    private String responseSummary;
+    private String responseCode;
 
     public AnalyseResponse(String requestUUID){
         this.requestUUID = requestUUID;
@@ -47,5 +49,21 @@ public class AnalyseResponse implements Serializable {
 
     public void setResponseDateTime(Date responseDateTime) {
         this.responseDateTime = responseDateTime;
+    }
+
+    public String getResponseSummary() {
+        return responseSummary;
+    }
+
+    public void setResponseSummary(String responseSummary) {
+        this.responseSummary = responseSummary;
+    }
+
+    public String getResponseCode() {
+        return responseCode;
+    }
+
+    public void setResponseCode(String responseCode) {
+        this.responseCode = responseCode;
     }
 }

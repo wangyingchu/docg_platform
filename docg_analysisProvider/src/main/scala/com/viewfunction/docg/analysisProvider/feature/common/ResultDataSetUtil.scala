@@ -53,11 +53,11 @@ class ResultDataSetUtil {
           var conceptionEntitiesInsertMode = ConceptionEntitiesInsertMode.APPEND
           if(requestParameters.containsKey(CoreRealmOperationConstant.ConceptionEntitiesInsertMode)){
             val requestInsertMode:String = requestParameters.get(CoreRealmOperationConstant.ConceptionEntitiesInsertMode).toString
-            if(ConceptionEntitiesInsertMode.CLEAN_INSERT.equals(requestInsertMode)){
+            if(ConceptionEntitiesInsertMode.CLEAN_INSERT.toString.equals(requestInsertMode)){
               conceptionEntitiesInsertMode = ConceptionEntitiesInsertMode.CLEAN_INSERT
-            }else if(ConceptionEntitiesInsertMode.OVERWRITE.equals(requestInsertMode)){
+            }else if(ConceptionEntitiesInsertMode.OVERWRITE.toString.equals(requestInsertMode)){
               conceptionEntitiesInsertMode = ConceptionEntitiesInsertMode.OVERWRITE
-            }else if(ConceptionEntitiesInsertMode.APPEND.equals(requestInsertMode)){
+            }else if(ConceptionEntitiesInsertMode.APPEND.toString.equals(requestInsertMode)){
               conceptionEntitiesInsertMode = ConceptionEntitiesInsertMode.APPEND
             }else{}
           }

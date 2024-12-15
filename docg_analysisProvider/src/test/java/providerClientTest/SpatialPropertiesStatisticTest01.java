@@ -37,11 +37,15 @@ public class SpatialPropertiesStatisticTest01 {
         spatialPropertiesAggregateStatisticRequest.setCalculationOperator(SpatialPropertiesAggregateStatisticRequest.CalculationOperator.Add);
         spatialPropertiesAggregateStatisticRequest.setStatisticResultProperty("CalculationResult");
 
+        //spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.STREAM_BACK);
         //spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.DATA_SLICE);
         spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.CONCEPTION_KIND);
         HashMap<String,Object> map = new HashMap<>();
         map.put(CoreRealmOperationConstant.ConceptionkindName(),"TestConceptionKindName");
-        map.put(CoreRealmOperationConstant.ConceptionEntitiesInsertMode(),ConceptionEntitiesInsertMode.CLEAN_INSERT());
+        //map.put(CoreRealmOperationConstant.ConceptionEntitiesInsertMode(),ConceptionEntitiesInsertMode.CLEAN_INSERT());
+        map.put(CoreRealmOperationConstant.ConceptionEntitiesInsertMode(), ConceptionEntitiesInsertMode.APPEND());
+        //map.put(CoreRealmOperationConstant.ConceptionEntitiesInsertMode(), ConceptionEntitiesInsertMode.OVERWRITE());
+        //map.put(CoreRealmOperationConstant.ConceptionEntityPKAttributeName(),"DOCG_RealmGlobalUID");
 
         spatialPropertiesAggregateStatisticRequest.setRequestParameters(map);
         try {
@@ -57,6 +61,8 @@ public class SpatialPropertiesStatisticTest01 {
                     System.out.println("RequestUUID: "+analyseResponse.getRequestUUID());
                     System.out.println("ResponseUUID: "+analyseResponse.getResponseUUID());
                     System.out.println(analyseResponse.getResponseDateTime());
+                    System.out.println(analyseResponse.getResponseCode());
+                    System.out.println(analyseResponse.getResponseSummary());
 
                     System.out.println(analyseResponse.getResponseData());
                     ResponseDataset responseDataset = (ResponseDataset)analyseResponse.getResponseData();

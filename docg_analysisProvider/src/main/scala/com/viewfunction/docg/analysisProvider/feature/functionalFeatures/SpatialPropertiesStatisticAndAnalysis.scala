@@ -1,6 +1,6 @@
 package com.viewfunction.docg.analysisProvider.feature.functionalFeatures
 
-import com.viewfunction.docg.analysisProvider.feature.common.{GlobalDataAccessor, ResultDataSetUtil}
+import com.viewfunction.docg.analysisProvider.feature.common.{AnalysisResponseCode, GlobalDataAccessor, ResultDataSetUtil}
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.{AnalyseResponse, spatialAnalysis}
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialCommonConfig.PredicateType
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialPropertiesAggregateStatisticRequest.{CalculationOperator, ObjectAggregationType}
@@ -145,6 +145,9 @@ object SpatialPropertiesStatisticAndAnalysis {
       tempStr = tempStr.replaceAll("\\)","")
         newNames += tempStr
       })
+
+    analyseResponse.setResponseCode(AnalysisResponseCode.ANALYSUS_SUCCESS.toString)
+    analyseResponse.setResponseSummary("AnalysisResponse of SpatialPropertiesStatisticAndAnalysis")
 
     val resultDataSetUtil = new ResultDataSetUtil
 

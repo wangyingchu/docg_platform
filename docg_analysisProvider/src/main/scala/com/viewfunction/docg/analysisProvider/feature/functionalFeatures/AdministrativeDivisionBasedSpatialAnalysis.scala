@@ -1,7 +1,7 @@
 package com.viewfunction.docg.analysisProvider.feature.functionalFeatures
 
 import com.viewfunction.docg.analysisProvider.exception.AnalysisProviderRuntimeException
-import com.viewfunction.docg.analysisProvider.feature.common.{GlobalDataAccessor, ResultDataSetUtil}
+import com.viewfunction.docg.analysisProvider.feature.common.{AnalysisResponseCode, GlobalDataAccessor, ResultDataSetUtil}
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.{AnalyseRequest, AnalyseResponse, spatialAnalysis}
 import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial
 import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial.SpatialQueryMetaFunction
@@ -167,6 +167,9 @@ object AdministrativeDivisionBasedSpatialAnalysis {
       newNames += (geospatialScaleGrade+"__"+attribute)
     })
     val dfRenamed = calculateResultDF.toDF(newNames: _*)
+
+    analyseResponse.setResponseCode(AnalysisResponseCode.ANALYSUS_SUCCESS.toString)
+    analyseResponse.setResponseSummary("AnalysisResponse of AdministrativeDivisionBasedSpatialAnalysis")
 
     val resultDataSetUtil = new ResultDataSetUtil
     resultDataSetUtil.generateResultDataSet(globalDataAccessor,dfRenamed,analyseResponse,administrativeDivisionSpatialCalculateRequest)
