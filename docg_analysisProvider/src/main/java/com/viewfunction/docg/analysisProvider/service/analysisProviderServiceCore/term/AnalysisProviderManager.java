@@ -9,4 +9,12 @@ public class AnalysisProviderManager {
     public Set<FunctionalFeatureMetaInfo> listFunctionalFeatures(){
         return null;
     }
+
+    public boolean registerFunctionalFeature(FunctionalFeatureMetaInfo functionalFeatureMetaInfo){
+        return false;
+    }
+
+    public boolean unregisterFunctionalFeature(FunctionalFeatureMetaInfo functionalFeatureMetaInfo){return false; }
+
+
 }
