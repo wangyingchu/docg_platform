@@ -17,6 +17,7 @@
         <geotools.version>26.4</geotools.version>
         <sedona.version>1.6.1</sedona.version>
         <akka.version>2.7.0</akka.version>
+        <derby.version>10.15.2.0</derby.version>
     </properties>
 
     <dependencies>
@@ -401,6 +402,22 @@
            <artifactId>docg_dataCompute</artifactId>
            <version>1.0.0</version>
        </dependency>
+
+        <!--
+        Derby Related
+        -->
+        <!-- https://mvnrepository.com/artifact/org.apache.derby/derby -->
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derby</artifactId>
+            <version>${derby.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.derby/derbytools -->
+        <dependency>
+            <groupId>org.apache.derby</groupId>
+            <artifactId>derbytools</artifactId>
+            <version>${derby.version}</version>
+        </dependency>
     </dependencies>
 
     <repositories>

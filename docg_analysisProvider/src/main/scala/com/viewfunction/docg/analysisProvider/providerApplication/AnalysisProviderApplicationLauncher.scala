@@ -6,6 +6,7 @@ import com.viewfunction.docg.analysisProvider.providerApplication.communication.
 import com.viewfunction.docg.analysisProvider.providerApplication.exception.ApplicationInitException
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
 import com.viewfunction.docg.analysisProvider.feature.communicationRouter.AnalysisProviderCommunicationMessageHandler
+import com.viewfunction.docg.analysisProvider.providerApplication.util.InternalOperationDB
 
 import scala.io.StdIn
 
@@ -15,6 +16,7 @@ object AnalysisProviderApplicationLauncher {
   val applicationExitCommand = AnalysisProviderApplicationUtil.getApplicationProperty("applicationExitCommand")
   var globalDataAccessor : GlobalDataAccessor = null
   var engineCommunicationAKKASystem : ActorSystem = null
+  var internalOperationDB : InternalOperationDB = null
 
   def main(args:Array[String]):Unit={
 
@@ -84,6 +86,10 @@ object AnalysisProviderApplicationLauncher {
        """.stripMargin
     val config = ConfigFactory.parseString(configStr)
     engineCommunicationAKKASystem = ActorSystem("DOCGAnalysisProviderCommunicationSystem",config)
+
+    internalOperationDB = new InternalOperationDB
+    internalOperationDB.startDB()
+
     val _AnalysisEngineCommunicationMessageHandler = new AnalysisProviderCommunicationMessageHandler(globalDataAccessor)
     val communicationActor = engineCommunicationAKKASystem.actorOf(Props(new CommunicationActor(_AnalysisEngineCommunicationMessageHandler)), name = "communicationRouter")
     //communicationActor ! "DOCG Analysis Provider communication router Started."
@@ -96,6 +102,9 @@ object AnalysisProviderApplicationLauncher {
     }
     if(engineCommunicationAKKASystem != null){
       engineCommunicationAKKASystem.terminate()
+    }
+    if(internalOperationDB != null){
+      internalOperationDB.shutdownDB()
     }
     true
   }
