@@ -3,7 +3,6 @@ package com.viewfunction.docg.analysisProvider.providerApplication.util
 import java.sql.{Connection, DriverManager, SQLException, Statement}
 
 class InternalOperationDB {
-
   // Derby 数据库 URL
   val dbUrl = "jdbc:derby:internalDB;create=true"
   var connection : Connection = null
@@ -14,6 +13,7 @@ class InternalOperationDB {
       Class.forName("org.apache.derby.jdbc.EmbeddedDriver")
       // 连接到数据库
       connection = DriverManager.getConnection(dbUrl)
+      InternalOperationDBUtil.initializeOperationDB(connection)
       println("OperationDB(Derby) Start success")
       println()
     } catch {
