@@ -45,4 +45,8 @@ class InternalOperationDB {
         }
     }
   }
+
+  def registerFunctionalFeature(functionalFeatureName:String,functionalFeatureDesc:String): Unit = {
+    InternalOperationDBUtil.registerFunctionalFeature(connection,functionalFeatureName,functionalFeatureDesc)
+  }
 }

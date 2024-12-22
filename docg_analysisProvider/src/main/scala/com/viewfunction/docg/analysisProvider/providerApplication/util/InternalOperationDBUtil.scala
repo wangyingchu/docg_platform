@@ -35,7 +35,7 @@ object InternalOperationDBUtil {
     if(!functionalFeatureTableExistFlag){
       println("init functional feature table")
       val statement = connection.createStatement()
-      val createSQL ="CREATE TABLE "+FUNCTIONAL_FEATURE_TABLE_NAME+" (\n id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n feature_name VARCHAR(2048),\n feature_description VARCHAR(2048)\n)"
+      val createSQL ="CREATE TABLE "+FUNCTIONAL_FEATURE_TABLE_NAME+" (\n id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n feature_name VARCHAR(2048) UNIQUE,\n feature_description VARCHAR(2048)\n)"
       statement.execute(createSQL)
       statement.close()
     }
@@ -57,6 +57,12 @@ object InternalOperationDBUtil {
       statement.execute(createSQL)
       statement.close()
     }
+  }
 
+  def registerFunctionalFeature(connection : Connection,functionalFeatureName:String,functionalFeatureDesc:String): Unit = {
+    val statement = connection.createStatement()
+    val insertSQL = "INSERT INTO "+FUNCTIONAL_FEATURE_TABLE_NAME+" (feature_name, feature_description)\n VALUES ('"+functionalFeatureName+"', '"+functionalFeatureDesc+"');"
+    statement.execute(insertSQL)
+    statement.close()
   }
 }
