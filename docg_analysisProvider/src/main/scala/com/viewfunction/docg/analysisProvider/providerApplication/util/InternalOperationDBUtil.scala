@@ -45,7 +45,7 @@ object InternalOperationDBUtil {
     if(!featureRunningStatusTableExistFlag){
       println("init feature status table")
       val statement = connection.createStatement()
-      val createSQL = "CREATE TABLE "+FEATURE_RUNNING_STATUS_NAME+" (\n id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n event_name VARCHAR(50),\n record_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n)"
+      val createSQL = "CREATE TABLE "+FEATURE_RUNNING_STATUS_NAME+" (\n id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n feature_running_status VARCHAR(64),\n requestUUID VARCHAR(64),\n responseUUID VARCHAR(64),\n feature_name VARCHAR(256),\n response_dataform VARCHAR(64),\n running_startTime TIMESTAMP,\n running_finishTime TIMESTAMP,\n record_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n)"
       statement.execute(createSQL)
       statement.close()
     }
@@ -145,4 +145,6 @@ object InternalOperationDBUtil {
       case e: SQLException => e.printStackTrace()
     }
   }
+
+
 }

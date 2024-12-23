@@ -92,7 +92,7 @@ object AnalysisProviderApplicationLauncher {
     internalOperationDB = new InternalOperationDB
     internalOperationDB.startDB()
 
-    val _AnalysisEngineCommunicationMessageHandler = new AnalysisProviderCommunicationMessageHandler(globalDataAccessor)
+    val _AnalysisEngineCommunicationMessageHandler = new AnalysisProviderCommunicationMessageHandler(globalDataAccessor,internalOperationDB)
     val communicationActor = engineCommunicationAKKASystem.actorOf(Props(new CommunicationActor(_AnalysisEngineCommunicationMessageHandler)), name = "communicationRouter")
     //communicationActor ! "DOCG Analysis Provider communication router Started."
 

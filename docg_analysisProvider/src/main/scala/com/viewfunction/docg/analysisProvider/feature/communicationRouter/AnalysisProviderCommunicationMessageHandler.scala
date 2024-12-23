@@ -6,9 +6,12 @@ import com.viewfunction.docg.analysisProvider.providerApplication.communication.
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.{AdministrativeDivisionSpatialCalculateRequest, SpatialPropertiesAggregateStatisticRequest}
 import com.viewfunction.docg.analysisProvider.feature.functionalFeatures.{AdministrativeDivisionBasedSpatialAnalysis, SpatialPropertiesStatisticAndAnalysis}
+import com.viewfunction.docg.analysisProvider.providerApplication.util.InternalOperationDB
+
+import java.time.LocalDateTime
 import java.util.Date
 
-class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalDataAccessor) extends CommunicationMessageHandler{
+class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalDataAccessor,internalOperationDB:InternalOperationDB) extends CommunicationMessageHandler{
   override def handleMessage(communicationMessage: Any, communicationActor: ActorRef, senderActor: ActorRef): Unit = {
 
     var analyseResponse:AnalyseResponse=null
@@ -17,10 +20,13 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
       case communicationMessage:AnalyseRequest =>
         analyseResponse = new AnalyseResponse(communicationMessage.getRequestUUID)
         analyseResponse.setResponseDataForm(communicationMessage.getResponseDataForm)
-        val serviceDatetime = new Date
+        //val serviceDatetime = new Date
+        val currentTime = LocalDateTime.now()
         println("################################################################")
-        println("Service Analysis: "+communicationMessage.getRequestUUID + " at: " + serviceDatetime + "")
+        println("Service Analysis: "+communicationMessage.getRequestUUID + " at: " + currentTime + "")
         println("################################################################")
+
+        internalOperationDB.recordFeatureRequest(communicationMessage.getRequestUUID,analyseResponse.getResponseUUID,communicationMessage.getResponseDataForm.toString,currentTime)
     }
     if(analyseResponse!=null){
       communicationMessage match {

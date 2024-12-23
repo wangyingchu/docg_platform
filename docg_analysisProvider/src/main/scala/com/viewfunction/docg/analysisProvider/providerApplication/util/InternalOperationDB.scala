@@ -1,6 +1,7 @@
 package com.viewfunction.docg.analysisProvider.providerApplication.util
 
 import java.sql.{Connection, DriverManager, SQLException, Statement}
+import java.time.LocalDateTime
 
 class InternalOperationDB {
   // Derby 数据库 URL
@@ -61,4 +62,10 @@ class InternalOperationDB {
   def recordProviderStop(runningUUID:String):Unit = {
     InternalOperationDBUtil.recordProviderStop(connection,runningUUID)
   }
+
+  def recordFeatureRequest(requestUUID:String,responseUUID:String,responseDataForm:String,runningStartTime:LocalDateTime):Unit = {}
+
+  def recordFeatureExecution(runningUUID:String,functionalFeatureName:String):Unit = {}
+
+  def recordFeatureResponse(runningUUID:String,functionalFeatureName:String):Unit = {}
 }
