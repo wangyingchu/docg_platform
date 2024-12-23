@@ -90,8 +90,6 @@ object AnalysisProviderApplicationLauncher {
     internalOperationDB = new InternalOperationDB
     internalOperationDB.startDB()
 
-    internalOperationDB.registerFunctionalFeature("FunctionFeature01","Desc")
-
     val _AnalysisEngineCommunicationMessageHandler = new AnalysisProviderCommunicationMessageHandler(globalDataAccessor)
     val communicationActor = engineCommunicationAKKASystem.actorOf(Props(new CommunicationActor(_AnalysisEngineCommunicationMessageHandler)), name = "communicationRouter")
     //communicationActor ! "DOCG Analysis Provider communication router Started."

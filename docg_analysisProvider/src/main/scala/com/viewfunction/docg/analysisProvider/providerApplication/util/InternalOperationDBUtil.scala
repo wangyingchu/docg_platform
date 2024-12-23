@@ -59,10 +59,55 @@ object InternalOperationDBUtil {
     }
   }
 
-  def registerFunctionalFeature(connection : Connection,functionalFeatureName:String,functionalFeatureDesc:String): Unit = {
-    val statement = connection.createStatement()
-    val insertSQL = "INSERT INTO "+FUNCTIONAL_FEATURE_TABLE_NAME+" (feature_name, feature_description)\n VALUES ('"+functionalFeatureName+"', '"+functionalFeatureDesc+"');"
-    statement.execute(insertSQL)
-    statement.close()
+  def registerFunctionalFeature(connection:Connection,functionalFeatureName:String,functionalFeatureDesc:String): Boolean = {
+    var registerResult:Boolean = false
+    try {
+      val checkExistenceSQL = "SELECT count(*) FROM "+FUNCTIONAL_FEATURE_TABLE_NAME+" WHERE feature_name = '"+functionalFeatureName+"'"
+      val statement = connection.createStatement()
+      try {
+        val rs = statement.executeQuery(checkExistenceSQL)
+        if (rs.next()) {
+          val count = rs.getInt(1)
+          if (count > 0) {
+            registerResult = false
+          } else {
+            val insertSQL = "INSERT INTO "+FUNCTIONAL_FEATURE_TABLE_NAME+" (feature_name, feature_description)\n VALUES ('"+functionalFeatureName+"', '"+functionalFeatureDesc+"')"
+            statement.execute(insertSQL)
+            registerResult = true
+          }
+        }
+      } finally {
+        statement.close()
+      }
+    } catch {
+      case e: SQLException => e.printStackTrace()
+    }
+    registerResult
+  }
+
+  def unregisterFunctionalFeature(connection:Connection,functionalFeatureName:String): Boolean = {
+    var unregisterResult:Boolean = false
+    try {
+      val checkExistenceSQL = "SELECT count(*) FROM "+FUNCTIONAL_FEATURE_TABLE_NAME+" WHERE feature_name = '"+functionalFeatureName+"'"
+      val statement = connection.createStatement()
+      try {
+        val rs = statement.executeQuery(checkExistenceSQL)
+        if (rs.next()) {
+          val count = rs.getInt(1)
+          if (count > 0) {
+            val deleteSQL = "DELETE FROM "+FUNCTIONAL_FEATURE_TABLE_NAME+" WHERE feature_name = '"+functionalFeatureName+"'"
+            statement.execute(deleteSQL)
+            unregisterResult = true
+          } else {
+            unregisterResult = false
+          }
+        }
+      } finally {
+        statement.close()
+      }
+    } catch {
+      case e: SQLException => e.printStackTrace()
+    }
+    unregisterResult
   }
 }

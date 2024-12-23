@@ -46,7 +46,11 @@ class InternalOperationDB {
     }
   }
 
-  def registerFunctionalFeature(functionalFeatureName:String,functionalFeatureDesc:String): Unit = {
+  def registerFunctionalFeature(functionalFeatureName:String,functionalFeatureDesc:String): Boolean = {
     InternalOperationDBUtil.registerFunctionalFeature(connection,functionalFeatureName,functionalFeatureDesc)
+  }
+
+  def unregisterFunctionalFeature(functionalFeatureName:String): Boolean = {
+    InternalOperationDBUtil.unregisterFunctionalFeature(connection,functionalFeatureName)
   }
 }
