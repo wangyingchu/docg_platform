@@ -53,4 +53,12 @@ class InternalOperationDB {
   def unregisterFunctionalFeature(functionalFeatureName:String): Boolean = {
     InternalOperationDBUtil.unregisterFunctionalFeature(connection,functionalFeatureName)
   }
+
+  def recordProviderStart(runningUUID:String):Unit = {
+    InternalOperationDBUtil.recordProviderStart(connection,runningUUID)
+  }
+
+  def recordProviderStop(runningUUID:String):Unit = {
+
+  }
 }

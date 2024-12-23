@@ -9,6 +9,7 @@ import com.viewfunction.docg.analysisProvider.feature.communicationRouter.Analys
 import com.viewfunction.docg.analysisProvider.providerApplication.util.InternalOperationDB
 
 import scala.io.StdIn
+import java.util.UUID
 
 object AnalysisProviderApplicationLauncher {
 
@@ -17,6 +18,7 @@ object AnalysisProviderApplicationLauncher {
   var globalDataAccessor : GlobalDataAccessor = null
   var engineCommunicationAKKASystem : ActorSystem = null
   var internalOperationDB : InternalOperationDB = null
+  var runningUUID:String = null
 
   def main(args:Array[String]):Unit={
 
@@ -93,6 +95,9 @@ object AnalysisProviderApplicationLauncher {
     val _AnalysisEngineCommunicationMessageHandler = new AnalysisProviderCommunicationMessageHandler(globalDataAccessor)
     val communicationActor = engineCommunicationAKKASystem.actorOf(Props(new CommunicationActor(_AnalysisEngineCommunicationMessageHandler)), name = "communicationRouter")
     //communicationActor ! "DOCG Analysis Provider communication router Started."
+
+    runningUUID = UUID.randomUUID().toString
+    internalOperationDB.recordProviderStart(runningUUID)
     true
   }
 
@@ -104,6 +109,7 @@ object AnalysisProviderApplicationLauncher {
       engineCommunicationAKKASystem.terminate()
     }
     if(internalOperationDB != null){
+      internalOperationDB.recordProviderStop(runningUUID)
       internalOperationDB.shutdownDB()
     }
     true

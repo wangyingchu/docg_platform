@@ -1,6 +1,7 @@
 package com.viewfunction.docg.analysisProvider.providerApplication.util
 
-import java.sql.{Connection, SQLException}
+import java.sql.{Connection, PreparedStatement, SQLException}
+import java.time.LocalDateTime
 
 object InternalOperationDBUtil {
   val FUNCTIONAL_FEATURE_TABLE_NAME = "FUNCTIONAL_FEATURE"
@@ -44,7 +45,7 @@ object InternalOperationDBUtil {
     if(!featureRunningStatusTableExistFlag){
       println("init feature status table")
       val statement = connection.createStatement()
-      val createSQL = "CREATE TABLE "+FEATURE_RUNNING_STATUS_NAME+" (\n id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n event_name VARCHAR(50),\n event_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n)"
+      val createSQL = "CREATE TABLE "+FEATURE_RUNNING_STATUS_NAME+" (\n id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n event_name VARCHAR(50),\n record_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n)"
       statement.execute(createSQL)
       statement.close()
     }
@@ -53,7 +54,7 @@ object InternalOperationDBUtil {
     if(!providerRunningStatusTableExistFlag){
       println("init provider status table")
       val statement = connection.createStatement()
-      val createSQL ="CREATE TABLE "+PROVIDER_RUNNING_STATUS_NAME+" (\n id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n feature_name VARCHAR(2048),\n feature_description VARCHAR(2048)\n)"
+      val createSQL ="CREATE TABLE "+PROVIDER_RUNNING_STATUS_NAME+" (\n id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n provider_startTime TIMESTAMP,\n provider_stopTime TIMESTAMP,\n provider_runningUUID VARCHAR(128)\n,record_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n)"
       statement.execute(createSQL)
       statement.close()
     }
@@ -109,5 +110,22 @@ object InternalOperationDBUtil {
       case e: SQLException => e.printStackTrace()
     }
     unregisterResult
+  }
+
+  def recordProviderStart(connection:Connection,runningUUID:String):Unit = {
+    try {
+      val insertSQL = "INSERT INTO "+PROVIDER_RUNNING_STATUS_NAME+" (provider_startTime, provider_runningUUID)\n VALUES (?,?)"
+      val preparedStatement: PreparedStatement = connection.prepareStatement(insertSQL)
+      try {
+        val currentTime = LocalDateTime.now()
+        preparedStatement.setTimestamp(1, java.sql.Timestamp.valueOf(currentTime))
+        preparedStatement.setString(2, runningUUID)
+        preparedStatement.executeUpdate()
+      } finally {
+        preparedStatement.close()
+      }
+    } catch {
+      case e: SQLException => e.printStackTrace()
+    }
   }
 }
