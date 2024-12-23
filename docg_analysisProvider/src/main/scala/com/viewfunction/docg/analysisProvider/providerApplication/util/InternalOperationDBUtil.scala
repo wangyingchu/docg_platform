@@ -128,4 +128,21 @@ object InternalOperationDBUtil {
       case e: SQLException => e.printStackTrace()
     }
   }
+
+  def recordProviderStop(connection:Connection,runningUUID:String):Unit = {
+    try {
+      val updateSQL = "UPDATE "+PROVIDER_RUNNING_STATUS_NAME+" SET provider_stopTime = ? WHERE provider_runningUUID = ?"
+      val preparedStatement: PreparedStatement = connection.prepareStatement(updateSQL)
+      try {
+        val currentTime = LocalDateTime.now()
+        preparedStatement.setTimestamp(1, java.sql.Timestamp.valueOf(currentTime))
+        preparedStatement.setString(2,runningUUID)
+        preparedStatement.executeUpdate()
+      } finally {
+        preparedStatement.close()
+      }
+    } catch {
+      case e: SQLException => e.printStackTrace()
+    }
+  }
 }
