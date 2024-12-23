@@ -59,6 +59,6 @@ class InternalOperationDB {
   }
 
   def recordProviderStop(runningUUID:String):Unit = {
-    InternalOperationDBUtil.recordProviderStart(connection,runningUUID)
+    InternalOperationDBUtil.recordProviderStop(connection,runningUUID)
   }
 }
