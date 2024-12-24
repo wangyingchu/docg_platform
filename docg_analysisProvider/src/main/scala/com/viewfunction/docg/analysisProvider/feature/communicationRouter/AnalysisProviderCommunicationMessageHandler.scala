@@ -10,6 +10,8 @@ import com.viewfunction.docg.analysisProvider.providerApplication.util.InternalO
 
 import java.time.LocalDateTime
 import java.util.Date
+import java.time.ZoneId
+import java.time.Instant
 
 class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalDataAccessor,internalOperationDB:InternalOperationDB) extends CommunicationMessageHandler{
   override def handleMessage(communicationMessage: Any, communicationActor: ActorRef, senderActor: ActorRef): Unit = {
@@ -26,7 +28,10 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
         println("Service Analysis: "+communicationMessage.getRequestUUID + " at: " + currentTime + "")
         println("################################################################")
 
-        internalOperationDB.recordFeatureRequest(communicationMessage.getRequestUUID,analyseResponse.getResponseUUID,communicationMessage.getResponseDataForm.toString,currentTime)
+        val timestamp: Long = communicationMessage.getRequestDateTime
+        val instant: Instant = Instant.ofEpochMilli(timestamp)
+        val requestLocalDateTime: LocalDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
+        internalOperationDB.recordFeatureRequest(communicationMessage.getRequestUUID,requestLocalDateTime,analyseResponse.getResponseUUID,communicationMessage.getResponseDataForm.toString,currentTime)
     }
     if(analyseResponse!=null){
       communicationMessage match {

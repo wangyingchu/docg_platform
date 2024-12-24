@@ -63,7 +63,7 @@ class InternalOperationDB {
     InternalOperationDBUtil.recordProviderStop(connection,runningUUID)
   }
 
-  def recordFeatureRequest(requestUUID:String,responseUUID:String,responseDataForm:String,runningStartTime:LocalDateTime):Unit = {}
+  def recordFeatureRequest(requestUUID:String,requestTime:LocalDateTime,responseUUID:String,responseDataForm:String,runningStartTime:LocalDateTime):Unit = {}
 
   def recordFeatureExecution(runningUUID:String,functionalFeatureName:String):Unit = {}
 
