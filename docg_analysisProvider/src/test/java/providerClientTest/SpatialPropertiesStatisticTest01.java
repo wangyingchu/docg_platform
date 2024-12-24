@@ -37,9 +37,9 @@ public class SpatialPropertiesStatisticTest01 {
         spatialPropertiesAggregateStatisticRequest.setCalculationOperator(SpatialPropertiesAggregateStatisticRequest.CalculationOperator.Add);
         spatialPropertiesAggregateStatisticRequest.setStatisticResultProperty("CalculationResult");
 
-        //spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.STREAM_BACK);
+        spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.STREAM_BACK);
         //spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.DATA_SLICE);
-        spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.CONCEPTION_KIND);
+        //spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.CONCEPTION_KIND);
         HashMap<String,Object> map = new HashMap<>();
         map.put(CoreRealmOperationConstant.ConceptionkindName(),"TestConceptionKindName");
         //map.put(CoreRealmOperationConstant.ConceptionEntitiesInsertMode(),ConceptionEntitiesInsertMode.CLEAN_INSERT());

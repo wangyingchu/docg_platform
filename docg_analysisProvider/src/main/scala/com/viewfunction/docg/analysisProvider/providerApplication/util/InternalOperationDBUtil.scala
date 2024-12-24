@@ -146,6 +146,57 @@ object InternalOperationDBUtil {
     }
   }
 
-  def recordFeatureRequest(requestUUID:String,requestTime:LocalDateTime,responseUUID:String,responseDataForm:String,runningStartTime:LocalDateTime):Unit = {}}
+  def recordFeatureRequest(connection:Connection,requestUUID:String,requestTime:LocalDateTime,responseUUID:String,responseDataForm:String,runningStartTime:LocalDateTime):Unit = {
+    try {
+      val insertSQL = "INSERT INTO "+FEATURE_RUNNING_STATUS_NAME+" (feature_running_status,requestUUID,request_time,responseUUID,response_dataform,running_startTime)\n VALUES (?,?,?,?,?,?)"
+      val preparedStatement: PreparedStatement = connection.prepareStatement(insertSQL)
+      try {
+        preparedStatement.setString(1, "ACCEPT")
+        preparedStatement.setString(2, requestUUID)
+        preparedStatement.setTimestamp(3, java.sql.Timestamp.valueOf(requestTime))
+        preparedStatement.setString(4, responseUUID)
+        preparedStatement.setString(5, responseDataForm)
+        preparedStatement.setTimestamp(6, java.sql.Timestamp.valueOf(runningStartTime))
+        preparedStatement.executeUpdate()
+      } finally {
+        preparedStatement.close()
+      }
+    } catch {
+      case e: SQLException => e.printStackTrace()
+    }
+  }
 
+  def recordFeatureExecution(connection:Connection,requestUUID:String,functionalFeatureName:String):Unit = {
+    try {
+      val updateSQL = "UPDATE "+FEATURE_RUNNING_STATUS_NAME+" SET feature_running_status = ?,feature_name = ? WHERE requestUUID = ?"
+      val preparedStatement: PreparedStatement = connection.prepareStatement(updateSQL)
+      try {
+        preparedStatement.setString(1, "EXECUTING")
+        preparedStatement.setString(2, functionalFeatureName)
+        preparedStatement.setString(3,requestUUID)
+        preparedStatement.executeUpdate()
+      } finally {
+        preparedStatement.close()
+      }
+    } catch {
+      case e: SQLException => e.printStackTrace()
+    }
+  }
+
+  def recordFeatureResponse(connection:Connection,requestUUID:String,runningFinishTime:LocalDateTime):Unit = {
+    try {
+      val updateSQL = "UPDATE "+FEATURE_RUNNING_STATUS_NAME+" SET feature_running_status = ?,running_finishTime = ? WHERE requestUUID = ?"
+      val preparedStatement: PreparedStatement = connection.prepareStatement(updateSQL)
+      try {
+        preparedStatement.setString(1, "FINISHED")
+        preparedStatement.setTimestamp(2, java.sql.Timestamp.valueOf(runningFinishTime))
+        preparedStatement.setString(3,requestUUID)
+        preparedStatement.executeUpdate()
+      } finally {
+        preparedStatement.close()
+      }
+    } catch {
+      case e: SQLException => e.printStackTrace()
+    }
+  }
 }

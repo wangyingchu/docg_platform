@@ -22,7 +22,6 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
       case communicationMessage:AnalyseRequest =>
         analyseResponse = new AnalyseResponse(communicationMessage.getRequestUUID)
         analyseResponse.setResponseDataForm(communicationMessage.getResponseDataForm)
-        //val serviceDatetime = new Date
         val currentTime = LocalDateTime.now()
         println("################################################################")
         println("Service Analysis: "+communicationMessage.getRequestUUID + " at: " + currentTime + "")
@@ -40,10 +39,12 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
 
 
         case communicationMessage: SpatialPropertiesAggregateStatisticRequest =>
+          internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "SpatialPropertiesAggregateStatistic")
           SpatialPropertiesStatisticAndAnalysis.doExecuteSpatialPropertiesAggregateStatistic(
             globalDataAccessor,analyseResponse,communicationMessage.asInstanceOf[SpatialPropertiesAggregateStatisticRequest])
 
         case communicationMessage: AdministrativeDivisionSpatialCalculateRequest =>
+          internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "AdministrativeDivisionSpatialCalculate")
           AdministrativeDivisionBasedSpatialAnalysis.doExecuteDataSliceAdministrativeDivisionSpatialCalculation(
             globalDataAccessor,analyseResponse,communicationMessage.asInstanceOf[AdministrativeDivisionSpatialCalculateRequest])
       }
@@ -53,8 +54,11 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
       val responseDatetime = new Date
       val requestUUID = analyseResponse.getRequestUUID
       analyseResponse.setResponseDateTime(responseDatetime)
+      val instant: Instant = responseDatetime.toInstant
+      val localDateTime: LocalDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime
+      internalOperationDB.recordFeatureResponse(requestUUID, localDateTime)
       println("################################################################")
-      println("Response Analysis: "+requestUUID+ " at: " + responseDatetime + "")
+      println("Response Analysis: "+requestUUID+ " at: " + localDateTime + "")
       println("################################################################")
       senderActor.tell(analyseResponse,communicationActor)
     }

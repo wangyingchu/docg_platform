@@ -63,9 +63,15 @@ class InternalOperationDB {
     InternalOperationDBUtil.recordProviderStop(connection,runningUUID)
   }
 
-  def recordFeatureRequest(requestUUID:String,requestTime:LocalDateTime,responseUUID:String,responseDataForm:String,runningStartTime:LocalDateTime):Unit = {}
+  def recordFeatureRequest(requestUUID:String,requestTime:LocalDateTime,responseUUID:String,responseDataForm:String,runningStartTime:LocalDateTime):Unit = {
+    InternalOperationDBUtil.recordFeatureRequest(connection,requestUUID,requestTime,responseUUID,responseDataForm,runningStartTime)
+  }
 
-  def recordFeatureExecution(runningUUID:String,functionalFeatureName:String):Unit = {}
+  def recordFeatureExecution(requestUUID:String,functionalFeatureName:String):Unit = {
+    InternalOperationDBUtil.recordFeatureExecution(connection,requestUUID,functionalFeatureName)
+  }
 
-  def recordFeatureResponse(runningUUID:String,functionalFeatureName:String):Unit = {}
+  def recordFeatureResponse(requestUUID:String,runningFinishTime:LocalDateTime):Unit = {
+    InternalOperationDBUtil.recordFeatureResponse(connection,requestUUID,runningFinishTime)
+  }
 }
