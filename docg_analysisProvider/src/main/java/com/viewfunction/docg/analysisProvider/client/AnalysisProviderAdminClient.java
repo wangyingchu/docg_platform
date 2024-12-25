@@ -189,4 +189,10 @@ public class AnalysisProviderAdminClient {
             throw new RuntimeException(e);
         }
     }
+
+    public void listFunctionalFeatures(AnalyseResponseCallback analyseResponseCallback,int analyseTimeOutInSecond) {}
+
+    public void listProviderRunningStatus(AnalyseResponseCallback analyseResponseCallback,int analyseTimeOutInSecond) {}
+
+    public void listFeatureRunningStatus(AnalyseResponseCallback analyseResponseCallback,int analyseTimeOutInSecond) {}
 }

@@ -4,7 +4,7 @@ import akka.actor.ActorRef
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.{AnalyseRequest, AnalyseResponse}
 import com.viewfunction.docg.analysisProvider.providerApplication.communication.CommunicationMessageHandler
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
-import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.admin.AnalysisProviderPingRequest
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.admin.{AnalysisProviderPingRequest, AnalysisProviderRunningStatusRequest, FunctionalFeatureRunningStatusRequest, FunctionalFeaturesInfoRequest}
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.{AdministrativeDivisionSpatialCalculateRequest, SpatialPropertiesAggregateStatisticRequest}
 import com.viewfunction.docg.analysisProvider.feature.functionalFeatures.{AdministrativeDivisionBasedSpatialAnalysis, SpatialPropertiesStatisticAndAnalysis}
 import com.viewfunction.docg.analysisProvider.providerApplication.util.InternalOperationDB
@@ -38,9 +38,17 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
         case communicationMessage: String =>
           println(s" $communicationMessage")
 
+        //for provider administration
         case communicationMessage: AnalysisProviderPingRequest =>
           internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "AnalysisProviderPing")
+        case communicationMessage: FunctionalFeaturesInfoRequest =>
+          internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "ListFunctionalFeaturesInfo")
+        case communicationMessage: FunctionalFeatureRunningStatusRequest =>
+          internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "ListFunctionalFeatureRunningStatus")
+        case communicationMessage: AnalysisProviderRunningStatusRequest =>
+          internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "ListAnalysisProviderRunningStatus")
 
+        //for provider analysis service
         case communicationMessage: SpatialPropertiesAggregateStatisticRequest =>
           internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "SpatialPropertiesAggregateStatistic")
           SpatialPropertiesStatisticAndAnalysis.doExecuteSpatialPropertiesAggregateStatistic(
