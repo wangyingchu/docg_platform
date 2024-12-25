@@ -213,7 +213,12 @@ public class AnalysisProviderAdminClient {
                 @Override
                 public void onSuccessResponseReceived(AnalyseResponse analyseResponse) {
                     try {
-                        listFunctionalFeaturesCallback.onExecutionSuccess(null);
+                        if(analyseResponse.getResponseData() != null){
+                            List<FunctionalFeatureInfo> functionalFeatureInfoList = (List<FunctionalFeatureInfo>)analyseResponse.getResponseData();
+                            listFunctionalFeaturesCallback.onExecutionSuccess(functionalFeatureInfoList);
+                        }else{
+                            listFunctionalFeaturesCallback.onExecutionSuccess(null);
+                        }
                         closeSession();
                     } catch (ProviderClientInitException e) {
                         e.printStackTrace();

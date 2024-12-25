@@ -1,7 +1,10 @@
 package com.viewfunction.docg.analysisProvider.providerApplication.util
 
+import com.viewfunction.docg.analysisProvider.service.analysisProviderServiceCore.payload.FunctionalFeatureInfo
+
 import java.sql.{Connection, DriverManager, SQLException, Statement}
 import java.time.LocalDateTime
+import java.util
 
 class InternalOperationDB {
   // Derby 数据库 URL
@@ -74,4 +77,12 @@ class InternalOperationDB {
   def recordFeatureResponse(requestUUID:String,runningFinishTime:LocalDateTime):Unit = {
     InternalOperationDBUtil.recordFeatureResponse(connection,requestUUID,runningFinishTime)
   }
+
+  def listFunctionalFeaturesInfo():util.ArrayList[FunctionalFeatureInfo]={
+    InternalOperationDBUtil.listFunctionalFeaturesInfo(connection)
+  }
+
+  def listFunctionalFeatureRunningStatus():Unit={}
+
+  def listAnalysisProviderRunningStatus():Unit={}
 }

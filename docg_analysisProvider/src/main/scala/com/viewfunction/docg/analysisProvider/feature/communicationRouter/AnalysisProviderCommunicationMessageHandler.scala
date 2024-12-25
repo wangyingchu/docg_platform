@@ -1,6 +1,7 @@
 package com.viewfunction.docg.analysisProvider.feature.communicationRouter
 
 import akka.actor.ActorRef
+import com.viewfunction.docg.analysisProvider.feature.admin.AnalysisProviderAdministrationOperator
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.{AnalyseRequest, AnalyseResponse}
 import com.viewfunction.docg.analysisProvider.providerApplication.communication.CommunicationMessageHandler
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
@@ -40,13 +41,16 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
 
         //for provider administration
         case communicationMessage: AnalysisProviderPingRequest =>
-          internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "AnalysisProviderPing")
+          internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "PingAnalysisProvider")
         case communicationMessage: FunctionalFeaturesInfoRequest =>
           internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "ListFunctionalFeaturesInfo")
+          AnalysisProviderAdministrationOperator.doProvideFunctionalFeaturesInfoList(internalOperationDB,analyseResponse)
         case communicationMessage: FunctionalFeatureRunningStatusRequest =>
           internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "ListFunctionalFeatureRunningStatus")
+          AnalysisProviderAdministrationOperator.doProvideFunctionalFeatureRunningStatusInfoList(internalOperationDB,analyseResponse)
         case communicationMessage: AnalysisProviderRunningStatusRequest =>
           internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "ListAnalysisProviderRunningStatus")
+          AnalysisProviderAdministrationOperator.doProvideAnalysisProviderRunningStatusInfoList(internalOperationDB,analyseResponse)
 
         //for provider analysis service
         case communicationMessage: SpatialPropertiesAggregateStatisticRequest =>

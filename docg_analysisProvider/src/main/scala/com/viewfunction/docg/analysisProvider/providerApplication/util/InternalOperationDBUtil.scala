@@ -1,7 +1,10 @@
 package com.viewfunction.docg.analysisProvider.providerApplication.util
 
-import java.sql.{Connection, PreparedStatement, SQLException}
+import com.viewfunction.docg.analysisProvider.service.analysisProviderServiceCore.payload.FunctionalFeatureInfo
+
+import java.sql.{Connection, PreparedStatement, ResultSet, SQLException}
 import java.time.LocalDateTime
+import java.util.ArrayList
 
 object InternalOperationDBUtil {
   val FUNCTIONAL_FEATURE_TABLE_NAME = "FUNCTIONAL_FEATURE"
@@ -198,5 +201,26 @@ object InternalOperationDBUtil {
     } catch {
       case e: SQLException => e.printStackTrace()
     }
+  }
+
+  def listFunctionalFeaturesInfo(connection:Connection):ArrayList[FunctionalFeatureInfo] = {
+    val functionalFeaturesInfoList: ArrayList[FunctionalFeatureInfo] = new ArrayList[FunctionalFeatureInfo]()
+    try {
+      val statement = connection.createStatement()
+      try{
+        val resultSet: ResultSet = statement.executeQuery("SELECT * FROM "+FUNCTIONAL_FEATURE_TABLE_NAME)
+        while (resultSet.next()) {
+          val column1 = resultSet.getString("feature_name")
+          val column2 = resultSet.getString("feature_description")
+          val currentFunctionalFeatureInfo = new FunctionalFeatureInfo(column1,column2)
+          functionalFeaturesInfoList.add(currentFunctionalFeatureInfo)
+        }
+      }finally {
+        statement.close()
+      }
+    } catch {
+      case e: SQLException => e.printStackTrace()
+    }
+    functionalFeaturesInfoList
   }
 }
