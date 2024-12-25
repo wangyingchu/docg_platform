@@ -72,7 +72,7 @@ public class AdminClientTest {
 
             }
         };
-        analysisProviderAdminClient.listFeatureRunningStatus(listFeatureRunningStatusCallback,100);
+        analysisProviderAdminClient.listFeatureRunningStatus(listFeatureRunningStatusCallback,3);
 
         try {
             Thread.sleep(2000);

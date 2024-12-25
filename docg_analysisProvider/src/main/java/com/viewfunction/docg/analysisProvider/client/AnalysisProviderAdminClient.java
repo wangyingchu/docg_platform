@@ -142,19 +142,6 @@ public class AnalysisProviderAdminClient {
         }
     }
 
-    private void sendAnalyseRequest(AnalyseRequest analyseRequest) throws ProviderClientInitException,AnalysisEngineRuntimeException{
-        if(localCommunicationActor != null){
-            if(analyseRequest != null){
-                analyseRequest.generateMetaInfo();
-                localCommunicationActor.tell(analyseRequest,localCommunicationActor);
-            }else{
-                throw new AnalysisEngineRuntimeException();
-            }
-        }else{
-            throw new ProviderClientInitException();
-        }
-    }
-
     public interface PingAnalysisProviderCallback {
         public void onPingSuccess();
         public void onPingFail();
@@ -162,8 +149,6 @@ public class AnalysisProviderAdminClient {
 
     public void pingAnalysisProvider(PingAnalysisProviderCallback pingAnalysisProviderCallback,int pingTimeOutInSecond) {
         try {
-            openSession();
-            AnalysisProviderPingRequest analysisProviderPingRequest = new AnalysisProviderPingRequest();
             AnalyseResponseCallback analyseResponseCallback = new AnalyseResponseCallback() {
                 @Override
                 public void onResponseReceived(Object analyseResponseObject) {}
@@ -189,6 +174,8 @@ public class AnalysisProviderAdminClient {
                 }
             };
 
+            AnalysisProviderPingRequest analysisProviderPingRequest = new AnalysisProviderPingRequest();
+            openSession();
             sendAnalyseRequest(analysisProviderPingRequest,analyseResponseCallback,pingTimeOutInSecond);
         } catch (ProviderClientInitException e) {
             throw new RuntimeException(e);
@@ -204,8 +191,6 @@ public class AnalysisProviderAdminClient {
 
     public void listFunctionalFeatures(ListFunctionalFeaturesCallback listFunctionalFeaturesCallback,int listTimeOutInSecond) {
         try {
-            openSession();
-            FunctionalFeaturesInfoRequest functionalFeaturesInfoRequest = new FunctionalFeaturesInfoRequest();
             AnalyseResponseCallback analyseResponseCallback = new AnalyseResponseCallback() {
                 @Override
                 public void onResponseReceived(Object analyseResponseObject) {}
@@ -217,8 +202,8 @@ public class AnalysisProviderAdminClient {
                         if(analyseResponse.getResponseData() != null){
                             functionalFeatureInfoList = (List<FunctionalFeatureInfo>)analyseResponse.getResponseData();
                         }
-                        closeSession();
                         listFunctionalFeaturesCallback.onExecutionSuccess(functionalFeatureInfoList);
+                        closeSession();
                     } catch (ProviderClientInitException e) {
                         e.printStackTrace();
                     }
@@ -234,7 +219,8 @@ public class AnalysisProviderAdminClient {
                     }
                 }
             };
-
+            FunctionalFeaturesInfoRequest functionalFeaturesInfoRequest = new FunctionalFeaturesInfoRequest();
+            openSession();
             sendAnalyseRequest(functionalFeaturesInfoRequest,analyseResponseCallback,listTimeOutInSecond);
         } catch (ProviderClientInitException e) {
             throw new RuntimeException(e);
@@ -250,8 +236,7 @@ public class AnalysisProviderAdminClient {
 
     public void listProviderRunningStatus(ListProviderRunningStatusCallback listProviderRunningStatusCallback,int listTimeOutInSecond) {
         try {
-            openSession();
-            AnalysisProviderRunningStatusRequest analysisProviderRunningStatusRequest = new AnalysisProviderRunningStatusRequest();
+
             AnalyseResponseCallback analyseResponseCallback = new AnalyseResponseCallback() {
                 @Override
                 public void onResponseReceived(Object analyseResponseObject) {}
@@ -281,6 +266,8 @@ public class AnalysisProviderAdminClient {
                 }
             };
 
+            AnalysisProviderRunningStatusRequest analysisProviderRunningStatusRequest = new AnalysisProviderRunningStatusRequest();
+            openSession();
             sendAnalyseRequest(analysisProviderRunningStatusRequest,analyseResponseCallback,listTimeOutInSecond);
         } catch (ProviderClientInitException e) {
             throw new RuntimeException(e);
@@ -300,11 +287,7 @@ public class AnalysisProviderAdminClient {
             FunctionalFeatureRunningStatusRequest functionalFeatureRunningStatusRequest = new FunctionalFeatureRunningStatusRequest();
             AnalyseResponseCallback analyseResponseCallback = new AnalyseResponseCallback() {
                 @Override
-                public void onResponseReceived(Object analyseResponseObject) {
-
-                    System.out.println("listFeatureRunningStatus");
-                    System.out.println("listFeatureRunningStatus");
-                }
+                public void onResponseReceived(Object analyseResponseObject) {}
 
                 @Override
                 public void onSuccessResponseReceived(AnalyseResponse analyseResponse) {
