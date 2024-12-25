@@ -213,13 +213,12 @@ public class AnalysisProviderAdminClient {
                 @Override
                 public void onSuccessResponseReceived(AnalyseResponse analyseResponse) {
                     try {
+                        List<FunctionalFeatureInfo> functionalFeatureInfoList = null;
                         if(analyseResponse.getResponseData() != null){
-                            List<FunctionalFeatureInfo> functionalFeatureInfoList = (List<FunctionalFeatureInfo>)analyseResponse.getResponseData();
-                            listFunctionalFeaturesCallback.onExecutionSuccess(functionalFeatureInfoList);
-                        }else{
-                            listFunctionalFeaturesCallback.onExecutionSuccess(null);
+                            functionalFeatureInfoList = (List<FunctionalFeatureInfo>)analyseResponse.getResponseData();
                         }
                         closeSession();
+                        listFunctionalFeaturesCallback.onExecutionSuccess(functionalFeatureInfoList);
                     } catch (ProviderClientInitException e) {
                         e.printStackTrace();
                     }
@@ -228,8 +227,8 @@ public class AnalysisProviderAdminClient {
                 @Override
                 public void onFailureResponseReceived(Throwable throwable) {
                     try {
-                        listFunctionalFeaturesCallback.onExecutionFail();
                         closeSession();
+                        listFunctionalFeaturesCallback.onExecutionFail();
                     } catch (ProviderClientInitException e) {
                         e.printStackTrace();
                     }
