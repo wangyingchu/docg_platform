@@ -29,7 +29,6 @@ public class AdminClientTest {
             throw new RuntimeException(e);
         }
 
-
         AnalysisProviderAdminClient.ListFunctionalFeaturesCallback listFunctionalFeaturesCallback = new AnalysisProviderAdminClient.ListFunctionalFeaturesCallback() {
             @Override
             public void onExecutionSuccess(List<FunctionalFeatureInfo> functionalFeatureInfoList) {

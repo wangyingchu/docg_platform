@@ -1,6 +1,6 @@
 package com.viewfunction.docg.analysisProvider.providerApplication.util
 
-import com.viewfunction.docg.analysisProvider.service.analysisProviderServiceCore.payload.FunctionalFeatureInfo
+import com.viewfunction.docg.analysisProvider.service.analysisProviderServiceCore.payload.{FeatureRunningInfo, FunctionalFeatureInfo, ProviderRunningInfo}
 
 import java.sql.{Connection, DriverManager, SQLException, Statement}
 import java.time.LocalDateTime
@@ -78,11 +78,15 @@ class InternalOperationDB {
     InternalOperationDBUtil.recordFeatureResponse(connection,requestUUID,runningFinishTime)
   }
 
-  def listFunctionalFeaturesInfo():util.ArrayList[FunctionalFeatureInfo]={
+  def listFunctionalFeaturesInfo():util.ArrayList[FunctionalFeatureInfo] = {
     InternalOperationDBUtil.listFunctionalFeaturesInfo(connection)
   }
 
-  def listFunctionalFeatureRunningStatus():Unit={}
+  def listFunctionalFeatureRunningStatus():util.ArrayList[FeatureRunningInfo] = {
+    InternalOperationDBUtil.listFunctionalFeatureRunningStatus(connection)
+  }
 
-  def listAnalysisProviderRunningStatus():Unit={}
+  def listAnalysisProviderRunningStatus():util.ArrayList[ProviderRunningInfo] = {
+    InternalOperationDBUtil.listAnalysisProviderRunningStatus(connection)
+  }
 }

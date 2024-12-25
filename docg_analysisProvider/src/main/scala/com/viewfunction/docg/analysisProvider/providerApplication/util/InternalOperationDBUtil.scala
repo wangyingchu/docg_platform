@@ -1,10 +1,10 @@
 package com.viewfunction.docg.analysisProvider.providerApplication.util
 
-import com.viewfunction.docg.analysisProvider.service.analysisProviderServiceCore.payload.FunctionalFeatureInfo
+import com.viewfunction.docg.analysisProvider.service.analysisProviderServiceCore.payload.{FeatureRunningInfo, FunctionalFeatureInfo, ProviderRunningInfo}
 
 import java.sql.{Connection, PreparedStatement, ResultSet, SQLException}
 import java.time.LocalDateTime
-import java.util.ArrayList
+import java.util
 
 object InternalOperationDBUtil {
   val FUNCTIONAL_FEATURE_TABLE_NAME = "FUNCTIONAL_FEATURE"
@@ -203,8 +203,8 @@ object InternalOperationDBUtil {
     }
   }
 
-  def listFunctionalFeaturesInfo(connection:Connection):ArrayList[FunctionalFeatureInfo] = {
-    val functionalFeaturesInfoList: ArrayList[FunctionalFeatureInfo] = new ArrayList[FunctionalFeatureInfo]()
+  def listFunctionalFeaturesInfo(connection:Connection):util.ArrayList[FunctionalFeatureInfo] = {
+    val functionalFeaturesInfoList: util.ArrayList[FunctionalFeatureInfo] = new util.ArrayList[FunctionalFeatureInfo]()
     try {
       val statement = connection.createStatement()
       try{
@@ -222,5 +222,57 @@ object InternalOperationDBUtil {
       case e: SQLException => e.printStackTrace()
     }
     functionalFeaturesInfoList
+  }
+
+  def listFunctionalFeatureRunningStatus(connection:Connection):util.ArrayList[FeatureRunningInfo] = {
+    val functionalFeatureRunningStatusInfoList: util.ArrayList[FeatureRunningInfo] = new util.ArrayList[FeatureRunningInfo]()
+    try {
+      val statement = connection.createStatement()
+      try{
+        val resultSet: ResultSet = statement.executeQuery("SELECT * FROM "+FEATURE_RUNNING_STATUS_NAME)
+        while (resultSet.next()) {
+          //  val createSQL = "CREATE TABLE "+FEATURE_RUNNING_STATUS_NAME+" (\n id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n feature_running_status VARCHAR(64),\n requestUUID VARCHAR(64),\n request_time TIMESTAMP,\n responseUUID VARCHAR(64),\n feature_name VARCHAR(256),\n response_dataform VARCHAR(64),\n running_startTime TIMESTAMP,\n running_finishTime TIMESTAMP,\n record_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n)"
+          val column1 = resultSet.getString("feature_running_status")
+          val column2 = resultSet.getString("requestUUID")
+          val column3 = resultSet.getTimestamp("request_time")
+          val column4 = resultSet.getString("responseUUID")
+          val column5 = resultSet.getString("feature_name")
+          val column6 = resultSet.getString("response_dataform")
+          val column7 = resultSet.getTimestamp("running_startTime")
+          val column8 = resultSet.getTimestamp("running_finishTime")
+
+          //val currentFunctionalFeatureInfo = new FunctionalFeatureInfo(column1,column2)
+          //functionalFeaturesInfoList.add(currentFunctionalFeatureInfo)
+        }
+      }finally {
+        statement.close()
+      }
+    } catch {
+      case e: SQLException => e.printStackTrace()
+    }
+    functionalFeatureRunningStatusInfoList
+  }
+
+  def listAnalysisProviderRunningStatus(connection:Connection):util.ArrayList[ProviderRunningInfo] = {
+    val analysisProviderRunningStatusInfoList: util.ArrayList[ProviderRunningInfo] = new util.ArrayList[ProviderRunningInfo]()
+    try {
+      val statement = connection.createStatement()
+      try{
+        val resultSet: ResultSet = statement.executeQuery("SELECT * FROM "+PROVIDER_RUNNING_STATUS_NAME)
+        while (resultSet.next()) {
+          // val createSQL ="CREATE TABLE "+PROVIDER_RUNNING_STATUS_NAME+" (\n id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n provider_startTime TIMESTAMP,\n provider_stopTime TIMESTAMP,\n provider_runningUUID VARCHAR(128)\n,record_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n)"
+          val column1 = resultSet.getTimestamp("provider_startTime")
+          val column2 = resultSet.getTimestamp("provider_stopTime")
+          val column3 = resultSet.getString("provider_runningUUID")
+          //val currentFunctionalFeatureInfo = new FunctionalFeatureInfo(column1,column2)
+          //functionalFeaturesInfoList.add(currentFunctionalFeatureInfo)
+        }
+      }finally {
+        statement.close()
+      }
+    } catch {
+      case e: SQLException => e.printStackTrace()
+    }
+    analysisProviderRunningStatusInfoList
   }
 }
