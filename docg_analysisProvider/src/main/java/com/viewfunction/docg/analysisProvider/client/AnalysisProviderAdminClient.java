@@ -19,6 +19,9 @@ import com.viewfunction.docg.analysisProvider.feature.communication.AnalyseRespo
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseRequest;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseResponse;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.admin.AnalysisProviderPingRequest;
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.admin.AnalysisProviderRunningStatusRequest;
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.admin.FunctionalFeatureRunningStatusRequest;
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.admin.FunctionalFeaturesInfoRequest;
 import com.viewfunction.docg.analysisProvider.util.PropertyHandler;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
@@ -190,9 +193,129 @@ public class AnalysisProviderAdminClient {
         }
     }
 
-    public void listFunctionalFeatures(AnalyseResponseCallback analyseResponseCallback,int analyseTimeOutInSecond) {}
+    public interface ListFunctionalFeaturesCallback {
+        public void onExecutionSuccess();
+        public void onExecutionFail();
+    }
 
-    public void listProviderRunningStatus(AnalyseResponseCallback analyseResponseCallback,int analyseTimeOutInSecond) {}
+    public void listFunctionalFeatures(ListFunctionalFeaturesCallback listFunctionalFeaturesCallback,int listTimeOutInSecond) {
+        try {
+            openSession();
+            FunctionalFeaturesInfoRequest functionalFeaturesInfoRequest = new FunctionalFeaturesInfoRequest();
+            AnalyseResponseCallback analyseResponseCallback = new AnalyseResponseCallback() {
+                @Override
+                public void onResponseReceived(Object analyseResponseObject) {}
 
-    public void listFeatureRunningStatus(AnalyseResponseCallback analyseResponseCallback,int analyseTimeOutInSecond) {}
+                @Override
+                public void onSuccessResponseReceived(AnalyseResponse analyseResponse) {
+                    try {
+                        listFunctionalFeaturesCallback.onExecutionSuccess();
+                        closeSession();
+                    } catch (ProviderClientInitException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailureResponseReceived(Throwable throwable) {
+                    try {
+                        listFunctionalFeaturesCallback.onExecutionFail();
+                        closeSession();
+                    } catch (ProviderClientInitException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            sendAnalyseRequest(functionalFeaturesInfoRequest,analyseResponseCallback,listTimeOutInSecond);
+        } catch (ProviderClientInitException e) {
+            throw new RuntimeException(e);
+        } catch (AnalysisEngineRuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public interface ListProviderRunningStatusCallback {
+        public void onExecutionSuccess();
+        public void onExecutionFail();
+    }
+
+    public void listProviderRunningStatus(ListProviderRunningStatusCallback listProviderRunningStatusCallback,int listTimeOutInSecond) {
+        try {
+            openSession();
+            AnalysisProviderRunningStatusRequest analysisProviderRunningStatusRequest = new AnalysisProviderRunningStatusRequest();
+            AnalyseResponseCallback analyseResponseCallback = new AnalyseResponseCallback() {
+                @Override
+                public void onResponseReceived(Object analyseResponseObject) {}
+
+                @Override
+                public void onSuccessResponseReceived(AnalyseResponse analyseResponse) {
+                    try {
+                        listProviderRunningStatusCallback.onExecutionSuccess();
+                        closeSession();
+                    } catch (ProviderClientInitException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailureResponseReceived(Throwable throwable) {
+                    try {
+                        listProviderRunningStatusCallback.onExecutionFail();
+                        closeSession();
+                    } catch (ProviderClientInitException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            sendAnalyseRequest(analysisProviderRunningStatusRequest,analyseResponseCallback,listTimeOutInSecond);
+        } catch (ProviderClientInitException e) {
+            throw new RuntimeException(e);
+        } catch (AnalysisEngineRuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public interface ListFeatureRunningStatusCallback {
+        public void onExecutionSuccess();
+        public void onExecutionFail();
+    }
+
+    public void listFeatureRunningStatus(ListFeatureRunningStatusCallback listFeatureRunningStatusCallback,int listTimeOutInSecond) {
+        try {
+            openSession();
+            FunctionalFeatureRunningStatusRequest functionalFeatureRunningStatusRequest = new FunctionalFeatureRunningStatusRequest();
+            AnalyseResponseCallback analyseResponseCallback = new AnalyseResponseCallback() {
+                @Override
+                public void onResponseReceived(Object analyseResponseObject) {}
+
+                @Override
+                public void onSuccessResponseReceived(AnalyseResponse analyseResponse) {
+                    try {
+                        listFeatureRunningStatusCallback.onExecutionSuccess();
+                        closeSession();
+                    } catch (ProviderClientInitException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailureResponseReceived(Throwable throwable) {
+                    try {
+                        listFeatureRunningStatusCallback.onExecutionFail();
+                        closeSession();
+                    } catch (ProviderClientInitException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            sendAnalyseRequest(functionalFeatureRunningStatusRequest,analyseResponseCallback,listTimeOutInSecond);
+        } catch (ProviderClientInitException e) {
+            throw new RuntimeException(e);
+        } catch (AnalysisEngineRuntimeException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
