@@ -4,6 +4,7 @@ import akka.actor.ActorRef
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.{AnalyseRequest, AnalyseResponse}
 import com.viewfunction.docg.analysisProvider.providerApplication.communication.CommunicationMessageHandler
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.admin.AnalysisProviderPingRequest
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.{AdministrativeDivisionSpatialCalculateRequest, SpatialPropertiesAggregateStatisticRequest}
 import com.viewfunction.docg.analysisProvider.feature.functionalFeatures.{AdministrativeDivisionBasedSpatialAnalysis, SpatialPropertiesStatisticAndAnalysis}
 import com.viewfunction.docg.analysisProvider.providerApplication.util.InternalOperationDB
@@ -37,6 +38,8 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
         case communicationMessage: String =>
           println(s" $communicationMessage")
 
+        case communicationMessage: AnalysisProviderPingRequest =>
+          internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "AnalysisProviderPing")
 
         case communicationMessage: SpatialPropertiesAggregateStatisticRequest =>
           internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "SpatialPropertiesAggregateStatistic")
