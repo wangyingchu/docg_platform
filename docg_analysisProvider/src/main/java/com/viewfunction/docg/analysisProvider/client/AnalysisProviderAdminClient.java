@@ -22,10 +22,14 @@ import com.viewfunction.docg.analysisProvider.feature.communication.messagePaylo
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.admin.AnalysisProviderRunningStatusRequest;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.admin.FunctionalFeatureRunningStatusRequest;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.admin.FunctionalFeaturesInfoRequest;
+import com.viewfunction.docg.analysisProvider.service.analysisProviderServiceCore.payload.FeatureRunningInfo;
+import com.viewfunction.docg.analysisProvider.service.analysisProviderServiceCore.payload.FunctionalFeatureInfo;
+import com.viewfunction.docg.analysisProvider.service.analysisProviderServiceCore.payload.ProviderRunningInfo;
 import com.viewfunction.docg.analysisProvider.util.PropertyHandler;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -194,7 +198,7 @@ public class AnalysisProviderAdminClient {
     }
 
     public interface ListFunctionalFeaturesCallback {
-        public void onExecutionSuccess();
+        public void onExecutionSuccess(List<FunctionalFeatureInfo> functionalFeatureInfoList);
         public void onExecutionFail();
     }
 
@@ -209,7 +213,7 @@ public class AnalysisProviderAdminClient {
                 @Override
                 public void onSuccessResponseReceived(AnalyseResponse analyseResponse) {
                     try {
-                        listFunctionalFeaturesCallback.onExecutionSuccess();
+                        listFunctionalFeaturesCallback.onExecutionSuccess(null);
                         closeSession();
                     } catch (ProviderClientInitException e) {
                         e.printStackTrace();
@@ -236,7 +240,7 @@ public class AnalysisProviderAdminClient {
     }
 
     public interface ListProviderRunningStatusCallback {
-        public void onExecutionSuccess();
+        public void onExecutionSuccess(List<ProviderRunningInfo> providerRunningInfoList);
         public void onExecutionFail();
     }
 
@@ -251,7 +255,7 @@ public class AnalysisProviderAdminClient {
                 @Override
                 public void onSuccessResponseReceived(AnalyseResponse analyseResponse) {
                     try {
-                        listProviderRunningStatusCallback.onExecutionSuccess();
+                        listProviderRunningStatusCallback.onExecutionSuccess(null);
                         closeSession();
                     } catch (ProviderClientInitException e) {
                         e.printStackTrace();
@@ -278,7 +282,7 @@ public class AnalysisProviderAdminClient {
     }
 
     public interface ListFeatureRunningStatusCallback {
-        public void onExecutionSuccess();
+        public void onExecutionSuccess(List<FeatureRunningInfo> featureRunningInfo);
         public void onExecutionFail();
     }
 
@@ -293,7 +297,7 @@ public class AnalysisProviderAdminClient {
                 @Override
                 public void onSuccessResponseReceived(AnalyseResponse analyseResponse) {
                     try {
-                        listFeatureRunningStatusCallback.onExecutionSuccess();
+                        listFeatureRunningStatusCallback.onExecutionSuccess(null);
                         closeSession();
                     } catch (ProviderClientInitException e) {
                         e.printStackTrace();
