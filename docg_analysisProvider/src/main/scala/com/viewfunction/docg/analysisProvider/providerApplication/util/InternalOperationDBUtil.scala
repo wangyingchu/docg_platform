@@ -231,7 +231,6 @@ object InternalOperationDBUtil {
       try{
         val resultSet: ResultSet = statement.executeQuery("SELECT * FROM "+FEATURE_RUNNING_STATUS_NAME)
         while (resultSet.next()) {
-          //  val createSQL = "CREATE TABLE "+FEATURE_RUNNING_STATUS_NAME+" (\n id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n feature_running_status VARCHAR(64),\n requestUUID VARCHAR(64),\n request_time TIMESTAMP,\n responseUUID VARCHAR(64),\n feature_name VARCHAR(256),\n response_dataform VARCHAR(64),\n running_startTime TIMESTAMP,\n running_finishTime TIMESTAMP,\n record_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n)"
           val column1 = resultSet.getString("feature_running_status")
           val column2 = resultSet.getString("requestUUID")
           val column3 = resultSet.getTimestamp("request_time")
@@ -241,8 +240,12 @@ object InternalOperationDBUtil {
           val column7 = resultSet.getTimestamp("running_startTime")
           val column8 = resultSet.getTimestamp("running_finishTime")
 
-          //val currentFunctionalFeatureInfo = new FunctionalFeatureInfo(column1,column2)
-          //functionalFeaturesInfoList.add(currentFunctionalFeatureInfo)
+          val column3_real = if(column3 != null)  column3.toLocalDateTime else null
+          val column7_real = if(column7 != null)  column7.toLocalDateTime else null
+          val column8_real = if(column8 != null)  column8.toLocalDateTime else null
+
+          val currentFeatureRunningInfo = new FeatureRunningInfo(column1,column2,column3_real,column4,column5,column6,column7_real,column8_real)
+          functionalFeatureRunningStatusInfoList.add(currentFeatureRunningInfo)
         }
       }finally {
         statement.close()
@@ -260,12 +263,15 @@ object InternalOperationDBUtil {
       try{
         val resultSet: ResultSet = statement.executeQuery("SELECT * FROM "+PROVIDER_RUNNING_STATUS_NAME)
         while (resultSet.next()) {
-          // val createSQL ="CREATE TABLE "+PROVIDER_RUNNING_STATUS_NAME+" (\n id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,\n provider_startTime TIMESTAMP,\n provider_stopTime TIMESTAMP,\n provider_runningUUID VARCHAR(128)\n,record_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n)"
           val column1 = resultSet.getTimestamp("provider_startTime")
           val column2 = resultSet.getTimestamp("provider_stopTime")
           val column3 = resultSet.getString("provider_runningUUID")
-          //val currentFunctionalFeatureInfo = new FunctionalFeatureInfo(column1,column2)
-          //functionalFeaturesInfoList.add(currentFunctionalFeatureInfo)
+
+          val column1_real = if(column1 != null)  column1.toLocalDateTime else null
+          val column2_real = if(column2 != null)  column2.toLocalDateTime else null
+
+          val currentProviderRunningInfo = new ProviderRunningInfo(column1_real,column2_real,column3)
+          analysisProviderRunningStatusInfoList.add(currentProviderRunningInfo)
         }
       }finally {
         statement.close()

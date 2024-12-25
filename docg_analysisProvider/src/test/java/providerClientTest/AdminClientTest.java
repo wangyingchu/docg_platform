@@ -1,7 +1,9 @@
 package providerClientTest;
 
 import com.viewfunction.docg.analysisProvider.client.AnalysisProviderAdminClient;
+import com.viewfunction.docg.analysisProvider.service.analysisProviderServiceCore.payload.FeatureRunningInfo;
 import com.viewfunction.docg.analysisProvider.service.analysisProviderServiceCore.payload.FunctionalFeatureInfo;
+import com.viewfunction.docg.analysisProvider.service.analysisProviderServiceCore.payload.ProviderRunningInfo;
 
 import java.util.List;
 
@@ -47,5 +49,49 @@ public class AdminClientTest {
             }
         };
         analysisProviderAdminClient.listFunctionalFeatures(listFunctionalFeaturesCallback,10);
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        AnalysisProviderAdminClient.ListFeatureRunningStatusCallback listFeatureRunningStatusCallback = new AnalysisProviderAdminClient.ListFeatureRunningStatusCallback() {
+            @Override
+            public void onExecutionSuccess(List<FeatureRunningInfo> featureRunningInfo) {
+                if(featureRunningInfo != null){
+                    for(FeatureRunningInfo featureRunningInfoItem:featureRunningInfo){
+                        System.out.println(featureRunningInfoItem.getFeatureName());
+                        System.out.println("-------------------------");
+                    }
+                }
+            }
+
+            @Override
+            public void onExecutionFail() {
+
+            }
+        };
+        //analysisProviderAdminClient.listFeatureRunningStatus(listFeatureRunningStatusCallback,10);
+
+        AnalysisProviderAdminClient.ListProviderRunningStatusCallback listProviderRunningStatusCallback = new AnalysisProviderAdminClient.ListProviderRunningStatusCallback() {
+            @Override
+            public void onExecutionSuccess(List<ProviderRunningInfo> providerRunningInfoList) {
+                if(providerRunningInfoList != null){
+                    for(ProviderRunningInfo providerRunningInfoItem:providerRunningInfoList){
+                        System.out.println(providerRunningInfoItem.getProviderRunningUUID());
+                        System.out.println("-------------------------");
+                    }
+
+                }
+            }
+
+            @Override
+            public void onExecutionFail() {
+
+            }
+        };
+        analysisProviderAdminClient.listProviderRunningStatus(listProviderRunningStatusCallback,10);
+
     }
 }

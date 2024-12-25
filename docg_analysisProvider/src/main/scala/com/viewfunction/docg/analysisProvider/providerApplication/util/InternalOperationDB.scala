@@ -18,7 +18,7 @@ class InternalOperationDB {
       // 连接到数据库
       connection = DriverManager.getConnection(dbUrl)
       InternalOperationDBUtil.initializeOperationDB(connection)
-      println("OperationDB(Derby) Start success")
+      println("OperationDB Start success")
       println()
     } catch {
       case e: ClassNotFoundException => e.printStackTrace()
@@ -43,7 +43,7 @@ class InternalOperationDB {
       case e: ClassNotFoundException => e.printStackTrace()
       case e: SQLException =>
         if (e.getSQLState.equals("XJ015")) {
-          println("OperationDB(Derby) Shutdown success")
+          println("OperationDB Shutdown success")
         } else {
           e.printStackTrace()
         }

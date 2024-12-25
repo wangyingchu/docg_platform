@@ -259,8 +259,12 @@ public class AnalysisProviderAdminClient {
                 @Override
                 public void onSuccessResponseReceived(AnalyseResponse analyseResponse) {
                     try {
-                        listProviderRunningStatusCallback.onExecutionSuccess(null);
+                        List<ProviderRunningInfo> providerRunningInfoList = null;
+                        if(analyseResponse.getResponseData() != null){
+                            providerRunningInfoList = (List<ProviderRunningInfo>)analyseResponse.getResponseData();
+                        }
                         closeSession();
+                        listProviderRunningStatusCallback.onExecutionSuccess(providerRunningInfoList);
                     } catch (ProviderClientInitException e) {
                         e.printStackTrace();
                     }
@@ -269,8 +273,8 @@ public class AnalysisProviderAdminClient {
                 @Override
                 public void onFailureResponseReceived(Throwable throwable) {
                     try {
-                        listProviderRunningStatusCallback.onExecutionFail();
                         closeSession();
+                        listProviderRunningStatusCallback.onExecutionFail();
                     } catch (ProviderClientInitException e) {
                         e.printStackTrace();
                     }
@@ -301,8 +305,12 @@ public class AnalysisProviderAdminClient {
                 @Override
                 public void onSuccessResponseReceived(AnalyseResponse analyseResponse) {
                     try {
-                        listFeatureRunningStatusCallback.onExecutionSuccess(null);
+                        List<FeatureRunningInfo> featureRunningInfoList = null;
+                        if(analyseResponse.getResponseData() != null){
+                            featureRunningInfoList = (List<FeatureRunningInfo>)analyseResponse.getResponseData();
+                        }
                         closeSession();
+                        listFeatureRunningStatusCallback.onExecutionSuccess(featureRunningInfoList);
                     } catch (ProviderClientInitException e) {
                         e.printStackTrace();
                     }
@@ -311,8 +319,8 @@ public class AnalysisProviderAdminClient {
                 @Override
                 public void onFailureResponseReceived(Throwable throwable) {
                     try {
-                        listFeatureRunningStatusCallback.onExecutionFail();
                         closeSession();
+                        listFeatureRunningStatusCallback.onExecutionFail();
                     } catch (ProviderClientInitException e) {
                         e.printStackTrace();
                     }
