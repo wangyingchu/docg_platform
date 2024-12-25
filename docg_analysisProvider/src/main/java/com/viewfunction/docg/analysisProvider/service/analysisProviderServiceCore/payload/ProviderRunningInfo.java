@@ -14,8 +14,6 @@ public class ProviderRunningInfo {
         this.providerRunningUUID = providerRunningUUID;
     }
 
-    public ProviderRunningInfo(){}
-
     public LocalDateTime getProviderStartTime() {
         return providerStartTime;
     }

@@ -300,7 +300,11 @@ public class AnalysisProviderAdminClient {
             FunctionalFeatureRunningStatusRequest functionalFeatureRunningStatusRequest = new FunctionalFeatureRunningStatusRequest();
             AnalyseResponseCallback analyseResponseCallback = new AnalyseResponseCallback() {
                 @Override
-                public void onResponseReceived(Object analyseResponseObject) {}
+                public void onResponseReceived(Object analyseResponseObject) {
+
+                    System.out.println("listFeatureRunningStatus");
+                    System.out.println("listFeatureRunningStatus");
+                }
 
                 @Override
                 public void onSuccessResponseReceived(AnalyseResponse analyseResponse) {

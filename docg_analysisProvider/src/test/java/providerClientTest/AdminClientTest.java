@@ -23,7 +23,7 @@ public class AdminClientTest {
                 System.out.println("Ping Fail");
             }
         };
-        analysisProviderAdminClient.pingAnalysisProvider(pingAnalysisProviderCallback,3);
+        //analysisProviderAdminClient.pingAnalysisProvider(pingAnalysisProviderCallback,3);
 
         try {
             Thread.sleep(2000);
@@ -48,7 +48,7 @@ public class AdminClientTest {
 
             }
         };
-        analysisProviderAdminClient.listFunctionalFeatures(listFunctionalFeaturesCallback,10);
+        //analysisProviderAdminClient.listFunctionalFeatures(listFunctionalFeaturesCallback,10);
 
         try {
             Thread.sleep(2000);
@@ -72,7 +72,13 @@ public class AdminClientTest {
 
             }
         };
-        //analysisProviderAdminClient.listFeatureRunningStatus(listFeatureRunningStatusCallback,10);
+        analysisProviderAdminClient.listFeatureRunningStatus(listFeatureRunningStatusCallback,100);
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         AnalysisProviderAdminClient.ListProviderRunningStatusCallback listProviderRunningStatusCallback = new AnalysisProviderAdminClient.ListProviderRunningStatusCallback() {
             @Override
@@ -91,7 +97,6 @@ public class AdminClientTest {
 
             }
         };
-        analysisProviderAdminClient.listProviderRunningStatus(listProviderRunningStatusCallback,10);
-
+        //analysisProviderAdminClient.listProviderRunningStatus(listProviderRunningStatusCallback,10);
     }
 }

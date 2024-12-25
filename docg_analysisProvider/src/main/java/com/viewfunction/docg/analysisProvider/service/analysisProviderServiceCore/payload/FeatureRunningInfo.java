@@ -26,8 +26,6 @@ public class FeatureRunningInfo {
         this.runningFinishTime = runningFinishTime;
     }
 
-    public FeatureRunningInfo(){}
-
     public String getFeatureRunningStatus() {
         return featureRunningStatus;
     }
