@@ -23,7 +23,7 @@ public class AdminClientTest {
                 System.out.println("Ping Fail");
             }
         };
-        //analysisProviderAdminClient.pingAnalysisProvider(pingAnalysisProviderCallback,3);
+        analysisProviderAdminClient.pingAnalysisProvider(pingAnalysisProviderCallback,3);
 
         try {
             Thread.sleep(2000);
@@ -48,7 +48,7 @@ public class AdminClientTest {
 
             }
         };
-        //analysisProviderAdminClient.listFunctionalFeatures(listFunctionalFeaturesCallback,10);
+        analysisProviderAdminClient.listFunctionalFeatures(listFunctionalFeaturesCallback,10);
 
         try {
             Thread.sleep(2000);
@@ -62,6 +62,13 @@ public class AdminClientTest {
                 if(featureRunningInfo != null){
                     for(FeatureRunningInfo featureRunningInfoItem:featureRunningInfo){
                         System.out.println(featureRunningInfoItem.getFeatureName());
+                        System.out.println(featureRunningInfoItem.getFeatureRunningStatus());
+                        System.out.println(featureRunningInfoItem.getRequestUUID());
+                        System.out.println(featureRunningInfoItem.getResponseUUID());
+                        System.out.println(featureRunningInfoItem.getResponseDataForm());
+                        System.out.println(featureRunningInfoItem.getRequestTime());
+                        System.out.println(featureRunningInfoItem.getRunningStartTime());
+                        System.out.println(featureRunningInfoItem.getRunningFinishTime());
                         System.out.println("-------------------------");
                     }
                 }
@@ -86,6 +93,8 @@ public class AdminClientTest {
                 if(providerRunningInfoList != null){
                     for(ProviderRunningInfo providerRunningInfoItem:providerRunningInfoList){
                         System.out.println(providerRunningInfoItem.getProviderRunningUUID());
+                        System.out.println(providerRunningInfoItem.getProviderStartTime());
+                        System.out.println(providerRunningInfoItem.getProviderStopTime());
                         System.out.println("-------------------------");
                     }
 
@@ -97,6 +106,6 @@ public class AdminClientTest {
 
             }
         };
-        //analysisProviderAdminClient.listProviderRunningStatus(listProviderRunningStatusCallback,10);
+        analysisProviderAdminClient.listProviderRunningStatus(listProviderRunningStatusCallback,10);
     }
 }

@@ -215,6 +215,7 @@ object InternalOperationDBUtil {
           val currentFunctionalFeatureInfo = new FunctionalFeatureInfo(column1,column2)
           functionalFeaturesInfoList.add(currentFunctionalFeatureInfo)
         }
+        resultSet.close()
       }finally {
         statement.close()
       }
@@ -240,13 +241,10 @@ object InternalOperationDBUtil {
           val column7 = resultSet.getTimestamp("running_startTime")
           val column8 = resultSet.getTimestamp("running_finishTime")
 
-          val column3_real = if(column3 != null)  column3.toLocalDateTime else null
-          val column7_real = if(column7 != null)  column7.toLocalDateTime else null
-          val column8_real = if(column8 != null)  column8.toLocalDateTime else null
-
-          val currentFeatureRunningInfo = new FeatureRunningInfo(column1,column2,column3_real,column4,column5,column6,column7_real,column8_real)
+          val currentFeatureRunningInfo = new FeatureRunningInfo(column1,column2,column3,column4,column5,column6,column7,column8)
           functionalFeatureRunningStatusInfoList.add(currentFeatureRunningInfo)
         }
+        resultSet.close()
       }finally {
         statement.close()
       }
@@ -267,12 +265,10 @@ object InternalOperationDBUtil {
           val column2 = resultSet.getTimestamp("provider_stopTime")
           val column3 = resultSet.getString("provider_runningUUID")
 
-          val column1_real = if(column1 != null)  column1.toLocalDateTime else null
-          val column2_real = if(column2 != null)  column2.toLocalDateTime else null
-
-          val currentProviderRunningInfo = new ProviderRunningInfo(column1_real,column2_real,column3)
+          val currentProviderRunningInfo = new ProviderRunningInfo(column1,column2,column3)
           analysisProviderRunningStatusInfoList.add(currentProviderRunningInfo)
         }
+        resultSet.close()
       }finally {
         statement.close()
       }

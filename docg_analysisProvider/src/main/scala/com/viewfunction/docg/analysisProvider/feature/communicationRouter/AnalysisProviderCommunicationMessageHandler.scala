@@ -47,10 +47,10 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
           AnalysisProviderAdministrationOperator.doProvideFunctionalFeaturesInfoList(internalOperationDB,analyseResponse)
         case communicationMessage: FunctionalFeatureRunningStatusRequest =>
           internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "ListFunctionalFeatureRunningStatus")
-          //wrong here AnalysisProviderAdministrationOperator.doProvideFunctionalFeatureRunningStatusInfoList(internalOperationDB,analyseResponse)
+          AnalysisProviderAdministrationOperator.doProvideFunctionalFeatureRunningStatusInfoList(internalOperationDB,analyseResponse)
         case communicationMessage: AnalysisProviderRunningStatusRequest =>
           internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "ListAnalysisProviderRunningStatus")
-          //wrong here AnalysisProviderAdministrationOperator.doProvideAnalysisProviderRunningStatusInfoList(internalOperationDB,analyseResponse)
+          AnalysisProviderAdministrationOperator.doProvideAnalysisProviderRunningStatusInfoList(internalOperationDB,analyseResponse)
 
         //for provider analysis service
         case communicationMessage: SpatialPropertiesAggregateStatisticRequest =>
