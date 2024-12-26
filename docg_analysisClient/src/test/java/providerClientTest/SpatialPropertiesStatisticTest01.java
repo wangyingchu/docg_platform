@@ -41,11 +41,11 @@ public class SpatialPropertiesStatisticTest01 {
         //spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.DATA_SLICE);
         //spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.CONCEPTION_KIND);
         HashMap<String,Object> map = new HashMap<>();
-        map.put(CoreRealmOperationConstant.ConceptionKindName,"TestConceptionKindName");
+        //map.put(CoreRealmOperationConstant.ConceptionKindName,"TestConceptionKindName");
         //map.put(CoreRealmOperationConstant.ConceptionEntitiesInsertMode(),ConceptionEntitiesInsertMode.CLEAN_INSERT());
         map.put(CoreRealmOperationConstant.ConceptionEntitiesInsertMode, ConceptionEntitiesOperationConfig.ConceptionEntitiesInsertMode.APPEND);
         //map.put(CoreRealmOperationConstant.ConceptionEntitiesInsertMode(), ConceptionEntitiesInsertMode.OVERWRITE());
-        //map.put(CoreRealmOperationConstant.ConceptionEntityPKAttributeName(),"DOCG_RealmGlobalUID");
+        //map.put(CoreRealmOperationConstant.ConceptionEntityPKAttributeName,"DOCG_RealmGlobalUID");
 
         spatialPropertiesAggregateStatisticRequest.setRequestParameters(map);
         try {
