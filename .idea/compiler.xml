@@ -7,9 +7,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="docg_realmKnowledgeManage" />
+        <module name="docg_analysisClient" />
         <module name="docg_coreRealm" />
         <module name="docg_dataCompute" />
         <module name="docg_dataCollector" />
+        <module name="ddocg_analysisClient" />
         <module name="docg_dataAnalyze" />
         <module name="docg_analysisProvider" />
         <module name="docg_realmExample" />
