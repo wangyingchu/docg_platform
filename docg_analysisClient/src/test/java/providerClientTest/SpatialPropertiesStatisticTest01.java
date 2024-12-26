@@ -9,7 +9,7 @@ import com.viewfunction.docg.analysisProvider.feature.communication.messagePaylo
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialCommonConfig;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialPropertiesAggregateStatisticRequest;
-import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.ConceptionEntitiesInsertMode;
+import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.ConceptionEntitiesOperationConfig;
 import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.CoreRealmOperationConstant;
 
 import java.util.ArrayList;
@@ -43,7 +43,7 @@ public class SpatialPropertiesStatisticTest01 {
         HashMap<String,Object> map = new HashMap<>();
         map.put(CoreRealmOperationConstant.ConceptionkindName,"TestConceptionKindName");
         //map.put(CoreRealmOperationConstant.ConceptionEntitiesInsertMode(),ConceptionEntitiesInsertMode.CLEAN_INSERT());
-        map.put(CoreRealmOperationConstant.ConceptionEntitiesInsertMode, ConceptionEntitiesInsertMode.conceptionEntitiesInsertMode.APPEND);
+        map.put(CoreRealmOperationConstant.ConceptionEntitiesInsertMode, ConceptionEntitiesOperationConfig.ConceptionEntitiesInsertMode.APPEND);
         //map.put(CoreRealmOperationConstant.ConceptionEntitiesInsertMode(), ConceptionEntitiesInsertMode.OVERWRITE());
         //map.put(CoreRealmOperationConstant.ConceptionEntityPKAttributeName(),"DOCG_RealmGlobalUID");
 
