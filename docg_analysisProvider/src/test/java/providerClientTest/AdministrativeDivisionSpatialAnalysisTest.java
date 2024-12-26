@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
-public class AdministrativeDivisionSpatialAnalysisTest01 {
+public class AdministrativeDivisionSpatialAnalysisTest {
 
     public static void main(String[] args) throws AnalyseRequestFormatException {
         AnalysisProviderClient analysisProviderClient = new AnalysisProviderClient("127.0.0.1",9900);

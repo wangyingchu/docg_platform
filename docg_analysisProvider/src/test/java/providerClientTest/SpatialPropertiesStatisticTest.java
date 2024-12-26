@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
-public class SpatialPropertiesStatisticTest01 {
+public class SpatialPropertiesStatisticTest {
 
     public static void main(String[] args){
         AnalysisProviderClient analysisProviderClient = new AnalysisProviderClient("127.0.0.1",9999);
