@@ -1,7 +1,7 @@
 package com.viewfunction.docg.analysisProvider.fundamental.coreRealm
 
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset
-import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.ConceptionEntitiesInsertMode.ConceptionEntitiesInsertMode
+import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.ConceptionEntitiesOperationConfig.ConceptionEntitiesInsertMode
 import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationUtil
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue

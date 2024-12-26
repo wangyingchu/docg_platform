@@ -402,6 +402,11 @@
            <artifactId>docg_dataCompute</artifactId>
            <version>1.0.0</version>
        </dependency>
+        <dependency>
+            <groupId>com.viewfunction</groupId>
+            <artifactId>docg_analysisClient</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
         <!--
         Derby Related

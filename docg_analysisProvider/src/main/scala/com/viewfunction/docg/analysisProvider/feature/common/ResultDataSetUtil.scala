@@ -1,7 +1,8 @@
 package com.viewfunction.docg.analysisProvider.feature.common
 
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.{AnalyseRequest, AnalyseResponse}
-import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.{ConceptionEntitiesInsertMode, CoreRealmOperationConstant, CoreRealmOperationUtil}
+import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.ConceptionEntitiesOperationConfig.ConceptionEntitiesInsertMode
+import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.{CoreRealmOperationConstant, CoreRealmOperationUtil}
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.{DataSliceOperationConstant, DataSliceOperationUtil, ResponseDataSourceTech}
 import org.apache.spark.sql.DataFrame
 
@@ -47,8 +48,8 @@ class ResultDataSetUtil {
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.CONCEPTION_KIND)){
       if(analyseRequest.getRequestParameters != null){
         val requestParameters:util.HashMap[String,AnyRef] = analyseRequest.getRequestParameters.asInstanceOf[util.HashMap[String,AnyRef]]
-        if(requestParameters.containsKey(CoreRealmOperationConstant.ConceptionkindName)){
-          val targetConceptionKind:String = requestParameters.get(CoreRealmOperationConstant.ConceptionkindName).toString
+        if(requestParameters.containsKey(CoreRealmOperationConstant.ConceptionKindName)){
+          val targetConceptionKind:String = requestParameters.get(CoreRealmOperationConstant.ConceptionKindName).toString
 
           var conceptionEntitiesInsertMode = ConceptionEntitiesInsertMode.APPEND
           if(requestParameters.containsKey(CoreRealmOperationConstant.ConceptionEntitiesInsertMode)){
