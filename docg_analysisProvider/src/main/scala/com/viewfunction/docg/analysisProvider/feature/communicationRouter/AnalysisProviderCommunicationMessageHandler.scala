@@ -17,7 +17,11 @@ import java.time.Instant
 
 class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalDataAccessor,internalOperationDB:InternalOperationDB) extends CommunicationMessageHandler{
   override def handleMessage(communicationMessage: Any, communicationActor: ActorRef, senderActor: ActorRef): Unit = {
-
+    println()
+    println("****************************************************************************************")
+    println("Received Message: ")
+    println(communicationMessage)
+    //println("****************************************************************************************")
     var analyseResponse:AnalyseResponse=null
 
     communicationMessage match {
@@ -25,9 +29,9 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
         analyseResponse = new AnalyseResponse(communicationMessage.getRequestUUID)
         analyseResponse.setResponseDataForm(communicationMessage.getResponseDataForm)
         val currentTime = LocalDateTime.now()
-        println("################################################################")
+        println("----------------------------------------------------------------------------------------")
         println("Service Analysis: "+communicationMessage.getRequestUUID + " at: " + currentTime + "")
-        println("################################################################")
+        //println("----------------------------------------------------------------------------------------")
 
         val timestamp: Long = communicationMessage.getRequestDateTime
         val instant: Instant = Instant.ofEpochMilli(timestamp)
@@ -72,10 +76,11 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
       val instant: Instant = responseDatetime.toInstant
       val localDateTime: LocalDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime
       internalOperationDB.recordFeatureResponse(requestUUID, localDateTime)
-      println("################################################################")
+      //println("----------------------------------------------------------------------------------------")
       println("Response Analysis: "+requestUUID+ " at: " + localDateTime + "")
-      println("################################################################")
+      println("----------------------------------------------------------------------------------------")
       senderActor.tell(analyseResponse,communicationActor)
     }
+    print("~$ ")
   }
 }
