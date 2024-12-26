@@ -21,7 +21,7 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
     println("****************************************************************************************")
     println("Received Message: ")
     println(communicationMessage)
-    //println("****************************************************************************************")
+
     var analyseResponse:AnalyseResponse=null
 
     communicationMessage match {
@@ -31,7 +31,6 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
         val currentTime = LocalDateTime.now()
         println("----------------------------------------------------------------------------------------")
         println("Service Analysis: "+communicationMessage.getRequestUUID + " at: " + currentTime + "")
-        //println("----------------------------------------------------------------------------------------")
 
         val timestamp: Long = communicationMessage.getRequestDateTime
         val instant: Instant = Instant.ofEpochMilli(timestamp)
@@ -76,7 +75,7 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
       val instant: Instant = responseDatetime.toInstant
       val localDateTime: LocalDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime
       internalOperationDB.recordFeatureResponse(requestUUID, localDateTime)
-      //println("----------------------------------------------------------------------------------------")
+
       println("Response Analysis: "+requestUUID+ " at: " + localDateTime + "")
       println("----------------------------------------------------------------------------------------")
       senderActor.tell(analyseResponse,communicationActor)
