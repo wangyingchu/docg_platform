@@ -202,8 +202,8 @@ public class AnalysisProviderAdminClient {
                         if(analyseResponse.getResponseData() != null){
                             functionalFeatureInfoList = (List<FunctionalFeatureInfo>)analyseResponse.getResponseData();
                         }
-                        listFunctionalFeaturesCallback.onExecutionSuccess(functionalFeatureInfoList);
                         closeSession();
+                        listFunctionalFeaturesCallback.onExecutionSuccess(functionalFeatureInfoList);
                     } catch (ProviderClientInitException e) {
                         e.printStackTrace();
                     }
