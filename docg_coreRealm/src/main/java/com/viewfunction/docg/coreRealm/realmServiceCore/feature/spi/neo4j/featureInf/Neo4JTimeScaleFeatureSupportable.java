@@ -250,6 +250,12 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
 
 
     public default List<TimeScaleEvent> getAttachedTimeScaleEvents(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException{
+        if (queryParameters != null) {
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters("DOCG_TimeScaleEvent",queryParameters,null);
+        }
+
+
+
         return null;
     }
 
