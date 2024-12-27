@@ -1,6 +1,9 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf;
 
 import com.google.common.collect.Lists;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.TimeScaleFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
@@ -242,6 +245,22 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
         }
         return new ArrayList<>();
     }
+
+
+
+
+    public default List<TimeScaleEvent> getAttachedTimeScaleEvents(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException{
+        return null;
+    }
+
+    public default Long countAttachedTimeScaleEvents(AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException{
+        return null;
+    }
+
+
+
+
+
 
     public default List<TimeScaleEntity> getAttachedTimeScaleEntities(){
         if(this.getEntityUID() != null) {

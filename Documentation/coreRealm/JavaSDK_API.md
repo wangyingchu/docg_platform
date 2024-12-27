@@ -3663,6 +3663,24 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public List<TimeScaleEvent> getAttachedTimeScaleEvents();
 
     /**
+     * 获取当前对象上关联的所有符合过滤条件的时间刻度事件
+     *
+     * @param queryParameters QueryParameters 时间刻度事件过滤条件
+     *
+     * @return 时间刻度事件对象列表
+     */
+    public List<TimeScaleEvent> getAttachedTimeScaleEvents(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 计算当前对象上关联的所有符合过滤条件的时间刻度事件数量
+     *
+     * @param attributesParameters AttributesParameters 时间刻度事件过滤条件
+     *
+     * @return 时间刻度事件数量
+     */
+    public Long countAttachedTimeScaleEvents(AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException;
+
+    /**
      * 获取当前对象上关联的所有时间刻度实体
      *
      * @return 时间刻度实体对象列表

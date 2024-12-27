@@ -1,5 +1,8 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.feature;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.TimeScaleDataPair;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.TimeScaleEntity;
@@ -214,6 +217,24 @@ public interface TimeScaleFeatureSupportable {
      * @return 时间刻度事件对象列表
      */
     public List<TimeScaleEvent> getAttachedTimeScaleEvents();
+
+    /**
+     * 获取当前对象上关联的所有符合过滤条件的时间刻度事件
+     *
+     * @param queryParameters QueryParameters 时间刻度事件过滤条件
+     *
+     * @return 时间刻度事件对象列表
+     */
+    public List<TimeScaleEvent> getAttachedTimeScaleEvents(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 计算当前对象上关联的所有符合过滤条件的时间刻度事件数量
+     *
+     * @param attributesParameters AttributesParameters 时间刻度事件过滤条件
+     *
+     * @return 时间刻度事件数量
+     */
+    public Long countAttachedTimeScaleEvents(AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException;
 
     /**
      * 获取当前对象上关联的所有时间刻度实体
