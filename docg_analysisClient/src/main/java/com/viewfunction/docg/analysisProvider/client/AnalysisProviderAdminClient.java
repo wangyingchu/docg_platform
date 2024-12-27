@@ -29,6 +29,7 @@ import com.viewfunction.docg.analysisProvider.util.PropertyHandler;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ public class AnalysisProviderAdminClient {
     private ActorSystem actorSystem;
     private ActorRef localCommunicationActor;
     private ActorSelection remoteCommunicationActor;
+    private int timeoutInSecond = 3;
 
     public AnalysisProviderAdminClient(String hostName, int hostPort){
         this.hostName = hostName;
@@ -143,6 +145,14 @@ public class AnalysisProviderAdminClient {
         }
     }
 
+    public int getTimeoutInSecond() {
+        return timeoutInSecond;
+    }
+
+    public void setTimeoutInSecond(int timeoutInSecond) {
+        this.timeoutInSecond = timeoutInSecond;
+    }
+
     public interface PingAnalysisProviderCallback {
         public void onPingSuccess();
         public void onPingFail();
@@ -186,15 +196,44 @@ public class AnalysisProviderAdminClient {
     }
 
     public boolean pingAnalysisProvider(){
+        List<Boolean> resultList = new ArrayList<>();
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        java.util.concurrent.Future<String> future = executor.submit(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                AnalysisProviderAdminClient.PingAnalysisProviderCallback pingAnalysisProviderCallback = new AnalysisProviderAdminClient.PingAnalysisProviderCallback() {
+                    @Override
+                    public void onPingSuccess() {
+                        resultList.add(Boolean.TRUE);
+                    }
 
+                    @Override
+                    public void onPingFail() {}
+                };
+                pingAnalysisProvider(pingAnalysisProviderCallback,timeoutInSecond);
+                //need this sleep to make sure the callback is executed
+                Thread.sleep(timeoutInSecond*1000);
+                return "";
+            }
+        });
 
+        try {
+            // 同步等待异步操作结果
+            future.get();
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            // 关闭ExecutorService
+            executor.shutdown();
+        }
 
-
-
-
-
-
-        return true;
+        if(resultList.size()>0){
+            return resultList.get(0);
+        }else{
+            return false;
+        }
     }
 
     public interface ListFunctionalFeaturesCallback {
@@ -244,7 +283,7 @@ public class AnalysisProviderAdminClient {
 
     public List<FunctionalFeatureInfo> listFunctionalFeatures(){
         Map<String,List<FunctionalFeatureInfo>> resultDataMap = new HashMap<>();
-        final String listFunctionalFeaturesKey = "functionalFeatureInfoList";
+        final String listFunctionalFeaturesKey = "FunctionalFeatureInfoList";
 
         ExecutorService executor = Executors.newFixedThreadPool(1);
         java.util.concurrent.Future<String> future = executor.submit(new Callable<String>() {
@@ -262,9 +301,9 @@ public class AnalysisProviderAdminClient {
                     @Override
                     public void onExecutionFail() {}
                 };
-                listFunctionalFeatures(listFunctionalFeaturesCallback,2);
+                listFunctionalFeatures(listFunctionalFeaturesCallback,timeoutInSecond);
                 //need this sleep to make sure the callback is executed
-                Thread.sleep(2000);
+                Thread.sleep(timeoutInSecond*1000);
                 return "";
             }
         });
@@ -335,6 +374,52 @@ public class AnalysisProviderAdminClient {
         }
     }
 
+    public List<ProviderRunningInfo> listProviderRunningStatus(){
+        Map<String,List<ProviderRunningInfo>> resultDataMap = new HashMap<>();
+        final String listProviderRunningInfoKey = "ProviderRunningStatusList";
+
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        java.util.concurrent.Future<String> future = executor.submit(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                AnalysisProviderAdminClient.ListProviderRunningStatusCallback listProviderRunningStatusCallback = new AnalysisProviderAdminClient.ListProviderRunningStatusCallback() {
+                    @Override
+                    public void onExecutionSuccess(List<ProviderRunningInfo> providerRunningInfoList) {
+                        if(providerRunningInfoList != null){
+                            resultDataMap.put(listProviderRunningInfoKey,providerRunningInfoList);
+
+                        }
+                    }
+
+                    @Override
+                    public void onExecutionFail() {}
+                };
+                listProviderRunningStatus(listProviderRunningStatusCallback,timeoutInSecond);
+                //need this sleep to make sure the callback is executed
+                Thread.sleep(timeoutInSecond*1000);
+                return "";
+            }
+        });
+
+        try {
+            // 同步等待异步操作结果
+            future.get();
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            // 关闭ExecutorService
+            executor.shutdown();
+        }
+
+        if(resultDataMap.containsKey(listProviderRunningInfoKey)){
+            return resultDataMap.get(listProviderRunningInfoKey);
+        }else{
+            return null;
+        }
+    }
+
     public interface ListFeatureRunningStatusCallback {
         public void onExecutionSuccess(List<FeatureRunningInfo> featureRunningInfo);
         public void onExecutionFail();
@@ -378,6 +463,51 @@ public class AnalysisProviderAdminClient {
             throw new RuntimeException(e);
         } catch (AnalysisEngineRuntimeException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public List<FeatureRunningInfo> listFeatureRunningStatus(){
+        Map<String,List<FeatureRunningInfo>> resultDataMap = new HashMap<>();
+        final String listFeatureRunningStatusKey = "FeatureRunningStatusList";
+
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        java.util.concurrent.Future<String> future = executor.submit(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                AnalysisProviderAdminClient.ListFeatureRunningStatusCallback listFeatureRunningStatusCallback = new AnalysisProviderAdminClient.ListFeatureRunningStatusCallback() {
+                    @Override
+                    public void onExecutionSuccess(List<FeatureRunningInfo> featureRunningInfo) {
+                        if(featureRunningInfo != null){
+                            resultDataMap.put(listFeatureRunningStatusKey,featureRunningInfo);
+                        }
+                    }
+
+                    @Override
+                    public void onExecutionFail() {}
+                };
+                listFeatureRunningStatus(listFeatureRunningStatusCallback,timeoutInSecond);
+                //need this sleep to make sure the callback is executed
+                Thread.sleep(timeoutInSecond*1000);
+                return "";
+            }
+        });
+
+        try {
+            // 同步等待异步操作结果
+            future.get();
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            // 关闭ExecutorService
+            executor.shutdown();
+        }
+
+        if(resultDataMap.containsKey(listFeatureRunningStatusKey)){
+            return resultDataMap.get(listFeatureRunningStatusKey);
+        }else{
+            return null;
         }
     }
 }

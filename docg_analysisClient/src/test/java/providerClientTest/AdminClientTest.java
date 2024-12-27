@@ -117,10 +117,22 @@ public class AdminClientTest {
             throw new RuntimeException(e);
         }
 
-        List<FunctionalFeatureInfo> res = analysisProviderAdminClient.listFunctionalFeatures();
+        boolean pingRes = analysisProviderAdminClient.pingAnalysisProvider();
+        System.out.println(pingRes);
+        System.out.println("Finish1");
 
+        List<FunctionalFeatureInfo> res = analysisProviderAdminClient.listFunctionalFeatures();
         System.out.println(res);
-        System.out.println("Finish");
+        System.out.println("Finish2");
+
+        List<ProviderRunningInfo> res2 = analysisProviderAdminClient.listProviderRunningStatus();
+        System.out.println(res2);
+        System.out.println("Finish3");
+
+        List<FeatureRunningInfo> res3 = analysisProviderAdminClient.listFeatureRunningStatus();
+        System.out.println(res3);
+        System.out.println("Finish4");
+
     }
 
     public static void main1(String[] args){
