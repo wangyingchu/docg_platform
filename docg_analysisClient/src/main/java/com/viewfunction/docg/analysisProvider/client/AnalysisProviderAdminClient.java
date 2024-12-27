@@ -29,9 +29,10 @@ import com.viewfunction.docg.analysisProvider.util.PropertyHandler;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.Map;
+import java.util.concurrent.*;
 
 public class AnalysisProviderAdminClient {
 
@@ -184,6 +185,18 @@ public class AnalysisProviderAdminClient {
         }
     }
 
+    public boolean pingAnalysisProvider(){
+
+
+
+
+
+
+
+
+        return true;
+    }
+
     public interface ListFunctionalFeaturesCallback {
         public void onExecutionSuccess(List<FunctionalFeatureInfo> functionalFeatureInfoList);
         public void onExecutionFail();
@@ -226,6 +239,52 @@ public class AnalysisProviderAdminClient {
             throw new RuntimeException(e);
         } catch (AnalysisEngineRuntimeException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public List<FunctionalFeatureInfo> listFunctionalFeatures(){
+        Map<String,List<FunctionalFeatureInfo>> resultDataMap = new HashMap<>();
+        final String listFunctionalFeaturesKey = "functionalFeatureInfoList";
+
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        java.util.concurrent.Future<String> future = executor.submit(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                AnalysisProviderAdminClient.ListFunctionalFeaturesCallback listFunctionalFeaturesCallback = new AnalysisProviderAdminClient.ListFunctionalFeaturesCallback() {
+                    @Override
+                    public void onExecutionSuccess(List<FunctionalFeatureInfo> functionalFeatureInfoList) {
+                        if(functionalFeatureInfoList != null){
+                            resultDataMap.put(listFunctionalFeaturesKey,functionalFeatureInfoList);
+
+                        }
+                    }
+
+                    @Override
+                    public void onExecutionFail() {}
+                };
+                listFunctionalFeatures(listFunctionalFeaturesCallback,2);
+                //need this sleep to make sure the callback is executed
+                Thread.sleep(2000);
+                return "";
+            }
+        });
+
+        try {
+            // 同步等待异步操作结果
+            future.get();
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            // 关闭ExecutorService
+            executor.shutdown();
+        }
+
+        if(resultDataMap.containsKey(listFunctionalFeaturesKey)){
+            return resultDataMap.get(listFunctionalFeaturesKey);
+        }else{
+            return null;
         }
     }
 
