@@ -249,4 +249,13 @@ public interface TimeScaleFeatureSupportable {
      * @return 时间刻度数据对对象列表
      */
     public List<TimeScaleDataPair> getAttachedTimeScaleDataPairs();
+
+    /**
+     * 获取当前对象上关联的所有符合过滤条件的时间刻度数据对
+     *
+     * @param queryParameters QueryParameters 时间刻度事件过滤条件
+     *
+     * @return 时间刻度数据对对象列表
+     */
+    public List<TimeScaleDataPair> getAttachedTimeScaleDataPairs(QueryParameters queryParameters);
 }
