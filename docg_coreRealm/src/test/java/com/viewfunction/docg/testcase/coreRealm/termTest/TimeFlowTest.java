@@ -2,6 +2,7 @@ package com.viewfunction.docg.testcase.coreRealm.termTest;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
@@ -376,6 +377,22 @@ public class TimeFlowTest {
             Assert.assertNotNull(attachedTimeScaleEventsList.get(0).getAttachConceptionEntity());
             Assert.assertNotNull(attachedTimeScaleEventsList.get(0).getReferTimeScaleEntity());
         }
+
+        QueryParameters queryParameters_eventTest = new QueryParameters();
+        List<TimeScaleEvent> attachedTimeScaleEventsList2 = _ConceptionEntity.getAttachedTimeScaleEvents(queryParameters_eventTest);
+        Assert.assertEquals(attachedTimeScaleEventsList2.size(),attachedTimeScaleEventsList.size());
+
+        AttributesParameters attributesParameters_eventTest = new AttributesParameters();
+        Long timeScaleEventCount = _ConceptionEntity.countAttachedTimeScaleEvents(attributesParameters_eventTest);
+        Assert.assertEquals(attachedTimeScaleEventsList2.size(),timeScaleEventCount);
+
+        queryParameters_eventTest.setDefaultFilteringItem(new EqualFilteringItem("NOTEXIST_ATTRIBUTE","NOTEXIST_ATTRIBUTE_VALUE"));
+        attachedTimeScaleEventsList2 = _ConceptionEntity.getAttachedTimeScaleEvents(queryParameters_eventTest);
+        Assert.assertEquals(attachedTimeScaleEventsList2.size(),0);
+
+        attributesParameters_eventTest.setDefaultFilteringItem(new EqualFilteringItem("NOTEXIST_ATTRIBUTE","NOTEXIST_ATTRIBUTE_VALUE"));
+        timeScaleEventCount = _ConceptionEntity.countAttachedTimeScaleEvents(attributesParameters_eventTest);
+        Assert.assertEquals(timeScaleEventCount,0);
 
         List<TimeScaleEntity> attachedTimeScaleEntityList = _ConceptionEntity.getAttachedTimeScaleEntities();
         if(attachedTimeScaleEntityList.size()>0) {
