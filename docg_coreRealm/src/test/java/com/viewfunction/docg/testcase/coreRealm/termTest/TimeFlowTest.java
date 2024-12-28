@@ -406,10 +406,12 @@ public class TimeFlowTest {
             Assert.assertEquals(timeScaleDataPairList.get(0).getTimeScaleEntity().getTimeScaleGrade(),TimeFlow.TimeScaleGrade.MINUTE);
         }
 
-
-
-
-
+        QueryParameters queryParameters_eventTest2 = new QueryParameters();
+        List<TimeScaleDataPair> timeScaleDataPairList2 = _ConceptionEntity.getAttachedTimeScaleDataPairs(queryParameters_eventTest2);
+        Assert.assertEquals(timeScaleDataPairList.size(),timeScaleDataPairList2.size());
+        queryParameters_eventTest2.setDefaultFilteringItem(new EqualFilteringItem("NOTEXIST_ATTRIBUTE","NOTEXIST_ATTRIBUTE_VALUE"));
+        timeScaleDataPairList2 = _ConceptionEntity.getAttachedTimeScaleDataPairs(queryParameters_eventTest2);
+        Assert.assertEquals(timeScaleDataPairList2.size(),0);
 
         boolean detachTimeScaleEventRes = _ConceptionEntity.detachTimeScaleEvent(attachedTimeScaleEventsList.get(0).getTimeScaleEventUID());
         Assert.assertTrue(detachTimeScaleEventRes);

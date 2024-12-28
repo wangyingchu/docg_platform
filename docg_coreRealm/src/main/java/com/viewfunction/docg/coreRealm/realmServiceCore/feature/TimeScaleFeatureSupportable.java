@@ -257,5 +257,5 @@ public interface TimeScaleFeatureSupportable {
      *
      * @return 时间刻度数据对对象列表
      */
-    public List<TimeScaleDataPair> getAttachedTimeScaleDataPairs(QueryParameters queryParameters);
+    public List<TimeScaleDataPair> getAttachedTimeScaleDataPairs(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
 }

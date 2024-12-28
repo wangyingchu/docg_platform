@@ -3701,7 +3701,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @return 时间刻度数据对对象列表
      */
-    public List<TimeScaleDataPair> getAttachedTimeScaleDataPairs(QueryParameters queryParameters);
+    public List<TimeScaleDataPair> getAttachedTimeScaleDataPairs(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
 ```
 
 ###### ↳ GeospatialScaleFeatureSupportable

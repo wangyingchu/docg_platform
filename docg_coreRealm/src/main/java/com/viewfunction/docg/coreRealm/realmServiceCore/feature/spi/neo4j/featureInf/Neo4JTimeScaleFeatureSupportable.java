@@ -357,11 +357,35 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
         return new ArrayList<TimeScaleDataPair>();
     }
 
-    public default List<TimeScaleDataPair> getAttachedTimeScaleDataPairs(QueryParameters queryParameters){
+    public default List<TimeScaleDataPair> getAttachedTimeScaleDataPairs(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException{
+        if(this.getEntityUID() != null) {
+            if(queryParameters != null){
+                String queryCql =CypherBuilder.matchNodesWithQueryParameters(RealmConstant.TimeScaleEventClass,queryParameters,null);
+                queryCql = queryCql.replace("MATCH (operationResult:`DOCG_TimeScaleEvent`)","MATCH(currentEntity)-[:`DOCG_AttachToTimeScale`]->(timeScaleEvents:DOCG_TimeScaleEvent)<-[:`DOCG_TS_TimeReferTo`]-(timeScaleEntities:`DOCG_TimeScaleEntity`)");
+                if(queryCql.contains("WHERE")){
+                    queryCql = queryCql.replace("WHERE",
+                            "WHERE id(currentEntity) = "+ this.getEntityUID() + " AND ");
+                }else{
+                    queryCql = queryCql.replace("RETURN",
+                            "WHERE id(currentEntity) = "+ this.getEntityUID() + " RETURN");
+                }
+                queryCql = queryCql.replace("RETURN operationResult","RETURN timeScaleEntities ,timeScaleEvents");
+                queryCql = queryCql.replaceAll("operationResult","timeScaleEvents");
+                logger.debug("Generated Cypher Statement: {}", queryCql);
 
-
-
-        return null;
+                GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+                try{
+                    GetListTimeScaleDataPairTransformer getListTimeScaleDataPairTransformer = new GetListTimeScaleDataPairTransformer(getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
+                    Object queryRes = workingGraphOperationExecutor.executeRead(getListTimeScaleDataPairTransformer,queryCql);
+                    if(queryRes != null){
+                        return (List<TimeScaleDataPair>)queryRes;
+                    }
+                }finally {
+                    getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+                }
+            }
+        }
+        return new ArrayList<TimeScaleDataPair>();
     }
 
     private TimeScaleEvent attachTimeScaleEventInnerLogic(String timeFlowName,LocalDateTime dateTime, String eventComment,
