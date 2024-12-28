@@ -3,6 +3,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featu
 import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.TimeScaleFeatureSupportable;
@@ -249,11 +250,17 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
     public default List<TimeScaleEvent> getAttachedTimeScaleEvents(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException{
         if(this.getEntityUID() != null) {
             if (queryParameters != null) {
-                String queryCql = CypherBuilder.matchNodesWithQueryParameters("DOCG_TimeScaleEvent",queryParameters,null);
+                String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.TimeScaleEventClass,queryParameters,null);
                 queryCql = queryCql.replace("MATCH (operationResult:`"+RealmConstant.TimeScaleEventClass+"`)",
                         "MATCH(currentEntity)-[:`" + RealmConstant.TimeScale_AttachToRelationClass + "`]->(operationResult:`"+RealmConstant.TimeScaleEventClass+"`)");
-                queryCql = queryCql.replace("WHERE",
-                        "WHERE id(currentEntity) = "+ this.getEntityUID() + " AND ");
+                if(queryCql.contains("WHERE")){
+                    queryCql = queryCql.replace("WHERE",
+                            "WHERE id(currentEntity) = "+ this.getEntityUID() + " AND ");
+                }else{
+                    queryCql = queryCql.replace("RETURN",
+                            "WHERE id(currentEntity) = "+ this.getEntityUID() + " RETURN ");
+                }
+
                 logger.debug("Generated Cypher Statement: {}", queryCql);
 
                 GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
@@ -273,7 +280,46 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
     }
 
     public default Long countAttachedTimeScaleEvents(AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException{
-        return null;
+        if(this.getEntityUID() != null) {
+            if (attributesParameters != null) {
+                QueryParameters queryParameters = new QueryParameters();
+                queryParameters.setResultNumber(100000000);
+                queryParameters.setDefaultFilteringItem(attributesParameters.getDefaultFilteringItem());
+                if (attributesParameters.getAndFilteringItemsList() != null) {
+                    for (FilteringItem currentFilteringItem : attributesParameters.getAndFilteringItemsList()) {
+                        queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.AND);
+                    }
+                }
+                if (attributesParameters.getOrFilteringItemsList() != null) {
+                    for (FilteringItem currentFilteringItem : attributesParameters.getOrFilteringItemsList()) {
+                        queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.OR);
+                    }
+                }
+                String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.TimeScaleEventClass,queryParameters,CypherBuilder.CypherFunctionType.COUNT);
+                queryCql = queryCql.replace("MATCH (operationResult:`"+RealmConstant.TimeScaleEventClass+"`)",
+                        "MATCH(currentEntity)-[:`" + RealmConstant.TimeScale_AttachToRelationClass + "`]->(operationResult:`"+RealmConstant.TimeScaleEventClass+"`)");
+                if(queryCql.contains("WHERE")){
+                    queryCql = queryCql.replace("WHERE",
+                            "WHERE id(currentEntity) = "+ this.getEntityUID() + " AND ");
+                }else{
+                    queryCql = queryCql.replace("RETURN",
+                            "WHERE id(currentEntity) = "+ this.getEntityUID() + " RETURN ");
+                }
+                logger.debug("Generated Cypher Statement: {}", queryCql);
+
+                GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+                try{
+                    GetLongFormatAggregatedReturnValueTransformer GetLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
+                    Object queryRes = workingGraphOperationExecutor.executeRead(GetLongFormatAggregatedReturnValueTransformer,queryCql);
+                    if(queryRes != null){
+                        return (Long)queryRes;
+                    }
+                }finally {
+                    getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+                }
+            }
+        }
+        return 0L;
     }
 
     public default List<TimeScaleEntity> getAttachedTimeScaleEntities(){
