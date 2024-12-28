@@ -246,27 +246,35 @@ public interface Neo4JTimeScaleFeatureSupportable extends TimeScaleFeatureSuppor
         return new ArrayList<>();
     }
 
-
-
-
     public default List<TimeScaleEvent> getAttachedTimeScaleEvents(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException{
-        if (queryParameters != null) {
-            String queryCql = CypherBuilder.matchNodesWithQueryParameters("DOCG_TimeScaleEvent",queryParameters,null);
+        if(this.getEntityUID() != null) {
+            if (queryParameters != null) {
+                String queryCql = CypherBuilder.matchNodesWithQueryParameters("DOCG_TimeScaleEvent",queryParameters,null);
+                queryCql = queryCql.replace("MATCH (operationResult:`"+RealmConstant.TimeScaleEventClass+"`)",
+                        "MATCH(currentEntity)-[:`" + RealmConstant.TimeScale_AttachToRelationClass + "`]->(operationResult:`"+RealmConstant.TimeScaleEventClass+"`)");
+                queryCql = queryCql.replace("WHERE",
+                        "WHERE id(currentEntity) = "+ this.getEntityUID() + " AND ");
+                logger.debug("Generated Cypher Statement: {}", queryCql);
+
+                GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+                try{
+                    GetListTimeScaleEventTransformer getListTimeScaleEventTransformer = new GetListTimeScaleEventTransformer(null,getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
+                    Object queryRes = workingGraphOperationExecutor.executeRead(getListTimeScaleEventTransformer,queryCql);
+                    if(queryRes != null){
+                        List<TimeScaleEvent> res = (List<TimeScaleEvent>)queryRes;
+                        return res;
+                    }
+                }finally {
+                    getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+                }
+            }
         }
-
-
-
-        return null;
+        return new ArrayList<>();
     }
 
     public default Long countAttachedTimeScaleEvents(AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException{
         return null;
     }
-
-
-
-
-
 
     public default List<TimeScaleEntity> getAttachedTimeScaleEntities(){
         if(this.getEntityUID() != null) {
