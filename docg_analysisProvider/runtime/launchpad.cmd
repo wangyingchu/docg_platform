@@ -15,4 +15,4 @@ set LIB=lib\*
 --add-opens=java.base/java.lang=ALL-UNNAMED  ^
 --add-opens=java.base/java.lang.invoke=ALL-UNNAMED  ^
 --add-opens=java.base/sun.security.action=ALL-UNNAMED  ^
- -cp docg_dataCompute-1.0.0.jar;%EXTCLASS%;%LIB% "com.viewfunction.docg.dataCompute.consoleApplication.DataComputeApplicationLauncher"
+-cp docg_analysisProvider-1.0.0.jar;%EXTCLASS%;%LIB% "com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProviderApplicationLauncher"
