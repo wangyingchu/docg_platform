@@ -566,12 +566,9 @@ public class CypherBuilder {
                 break;
         }
         String rel = cypherRenderer.render(statement);
-*/
+        */
 
-
-
-
-/*
+        /*
         StatementBuilder.OngoingReadingWithoutWhere currentOngoingReadingWithoutWhere = Cypher.match(m);
         StatementBuilder.OngoingReadingAndReturn ongoingReadingAndReturn;
         switch (cypherFunctionType) {
@@ -588,14 +585,6 @@ public class CypherBuilder {
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}", rel);
         */
-
-
-
-
-
-
-
-
     }
 
     public static String setRelationPropertiesWithSingleValueEqual(CypherFunctionType propertyFunctionType, Object propertyValue, Map<String, Object> originalTargetPropertiesMap) {

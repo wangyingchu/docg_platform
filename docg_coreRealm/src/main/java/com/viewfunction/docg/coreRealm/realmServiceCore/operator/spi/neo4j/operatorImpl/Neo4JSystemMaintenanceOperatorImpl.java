@@ -1067,6 +1067,15 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         return generatedIndexSet;
     }
 
+    @Override
+    public void getConceptionKindsDataCapabilityStatistics() {
+        /*
+        MATCH (n:`DOCG_GS_County`)
+        WHERE n.DOCG_GS_CLGeometryContent IS NOT NULL OR n.DOCG_GS_GLGeometryContent IS NOT NULL OR n.DOCG_GS_LLGeometryContent IS NOT NULL
+        RETURN n LIMIT 1
+        */
+    }
+
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }

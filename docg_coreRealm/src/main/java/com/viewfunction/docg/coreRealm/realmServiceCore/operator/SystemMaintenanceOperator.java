@@ -176,4 +176,7 @@ public interface SystemMaintenanceOperator {
      * @return 创建成功的索引名称集合 Set<String>
      */
     public Set<String> generateGeospatialRegionSearchIndexes() throws CoreRealmServiceRuntimeException;
+
+
+    public void getConceptionKindsDataCapabilityStatistics();
 }
