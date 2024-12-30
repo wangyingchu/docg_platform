@@ -5834,6 +5834,13 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 创建成功的索引名称集合 Set<String>
      */
     public Set<String> generateGeospatialRegionSearchIndexes() throws CoreRealmServiceRuntimeException;
+
+     /**
+     * 查询所有概念类型中实体数据具有的数据操作能力统计信息
+     *
+     * @return 所有的概念类型名称与其中概念实体数据可以执行的数据操作能力统计的映射字典
+     */
+    public Map<String,ConceptionKindDataCapabilityInfo> getConceptionKindsDataCapabilityStatistics();
 ```
 
 ###### ↳ DataScienceOperator

@@ -1,15 +1,16 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl;
 
 import com.google.common.collect.Lists;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListAttributeSystemInfoTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetLongFormatReturnValueTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetMapAttributeSystemInfoTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.SystemMaintenanceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
@@ -1068,12 +1069,55 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
     }
 
     @Override
-    public void getConceptionKindsDataCapabilityStatistics() {
-        /*
-        MATCH (n:`DOCG_GS_County`)
-        WHERE n.DOCG_GS_CLGeometryContent IS NOT NULL OR n.DOCG_GS_GLGeometryContent IS NOT NULL OR n.DOCG_GS_LLGeometryContent IS NOT NULL
-        RETURN n LIMIT 1
-        */
+    public Map<String,ConceptionKindDataCapabilityInfo> getConceptionKindsDataCapabilityStatistics() {
+        Map<String,ConceptionKindDataCapabilityInfo> conceptionKindsDataCapabilityStatisticsMap = new HashMap<>();
+
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(1000000);
+
+        DataTransformer dataTransformer = new DataTransformer() {
+            @Override
+            public Boolean transformResult(Result result) {
+                if(result.hasNext()){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        };
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.matchNodesWithQueryParameters(RealmConstant.ConceptionKindClass,queryParameters,null);
+            GetListConceptionKindTransformer getListConceptionKindTransformer = new GetListConceptionKindTransformer(this.coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object conceptionListRes = workingGraphOperationExecutor.executeRead(getListConceptionKindTransformer,queryCql);
+            if(conceptionListRes != null){
+                List<ConceptionKind> currentList = (List<ConceptionKind>) conceptionListRes;
+                for(ConceptionKind currentConceptionKind:currentList){
+                    String conceptionKindName = currentConceptionKind.getConceptionKindName();
+                    /*
+                    MATCH (n:`DOCG_GS_County`)
+                    WHERE n.DOCG_GS_CLGeometryContent IS NOT NULL OR n.DOCG_GS_GLGeometryContent IS NOT NULL OR n.DOCG_GS_LLGeometryContent IS NOT NULL
+                    RETURN n LIMIT 1
+                    */
+                    String containsGeospatialAttributeCheckCql = "MATCH (n:`"+conceptionKindName+"`)\n" +
+                            "        WHERE n.DOCG_GS_CLGeometryContent IS NOT NULL OR n.DOCG_GS_GLGeometryContent IS NOT NULL OR n.DOCG_GS_LLGeometryContent IS NOT NULL\n" +
+                            "        RETURN n LIMIT 1";
+
+                    Object checkRes1 = workingGraphOperationExecutor.executeRead(dataTransformer,containsGeospatialAttributeCheckCql);
+                    if(checkRes1 != null){
+                        ConceptionKindDataCapabilityInfo conceptionKindDataCapabilityInfo = new ConceptionKindDataCapabilityInfo();
+                        conceptionKindDataCapabilityInfo.setContainsGeospatialAttribute((Boolean)checkRes1);
+                        conceptionKindsDataCapabilityStatisticsMap.put(conceptionKindName,conceptionKindDataCapabilityInfo);
+                    }
+                }
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            throw new RuntimeException(e);
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return conceptionKindsDataCapabilityStatisticsMap;
     }
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
