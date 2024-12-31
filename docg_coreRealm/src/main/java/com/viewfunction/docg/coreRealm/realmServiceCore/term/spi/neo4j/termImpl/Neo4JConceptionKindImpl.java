@@ -2450,6 +2450,55 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         return entitiesOperationStatistics;
     }
 
+    @Override
+    public ConceptionKindDataCapabilityInfo getConceptionKindDataCapabilityStatistics() {
+        ConceptionKindDataCapabilityInfo conceptionKindDataCapabilityInfo = new ConceptionKindDataCapabilityInfo();
+        DataTransformer dataTransformer = new DataTransformer() {
+            @Override
+            public Boolean transformResult(Result result) {
+                if(result.hasNext()){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        };
+        try{
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+
+            //For ContainsGeospatialAttribute
+            /*
+            MATCH (n:`ConceptionKind`)
+            WHERE n.DOCG_GS_CLGeometryContent IS NOT NULL OR n.DOCG_GS_GLGeometryContent IS NOT NULL OR n.DOCG_GS_LLGeometryContent IS NOT NULL
+            RETURN n LIMIT 1
+            */
+            String containsGeospatialAttributeCheckCql = "MATCH (n:`"+conceptionKindName+"`)\n" +
+                    "        WHERE n.DOCG_GS_CLGeometryContent IS NOT NULL OR n.DOCG_GS_GLGeometryContent IS NOT NULL OR n.DOCG_GS_LLGeometryContent IS NOT NULL\n" +
+                    "        RETURN n LIMIT 1";
+            Object checkRes1 = workingGraphOperationExecutor.executeRead(dataTransformer,containsGeospatialAttributeCheckCql);
+            if(checkRes1 != null){
+                conceptionKindDataCapabilityInfo.setContainsGeospatialAttribute((Boolean)checkRes1);
+            }
+
+            //For AttachedToGeospatialScaleEvent
+            String attachedToGeospatialScaleEventCheckCql = "MATCH (n:`"+conceptionKindName+"`)-[DOCG_AttachToGeospatialScale]->(DOCG_GeospatialScaleEvent) RETURN n LIMIT 1";
+            Object checkRes2 = workingGraphOperationExecutor.executeRead(dataTransformer,attachedToGeospatialScaleEventCheckCql);
+            if(checkRes2 != null){
+                conceptionKindDataCapabilityInfo.setAttachedToGeospatialScaleEvent((Boolean)checkRes2);
+            }
+
+            //For AttachedToTimeScaleEvent
+            String attachedToTimeScaleEventCheckCql = "MATCH (n:`"+conceptionKindName+"`)-[DOCG_AttachToTimeScale]->(DOCG_TimeScaleEvent) RETURN n LIMIT 1";
+            Object checkRes3 = workingGraphOperationExecutor.executeRead(dataTransformer,attachedToTimeScaleEventCheckCql);
+            if(checkRes3 != null){
+                conceptionKindDataCapabilityInfo.setAttachedToTimeScaleEvent((Boolean)checkRes3);
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return conceptionKindDataCapabilityInfo;
+    }
+
     private long executeEntitiesOperationWithCountResponse(String cql){
         long operationResultCount = 0;
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();

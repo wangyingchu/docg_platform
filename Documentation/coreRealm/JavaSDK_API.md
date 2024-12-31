@@ -1263,6 +1263,13 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 操作执行状况的统计结果
      */
     public EntitiesOperationStatistics retreatFromConceptionKind(String kindName) throws CoreRealmServiceRuntimeException;
+
+	/**
+     * 查询当前概念类型中实体数据具有的数据操作能力
+     *
+     * @return 当前概念类型中概念实体数据可以执行的数据操作能力统计
+     */
+    public ConceptionKindDataCapabilityInfo getConceptionKindDataCapabilityStatistics();
 ```
 ###### ↳ RelationKind
 
