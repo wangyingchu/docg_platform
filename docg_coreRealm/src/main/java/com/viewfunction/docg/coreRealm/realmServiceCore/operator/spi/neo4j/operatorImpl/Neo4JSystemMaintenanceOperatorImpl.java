@@ -1113,14 +1113,14 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                     }
 
                     //For AttachedToGeospatialScaleEvent
-                    String attachedToGeospatialScaleEventCheckCql = "MATCH (n:`"+conceptionKindName+"`)-[DOCG_AttachToGeospatialScale]->(DOCG_GeospatialScaleEvent) RETURN n LIMIT 1";
+                    String attachedToGeospatialScaleEventCheckCql = "MATCH (n:`"+conceptionKindName+"`)-[:DOCG_AttachToGeospatialScale]->(DOCG_GeospatialScaleEvent) RETURN n LIMIT 1";
                     Object checkRes2 = workingGraphOperationExecutor.executeRead(dataTransformer,attachedToGeospatialScaleEventCheckCql);
                     if(checkRes2 != null){
                         conceptionKindDataCapabilityInfo.setAttachedToGeospatialScaleEvent((Boolean)checkRes2);
                     }
 
                     //For AttachedToTimeScaleEvent
-                    String attachedToTimeScaleEventCheckCql = "MATCH (n:`"+conceptionKindName+"`)-[DOCG_AttachToTimeScale]->(DOCG_TimeScaleEvent) RETURN n LIMIT 1";
+                    String attachedToTimeScaleEventCheckCql = "MATCH (n:`"+conceptionKindName+"`)-[:DOCG_AttachToTimeScale]->(DOCG_TimeScaleEvent) RETURN n LIMIT 1";
                     Object checkRes3 = workingGraphOperationExecutor.executeRead(dataTransformer,attachedToTimeScaleEventCheckCql);
                     if(checkRes3 != null){
                         conceptionKindDataCapabilityInfo.setAttachedToTimeScaleEvent((Boolean)checkRes3);
