@@ -5,7 +5,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntity;
 
 import java.util.List;
 
-public interface ConceptionEntity extends AttributesMeasurable, EntityRelationable, ClassificationAttachable, MultiConceptionKindsSupportable, TimeScaleFeatureSupportable, GeospatialScaleFeatureSupportable, PathTravelable, PathEntity, GeospatialScaleCalculable {
+public interface ConceptionEntity extends AttributesMeasurable, EntityRelationable, ClassificationAttachable, MultiConceptionKindsSupportable, TimeScaleFeatureSupportable, GeospatialScaleFeatureSupportable, PathTravelable, PathEntity, GeospatialScaleCalculable, ExternalAttributesValueAccessible {
     /**
      * 获取当前概念实体对象唯一ID
      *
