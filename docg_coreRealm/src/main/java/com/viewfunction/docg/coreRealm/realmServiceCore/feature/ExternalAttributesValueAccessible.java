@@ -10,7 +10,7 @@ import java.util.Set;
 
 public interface ExternalAttributesValueAccessible {
 
-    public Set<AttributesViewKind> getAvailableAttributesViewKinds();
+    public Set<AttributesViewKind> getAvailableExternalValueAttributesViewKinds();
 
     public ConceptionEntityExternalAttributesValueRetrieveResult getEntityExternalAttributesValues(
             AttributesViewKind attributesViewKind, QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;;
