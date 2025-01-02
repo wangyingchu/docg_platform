@@ -15,6 +15,7 @@ public interface ExternalAttributesValueAccessible {
     public ConceptionEntityExternalAttributesValueRetrieveResult getEntityExternalAttributesValues(
             AttributesViewKind attributesViewKind, QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;;
 
-    public Long countEntityExternalAttributesValues(AttributesViewKind attributesViewKind, AttributesParameters attributesParameters);
+    public Long countEntityExternalAttributesValues(AttributesViewKind attributesViewKind,
+                                                    AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException;
 
 }
