@@ -4,12 +4,14 @@ import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.spi.neo4j.featureInf.Neo4JExternalAttributesValueAccessible;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.SystemMaintenanceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
@@ -1133,6 +1135,17 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
         return conceptionKindsDataCapabilityStatisticsMap;
+    }
+
+    @Override
+    public boolean registerExternalAttributesValueAccessProcessor(AttributesViewKind attributesViewKind, String accessProcessorID) throws CoreRealmServiceRuntimeException{
+        if(!AttributesViewKind.AttributesViewKindDataForm.EXTERNAL_VALUE.equals(attributesViewKind.getAttributesViewKindDataForm())){
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("AttributesViewKindDataForm must be EXTERNAL_VALUE");
+            throw exception;
+        }else{
+            return attributesViewKind.addOrUpdateMetaConfigItem(Neo4JExternalAttributesValueAccessible.ExternalAttributesValueAccessProcessorID,accessProcessorID);
+        }
     }
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {

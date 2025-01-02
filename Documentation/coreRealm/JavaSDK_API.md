@@ -5848,6 +5848,16 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 所有的概念类型名称与其中概念实体数据可以执行的数据操作能力统计的映射字典
      */
     public Map<String,ConceptionKindDataCapabilityInfo> getConceptionKindsDataCapabilityStatistics();
+
+     /**
+     * 在当前领域模型中为指定的 EXTERNAL_VALUE 数据存储结构的属性视图类型注册数据存取处理器
+     *
+     *  @param attributesViewKind AttributesViewKind 注册操作目标属性视图类型
+     *  @param accessProcessorID String 数据存取处理器ID
+     *
+     * @return 注册数据存取处理器操作结果
+     */
+    public boolean registerExternalAttributesValueAccessProcessor(AttributesViewKind attributesViewKind, String accessProcessorID) throws CoreRealmServiceRuntimeException;
 ```
 
 ###### ↳ DataScienceOperator

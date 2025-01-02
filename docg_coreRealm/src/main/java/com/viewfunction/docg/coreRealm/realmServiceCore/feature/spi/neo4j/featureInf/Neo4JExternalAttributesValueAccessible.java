@@ -28,6 +28,8 @@ import java.util.Set;
 
 public interface Neo4JExternalAttributesValueAccessible extends ExternalAttributesValueAccessible,Neo4JKeyResourcesRetrievable{
 
+    public final String ExternalAttributesValueAccessProcessorID = "DOCG_ExternalAttributesValueAccessProcessorID";
+
     public default Set<AttributesViewKind> getAvailableExternalValueAttributesViewKinds(){
         if(this.getEntityUID() != null) {
             GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
@@ -104,11 +106,14 @@ public interface Neo4JExternalAttributesValueAccessible extends ExternalAttribut
                 checkAttributesViewKindAndQueryParameterCompatibility(attributesViewKind,queryParameters);
             }
 
-           // attributesViewKind.getMetaConfigItem();
-
-
-
-
+            Object _ExternalAttributesValueAccessProcessorID = attributesViewKind.getMetaConfigItem(ExternalAttributesValueAccessProcessorID);
+            if(_ExternalAttributesValueAccessProcessorID == null){
+                CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+                exception.setCauseMessage("ExternalAttributesValueAccessProcessor is required");
+                throw exception;
+            }else{
+                String externalAttributesValueAccessProcessorID = _ExternalAttributesValueAccessProcessorID.toString();
+            }
         }
         return null;
     }
