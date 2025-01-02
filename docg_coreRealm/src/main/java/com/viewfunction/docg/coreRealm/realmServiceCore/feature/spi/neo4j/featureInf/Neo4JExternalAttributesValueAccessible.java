@@ -7,24 +7,26 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryPara
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.SortingItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.ExternalAttributesValueAccessProcessor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.ExternalAttributesValueAccessible;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionKindTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionEntityTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityExternalAttributesValueRetrieveResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 public interface Neo4JExternalAttributesValueAccessible extends ExternalAttributesValueAccessible,Neo4JKeyResourcesRetrievable{
 
@@ -106,6 +108,26 @@ public interface Neo4JExternalAttributesValueAccessible extends ExternalAttribut
                 checkAttributesViewKindAndQueryParameterCompatibility(attributesViewKind,queryParameters);
             }
 
+            ConceptionEntityExternalAttributesValueRetrieveResult conceptionEntityExternalAttributesValueRetrieveResult
+                    = new ConceptionEntityExternalAttributesValueRetrieveResult();
+            conceptionEntityExternalAttributesValueRetrieveResult.setStartTime(new Date());
+            conceptionEntityExternalAttributesValueRetrieveResult.setConceptionEntityUID(this.getEntityUID());
+            conceptionEntityExternalAttributesValueRetrieveResult.setAttributesViewKind(attributesViewKind);
+            conceptionEntityExternalAttributesValueRetrieveResult.setQueryParameters(queryParameters);
+
+            List<AttributeValue> attributeValueList = null;
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                String cypherProcedureString1 = "MATCH (targetNode) WHERE id(targetNode) = " + this.getEntityUID()+"\n"+
+                        "RETURN targetNode as "+CypherBuilder.operationResultName;
+                GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer = new GetSingleConceptionEntityTransformer(null,workingGraphOperationExecutor);
+                Object conceptionEntityObj = workingGraphOperationExecutor.executeRead(getSingleConceptionEntityTransformer,cypherProcedureString1);
+                ConceptionEntity conceptionEntity = conceptionEntityObj!= null ? (ConceptionEntity)conceptionEntityObj : null;
+                attributeValueList = conceptionEntity.getAttributes();
+            } finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+
             Object _ExternalAttributesValueAccessProcessorID = attributesViewKind.getMetaConfigItem(ExternalAttributesValueAccessProcessorID);
             if(_ExternalAttributesValueAccessProcessorID == null){
                 CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
@@ -113,6 +135,28 @@ public interface Neo4JExternalAttributesValueAccessible extends ExternalAttribut
                 throw exception;
             }else{
                 String externalAttributesValueAccessProcessorID = _ExternalAttributesValueAccessProcessorID.toString();
+                try {
+                    Class<?> externalAttributesValueAccessProcessorClass = Class.forName(externalAttributesValueAccessProcessorID);
+                    ExternalAttributesValueAccessProcessor externalAttributesValueAccessProcessor =
+                            (ExternalAttributesValueAccessProcessor)externalAttributesValueAccessProcessorClass.getDeclaredConstructor().newInstance();
+                    List<Map<String,Object>> queryResult = externalAttributesValueAccessProcessor.getEntityExternalAttributesValues(attributesViewKind,queryParameters,attributeValueList);
+                    if(queryResult != null){
+                        conceptionEntityExternalAttributesValueRetrieveResult.setResultRowsCount(queryResult.size());
+                    }
+                    conceptionEntityExternalAttributesValueRetrieveResult.setExternalAttributesValue(queryResult);
+                    conceptionEntityExternalAttributesValueRetrieveResult.setFinishTime(new Date());
+                    return conceptionEntityExternalAttributesValueRetrieveResult;
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                } catch (InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                } catch (InstantiationException e) {
+                    throw new RuntimeException(e);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                } catch (NoSuchMethodException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         return null;
@@ -125,9 +169,44 @@ public interface Neo4JExternalAttributesValueAccessible extends ExternalAttribut
             if(attributesParameters != null){
                 checkAttributesViewKindAndAttributesParametersCompatibility(attributesViewKind,attributesParameters);
             }
+            List<AttributeValue> attributeValueList = null;
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                String cypherProcedureString1 = "MATCH (targetNode) WHERE id(targetNode) = " + this.getEntityUID()+"\n"+
+                        "RETURN targetNode as "+CypherBuilder.operationResultName;
+                GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer = new GetSingleConceptionEntityTransformer(null,workingGraphOperationExecutor);
+                Object conceptionEntityObj = workingGraphOperationExecutor.executeRead(getSingleConceptionEntityTransformer,cypherProcedureString1);
+                ConceptionEntity conceptionEntity = conceptionEntityObj!= null ? (ConceptionEntity)conceptionEntityObj : null;
+                attributeValueList = conceptionEntity.getAttributes();
+            } finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
 
+            Object _ExternalAttributesValueAccessProcessorID = attributesViewKind.getMetaConfigItem(ExternalAttributesValueAccessProcessorID);
+            if(_ExternalAttributesValueAccessProcessorID == null){
+                CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+                exception.setCauseMessage("ExternalAttributesValueAccessProcessor is required");
+                throw exception;
+            }else{
+                String externalAttributesValueAccessProcessorID = _ExternalAttributesValueAccessProcessorID.toString();
+                try {
+                    Class<?> externalAttributesValueAccessProcessorClass = Class.forName(externalAttributesValueAccessProcessorID);
+                    ExternalAttributesValueAccessProcessor externalAttributesValueAccessProcessor =
+                            (ExternalAttributesValueAccessProcessor)externalAttributesValueAccessProcessorClass.getDeclaredConstructor().newInstance();
 
-
+                    return externalAttributesValueAccessProcessor.countEntityExternalAttributesValues(attributesViewKind,attributesParameters,attributeValueList);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                } catch (InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                } catch (InstantiationException e) {
+                    throw new RuntimeException(e);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                } catch (NoSuchMethodException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
         return null;
     }
@@ -183,7 +262,7 @@ public interface Neo4JExternalAttributesValueAccessible extends ExternalAttribut
         }
 
         String defaultFilterAttributeName = queryParameters.getDefaultFilteringItem() != null ? queryParameters.getDefaultFilteringItem().getAttributeName():null;
-        if(!viewAttributesNameList.contains(defaultFilterAttributeName)){
+        if(defaultFilterAttributeName != null && !viewAttributesNameList.contains(defaultFilterAttributeName)){
             CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
             exception.setCauseMessage("attribute "+defaultFilterAttributeName + " not contained in AttributesViewKind");
             throw exception;
@@ -219,7 +298,7 @@ public interface Neo4JExternalAttributesValueAccessible extends ExternalAttribut
         }
 
         String defaultFilterAttributeName = attributesParameters.getDefaultFilteringItem() != null ? attributesParameters.getDefaultFilteringItem().getAttributeName():null;
-        if(!viewAttributesNameList.contains(defaultFilterAttributeName)){
+        if(defaultFilterAttributeName != null && !viewAttributesNameList.contains(defaultFilterAttributeName)){
             CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
             exception.setCauseMessage("attribute "+defaultFilterAttributeName + " not contained in AttributesViewKind");
             throw exception;
