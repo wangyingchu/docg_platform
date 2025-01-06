@@ -4,23 +4,31 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.Attribute
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.ExternalAttributesValueAccessProcessor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TestExternalAttributesValueAccessProcessor implements ExternalAttributesValueAccessProcessor {
 
     @Override
     public List<Map<String, Object>> getEntityExternalAttributesValues(AttributesViewKind attributesViewKind, QueryParameters queryParameters, List<AttributeValue> attributeValueList) {
+        List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+
         System.out.println(attributesViewKind);
         System.out.println(queryParameters);
         System.out.println(attributeValueList);
-        Map<String, Object> resultDataMap = new HashMap<>();
-        resultDataMap.put("attr001", "attr001Value");
-        resultDataMap.put("attr002", 1000);
-        return List.of(resultDataMap);
+        List<AttributeKind> attributeKindList = attributesViewKind.getContainsAttributeKinds();
+
+        for(int i=0;i<100000;i++){
+            Map<String, Object> resultDataMap = new HashMap<>();
+            for(AttributeKind currentAttributeKind:attributeKindList){
+                resultDataMap.put(currentAttributeKind.getAttributeKindName(), ""+i+"_"+UUID.randomUUID());
+            }
+            resultList.add(resultDataMap);
+        }
+
+        return resultList;
     }
 
     @Override
