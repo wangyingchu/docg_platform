@@ -296,7 +296,7 @@ public class CoreRealmTest {
         Assert.assertEquals(attributeKindList.get(0).getAttributeKindDesc(),"attributeKind01Desc");
         Assert.assertEquals(attributeKindList.get(0).getAttributeDataType(),AttributeDataType.BOOLEAN);
 
-        coreRealm.createAttributesViewKind("attributesViewKind03","attributesViewKind03Desc",AttributesViewKind.AttributesViewKindDataForm.LIST_VALUE);
+        AttributesViewKind attributesViewKind03 = coreRealm.createAttributesViewKind("attributesViewKind03","attributesViewKind03Desc",AttributesViewKind.AttributesViewKindDataForm.LIST_VALUE);
 
         List<AttributesViewKind> attributesViewKindList = coreRealm.getAttributesViewKinds(null,null,null);
         Assert.assertTrue(attributesViewKindList.size()>0);
@@ -312,6 +312,20 @@ public class CoreRealmTest {
         Assert.assertTrue(attributesViewKindList.size()==0);
         attributesViewKindList = coreRealm.getAttributesViewKinds("attributesViewKind03","attributesViewKind03Desc",AttributesViewKind.AttributesViewKindDataForm.LIST_VALUE);
         Assert.assertTrue(attributesViewKindList.size()>0);
+
+        boolean deleteConfigItemResult = attributesViewKind03.deleteMetaConfigItem("TESTFilterConfig");
+        Assert.assertTrue(deleteConfigItemResult);
+        Assert.assertNull(attributesViewKind03.getMetaConfigItem("TESTFilterConfig"));
+        List<AttributesViewKind> matchedAttributesViewKindList = coreRealm.getAttributesViewKindsByMetaConfigItemMatch("TESTFilterConfig","selected");
+        Assert.assertEquals(matchedAttributesViewKindList.size(),0);
+        attributesViewKind03.addOrUpdateMetaConfigItem("TESTFilterConfig","selected");
+        matchedAttributesViewKindList = coreRealm.getAttributesViewKindsByMetaConfigItemMatch("TESTFilterConfig","selected");
+        Assert.assertEquals(matchedAttributesViewKindList.size(),1);
+        Assert.assertEquals(matchedAttributesViewKindList.get(0).getAttributesViewKindName(),"attributesViewKind03");
+        attributesViewKind03.addOrUpdateMetaConfigItem("TESTFilterConfig","notSelected");
+        matchedAttributesViewKindList = coreRealm.getAttributesViewKindsByMetaConfigItemMatch("TESTFilterConfig","selected");
+        Assert.assertEquals(matchedAttributesViewKindList.size(),0);
+        coreRealm.removeAttributesViewKind(attributesViewKind03.getAttributesViewKindUID());
 
         RelationAttachKind targetRelationAttachKind = coreRealm.createRelationAttachKind("RelationAttachKind_Name","RelationAttachKind_Desc",
                 "RelationAttachKind_SourceKind","RelationAttachKind_TargetKind","RelationAttachKind_RelationKind",true);
