@@ -1097,36 +1097,9 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                 List<ConceptionKind> currentList = (List<ConceptionKind>) conceptionListRes;
                 for(ConceptionKind currentConceptionKind:currentList){
                     String conceptionKindName = currentConceptionKind.getConceptionKindName();
-                    ConceptionKindDataCapabilityInfo conceptionKindDataCapabilityInfo = new ConceptionKindDataCapabilityInfo();
+                    ConceptionKindDataCapabilityInfo conceptionKindDataCapabilityInfo =
+                            getConceptionKindDataCapabilityInfo(workingGraphOperationExecutor,dataTransformer,conceptionKindName);
                     conceptionKindsDataCapabilityStatisticsMap.put(conceptionKindName,conceptionKindDataCapabilityInfo);
-
-                    //For ContainsGeospatialAttribute
-                    /*
-                    MATCH (n:`ConceptionKind`)
-                    WHERE n.DOCG_GS_CLGeometryContent IS NOT NULL OR n.DOCG_GS_GLGeometryContent IS NOT NULL OR n.DOCG_GS_LLGeometryContent IS NOT NULL
-                    RETURN n LIMIT 1
-                    */
-                    String containsGeospatialAttributeCheckCql = "MATCH (n:`"+conceptionKindName+"`)\n" +
-                            "        WHERE n.DOCG_GS_CLGeometryContent IS NOT NULL OR n.DOCG_GS_GLGeometryContent IS NOT NULL OR n.DOCG_GS_LLGeometryContent IS NOT NULL\n" +
-                            "        RETURN n LIMIT 1";
-                    Object checkRes1 = workingGraphOperationExecutor.executeRead(dataTransformer,containsGeospatialAttributeCheckCql);
-                    if(checkRes1 != null){
-                        conceptionKindDataCapabilityInfo.setContainsGeospatialAttribute((Boolean)checkRes1);
-                    }
-
-                    //For AttachedToGeospatialScaleEvent
-                    String attachedToGeospatialScaleEventCheckCql = "MATCH (n:`"+conceptionKindName+"`)-[:DOCG_AttachToGeospatialScale]->(DOCG_GeospatialScaleEvent) RETURN n LIMIT 1";
-                    Object checkRes2 = workingGraphOperationExecutor.executeRead(dataTransformer,attachedToGeospatialScaleEventCheckCql);
-                    if(checkRes2 != null){
-                        conceptionKindDataCapabilityInfo.setAttachedToGeospatialScaleEvent((Boolean)checkRes2);
-                    }
-
-                    //For AttachedToTimeScaleEvent
-                    String attachedToTimeScaleEventCheckCql = "MATCH (n:`"+conceptionKindName+"`)-[:DOCG_AttachToTimeScale]->(DOCG_TimeScaleEvent) RETURN n LIMIT 1";
-                    Object checkRes3 = workingGraphOperationExecutor.executeRead(dataTransformer,attachedToTimeScaleEventCheckCql);
-                    if(checkRes3 != null){
-                        conceptionKindDataCapabilityInfo.setAttachedToTimeScaleEvent((Boolean)checkRes3);
-                    }
                 }
             }
         } catch (CoreRealmServiceEntityExploreException e) {
@@ -1135,6 +1108,37 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
         return conceptionKindsDataCapabilityStatisticsMap;
+    }
+
+    @Override
+    public Map<String,ConceptionKindDataCapabilityInfo> getConceptionKindsDataCapabilityStatistics(List<String> targetConceptionKindNameList){
+        if(targetConceptionKindNameList != null && !targetConceptionKindNameList.isEmpty()){
+            Map<String,ConceptionKindDataCapabilityInfo> conceptionKindsDataCapabilityStatisticsMap = new HashMap<>();
+            DataTransformer dataTransformer = new DataTransformer() {
+                @Override
+                public Boolean transformResult(Result result) {
+                    if(result.hasNext()){
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }
+            };
+
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                for(String conceptionKindName:targetConceptionKindNameList){
+                    ConceptionKindDataCapabilityInfo conceptionKindDataCapabilityInfo =
+                            getConceptionKindDataCapabilityInfo(workingGraphOperationExecutor,dataTransformer,conceptionKindName);
+                    conceptionKindsDataCapabilityStatisticsMap.put(conceptionKindName,conceptionKindDataCapabilityInfo);
+                }
+            } finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            return conceptionKindsDataCapabilityStatisticsMap;
+        }else{
+            return null;
+        }
     }
 
     @Override
@@ -1242,5 +1246,38 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         };
         Object queryRes = workingGraphOperationExecutor.executeRead(dataTransformer,cql);
         return queryRes != null ? ((Boolean)queryRes).booleanValue():false;
+    }
+
+    private ConceptionKindDataCapabilityInfo getConceptionKindDataCapabilityInfo(GraphOperationExecutor workingGraphOperationExecutor,DataTransformer dataTransformer,String conceptionKindName){
+        ConceptionKindDataCapabilityInfo conceptionKindDataCapabilityInfo = new ConceptionKindDataCapabilityInfo();
+        //For ContainsGeospatialAttribute
+        /*
+            MATCH (n:`ConceptionKind`)
+            WHERE n.DOCG_GS_CLGeometryContent IS NOT NULL OR n.DOCG_GS_GLGeometryContent IS NOT NULL OR n.DOCG_GS_LLGeometryContent IS NOT NULL
+            RETURN n LIMIT 1
+        */
+        String containsGeospatialAttributeCheckCql = "MATCH (n:`"+conceptionKindName+"`)\n" +
+                "        WHERE n.DOCG_GS_CLGeometryContent IS NOT NULL OR n.DOCG_GS_GLGeometryContent IS NOT NULL OR n.DOCG_GS_LLGeometryContent IS NOT NULL\n" +
+                "        RETURN n LIMIT 1";
+        Object checkRes1 = workingGraphOperationExecutor.executeRead(dataTransformer,containsGeospatialAttributeCheckCql);
+        if(checkRes1 != null){
+            conceptionKindDataCapabilityInfo.setContainsGeospatialAttribute((Boolean)checkRes1);
+        }
+
+        //For AttachedToGeospatialScaleEvent
+        String attachedToGeospatialScaleEventCheckCql = "MATCH (n:`"+conceptionKindName+"`)-[:DOCG_AttachToGeospatialScale]->(DOCG_GeospatialScaleEvent) RETURN n LIMIT 1";
+        Object checkRes2 = workingGraphOperationExecutor.executeRead(dataTransformer,attachedToGeospatialScaleEventCheckCql);
+        if(checkRes2 != null){
+            conceptionKindDataCapabilityInfo.setAttachedToGeospatialScaleEvent((Boolean)checkRes2);
+        }
+
+        //For AttachedToTimeScaleEvent
+        String attachedToTimeScaleEventCheckCql = "MATCH (n:`"+conceptionKindName+"`)-[:DOCG_AttachToTimeScale]->(DOCG_TimeScaleEvent) RETURN n LIMIT 1";
+        Object checkRes3 = workingGraphOperationExecutor.executeRead(dataTransformer,attachedToTimeScaleEventCheckCql);
+        if(checkRes3 != null){
+            conceptionKindDataCapabilityInfo.setAttachedToTimeScaleEvent((Boolean)checkRes3);
+        }
+
+        return conceptionKindDataCapabilityInfo;
     }
 }

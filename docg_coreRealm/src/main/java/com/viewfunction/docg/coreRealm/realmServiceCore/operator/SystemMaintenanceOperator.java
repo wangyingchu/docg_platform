@@ -186,6 +186,15 @@ public interface SystemMaintenanceOperator {
     public Map<String,ConceptionKindDataCapabilityInfo> getConceptionKindsDataCapabilityStatistics();
 
     /**
+     * 查询指定概念类型中实体数据具有的数据操作能力统计信息
+     *
+     *  @param targetConceptionKindNameList List<String> 需要执行统计的概念类型名称列表
+     *
+     * @return 所有的概念类型名称与其中概念实体数据可以执行的数据操作能力统计的映射字典
+     */
+    public Map<String,ConceptionKindDataCapabilityInfo> getConceptionKindsDataCapabilityStatistics(List<String> targetConceptionKindNameList);
+
+    /**
      * 在当前领域模型中为指定的 EXTERNAL_VALUE 数据存储结构的属性视图类型注册数据存取处理器
      *
      *  @param attributesViewKind AttributesViewKind 注册操作目标属性视图类型
