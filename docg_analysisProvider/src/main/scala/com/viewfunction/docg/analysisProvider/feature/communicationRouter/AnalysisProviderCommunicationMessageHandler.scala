@@ -5,7 +5,7 @@ import com.viewfunction.docg.analysisProvider.feature.admin.AnalysisProviderAdmi
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.{AnalyseRequest, AnalyseResponse}
 import com.viewfunction.docg.analysisProvider.providerApplication.communication.CommunicationMessageHandler
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
-import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.admin.{AnalysisProviderPingRequest, AnalysisProviderRunningStatusRequest, FunctionalFeatureRunningStatusRequest, FunctionalFeaturesInfoRequest}
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.admin.{AnalysisProviderPingRequest, AnalysisProviderRegisterFunctionalFeatureRequest, AnalysisProviderRunningStatusRequest, AnalysisProviderUnregisterFunctionalFeatureRequest, FunctionalFeatureRunningStatusRequest, FunctionalFeaturesInfoRequest}
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.{AdministrativeDivisionSpatialCalculateRequest, SpatialPropertiesAggregateStatisticRequest}
 import com.viewfunction.docg.analysisProvider.feature.functionalFeatures.{AdministrativeDivisionBasedSpatialAnalysis, SpatialPropertiesStatisticAndAnalysis}
 import com.viewfunction.docg.analysisProvider.providerApplication.util.InternalOperationDB
@@ -54,6 +54,12 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
         case communicationMessage: AnalysisProviderRunningStatusRequest =>
           internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "ListAnalysisProviderRunningStatus")
           AnalysisProviderAdministrationOperator.doProvideAnalysisProviderRunningStatusInfoList(internalOperationDB,analyseResponse)
+        case communicationMessage: AnalysisProviderRegisterFunctionalFeatureRequest =>
+          internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "RegisterFunctionalFeature")
+          AnalysisProviderAdministrationOperator.doRegisterFunctionalFeature(internalOperationDB,communicationMessage,analyseResponse)
+        case communicationMessage: AnalysisProviderUnregisterFunctionalFeatureRequest =>
+          internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "UnregisterFunctionalFeature")
+          AnalysisProviderAdministrationOperator.doUnregisterFunctionalFeature(internalOperationDB,communicationMessage,analyseResponse)
 
         //for provider analysis service
         case communicationMessage: SpatialPropertiesAggregateStatisticRequest =>

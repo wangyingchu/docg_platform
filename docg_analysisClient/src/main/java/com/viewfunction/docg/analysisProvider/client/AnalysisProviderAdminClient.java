@@ -18,10 +18,7 @@ import com.viewfunction.docg.analysisProvider.communication.CommunicationActor;
 import com.viewfunction.docg.analysisProvider.feature.communication.AnalyseResponseCallback;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseRequest;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseResponse;
-import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.admin.AnalysisProviderPingRequest;
-import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.admin.AnalysisProviderRunningStatusRequest;
-import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.admin.FunctionalFeatureRunningStatusRequest;
-import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.admin.FunctionalFeaturesInfoRequest;
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.admin.*;
 import com.viewfunction.docg.analysisProvider.service.analysisProviderServiceCore.payload.FeatureRunningInfo;
 import com.viewfunction.docg.analysisProvider.service.analysisProviderServiceCore.payload.FunctionalFeatureInfo;
 import com.viewfunction.docg.analysisProvider.service.analysisProviderServiceCore.payload.ProviderRunningInfo;
@@ -508,6 +505,79 @@ public class AnalysisProviderAdminClient {
             return resultDataMap.get(listFeatureRunningStatusKey);
         }else{
             return null;
+        }
+    }
+
+    public boolean registerFunctionalFeature(String functionalFeatureName,String functionalFeatureDesc,int registerTimeOutInSecond){
+        Map<String,Boolean> resultDataMap = new HashMap<>();
+        final String registerFunctionalFeatureKey = "RegisterFunctionalFeature";
+
+        ExecutorService executor = Executors.newFixedThreadPool(1);
+        java.util.concurrent.Future<String> future = executor.submit(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+
+                try {
+                    openSession();
+                    AnalysisProviderRegisterFunctionalFeatureRequest analysisProviderRegisterFunctionalFeatureRequest = new AnalysisProviderRegisterFunctionalFeatureRequest();
+                    analysisProviderRegisterFunctionalFeatureRequest.setFunctionalFeatureName(functionalFeatureName);
+                    analysisProviderRegisterFunctionalFeatureRequest.setFunctionalFeatureDescription(functionalFeatureDesc);
+                    AnalyseResponseCallback analyseResponseCallback = new AnalyseResponseCallback() {
+                        @Override
+                        public void onResponseReceived(Object analyseResponseObject) {}
+
+                        @Override
+                        public void onSuccessResponseReceived(AnalyseResponse analyseResponse) {
+                            try {
+                                if(analyseResponse.getResponseData() != null){
+                                    boolean registerResult = (boolean)analyseResponse.getResponseData();
+                                    resultDataMap.put(registerFunctionalFeatureKey,registerResult);
+                                }
+                                closeSession();
+                            } catch (ProviderClientInitException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onFailureResponseReceived(Throwable throwable) {
+                            try {
+                                closeSession();
+                            } catch (ProviderClientInitException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    };
+
+                    sendAnalyseRequest(analysisProviderRegisterFunctionalFeatureRequest,analyseResponseCallback,registerTimeOutInSecond);
+                } catch (ProviderClientInitException e) {
+                    throw new RuntimeException(e);
+                } catch (AnalysisEngineRuntimeException e) {
+                    throw new RuntimeException(e);
+                }
+
+                //need this sleep to make sure the callback is executed
+                Thread.sleep(timeoutInSecond*1000);
+                return "";
+            }
+        });
+
+        try {
+            // 同步等待异步操作结果
+            future.get();
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } finally {
+            // 关闭ExecutorService
+            executor.shutdown();
+        }
+
+        if(resultDataMap.containsKey(registerFunctionalFeatureKey)){
+            return resultDataMap.get(registerFunctionalFeatureKey);
+        }else{
+            return false;
         }
     }
 }
