@@ -1,6 +1,6 @@
 package com.viewfunction.docg.analysisProvider.feature.functionalFeatures
 
-import com.viewfunction.docg.analysisProvider.feature.common.{GlobalDataAccessor, ResultDataSetUtil}
+import com.viewfunction.docg.analysisProvider.feature.common.{AnalysisResponseCode, GlobalDataAccessor, ResultDataSetUtil}
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.{AnalyseResponse, spatialAnalysis}
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialCommonConfig.PredicateType
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.TemporalDurationBasedSpatialPropertiesStatisticRequest.ObjectAggregationType
@@ -11,8 +11,13 @@ import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial.Spa
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredicateType
 import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredicateType.SpatialPredicateType
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
+import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.common.CoreRealmOperationUtil
+import org.apache.spark.sql.{DataFrame, Row}
+import org.apache.spark.sql.functions.{avg, count, max, min, stddev, sum, variance}
+import org.apache.spark.sql.types.{DoubleType, StructField, StructType}
 
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
 object TemporalDurationBasedSpatialPropertiesStatisticAndAnalysis {
 
@@ -79,22 +84,78 @@ object TemporalDurationBasedSpatialPropertiesStatisticAndAnalysis {
     val loopPartObjectConceptionSpDFName = objectConceptionSpDFName+"calculateLoop"
     val objectConception_spatialQueryParam = spatial.SpatialQueryParam(loopPartObjectConceptionSpDFName,objectConceptionSpatialAttributeName,mutable.Buffer[String](objectStatisticProperty,objectTemporalProperty))
 
-
-
-    //in loop logic
-    var currentLoopDataFilterSparkSQL:String = "SELECT * FROM "+objectConceptionSpDFName+" WHERE "+ objectTemporalProperty+" = '1'"
-    globalDataAccessor._getDataFrameFromSparkSQL(loopPartObjectConceptionSpDFName,currentLoopDataFilterSparkSQL)
-    val subject_objectSpJoinDF = spatialQueryMetaFunction.spatialJoinQuery(globalDataAccessor,subjectConception_spatialQueryParam,spatialPredicateType,objectConception_spatialQueryParam,subject_objectSpJoinDFName)
-
-
-
-
-
-
-
-
     val resultDataSetUtil = new ResultDataSetUtil
-    resultDataSetUtil.generateResultDataSet(globalDataAccessor,null,analyseResponse,statisticRequest)
+    var dfRenamed:DataFrame = null
+    //in loop logic START
+
+    for (i <- 1 to 5) {
+      println(i)
+
+      var currentLoopDataFilterSparkSQL:String = "SELECT * FROM "+objectConceptionSpDFName+" WHERE "+ objectTemporalProperty+" = '1'"
+      globalDataAccessor._getDataFrameFromSparkSQL(loopPartObjectConceptionSpDFName,currentLoopDataFilterSparkSQL)
+      val subject_objectSpJoinDF = spatialQueryMetaFunction.spatialJoinQuery(globalDataAccessor,subjectConception_spatialQueryParam,spatialPredicateType,objectConception_spatialQueryParam,subject_objectSpJoinDFName)
+
+      //统计主体空间相关的客体的计算属性的聚合值
+      var subject_objectAggResultDF:DataFrame = null
+      var aggregateColumnName:String = ""
+      objectAggregationType match {
+        case spatialAnalysis.TemporalDurationBasedSpatialPropertiesStatisticRequest.ObjectAggregationType.SUM =>
+          subject_objectAggResultDF = subject_objectSpJoinDF.groupBy(subjectIdentityProperty).agg(sum(objectStatisticProperty))
+          aggregateColumnName = "sum("+objectStatisticProperty+")"
+        case spatialAnalysis.TemporalDurationBasedSpatialPropertiesStatisticRequest.ObjectAggregationType.AVG =>
+          subject_objectAggResultDF = subject_objectSpJoinDF.groupBy(subjectIdentityProperty).agg(avg(objectStatisticProperty))
+          aggregateColumnName = "avg("+objectStatisticProperty+")"
+        case spatialAnalysis.TemporalDurationBasedSpatialPropertiesStatisticRequest.ObjectAggregationType.STDDEV =>
+          subject_objectAggResultDF = subject_objectSpJoinDF.groupBy(subjectIdentityProperty).agg(stddev(objectStatisticProperty))
+          aggregateColumnName = "stddev_samp("+objectStatisticProperty+")"
+        case spatialAnalysis.TemporalDurationBasedSpatialPropertiesStatisticRequest.ObjectAggregationType.COUNT =>
+          subject_objectAggResultDF = subject_objectSpJoinDF.groupBy(subjectIdentityProperty).agg(count(objectStatisticProperty))
+          aggregateColumnName = "count("+objectStatisticProperty+")"
+        case spatialAnalysis.TemporalDurationBasedSpatialPropertiesStatisticRequest.ObjectAggregationType.MAX =>
+          subject_objectAggResultDF = subject_objectSpJoinDF.groupBy(subjectIdentityProperty).agg(max(objectStatisticProperty))
+          aggregateColumnName = "max("+objectStatisticProperty+")"
+        case spatialAnalysis.TemporalDurationBasedSpatialPropertiesStatisticRequest.ObjectAggregationType.MIN =>
+          subject_objectAggResultDF = subject_objectSpJoinDF.groupBy(subjectIdentityProperty).agg(min(objectStatisticProperty))
+          aggregateColumnName = "min("+objectStatisticProperty+")"
+        case spatialAnalysis.TemporalDurationBasedSpatialPropertiesStatisticRequest.ObjectAggregationType.VARIANCE =>
+          subject_objectAggResultDF = subject_objectSpJoinDF.groupBy(subjectIdentityProperty).agg(variance(objectStatisticProperty))
+          aggregateColumnName = "var_samp("+objectStatisticProperty+")"
+      }
+      //subject_objectAggResultDF.printSchema()
+
+      //join 初始主体 df，获取相关属性信息
+      val mergedSubjectStaticResultDF = subject_objectAggResultDF.join(subjectConceptionSpDF,subjectIdentityProperty)
+      //mergedSubjectStaticResultDF.printSchema()
+
+      //过滤所需的属性信息
+      val propertiesList:ArrayBuffer[String] = ArrayBuffer[String](aggregateColumnName)
+
+      if(subjectReturnProperties!=null){
+        subjectReturnProperties.foreach(propItem=>{
+          if(!propItem.equalsIgnoreCase(CoreRealmOperationUtil.RealmGlobalUID)){
+            propertiesList += propItem
+          }
+        })
+      }
+      val filterResDF = mergedSubjectStaticResultDF.select(subjectIdentityProperty,propertiesList:_*)
+      //filterResDF.printSchema()
+
+      val newNames = mutable.Buffer[String](CoreRealmOperationUtil.RealmGlobalUID)
+      propertiesList.foreach(attribute=>{
+        var tempStr = attribute.replaceAll("\\(","__")
+        tempStr = tempStr.replaceAll("\\)","")
+        newNames += tempStr
+      })
+
+      analyseResponse.setResponseCode(AnalysisResponseCode.ANALYSUS_SUCCESS.toString)
+      analyseResponse.setResponseSummary("AnalysisResponse of SpatialPropertiesStatisticAndAnalysis")
+
+      dfRenamed = filterResDF.toDF(newNames: _*)
+      //dfRenamed.printSchema()
+    }
+    //in loop logic END
+
+    resultDataSetUtil.generateResultDataSet(globalDataAccessor,dfRenamed,analyseResponse,statisticRequest)
   }
 
   private def getGeospatialGeometryContent(geospatialScaleLevel:SpatialCommonConfig.GeospatialScaleLevel):String = {
