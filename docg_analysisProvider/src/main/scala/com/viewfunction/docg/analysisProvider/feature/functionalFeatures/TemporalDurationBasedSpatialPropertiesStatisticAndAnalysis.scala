@@ -49,16 +49,6 @@ object TemporalDurationBasedSpatialPropertiesStatisticAndAnalysis {
     //subjectConceptionSpDF.printSchema()
     val subjectConception_spatialQueryParam = spatial.SpatialQueryParam(subjectConceptionSpDFName,subjectConceptionSpatialAttributeName,mutable.Buffer[String](subjectIdentityProperty))
 
-    //获取Object conception(客体) 空间dataframe
-    val objectConceptionSpDFName = "objectConceptionSpDF"
-    val objectConceptionSpatialAttributeName = "objectConceptionGeoAttr"
-    if(statisticRequest.getObjectGroup != null){
-      sliceGroupName = statisticRequest.getObjectGroup
-    }
-    val objectConceptionSpDF = globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(objectConception,sliceGroupName,spatialValueProperty,objectConceptionSpDFName,objectConceptionSpatialAttributeName)
-    //objectConceptionSpDF.printSchema()
-    val objectConception_spatialQueryParam = spatial.SpatialQueryParam(objectConceptionSpDFName,objectConceptionSpatialAttributeName,mutable.Buffer[String](objectStatisticProperty,objectTemporalProperty))
-
     //设定主体客体见的空间join计算逻辑
     val subject_objectSpJoinDFName = "subject_objectSpJoinDF"
     var spatialPredicateType:SpatialPredicateType = SpatialPredicateType.Contains
@@ -79,7 +69,21 @@ object TemporalDurationBasedSpatialPropertiesStatisticAndAnalysis {
         spatialPredicateType = SpatialPredicateType.Overlaps
     }
 
+    //获取Object conception(客体) 空间dataframe
+    val objectConceptionSpDFName = "objectConceptionSpDF"
+    val objectConceptionSpatialAttributeName = "objectConceptionGeoAttr"
+    if(statisticRequest.getObjectGroup != null){
+      sliceGroupName = statisticRequest.getObjectGroup
+    }
+    val objectConceptionSpDF = globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(objectConception,sliceGroupName,spatialValueProperty,objectConceptionSpDFName,objectConceptionSpatialAttributeName)
+    val loopPartObjectConceptionSpDFName = objectConceptionSpDFName+"calculateLoop"
+    val objectConception_spatialQueryParam = spatial.SpatialQueryParam(loopPartObjectConceptionSpDFName,objectConceptionSpatialAttributeName,mutable.Buffer[String](objectStatisticProperty,objectTemporalProperty))
 
+
+
+    //in loop logic
+    var currentLoopDataFilterSparkSQL:String = "SELECT * FROM "+objectConceptionSpDFName+" WHERE "+ objectTemporalProperty+" = '1'"
+    globalDataAccessor._getDataFrameFromSparkSQL(loopPartObjectConceptionSpDFName,currentLoopDataFilterSparkSQL)
     val subject_objectSpJoinDF = spatialQueryMetaFunction.spatialJoinQuery(globalDataAccessor,subjectConception_spatialQueryParam,spatialPredicateType,objectConception_spatialQueryParam,subject_objectSpJoinDFName)
 
 
