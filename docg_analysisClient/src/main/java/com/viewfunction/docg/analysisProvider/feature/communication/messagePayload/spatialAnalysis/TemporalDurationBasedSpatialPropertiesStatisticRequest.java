@@ -29,7 +29,7 @@ public class TemporalDurationBasedSpatialPropertiesStatisticRequest extends Anal
     private LocalDateTime statisticStartTime;
     private LocalDateTime statisticEndTime;
     private ChronoUnit temporalDurationType;
-    private int durationCount;
+    private long durationCount;
     private String statisticResultTemporalProperty;
 
     public String getSubjectConception() {
@@ -144,11 +144,11 @@ public class TemporalDurationBasedSpatialPropertiesStatisticRequest extends Anal
         this.temporalDurationType = temporalDurationType;
     }
 
-    public int getDurationCount() {
+    public long getDurationCount() {
         return durationCount;
     }
 
-    public void setDurationCount(int durationCount) {
+    public void setDurationCount(long durationCount) {
         this.durationCount = durationCount;
     }
 
