@@ -1,9 +1,18 @@
 package com.viewfunction.docg.analysisProvider.feature.functionalFeatures
 
 import com.viewfunction.docg.analysisProvider.feature.common.{GlobalDataAccessor, ResultDataSetUtil}
-import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseResponse
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.{AnalyseResponse, spatialAnalysis}
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialCommonConfig.PredicateType
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.TemporalDurationBasedSpatialPropertiesStatisticRequest.ObjectAggregationType
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.{SpatialCommonConfig, SpatialPropertiesAggregateStatisticRequest, TemporalDurationBasedSpatialPropertiesStatisticRequest}
+import com.viewfunction.docg.analysisProvider.feature.functionalFeatures.SpatialPropertiesStatisticAndAnalysis.{getGeospatialGeometryContent, sliceGroupName}
+import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial
+import com.viewfunction.docg.analysisProvider.feature.techImpl.spark.spatial.SpatialQueryMetaFunction
+import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredicateType
+import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredicateType.SpatialPredicateType
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
+
+import scala.collection.mutable
 
 object TemporalDurationBasedSpatialPropertiesStatisticAndAnalysis {
 
@@ -11,6 +20,75 @@ object TemporalDurationBasedSpatialPropertiesStatisticAndAnalysis {
                                                    analyseResponse:AnalyseResponse,
                                                    statisticRequest:TemporalDurationBasedSpatialPropertiesStatisticRequest):
   com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset = {
+    println(" Start execute doExecuteTemporalDurationBasedSpatialPropertiesStatistic ...")
+    val subjectConception = statisticRequest.getSubjectConception
+    val objectConception = statisticRequest.getObjectConception
+    val predicateType:PredicateType = statisticRequest.getPredicateType
+
+    val subjectIdentityProperty = statisticRequest.getSubjectIdentityProperty
+    val subjectReturnProperties:Array[String] = statisticRequest.getSubjectReturnProperties
+
+    val objectAggregationType:ObjectAggregationType = statisticRequest.getObjectAggregationType
+    val objectStatisticProperty = statisticRequest.getObjectStatisticProperty
+    val objectTemporalProperty = statisticRequest.getObjectTemporalProperty
+
+    val spatialQueryMetaFunction = new SpatialQueryMetaFunction
+
+    //获取Subject conception(主体) 空间dataframe
+    val subjectConceptionSpDFName = "subjectConceptionSpDF"
+    val subjectConceptionSpatialAttributeName = "subjectConceptionGeoAttr"
+    if(statisticRequest.getSubjectGroup != null){
+      sliceGroupName = statisticRequest.getSubjectGroup
+    }
+    var spatialValueProperty = getGeospatialGeometryContent(SpatialCommonConfig.GeospatialScaleLevel.GlobalLevel)
+    if(statisticRequest.getGeospatialScaleLevel != null) {
+      spatialValueProperty = getGeospatialGeometryContent(statisticRequest.getGeospatialScaleLevel)
+    }
+
+    val subjectConceptionSpDF = globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(subjectConception,sliceGroupName,spatialValueProperty,subjectConceptionSpDFName,subjectConceptionSpatialAttributeName)
+    //subjectConceptionSpDF.printSchema()
+    val subjectConception_spatialQueryParam = spatial.SpatialQueryParam(subjectConceptionSpDFName,subjectConceptionSpatialAttributeName,mutable.Buffer[String](subjectIdentityProperty))
+
+    //获取Object conception(客体) 空间dataframe
+    val objectConceptionSpDFName = "objectConceptionSpDF"
+    val objectConceptionSpatialAttributeName = "objectConceptionGeoAttr"
+    if(statisticRequest.getObjectGroup != null){
+      sliceGroupName = statisticRequest.getObjectGroup
+    }
+    val objectConceptionSpDF = globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(objectConception,sliceGroupName,spatialValueProperty,objectConceptionSpDFName,objectConceptionSpatialAttributeName)
+    //objectConceptionSpDF.printSchema()
+    val objectConception_spatialQueryParam = spatial.SpatialQueryParam(objectConceptionSpDFName,objectConceptionSpatialAttributeName,mutable.Buffer[String](objectStatisticProperty,objectTemporalProperty))
+
+    //设定主体客体见的空间join计算逻辑
+    val subject_objectSpJoinDFName = "subject_objectSpJoinDF"
+    var spatialPredicateType:SpatialPredicateType = SpatialPredicateType.Contains
+    predicateType match {
+      case spatialAnalysis.SpatialCommonConfig.PredicateType.Contains =>
+        spatialPredicateType = SpatialPredicateType.Contains
+      case spatialAnalysis.SpatialCommonConfig.PredicateType.Intersects =>
+        spatialPredicateType = SpatialPredicateType.Intersects
+      case spatialAnalysis.SpatialCommonConfig.PredicateType.Crosses =>
+        spatialPredicateType = SpatialPredicateType.Crosses
+      case spatialAnalysis.SpatialCommonConfig.PredicateType.Within =>
+        spatialPredicateType = SpatialPredicateType.Within
+      case spatialAnalysis.SpatialCommonConfig.PredicateType.Equals =>
+        spatialPredicateType = SpatialPredicateType.Equals
+      case spatialAnalysis.SpatialCommonConfig.PredicateType.Touches =>
+        spatialPredicateType = SpatialPredicateType.Touches
+      case spatialAnalysis.SpatialCommonConfig.PredicateType.Overlaps =>
+        spatialPredicateType = SpatialPredicateType.Overlaps
+    }
+
+
+    val subject_objectSpJoinDF = spatialQueryMetaFunction.spatialJoinQuery(globalDataAccessor,subjectConception_spatialQueryParam,spatialPredicateType,objectConception_spatialQueryParam,subject_objectSpJoinDFName)
+
+
+
+
+
+
+
+
     val resultDataSetUtil = new ResultDataSetUtil
     resultDataSetUtil.generateResultDataSet(globalDataAccessor,null,analyseResponse,statisticRequest)
   }
