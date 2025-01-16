@@ -6,8 +6,8 @@ import com.viewfunction.docg.analysisProvider.feature.communication.messagePaylo
 import com.viewfunction.docg.analysisProvider.providerApplication.communication.CommunicationMessageHandler
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.admin.{AnalysisProviderPingRequest, AnalysisProviderRegisterFunctionalFeatureRequest, AnalysisProviderRunningStatusRequest, AnalysisProviderUnregisterFunctionalFeatureRequest, FunctionalFeatureRunningStatusRequest, FunctionalFeaturesInfoRequest}
-import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.{AdministrativeDivisionSpatialCalculateRequest, SpatialPropertiesAggregateStatisticRequest}
-import com.viewfunction.docg.analysisProvider.feature.functionalFeatures.{AdministrativeDivisionBasedSpatialAnalysis, SpatialPropertiesStatisticAndAnalysis}
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.{AdministrativeDivisionSpatialCalculateRequest, SpatialPropertiesAggregateStatisticRequest, TemporalDurationBasedSpatialPropertiesStatisticRequest}
+import com.viewfunction.docg.analysisProvider.feature.functionalFeatures.{AdministrativeDivisionBasedSpatialAnalysis, SpatialPropertiesStatisticAndAnalysis, TemporalDurationBasedSpatialPropertiesStatisticAndAnalysis}
 import com.viewfunction.docg.analysisProvider.providerApplication.util.InternalOperationDB
 
 import java.time.LocalDateTime
@@ -71,6 +71,12 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
           internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "AdministrativeDivisionSpatialCalculate")
           AdministrativeDivisionBasedSpatialAnalysis.doExecuteDataSliceAdministrativeDivisionSpatialCalculation(
             globalDataAccessor,analyseResponse,communicationMessage.asInstanceOf[AdministrativeDivisionSpatialCalculateRequest])
+
+        case communicationMessage: TemporalDurationBasedSpatialPropertiesStatisticRequest =>
+          internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "TemporalDurationBasedSpatialPropertiesStatistic")
+          TemporalDurationBasedSpatialPropertiesStatisticAndAnalysis.doExecuteTemporalDurationBasedSpatialPropertiesStatistic(
+            globalDataAccessor,analyseResponse,communicationMessage.asInstanceOf[TemporalDurationBasedSpatialPropertiesStatisticRequest]
+          )
       }
     }
 
