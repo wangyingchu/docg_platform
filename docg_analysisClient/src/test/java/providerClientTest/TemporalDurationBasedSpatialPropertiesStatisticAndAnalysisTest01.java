@@ -25,19 +25,19 @@ public class TemporalDurationBasedSpatialPropertiesStatisticAndAnalysisTest01 {
         TemporalDurationBasedSpatialPropertiesStatisticRequest temporalDurationBasedSpatialPropertiesStatisticRequest =
                 new TemporalDurationBasedSpatialPropertiesStatisticRequest();
 
-        temporalDurationBasedSpatialPropertiesStatisticRequest.setObjectConception("MeshHexagon");
+        temporalDurationBasedSpatialPropertiesStatisticRequest.setSubjectConception("MeshHexagon");
         temporalDurationBasedSpatialPropertiesStatisticRequest.setSubjectGroup("DEFAULTSLICEGROUP");
-        temporalDurationBasedSpatialPropertiesStatisticRequest.setSubjectConception("LandingPAXTrafficFlow116");
+        temporalDurationBasedSpatialPropertiesStatisticRequest.setObjectConception("LandingPAXTrafficFlow119");
         temporalDurationBasedSpatialPropertiesStatisticRequest.setObjectGroup("DEFAULTSLICEGROUP");
 
         temporalDurationBasedSpatialPropertiesStatisticRequest.setPredicateType(SpatialCommonConfig.PredicateType.Contains);
         temporalDurationBasedSpatialPropertiesStatisticRequest.setGeospatialScaleLevel(SpatialCommonConfig.GeospatialScaleLevel.GlobalLevel);
         temporalDurationBasedSpatialPropertiesStatisticRequest.setObjectAggregationType(TemporalDurationBasedSpatialPropertiesStatisticRequest.ObjectAggregationType.COUNT);
 
-        temporalDurationBasedSpatialPropertiesStatisticRequest.setSubjectIdentityProperty("DOCG_REALMGLOBALUID");
+        temporalDurationBasedSpatialPropertiesStatisticRequest.setSubjectIdentityProperty("BIAD_ALG_CREATEMESH_ATTR_MESH_ID");
         temporalDurationBasedSpatialPropertiesStatisticRequest.setSubjectReturnProperties(new String[]{"BIAD_ALG_CREATEMESH_ATTR_MESH_ID"});
 
-        temporalDurationBasedSpatialPropertiesStatisticRequest.setObjectStatisticProperty("DOCG_REALMGLOBALUID");
+        temporalDurationBasedSpatialPropertiesStatisticRequest.setObjectStatisticProperty("BIAD_ALG_LANDINGPAX_ATTR_POINTID");
         temporalDurationBasedSpatialPropertiesStatisticRequest.setObjectTemporalProperty("BIAD_ALG_LANDINGPAX_ATTR_DATETIME");
 
         LocalDateTime now = LocalDateTime.now();
