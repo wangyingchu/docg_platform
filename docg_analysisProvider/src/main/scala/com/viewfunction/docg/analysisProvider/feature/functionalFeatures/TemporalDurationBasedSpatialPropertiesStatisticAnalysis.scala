@@ -21,7 +21,7 @@ import java.time.temporal.ChronoUnit
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-object TemporalDurationBasedSpatialPropertiesStatisticAndAnalysis {
+object TemporalDurationBasedSpatialPropertiesStatisticAnalysis {
 
   def doExecuteTemporalDurationBasedSpatialPropertiesStatistic(globalDataAccessor:GlobalDataAccessor,
                                                    analyseResponse:AnalyseResponse,

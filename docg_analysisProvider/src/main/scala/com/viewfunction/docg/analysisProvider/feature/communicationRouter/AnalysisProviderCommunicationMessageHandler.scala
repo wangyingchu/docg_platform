@@ -7,7 +7,7 @@ import com.viewfunction.docg.analysisProvider.providerApplication.communication.
 import com.viewfunction.docg.analysisProvider.feature.common.GlobalDataAccessor
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.admin.{AnalysisProviderPingRequest, AnalysisProviderRegisterFunctionalFeatureRequest, AnalysisProviderRunningStatusRequest, AnalysisProviderUnregisterFunctionalFeatureRequest, FunctionalFeatureRunningStatusRequest, FunctionalFeaturesInfoRequest}
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.{AdministrativeDivisionSpatialCalculateRequest, SpatialPropertiesAggregateStatisticRequest, TemporalDurationBasedSpatialPropertiesStatisticRequest}
-import com.viewfunction.docg.analysisProvider.feature.functionalFeatures.{AdministrativeDivisionBasedSpatialAnalysis, SpatialPropertiesStatisticAndAnalysis, TemporalDurationBasedSpatialPropertiesStatisticAndAnalysis}
+import com.viewfunction.docg.analysisProvider.feature.functionalFeatures.{AdministrativeDivisionBasedSpatialAnalysis, SpatialPropertiesStatisticAndAnalysis, TemporalDurationBasedSpatialPropertiesStatisticAnalysis}
 import com.viewfunction.docg.analysisProvider.providerApplication.util.InternalOperationDB
 
 import java.time.LocalDateTime
@@ -74,7 +74,7 @@ class AnalysisProviderCommunicationMessageHandler(globalDataAccessor :GlobalData
 
         case communicationMessage: TemporalDurationBasedSpatialPropertiesStatisticRequest =>
           internalOperationDB.recordFeatureExecution(communicationMessage.getRequestUUID, "TemporalDurationBasedSpatialPropertiesStatistic")
-          TemporalDurationBasedSpatialPropertiesStatisticAndAnalysis.doExecuteTemporalDurationBasedSpatialPropertiesStatistic(
+          TemporalDurationBasedSpatialPropertiesStatisticAnalysis.doExecuteTemporalDurationBasedSpatialPropertiesStatistic(
             globalDataAccessor,analyseResponse,communicationMessage.asInstanceOf[TemporalDurationBasedSpatialPropertiesStatisticRequest]
           )
       }
