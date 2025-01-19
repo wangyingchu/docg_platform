@@ -13,7 +13,7 @@ import com.viewfunction.docg.analysisProvider.fundamental.spatial.SpatialPredica
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.common.CoreRealmOperationUtil
 import org.apache.spark.sql.{DataFrame, Row}
-import org.apache.spark.sql.functions.{avg, count, max, min, stddev, sum, variance}
+import org.apache.spark.sql.functions.{avg, count, lit, max, min, stddev, sum, variance}
 import org.apache.spark.sql.types.{DoubleType, StructField, StructType}
 
 import java.time.{Instant, LocalDateTime, ZoneId}
@@ -51,6 +51,9 @@ object TemporalDurationBasedSpatialPropertiesStatisticAndAnalysis {
     if(statisticRequest.getGeospatialScaleLevel != null) {
       spatialValueProperty = getGeospatialGeometryContent(statisticRequest.getGeospatialScaleLevel)
     }
+
+    val statisticResultTemporalProperty =
+    if (statisticRequest.getStatisticResultTemporalProperty != null) statisticRequest.getStatisticResultTemporalProperty else objectTemporalProperty
 
     val subjectConceptionSpDF = globalDataAccessor.getDataFrameWithSpatialSupportFromDataSlice(subjectConception,sliceGroupName,spatialValueProperty,subjectConceptionSpDFName,subjectConceptionSpatialAttributeName)
     //subjectConceptionSpDF.printSchema()
@@ -90,6 +93,8 @@ object TemporalDurationBasedSpatialPropertiesStatisticAndAnalysis {
 
     val resultDataSetUtil = new ResultDataSetUtil
     var dfRenamed:DataFrame = null
+    var dfRenamedWithTimeWindow:DataFrame = null
+    var resultUnionDFWithTimeWindow:DataFrame = null
 
     val startLocalDateTimeValue: Long = statisticRequest.getStatisticStartTime
     val startLocalDateTimeInstant = Instant.ofEpochMilli(startLocalDateTimeValue)
@@ -104,6 +109,7 @@ object TemporalDurationBasedSpatialPropertiesStatisticAndAnalysis {
 
     var currentLoopTimeWindowStartDateTime:Long = 0
     var currentLoopDataFilterSparkSQL:String = "SELECT * FROM "+objectConceptionSpDFName
+
     while (getLongLocalDateTimeValue(stepLocalDateTime) <= getLongLocalDateTimeValue(endLocalDateTime)) {
       currentLoopTimeWindowStartDateTime = getLongLocalDateTimeValue(stepLocalDateTime)
       currentLoopDataFilterSparkSQL = "SELECT * FROM "+objectConceptionSpDFName+" WHERE "+ objectTemporalProperty+" BETWEEN "+
@@ -168,6 +174,13 @@ object TemporalDurationBasedSpatialPropertiesStatisticAndAnalysis {
 
       dfRenamed = filterResDF.toDF(newNames: _*)
       //dfRenamed.printSchema()
+      dfRenamedWithTimeWindow = dfRenamed.withColumn(statisticResultTemporalProperty, lit(currentLoopTimeWindowStartDateTime))
+
+      if(resultUnionDFWithTimeWindow == null){
+        resultUnionDFWithTimeWindow = dfRenamedWithTimeWindow
+      }else{
+        resultUnionDFWithTimeWindow = resultUnionDFWithTimeWindow.union(dfRenamedWithTimeWindow)
+      }
 
       startLocalDateTime = getLocalDateTime(stepLocalDateTime.getYear,
         stepLocalDateTime.getMonthValue,
@@ -181,7 +194,7 @@ object TemporalDurationBasedSpatialPropertiesStatisticAndAnalysis {
 
     analyseResponse.setResponseCode(AnalysisResponseCode.ANALYSUS_SUCCESS.toString)
     analyseResponse.setResponseSummary("AnalysisResponse of SpatialPropertiesStatisticAndAnalysis")
-    resultDataSetUtil.generateResultDataSet(globalDataAccessor,dfRenamed,analyseResponse,statisticRequest)
+    resultDataSetUtil.generateResultDataSet(globalDataAccessor,resultUnionDFWithTimeWindow,analyseResponse,statisticRequest)
   }
 
   private def getGeospatialGeometryContent(geospatialScaleLevel:SpatialCommonConfig.GeospatialScaleLevel):String = {

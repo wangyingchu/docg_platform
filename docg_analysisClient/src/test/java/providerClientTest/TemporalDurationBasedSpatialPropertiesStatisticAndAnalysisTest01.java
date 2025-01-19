@@ -53,6 +53,7 @@ public class TemporalDurationBasedSpatialPropertiesStatisticAndAnalysisTest01 {
         temporalDurationBasedSpatialPropertiesStatisticRequest.setStatisticEndTime(endInstant.toEpochMilli());
         temporalDurationBasedSpatialPropertiesStatisticRequest.setTemporalDurationType(ChronoUnit.SECONDS);
         temporalDurationBasedSpatialPropertiesStatisticRequest.setDurationCount(10);
+        temporalDurationBasedSpatialPropertiesStatisticRequest.setStatisticResultTemporalProperty("timeWindowProperty");
 
         temporalDurationBasedSpatialPropertiesStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.STREAM_BACK);
 
