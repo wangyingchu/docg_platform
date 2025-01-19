@@ -16,7 +16,7 @@ import org.apache.spark.sql.{DataFrame, Row}
 import org.apache.spark.sql.functions.{avg, count, max, min, stddev, sum, variance}
 import org.apache.spark.sql.types.{DoubleType, StructField, StructType}
 
-import java.time.{LocalDateTime, ZoneId}
+import java.time.{Instant, LocalDateTime, ZoneId}
 import java.time.temporal.ChronoUnit
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
@@ -91,8 +91,13 @@ object TemporalDurationBasedSpatialPropertiesStatisticAndAnalysis {
 
 
 
-    var startLocalDateTime: LocalDateTime = statisticRequest.getStatisticStartTime
-    val endLocalDateTime: LocalDateTime = statisticRequest.getStatisticEndTime
+    val startLocalDateTimeValue: Long = statisticRequest.getStatisticStartTime
+    val startLocalDateTimeInstant = Instant.ofEpochMilli(startLocalDateTimeValue)
+    var startLocalDateTime: LocalDateTime = LocalDateTime.ofInstant(startLocalDateTimeInstant, ZoneId.systemDefault())
+    val endLocalDateTimeValue: Long = statisticRequest.getStatisticEndTime
+    val endLocalDateTimeInstant = Instant.ofEpochMilli(endLocalDateTimeValue)
+    val endLocalDateTime: LocalDateTime = LocalDateTime.ofInstant(endLocalDateTimeInstant, ZoneId.systemDefault())
+
     val temporalDurationType: ChronoUnit = statisticRequest.getTemporalDurationType
     val durationCount: Long = statisticRequest.getDurationCount
     var stepLocalDateTime:LocalDateTime = startLocalDateTime.plus(durationCount,temporalDurationType)
