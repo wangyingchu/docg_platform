@@ -10,7 +10,10 @@ import com.viewfunction.docg.analysisProvider.feature.communication.messagePaylo
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialCommonConfig;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.TemporalDurationBasedSpatialPropertiesStatisticRequest;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,8 +22,6 @@ import java.util.HashMap;
 public class TemporalDurationBasedSpatialPropertiesStatisticAndAnalysisTest01 {
 
     public static void main(String[] args){
-
-
         TemporalDurationBasedSpatialPropertiesStatisticRequest temporalDurationBasedSpatialPropertiesStatisticRequest =
                 new TemporalDurationBasedSpatialPropertiesStatisticRequest();
 
@@ -43,8 +44,13 @@ public class TemporalDurationBasedSpatialPropertiesStatisticAndAnalysisTest01 {
         LocalDateTime startLocalDateTime = getLocalDateTime(now.getYear(), now.getMonthValue(), now.getDayOfMonth(), 00, 00, 00);
         LocalDateTime endLocalDateTime = getLocalDateTime(now.getYear(), now.getMonthValue(), now.getDayOfMonth(), 00, 10, 00);
 
-        temporalDurationBasedSpatialPropertiesStatisticRequest.setStatisticStartTime(startLocalDateTime);
-        temporalDurationBasedSpatialPropertiesStatisticRequest.setStatisticEndTime(endLocalDateTime);
+        ZonedDateTime starZonedDateTime = startLocalDateTime.atZone(ZoneId.systemDefault());
+        Instant starInstant = starZonedDateTime.toInstant();
+        ZonedDateTime endZonedDateTime = endLocalDateTime.atZone(ZoneId.systemDefault());
+        Instant endInstant = endZonedDateTime.toInstant();
+
+        temporalDurationBasedSpatialPropertiesStatisticRequest.setStatisticStartTime(starInstant.toEpochMilli());
+        temporalDurationBasedSpatialPropertiesStatisticRequest.setStatisticEndTime(endInstant.toEpochMilli());
         temporalDurationBasedSpatialPropertiesStatisticRequest.setTemporalDurationType(ChronoUnit.SECONDS);
         temporalDurationBasedSpatialPropertiesStatisticRequest.setDurationCount(10);
 
@@ -98,6 +104,7 @@ public class TemporalDurationBasedSpatialPropertiesStatisticAndAnalysisTest01 {
                     }
                 }
             };
+
             analysisProviderClient.sendAnalyseRequest(temporalDurationBasedSpatialPropertiesStatisticRequest,analyseResponseCallback,600);
         } catch (AnalysisEngineRuntimeException | ProviderClientInitException e) {
             e.printStackTrace();

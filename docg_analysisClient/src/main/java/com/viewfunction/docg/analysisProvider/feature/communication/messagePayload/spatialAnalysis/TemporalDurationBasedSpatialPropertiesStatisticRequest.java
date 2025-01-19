@@ -2,7 +2,6 @@ package com.viewfunction.docg.analysisProvider.feature.communication.messagePayl
 
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseRequest;
 
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 public class TemporalDurationBasedSpatialPropertiesStatisticRequest extends AnalyseRequest {
@@ -26,8 +25,8 @@ public class TemporalDurationBasedSpatialPropertiesStatisticRequest extends Anal
     private String objectStatisticProperty;
     private String objectTemporalProperty;
 
-    private LocalDateTime statisticStartTime;
-    private LocalDateTime statisticEndTime;
+    private long statisticStartTime;
+    private long statisticEndTime;
     private ChronoUnit temporalDurationType;
     private long durationCount;
     private String statisticResultTemporalProperty;
@@ -120,19 +119,19 @@ public class TemporalDurationBasedSpatialPropertiesStatisticRequest extends Anal
         this.objectTemporalProperty = objectTemporalProperty;
     }
 
-    public LocalDateTime getStatisticStartTime() {
+    public long getStatisticStartTime() {
         return statisticStartTime;
     }
 
-    public void setStatisticStartTime(LocalDateTime statisticStartTime) {
+    public void setStatisticStartTime(long statisticStartTime) {
         this.statisticStartTime = statisticStartTime;
     }
 
-    public LocalDateTime getStatisticEndTime() {
+    public long getStatisticEndTime() {
         return statisticEndTime;
     }
 
-    public void setStatisticEndTime(LocalDateTime statisticEndTime) {
+    public void setStatisticEndTime(long statisticEndTime) {
         this.statisticEndTime = statisticEndTime;
     }
 
