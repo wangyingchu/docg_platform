@@ -94,7 +94,6 @@ object TemporalDurationBasedSpatialPropertiesStatisticAnalysis {
     val resultDataSetUtil = new ResultDataSetUtil
     var dfRenamed:DataFrame = null
     var dfRenamedWithTimeWindow:DataFrame = null
-    var resultUnionDFWithTimeWindow:DataFrame = null
 
     val startLocalDateTimeValue: Long = statisticRequest.getStatisticStartTime
     val startLocalDateTimeInstant = Instant.ofEpochMilli(startLocalDateTimeValue)
@@ -110,10 +109,16 @@ object TemporalDurationBasedSpatialPropertiesStatisticAnalysis {
     var currentLoopTimeWindowStartDateTime:Long = 0
     var currentLoopDataFilterSparkSQL:String = "SELECT * FROM "+objectConceptionSpDFName
 
+    val resultDataList = new java.util.ArrayList[java.util.HashMap[String,Object]]
+    val resultDataframePropertiesInfoList = new java.util.ArrayList[java.util.HashMap[String,Object]]
+    var resultDataframePropertiesInfoCreated = false
+
     while (getLongLocalDateTimeValue(stepLocalDateTime) <= getLongLocalDateTimeValue(endLocalDateTime)) {
       currentLoopTimeWindowStartDateTime = getLongLocalDateTimeValue(stepLocalDateTime)
       currentLoopDataFilterSparkSQL = "SELECT * FROM "+objectConceptionSpDFName+" WHERE "+ objectTemporalProperty+" BETWEEN "+
         getLongLocalDateTimeValue(startLocalDateTime) + " AND "+getLongLocalDateTimeValue(stepLocalDateTime)
+
+      println("Calculating for "+stepLocalDateTime+ "......")
 
       globalDataAccessor._getDataFrameFromSparkSQL(loopPartObjectConceptionSpDFName,currentLoopDataFilterSparkSQL)
       val subject_objectSpJoinDF = spatialQueryMetaFunction.spatialJoinQuery(globalDataAccessor,subjectConception_spatialQueryParam,spatialPredicateType,objectConception_spatialQueryParam,subject_objectSpJoinDFName)
@@ -174,13 +179,21 @@ object TemporalDurationBasedSpatialPropertiesStatisticAnalysis {
 
       dfRenamed = filterResDF.toDF(newNames: _*)
       //dfRenamed.printSchema()
+
       dfRenamedWithTimeWindow = dfRenamed.withColumn(statisticResultTemporalProperty, lit(currentLoopTimeWindowStartDateTime))
 
-      if(resultUnionDFWithTimeWindow == null){
-        resultUnionDFWithTimeWindow = dfRenamedWithTimeWindow
-      }else{
-        resultUnionDFWithTimeWindow = resultUnionDFWithTimeWindow.union(dfRenamedWithTimeWindow)
+      if(!resultDataframePropertiesInfoCreated){
+        val structureFields =dfRenamedWithTimeWindow.schema.fields
+        val propertiesMetaInfo = new java.util.HashMap[String,Object]
+        structureFields.foreach(item =>{
+          propertiesMetaInfo.put(item.name,item.dataType.typeName)
+        })
+
+        resultDataframePropertiesInfoList.add(propertiesMetaInfo)
+        resultDataframePropertiesInfoCreated = true
       }
+
+      resultDataSetUtil.generateResultDataList(dfRenamedWithTimeWindow,resultDataList)
 
       startLocalDateTime = getLocalDateTime(stepLocalDateTime.getYear,
         stepLocalDateTime.getMonthValue,
@@ -193,8 +206,8 @@ object TemporalDurationBasedSpatialPropertiesStatisticAnalysis {
     }
 
     analyseResponse.setResponseCode(AnalysisResponseCode.ANALYSUS_SUCCESS.toString)
-    analyseResponse.setResponseSummary("AnalysisResponse of SpatialPropertiesStatisticAndAnalysis")
-    resultDataSetUtil.generateResultDataSet(globalDataAccessor,resultUnionDFWithTimeWindow,analyseResponse,statisticRequest)
+    analyseResponse.setResponseSummary("AnalysisResponse of TemporalDurationBasedSpatialPropertiesStatisticAnalysis")
+    resultDataSetUtil.generateResultDataSet(globalDataAccessor,resultDataframePropertiesInfoList,resultDataList,analyseResponse,statisticRequest)
   }
 
   private def getGeospatialGeometryContent(geospatialScaleLevel:SpatialCommonConfig.GeospatialScaleLevel):String = {

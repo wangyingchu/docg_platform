@@ -27,7 +27,7 @@ public class TemporalDurationBasedSpatialPropertiesStatisticAndAnalysisTest01 {
 
         temporalDurationBasedSpatialPropertiesStatisticRequest.setSubjectConception("MeshHexagon");
         temporalDurationBasedSpatialPropertiesStatisticRequest.setSubjectGroup("DEFAULTSLICEGROUP");
-        temporalDurationBasedSpatialPropertiesStatisticRequest.setObjectConception("LandingPAXTrafficFlow119");
+        temporalDurationBasedSpatialPropertiesStatisticRequest.setObjectConception("PAX0120");
         temporalDurationBasedSpatialPropertiesStatisticRequest.setObjectGroup("DEFAULTSLICEGROUP");
 
         temporalDurationBasedSpatialPropertiesStatisticRequest.setPredicateType(SpatialCommonConfig.PredicateType.Contains);
@@ -41,8 +41,9 @@ public class TemporalDurationBasedSpatialPropertiesStatisticAndAnalysisTest01 {
         temporalDurationBasedSpatialPropertiesStatisticRequest.setObjectTemporalProperty("BIAD_ALG_LANDINGPAX_ATTR_DATETIME");
 
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startLocalDateTime = getLocalDateTime(now.getYear(), now.getMonthValue(), now.getDayOfMonth(), 00, 00, 00);
-        LocalDateTime endLocalDateTime = getLocalDateTime(now.getYear(), now.getMonthValue(), now.getDayOfMonth(), 00, 10, 00);
+        LocalDateTime startLocalDateTime = getLocalDateTime(2025, 1, 20, 00, 00, 00);
+        //LocalDateTime endLocalDateTime = getLocalDateTime(2025, 1, 17, 23, 59, 59);
+        LocalDateTime endLocalDateTime = getLocalDateTime(2025, 1, 20, 23, 59, 59);
 
         ZonedDateTime starZonedDateTime = startLocalDateTime.atZone(ZoneId.systemDefault());
         Instant starInstant = starZonedDateTime.toInstant();
@@ -51,11 +52,18 @@ public class TemporalDurationBasedSpatialPropertiesStatisticAndAnalysisTest01 {
 
         temporalDurationBasedSpatialPropertiesStatisticRequest.setStatisticStartTime(starInstant.toEpochMilli());
         temporalDurationBasedSpatialPropertiesStatisticRequest.setStatisticEndTime(endInstant.toEpochMilli());
-        temporalDurationBasedSpatialPropertiesStatisticRequest.setTemporalDurationType(ChronoUnit.SECONDS);
-        temporalDurationBasedSpatialPropertiesStatisticRequest.setDurationCount(10);
+        temporalDurationBasedSpatialPropertiesStatisticRequest.setTemporalDurationType(ChronoUnit.MINUTES);
+        temporalDurationBasedSpatialPropertiesStatisticRequest.setDurationCount(1);
         temporalDurationBasedSpatialPropertiesStatisticRequest.setStatisticResultTemporalProperty("timeWindowProperty");
 
         temporalDurationBasedSpatialPropertiesStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.STREAM_BACK);
+        /*
+        temporalDurationBasedSpatialPropertiesStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.CONCEPTION_KIND);
+        HashMap<String,Object> map = new HashMap<>();
+        map.put(CoreRealmOperationConstant.ConceptionKindName,"TestDistConceptionKind");
+        map.put(CoreRealmOperationConstant.ConceptionEntitiesInsertMode, ConceptionEntitiesOperationConfig.ConceptionEntitiesInsertMode.APPEND);
+        map.put(CoreRealmOperationConstant.ConceptionEntityPKAttributeName,"DOCG_RealmGlobalUID");
+        */
 
         AnalysisProviderClient analysisProviderClient = new AnalysisProviderClient("127.0.0.1",9999);
         analysisProviderClient.openSession();
@@ -80,13 +88,14 @@ public class TemporalDurationBasedSpatialPropertiesStatisticAndAnalysisTest01 {
                     ResponseDataset responseDataset = (ResponseDataset)analyseResponse.getResponseData();
                     ArrayList<HashMap<String,Object>> datalist = responseDataset.getDataList();
 
+                    /*
                     for(HashMap<String,Object> currentDataRow : datalist){
                         System.out.println(currentDataRow);
                     }
+                    */
 
                     System.out.println(datalist.size());
-                    System.out.println( responseDataset.getPropertiesInfo());
-
+                    System.out.println(responseDataset.getPropertiesInfo());
                     try {
                         analysisProviderClient.closeSession();
                     } catch (ProviderClientInitException e) {
@@ -106,7 +115,7 @@ public class TemporalDurationBasedSpatialPropertiesStatisticAndAnalysisTest01 {
                 }
             };
 
-            analysisProviderClient.sendAnalyseRequest(temporalDurationBasedSpatialPropertiesStatisticRequest,analyseResponseCallback,600);
+            analysisProviderClient.sendAnalyseRequest(temporalDurationBasedSpatialPropertiesStatisticRequest,analyseResponseCallback,6000);
         } catch (AnalysisEngineRuntimeException | ProviderClientInitException e) {
             e.printStackTrace();
         }
