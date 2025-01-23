@@ -263,6 +263,54 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
+    public EntitiesOperationStatistics deleteConceptionEntitiesByUIDs(List<String> conceptionEntityUIDs) throws CoreRealmServiceEntityExploreException{
+        if(conceptionEntityUIDs == null || conceptionEntityUIDs.size() < 1){
+            logger.error("At least one conception entity UID is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("At least one conception entity UID is required");
+            throw e;
+        }
+
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+
+        String cypherProcedureString = "CALL apoc.periodic.commit(\n" +
+                "         'MATCH (targetNodes) WHERE id(targetNodes) IN "+conceptionEntityUIDs.toString()+" WITH targetNodes LIMIT $limit DETACH DELETE targetNodes RETURN count(*)',\n" +
+                "         {limit: 10000}\n" +
+                "       )\n" +
+                "       YIELD updates, executions, runtime, batches\n" +
+                "       RETURN updates, executions, runtime, batches;";
+        //logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            DataTransformer dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeWrite(dataTransformer,cypherProcedureString);
+
+            cypherProcedureString = "MATCH (targetNodes) WHERE id(targetNodes) IN " + conceptionEntityUIDs.toString()+"\n"+
+                    "RETURN COUNT(targetNodes) as operationResult";
+
+            GetLongFormatReturnValueTransformer getLongFormatReturnValueTransformer = new GetLongFormatReturnValueTransformer();
+            Object operationResult = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,cypherProcedureString);
+            if(operationResult!= null){
+                entitiesOperationStatistics.setSuccessItemsCount(conceptionEntityUIDs.size() - (Long)operationResult);
+                entitiesOperationStatistics.setFailItemsCount((Long)operationResult);
+
+            }
+            entitiesOperationStatistics.setOperationSummary("deleteConceptionEntitiesByUIDs operation success");
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        entitiesOperationStatistics.setFinishTime(new Date());
+        return entitiesOperationStatistics;
+    }
+
+    @Override
     public Double computeConceptionEntityPairTopologySimilarity(String conceptionEntityAUID, String conceptionEntityBUID,
                                                                 TopologySimilarityComputeAlgorithm topologySimilarityComputeAlgorithm,
                                                                 TopologySimilarityComputeDirection topologySimilarityComputeDirection,
