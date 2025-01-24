@@ -159,6 +159,55 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
+    public EntitiesOperationStatistics deleteRelationEntitiesByUIDs(List<String> relationEntityUIDs) throws CoreRealmServiceEntityExploreException {
+        if(relationEntityUIDs == null || relationEntityUIDs.size() < 1){
+            logger.error("At least one relation entity UID is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("At least one relation entity UID is required");
+            throw e;
+        }
+
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+
+        String cypherProcedureString = "CALL apoc.periodic.commit(\n" +
+                "         'MATCH (source)-[r]->(target) WHERE id(r) IN "+ relationEntityUIDs.toString()+" WITH r LIMIT $limit DELETE r RETURN count(*)',\n" +
+                "         {limit: 10000}\n" +
+                "       )\n" +
+                "       YIELD updates, executions, runtime, batches\n" +
+                "       RETURN updates, executions, runtime, batches;";
+        //logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            DataTransformer dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeWrite(dataTransformer,cypherProcedureString);
+
+            cypherProcedureString = "MATCH (source)-[r]->(target)\n" +
+                    "WHERE id(r) IN "+relationEntityUIDs.toString()+"\n" +
+                    "RETURN DISTINCT COUNT(r) as operationResult";
+
+            GetLongFormatReturnValueTransformer getLongFormatReturnValueTransformer = new GetLongFormatReturnValueTransformer();
+            Object operationResult = workingGraphOperationExecutor.executeRead(getLongFormatReturnValueTransformer,cypherProcedureString);
+            if(operationResult!= null){
+                entitiesOperationStatistics.setSuccessItemsCount(relationEntityUIDs.size() - (Long)operationResult);
+                entitiesOperationStatistics.setFailItemsCount((Long)operationResult);
+
+            }
+            entitiesOperationStatistics.setOperationSummary("deleteRelationEntitiesByUIDs operation success");
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        entitiesOperationStatistics.setFinishTime(new Date());
+        return entitiesOperationStatistics;
+    }
+
+    @Override
     public EntitiesOperationStatistics setRelationEntitiesAttributesByUIDs(List<String> relationEntityUIDs, Map<String, Object> attributes) throws CoreRealmServiceEntityExploreException {
         if(relationEntityUIDs == null || relationEntityUIDs.size() < 1){
             logger.error("At least one relation entity UID is required");

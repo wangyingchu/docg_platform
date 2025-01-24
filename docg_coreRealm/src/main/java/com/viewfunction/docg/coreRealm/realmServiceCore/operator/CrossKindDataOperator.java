@@ -66,6 +66,15 @@ public interface CrossKindDataOperator {
     public List<RelationEntity> getRelationEntitiesByUIDs(List<String> relationEntityUIDs) throws CoreRealmServiceEntityExploreException;
 
     /**
+     * 输入一组概念实体的唯一值ID，删除所有匹配的关系实体数据
+     *
+     * @param relationEntityUIDs List<String> 概念实体唯一值ID列表
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics deleteRelationEntitiesByUIDs(List<String> relationEntityUIDs) throws CoreRealmServiceEntityExploreException;
+
+    /**
      * 输入一组关系实体的唯一值ID，设置所有匹配的关系实体的指定的属性，如属性不存在新增属性，如属性已经存在，则用新的值覆盖原有属性
      *
      * @param relationEntityUIDs List<String> 关系实体唯一值ID列表
