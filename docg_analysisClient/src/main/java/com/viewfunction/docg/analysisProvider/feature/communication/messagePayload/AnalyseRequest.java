@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public class AnalyseRequest{
 
-    public enum ResponseDataForm {STREAM_BACK,DATA_SLICE,CONCEPTION_KIND}
+    public enum ResponseDataForm {STREAM_BACK,DATA_SLICE,CONCEPTION_KIND,MESSAGE_QUEUE,R_DATABASE,DS_and_RDB,DS_and_MQ,DS_and_CK}
     private String uuid;
     private long requestDateTime;
     private ResponseDataForm responseDataForm;
