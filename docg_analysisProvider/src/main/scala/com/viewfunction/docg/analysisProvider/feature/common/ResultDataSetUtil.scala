@@ -75,6 +75,16 @@ class ResultDataSetUtil {
           responseDataset.clearDataList()
         }
       }
+    }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.MESSAGE_QUEUE)){
+
+    }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.R_DATABASE)){
+
+    }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DS_and_RDB)){
+
+    }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DS_and_MQ)){
+
+    }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DS_and_CK)){
+
     }
     responseDataset
   }
