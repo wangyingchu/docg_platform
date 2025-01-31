@@ -4,6 +4,7 @@ import com.viewfunction.docg.analysisProvider.feature.communication.messagePaylo
 import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.ConceptionEntitiesOperationConfig.ConceptionEntitiesInsertMode
 import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.{CoreRealmOperationClientConstant, CoreRealmOperationUtil}
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.{DataSliceOperationClientConstant, DataSliceOperationConstant, DataSliceOperationUtil, ResponseDataSourceTech}
+import com.viewfunction.docg.analysisProvider.fundamental.messageQueue.{MessageQueueOperationClientConstant, MessageQueueOperationUtil}
 import org.apache.spark.sql.DataFrame
 
 import java.util
@@ -82,13 +83,24 @@ class ResultDataSetUtil {
         }
       }
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.MESSAGE_QUEUE)){
-
-
-
-
-
-
-
+      if(analyseRequest.getRequestParameters != null){
+        val requestParameters:util.HashMap[String,AnyRef] = analyseRequest.getRequestParameters.asInstanceOf[util.HashMap[String,AnyRef]]
+        var topicName:String = null
+        var topicTag:String = null
+        var topicProperties:java.util.HashMap[String,String] = null
+        if(requestParameters.containsKey(MessageQueueOperationClientConstant.MessageTopic)){
+          topicName = requestParameters.get(MessageQueueOperationClientConstant.MessageTopic).toString
+        }
+        if(requestParameters.containsKey(MessageQueueOperationClientConstant.MessageTag)){
+          topicTag = requestParameters.get(MessageQueueOperationClientConstant.MessageTag).toString
+        }
+        if(requestParameters.containsKey(MessageQueueOperationClientConstant.MessageProperties)){
+          topicProperties = requestParameters.get(MessageQueueOperationClientConstant.MessageProperties).asInstanceOf[java.util.HashMap[String,String]]
+        }
+        if(topicName != null){
+          MessageQueueOperationUtil.sendMessageFromResponseDataset(topicName,topicTag,topicProperties,responseDataset)
+        }
+      }
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.R_DATABASE)){
 
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DS_and_RDB)){
