@@ -18,6 +18,7 @@
         <sedona.version>1.7.0</sedona.version>
         <akka.version>2.7.0</akka.version>
         <derby.version>10.15.2.0</derby.version>
+        <rocketmq-client-java-version>5.0.7</rocketmq-client-java-version>
     </properties>
 
     <dependencies>
@@ -422,6 +423,28 @@
             <groupId>org.apache.derby</groupId>
             <artifactId>derbytools</artifactId>
             <version>${derby.version}</version>
+        </dependency>
+
+        <!--
+        RocketMQ Related
+        -->
+        <!-- https://mvnrepository.com/artifact/org.apache.rocketmq/rocketmq-client-java -->
+        <dependency>
+            <groupId>org.apache.rocketmq</groupId>
+            <artifactId>rocketmq-client-java</artifactId>
+            <version>${rocketmq-client-java-version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.16</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>2.0.54</version>
         </dependency>
     </dependencies>
 

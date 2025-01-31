@@ -1,6 +1,6 @@
 package com.viewfunction.docg.analysisProvider.fundamental.coreRealm;
 
-public class CoreRealmOperationConstant {
+public class CoreRealmOperationClientConstant {
 
   public static final String ConceptionKindName = "CONCEPTIONKIND_NAME";
   public static final String ConceptionEntitiesInsertMode = "CONCEPTION_ENTITIES_INSERT_MODE";
