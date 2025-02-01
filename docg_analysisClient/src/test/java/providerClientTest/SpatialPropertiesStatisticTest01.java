@@ -4,10 +4,12 @@ import com.viewfunction.docg.analysisProvider.client.AnalysisProviderClient;
 import com.viewfunction.docg.analysisProvider.client.exception.AnalysisEngineRuntimeException;
 import com.viewfunction.docg.analysisProvider.client.exception.ProviderClientInitException;
 import com.viewfunction.docg.analysisProvider.feature.communication.AnalyseResponseCallback;
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseRequest;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseResponse;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.ResponseDataset;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialCommonConfig;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.spatialAnalysis.SpatialPropertiesAggregateStatisticRequest;
+import com.viewfunction.docg.analysisProvider.fundamental.messageQueue.MessageQueueOperationClientConstant;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,15 +38,15 @@ public class SpatialPropertiesStatisticTest01 {
 
         HashMap<String,Object> map = new HashMap<>();
 
-        //spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.STREAM_BACK);
+        spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.STREAM_BACK);
 
         //spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.DS_and_MQ);
         //spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.DATA_SLICE);
         //map.put(DataSliceOperationClientConstant.DataSliceName, "R4d1306efb12f4182b5f828f58b519008");
 
         //spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.MESSAGE_QUEUE);
-        //map.put(MessageQueueOperationClientConstant.MessageTopic, "TestTopic");
-        //map.put(MessageQueueOperationClientConstant.MessageTag, "messageTag");
+        map.put(MessageQueueOperationClientConstant.MessageTopic, "TestTopic");
+        map.put(MessageQueueOperationClientConstant.MessageTag, "messageTag");
 
         //spatialPropertiesAggregateStatisticRequest.setResponseDataForm(AnalyseRequest.ResponseDataForm.CONCEPTION_KIND);
         //map.put(CoreRealmOperationClientConstant.ConceptionKindName,"TestConceptionKind");
