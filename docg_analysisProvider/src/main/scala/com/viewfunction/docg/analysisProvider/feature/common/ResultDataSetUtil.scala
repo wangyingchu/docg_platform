@@ -1,6 +1,6 @@
 package com.viewfunction.docg.analysisProvider.feature.common
 
-import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.{AnalyseRequest, AnalyseResponse}
+import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.{AnalyseRequest, AnalyseResponse, ResponseDataset}
 import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.ConceptionEntitiesOperationConfig.ConceptionEntitiesInsertMode
 import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.{CoreRealmOperationClientConstant, CoreRealmOperationUtil}
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.{DataSliceOperationClientConstant, DataSliceOperationConstant, DataSliceOperationUtil, ResponseDataSourceTech}
@@ -83,24 +83,8 @@ class ResultDataSetUtil {
         }
       }
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.MESSAGE_QUEUE)){
-      if(analyseRequest.getRequestParameters != null){
-        val requestParameters:util.HashMap[String,AnyRef] = analyseRequest.getRequestParameters.asInstanceOf[util.HashMap[String,AnyRef]]
-        var topicName:String = null
-        var topicTag:String = null
-        var topicProperties:java.util.HashMap[String,String] = null
-        if(requestParameters.containsKey(MessageQueueOperationClientConstant.MessageTopic)){
-          topicName = requestParameters.get(MessageQueueOperationClientConstant.MessageTopic).toString
-        }
-        if(requestParameters.containsKey(MessageQueueOperationClientConstant.MessageTag)){
-          topicTag = requestParameters.get(MessageQueueOperationClientConstant.MessageTag).toString
-        }
-        if(requestParameters.containsKey(MessageQueueOperationClientConstant.MessageProperties)){
-          topicProperties = requestParameters.get(MessageQueueOperationClientConstant.MessageProperties).asInstanceOf[java.util.HashMap[String,String]]
-        }
-        if(topicName != null){
-          MessageQueueOperationUtil.sendMessageFromResponseDataset(topicName,topicTag,topicProperties,responseDataset)
-        }
-      }
+      sendToMessageQueue(analyseRequest,responseDataset)
+      responseDataset.clearDataList()
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.R_DATABASE)){
 
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DS_and_RDB)){
@@ -181,8 +165,43 @@ class ResultDataSetUtil {
           responseDataset.clearDataList()
         }
       }
+    }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.MESSAGE_QUEUE)){
+      sendToMessageQueue(analyseRequest,responseDataset)
+      responseDataset.clearDataList()
+    }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.R_DATABASE)){
+
+    }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DS_and_RDB)){
+
+    }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DS_and_MQ)){
+
+    }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DS_and_CK)){
+
     }
     responseDataset
   }
+
+  /* utility functions */
+  def sendToMessageQueue(analyseRequest:AnalyseRequest,responseDataset:ResponseDataset):Unit = {
+    if(analyseRequest.getRequestParameters != null){
+      val requestParameters:util.HashMap[String,AnyRef] = analyseRequest.getRequestParameters.asInstanceOf[util.HashMap[String,AnyRef]]
+      var topicName:String = null
+      var topicTag:String = null
+      var topicProperties:java.util.HashMap[String,String] = null
+      if(requestParameters.containsKey(MessageQueueOperationClientConstant.MessageTopic)){
+        topicName = requestParameters.get(MessageQueueOperationClientConstant.MessageTopic).toString
+      }
+      if(requestParameters.containsKey(MessageQueueOperationClientConstant.MessageTag)){
+        topicTag = requestParameters.get(MessageQueueOperationClientConstant.MessageTag).toString
+      }
+      if(requestParameters.containsKey(MessageQueueOperationClientConstant.MessageProperties)){
+        topicProperties = requestParameters.get(MessageQueueOperationClientConstant.MessageProperties).asInstanceOf[java.util.HashMap[String,String]]
+      }
+      if(topicName != null){
+        MessageQueueOperationUtil.sendMessageFromResponseDataset(topicName,topicTag,topicProperties,responseDataset)
+      }
+    }
+  }
+
+
 
 }
