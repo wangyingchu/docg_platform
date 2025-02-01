@@ -50,32 +50,8 @@ class ResultDataSetUtil {
       sendToDataSlice(globalDataAccessor,analyseRequest,analyseResponse,responseDataset,ResponseDataSourceTech.SPARK)
       responseDataset.clearDataList()
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.CONCEPTION_KIND)){
-      if(analyseRequest.getRequestParameters != null){
-        val requestParameters:util.HashMap[String,AnyRef] = analyseRequest.getRequestParameters.asInstanceOf[util.HashMap[String,AnyRef]]
-        if(requestParameters.containsKey(CoreRealmOperationClientConstant.ConceptionKindName)){
-          val targetConceptionKind:String = requestParameters.get(CoreRealmOperationClientConstant.ConceptionKindName).toString
-
-          var conceptionEntitiesInsertMode = ConceptionEntitiesInsertMode.APPEND
-          if(requestParameters.containsKey(CoreRealmOperationClientConstant.ConceptionEntitiesInsertMode)){
-            val requestInsertMode:String = requestParameters.get(CoreRealmOperationClientConstant.ConceptionEntitiesInsertMode).toString
-            if(ConceptionEntitiesInsertMode.CLEAN_INSERT.toString.equals(requestInsertMode)){
-              conceptionEntitiesInsertMode = ConceptionEntitiesInsertMode.CLEAN_INSERT
-            }else if(ConceptionEntitiesInsertMode.OVERWRITE.toString.equals(requestInsertMode)){
-              conceptionEntitiesInsertMode = ConceptionEntitiesInsertMode.OVERWRITE
-            }else if(ConceptionEntitiesInsertMode.APPEND.toString.equals(requestInsertMode)){
-              conceptionEntitiesInsertMode = ConceptionEntitiesInsertMode.APPEND
-            }else{}
-          }
-
-          var conceptionEntityPKAttributeName:String = null
-          if(requestParameters.containsKey(CoreRealmOperationClientConstant.ConceptionEntityPKAttributeName)){
-            conceptionEntityPKAttributeName = requestParameters.get(CoreRealmOperationClientConstant.ConceptionEntityPKAttributeName).toString
-          }
-
-          CoreRealmOperationUtil.syncConceptionKindFromResponseDataset(targetConceptionKind,responseDataset,conceptionEntitiesInsertMode,conceptionEntityPKAttributeName)
-          responseDataset.clearDataList()
-        }
-      }
+      sendToConceptionKind(analyseRequest,responseDataset)
+      responseDataset.clearDataList()
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.MESSAGE_QUEUE)){
       sendToMessageQueue(analyseRequest,responseDataset)
       responseDataset.clearDataList()
@@ -84,9 +60,13 @@ class ResultDataSetUtil {
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DS_and_RDB)){
 
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DS_and_MQ)){
-
+      sendToDataSlice(globalDataAccessor,analyseRequest,analyseResponse,responseDataset,ResponseDataSourceTech.SPARK)
+      sendToMessageQueue(analyseRequest,responseDataset)
+      responseDataset.clearDataList()
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DS_and_CK)){
-
+      sendToDataSlice(globalDataAccessor,analyseRequest,analyseResponse,responseDataset,ResponseDataSourceTech.SPARK)
+      sendToConceptionKind(analyseRequest,responseDataset)
+      responseDataset.clearDataList()
     }
     responseDataset
   }
@@ -126,32 +106,8 @@ class ResultDataSetUtil {
       sendToDataSlice(globalDataAccessor,analyseRequest,analyseResponse,responseDataset,ResponseDataSourceTech.SPARK)
       responseDataset.clearDataList()
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.CONCEPTION_KIND)){
-      if(analyseRequest.getRequestParameters != null){
-        val requestParameters:util.HashMap[String,AnyRef] = analyseRequest.getRequestParameters.asInstanceOf[util.HashMap[String,AnyRef]]
-        if(requestParameters.containsKey(CoreRealmOperationClientConstant.ConceptionKindName)){
-          val targetConceptionKind:String = requestParameters.get(CoreRealmOperationClientConstant.ConceptionKindName).toString
-
-          var conceptionEntitiesInsertMode = ConceptionEntitiesInsertMode.APPEND
-          if(requestParameters.containsKey(CoreRealmOperationClientConstant.ConceptionEntitiesInsertMode)){
-            val requestInsertMode:String = requestParameters.get(CoreRealmOperationClientConstant.ConceptionEntitiesInsertMode).toString
-            if(ConceptionEntitiesInsertMode.CLEAN_INSERT.toString.equals(requestInsertMode)){
-              conceptionEntitiesInsertMode = ConceptionEntitiesInsertMode.CLEAN_INSERT
-            }else if(ConceptionEntitiesInsertMode.OVERWRITE.toString.equals(requestInsertMode)){
-              conceptionEntitiesInsertMode = ConceptionEntitiesInsertMode.OVERWRITE
-            }else if(ConceptionEntitiesInsertMode.APPEND.toString.equals(requestInsertMode)){
-              conceptionEntitiesInsertMode = ConceptionEntitiesInsertMode.APPEND
-            }else{}
-          }
-
-          var conceptionEntityPKAttributeName:String = null
-          if(requestParameters.containsKey(CoreRealmOperationClientConstant.ConceptionEntityPKAttributeName)){
-            conceptionEntityPKAttributeName = requestParameters.get(CoreRealmOperationClientConstant.ConceptionEntityPKAttributeName).toString
-          }
-
-          CoreRealmOperationUtil.syncConceptionKindFromResponseDataset(targetConceptionKind,responseDataset,conceptionEntitiesInsertMode,conceptionEntityPKAttributeName)
-          responseDataset.clearDataList()
-        }
-      }
+      sendToConceptionKind(analyseRequest,responseDataset)
+      responseDataset.clearDataList()
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.MESSAGE_QUEUE)){
       sendToMessageQueue(analyseRequest,responseDataset)
       responseDataset.clearDataList()
@@ -160,9 +116,13 @@ class ResultDataSetUtil {
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DS_and_RDB)){
 
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DS_and_MQ)){
-
+      sendToDataSlice(globalDataAccessor,analyseRequest,analyseResponse,responseDataset,ResponseDataSourceTech.SPARK)
+      sendToMessageQueue(analyseRequest,responseDataset)
+      responseDataset.clearDataList()
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DS_and_CK)){
-
+      sendToDataSlice(globalDataAccessor,analyseRequest,analyseResponse,responseDataset,ResponseDataSourceTech.SPARK)
+      sendToConceptionKind(analyseRequest,responseDataset)
+      responseDataset.clearDataList()
     }
     responseDataset
   }
@@ -205,6 +165,34 @@ class ResultDataSetUtil {
       }
     }
     DataSliceOperationUtil.syncDataSliceFromResponseDataset(globalDataAccessor.dataService,dataSliceName,DataSliceOperationConstant.AnalysisResponseDataFormGroup,responseDataset, responseDataSourceTech,createNewSlice)
+  }
+
+  private def sendToConceptionKind(analyseRequest:AnalyseRequest,responseDataset:ResponseDataset):Unit = {
+    if(analyseRequest.getRequestParameters != null){
+      val requestParameters:util.HashMap[String,AnyRef] = analyseRequest.getRequestParameters.asInstanceOf[util.HashMap[String,AnyRef]]
+      if(requestParameters.containsKey(CoreRealmOperationClientConstant.ConceptionKindName)){
+        val targetConceptionKind:String = requestParameters.get(CoreRealmOperationClientConstant.ConceptionKindName).toString
+
+        var conceptionEntitiesInsertMode = ConceptionEntitiesInsertMode.APPEND
+        if(requestParameters.containsKey(CoreRealmOperationClientConstant.ConceptionEntitiesInsertMode)){
+          val requestInsertMode:String = requestParameters.get(CoreRealmOperationClientConstant.ConceptionEntitiesInsertMode).toString
+          if(ConceptionEntitiesInsertMode.CLEAN_INSERT.toString.equals(requestInsertMode)){
+            conceptionEntitiesInsertMode = ConceptionEntitiesInsertMode.CLEAN_INSERT
+          }else if(ConceptionEntitiesInsertMode.OVERWRITE.toString.equals(requestInsertMode)){
+            conceptionEntitiesInsertMode = ConceptionEntitiesInsertMode.OVERWRITE
+          }else if(ConceptionEntitiesInsertMode.APPEND.toString.equals(requestInsertMode)){
+            conceptionEntitiesInsertMode = ConceptionEntitiesInsertMode.APPEND
+          }else{}
+        }
+
+        var conceptionEntityPKAttributeName:String = null
+        if(requestParameters.containsKey(CoreRealmOperationClientConstant.ConceptionEntityPKAttributeName)){
+          conceptionEntityPKAttributeName = requestParameters.get(CoreRealmOperationClientConstant.ConceptionEntityPKAttributeName).toString
+        }
+
+        CoreRealmOperationUtil.syncConceptionKindFromResponseDataset(targetConceptionKind,responseDataset,conceptionEntitiesInsertMode,conceptionEntityPKAttributeName)
+      }
+    }
   }
 
 }
