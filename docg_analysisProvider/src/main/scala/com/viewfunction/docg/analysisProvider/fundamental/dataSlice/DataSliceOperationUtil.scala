@@ -15,7 +15,7 @@ object DataSliceOperationUtil {
   val massDataOperationParallelism = AnalysisProviderApplicationUtil.getApplicationProperty("massDataOperationParallelism")
 
   def syncDataSliceFromResponseDataset(dataService:DataService, dataSliceName:String, dataSliceGroup:String,
-                                       responseDataset:ResponseDataset, responseDataSourceTech:ResponseDataSourceTech):Unit = {
+                                       responseDataset:ResponseDataset, responseDataSourceTech:ResponseDataSourceTech,createNewSlice:Boolean):Unit = {
     val dataSlicePropertiesDefinitions:java.util.Map[String,String] = responseDataset.getPropertiesInfo
     val dataSlicePK:java.util.ArrayList[String] = new java.util.ArrayList[String]()
     dataSlicePK.add(DataSliceOperationConstant.TempResponseDataSlicePK)
@@ -30,7 +30,12 @@ object DataSliceOperationUtil {
       dataSliceProperties.add(propertyName)
     })
     dataSlicePropertyMap.put(DataSliceOperationConstant.TempResponseDataSlicePK,DataSlicePropertyType.STRING)
-    val resultDataSlice:DataSlice = dataService.createGridDataSlice(dataSliceName,dataSliceGroup,dataSlicePropertyMap,dataSlicePK)
+    var resultDataSlice:DataSlice = null
+    if(createNewSlice){
+      resultDataSlice = dataService.createGridDataSlice(dataSliceName,dataSliceGroup,dataSlicePropertyMap,dataSlicePK)
+    }else{
+      resultDataSlice = dataService.getDataSlice(dataSliceName)
+    }
     val dataList: java.util.ArrayList[java.util.HashMap[String,Object]]  = responseDataset.getDataList
     val dataSliceOperationResult:DataSliceOperationResult = MassDataOperationUtil.massInsertSliceData(dataService,dataSliceName,dataList.asInstanceOf[util.List[util.Map[String,Object]]],
     dataSliceProperties,DataSliceOperationConstant.TempResponseDataSlicePK,massDataOperationParallelism.toInt)

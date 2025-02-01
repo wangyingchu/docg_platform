@@ -3,6 +3,7 @@ package com.viewfunction.docg.analysisProvider.feature.common
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.{AnalyseRequest, AnalyseResponse, ResponseDataset}
 import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.ConceptionEntitiesOperationConfig.ConceptionEntitiesInsertMode
 import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.{CoreRealmOperationClientConstant, CoreRealmOperationUtil}
+import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.ResponseDataSourceTech.ResponseDataSourceTech
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.{DataSliceOperationClientConstant, DataSliceOperationConstant, DataSliceOperationUtil, ResponseDataSourceTech}
 import com.viewfunction.docg.analysisProvider.fundamental.messageQueue.{MessageQueueOperationClientConstant, MessageQueueOperationUtil}
 import org.apache.spark.sql.DataFrame
@@ -46,14 +47,7 @@ class ResultDataSetUtil {
     if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.STREAM_BACK)){
       //need do nothing
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DATA_SLICE)){
-      var dataSliceName:String = analyseResponse.getResponseUUID
-      if(analyseRequest.getRequestParameters != null){
-        val requestParameters:util.HashMap[String,AnyRef] = analyseRequest.getRequestParameters.asInstanceOf[util.HashMap[String,AnyRef]]
-        if(requestParameters.containsKey(DataSliceOperationClientConstant.DataSliceName)){
-          dataSliceName = requestParameters.get(DataSliceOperationClientConstant.DataSliceName).toString
-        }
-      }
-      DataSliceOperationUtil.syncDataSliceFromResponseDataset(globalDataAccessor.dataService,dataSliceName,DataSliceOperationConstant.AnalysisResponseDataFormGroup,responseDataset,ResponseDataSourceTech.SPARK)
+      sendToDataSlice(globalDataAccessor,analyseRequest,analyseResponse,responseDataset,ResponseDataSourceTech.SPARK)
       responseDataset.clearDataList()
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.CONCEPTION_KIND)){
       if(analyseRequest.getRequestParameters != null){
@@ -129,14 +123,7 @@ class ResultDataSetUtil {
     if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.STREAM_BACK)){
       //need do nothing
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DATA_SLICE)){
-      var dataSliceName:String = analyseResponse.getResponseUUID
-      if(analyseRequest.getRequestParameters != null){
-        val requestParameters:util.HashMap[String,AnyRef] = analyseRequest.getRequestParameters.asInstanceOf[util.HashMap[String,AnyRef]]
-        if(requestParameters.containsKey(DataSliceOperationClientConstant.DataSliceName)){
-          dataSliceName = requestParameters.get(DataSliceOperationClientConstant.DataSliceName).toString
-        }
-      }
-      DataSliceOperationUtil.syncDataSliceFromResponseDataset(globalDataAccessor.dataService,dataSliceName,DataSliceOperationConstant.AnalysisResponseDataFormGroup,responseDataset,ResponseDataSourceTech.SPARK)
+      sendToDataSlice(globalDataAccessor,analyseRequest,analyseResponse,responseDataset,ResponseDataSourceTech.SPARK)
       responseDataset.clearDataList()
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.CONCEPTION_KIND)){
       if(analyseRequest.getRequestParameters != null){
@@ -181,7 +168,8 @@ class ResultDataSetUtil {
   }
 
   /* utility functions */
-  def sendToMessageQueue(analyseRequest:AnalyseRequest,responseDataset:ResponseDataset):Unit = {
+  private def sendToMessageQueue(analyseRequest:AnalyseRequest,
+                                 responseDataset:ResponseDataset):Unit = {
     if(analyseRequest.getRequestParameters != null){
       val requestParameters:util.HashMap[String,AnyRef] = analyseRequest.getRequestParameters.asInstanceOf[util.HashMap[String,AnyRef]]
       var topicName:String = null
@@ -202,6 +190,21 @@ class ResultDataSetUtil {
     }
   }
 
-
+  private def sendToDataSlice(globalDataAccessor:GlobalDataAccessor,
+                      analyseRequest:AnalyseRequest,
+                      analyseResponse:AnalyseResponse,
+                      responseDataset:ResponseDataset,
+                      responseDataSourceTech:ResponseDataSourceTech):Unit = {
+    var dataSliceName:String = analyseResponse.getResponseUUID
+    var createNewSlice = true
+    if(analyseRequest.getRequestParameters != null){
+      val requestParameters:util.HashMap[String,AnyRef] = analyseRequest.getRequestParameters.asInstanceOf[util.HashMap[String,AnyRef]]
+      if(requestParameters.containsKey(DataSliceOperationClientConstant.DataSliceName)){
+        dataSliceName = requestParameters.get(DataSliceOperationClientConstant.DataSliceName).toString
+        createNewSlice = false
+      }
+    }
+    DataSliceOperationUtil.syncDataSliceFromResponseDataset(globalDataAccessor.dataService,dataSliceName,DataSliceOperationConstant.AnalysisResponseDataFormGroup,responseDataset, responseDataSourceTech,createNewSlice)
+  }
 
 }
