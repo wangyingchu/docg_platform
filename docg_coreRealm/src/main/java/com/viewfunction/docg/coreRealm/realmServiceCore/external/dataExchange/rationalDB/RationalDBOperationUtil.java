@@ -80,6 +80,7 @@ public class RationalDBOperationUtil {
             case OBJECT -> preparedStatement.setObject(index, propertyValue);
             case TIME -> preparedStatement.setTime(index, (Time) propertyValue);
             case TIMESTAMP -> preparedStatement.setTimestamp(index, (Timestamp) propertyValue);
+            case NULL -> preparedStatement.setNull(index, Types.NULL);
         }
     }
 

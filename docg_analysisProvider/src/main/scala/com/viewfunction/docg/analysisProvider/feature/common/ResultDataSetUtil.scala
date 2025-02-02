@@ -6,7 +6,7 @@ import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.{CoreRealmOp
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.ResponseDataSourceTech.ResponseDataSourceTech
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.{DataSliceOperationClientConstant, DataSliceOperationConstant, DataSliceOperationUtil, ResponseDataSourceTech}
 import com.viewfunction.docg.analysisProvider.fundamental.messageQueue.{MessageQueueOperationClientConstant, MessageQueueOperationUtil}
-import com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.rationalDB.RationalDBOperationUtil
+import com.viewfunction.docg.analysisProvider.fundamental.relationalDatabase.{RelationalDatabaseOperationConstant, RelationalDatabaseOperationUtil}
 import org.apache.spark.sql.DataFrame
 
 import java.util
@@ -57,9 +57,12 @@ class ResultDataSetUtil {
       sendToMessageQueue(analyseRequest,responseDataset)
       responseDataset.clearDataList()
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.R_DATABASE)){
-
+      sendToRelationalDB(analyseRequest,responseDataset)
+      responseDataset.clearDataList()
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DS_and_RDB)){
-
+      sendToDataSlice(globalDataAccessor,analyseRequest,analyseResponse,responseDataset,ResponseDataSourceTech.SPARK)
+      sendToRelationalDB(analyseRequest,responseDataset)
+      responseDataset.clearDataList()
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DS_and_MQ)){
       sendToDataSlice(globalDataAccessor,analyseRequest,analyseResponse,responseDataset,ResponseDataSourceTech.SPARK)
       sendToMessageQueue(analyseRequest,responseDataset)
@@ -113,9 +116,12 @@ class ResultDataSetUtil {
       sendToMessageQueue(analyseRequest,responseDataset)
       responseDataset.clearDataList()
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.R_DATABASE)){
-
+      sendToRelationalDB(analyseRequest,responseDataset)
+      responseDataset.clearDataList()
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DS_and_RDB)){
-
+      sendToDataSlice(globalDataAccessor,analyseRequest,analyseResponse,responseDataset,ResponseDataSourceTech.SPARK)
+      sendToRelationalDB(analyseRequest,responseDataset)
+      responseDataset.clearDataList()
     }else if(responseDataFormValue.equals(AnalyseRequest.ResponseDataForm.DS_and_MQ)){
       sendToDataSlice(globalDataAccessor,analyseRequest,analyseResponse,responseDataset,ResponseDataSourceTech.SPARK)
       sendToMessageQueue(analyseRequest,responseDataset)
@@ -197,9 +203,22 @@ class ResultDataSetUtil {
   }
   private def sendToRelationalDB(analyseRequest:AnalyseRequest,
                                  responseDataset:ResponseDataset):Unit = {
-
-    RationalDBOperationUtil.insertBatchData(null, null, null, null)
-
+    if(analyseRequest.getRequestParameters != null){
+      val requestParameters:util.HashMap[String,AnyRef] = analyseRequest.getRequestParameters.asInstanceOf[util.HashMap[String,AnyRef]]
+      var databaseName:String = null
+      var tableName:String = null
+      if(requestParameters.containsKey(RelationalDatabaseOperationConstant.DatabaseName)){
+        databaseName = requestParameters.get(RelationalDatabaseOperationConstant.DatabaseName).toString
+      }
+      if(requestParameters.containsKey(RelationalDatabaseOperationConstant.TableName)){
+        tableName = requestParameters.get(RelationalDatabaseOperationConstant.TableName).toString
+      }
+      if(databaseName != null && tableName != null){
+        val dataTablePropertiesDefinitions:java.util.Map[String,String] = responseDataset.getPropertiesInfo
+        val dataList: java.util.ArrayList[java.util.Map[String,Object]] = responseDataset.getDataList.asInstanceOf[java.util.ArrayList[java.util.Map[String,Object]]]
+        RelationalDatabaseOperationUtil.syncDatabaseFromResponseDataset(databaseName,tableName,dataTablePropertiesDefinitions,dataList,ResponseDataSourceTech.SPARK)
+      }
+    }
   }
 
 }
