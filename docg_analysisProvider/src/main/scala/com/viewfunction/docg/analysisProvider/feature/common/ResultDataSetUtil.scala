@@ -6,6 +6,7 @@ import com.viewfunction.docg.analysisProvider.fundamental.coreRealm.{CoreRealmOp
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.ResponseDataSourceTech.ResponseDataSourceTech
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.{DataSliceOperationClientConstant, DataSliceOperationConstant, DataSliceOperationUtil, ResponseDataSourceTech}
 import com.viewfunction.docg.analysisProvider.fundamental.messageQueue.{MessageQueueOperationClientConstant, MessageQueueOperationUtil}
+import com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.rationalDB.RationalDBOperationUtil
 import org.apache.spark.sql.DataFrame
 
 import java.util
@@ -193,6 +194,12 @@ class ResultDataSetUtil {
         CoreRealmOperationUtil.syncConceptionKindFromResponseDataset(targetConceptionKind,responseDataset,conceptionEntitiesInsertMode,conceptionEntityPKAttributeName)
       }
     }
+  }
+  private def sendToRelationalDB(analyseRequest:AnalyseRequest,
+                                 responseDataset:ResponseDataset):Unit = {
+
+    RationalDBOperationUtil.insertBatchData(null, null, null, null)
+
   }
 
 }
