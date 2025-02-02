@@ -23,7 +23,7 @@ public class RationalDataBaseOperationTest {
 
         List<Map<String,Object>> batchData = new ArrayList<>();
 
-        for(int i=0;i<10000;i++){
+        for(int i=0;i<25432;i++){
             Map<String,Object> map = new HashMap<>();
             map.put("k1",Short.valueOf("12"));
             map.put("k2",1.01+i);

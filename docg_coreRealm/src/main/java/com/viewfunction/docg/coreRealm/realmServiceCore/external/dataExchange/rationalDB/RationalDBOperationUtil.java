@@ -1,6 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.rationalDB;
 
 import com.google.common.collect.Lists;
+import com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.config.ExternalDataExchangePropertiesHandler;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -11,39 +12,11 @@ public class RationalDBOperationUtil {
 
     private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     private static final String URL_PATTERN = "jdbc:mysql://%s:%d/%s?useServerPrepStmts=true&useLocalSessionState=true&rewriteBatchedStatements=true&cachePrepStmts=true&prepStmtCacheSqlLimit=99999&prepStmtCacheSize=50&sessionVariables=group_commit=async_mode";
-    private static final String HOST = "127.0.0.1";
-    private static final int PORT = 9030;
-    private static final String USER = "root";
-    private static final String PASSWD = null;
-    private static final int INSERT_BATCH_SIZE = 100;
-
-    public static void main(String[] args) {
-
-        String dbName = "demo";
-        String tableName = "mytable";
-
-        Map<String,RationalDBPropertyType> propertiesDataTypeMap = new HashMap<>();
-        propertiesDataTypeMap.put("k1",RationalDBPropertyType.SHORT);
-        propertiesDataTypeMap.put("k2",RationalDBPropertyType.DOUBLE);
-        propertiesDataTypeMap.put("k3",RationalDBPropertyType.STRING);
-        propertiesDataTypeMap.put("k4",RationalDBPropertyType.INT);
-
-        List<Map<String,Object>> batchData = new ArrayList<>();
-
-        for(int i=0;i<49234;i++){
-            Map<String,Object> map = new HashMap<>();
-            map.put("k1",Short.valueOf("12"));
-            map.put("k2",1.01+i);
-            map.put("k3","k3");
-            map.put("k4",1000+i);
-            batchData.add(map);
-        }
-        System.out.println(new java.util.Date());
-
-        insertBatchData(dbName,tableName, propertiesDataTypeMap, batchData);
-        System.out.println(new java.util.Date());
-
-    }
+    private static final String HOST = ExternalDataExchangePropertiesHandler.getPropertyValue(ExternalDataExchangePropertiesHandler.APACHE_DORIS_HOST);
+    private static final int PORT = Integer.valueOf(ExternalDataExchangePropertiesHandler.getPropertyValue(ExternalDataExchangePropertiesHandler.APACHE_DORIS_PORT));
+    private static final String USER = ExternalDataExchangePropertiesHandler.getPropertyValue(ExternalDataExchangePropertiesHandler.APACHE_DORIS_USER);
+    private static final String PASSWD = ExternalDataExchangePropertiesHandler.getPropertyValue(ExternalDataExchangePropertiesHandler.APACHE_DORIS_PASSWD);
+    private static final int INSERT_BATCH_SIZE = Integer.valueOf(ExternalDataExchangePropertiesHandler.getPropertyValue(ExternalDataExchangePropertiesHandler.APACHE_DORIS_INSERT_BATCH_SIZE));
 
     public static void insertBatchData(String dbName, String tableName, Map<String,RationalDBPropertyType> propertiesDataTypeMap, List<Map<String,Object>> batchData) {
         if(dbName != null && tableName != null && propertiesDataTypeMap != null && batchData != null) {
