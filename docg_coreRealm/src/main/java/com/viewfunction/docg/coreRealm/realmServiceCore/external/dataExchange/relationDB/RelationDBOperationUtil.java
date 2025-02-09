@@ -1,4 +1,4 @@
-package com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.rationalDB;
+package com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.relationDB;
 
 import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.config.ExternalDataExchangePropertiesHandler;
@@ -8,7 +8,7 @@ import java.sql.Date;
 import java.sql.*;
 import java.util.*;
 
-public class RationalDBOperationUtil {
+public class RelationDBOperationUtil {
 
     private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     private static final String URL_PATTERN = "jdbc:mysql://%s:%d/%s?useServerPrepStmts=true&useLocalSessionState=true&rewriteBatchedStatements=true&cachePrepStmts=true&prepStmtCacheSqlLimit=99999&prepStmtCacheSize=50&sessionVariables=group_commit=async_mode";
@@ -18,7 +18,7 @@ public class RationalDBOperationUtil {
     private static final String PASSWD = ExternalDataExchangePropertiesHandler.getPropertyValue(ExternalDataExchangePropertiesHandler.APACHE_DORIS_PASSWD);
     private static final int INSERT_BATCH_SIZE = Integer.valueOf(ExternalDataExchangePropertiesHandler.getPropertyValue(ExternalDataExchangePropertiesHandler.APACHE_DORIS_INSERT_BATCH_SIZE));
 
-    public static void insertBatchData(String dbName, String tableName, Map<String,RationalDBPropertyType> propertiesDataTypeMap, List<Map<String,Object>> batchData) {
+    public static void insertBatchData(String dbName, String tableName, Map<String, RelationDBPropertyType> propertiesDataTypeMap, List<Map<String,Object>> batchData) {
         if(dbName != null && tableName != null && propertiesDataTypeMap != null && batchData != null) {
             Set<String> sortedSet = new TreeSet<>(propertiesDataTypeMap.keySet());
             String insertSQL = generateInsertSql(tableName, sortedSet);
@@ -45,7 +45,7 @@ public class RationalDBOperationUtil {
         }
     }
 
-    private static int[] executeInsertBatch(PreparedStatement preparedStatement, Set<String> sortedPropertiesSet,Map<String,RationalDBPropertyType> propertiesDataType,List<Map<String,Object>> dataList) throws SQLException {
+    private static int[] executeInsertBatch(PreparedStatement preparedStatement, Set<String> sortedPropertiesSet, Map<String, RelationDBPropertyType> propertiesDataType, List<Map<String,Object>> dataList) throws SQLException {
         for(Map<String,Object> currentData:dataList){
             setPreparedStatementData(preparedStatement,sortedPropertiesSet,propertiesDataType,currentData);
             preparedStatement.addBatch();
@@ -53,18 +53,18 @@ public class RationalDBOperationUtil {
         return preparedStatement.executeBatch();
     }
 
-    private static void setPreparedStatementData(PreparedStatement preparedStatement, Set<String> sortedPropertiesSet,Map<String,RationalDBPropertyType> propertiesDataType,Map<String,Object> currentData) throws SQLException {
+    private static void setPreparedStatementData(PreparedStatement preparedStatement, Set<String> sortedPropertiesSet, Map<String, RelationDBPropertyType> propertiesDataType, Map<String,Object> currentData) throws SQLException {
         int propertiesIndex = 1;
         for(String currentProperty:sortedPropertiesSet){
             Object propertyValue = currentData.get(currentProperty);
-            RationalDBPropertyType propertyType = propertiesDataType.get(currentProperty);
+            RelationDBPropertyType propertyType = propertiesDataType.get(currentProperty);
             preparedStatement.setString(propertiesIndex,currentData.get(currentProperty).toString());
             setPropertyValue(propertiesIndex,propertyType,propertyValue,preparedStatement);
             propertiesIndex++;
         }
     }
 
-    private static void setPropertyValue(int index, RationalDBPropertyType propertyType,Object propertyValue, PreparedStatement preparedStatement) throws SQLException {
+    private static void setPropertyValue(int index, RelationDBPropertyType propertyType, Object propertyValue, PreparedStatement preparedStatement) throws SQLException {
         switch (propertyType){
             case INT -> preparedStatement.setInt(index, (Integer)propertyValue);
             case DOUBLE -> preparedStatement.setDouble(index, (Double) propertyValue);

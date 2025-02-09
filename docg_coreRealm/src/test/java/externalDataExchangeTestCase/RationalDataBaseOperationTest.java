@@ -1,7 +1,7 @@
 package externalDataExchangeTestCase;
 
-import com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.rationalDB.RationalDBOperationUtil;
-import com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.rationalDB.RationalDBPropertyType;
+import com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.relationDB.RelationDBOperationUtil;
+import com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.relationDB.RelationDBPropertyType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,11 +15,11 @@ public class RationalDataBaseOperationTest {
         String dbName = "demo";
         String tableName = "mytable";
 
-        Map<String, RationalDBPropertyType> propertiesDataTypeMap = new HashMap<>();
-        propertiesDataTypeMap.put("k1",RationalDBPropertyType.SHORT);
-        propertiesDataTypeMap.put("k2",RationalDBPropertyType.DOUBLE);
-        propertiesDataTypeMap.put("k3",RationalDBPropertyType.STRING);
-        propertiesDataTypeMap.put("k4",RationalDBPropertyType.INT);
+        Map<String, RelationDBPropertyType> propertiesDataTypeMap = new HashMap<>();
+        propertiesDataTypeMap.put("k1", RelationDBPropertyType.SHORT);
+        propertiesDataTypeMap.put("k2", RelationDBPropertyType.DOUBLE);
+        propertiesDataTypeMap.put("k3", RelationDBPropertyType.STRING);
+        propertiesDataTypeMap.put("k4", RelationDBPropertyType.INT);
 
         List<Map<String,Object>> batchData = new ArrayList<>();
 
@@ -33,7 +33,7 @@ public class RationalDataBaseOperationTest {
         }
         System.out.println(new java.util.Date());
 
-        RationalDBOperationUtil.insertBatchData(dbName,tableName, propertiesDataTypeMap, batchData);
+        RelationDBOperationUtil.insertBatchData(dbName,tableName, propertiesDataTypeMap, batchData);
         System.out.println(new java.util.Date());
 
     }

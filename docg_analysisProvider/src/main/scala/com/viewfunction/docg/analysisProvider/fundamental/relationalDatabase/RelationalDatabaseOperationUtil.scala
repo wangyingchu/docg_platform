@@ -2,7 +2,7 @@ package com.viewfunction.docg.analysisProvider.fundamental.relationalDatabase
 
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.ResponseDataSourceTech
 import com.viewfunction.docg.analysisProvider.fundamental.dataSlice.ResponseDataSourceTech.ResponseDataSourceTech
-import com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.rationalDB.{RationalDBOperationUtil, RationalDBPropertyType}
+import com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.relationDB.{RelationDBOperationUtil, RelationDBPropertyType}
 
 import org.apache.spark.sql.types.DataTypes
 
@@ -15,31 +15,31 @@ object RelationalDatabaseOperationUtil {
                                       dataPropertiesDefinitions:java.util.Map[String,String],
                                       dataList: java.util.ArrayList[java.util.Map[String,Object]],
                                       responseDataSourceTech:ResponseDataSourceTech):Unit = {
-    val dataTablePropertyMap: util.HashMap[String, RationalDBPropertyType] = new util.HashMap[String, RationalDBPropertyType]()
+    val dataTablePropertyMap: util.HashMap[String, RelationDBPropertyType] = new util.HashMap[String, RelationDBPropertyType]()
     dataPropertiesDefinitions.forEach((propertyName,propertyType) =>{
       dataTablePropertyMap.put(propertyName,
         getDataTablePropertyType(propertyType,responseDataSourceTech)
       )
     })
-    RationalDBOperationUtil.insertBatchData(databaseName, tableName, dataTablePropertyMap, dataList)
+    RelationDBOperationUtil.insertBatchData(databaseName, tableName, dataTablePropertyMap, dataList)
   }
 
-  def getDataTablePropertyType(propertyType:String,responseDataSourceTech:ResponseDataSourceTech):RationalDBPropertyType = {
-    var resultType = RationalDBPropertyType.STRING
+  def getDataTablePropertyType(propertyType:String,responseDataSourceTech:ResponseDataSourceTech):RelationDBPropertyType = {
+    var resultType = RelationDBPropertyType.STRING
     if(responseDataSourceTech.equals(ResponseDataSourceTech.SPARK)){
-      if(propertyType.equals(DataTypes.StringType.typeName)){resultType = RationalDBPropertyType.STRING}
-      if(propertyType.equals(DataTypes.DateType.typeName)){resultType = RationalDBPropertyType.DATE}
-      if(propertyType.equals(DataTypes.ShortType.typeName)){resultType = RationalDBPropertyType.SHORT}
-      if(propertyType.equals(DataTypes.ByteType.typeName)){resultType = RationalDBPropertyType.BYTE}
-      if(propertyType.equals(DataTypes.LongType.typeName)){resultType = RationalDBPropertyType.LONG}
-      if(propertyType.equals(DataTypes.BinaryType.typeName)){resultType = RationalDBPropertyType.BYTES}
-      if(propertyType.equals(DataTypes.BooleanType.typeName)){resultType = RationalDBPropertyType.BOOLEAN}
-      if(propertyType.equals(DataTypes.CalendarIntervalType.typeName)){resultType = RationalDBPropertyType.LONG}
-      if(propertyType.equals(DataTypes.DoubleType.typeName)){resultType = RationalDBPropertyType.DOUBLE}
-      if(propertyType.equals(DataTypes.FloatType.typeName)){resultType = RationalDBPropertyType.FLOAT}
-      if(propertyType.equals(DataTypes.IntegerType.typeName)){resultType = RationalDBPropertyType.INT}
-      if(propertyType.equals(DataTypes.TimestampType.typeName)){resultType = RationalDBPropertyType.TIMESTAMP}
-      if(propertyType.equals(DataTypes.NullType.typeName)){resultType = RationalDBPropertyType.NULL}
+      if(propertyType.equals(DataTypes.StringType.typeName)){resultType = RelationDBPropertyType.STRING}
+      if(propertyType.equals(DataTypes.DateType.typeName)){resultType = RelationDBPropertyType.DATE}
+      if(propertyType.equals(DataTypes.ShortType.typeName)){resultType = RelationDBPropertyType.SHORT}
+      if(propertyType.equals(DataTypes.ByteType.typeName)){resultType = RelationDBPropertyType.BYTE}
+      if(propertyType.equals(DataTypes.LongType.typeName)){resultType = RelationDBPropertyType.LONG}
+      if(propertyType.equals(DataTypes.BinaryType.typeName)){resultType = RelationDBPropertyType.BYTES}
+      if(propertyType.equals(DataTypes.BooleanType.typeName)){resultType = RelationDBPropertyType.BOOLEAN}
+      if(propertyType.equals(DataTypes.CalendarIntervalType.typeName)){resultType = RelationDBPropertyType.LONG}
+      if(propertyType.equals(DataTypes.DoubleType.typeName)){resultType = RelationDBPropertyType.DOUBLE}
+      if(propertyType.equals(DataTypes.FloatType.typeName)){resultType = RelationDBPropertyType.FLOAT}
+      if(propertyType.equals(DataTypes.IntegerType.typeName)){resultType = RelationDBPropertyType.INT}
+      if(propertyType.equals(DataTypes.TimestampType.typeName)){resultType = RelationDBPropertyType.TIMESTAMP}
+      if(propertyType.equals(DataTypes.NullType.typeName)){resultType = RelationDBPropertyType.NULL}
     }
     resultType
   }
