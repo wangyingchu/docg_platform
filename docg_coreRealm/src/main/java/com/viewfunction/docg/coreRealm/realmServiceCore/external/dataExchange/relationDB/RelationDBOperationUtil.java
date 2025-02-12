@@ -10,7 +10,7 @@ import java.util.*;
 
 public class RelationDBOperationUtil {
 
-    private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+    private static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
     private static final String URL_PATTERN = "jdbc:mysql://%s:%d/%s?useServerPrepStmts=true&useLocalSessionState=true&rewriteBatchedStatements=true&cachePrepStmts=true&prepStmtCacheSqlLimit=99999&prepStmtCacheSize=50&sessionVariables=group_commit=async_mode";
     private static final String HOST = ExternalDataExchangePropertiesHandler.getPropertyValue(ExternalDataExchangePropertiesHandler.APACHE_DORIS_HOST);
     private static final int PORT = Integer.valueOf(ExternalDataExchangePropertiesHandler.getPropertyValue(ExternalDataExchangePropertiesHandler.APACHE_DORIS_PORT));
@@ -27,10 +27,15 @@ public class RelationDBOperationUtil {
             int singleBatchSize = batchData.size()/singlePartitionSize;
             List<List<Map<String,Object>>> batchesDataList = Lists.partition(batchData, singleBatchSize);
 
-            //Class.forName(JDBC_DRIVER);
             // add rewriteBatchedStatements=true and cachePrepStmts=true in JDBC url
             // set session variables by sessionVariables=group_commit=async_mode in JDBC url
+            try {
+                Class.forName(JDBC_DRIVER);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
             try (Connection conn = DriverManager.getConnection(
+
                     String.format(URL_PATTERN, HOST, PORT, dbName), USER, PASSWD)) {
                 try (PreparedStatement preparedStatement = conn.prepareStatement(insertSQL)) {
 
