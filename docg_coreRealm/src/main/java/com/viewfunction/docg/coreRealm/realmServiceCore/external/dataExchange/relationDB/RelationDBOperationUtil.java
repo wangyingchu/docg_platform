@@ -19,11 +19,15 @@ public class RelationDBOperationUtil {
     private static final int INSERT_BATCH_SIZE = Integer.valueOf(ExternalDataExchangePropertiesHandler.getPropertyValue(ExternalDataExchangePropertiesHandler.APACHE_DORIS_INSERT_BATCH_SIZE));
 
     public static void insertBatchData(String dbName, String tableName, Map<String, RelationDBPropertyType> propertiesDataTypeMap, List<Map<String,Object>> batchData) {
+        insertBatchData(dbName, tableName, propertiesDataTypeMap,batchData,INSERT_BATCH_SIZE);
+    }
+
+    public static void insertBatchData(String dbName, String tableName, Map<String, RelationDBPropertyType> propertiesDataTypeMap, List<Map<String,Object>> batchData,int insertBatchSize) {
         if(dbName != null && tableName != null && propertiesDataTypeMap != null && batchData != null) {
             Set<String> sortedSet = new TreeSet<>(propertiesDataTypeMap.keySet());
             String insertSQL = generateInsertSql(tableName, sortedSet);
 
-            int singlePartitionSize = (batchData.size()/INSERT_BATCH_SIZE);
+            int singlePartitionSize = Math.max((batchData.size() / insertBatchSize), 1);
             int singleBatchSize = batchData.size()/singlePartitionSize;
             List<List<Map<String,Object>>> batchesDataList = Lists.partition(batchData, singleBatchSize);
 
@@ -34,9 +38,7 @@ public class RelationDBOperationUtil {
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
-            try (Connection conn = DriverManager.getConnection(
-
-                    String.format(URL_PATTERN, HOST, PORT, dbName), USER, PASSWD)) {
+            try (Connection conn = DriverManager.getConnection(String.format(URL_PATTERN, HOST, PORT, dbName), USER, PASSWD)) {
                 try (PreparedStatement preparedStatement = conn.prepareStatement(insertSQL)) {
 
                     for(List<Map<String,Object>> singleBatchesDataList : batchesDataList) {
