@@ -150,6 +150,33 @@ public final class Functions2 {
         return FunctionInvocation.create(countFunctionDefinition,expression);
     }
 
+    /**
+     * @param node The named node to be counted
+     * @return A function call for {@code localDateTime()} for one named node
+     * @see #datetime(Expression)
+     */
+    public static FunctionInvocation localDateTime(Node node) {
+        Assertions.notNull(node, "The node parameter is required.");
+        return datetime(node.getRequiredSymbolicName());
+    }
+    /**
+     * Creates a function invocation for the {@code localDateTime()} function.
+     * See <a href="https://neo4j.com/docs/cypher-manual/current/functions/aggregating/#functions-count">count</a>.
+     *
+     * @param expression An expression describing the things to count.
+     * @return A function call for {@code datetime()} for an expression like {@link Cypher#asterisk()} etc.
+     */
+    public static FunctionInvocation localDateTime(Expression expression) {
+        Assertions.notNull(expression, "The expression to count is required.");
+        FunctionInvocation.FunctionDefinition datetimeFunctionDefinition = new FunctionInvocation.FunctionDefinition() {
+            @Override
+            public String getImplementationName() {
+                return "localDateTime";
+            }
+        };
+        return FunctionInvocation.create(datetimeFunctionDefinition,expression);
+    }
+
     public static @NotNull FunctionInvocation id(@NotNull Node node) {
         return Functions.id(node);
     }

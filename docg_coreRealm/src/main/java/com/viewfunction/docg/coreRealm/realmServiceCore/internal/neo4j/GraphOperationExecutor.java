@@ -9,9 +9,10 @@ import static org.neo4j.driver.Values.parameters;
 public class GraphOperationExecutor<T> implements AutoCloseable{
 
     private static final String uri = PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_URI);
-    private static final String user = PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_USER);
-    private static final String password = PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_PASSWORD);
-
+    private static final String user = PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_USER) != null?
+            PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_USER) : "";
+    private static final String password = PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_PASSWORD) != null?
+            PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_PASSWORD) : "";
     private Driver driver;
 
     public GraphOperationExecutor(){
