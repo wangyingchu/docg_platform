@@ -1,4 +1,4 @@
-package com.viewfunction.docg.testcase.coreRealm.termTest;
+package com.viewfunction.docg.testcase.coreRealm.termTest_neo4j;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;

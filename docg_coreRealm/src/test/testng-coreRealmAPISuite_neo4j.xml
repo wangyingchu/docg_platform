@@ -2,98 +2,98 @@
 <suite name="DOCG Core Realm API  test suite">
     <test verbose="1" name="RealmTermFactoryTest">
         <classes>
-            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.RealmTermFactoryTest"/>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.RealmTermFactoryTest"/>
         </classes>
     </test>
     <test verbose="2" name="CoreRealmTest">
         <classes>
-            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.CoreRealmTest"/>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.CoreRealmTest"/>
         </classes>
     </test>
     <test verbose="3" name="ConceptionKindTest">
         <classes>
-            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.ConceptionKindTest"/>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.ConceptionKindTest"/>
         </classes>
     </test>
     <test verbose="4" name="AttributesMeasurableTest">
         <classes>
-            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.AttributesMeasurableTest"/>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.AttributesMeasurableTest"/>
         </classes>
     </test>
     <test verbose="5" name="MetaAttributeFeatureSupportableTest">
         <classes>
-            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.MetaAttributeFeatureSupportableTest"/>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.MetaAttributeFeatureSupportableTest"/>
         </classes>
     </test>
     <test verbose="6" name="MetaConfigItemFeatureSupportableTest">
         <classes>
-            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.MetaConfigItemFeatureSupportableTest"/>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.MetaConfigItemFeatureSupportableTest"/>
         </classes>
     </test>
     <test verbose="7" name="AttributesViewKindTest">
         <classes>
-            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.AttributesViewKindTest"/>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.AttributesViewKindTest"/>
         </classes>
     </test>
     <test verbose="8" name="EntityQueryTest">
         <classes>
-            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.EntityQueryTest"/>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.EntityQueryTest"/>
         </classes>
     </test>
     <test verbose="9" name="EntityRelationableTest">
         <classes>
-            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.EntityRelationableTest"/>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.EntityRelationableTest"/>
         </classes>
     </test>
     <test verbose="10" name="StatisticalAndEvaluableTest">
         <classes>
-            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.StatisticalAndEvaluableTest"/>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.StatisticalAndEvaluableTest"/>
         </classes>
     </test>
     <test verbose="11" name="RelationKindTest">
         <classes>
-            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.RelationKindTest"/>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.RelationKindTest"/>
         </classes>
     </test>
     <test verbose="12" name="MultiConceptionKindsSupportableTest">
         <classes>
-            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.MultiConceptionKindsSupportableTest"/>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.MultiConceptionKindsSupportableTest"/>
         </classes>
     </test>
     <test verbose="13" name="RelationAttachKindTest">
         <classes>
-            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.RelationAttachKindTest"/>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.RelationAttachKindTest"/>
         </classes>
     </test>
     <test verbose="14" name="CrossKindDataOperatorTest">
         <classes>
-            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.CrossKindDataOperatorTest"/>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.CrossKindDataOperatorTest"/>
         </classes>
     </test>
     <test verbose="15" name="GeospatialScaleCalculableTest">
         <classes>
-            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.GeospatialScaleCalculableTest"/>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.GeospatialScaleCalculableTest"/>
         </classes>
     </test>
     <test verbose="16" name="TimeFlowTest">
         <classes>
-            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.TimeFlowTest"/>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.TimeFlowTest"/>
         </classes>
     </test>
     <test verbose="17" name="GeospatialRegionTest">
         <classes>
-            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.GeospatialRegionTest"/>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.GeospatialRegionTest"/>
         </classes>
     </test>
     <test verbose="18" name="ClassificationTest">
         <classes>
-            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.ClassificationTest"/>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.ClassificationTest"/>
         </classes>
     </test>
     <!-- KindCacheableTest must be the last test case at anytime-->
     <test verbose="19" name="KindCacheableTest">
         <classes>
-            <class name="com.viewfunction.docg.testcase.coreRealm.termTest.KindCacheableTest"/>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.KindCacheableTest"/>
         </classes>
     </test>
 </suite>
