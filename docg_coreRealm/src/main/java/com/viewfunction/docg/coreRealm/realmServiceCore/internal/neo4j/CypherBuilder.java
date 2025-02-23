@@ -321,6 +321,12 @@ public class CypherBuilder {
                     } else {
                         statement = ongoingReadingWithoutWhere.detachDelete(m).returning(Cypher.exists(m.property(additionalPropertyName))).build();
                     }
+                case ID:
+                    if (ongoingReadingWithWhere != null) {
+                        statement = ongoingReadingWithWhere.detachDelete(m).returning(Functions2.id(m)).build();
+                    } else {
+                        statement = ongoingReadingWithoutWhere.detachDelete(m).returning(Functions2.id(m)).build();
+                    }
             }
         } else {
             if (ongoingReadingWithWhere != null) {

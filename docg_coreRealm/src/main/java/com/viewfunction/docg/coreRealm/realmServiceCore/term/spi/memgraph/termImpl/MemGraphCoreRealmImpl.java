@@ -1,32 +1,61 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.memgraph.termImpl;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.memgraph.dataTransformer.GetSingleConceptionKindTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleAttributesViewKindTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionKindTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.memgraph.termInf.MemGraphCoreRealm;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JCoreRealmImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MemGraphCoreRealmImpl extends Neo4JCoreRealmImpl implements MemGraphCoreRealm {
 
+    private static Logger logger = LoggerFactory.getLogger(MemGraphCoreRealmImpl.class);
+
     public MemGraphCoreRealmImpl(String coreRealmName){
         super(coreRealmName);
+        this.graphOperationExecutorHelper = new GraphOperationExecutorHelper();
     }
 
-    public MemGraphCoreRealmImpl(){}
-    private static Logger logger = LoggerFactory.getLogger(MemGraphCoreRealmImpl.class);
+    public MemGraphCoreRealmImpl(){
+        this.graphOperationExecutorHelper = new GraphOperationExecutorHelper();
+    }
 
     @Override
     public CoreRealmStorageImplTech getStorageImplTech() {
         return CoreRealmStorageImplTech.MEMGRAPH;
+    }
+
+    @Override
+    public ConceptionKind getConceptionKind(String conceptionKindName) {
+        if(conceptionKindName == null){
+            return null;
+        }
+
+        if(conceptionKindName.startsWith("DOCG_")){
+            MemGraphConceptionKindImpl memGraphConceptionKindImpl =
+                    new MemGraphConceptionKindImpl(getCoreRealmName(),conceptionKindName,null,"0");
+            memGraphConceptionKindImpl.setGlobalGraphOperationExecutor(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            return memGraphConceptionKindImpl;
+        }
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.ConceptionKindClass,RealmConstant._NameProperty,conceptionKindName,1);
+            GetSingleConceptionKindTransformer getSingleConceptionKindTransformer =
+                    new GetSingleConceptionKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object createConceptionKindRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionKindTransformer,queryCql);
+            return createConceptionKindRes != null?(ConceptionKind)createConceptionKindRes:null;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
@@ -46,8 +75,8 @@ public class MemGraphCoreRealmImpl extends Neo4JCoreRealmImpl implements MemGrap
             }
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try{
-                String conceptionKindUID = ((Neo4JConceptionKindImpl)targetConceptionKind).getConceptionKindUID();
-                String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(conceptionKindUID),null,null);
+                String conceptionKindUID = ((MemGraphConceptionKindImpl)targetConceptionKind).getConceptionKindUID();
+                String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(conceptionKindUID),CypherBuilder.CypherFunctionType.ID,null);
                 GetSingleConceptionKindTransformer getSingleConceptionKindTransformer =
                         new GetSingleConceptionKindTransformer(getCoreRealmName(),this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object deletedConceptionKindRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionKindTransformer,deleteCql);
@@ -55,9 +84,9 @@ public class MemGraphCoreRealmImpl extends Neo4JCoreRealmImpl implements MemGrap
                 if(resultConceptionKind == null){
                     throw new CoreRealmServiceRuntimeException();
                 }else{
-                    String conceptionKindId = ((Neo4JConceptionKindImpl)resultConceptionKind).getConceptionKindUID();
-                    Neo4JConceptionKindImpl resultNeo4JConceptionKindImplForCacheOperation = new Neo4JConceptionKindImpl(getCoreRealmName(),conceptionKindName,null,conceptionKindId);
-                    executeConceptionKindCacheOperation(resultNeo4JConceptionKindImplForCacheOperation,CacheOperationType.DELETE);
+                    String conceptionKindId = ((MemGraphConceptionKindImpl)resultConceptionKind).getConceptionKindUID();
+                    MemGraphConceptionKindImpl resultMemGraphConceptionKindImplForCacheOperation = new MemGraphConceptionKindImpl(getCoreRealmName(),conceptionKindName,null,conceptionKindId);
+                    executeConceptionKindCacheOperation(resultMemGraphConceptionKindImplForCacheOperation,CacheOperationType.DELETE);
                     return true;
                 }
             }finally {
