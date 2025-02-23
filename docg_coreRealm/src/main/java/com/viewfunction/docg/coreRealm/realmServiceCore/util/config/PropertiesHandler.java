@@ -45,6 +45,9 @@ public class PropertiesHandler {
     public static String NEBULAGRAPH_PARTITION_NUMBER = "NEBULAGRAPH_PARTITION_NUMBER";
     public static String NEBULAGRAPH_REPLICA_FACTOR = "NEBULAGRAPH_REPLICA_FACTOR";
 
+    //MemGraph Implements configuration properties
+    public static String MEMGRAPH_SUPPORT_MULTI_GRAPH = "MEMGRAPH_SUPPORT_MULTI_GRAPH";
+
     public static String DEFAULT_REALM_NAME = "DEFAULT_REALM_NAME";
 
     public static String getPropertyValue(String propertyName) {

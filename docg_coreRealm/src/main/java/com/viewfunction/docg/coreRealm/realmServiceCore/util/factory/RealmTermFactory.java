@@ -4,6 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunct
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.memgraph.termImpl.MemGraphCoreRealmImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.memgraph.util.MemGraphCoreRealmSystemUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JCoreRealmImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.util.Neo4JCoreRealmSystemUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
@@ -16,6 +17,8 @@ public class RealmTermFactory {
     private static String _CORE_REALM_STORAGE_IMPL_TECH = PropertiesHandler.getPropertyValue(PropertiesHandler.CORE_REALM_STORAGE_IMPL_TECH);
     private static boolean supportMultiNeo4JGraph =
             Boolean.parseBoolean(PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_SUPPORT_MULTI_GRAPH));
+    private static boolean supportMultiMemGraphGraph =
+            Boolean.parseBoolean(PropertiesHandler.getPropertyValue(PropertiesHandler.MEMGRAPH_SUPPORT_MULTI_GRAPH));
 
     public static CoreRealm getCoreRealm(String coreRealmName) throws CoreRealmFunctionNotSupportedException {
         if(CoreRealmStorageImplTech.NEO4J.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
@@ -27,7 +30,13 @@ public class RealmTermFactory {
                 throw exception;
             }
         }else if(CoreRealmStorageImplTech.MEMGRAPH.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
-            return new MemGraphCoreRealmImpl(coreRealmName);
+            if(supportMultiMemGraphGraph){
+                return new MemGraphCoreRealmImpl(coreRealmName);
+            }else{
+                CoreRealmFunctionNotSupportedException exception = new CoreRealmFunctionNotSupportedException();
+                exception.setCauseMessage("Current Neo4J storage implements doesn't support multi Realm");
+                throw exception;
+            }
         }else{
             return null;
         }
@@ -37,7 +46,7 @@ public class RealmTermFactory {
         if(CoreRealmStorageImplTech.NEO4J.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
             return Neo4JCoreRealmSystemUtil.getDefaultCoreRealm();
         }else if(CoreRealmStorageImplTech.MEMGRAPH.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
-            return new MemGraphCoreRealmImpl();
+            return MemGraphCoreRealmSystemUtil.getDefaultCoreRealm();
         }else{
             return null;
         }
