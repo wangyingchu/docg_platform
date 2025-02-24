@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.memgraph.termImpl;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.memgraph.dataTransformer.GetSingleConceptionKindTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
@@ -7,6 +8,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOper
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetLongFormatAggregatedReturnValueTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntityStatisticsInfo;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachLinkLogic;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.memgraph.termInf.MemGraphCoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JClassificationImpl;
@@ -20,12 +23,14 @@ import org.neo4j.driver.types.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 public class MemGraphCoreRealmImpl extends Neo4JCoreRealmImpl implements MemGraphCoreRealm {
 
     private static Logger logger = LoggerFactory.getLogger(MemGraphCoreRealmImpl.class);
+    private static final ZoneId systemDefaultZoneId = ZoneId.systemDefault();
 
     public MemGraphCoreRealmImpl(String coreRealmName){
         super(coreRealmName);
@@ -252,25 +257,12 @@ public class MemGraphCoreRealmImpl extends Neo4JCoreRealmImpl implements MemGrap
                     };
                     workingGraphOperationExecutor.executeRead(offspringClassificationsDataTransformer,queryCql);
 
-                    List<Object> deletedClassificationUIDList = new ArrayList<>();
                     String deleteCql = CypherBuilder.deleteNodesWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, withOffspringClassificationUIDList);
-                    DataTransformer deleteOffspringClassificationsDataTransformer = new DataTransformer() {
-                        @Override
-                        public Object transformResult(Result result) {
-                            List<Record> recordList = result.list();
-                            if(recordList != null){
-                                for(Record nodeRecord : recordList){
-                                    Node resultNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
-                                    long nodeUID = resultNode.id();
-                                    deletedClassificationUIDList.add(nodeUID);
-                                }
-                            }
-                            return null;
-                        }
-                    };
-                    workingGraphOperationExecutor.executeWrite(deleteOffspringClassificationsDataTransformer,deleteCql);
+                    deleteCql = deleteCql.replace("RETURN operationResult","RETURN count(operationResult)");
+                    GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
+                    Object deleteResultObj = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer,deleteCql);
 
-                    if(deletedClassificationUIDList.size() == withOffspringClassificationUIDList.size()){
+                    if(Long.parseLong(deleteResultObj.toString()) == withOffspringClassificationUIDList.size()){
                         return true;
                     }else{
                         logger.error("Not all offspring classifications of Classification {} are successful removed.", classificationName);
@@ -283,6 +275,149 @@ public class MemGraphCoreRealmImpl extends Neo4JCoreRealmImpl implements MemGrap
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
         }
+    }
+
+    @Override
+    public boolean removeRelationAttachKind(String relationAttachKindUID) throws CoreRealmServiceRuntimeException {
+        if(relationAttachKindUID == null){
+            return false;
+        }
+        RelationAttachKind targetRelationAttachKind = this.getRelationAttachKind(relationAttachKindUID);
+        if(targetRelationAttachKind != null){
+            List<RelationAttachLinkLogic> relationAttachLinkLogicList = targetRelationAttachKind.getRelationAttachLinkLogic();
+            if(relationAttachLinkLogicList != null){
+                for(RelationAttachLinkLogic currentRelationAttachLinkLogic:relationAttachLinkLogicList){
+                    targetRelationAttachKind.removeRelationAttachLinkLogic(currentRelationAttachLinkLogic.getRelationAttachLinkLogicUID());
+                }
+            }
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(relationAttachKindUID),CypherBuilder.CypherFunctionType.ID,null);
+                GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("id");
+                Object deletedRelationAttachKindRes = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer,deleteCql);
+
+                if(deletedRelationAttachKindRes == null){
+                    throw new CoreRealmServiceRuntimeException();
+                }else{
+                    executeRelationAttachKindCacheOperation(targetRelationAttachKind,CacheOperationType.DELETE);
+                    return true;
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }else{
+            logger.error("RelationAttachKind does not contains entity with UID {}.", relationAttachKindUID);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("RelationAttachKind does not contains entity with UID " + relationAttachKindUID + ".");
+            throw exception;
+        }
+    }
+
+    @Override
+    public List<EntityStatisticsInfo> getConceptionEntitiesStatistics() throws CoreRealmServiceEntityExploreException {
+        List<EntityStatisticsInfo> entityStatisticsInfoList = new ArrayList<>();
+        String cypherProcedureString = "CALL db.labels()\n" +
+                "YIELD label\n" +
+                "CALL apoc.cypher.run(\"MATCH (:`\"+label+\"`) RETURN count(*) as count\", null)\n" +
+                "YIELD value\n" +
+                "RETURN label, value.count as count\n" +
+                "ORDER BY label";
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            List<String> attributesNameList = new ArrayList<>();
+            Map<String, HashMap<String,Object>> conceptionKindMetaDataMap = new HashMap<>();
+            attributesNameList.add(RealmConstant._NameProperty);
+            attributesNameList.add(RealmConstant._DescProperty);
+            attributesNameList.add(RealmConstant._createDateProperty);
+            attributesNameList.add(RealmConstant._lastModifyDateProperty);
+            attributesNameList.add(RealmConstant._creatorIdProperty);
+            attributesNameList.add(RealmConstant._dataOriginProperty);
+            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(RealmConstant.ConceptionKindClass,null,attributesNameList);
+            DataTransformer conceptionKindInfoDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    while(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        String conceptionKindName = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._NameProperty).asString();
+                        String conceptionKindDesc = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._DescProperty).asString();
+                        ZonedDateTime createDate = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._createDateProperty).asLocalDateTime().atZone(systemDefaultZoneId);
+                        ZonedDateTime lastModifyDate = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._lastModifyDateProperty).asLocalDateTime().atZone(systemDefaultZoneId);
+                        String dataOrigin = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._dataOriginProperty).asString();
+                        long conceptionKindUID = nodeRecord.get("id("+CypherBuilder.operationResultName+")").asLong();
+                        String creatorId = nodeRecord.containsKey(CypherBuilder.operationResultName+"."+RealmConstant._creatorIdProperty) ?
+                                nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._creatorIdProperty).asString():null;
+
+                        HashMap<String,Object> metaDataMap = new HashMap<>();
+                        metaDataMap.put(RealmConstant._NameProperty,conceptionKindName);
+                        metaDataMap.put(RealmConstant._DescProperty,conceptionKindDesc);
+                        metaDataMap.put(RealmConstant._createDateProperty,createDate);
+                        metaDataMap.put(RealmConstant._lastModifyDateProperty,lastModifyDate);
+                        metaDataMap.put(RealmConstant._creatorIdProperty,creatorId);
+                        metaDataMap.put(RealmConstant._dataOriginProperty,dataOrigin);
+                        metaDataMap.put("ConceptionKindUID",""+conceptionKindUID);
+                        conceptionKindMetaDataMap.put(conceptionKindName,metaDataMap);
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeRead(conceptionKindInfoDataTransformer,queryCql);
+
+            DataTransformer queryResultDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    List<String> conceptionKindsNameWithDataList = new ArrayList<>();
+                    while(result.hasNext()){
+                        Record currentRecord = result.next();
+                        String entityKind = currentRecord.get("label").asString();
+                        long entityCount = currentRecord.get("count").asLong();
+                        conceptionKindsNameWithDataList.add(entityKind);
+                        EntityStatisticsInfo currentEntityStatisticsInfo = null;
+                        if(entityKind.startsWith("DOCG_")){
+                            currentEntityStatisticsInfo = new EntityStatisticsInfo(
+                                    entityKind, EntityStatisticsInfo.kindType.ConceptionKind, true, entityCount);
+                        }else{
+                            if(conceptionKindMetaDataMap.containsKey(entityKind)){
+                                currentEntityStatisticsInfo = new EntityStatisticsInfo(
+                                        entityKind, EntityStatisticsInfo.kindType.ConceptionKind, false, entityCount,
+                                        conceptionKindMetaDataMap.get(entityKind).get(RealmConstant._DescProperty).toString(),
+                                        conceptionKindMetaDataMap.get(entityKind).get("ConceptionKindUID").toString(),
+                                        (ZonedDateTime) (conceptionKindMetaDataMap.get(entityKind).get(RealmConstant._createDateProperty)),
+                                        (ZonedDateTime) (conceptionKindMetaDataMap.get(entityKind).get(RealmConstant._lastModifyDateProperty)),
+                                        conceptionKindMetaDataMap.get(entityKind).get(RealmConstant._creatorIdProperty).toString(),
+                                        conceptionKindMetaDataMap.get(entityKind).get(RealmConstant._dataOriginProperty).toString()
+                                );
+                            }
+                        }
+                        if(currentEntityStatisticsInfo != null){
+                            entityStatisticsInfoList.add(currentEntityStatisticsInfo);
+                        }
+                    }
+
+                    //如果 ConceptionKind 尚未有实体数据，则 CALL db.labels() 不会返回该 Kind 记录，需要从 ConceptionKind 列表反向查找
+                    Set<String> allConceptionKindNameSet = conceptionKindMetaDataMap.keySet();
+                    for(String currentKindName :allConceptionKindNameSet ){
+                        if(!conceptionKindsNameWithDataList.contains(currentKindName)){
+                            //当前 ConceptionKind 中无数据，需要手动添加信息
+                            EntityStatisticsInfo currentEntityStatisticsInfo = new EntityStatisticsInfo(
+                                    currentKindName, EntityStatisticsInfo.kindType.ConceptionKind, false, 0,
+                                    conceptionKindMetaDataMap.get(currentKindName).get(RealmConstant._DescProperty).toString(),
+                                    conceptionKindMetaDataMap.get(currentKindName).get("ConceptionKindUID").toString(),
+                                    (ZonedDateTime) (conceptionKindMetaDataMap.get(currentKindName).get(RealmConstant._createDateProperty)),
+                                    (ZonedDateTime) (conceptionKindMetaDataMap.get(currentKindName).get(RealmConstant._lastModifyDateProperty)),
+                                    conceptionKindMetaDataMap.get(currentKindName).get(RealmConstant._creatorIdProperty).toString(),
+                                    conceptionKindMetaDataMap.get(currentKindName).get(RealmConstant._dataOriginProperty).toString()
+                            );
+                            entityStatisticsInfoList.add(currentEntityStatisticsInfo);
+                        }
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeRead(queryResultDataTransformer,cypherProcedureString);
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return entityStatisticsInfoList;
     }
 
     //internal graphOperationExecutor management logic
