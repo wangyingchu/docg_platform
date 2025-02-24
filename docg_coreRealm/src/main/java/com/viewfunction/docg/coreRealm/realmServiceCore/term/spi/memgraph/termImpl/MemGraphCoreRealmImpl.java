@@ -6,13 +6,16 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.memgraph.dataTr
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.memgraph.dataTransformer.GetListKindMetaInfoTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetLongFormatAggregatedReturnValueTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleAttributeValueTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntityStatisticsInfo;
-import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationAttachLinkLogic;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.memgraph.termInf.MemGraphCoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JClassificationImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JCoreRealmImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JRelationKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
@@ -418,6 +421,330 @@ public class MemGraphCoreRealmImpl extends Neo4JCoreRealmImpl implements MemGrap
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
         return entityStatisticsInfoList;
+    }
+
+    @Override
+    public List<KindMetaInfo> getConceptionKindsMetaInfo() throws CoreRealmServiceEntityExploreException {
+        return getKindsMetaInfo(RealmConstant.ConceptionKindClass);
+    }
+
+    @Override
+    public List<KindMetaInfo> getRelationKindsMetaInfo() throws CoreRealmServiceEntityExploreException{
+        return getKindsMetaInfo(RealmConstant.RelationKindClass);
+    }
+
+    private List<KindMetaInfo> getKindsMetaInfo(String kindClassName) throws CoreRealmServiceEntityExploreException {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            List<String> attributesNameList = new ArrayList<>();
+            attributesNameList.add(RealmConstant._NameProperty);
+            attributesNameList.add(RealmConstant._DescProperty);
+            attributesNameList.add(RealmConstant._createDateProperty);
+            attributesNameList.add(RealmConstant._lastModifyDateProperty);
+            attributesNameList.add(RealmConstant._creatorIdProperty);
+            attributesNameList.add(RealmConstant._dataOriginProperty);
+            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(kindClassName,null,attributesNameList);
+
+            GetListKindMetaInfoTransformer getListKindMetaInfoTransformer = new GetListKindMetaInfoTransformer();
+            Object kindMetaInfoListRes = workingGraphOperationExecutor.executeRead(getListKindMetaInfoTransformer,queryCql);
+            return kindMetaInfoListRes != null ? (List<KindMetaInfo>) kindMetaInfoListRes : null;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public List<AttributesViewKindMetaInfo> getAttributesViewKindsMetaInfo() throws CoreRealmServiceEntityExploreException{
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            List<String> attributesNameList = new ArrayList<>();
+            attributesNameList.add(RealmConstant._NameProperty);
+            attributesNameList.add(RealmConstant._DescProperty);
+            attributesNameList.add(RealmConstant._createDateProperty);
+            attributesNameList.add(RealmConstant._lastModifyDateProperty);
+            attributesNameList.add(RealmConstant._creatorIdProperty);
+            attributesNameList.add(RealmConstant._dataOriginProperty);
+            attributesNameList.add(RealmConstant._viewKindDataForm);
+            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(RealmConstant.AttributesViewKindClass,null,attributesNameList);
+            DataTransformer dataTransformer = new DataTransformer<List<AttributesViewKindMetaInfo>>() {
+                @Override
+                public List<AttributesViewKindMetaInfo> transformResult(Result result) {
+                    List<AttributesViewKindMetaInfo> resultKindMetaInfoList = new ArrayList<>();
+                    while(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        String kindName = nodeRecord.get(CypherBuilder.operationResultName+"."+ RealmConstant._NameProperty).asString();
+                        String kindDesc = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._DescProperty).asString();
+                        ZonedDateTime createDate = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._createDateProperty).asLocalDateTime().atZone(systemDefaultZoneId);
+                        ZonedDateTime lastModifyDate = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._lastModifyDateProperty).asLocalDateTime().atZone(systemDefaultZoneId);
+                        String dataOrigin = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._dataOriginProperty).asString();
+                        long KindUID = nodeRecord.get("id("+CypherBuilder.operationResultName+")").asLong();
+                        String creatorId = nodeRecord.containsKey(CypherBuilder.operationResultName+"."+RealmConstant._creatorIdProperty) ?
+                                nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._creatorIdProperty).asString():null;
+                        String viewKindDataForm = nodeRecord.get(CypherBuilder.operationResultName+"."+ RealmConstant._viewKindDataForm).asString();
+                        resultKindMetaInfoList.add(new AttributesViewKindMetaInfo(kindName,kindDesc,""+KindUID,viewKindDataForm,createDate,lastModifyDate,creatorId,dataOrigin));
+                    }
+                    return resultKindMetaInfoList;
+                }
+            };
+            Object kindMetaInfoListRes = workingGraphOperationExecutor.executeRead(dataTransformer,queryCql);
+            List<AttributesViewKindMetaInfo> resultkindMetaInfoList = kindMetaInfoListRes != null ? (List<AttributesViewKindMetaInfo>) kindMetaInfoListRes : null;
+            if(resultkindMetaInfoList != null && resultkindMetaInfoList.size()>0){
+                queryCql = "MATCH (DOCG_AttributeKind)<-[r1:DOCG_ViewContainsAttributeKindIs]-(n:DOCG_AttributesViewKind) RETURN id(n),count(r1) LIMIT 10000000";
+                DataTransformer dataTransformer2 = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        while(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            long KindUID = nodeRecord.get("id(n)").asLong();
+                            int attachedAttributeKindNumber = nodeRecord.get("count(r1)").asInt();
+                            setContainsAttributeKindCount(resultkindMetaInfoList,""+KindUID,attachedAttributeKindNumber);
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(dataTransformer2,queryCql);
+
+                queryCql = "MATCH (n:DOCG_AttributesViewKind) <-[r2:DOCG_ConceptionContainsViewKindIs] -(DOCG_ConceptionKind) RETURN id(n),count(r2) LIMIT 10000000";
+                DataTransformer dataTransformer3 = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        while(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            long KindUID = nodeRecord.get("id(n)").asLong();
+                            int attachedConceptionKindNumber = nodeRecord.get("count(r2)").asInt();
+                            setContainerConceptionKindCount(resultkindMetaInfoList,""+KindUID,attachedConceptionKindNumber);
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(dataTransformer3,queryCql);
+            }
+            return resultkindMetaInfoList;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    private void setContainerConceptionKindCount(List<AttributesViewKindMetaInfo> attributesViewKindMetaInfoList,String attributesViewKindUID,int containerConceptionKindCount){
+        for(AttributesViewKindMetaInfo currentAttributesViewKindMetaInfo:attributesViewKindMetaInfoList){
+            if(attributesViewKindUID.equals(currentAttributesViewKindMetaInfo.getKindUID())){
+                currentAttributesViewKindMetaInfo.setContainerConceptionKindCount(containerConceptionKindCount);
+                return;
+            }
+        }
+    }
+
+    private void setContainsAttributeKindCount(List<AttributesViewKindMetaInfo> attributesViewKindMetaInfoList,String attributesViewKindUID,int containsAttributeKindCount){
+        for(AttributesViewKindMetaInfo currentAttributesViewKindMetaInfo:attributesViewKindMetaInfoList){
+            if(attributesViewKindUID.equals(currentAttributesViewKindMetaInfo.getKindUID())){
+                currentAttributesViewKindMetaInfo.setContainsAttributeKindCount(containsAttributeKindCount);
+                return;
+            }
+        }
+    }
+
+    @Override
+    public List<AttributeKindMetaInfo> getAttributeKindsMetaInfo() throws CoreRealmServiceEntityExploreException{
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            List<String> attributesNameList = new ArrayList<>();
+            attributesNameList.add(RealmConstant._NameProperty);
+            attributesNameList.add(RealmConstant._DescProperty);
+            attributesNameList.add(RealmConstant._createDateProperty);
+            attributesNameList.add(RealmConstant._lastModifyDateProperty);
+            attributesNameList.add(RealmConstant._creatorIdProperty);
+            attributesNameList.add(RealmConstant._dataOriginProperty);
+            attributesNameList.add(RealmConstant._attributeDataType);
+            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(RealmConstant.AttributeKindClass,null,attributesNameList);
+            DataTransformer dataTransformer = new DataTransformer<List<AttributeKindMetaInfo>>() {
+                @Override
+                public List<AttributeKindMetaInfo> transformResult(Result result) {
+                    List<AttributeKindMetaInfo> resultKindMetaInfoList = new ArrayList<>();
+                    while(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        String kindName = nodeRecord.get(CypherBuilder.operationResultName+"."+ RealmConstant._NameProperty).asString();
+                        String kindDesc = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._DescProperty).asString();
+                        ZonedDateTime createDate = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._createDateProperty).asLocalDateTime().atZone(systemDefaultZoneId);
+                        ZonedDateTime lastModifyDate = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._lastModifyDateProperty).asLocalDateTime().atZone(systemDefaultZoneId);
+                        String dataOrigin = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._dataOriginProperty).asString();
+                        long KindUID = nodeRecord.get("id("+CypherBuilder.operationResultName+")").asLong();
+                        String creatorId = nodeRecord.containsKey(CypherBuilder.operationResultName+"."+RealmConstant._creatorIdProperty) ?
+                                nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._creatorIdProperty).asString():null;
+                        String attributeDataType = nodeRecord.get(CypherBuilder.operationResultName+"."+ RealmConstant._attributeDataType).asString();
+                        resultKindMetaInfoList.add(new AttributeKindMetaInfo(kindName,kindDesc,""+KindUID,attributeDataType,createDate,lastModifyDate,creatorId,dataOrigin));
+                    }
+                    return resultKindMetaInfoList;
+                }
+            };
+            Object kindMetaInfoListRes = workingGraphOperationExecutor.executeRead(dataTransformer,queryCql);
+            List<AttributeKindMetaInfo> resultAttributeKindMetaInfoList = kindMetaInfoListRes != null ? (List<AttributeKindMetaInfo>) kindMetaInfoListRes : null;
+
+            if(resultAttributeKindMetaInfoList != null && resultAttributeKindMetaInfoList.size()>0){
+                queryCql = "MATCH (n:DOCG_AttributeKind)<-[r:DOCG_ViewContainsAttributeKindIs]-(DOCG_AttributesViewKind) RETURN id(n), count(r) LIMIT 10000000";
+                DataTransformer dataTransformer2 = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        while(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            long KindUID = nodeRecord.get("id(n)").asLong();
+                            int attachedAttributesKindNumber = nodeRecord.get("count(r)").asInt();
+                            setContainerAttributeKindCount(resultAttributeKindMetaInfoList,""+KindUID,attachedAttributesKindNumber);
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(dataTransformer2,queryCql);
+            }
+            return resultAttributeKindMetaInfoList;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    private void setContainerAttributeKindCount(List<AttributeKindMetaInfo> attributeKindMetaInfoList, String attributeKindUID, int containerAttributesKindCount){
+        for(AttributeKindMetaInfo currentAttributeKindMetaInfo:attributeKindMetaInfoList){
+            if(attributeKindUID.equals(currentAttributeKindMetaInfo.getKindUID())){
+                currentAttributeKindMetaInfo.setContainerAttributesViewKindCount(containerAttributesKindCount);
+                return;
+            }
+        }
+    }
+
+    @Override
+    public boolean renameConceptionKind(String originalConceptionKindName, String newConceptionKindName, String newConceptionKindDesc) throws CoreRealmServiceRuntimeException {
+        if(originalConceptionKindName == null){
+            logger.error("original Conception Kind Name is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("original ConceptionKind Name is required.");
+            throw exception;
+        }
+        if(newConceptionKindName == null){
+            logger.error("new ConceptionKind Name is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("new ConceptionKind Name is required.");
+            throw exception;
+        }
+        ConceptionKind originalConceptionKind =this.getConceptionKind(originalConceptionKindName);
+        if(originalConceptionKind == null){
+            logger.error("CoreRealm does not contains ConceptionKind with name {}.", originalConceptionKindName);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("CoreRealm does not contains ConceptionKind with name " + originalConceptionKindName + ".");
+            throw exception;
+        }
+        String originalConceptionKindUID = ((Neo4JConceptionKindImpl)originalConceptionKind).getConceptionKindUID();
+        ConceptionKind newConceptionKind = this.getConceptionKind(newConceptionKindName);
+        if(newConceptionKind != null){
+            logger.error("CoreRealm already contains ConceptionKind with name {}.", newConceptionKindName);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("CoreRealm already contains ConceptionKind with name " + newConceptionKindName + ".");
+            throw exception;
+        }
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            //https://neo4j.com/labs/apoc/4.1/overview/apoc.periodic/apoc.periodic.iterate/
+            String modifyConceptionEntityLabelCQL =
+                    "MATCH (n:`"+originalConceptionKindName+"`) SET n:`"+newConceptionKindName+"` REMOVE n:`"+originalConceptionKindName+"`";
+            logger.debug("Generated Cypher Statement: {}", modifyConceptionEntityLabelCQL);
+            DataTransformer dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    System.out.println(result);
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeWrite(dataTransformer,modifyConceptionEntityLabelCQL);
+
+            Map<String,Object> attributeDataMap = new HashMap<>();
+
+            attributeDataMap.put(RealmConstant._NameProperty, newConceptionKindName);
+            if(newConceptionKindDesc != null){
+                attributeDataMap.put(RealmConstant._DescProperty, newConceptionKindDesc);
+            }
+
+            String updateCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(originalConceptionKindUID),attributeDataMap);
+            GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._NameProperty);
+            Object updateResultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,updateCql);
+            CommonOperationUtil.updateEntityMetaAttributes(workingGraphOperationExecutor,originalConceptionKindUID,false);
+
+            AttributeValue resultAttributeValue =  updateResultRes != null ? (AttributeValue) updateResultRes : null;
+            if(resultAttributeValue != null && resultAttributeValue.getAttributeValue().toString().equals(newConceptionKindName)){
+                return true;
+            }else{
+                return false;
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
+    public boolean renameRelationKind(String originalRelationKindName, String newRelationKindName, String newRelationKindDesc) throws CoreRealmServiceRuntimeException {
+        if(originalRelationKindName == null){
+            logger.error("original RelationKind Name is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("original RelationKind Name is required.");
+            throw exception;
+        }
+        if(newRelationKindName == null){
+            logger.error("new RelationKind Name is required.");
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("new RelationKind Name is required.");
+            throw exception;
+        }
+
+        RelationKind originalRelationKind = this.getRelationKind(originalRelationKindName);
+        if(originalRelationKind == null){
+            logger.error("CoreRealm does not contains RelationKind with name {}.", originalRelationKindName);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("CoreRealm does not contains RelationKind with name " + originalRelationKindName + ".");
+            throw exception;
+        }
+        String originalRelationKindUID = ((Neo4JRelationKindImpl)originalRelationKind).getRelationKindUID();
+        RelationKind newRelationKind = this.getRelationKind(newRelationKindName);
+        if(newRelationKind != null){
+            logger.error("CoreRealm already contains RelationKind with name {}.", newRelationKindName);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("CoreRealm already contains RelationKind with name " + newRelationKindName + ".");
+            throw exception;
+        }
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            //https://neo4j.com/labs/apoc/4.1/overview/apoc.periodic/apoc.periodic.iterate/
+            //https://neo4j.com/docs/apoc/current/graph-refactoring/set-relationship-type/
+            String modifyRelationEntityTypeCQL =
+                    "CALL apoc.periodic.iterate(\"MATCH ()-[rel:`"+originalRelationKindName+"`]->() CALL apoc.refactor.setType(rel,'"+newRelationKindName+"') YIELD input, output RETURN input, output\",\"\",{batchSize:10000,parallel:true})";
+            logger.debug("Generated Cypher Statement: {}", modifyRelationEntityTypeCQL);
+            DataTransformer dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    System.out.println(result);
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeWrite(dataTransformer,modifyRelationEntityTypeCQL);
+
+            Map<String,Object> attributeDataMap = new HashMap<>();
+            attributeDataMap.put(RealmConstant._NameProperty, newRelationKindName);
+            if(newRelationKindDesc != null){
+                attributeDataMap.put(RealmConstant._DescProperty, newRelationKindDesc);
+            }
+
+            String updateCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(originalRelationKindUID),attributeDataMap);
+            GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._NameProperty);
+            Object updateResultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,updateCql);
+            CommonOperationUtil.updateEntityMetaAttributes(workingGraphOperationExecutor,originalRelationKindUID,false);
+
+            AttributeValue resultAttributeValue =  updateResultRes != null ? (AttributeValue) updateResultRes : null;
+            if(resultAttributeValue != null && resultAttributeValue.getAttributeValue().toString().equals(newRelationKindName)){
+                return true;
+            }else{
+                return false;
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     //internal graphOperationExecutor management logic

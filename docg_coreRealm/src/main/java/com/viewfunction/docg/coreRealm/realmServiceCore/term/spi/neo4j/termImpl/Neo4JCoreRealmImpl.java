@@ -2022,7 +2022,8 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 currentAttributesViewKindMetaInfo.setContainsAttributeKindCount(containsAttributeKindCount);
                 return;
             }
-        }    }
+        }
+    }
 
     //internal graphOperationExecutor management logic
     private GraphOperationExecutorHelper graphOperationExecutorHelper;
