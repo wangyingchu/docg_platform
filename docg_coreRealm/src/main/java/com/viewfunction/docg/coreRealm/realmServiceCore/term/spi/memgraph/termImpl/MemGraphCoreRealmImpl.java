@@ -711,8 +711,6 @@ public class MemGraphCoreRealmImpl extends Neo4JCoreRealmImpl implements MemGrap
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
-            //https://neo4j.com/labs/apoc/4.1/overview/apoc.periodic/apoc.periodic.iterate/
-            //https://neo4j.com/docs/apoc/current/graph-refactoring/set-relationship-type/
             String modifyRelationEntityTypeCQL =
                     "CALL apoc.periodic.iterate(\"MATCH ()-[rel:`"+originalRelationKindName+"`]->() CALL apoc.refactor.setType(rel,'"+newRelationKindName+"') YIELD input, output RETURN input, output\",\"\",{batchSize:10000,parallel:true})";
             logger.debug("Generated Cypher Statement: {}", modifyRelationEntityTypeCQL);
