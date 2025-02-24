@@ -437,11 +437,11 @@ public class CoreRealmTest {
 
 //NEED ENABLE//
 //NEED ENABLE//
-/*
+
         List<EntityStatisticsInfo> statisticsInfosList = coreRealm.getConceptionEntitiesStatistics();
         Assert.assertNotNull(statisticsInfosList);
         Assert.assertTrue(statisticsInfosList.size()>1);
-
+/*
         for(EntityStatisticsInfo currentEntityStatisticsInfo:statisticsInfosList){
             if(!currentEntityStatisticsInfo.isSystemKind()){
                 Assert.assertNotNull(currentEntityStatisticsInfo.getEntityKindName());

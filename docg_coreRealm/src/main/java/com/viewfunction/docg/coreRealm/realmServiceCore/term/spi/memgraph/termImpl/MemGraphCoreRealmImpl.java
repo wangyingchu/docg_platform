@@ -325,6 +325,7 @@ public class MemGraphCoreRealmImpl extends Neo4JCoreRealmImpl implements MemGrap
                 "YIELD value\n" +
                 "RETURN label, value.count as count\n" +
                 "ORDER BY label";
+        cypherProcedureString ="MATCH (n) RETURN DISTINCT labels(n) as label,count(n) as count";
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
             List<String> attributesNameList = new ArrayList<>();
