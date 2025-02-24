@@ -215,9 +215,18 @@ public class CommonOperationUtil {
                     }
                     propertiesValueList.add(Cypher.listOf(orgLiteralValue));
                 } else if (propertyValue instanceof ZonedDateTime) {
-                    ZonedDateTime targetZonedDateTime = (ZonedDateTime) propertyValue;
-                    String targetZonedDateTimeString = targetZonedDateTime.toString();
-                    propertiesValueList.add(Functions2.datetime(Cypher.literalOf(targetZonedDateTimeString)));
+                    if (CoreRealmStorageImplTech.MEMGRAPH.toString().equals(CORE_REALM_STORAGE_IMPL_TECH)) {
+                        if (zonedDateTimeFormatter == null) {
+                            zonedDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+                        }
+                        ZonedDateTime targetZonedDateTime = (ZonedDateTime) propertyValue;
+                        String targetZonedDateTimeString = targetZonedDateTime.format(zonedDateTimeFormatter);
+                        propertiesValueList.add( Functions2.localDateTime(Cypher.literalOf(targetZonedDateTimeString)));
+                    }else{
+                        ZonedDateTime targetZonedDateTime = (ZonedDateTime) propertyValue;
+                        String targetZonedDateTimeString = targetZonedDateTime.toString();
+                        propertiesValueList.add(Functions2.datetime(Cypher.literalOf(targetZonedDateTimeString)));
+                    }
                 } else if (propertyValue instanceof Date) {
                     ZonedDateTime targetZonedDateTime = ZonedDateTime.ofInstant(((Date) propertyValue).toInstant(), systemDefaultZoneId);
                     String targetZonedDateTimeString = targetZonedDateTime.toString();
