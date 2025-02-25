@@ -887,6 +887,9 @@ public class MemGraphCoreRealmImpl extends Neo4JCoreRealmImpl implements MemGrap
         try {
             String modifyRelationEntityTypeCQL =
                     "CALL apoc.periodic.iterate(\"MATCH ()-[rel:`"+originalRelationKindName+"`]->() CALL apoc.refactor.setType(rel,'"+newRelationKindName+"') YIELD input, output RETURN input, output\",\"\",{batchSize:10000,parallel:true})";
+
+            modifyRelationEntityTypeCQL = "MATCH ()-[r]->() WHERE type(r) = '"+originalRelationKindName+"' SET type(r) = '"+newRelationKindName+"'";
+
             logger.debug("Generated Cypher Statement: {}", modifyRelationEntityTypeCQL);
             DataTransformer dataTransformer = new DataTransformer() {
                 @Override
