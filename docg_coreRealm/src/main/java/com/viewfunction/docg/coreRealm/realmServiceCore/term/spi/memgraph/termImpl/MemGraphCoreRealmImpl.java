@@ -2,11 +2,11 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.memgraph.termI
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.memgraph.dataTransformer.GetListKindMetaInfoTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.memgraph.dataTransformer.GetSingleConceptionKindTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.DataTransformer;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.memgraph.dataTransformer.GetListKindMetaInfoTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetLongFormatAggregatedReturnValueTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleAttributeValueTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
@@ -23,9 +23,11 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
+import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -319,13 +321,6 @@ public class MemGraphCoreRealmImpl extends Neo4JCoreRealmImpl implements MemGrap
     @Override
     public List<EntityStatisticsInfo> getConceptionEntitiesStatistics() throws CoreRealmServiceEntityExploreException {
         List<EntityStatisticsInfo> entityStatisticsInfoList = new ArrayList<>();
-        String cypherProcedureString = "CALL db.labels()\n" +
-                "YIELD label\n" +
-                "CALL apoc.cypher.run(\"MATCH (:`\"+label+\"`) RETURN count(*) as count\", null)\n" +
-                "YIELD value\n" +
-                "RETURN label, value.count as count\n" +
-                "ORDER BY label";
-        cypherProcedureString ="MATCH (n) RETURN DISTINCT labels(n) as label,count(n) as count";
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
             List<String> attributesNameList = new ArrayList<>();
@@ -344,8 +339,23 @@ public class MemGraphCoreRealmImpl extends Neo4JCoreRealmImpl implements MemGrap
                         Record nodeRecord = result.next();
                         String conceptionKindName = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._NameProperty).asString();
                         String conceptionKindDesc = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._DescProperty).asString();
-                        ZonedDateTime createDate = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._createDateProperty).asLocalDateTime().atZone(systemDefaultZoneId);
-                        ZonedDateTime lastModifyDate = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._lastModifyDateProperty).asLocalDateTime().atZone(systemDefaultZoneId);
+
+                        ZonedDateTime createDate = null;
+                        Object createDatePropertyObject = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._createDateProperty).asObject();
+                        if(createDatePropertyObject instanceof LocalDateTime){
+                            createDate = ((LocalDateTime)createDatePropertyObject).atZone(systemDefaultZoneId);
+                        }else{
+                            createDate = (ZonedDateTime)createDatePropertyObject;
+                        }
+
+                        ZonedDateTime lastModifyDate = null;
+                        Object lastModifyDatePropertyObject = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._lastModifyDateProperty).asObject();
+                        if(lastModifyDatePropertyObject instanceof LocalDateTime){
+                            lastModifyDate = ((LocalDateTime)lastModifyDatePropertyObject).atZone(systemDefaultZoneId);
+                        }else{
+                            lastModifyDate =(ZonedDateTime)lastModifyDatePropertyObject;
+                        }
+
                         String dataOrigin = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._dataOriginProperty).asString();
                         long conceptionKindUID = nodeRecord.get("id("+CypherBuilder.operationResultName+")").asLong();
                         String creatorId = nodeRecord.containsKey(CypherBuilder.operationResultName+"."+RealmConstant._creatorIdProperty) ?
@@ -366,13 +376,16 @@ public class MemGraphCoreRealmImpl extends Neo4JCoreRealmImpl implements MemGrap
             };
             workingGraphOperationExecutor.executeRead(conceptionKindInfoDataTransformer,queryCql);
 
+            String cypherProcedureString ="MATCH (n) RETURN DISTINCT labels(n) as label,count(n) as count";
+            logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
             DataTransformer queryResultDataTransformer = new DataTransformer() {
                 @Override
                 public Object transformResult(Result result) {
                     List<String> conceptionKindsNameWithDataList = new ArrayList<>();
                     while(result.hasNext()){
                         Record currentRecord = result.next();
-                        String entityKind = currentRecord.get("label").asString();
+                        String entityKind = currentRecord.get("label").asList().get(0).toString();
                         long entityCount = currentRecord.get("count").asLong();
                         conceptionKindsNameWithDataList.add(entityKind);
                         EntityStatisticsInfo currentEntityStatisticsInfo = null;
@@ -422,6 +435,166 @@ public class MemGraphCoreRealmImpl extends Neo4JCoreRealmImpl implements MemGrap
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
         return entityStatisticsInfoList;
+    }
+
+    @Override
+    public List<EntityStatisticsInfo> getRelationEntitiesStatistics() {
+        List<EntityStatisticsInfo> entityStatisticsInfoList = new ArrayList<>();
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            List<String> attributesNameList = new ArrayList<>();
+            Map<String,HashMap<String,Object>> relationKindMetaDataMap = new HashMap<>();
+            attributesNameList.add(RealmConstant._NameProperty);
+            attributesNameList.add(RealmConstant._DescProperty);
+            attributesNameList.add(RealmConstant._createDateProperty);
+            attributesNameList.add(RealmConstant._lastModifyDateProperty);
+            attributesNameList.add(RealmConstant._creatorIdProperty);
+            attributesNameList.add(RealmConstant._dataOriginProperty);
+            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(RealmConstant.RelationKindClass,null,attributesNameList);
+            DataTransformer relationKindInfoDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    while(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        String relationKindName = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._NameProperty).asString();
+                        String relationKindDesc = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._DescProperty).asString();
+                        ZonedDateTime createDate = nodeRecord.containsKey(CypherBuilder.operationResultName+"."+RealmConstant._createDateProperty) ?
+                                nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._createDateProperty).asLocalDateTime().atZone(systemDefaultZoneId) : null;
+                        ZonedDateTime lastModifyDate = nodeRecord.containsKey(CypherBuilder.operationResultName+"."+RealmConstant._lastModifyDateProperty) ?
+                                nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._lastModifyDateProperty).asLocalDateTime().atZone(systemDefaultZoneId) : null;
+                        String dataOrigin = nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._dataOriginProperty).asString();
+                        long conceptionKindUID = nodeRecord.get("id("+CypherBuilder.operationResultName+")").asLong();
+                        String creatorId = nodeRecord.containsKey(CypherBuilder.operationResultName+"."+RealmConstant._creatorIdProperty) ?
+                                nodeRecord.get(CypherBuilder.operationResultName+"."+RealmConstant._creatorIdProperty).asString():null;
+
+                        HashMap<String,Object> metaDataMap = new HashMap<>();
+                        metaDataMap.put(RealmConstant._NameProperty,relationKindName);
+                        metaDataMap.put(RealmConstant._DescProperty,relationKindDesc);
+                        metaDataMap.put(RealmConstant._createDateProperty,createDate);
+                        metaDataMap.put(RealmConstant._lastModifyDateProperty,lastModifyDate);
+                        metaDataMap.put(RealmConstant._creatorIdProperty,creatorId);
+                        metaDataMap.put(RealmConstant._dataOriginProperty,dataOrigin);
+                        metaDataMap.put("RelationKindUID",""+conceptionKindUID);
+                        relationKindMetaDataMap.put(relationKindName,metaDataMap);
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeRead(relationKindInfoDataTransformer,queryCql);
+
+            String cypherProcedureString = "MATCH ()-[r]->() RETURN type(r) AS relationshipType, count(*) AS count";
+            logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+            DataTransformer queryResultDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    List<String> conceptionKindsNameWithDataList = new ArrayList<>();
+                    while(result.hasNext()){
+                        Record currentRecord = result.next();
+                        String entityKind = currentRecord.get("relationshipType").asString();
+                        long entityCount = currentRecord.get("count").asLong();
+                        conceptionKindsNameWithDataList.add(entityKind);
+                        EntityStatisticsInfo currentEntityStatisticsInfo = null;
+                        if(entityKind.startsWith("DOCG_")){
+                            currentEntityStatisticsInfo = new EntityStatisticsInfo(
+                                    entityKind, EntityStatisticsInfo.kindType.RelationKind, true, entityCount);
+                        }else{
+                            if(relationKindMetaDataMap.containsKey(entityKind)){
+                                ZonedDateTime createDate = relationKindMetaDataMap.get(entityKind).containsKey(RealmConstant._createDateProperty) ?
+                                        (ZonedDateTime) (relationKindMetaDataMap.get(entityKind).get(RealmConstant._createDateProperty)) : null;
+                                ZonedDateTime lastModifyDate = relationKindMetaDataMap.get(entityKind).containsKey(RealmConstant._lastModifyDateProperty) ?
+                                        (ZonedDateTime) (relationKindMetaDataMap.get(entityKind).get(RealmConstant._lastModifyDateProperty)) : null;
+                                currentEntityStatisticsInfo = new EntityStatisticsInfo(
+                                        entityKind, EntityStatisticsInfo.kindType.RelationKind, false, entityCount,
+                                        relationKindMetaDataMap.get(entityKind).get(RealmConstant._DescProperty).toString(),
+                                        relationKindMetaDataMap.get(entityKind).get("RelationKindUID").toString(),
+                                        createDate,
+                                        lastModifyDate,
+                                        relationKindMetaDataMap.get(entityKind).get(RealmConstant._creatorIdProperty).toString(),
+                                        relationKindMetaDataMap.get(entityKind).get(RealmConstant._dataOriginProperty).toString()
+                                );
+                            }
+                        }
+                        if(currentEntityStatisticsInfo != null){
+                            entityStatisticsInfoList.add(currentEntityStatisticsInfo);
+                        }
+                    }
+                    //如果 ConceptionKind 尚未有实体数据，则 CALL db.relationshipTypes() 不会返回该 Kind 记录，需要从 ConceptionKind 列表反向查找
+                    Set<String> allConceptionKindNameSet = relationKindMetaDataMap.keySet();
+                    for(String currentKindName :allConceptionKindNameSet ){
+                        if(!conceptionKindsNameWithDataList.contains(currentKindName)){
+                            //当前 ConceptionKind 中无数据，需要手动添加信息
+                            ZonedDateTime createDate = relationKindMetaDataMap.get(currentKindName).containsKey(RealmConstant._createDateProperty) ?
+                                    (ZonedDateTime) (relationKindMetaDataMap.get(currentKindName).get(RealmConstant._createDateProperty)) : null;
+                            ZonedDateTime lastModifyDate = relationKindMetaDataMap.get(currentKindName).containsKey(RealmConstant._lastModifyDateProperty) ?
+                                    (ZonedDateTime) (relationKindMetaDataMap.get(currentKindName).get(RealmConstant._lastModifyDateProperty)) : null;
+                            EntityStatisticsInfo currentEntityStatisticsInfo = new EntityStatisticsInfo(
+                                    currentKindName, EntityStatisticsInfo.kindType.ConceptionKind, false, 0,
+                                    relationKindMetaDataMap.get(currentKindName).get(RealmConstant._DescProperty).toString(),
+                                    relationKindMetaDataMap.get(currentKindName).get("RelationKindUID").toString(),
+                                    createDate,
+                                    lastModifyDate,
+                                    relationKindMetaDataMap.get(currentKindName).get(RealmConstant._creatorIdProperty).toString(),
+                                    relationKindMetaDataMap.get(currentKindName).get(RealmConstant._dataOriginProperty).toString()
+                            );
+                            entityStatisticsInfoList.add(currentEntityStatisticsInfo);
+                        }
+                    }
+                    return null;
+                }
+            };
+
+            workingGraphOperationExecutor.executeRead(queryResultDataTransformer,cypherProcedureString);
+        } catch (CoreRealmServiceEntityExploreException e) {
+            throw new RuntimeException(e);
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return entityStatisticsInfoList;
+    }
+
+    @Override
+    public List<ConceptionKindCorrelationInfo> getConceptionKindsCorrelation() {
+        List<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoList = new ArrayList<>();
+        String cypherProcedureString = "CALL apoc.meta.graph";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            DataTransformer queryResultDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+
+                    if(result.hasNext()){
+                        Record currentRecord = result.next();
+                        List nodesList = currentRecord.get("nodes").asList();
+
+                        Map<String,String> conceptionKindMetaInfoMap = new HashMap<>();
+                        for(Object currentNode:nodesList){
+                            Node currentNeo4JNode = (Node)currentNode;
+                            conceptionKindMetaInfoMap.put(""+currentNeo4JNode.id(),currentNeo4JNode.get("name").asString());
+                        }
+                        List relationList =  currentRecord.get("relationships").asList();
+                        for(Object currenRelation:relationList){
+                            Relationship currentNeo4JRelation = (Relationship)currenRelation;
+                            String relationKindName = currentNeo4JRelation.type();
+                            String startConceptionKindName = conceptionKindMetaInfoMap.get(""+currentNeo4JRelation.startNodeId());
+                            String targetConceptionKindName = conceptionKindMetaInfoMap.get(""+currentNeo4JRelation.endNodeId());
+                            int relationEntityCount = currentNeo4JRelation.get("count").asInt();
+                            conceptionKindCorrelationInfoList.add(new ConceptionKindCorrelationInfo(startConceptionKindName,
+                                    targetConceptionKindName,relationKindName,relationEntityCount)
+                            );
+                        }
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeRead(queryResultDataTransformer,cypherProcedureString);
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return conceptionKindCorrelationInfoList;
     }
 
     @Override
