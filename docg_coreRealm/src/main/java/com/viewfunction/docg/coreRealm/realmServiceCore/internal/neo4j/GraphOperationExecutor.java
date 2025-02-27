@@ -4,6 +4,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.config.PropertiesHandler;
 import org.neo4j.driver.*;
 
+import java.util.concurrent.TimeUnit;
+
 import static org.neo4j.driver.Values.parameters;
 
 public class GraphOperationExecutor<T> implements AutoCloseable{
@@ -13,10 +15,23 @@ public class GraphOperationExecutor<T> implements AutoCloseable{
             PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_USER) : "";
     private static final String password = PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_PASSWORD) != null?
             PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_PASSWORD) : "";
+    private static final boolean usingConnectionPool = PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_USING_CONNECTION_POOL) != null ?
+            Boolean.parseBoolean(PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_USING_CONNECTION_POOL)):false;
+    private static final int maxConnectionPoolSize = PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_MAX_CONNECTION_POOL_SIZE) != null?
+            Integer.parseInt(PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_MAX_CONNECTION_POOL_SIZE)):100;
+    private static final int connectionAcquisitionTimeoutSeconds = PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_CONNECTION_ACQUISITION_TIMEOUT_SECONDS) != null?
+            Integer.parseInt(PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_CONNECTION_ACQUISITION_TIMEOUT_SECONDS)):5;;
     private Driver driver;
 
     public GraphOperationExecutor(){
-        driver = GraphDatabase.driver( uri, AuthTokens.basic( user, password ) );
+        if(usingConnectionPool){
+            driver = GraphDatabase.driver( uri, AuthTokens.basic( user, password ),
+                    Config.builder().
+                            withMaxConnectionPoolSize(maxConnectionPoolSize).
+                            withConnectionAcquisitionTimeout(connectionAcquisitionTimeoutSeconds, TimeUnit.SECONDS).build());
+        }else{
+            driver = GraphDatabase.driver( uri, AuthTokens.basic( user, password ));
+        }
     }
 
     public T executeWrite(DataTransformer<T> dataTransformer, String operationMessage, Object... keysAndValues){

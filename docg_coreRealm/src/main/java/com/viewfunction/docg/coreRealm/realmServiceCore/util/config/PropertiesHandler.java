@@ -30,6 +30,9 @@ public class PropertiesHandler {
     public static String NEO4J_URI = "NEO4J_URI";
     public static String NEO4J_USER = "NEO4J_USER";
     public static String NEO4J_PASSWORD = "NEO4J_PASSWORD";
+    public static String NEO4J_USING_CONNECTION_POOL = "NEO4J_USING_CONNECTION_POOL";
+    public static String NEO4J_MAX_CONNECTION_POOL_SIZE = "NEO4J_MAX_CONNECTION_POOL_SIZE";
+    public static String NEO4J_CONNECTION_ACQUISITION_TIMEOUT_SECONDS = "NEO4J_CONNECTION_ACQUISITION_TIMEOUT_SECONDS";
 
     //ArcadeDB Implements configuration properties
     public static String ARCADEDB_SERVER_ADDRESS = "ARCADEDB_SERVER_ADDRESS";
