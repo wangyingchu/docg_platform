@@ -38,23 +38,23 @@ public class DefaultRelationDBExternalAttributesValueAccessProcessor implements 
             String userPWD = null;
 
             Map<String,Object> metaConfigItems = attributesViewKind.getMetaConfigItems();
-            if(metaConfigItems.containsValue(_ExternalRelationDB_DefaultDBName)){
-                dbName = attributesViewKind.getMetaConfigItem(_ExternalRelationDB_DefaultDBName).toString();
+            if(metaConfigItems.containsKey(_ExternalRelationDB_DefaultDBName)){
+                dbName = metaConfigItems.get(_ExternalRelationDB_DefaultDBName).toString();
             }
-            if(metaConfigItems.containsValue(_ExternalRelationDB_DefaultTableName)){
+            if(metaConfigItems.containsKey(_ExternalRelationDB_DefaultTableName)){
                 tableName = attributesViewKind.getMetaConfigItem(_ExternalRelationDB_DefaultTableName).toString();
             }
-            if(metaConfigItems.containsValue(_ExternalRelationDB_Host)){
+            if(metaConfigItems.containsKey(_ExternalRelationDB_Host)){
                 host = attributesViewKind.getMetaConfigItem(_ExternalRelationDB_Host).toString();
             }
-            if(metaConfigItems.containsValue(_ExternalRelationDB_Port)){
+            if(metaConfigItems.containsKey(_ExternalRelationDB_Port)){
                 port = attributesViewKind.getMetaConfigItem(_ExternalRelationDB_Port).toString();
             }
-            if(metaConfigItems.containsValue(_ExternalRelationDBPORT_UserName)){
+            if(metaConfigItems.containsKey(_ExternalRelationDBPORT_UserName)){
                 userName = attributesViewKind.getMetaConfigItem(_ExternalRelationDBPORT_UserName).toString();
             }
-            if(metaConfigItems.containsValue(_ExternalRelationDBPORT_UserPWD)){
-                userPWD = attributesViewKind.getMetaConfigItem(_ExternalRelationDBPORT_UserPWD).toString();
+            if(metaConfigItems.containsKey(_ExternalRelationDBPORT_UserPWD)){
+                userPWD = attributesViewKind.getMetaConfigItem(_ExternalRelationDBPORT_UserPWD).toString().trim();
             }
 
             List<AttributeKind> attributeKindList = attributesViewKind.getContainsAttributeKinds();
