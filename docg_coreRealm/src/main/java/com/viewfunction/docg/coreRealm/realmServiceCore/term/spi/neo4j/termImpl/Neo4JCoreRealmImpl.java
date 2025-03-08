@@ -135,6 +135,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             exception.setCauseMessage("CoreRealm does not contains ConceptionKind with name " + conceptionKindName + ".");
             throw exception;
         }else{
+            boolean operationResult;
             if(deleteExistEntities){
                 targetConceptionKind.purgeAllEntities();
             }
@@ -152,11 +153,22 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                     String conceptionKindId = ((Neo4JConceptionKindImpl)resultConceptionKind).getConceptionKindUID();
                     Neo4JConceptionKindImpl resultNeo4JConceptionKindImplForCacheOperation = new Neo4JConceptionKindImpl(getCoreRealmName(),conceptionKindName,null,conceptionKindId);
                     executeConceptionKindCacheOperation(resultNeo4JConceptionKindImplForCacheOperation,CacheOperationType.DELETE);
-                    return true;
+                    operationResult = true;
                 }
             }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
+            if(operationResult){
+                List<RelationAttachKind> relationAttachKindList = getRelationAttachKinds(null,null,conceptionKindName,null,null,null);
+                for(RelationAttachKind currentRelationAttachKind:relationAttachKindList){
+                    removeRelationAttachKind(currentRelationAttachKind.getRelationAttachKindUID());
+                }
+                relationAttachKindList = getRelationAttachKinds(null,null,null,conceptionKindName,null,null);
+                for(RelationAttachKind currentRelationAttachKind:relationAttachKindList){
+                    removeRelationAttachKind(currentRelationAttachKind.getRelationAttachKindUID());
+                }
+            }
+            return operationResult;
         }
     }
 
@@ -701,6 +713,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             exception.setCauseMessage("RelationKind does not contains entity with UID " + relationKindName + ".");
             throw exception;
         }else{
+            boolean operationResult;
             if(deleteExistEntities){
                 targetRelationKind.purgeAllRelationEntities();
             }
@@ -718,11 +731,18 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                     String resultRelationKindUID = ((Neo4JRelationKindImpl)resultKind).getRelationKindUID();
                     Neo4JRelationKindImpl resultNeo4JRelationKindImplForCacheOperation = new Neo4JRelationKindImpl(getCoreRealmName(),relationKindName,null,resultRelationKindUID);
                     executeRelationKindCacheOperation(resultNeo4JRelationKindImplForCacheOperation,CacheOperationType.DELETE);
-                    return true;
+                    operationResult = true;
                 }
             }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
+            if(operationResult){
+                List<RelationAttachKind> relationAttachKindList = getRelationAttachKinds(null,null,null,null,relationKindName,null);
+                for(RelationAttachKind currentRelationAttachKind:relationAttachKindList){
+                    removeRelationAttachKind(currentRelationAttachKind.getRelationAttachKindUID());
+                }
+            }
+            return operationResult;
         }
     }
 
