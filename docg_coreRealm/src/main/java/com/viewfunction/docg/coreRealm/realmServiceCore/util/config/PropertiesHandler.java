@@ -53,6 +53,7 @@ public class PropertiesHandler {
 
     //TuGraph Implements configuration properties
     public static String NEO4J_SUPPORT_EXPLICIT_TRANSACTION = "NEO4J_SUPPORT_EXPLICIT_TRANSACTION";
+    public static String NEO4J_DATABASE_NAME = "NEO4J_DATABASE_NAME";
 
     public static String DEFAULT_REALM_NAME = "DEFAULT_REALM_NAME";
 

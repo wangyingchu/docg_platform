@@ -23,8 +23,9 @@ public class GraphOperationExecutor<T> implements AutoCloseable{
             Integer.parseInt(PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_CONNECTION_ACQUISITION_TIMEOUT_SECONDS)):5;
     private static final boolean supportExplicitTransaction = PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_SUPPORT_EXPLICIT_TRANSACTION) != null ?
             Boolean.parseBoolean(PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_SUPPORT_EXPLICIT_TRANSACTION)):true;
+    private String databaseName = PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_DATABASE_NAME) != null?
+            PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_DATABASE_NAME) : null;
     private Driver driver;
-    private String databaseName;
 
     public GraphOperationExecutor(){
         if(usingConnectionPool){
