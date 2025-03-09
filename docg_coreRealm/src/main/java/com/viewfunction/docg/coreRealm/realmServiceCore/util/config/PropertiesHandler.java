@@ -51,6 +51,9 @@ public class PropertiesHandler {
     //MemGraph Implements configuration properties
     public static String MEMGRAPH_SUPPORT_MULTI_GRAPH = "MEMGRAPH_SUPPORT_MULTI_GRAPH";
 
+    //TuGraph Implements configuration properties
+    public static String NEO4J_SUPPORT_EXPLICIT_TRANSACTION = "NEO4J_SUPPORT_EXPLICIT_TRANSACTION";
+
     public static String DEFAULT_REALM_NAME = "DEFAULT_REALM_NAME";
 
     public static String getPropertyValue(String propertyName) {
