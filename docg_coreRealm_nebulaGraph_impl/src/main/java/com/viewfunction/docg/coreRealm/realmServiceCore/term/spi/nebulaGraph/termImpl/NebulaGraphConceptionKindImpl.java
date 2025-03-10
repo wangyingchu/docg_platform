@@ -1,11 +1,10 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.nebulaGraph.termImpl;
 
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.RelationKindMatchLogic;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmFunctionNotSupportedException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleCalculable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.TemporalScaleCalculable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.nebulaGraph.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.nebulaGraph.util.GraphOperationExecutorHelper;
@@ -149,6 +148,11 @@ public class NebulaGraphConceptionKindImpl implements NebulaGraphConceptionKind 
     }
 
     @Override
+    public Map<Object, Number> statisticEntityGroupByAttributeValue(QueryParameters queryParameters, String attributeName) throws CoreRealmServiceEntityExploreException {
+        return Map.of();
+    }
+
+    @Override
     public String getConceptionKindName() {
         return null;
     }
@@ -234,12 +238,47 @@ public class NebulaGraphConceptionKindImpl implements NebulaGraphConceptionKind 
     }
 
     @Override
+    public EntitiesOperationResult purgeExclusiveEntities() throws CoreRealmServiceRuntimeException {
+        return null;
+    }
+
+    @Override
     public Long countEntities(AttributesParameters attributesParameters, boolean isDistinctMode) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
         return null;
     }
 
     @Override
     public ConceptionEntitiesRetrieveResult getEntities(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
+    @Override
+    public Long countEntitiesWithRelationsMatch(AttributesParameters attributesParameters, boolean isDistinctMode, RelationMatchParameters relationMatchParameters) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+        return 0l;
+    }
+
+    @Override
+    public ConceptionEntitiesRetrieveResult getEntitiesWithRelationsMatch(QueryParameters queryParameters, RelationMatchParameters relationMatchParameters) throws CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
+    @Override
+    public Long countEntitiesWithClassificationsAttached(AttributesParameters attributesParameters, boolean isDistinctMode, Set<ClassificationAttachParameters> classificationAttachParametersSet) throws CoreRealmServiceEntityExploreException {
+        return 0l;
+    }
+
+    @Override
+    public ConceptionEntitiesRetrieveResult getEntitiesWithClassificationsAttached(QueryParameters queryParameters, Set<ClassificationAttachParameters> classificationAttachParametersSet) throws CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
+    @Override
+    public Long countEntitiesWithClassificationsAttached(AttributesParameters attributesParameters, boolean isDistinctMode, Set<ClassificationAttachParameters> classificationAttachParametersSet, FixConceptionEntityAttachParameters fixConceptionEntityAttachParameters) throws CoreRealmServiceEntityExploreException {
+        return 0l;
+    }
+
+    @Override
+    public ConceptionEntitiesRetrieveResult getEntitiesWithClassificationsAttached(QueryParameters queryParameters, Set<ClassificationAttachParameters> classificationAttachParametersSet, FixConceptionEntityAttachParameters fixConceptionEntityAttachParameters) throws CoreRealmServiceEntityExploreException {
         return null;
     }
 
@@ -255,6 +294,16 @@ public class NebulaGraphConceptionKindImpl implements NebulaGraphConceptionKind 
 
     @Override
     public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNames(List<String> attributeNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
+    @Override
+    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByViewKindsWithRelationsMatch(List<String> attributesViewKindNames, QueryParameters exploreParameters, RelationMatchParameters relationMatchParameters) throws CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
+    @Override
+    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNamesWithRelationsMatch(List<String> attributeNames, QueryParameters exploreParameters, RelationMatchParameters relationMatchParameters) throws CoreRealmServiceEntityExploreException {
         return null;
     }
 
@@ -374,7 +423,62 @@ public class NebulaGraphConceptionKindImpl implements NebulaGraphConceptionKind 
     }
 
     @Override
+    public EntitiesOperationStatistics attachTimeScaleEvents(QueryParameters queryParameters, String timeEventYearAttributeName, String timeEventMonthAttributeName, String timeEventDayAttributeName, String timeEventHourAttributeName, String timeEventMinuteAttributeName, String timeFlowName, String eventComment, Map<String, Object> eventData, TimeFlow.TimeScaleGrade timeScaleGrade) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
+    @Override
     public EntitiesOperationStatistics attachGeospatialScaleEvents(QueryParameters queryParameters, String geospatialEventAttributeName, GeospatialRegion.GeospatialProperty geospatialPropertyType, String geospatialRegionName, String eventComment, Map<String, Object> eventData, GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
+    @Override
+    public EntitiesOperationStatistics attachGeospatialScaleEventsByEntityGeometryContent(QueryParameters queryParameters, GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel, GeospatialScaleCalculable.SpatialPredicateType spatialPredicateType, GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade, String geospatialRegionName, String eventComment, Map<String, Object> eventData) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
+    @Override
+    public TimeScaleEventAndConceptionEntityPairRetrieveResult getAttachedTimeScaleEventAndConceptionEntityPairs(QueryParameters queryParameters) {
+        return null;
+    }
+
+    @Override
+    public TimeScaleEventsRetrieveResult getAttachedTimeScaleEvents(QueryParameters queryParameters) {
+        return null;
+    }
+
+    @Override
+    public Long countAttachedTimeScaleEvents(AttributesParameters attributesParameters, boolean isDistinctMode) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+        return 0l;
+    }
+
+    @Override
+    public GeospatialScaleEventAndConceptionEntityPairRetrieveResult getAttachedGeospatialScaleEventAndConceptionEntityPairs(QueryParameters queryParameters) {
+        return null;
+    }
+
+    @Override
+    public GeospatialScaleEventsRetrieveResult getAttachedGeospatialScaleEvents(QueryParameters queryParameters) {
+        return null;
+    }
+
+    @Override
+    public Long countAttachedGeospatialScaleEvents(AttributesParameters attributesParameters, boolean isDistinctMode) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+        return 0l;
+    }
+
+    @Override
+    public EntitiesOperationStatistics joinConceptionKinds(String[] newKindNames) throws CoreRealmServiceRuntimeException {
+        return null;
+    }
+
+    @Override
+    public EntitiesOperationStatistics retreatFromConceptionKind(String kindName) throws CoreRealmServiceRuntimeException {
+        return null;
+    }
+
+    @Override
+    public ConceptionKindDataCapabilityInfo getConceptionKindDataCapabilityStatistics() {
         return null;
     }
 
