@@ -10,6 +10,6 @@ public class TuGraphCoreRealmSystemUtil {
     private static String defaultDatabaseName = PropertiesHandler.getPropertyValue(PropertiesHandler.NEO4J_DEFAULT_DATABASE_NAME);
 
     public static CoreRealm getDefaultCoreRealm(){
-        return new TuGraphCoreRealmImpl(defaultDatabaseName);
+        return new TuGraphCoreRealmImpl();
     }
 }
