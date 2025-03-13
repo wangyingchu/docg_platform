@@ -87,6 +87,11 @@ public class DefaultRelationDBExternalAttributesValueAccessProcessor implements 
 
     private List<Map<String, Object>> doQuery(String host,String port, String dbName,String user,String userPWD,String QuerySQL,Map<String,AttributeDataType> attributeDataTypeMap){
         int dbPort =Integer.parseInt(port);
+        try {
+            Class.forName(JDBC_DRIVER);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         try (Connection connection = DriverManager.getConnection(String.format(URL_PATTERN, host, dbPort, dbName), user, userPWD)) {
             List<Map<String, Object>> resultList = new ArrayList<>();
             Statement statement = connection.createStatement();
