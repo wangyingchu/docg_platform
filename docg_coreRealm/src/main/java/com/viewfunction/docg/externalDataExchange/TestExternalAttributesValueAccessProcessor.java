@@ -38,4 +38,9 @@ public class TestExternalAttributesValueAccessProcessor implements ExternalAttri
         System.out.println(attributeValueList);
         return 100000L;
     }
+
+    @Override
+    public Long deleteEntityExternalAttributesValues(AttributesViewKind attributesViewKind, AttributesParameters attributesParameters, List<AttributeValue> attributeValueList) {
+        return 0l;
+    }
 }

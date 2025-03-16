@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.relationDB;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.SortingItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.*;
@@ -14,8 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.Connection;
 import java.util.List;
 
-import static org.jooq.impl.DSL.field;
-import static org.jooq.impl.DSL.table;
+import static org.jooq.impl.DSL.*;
 
 public class RelationDBQueryBuilder {
 
@@ -150,6 +150,101 @@ public class RelationDBQueryBuilder {
             query = selectConditionStep.getQuery();
         }else{
             query = create.select(field("*")).from(table(dataTableName));
+        }
+        String sql = query.getSQL(ParamType.NAMED_OR_INLINED);
+        logger.debug("Generated SQL Statement: {}", sql);
+        return sql;
+    }
+
+    public static String buildCountQuerySQL(String dataTableName, AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException{
+        //RelationDB in DOCG mainly use Doris as its underlying database
+        DSLContext create = DSL.using((Connection) null, SQLDialect.MYSQL);
+        Query query = null;
+        if(attributesParameters != null){
+            FilteringItem defaultFilteringItem = attributesParameters.getDefaultFilteringItem();
+            List<FilteringItem> andFilteringItemList = attributesParameters.getAndFilteringItemsList();
+            List<FilteringItem> orFilteringItemList = attributesParameters.getOrFilteringItemsList();
+            if (defaultFilteringItem == null) {
+                if ((andFilteringItemList != null && andFilteringItemList.size() > 0) ||
+                        (orFilteringItemList != null && orFilteringItemList.size() > 0)) {
+                    logger.error("Default Filtering Item is required");
+                    CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+                    e.setCauseMessage("Default Filtering Item is required");
+                    throw e;
+                }else{
+                    query = create.select(count(field("*"))).from(table(dataTableName));
+                }
+            }else{
+                Condition defaultCondition = generateQueryCondition(defaultFilteringItem);
+                if(andFilteringItemList != null && andFilteringItemList.size() > 0){
+                    for(FilteringItem currentAndFilteringItem:andFilteringItemList){
+                        Condition currentAndCondition = generateQueryCondition(currentAndFilteringItem);
+                        if(currentAndCondition != null){
+                            defaultCondition = defaultCondition.and(currentAndCondition);
+                        }
+                    }
+                }
+                if(orFilteringItemList != null && orFilteringItemList.size() > 0){
+                    for(FilteringItem currentOrFilteringItem:orFilteringItemList){
+                        Condition currentOrCondition = generateQueryCondition(currentOrFilteringItem);
+                        if(currentOrCondition != null){
+                            defaultCondition = defaultCondition.or(currentOrCondition);
+                        }
+                    }
+                }
+                SelectConditionStep selectConditionStep = create.select(count(field("*"))).from(table(dataTableName)).where(defaultCondition);
+                query = selectConditionStep.getQuery();
+            }
+        }else{
+            query = create.select(count(field("*"))).from(table(dataTableName));
+        }
+
+        String sql = query.getSQL(ParamType.NAMED_OR_INLINED);
+        logger.debug("Generated SQL Statement: {}", sql);
+        return sql;
+    }
+
+    public static String buildDeleteQuerySQL(String dataTableName, AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException{
+        //RelationDB in DOCG mainly use Doris as its underlying database
+        DSLContext create = DSL.using((Connection) null, SQLDialect.MYSQL);
+        Query query = null;
+        if(attributesParameters != null){
+            FilteringItem defaultFilteringItem = attributesParameters.getDefaultFilteringItem();
+            List<FilteringItem> andFilteringItemList = attributesParameters.getAndFilteringItemsList();
+            List<FilteringItem> orFilteringItemList = attributesParameters.getOrFilteringItemsList();
+            if (defaultFilteringItem == null) {
+                if ((andFilteringItemList != null && andFilteringItemList.size() > 0) ||
+                        (orFilteringItemList != null && orFilteringItemList.size() > 0)) {
+                    logger.error("Default Filtering Item is required");
+                    CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+                    e.setCauseMessage("Default Filtering Item is required");
+                    throw e;
+                }else{
+                    query = create.deleteFrom(table(dataTableName)).returning();
+                }
+            }else{
+                Condition defaultCondition = generateQueryCondition(defaultFilteringItem);
+                if(andFilteringItemList != null && andFilteringItemList.size() > 0){
+                    for(FilteringItem currentAndFilteringItem:andFilteringItemList){
+                        Condition currentAndCondition = generateQueryCondition(currentAndFilteringItem);
+                        if(currentAndCondition != null){
+                            defaultCondition = defaultCondition.and(currentAndCondition);
+                        }
+                    }
+                }
+                if(orFilteringItemList != null && orFilteringItemList.size() > 0){
+                    for(FilteringItem currentOrFilteringItem:orFilteringItemList){
+                        Condition currentOrCondition = generateQueryCondition(currentOrFilteringItem);
+                        if(currentOrCondition != null){
+                            defaultCondition = defaultCondition.or(currentOrCondition);
+                        }
+                    }
+                }
+                DeleteConditionStep deleteConditionStep = create.deleteFrom(table(dataTableName)).where(defaultCondition);
+                query = deleteConditionStep.returning();
+            }
+        }else{
+            query = create.deleteFrom(table(dataTableName)) .returning();
         }
         String sql = query.getSQL(ParamType.NAMED_OR_INLINED);
         logger.debug("Generated SQL Statement: {}", sql);

@@ -193,8 +193,55 @@ public interface Neo4JExternalAttributesValueAccessible extends ExternalAttribut
                     Class<?> externalAttributesValueAccessProcessorClass = Class.forName(externalAttributesValueAccessProcessorID);
                     ExternalAttributesValueAccessProcessor externalAttributesValueAccessProcessor =
                             (ExternalAttributesValueAccessProcessor)externalAttributesValueAccessProcessorClass.getDeclaredConstructor().newInstance();
-
                     return externalAttributesValueAccessProcessor.countEntityExternalAttributesValues(attributesViewKind,attributesParameters,attributeValueList);
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                } catch (InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                } catch (InstantiationException e) {
+                    throw new RuntimeException(e);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                } catch (NoSuchMethodException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return null;
+    }
+
+    public default Long deleteEntityExternalAttributesValues(AttributesViewKind attributesViewKind, AttributesParameters attributesParameters)
+            throws CoreRealmServiceEntityExploreException{
+        if(attributesViewKind != null){
+            checkAttributesViewKindValidStatus(attributesViewKind);
+            if(attributesParameters != null){
+                checkAttributesViewKindAndAttributesParametersCompatibility(attributesViewKind,attributesParameters);
+            }
+            List<AttributeValue> attributeValueList = null;
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                String cypherProcedureString1 = "MATCH (targetNode) WHERE id(targetNode) = " + this.getEntityUID()+"\n"+
+                        "RETURN targetNode as "+CypherBuilder.operationResultName;
+                GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer = new GetSingleConceptionEntityTransformer(null,workingGraphOperationExecutor);
+                Object conceptionEntityObj = workingGraphOperationExecutor.executeRead(getSingleConceptionEntityTransformer,cypherProcedureString1);
+                ConceptionEntity conceptionEntity = conceptionEntityObj!= null ? (ConceptionEntity)conceptionEntityObj : null;
+                attributeValueList = conceptionEntity.getAttributes();
+            } finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+
+            Object _ExternalAttributesValueAccessProcessorID = attributesViewKind.getMetaConfigItem(ExternalAttributesValueAccessProcessorID);
+            if(_ExternalAttributesValueAccessProcessorID == null){
+                CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+                exception.setCauseMessage("ExternalAttributesValueAccessProcessor is required");
+                throw exception;
+            }else{
+                String externalAttributesValueAccessProcessorID = _ExternalAttributesValueAccessProcessorID.toString();
+                try {
+                    Class<?> externalAttributesValueAccessProcessorClass = Class.forName(externalAttributesValueAccessProcessorID);
+                    ExternalAttributesValueAccessProcessor externalAttributesValueAccessProcessor =
+                            (ExternalAttributesValueAccessProcessor)externalAttributesValueAccessProcessorClass.getDeclaredConstructor().newInstance();
+                    return externalAttributesValueAccessProcessor.deleteEntityExternalAttributesValues(attributesViewKind,attributesParameters,attributeValueList);
                 } catch (ClassNotFoundException e) {
                     throw new RuntimeException(e);
                 } catch (InvocationTargetException e) {
@@ -345,91 +392,4 @@ public interface Neo4JExternalAttributesValueAccessible extends ExternalAttribut
             throw exception;
         }
     }
-
-
-
-
-
-
-    private void buildQueryIndex(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException {
-        if (queryParameters != null) {
-            int defaultReturnRecordNumber = 10000;
-
-            int skipRecordNumber = 0;
-            int limitRecordNumber = 0;
-
-            int startPage = queryParameters.getStartPage();
-            int endPage = queryParameters.getEndPage();
-            int pageSize = queryParameters.getPageSize();
-            int resultNumber = queryParameters.getResultNumber();
-            boolean isDistinctMode = queryParameters.isDistinctMode();
-            List<SortingItem> sortingItemList = queryParameters.getSortingItems();
-
-            if (sortingItemList.size() > 0) {
-                for (int i = 0; i < sortingItemList.size(); i++) {
-                    SortingItem currentSortingItem = sortingItemList.get(i);
-                    String attributeName = currentSortingItem.getAttributeName();
-                    QueryParameters.SortingLogic sortingLogic = currentSortingItem.getSortingLogic();
-                    switch (sortingLogic) {
-                        case ASC:
-                            //
-                            break;
-                        case DESC:
-                            //
-                    }
-                }
-            }
-
-            if (startPage != 0) {
-                if (startPage < 0) {
-                    String exceptionMessage = "start page must great then zero";
-                    CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
-                    coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
-                    throw coreRealmServiceEntityExploreException;
-                }
-                if (pageSize < 0) {
-                    String exceptionMessage = "page size must great then zero";
-                    CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
-                    coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
-                    throw coreRealmServiceEntityExploreException;
-                }
-
-                int runtimePageSize = pageSize != 0 ? pageSize : 50;
-                int runtimeStartPage = startPage - 1;
-
-                if (endPage != 0) {
-                    //get data from start page to end page, each page has runtimePageSize number of record
-                    if (endPage < 0 || endPage <= startPage) {
-                        String exceptionMessage = "end page must great than start page";
-                        CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
-                        coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
-                        throw coreRealmServiceEntityExploreException;
-                    }
-                    int runtimeEndPage = endPage - 1;
-
-                    skipRecordNumber = runtimePageSize * runtimeStartPage;
-                    limitRecordNumber = (runtimeEndPage - runtimeStartPage) * runtimePageSize;
-                } else {
-                    //filter the data before the start page
-                    limitRecordNumber = runtimePageSize * runtimeStartPage;
-                }
-            } else {
-                //if there is no page parameters,use resultNumber to control result information number
-                if (resultNumber != 0) {
-                    if (resultNumber < 0) {
-                        String exceptionMessage = "result number must great then zero";
-                        CoreRealmServiceEntityExploreException coreRealmServiceEntityExploreException = new CoreRealmServiceEntityExploreException();
-                        coreRealmServiceEntityExploreException.setCauseMessage(exceptionMessage);
-                        throw coreRealmServiceEntityExploreException;
-                    }
-                    limitRecordNumber = resultNumber;
-                }
-            }
-
-            if (limitRecordNumber == 0) {
-                limitRecordNumber = defaultReturnRecordNumber;
-            }
-        }
-    }
-
 }

@@ -17,4 +17,8 @@ public interface ExternalAttributesValueAccessProcessor {
     public Long countEntityExternalAttributesValues(AttributesViewKind attributesViewKind,
                                                     AttributesParameters attributesParameters,
                                                     List<AttributeValue> attributeValueList);
+
+    public Long deleteEntityExternalAttributesValues(AttributesViewKind attributesViewKind,
+                                                    AttributesParameters attributesParameters,
+                                                    List<AttributeValue> attributeValueList);
 }

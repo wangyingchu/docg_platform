@@ -18,4 +18,6 @@ public interface ExternalAttributesValueAccessible {
     public Long countEntityExternalAttributesValues(AttributesViewKind attributesViewKind,
                                                     AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException;
 
+    public Long deleteEntityExternalAttributesValues(AttributesViewKind attributesViewKind,
+                                                    AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException;
 }

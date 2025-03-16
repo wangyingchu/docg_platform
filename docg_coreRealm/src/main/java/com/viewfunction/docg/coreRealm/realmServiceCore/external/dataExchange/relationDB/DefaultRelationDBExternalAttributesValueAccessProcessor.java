@@ -82,7 +82,108 @@ public class DefaultRelationDBExternalAttributesValueAccessProcessor implements 
 
     @Override
     public Long countEntityExternalAttributesValues(AttributesViewKind attributesViewKind, AttributesParameters attributesParameters, List<AttributeValue> attributeValueList) {
-        return 0l;
+        if(attributesViewKind != null){
+            String dbName = null;
+            String tableName = null;
+            String host = null;
+            String port = null;
+            String userName = null;
+            String userPWD = null;
+
+            Map<String,Object> metaConfigItems = attributesViewKind.getMetaConfigItems();
+            if(metaConfigItems.containsKey(_ExternalRelationDB_DefaultDBName)){
+                dbName = metaConfigItems.get(_ExternalRelationDB_DefaultDBName).toString();
+            }
+            if(metaConfigItems.containsKey(_ExternalRelationDB_DefaultTableName)){
+                tableName = attributesViewKind.getMetaConfigItem(_ExternalRelationDB_DefaultTableName).toString();
+            }
+            if(metaConfigItems.containsKey(_ExternalRelationDB_Host)){
+                host = attributesViewKind.getMetaConfigItem(_ExternalRelationDB_Host).toString();
+            }
+            if(metaConfigItems.containsKey(_ExternalRelationDB_Port)){
+                port = attributesViewKind.getMetaConfigItem(_ExternalRelationDB_Port).toString();
+            }
+            if(metaConfigItems.containsKey(_ExternalRelationDBPORT_UserName)){
+                userName = attributesViewKind.getMetaConfigItem(_ExternalRelationDBPORT_UserName).toString();
+            }
+            if(metaConfigItems.containsKey(_ExternalRelationDBPORT_UserPWD)){
+                userPWD = attributesViewKind.getMetaConfigItem(_ExternalRelationDBPORT_UserPWD).toString().trim();
+            }
+
+            List<AttributeKind> attributeKindList = attributesViewKind.getContainsAttributeKinds();
+            Map<String,AttributeDataType> attributeDataTypeMap = new HashMap<>();
+            for(AttributeKind currentAttributeKind:attributeKindList){
+                String attributeName = currentAttributeKind.getAttributeKindName();
+                AttributeDataType attributeDataType = currentAttributeKind.getAttributeDataType();
+                attributeDataTypeMap.put(attributeName,attributeDataType);
+            }
+
+            if(!attributeKindList.isEmpty() && dbName != null && tableName != null && host != null && port != null && userName != null && userPWD != null){
+                try {
+                    String querySQL = RelationDBQueryBuilder.buildCountQuerySQL(tableName,attributesParameters);
+                    return doCount(host,port,dbName,userName,userPWD,querySQL);
+                } catch (CoreRealmServiceEntityExploreException e) {
+                    throw new RuntimeException(e);
+                }
+            }else{
+                return null;
+            }
+        }else{
+            return null;
+        }
+    }
+
+    @Override
+    public Long deleteEntityExternalAttributesValues(AttributesViewKind attributesViewKind, AttributesParameters attributesParameters, List<AttributeValue> attributeValueList) {
+        if(attributesViewKind != null){
+            String dbName = null;
+            String tableName = null;
+            String host = null;
+            String port = null;
+            String userName = null;
+            String userPWD = null;
+
+            Map<String,Object> metaConfigItems = attributesViewKind.getMetaConfigItems();
+            if(metaConfigItems.containsKey(_ExternalRelationDB_DefaultDBName)){
+                dbName = metaConfigItems.get(_ExternalRelationDB_DefaultDBName).toString();
+            }
+            if(metaConfigItems.containsKey(_ExternalRelationDB_DefaultTableName)){
+                tableName = attributesViewKind.getMetaConfigItem(_ExternalRelationDB_DefaultTableName).toString();
+            }
+            if(metaConfigItems.containsKey(_ExternalRelationDB_Host)){
+                host = attributesViewKind.getMetaConfigItem(_ExternalRelationDB_Host).toString();
+            }
+            if(metaConfigItems.containsKey(_ExternalRelationDB_Port)){
+                port = attributesViewKind.getMetaConfigItem(_ExternalRelationDB_Port).toString();
+            }
+            if(metaConfigItems.containsKey(_ExternalRelationDBPORT_UserName)){
+                userName = attributesViewKind.getMetaConfigItem(_ExternalRelationDBPORT_UserName).toString();
+            }
+            if(metaConfigItems.containsKey(_ExternalRelationDBPORT_UserPWD)){
+                userPWD = attributesViewKind.getMetaConfigItem(_ExternalRelationDBPORT_UserPWD).toString().trim();
+            }
+
+            List<AttributeKind> attributeKindList = attributesViewKind.getContainsAttributeKinds();
+            Map<String,AttributeDataType> attributeDataTypeMap = new HashMap<>();
+            for(AttributeKind currentAttributeKind:attributeKindList){
+                String attributeName = currentAttributeKind.getAttributeKindName();
+                AttributeDataType attributeDataType = currentAttributeKind.getAttributeDataType();
+                attributeDataTypeMap.put(attributeName,attributeDataType);
+            }
+
+            if(!attributeKindList.isEmpty() && dbName != null && tableName != null && host != null && port != null && userName != null && userPWD != null){
+                try {
+                    String querySQL = RelationDBQueryBuilder.buildDeleteQuerySQL(tableName,attributesParameters);
+                    return doDelete(host,port,dbName,userName,userPWD,querySQL);
+                } catch (CoreRealmServiceEntityExploreException e) {
+                    throw new RuntimeException(e);
+                }
+            }else{
+                return null;
+            }
+        }else{
+            return null;
+        }
     }
 
     private List<Map<String, Object>> doQuery(String host,String port, String dbName,String user,String userPWD,String QuerySQL,Map<String,AttributeDataType> attributeDataTypeMap){
@@ -110,6 +211,51 @@ public class DefaultRelationDBExternalAttributesValueAccessProcessor implements 
             e.printStackTrace();
         }
         return null;
+    }
+
+    private Long doCount(String host, String port, String dbName, String user, String userPWD, String QuerySQL){
+        int dbPort =Integer.parseInt(port);
+        try {
+            Class.forName(JDBC_DRIVER);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        try (Connection connection = DriverManager.getConnection(String.format(URL_PATTERN, host, dbPort, dbName), user, userPWD)) {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(QuerySQL);
+            // Extract data from result set
+            int count = 0;
+            while (resultSet.next()) {
+                count = resultSet.getInt(1);
+            }
+            // Clean up environment
+            resultSet.close();
+            statement.close();
+            return (long) count;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0l;
+    }
+
+    private Long doDelete(String host, String port, String dbName, String user, String userPWD, String deleteQuery){
+        int dbPort =Integer.parseInt(port);
+        try {
+            Class.forName(JDBC_DRIVER);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        try (Connection connection = DriverManager.getConnection(String.format(URL_PATTERN, host, dbPort, dbName), user, userPWD)) {
+            PreparedStatement preparedStatement = null;
+            // Create a prepared statement for delete
+            preparedStatement = connection.prepareStatement(deleteQuery);
+            int rowsDeleted = preparedStatement.executeUpdate();
+            preparedStatement.close();
+            return (long) rowsDeleted;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0l;
     }
 
     private void setRowDataMap(Map<String, Object> rowDataMap,Map<String,AttributeDataType> attributeDataTypeMap,ResultSet resultSet){
