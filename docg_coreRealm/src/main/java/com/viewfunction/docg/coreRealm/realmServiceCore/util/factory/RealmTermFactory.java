@@ -36,7 +36,7 @@ public class RealmTermFactory {
                 return new MemGraphCoreRealmImpl(coreRealmName);
             }else{
                 CoreRealmFunctionNotSupportedException exception = new CoreRealmFunctionNotSupportedException();
-                exception.setCauseMessage("Current Neo4J storage implements doesn't support multi Realm");
+                exception.setCauseMessage("Current MemGraph storage implements doesn't support multi Realm");
                 throw exception;
             }
         }else if(CoreRealmStorageImplTech.TUGRAPH.toString().equals(_CORE_REALM_STORAGE_IMPL_TECH)){
