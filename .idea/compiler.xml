@@ -16,8 +16,10 @@
         <module name="docg_analysisProvider" />
         <module name="docg_realmExample" />
         <module name="docg_coreRealm_nebulaGraph_impl" />
-        <module name="docg_coreRealm_arcadedb_impl" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="docg_coreRealm_arcadedb_impl" target="17" />
+    </bytecodeTargetLevel>
   </component>
 </project>
