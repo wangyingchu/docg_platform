@@ -16,7 +16,5 @@
 /docg_realmExample/ignite/
 /docg_coreRealm/log/
 /ignite/
-/docg_coreRealm_nebulaGraph_impl/target/
-/docg_coreRealm_arcadedb_impl/target/
 /docg_analysisProvider/internalDB/
 /docg_analysisProvider/derby.log

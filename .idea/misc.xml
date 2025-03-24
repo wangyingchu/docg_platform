@@ -13,7 +13,6 @@
         <option value="$PROJECT_DIR$/docg_dataAnalyze/pom.xml" />
         <option value="$PROJECT_DIR$/docg_dataCollector/pom.xml" />
         <option value="$PROJECT_DIR$/docg_analysisProvider/pom.xml" />
-        <option value="$PROJECT_DIR$/docg_coreRealm_nebulaGraph_impl/pom.xml" />
         <option value="$PROJECT_DIR$/docg_analysisClient/pom.xml" />
       </list>
     </option>

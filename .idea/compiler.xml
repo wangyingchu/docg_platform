@@ -15,7 +15,6 @@
         <module name="docg_dataAnalyze" />
         <module name="docg_analysisProvider" />
         <module name="docg_realmExample" />
-        <module name="docg_coreRealm_nebulaGraph_impl" />
       </profile>
     </annotationProcessing>
   </component>
