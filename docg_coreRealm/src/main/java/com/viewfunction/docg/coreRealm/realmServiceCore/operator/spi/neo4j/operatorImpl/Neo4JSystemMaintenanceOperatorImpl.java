@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -1150,6 +1151,77 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         }else{
             return attributesViewKind.addOrUpdateMetaConfigItem(Neo4JExternalAttributesValueAccessible.ExternalAttributesValueAccessProcessorID,accessProcessorID);
         }
+    }
+
+    @Override
+    public Map<LocalDate, Long> getKindEntitiesPeriodicOperationStatic(String kindName, kindType kindType, OperationType operationType, OperationPeriod operationPeriod) throws CoreRealmServiceRuntimeException {
+        Map<LocalDate, Long> periodicOperationStaticMap = new HashMap<>();
+        if(kindType == null || operationType == null || operationPeriod == null){
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("kindType, operationType and operationPeriod is required");
+            throw exception;
+        }
+
+        String filterProperty = null;
+        switch (operationType){
+            case Create -> filterProperty="createDate";
+            case Update -> filterProperty="lastModifyDate";
+        }
+
+        String kindNamePart = kindName != null ? ":`"+kindName+"`": "";
+        String matchPart = null;
+        String dataPrefix = null;
+        switch(kindType){
+            case ConceptionKind :
+                matchPart="MATCH (n"+kindNamePart+")\n"+"WHERE n."+filterProperty+" IS NOT NULL\n";
+                dataPrefix = "n";
+                break;
+            case RelationKind : matchPart="MATCH ()-[r"+kindNamePart+"]-()\n"+"WHERE r."+filterProperty+" IS NOT NULL\n";
+                dataPrefix = "r";
+        }
+
+        String returnPart = null;
+        switch(operationPeriod){
+            case Year -> returnPart="RETURN date.truncate('year', datetime("+dataPrefix+"."+filterProperty+")) AS year, count(*) AS count\n"+"ORDER BY year";
+            case Month -> returnPart="RETURN date.truncate('month', datetime("+dataPrefix+"."+filterProperty+")) AS month, count(*) AS count\n"+"ORDER BY month";
+            case Day -> returnPart = "RETURN date(datetime("+dataPrefix+"."+filterProperty+")) AS day, count(*) AS count\n" +"ORDER BY day";
+        }
+
+        String cql = matchPart + returnPart;
+        logger.debug("Generated Cypher Statement: {}", cql);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            DataTransformer dataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    while(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        if(nodeRecord != null){
+                            LocalDate dateKey = null;
+                            switch (operationPeriod){
+                                case Year :
+                                    dateKey = nodeRecord.get("year").asLocalDate();
+                                    break;
+                                case Month:
+                                    dateKey = nodeRecord.get("month").asLocalDate();
+                                    break;
+                                case Day:
+                                    dateKey = nodeRecord.get("day").asLocalDate();
+                            }
+                            Long entitiesCount = nodeRecord.get("count").asLong();
+                            periodicOperationStaticMap.put(dateKey,entitiesCount);
+                        }
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeRead(dataTransformer,cql);
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+
+        return periodicOperationStaticMap;
     }
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {

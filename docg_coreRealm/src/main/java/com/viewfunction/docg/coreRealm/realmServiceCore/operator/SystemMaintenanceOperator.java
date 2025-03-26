@@ -4,6 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -203,4 +204,31 @@ public interface SystemMaintenanceOperator {
      * @return 注册数据存取处理器操作结果
      */
     public boolean registerExternalAttributesValueAccessProcessor(AttributesViewKind attributesViewKind, String accessProcessorID) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 统计操作类型
+     */
+    public enum OperationType {Create,Update}
+
+    /**
+     * 统计时间周期
+     */
+    public enum OperationPeriod {Year,Month,Day}
+
+    /**
+     * 统计类型分类
+     */
+    public enum kindType {ConceptionKind,RelationKind}
+
+    /**
+     * 按照时间周期统计系统中所有类型实体数据的创建、更新操作次数
+     *
+     *  @param kindName String 类型名称，如输入为 null 则默认统计所有类型实体数据
+     *  @param kindType kindType 需要执行统计的类型分类,不可为空
+     *  @param operationType OperationType 需要执行统计的操作类型,不可为空
+     *  @param operationType OperationType 需要执行统计的时间周期,不可为空
+     *
+     * @return 每个时间周期间隔中统计到的操作实体数量
+     */
+    public Map<LocalDate,Long> getKindEntitiesPeriodicOperationStatic(String kindName, kindType kindType, OperationType operationType, OperationPeriod operationPeriod) throws CoreRealmServiceRuntimeException;
 }
