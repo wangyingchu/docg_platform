@@ -24,4 +24,5 @@ public interface ComputeGrid {
 
     public ComputeService getComputeService() throws ComputeGridException;
 
+    public Set<ComputeFunctionMetaInfo> listComputeFunction() throws ComputeGridException;
 }

@@ -78,4 +78,13 @@ public class IgniteComputeGridImpl implements IgniteComputeGrid {
         ComputeService computeService = IgniteComputeServiceImpl.getServiceInstance();
         return computeService;
     }
+
+    @Override
+    public Set<ComputeFunctionMetaInfo> listComputeFunction() throws ComputeGridException{
+        try(ComputeGridObserver computeGridObserver = ComputeGridObserver.getObserverInstance()){
+            return computeGridObserver.listComputeFunction();
+        } catch (Exception e) {
+            throw new ComputeGridException(e);
+        }
+    }
 }

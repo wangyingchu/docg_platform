@@ -14,10 +14,7 @@ import org.apache.ignite.cache.CacheMode;
 import org.apache.ignite.cache.CachePeekMode;
 import org.apache.ignite.cache.QueryEntity;
 import org.apache.ignite.cache.query.SqlFieldsQuery;
-import org.apache.ignite.client.ClientCache;
-import org.apache.ignite.client.ClientCacheConfiguration;
-import org.apache.ignite.client.ClientClusterGroup;
-import org.apache.ignite.client.IgniteClient;
+import org.apache.ignite.client.*;
 import org.apache.ignite.cluster.ClusterNode;
 import org.apache.ignite.configuration.ClientConfiguration;
 
@@ -259,6 +256,23 @@ public class ComputeGridObserver implements AutoCloseable {
         }
 
         return null;
+    }
+
+    public Set<ComputeFunctionMetaInfo> listComputeFunction(){
+        Set<ComputeFunctionMetaInfo> computeFunctionMetaInfoSet = new HashSet<>();
+        ClientServices clientServices = this.igniteClient.services(this.igniteClient.cluster().forServers());
+        Collection<ClientServiceDescriptor> serviceDescCollection = clientServices.serviceDescriptors();
+        if (serviceDescCollection != null) {
+            for (ClientServiceDescriptor currentClientServiceDescriptor : serviceDescCollection) {
+                ComputeFunctionMetaInfo computeFunctionMetaInfo = new ComputeFunctionMetaInfo();
+                computeFunctionMetaInfo.setFunctionName(currentClientServiceDescriptor.name());
+                computeFunctionMetaInfo.setFunctionImplementation(currentClientServiceDescriptor.serviceClass());
+                computeFunctionMetaInfo.setMaxFunctionPerUnit(currentClientServiceDescriptor.maxPerNodeCount());
+                computeFunctionMetaInfo.setTotalRunningCount(currentClientServiceDescriptor.totalCount());
+                computeFunctionMetaInfoSet.add(computeFunctionMetaInfo);
+            }
+        }
+        return computeFunctionMetaInfoSet;
     }
 
     private Map<String, Object> getCurrentIgniteMetricsValueMap() {
