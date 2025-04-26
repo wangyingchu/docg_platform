@@ -21,7 +21,7 @@ public class DataSliceQueryBuilder {
     private static Logger logger = LoggerFactory.getLogger(DataSliceQueryBuilder.class);
 
     public static String buildSelectQuerySQL(String dataSliceName, QueryParameters queryParameters) throws DataSliceQueryStructureException {
-        DSLContext create = DSL.using((Connection) null, SQLDialect.SQL99);
+        DSLContext create = DSL.using((Connection) null, SQLDialect.DEFAULT);
         Query query = null;
         if(queryParameters != null){
             int startPage = queryParameters.getStartPage();
