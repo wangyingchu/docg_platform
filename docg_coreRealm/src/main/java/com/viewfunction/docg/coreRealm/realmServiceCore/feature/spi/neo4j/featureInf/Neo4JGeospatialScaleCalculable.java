@@ -374,6 +374,24 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
         return null;
     }
 
+    default public double getEntityGeometryArea(SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
+        if(this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
+                List<String> entityUIDList = new ArrayList<>();
+                entityUIDList.add(this.getEntityUID());
+                Map<String,String> getGeospatialScaleContentMap = getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,entityUIDList);
+                if(getGeospatialScaleContentMap.size() == 1){
+                    return GeospatialCalculateUtil.getGeometryArea(getGeospatialScaleContentMap.get(this.getEntityUID()));
+                }
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return 0f;
+    }
+
     private void validateSpatialScaleLevel(GraphOperationExecutor workingGraphOperationExecutor,SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException {
         if(!checkGeospatialScaleContentExist(workingGraphOperationExecutor,spatialScaleLevel,this.getEntityUID())){
             logger.error("ConceptionEntity with UID {} doesn't have {} level SpatialScale.", this.getEntityUID(),spatialScaleLevel);
@@ -428,14 +446,6 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
 
                 for(ConceptionEntityValue currentConceptionEntityValue:resultEntitiesValues){
                     Map<String, Object> entityAttributesMap = currentConceptionEntityValue.getEntityAttributesValue();
-
-
-
-
-
-
-
-
                     String entityUID = currentConceptionEntityValue.getConceptionEntityUID();
                     String geospatialScaleContent = entityAttributesMap.get(spatialScalePropertyName).toString();
                     geospatialScaleContentMap.put(entityUID,geospatialScaleContent);

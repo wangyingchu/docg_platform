@@ -176,4 +176,13 @@ public interface GeospatialScaleCalculable {
      * @return 计算结果 InteriorPoint（点状）WKT的文本表示
      */
     public String getEntitySpatialInteriorPointWKTGeometryContent(SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取当前概念实体的地理空间面积，其数值的度量单位与所使用的空间坐标系相同
+     *
+     * @param spatialScaleLevel SpatialScaleLevel 空间计算针对的地理空间尺度坐标系数据
+     *
+     * @return 概念实体的地理空间面积值
+     */
+    public double getEntityGeometryArea(SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException;
 }

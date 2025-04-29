@@ -307,6 +307,11 @@ public class GeospatialCalculateUtil {
         return interiorGeometry.toText();
     }
 
+    public static double getGeometryArea(String fromGeometryWKT) throws CoreRealmServiceRuntimeException{
+        Geometry targetGeometry = getGeometryFromWKT(fromGeometryWKT);
+        return targetGeometry.getArea();
+    }
+
     private static Geometry getGeometryFromWKT(String wktValue)throws CoreRealmServiceRuntimeException{
         if(geometryFactory == null){
             geometryFactory = JTSFactoryFinder.getGeometryFactory();
