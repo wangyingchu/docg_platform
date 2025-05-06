@@ -26,6 +26,10 @@ public class RelationDBQueryBuilder {
         DSLContext create = DSL.using((Connection) null, SQLDialect.MYSQL);
         Query query = null;
         if(queryParameters != null){
+            if(queryParameters.getCustomQuerySentence() != null){
+                return queryParameters.getCustomQuerySentence();
+            }
+
             int startPage = queryParameters.getStartPage();
             int endPage = queryParameters.getEndPage();
             int pageSize = queryParameters.getPageSize();

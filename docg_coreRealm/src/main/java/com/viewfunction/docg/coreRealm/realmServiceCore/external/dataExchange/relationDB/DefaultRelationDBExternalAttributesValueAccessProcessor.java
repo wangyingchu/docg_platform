@@ -186,7 +186,7 @@ public class DefaultRelationDBExternalAttributesValueAccessProcessor implements 
         }
     }
 
-    private List<Map<String, Object>> doQuery(String host,String port, String dbName,String user,String userPWD,String QuerySQL,Map<String,AttributeDataType> attributeDataTypeMap){
+    private List<Map<String, Object>> doQuery(String host,String port, String dbName,String user,String userPWD,String querySQL,Map<String,AttributeDataType> attributeDataTypeMap){
         int dbPort =Integer.parseInt(port);
         try {
             Class.forName(JDBC_DRIVER);
@@ -196,7 +196,7 @@ public class DefaultRelationDBExternalAttributesValueAccessProcessor implements 
         try (Connection connection = DriverManager.getConnection(String.format(URL_PATTERN, host, dbPort, dbName), user, userPWD)) {
             List<Map<String, Object>> resultList = new ArrayList<>();
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(QuerySQL);
+            ResultSet resultSet = statement.executeQuery(querySQL);
             // Extract data from result set
             while (resultSet.next()) {
                 Map<String, Object> currentRowDataMap = new HashMap<>();
