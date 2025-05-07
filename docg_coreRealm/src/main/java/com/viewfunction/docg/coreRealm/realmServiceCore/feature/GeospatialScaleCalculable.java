@@ -194,4 +194,13 @@ public interface GeospatialScaleCalculable {
      * @return 概念实体的地理空间周长值
      */
     public double getEntityGeometryPerimeter(SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取当前概念实体的地理空间长度，当 SpatialScaleLevel 为 local 时，数值的度量单位与所使用的空间坐标系相同，其他情况下数值的度量单位为米
+     *
+     * @param spatialScaleLevel SpatialScaleLevel 空间计算针对的地理空间尺度坐标系数据
+     *
+     * @return 概念实体的地理空间长度
+     */
+    public double getEntityGeometryLineLength(SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException;
 }

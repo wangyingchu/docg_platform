@@ -7,6 +7,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleC
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil;
 import net.sf.geographiclib.Geodesic;
+import net.sf.geographiclib.GeodesicData;
 import net.sf.geographiclib.PolygonArea;
 import net.sf.geographiclib.PolygonResult;
 import org.geotools.geojson.geom.GeometryJSON;
@@ -365,6 +366,37 @@ public class GeospatialCalculateUtil {
             logger.error("Geometry type {} doesn't supported in getGeometryPerimeter API.",targetGeometry.getGeometryType());
             CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
             exception.setCauseMessage("Geometry type "+targetGeometry.getGeometryType()+" doesn't supported in getGeometryPerimeter API.\"");
+            throw exception;
+        }
+    }
+
+    public static double getGeometryLineLength(String geometryWKT, GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
+        Geometry targetGeometry = getGeometryFromWKT(geometryWKT);
+        if(targetGeometry instanceof LineString || targetGeometry instanceof MultiLineString){
+            if(GeospatialScaleCalculable.SpatialScaleLevel.Local.equals(spatialScaleLevel)){
+                return targetGeometry.getLength();
+            }else{
+                Coordinate[] coordinates = targetGeometry.getCoordinates();
+                Double[][] result = new Double[coordinates.length][2];
+                for (int i = 0; i < coordinates.length; i++) {
+                    result[i][0] = coordinates[i].x;
+                    result[i][1] = coordinates[i].y;
+                }
+                double totalLength = 0;
+                Geodesic geod = Geodesic.WGS84;
+                for (int i = 0; i < result.length - 1; i++) {
+                    GeodesicData g = geod.Inverse(
+                            result[i][1], result[i][0],  // 点1 纬度,经度
+                            result[i+1][1], result[i+1][0] // 点2 纬度,经度
+                    );
+                    totalLength += g.s12; // s12是两点之间的距离(米)
+                }
+                return totalLength;
+            }
+        }else{
+            logger.error("Geometry type {} doesn't supported in getGeometryLineLength API.",targetGeometry.getGeometryType());
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("Geometry type "+targetGeometry.getGeometryType()+" doesn't supported in getGeometryLineLength API.\"");
             throw exception;
         }
     }
