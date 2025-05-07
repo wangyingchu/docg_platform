@@ -86,6 +86,12 @@
             <artifactId>gt-geojson</artifactId>
             <version>${geotools.version}</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/net.sf.geographiclib/GeographicLib-Java -->
+        <dependency>
+            <groupId>net.sf.geographiclib</groupId>
+            <artifactId>GeographicLib-Java</artifactId>
+            <version>2.0</version>
+        </dependency>
 
         <!-- External DataExchange -->
         <dependency>

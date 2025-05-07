@@ -383,7 +383,25 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
                 entityUIDList.add(this.getEntityUID());
                 Map<String,String> getGeospatialScaleContentMap = getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,entityUIDList);
                 if(getGeospatialScaleContentMap.size() == 1){
-                    return GeospatialCalculateUtil.getGeometryArea(getGeospatialScaleContentMap.get(this.getEntityUID()));
+                    return GeospatialCalculateUtil.getGeometryArea(getGeospatialScaleContentMap.get(this.getEntityUID()),spatialScaleLevel);
+                }
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+        return 0f;
+    }
+
+    default public double getEntityGeometryPerimeter(SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
+        if(this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
+                List<String> entityUIDList = new ArrayList<>();
+                entityUIDList.add(this.getEntityUID());
+                Map<String,String> getGeospatialScaleContentMap = getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,entityUIDList);
+                if(getGeospatialScaleContentMap.size() == 1){
+                    return GeospatialCalculateUtil.getGeometryPerimeter(getGeospatialScaleContentMap.get(this.getEntityUID()),spatialScaleLevel);
                 }
             }finally {
                 getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();

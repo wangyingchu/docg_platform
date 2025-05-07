@@ -2,15 +2,20 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.util.geospatial;
 
 import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleCalculable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleCalculable.SpatialPredicateType;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleFeatureSupportable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.BatchDataOperationUtil;
+import net.sf.geographiclib.Geodesic;
+import net.sf.geographiclib.PolygonArea;
+import net.sf.geographiclib.PolygonResult;
 import org.geotools.geojson.geom.GeometryJSON;
 import org.geotools.geometry.jts.JTSFactoryFinder;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.StringWriter;
 import java.util.*;
@@ -22,6 +27,7 @@ public class GeospatialCalculateUtil {
 
     private static GeometryFactory geometryFactory = null;
     private static WKTReader _WKTReader = null;
+    static Logger logger = LoggerFactory.getLogger(GeospatialCalculateUtil.class);
 
     public static boolean spatialPredicateWKTCalculate(String fromGeometryWKT,
                                                        SpatialPredicateType spatialPredicateType, String toGeometryWKT) throws CoreRealmServiceRuntimeException {
@@ -307,9 +313,60 @@ public class GeospatialCalculateUtil {
         return interiorGeometry.toText();
     }
 
-    public static double getGeometryArea(String fromGeometryWKT) throws CoreRealmServiceRuntimeException{
-        Geometry targetGeometry = getGeometryFromWKT(fromGeometryWKT);
-        return targetGeometry.getArea();
+    public static double getGeometryArea(String geometryWKT, GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
+        Geometry targetGeometry = getGeometryFromWKT(geometryWKT);
+        if(targetGeometry instanceof Polygon || targetGeometry instanceof MultiPolygon){
+            if(GeospatialScaleCalculable.SpatialScaleLevel.Local.equals(spatialScaleLevel)){
+                return targetGeometry.getArea();
+            }else{
+                Coordinate[] coordinates = targetGeometry.getCoordinates();
+                Double[][] result = new Double[coordinates.length][2];
+                for (int i = 0; i < coordinates.length; i++) {
+                    result[i][0] = coordinates[i].x;
+                    result[i][1] = coordinates[i].y;
+                }
+                PolygonArea targetPolygonArea = new PolygonArea(Geodesic.WGS84,false);
+                for(Double[] currentPoint:result){
+                    targetPolygonArea.AddPoint(currentPoint[1],currentPoint[0]);
+                }
+                PolygonResult res = targetPolygonArea.Compute();
+                targetPolygonArea.Clear();
+                return Math.abs(res.area);
+            }
+        }else{
+            logger.error("Geometry type {} doesn't supported in getGeometryArea API.",targetGeometry.getGeometryType());
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("Geometry type "+targetGeometry.getGeometryType()+" doesn't supported in getGeometryArea API.\"");
+            throw exception;
+        }
+    }
+
+    public static double getGeometryPerimeter(String geometryWKT, GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
+        Geometry targetGeometry = getGeometryFromWKT(geometryWKT);
+        if(targetGeometry instanceof Polygon || targetGeometry instanceof MultiPolygon){
+            if(GeospatialScaleCalculable.SpatialScaleLevel.Local.equals(spatialScaleLevel)){
+                return targetGeometry.getLength();
+            }else{
+                Coordinate[] coordinates = targetGeometry.getCoordinates();
+                Double[][] result = new Double[coordinates.length][2];
+                for (int i = 0; i < coordinates.length; i++) {
+                    result[i][0] = coordinates[i].x;
+                    result[i][1] = coordinates[i].y;
+                }
+                PolygonArea targetPolygonArea = new PolygonArea(Geodesic.WGS84,false);
+                for(Double[] currentPoint:result){
+                    targetPolygonArea.AddPoint(currentPoint[1],currentPoint[0]);
+                }
+                PolygonResult res = targetPolygonArea.Compute();
+                targetPolygonArea.Clear();
+                return res.perimeter;
+            }
+        }else{
+            logger.error("Geometry type {} doesn't supported in getGeometryPerimeter API.",targetGeometry.getGeometryType());
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("Geometry type "+targetGeometry.getGeometryType()+" doesn't supported in getGeometryPerimeter API.\"");
+            throw exception;
+        }
     }
 
     private static Geometry getGeometryFromWKT(String wktValue)throws CoreRealmServiceRuntimeException{
