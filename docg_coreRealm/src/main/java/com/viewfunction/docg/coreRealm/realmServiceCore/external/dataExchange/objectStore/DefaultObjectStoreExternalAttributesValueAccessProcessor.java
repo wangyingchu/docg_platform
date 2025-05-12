@@ -4,20 +4,27 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.Attribute
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.ExternalAttributesValueAccessProcessor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
 import io.minio.*;
 import io.minio.errors.MinioException;
 import io.minio.messages.Item;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Date;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class DefaultObjectStoreExternalAttributesValueAccessProcessor implements ExternalAttributesValueAccessProcessor {
-
 
     public final String _ExternalObjectStore_Host = "DOCG_ExternalObjectStore_Host";
     public final String _ExternalObjectStore_Port = "DOCG_ExternalObjectStore_Port";
@@ -47,7 +54,95 @@ public class DefaultObjectStoreExternalAttributesValueAccessProcessor implements
 
     @Override
     public List<Map<String, Object>> getEntityExternalAttributesValues(AttributesViewKind attributesViewKind, QueryParameters queryParameters, List<AttributeValue> attributeValueList) {
-        return List.of();
+        if(attributesViewKind != null){
+            String host = null;
+            String port = null;
+            String userName = null;
+            String userPWD = null;
+            String storeRoot = null;
+            String baseFolder = null;
+
+            Map<String,Object> metaConfigItems = attributesViewKind.getMetaConfigItems();
+            if(metaConfigItems.containsKey(_ExternalObjectStore_Host)){
+                host = metaConfigItems.get(_ExternalObjectStore_Host).toString();
+            }
+            if(metaConfigItems.containsKey(_ExternalObjectStore_Port)){
+                port = metaConfigItems.get(_ExternalObjectStore_Port).toString();
+            }
+            if(metaConfigItems.containsKey(_ExternalObjectStore_UserName)){
+                userName = metaConfigItems.get(_ExternalObjectStore_UserName).toString();
+            }
+            if(metaConfigItems.containsKey(_ExternalObjectStore_UserPWD)){
+                userPWD = metaConfigItems.get(_ExternalObjectStore_UserPWD).toString();
+            }
+            if(metaConfigItems.containsKey(_ExternalObjectStore_StoreRoot)){
+                storeRoot = metaConfigItems.get(_ExternalObjectStore_StoreRoot).toString();
+            }
+            if(metaConfigItems.containsKey(_ExternalObjectStore_BaseFolder)){
+                baseFolder = metaConfigItems.get(_ExternalObjectStore_BaseFolder).toString();
+            }
+
+            List<AttributeKind> attributeKindList = attributesViewKind.getContainsAttributeKinds();
+            Map<String, AttributeDataType> attributeDataTypeMap = new HashMap<>();
+            for(AttributeKind currentAttributeKind:attributeKindList){
+                String attributeName = currentAttributeKind.getAttributeKindName();
+                AttributeDataType attributeDataType = currentAttributeKind.getAttributeDataType();
+                attributeDataTypeMap.put(attributeName,attributeDataType);
+            }
+
+            //if(!attributeKindList.isEmpty() && host != null && port != null && userName != null && userPWD != null && storeRoot != null){
+            if(host != null && port != null && userName != null && userPWD != null && storeRoot != null){
+                try {
+                    // Create a minioClient with the MinIO server playground, its access key and secret key.
+                    String endpoint = "http://"+host+":"+port;
+                    MinioClient minioClient =
+                            MinioClient.builder()
+                                    .endpoint(endpoint)
+                                    .credentials(userName, userPWD)
+                                    .build();
+
+                    boolean storeRootExist =
+                            minioClient.bucketExists(BucketExistsArgs.builder().bucket(storeRoot).build());
+                    if (!storeRootExist) {
+                        return null;
+                    }else {
+                        List<Map<String, Object>> resultList = new ArrayList<>();
+                        ListObjectsArgs listObjectsArgs = baseFolder != null ? ListObjectsArgs.builder().bucket(storeRoot).prefix(baseFolder).build() :
+                                ListObjectsArgs.builder().bucket(storeRoot).build();
+                        Iterable<Result<Item>> results = minioClient.listObjects(listObjectsArgs);
+                        for(Result<Item> result : results){
+                            Map<String,Object> currentObjectResultMap = new HashMap<>();
+                            Item item = result.get();
+                            currentObjectResultMap.put(_ExternalObjectStore_ObjectName,item.objectName());
+                            currentObjectResultMap.put(_ExternalObjectStore_ObjectSize,item.size());
+                            currentObjectResultMap.put(_ExternalObjectStore_IsFolderObject,item.isDir());
+                            resultList.add(currentObjectResultMap);
+                            if(!attributeKindList.isEmpty()){
+                                Map<String, String> userMetadata = minioClient.statObject(
+                                        StatObjectArgs.builder().bucket(storeRoot).object(item.objectName()).build()
+                                ).userMetadata();
+                                for (Map.Entry<String, String> entry : userMetadata.entrySet()) {
+                                    String attributeName = entry.getKey();
+                                    if(attributeDataTypeMap.containsKey(attributeName) && AttributeDataType.STRING.equals(attributeDataTypeMap.get(attributeName))){
+                                        currentObjectResultMap.put(attributeName,entry.getValue());
+                                    }
+                                }
+                            }
+                        }
+                        return resultList;
+                    }
+                } catch (MinioException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                return null;
+            }else{
+                return null;
+            }
+        }else{
+            return null;
+        }
     }
 
     @Override
@@ -58,6 +153,42 @@ public class DefaultObjectStoreExternalAttributesValueAccessProcessor implements
     @Override
     public Long deleteEntityExternalAttributesValues(AttributesViewKind attributesViewKind, AttributesParameters attributesParameters, List<AttributeValue> attributeValueList) {
         return 0l;
+    }
+
+    private Object getExternalAttributeValue(AttributeDataType attributeDataType,String attributeValue){
+        Object attributeObjectValue = null;
+        switch(attributeDataType){
+            case STRING -> attributeObjectValue = attributeValue;
+            case INT -> attributeObjectValue = Integer.valueOf(attributeValue);
+            case BOOLEAN -> attributeObjectValue = Boolean.valueOf(attributeValue);
+            case LONG -> attributeObjectValue = Long.valueOf(attributeValue);
+            case FLOAT -> attributeObjectValue = Float.valueOf(attributeValue);
+            case DOUBLE -> attributeObjectValue = Double.valueOf(attributeValue);
+            case BYTE -> attributeObjectValue = Byte.valueOf(attributeValue);
+            case SHORT -> attributeObjectValue = Short.valueOf(attributeValue);
+            case DECIMAL -> attributeObjectValue =  new BigDecimal(attributeValue);
+            case DATE -> attributeObjectValue = LocalDate.parse(attributeValue); //LocalDate
+            case TIME -> attributeObjectValue = LocalTime.parse(attributeValue); //LocalTime
+            case DATETIME -> attributeObjectValue = LocalDateTime.parse(attributeValue); //LocalDateTime
+            case TIMESTAMP -> attributeObjectValue = ZonedDateTime.parse(attributeValue); //ZonedDateTime
+        }
+        return attributeObjectValue;
+    }
+
+    private LocalDate getLocalDate(Date date){
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
+    private LocalTime getLocalTime(Time time){
+        return time.toLocalTime();
+    }
+
+    private LocalDateTime getLocalDateTime(Timestamp timestamp){
+        return timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    private ZonedDateTime getZonedDateTime(Timestamp timestamp){
+        return timestamp.toInstant().atZone(ZoneId.systemDefault());
     }
 
 
