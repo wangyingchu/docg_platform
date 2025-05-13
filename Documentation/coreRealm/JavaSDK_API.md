@@ -751,6 +751,16 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public EntitiesOperationResult updateEntities(List<ConceptionEntityValue> entityValues);
 
     /**
+     * 更新多个当前概念类型的符合查询条件的概念实体对象的属性信息
+     *
+     * @param attributesParameters AttributesParameters 查询过滤条件
+     * @param entitiesAttributesMap Map<String,Object> 需要更新的概念实体属性信息
+     *
+     * @return 实体对象操作返回结果
+     */
+    public EntitiesOperationResult updateEntities(AttributesParameters attributesParameters,Map<String,Object> entitiesAttributesMap);
+
+    /**
      * 删除一个当前概念类型的概念实体对象
      *
      * @param conceptionEntityUID String 需要删除的概念实体的唯一ID

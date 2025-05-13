@@ -287,6 +287,11 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
+    public EntitiesOperationResult updateEntities(AttributesParameters attributesParameters, Map<String, Object> conceptionEntitiesAttributesMap) {
+        return null;
+    }
+
+    @Override
     public boolean deleteEntity(String conceptionEntityUID) throws CoreRealmServiceRuntimeException{
         if(conceptionEntityUID != null){
             ConceptionEntity targetConceptionEntity = this.getEntityByUID(conceptionEntityUID);

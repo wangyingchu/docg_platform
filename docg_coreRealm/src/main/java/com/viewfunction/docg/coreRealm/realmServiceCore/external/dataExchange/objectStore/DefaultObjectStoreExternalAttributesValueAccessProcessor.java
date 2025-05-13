@@ -15,10 +15,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.time.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -123,8 +123,8 @@ public class DefaultObjectStoreExternalAttributesValueAccessProcessor implements
                                 ).userMetadata();
                                 for (Map.Entry<String, String> entry : userMetadata.entrySet()) {
                                     String attributeName = entry.getKey();
-                                    if(attributeDataTypeMap.containsKey(attributeName) && AttributeDataType.STRING.equals(attributeDataTypeMap.get(attributeName))){
-                                        currentObjectResultMap.put(attributeName,entry.getValue());
+                                    if(attributeDataTypeMap.containsKey(attributeName)){
+                                        currentObjectResultMap.put(attributeName,getExternalAttributeValue(attributeDataTypeMap.get(attributeName),entry.getValue()));
                                     }
                                 }
                             }
@@ -174,23 +174,6 @@ public class DefaultObjectStoreExternalAttributesValueAccessProcessor implements
         }
         return attributeObjectValue;
     }
-
-    private LocalDate getLocalDate(Date date){
-        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-    }
-
-    private LocalTime getLocalTime(Time time){
-        return time.toLocalTime();
-    }
-
-    private LocalDateTime getLocalDateTime(Timestamp timestamp){
-        return timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-    }
-
-    private ZonedDateTime getZonedDateTime(Timestamp timestamp){
-        return timestamp.toInstant().atZone(ZoneId.systemDefault());
-    }
-
 
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         // TODO Auto-generated method stub
