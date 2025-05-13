@@ -287,8 +287,56 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
     }
 
     @Override
-    public EntitiesOperationResult updateEntities(AttributesParameters attributesParameters, Map<String, Object> conceptionEntitiesAttributesMap) {
-        return null;
+    public EntitiesOperationResult updateEntities(AttributesParameters attributesParameters, Map<String, Object> conceptionEntitiesAttributesMap) throws CoreRealmServiceEntityExploreException{
+        CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
+        String queryCql = null;
+        if (attributesParameters != null) {
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setResultNumber(100000000);
+            queryParameters.setDefaultFilteringItem(attributesParameters.getDefaultFilteringItem());
+            if (attributesParameters.getAndFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getAndFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.AND);
+                }
+            }
+            if (attributesParameters.getOrFilteringItemsList() != null) {
+                for (FilteringItem currentFilteringItem : attributesParameters.getOrFilteringItemsList()) {
+                    queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.OR);
+                }
+            }
+            queryCql = CypherBuilder.matchNodesWithQueryParameters(this.conceptionKindName,queryParameters, null);
+            queryCql = queryCql.replace(" RETURN operationResult LIMIT 100000000","");
+        }else{
+            queryCql = "MATCH (operationResult:`"+this.conceptionKindName+"`)";
+        }
+
+        String updateCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong("99999"),conceptionEntitiesAttributesMap);
+        updateCql = updateCql.replace("MATCH (operationResult) WHERE id(operationResult) = 99999","");
+        int returnIndex = updateCql.indexOf("RETURN");
+        updateCql = updateCql.substring(0,returnIndex);
+        queryCql = queryCql+updateCql+ "RETURN operationResult";
+        logger.debug("Generated Cypher Statement: {}", queryCql);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(this.conceptionKindName,
+                    this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object queryRes = workingGraphOperationExecutor.executeWrite(getListConceptionEntityTransformer,queryCql);
+            if(queryRes != null){
+                List<ConceptionEntity> resultConceptionEntityList = (List<ConceptionEntity>)queryRes;
+                for(ConceptionEntity currentConceptionEntity:resultConceptionEntityList){
+                    commonEntitiesOperationResultImpl.getSuccessEntityUIDs().add(currentConceptionEntity.getConceptionEntityUID());
+                }
+                commonEntitiesOperationResultImpl.getOperationStatistics().setSuccessItemsCount(resultConceptionEntityList.size());
+                commonEntitiesOperationResultImpl.getOperationStatistics().setFailItemsCount(0);
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        commonEntitiesOperationResultImpl.getOperationStatistics().
+                setOperationSummary("updateEntities operation for conceptionKind "+this.conceptionKindName+" success.");
+        commonEntitiesOperationResultImpl.finishEntitiesOperation();
+        return commonEntitiesOperationResultImpl;
     }
 
     @Override

@@ -139,7 +139,7 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      *
      * @return 实体对象操作返回结果
      */
-    public EntitiesOperationResult updateEntities(AttributesParameters attributesParameters,Map<String,Object> entitiesAttributesMap);
+    public EntitiesOperationResult updateEntities(AttributesParameters attributesParameters,Map<String,Object> entitiesAttributesMap) throws CoreRealmServiceEntityExploreException;
 
     /**
      * 删除一个当前概念类型的概念实体对象
