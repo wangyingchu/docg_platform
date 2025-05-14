@@ -7,6 +7,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
+
 import io.minio.*;
 import io.minio.errors.MinioException;
 import io.minio.messages.Item;
@@ -49,8 +50,6 @@ public class DefaultObjectStoreExternalAttributesValueAccessProcessor implements
     MINIO_ACCESS_KEY = B5PVSeDBuzTBuIyk52RE
     MINIO_SECRET_KEY = DXzK7X02q9ow9OBl1qloWcXQvorXPLxjx5PeerXz
     */
-
-
 
     @Override
     public List<Map<String, Object>> getEntityExternalAttributesValues(AttributesViewKind attributesViewKind, QueryParameters queryParameters, List<AttributeValue> attributeValueList) {
@@ -117,7 +116,7 @@ public class DefaultObjectStoreExternalAttributesValueAccessProcessor implements
                             currentObjectResultMap.put(_ExternalObjectStore_ObjectSize,item.size());
                             currentObjectResultMap.put(_ExternalObjectStore_IsFolderObject,item.isDir());
                             resultList.add(currentObjectResultMap);
-                            if(!attributeKindList.isEmpty()){
+                            if(!attributeDataTypeMap.isEmpty()){
                                 Map<String, String> userMetadata = minioClient.statObject(
                                         StatObjectArgs.builder().bucket(storeRoot).object(item.objectName()).build()
                                 ).userMetadata();
@@ -181,8 +180,8 @@ public class DefaultObjectStoreExternalAttributesValueAccessProcessor implements
             // Create a minioClient with the MinIO server playground, its access key and secret key.
             MinioClient minioClient =
                     MinioClient.builder()
-                            .endpoint("http://192.168.1.28:9000")
-                            .credentials("B5PVSeDBuzTBuIyk52RE", "DXzK7X02q9ow9OBl1qloWcXQvorXPLxjx5PeerXz")
+                            .endpoint("http://127.0.0.1:9000")
+                            .credentials("odkSHXMLtNVnGMLZ5PPz", "1NiXp4Mv03iHaaF3jCMr1rL7EQotiTw9pW7BEdJI")
                             .build();
 
             // Make 'asiatrip' bucket if not exist.
@@ -199,22 +198,22 @@ public class DefaultObjectStoreExternalAttributesValueAccessProcessor implements
             // 'asiatrip'.
 
             Map<String,String> infoMap = new HashMap<>();
-            infoMap.put("DOCG_p1", "video/mp4");
-            infoMap.put("DOCG_p2", "attachment; filename=\"VID_20230825_132716.mp4\"");
-            infoMap.put("DOCG_p3", "52428800");
+            infoMap.put("DOCG_p1", "ZIPPP");
+            infoMap.put("DOCG_p2", "rttree");
+            infoMap.put("DOCG_p3", "43667900");
 
             minioClient.uploadObject(
                     UploadObjectArgs.builder()
                             .bucket("asiatrip")
-                            .object("VID_20230825_132716_INFO2.mp4")
+                            .object("3d-force-graph-1.71.1.zip")
                             .userMetadata(infoMap)
-                            .filename("/home/wangychu/Downloads/VID_20230825_132716.mp4")
+                            .filename("/home/wangychu/Downloads/3d-force-graph-1.71.1.zip")
                             .build());
 
 
 
 
-            Iterable<Result<Item>> results = minioClient.listObjects(ListObjectsArgs.builder().bucket("asiatrip").build());
+            Iterable<Result<Item>> results = minioClient.listObjects(ListObjectsArgs.builder().bucket("asiatrip").includeUserMetadata(true).build());
             //Iterable<Result<Item>> results = minioClient.listObjects(ListObjectsArgs.builder().bucket("asiatrip").prefix("/").build());
             for (Result<Item> result : results) {
 
