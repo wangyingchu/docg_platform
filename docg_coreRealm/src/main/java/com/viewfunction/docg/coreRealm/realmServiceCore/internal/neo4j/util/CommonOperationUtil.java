@@ -933,6 +933,10 @@ public class CommonOperationUtil {
     }
 
     public static Expression getAttributeValueExpress(Object propertyValue) {
+        //convert Enum to String directly
+        if(propertyValue instanceof Enum<?>){
+            propertyValue = propertyValue.toString();
+        }
         if (propertyValue instanceof CharSequence || propertyValue instanceof Number ||
                 propertyValue instanceof Iterable || propertyValue instanceof Boolean) {
             return Cypher.literalOf(propertyValue);
