@@ -755,12 +755,13 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
 
         @Override
         public void run() {
+            GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
             for(Object currentRelationshipObj:relationEntityValueList){
                 Relationship currentRelationship = (Relationship)currentRelationshipObj;
                 String relationshipType = currentRelationship.type();
                 String startConceptionKindId = ""+currentRelationship.startNodeId();
                 String endConceptionKindId = ""+currentRelationship.endNodeId();
-                GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
+
                 boolean relationExist = checkRelationEntitiesExist(graphOperationExecutor,conceptionKindId_nameMapping.get(startConceptionKindId),conceptionKindId_nameMapping.get(endConceptionKindId),relationshipType);
                 if(relationExist){
                     ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
@@ -771,6 +772,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                     conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
                 }
             }
+            graphOperationExecutor.close();
         }
     }
 
