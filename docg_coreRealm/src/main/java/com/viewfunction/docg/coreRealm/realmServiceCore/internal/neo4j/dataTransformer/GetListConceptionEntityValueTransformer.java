@@ -82,6 +82,16 @@ public class GetListConceptionEntityValueTransformer implements DataTransformer<
                             entityAttributesValue.put(currentAttributeName,resultAttributeValue);
                         }
                     }
+                }
+            }else{
+                if(returnedAttributeList!= null){
+                    for(String currentAttributeName:returnedAttributeList){
+                        Object objectValue = valueMap.get(currentAttributeName);
+                        Object resultAttributeValue = getFormattedValue(currentAttributeName,objectValue);
+                        if(resultAttributeValue != null){
+                            entityAttributesValue.put(currentAttributeName,resultAttributeValue);
+                        }
+                    }
                 }else{
                     for (Map.Entry<String, Object> entry : valueMap.entrySet()) {
                         String key = entry.getKey();
@@ -89,14 +99,6 @@ public class GetListConceptionEntityValueTransformer implements DataTransformer<
                         if(validateValueFormat(value)){
                             entityAttributesValue.put(key,value);
                         }
-                    }
-                }
-            }else{
-                for(String currentAttributeName:returnedAttributeList){
-                    Object objectValue = valueMap.get(currentAttributeName);
-                    Object resultAttributeValue = getFormattedValue(currentAttributeName,objectValue);
-                    if(resultAttributeValue != null){
-                        entityAttributesValue.put(currentAttributeName,resultAttributeValue);
                     }
                 }
             }
