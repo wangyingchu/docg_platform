@@ -854,6 +854,17 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public ConceptionEntitiesRetrieveResult getEntitiesWithClassificationsAttached(QueryParameters queryParameters, Set<ClassificationAttachParameters> classificationAttachParametersSet) throws CoreRealmServiceEntityExploreException;
 
     /**
+     * 查询符合实体过滤条件，并且通过特定的关系类型附着在指定的分类上的当前概念类型的概念实体对象,根据输入的属性类型返回相应的属性值
+     *
+     * @param attributeNames List<String> 属性类型列表
+     * @param queryParameters QueryParameters 概念实体查询过滤条件
+     * @param classificationAttachParametersSet Set<ClassificationAttachParameters> 概念实体附着分类的匹配条件
+     *
+     * @return 概念实体属性查询结果集
+     */
+    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesWithClassificationsAttached(List<String> attributeNames,QueryParameters queryParameters, Set<ClassificationAttachParameters> classificationAttachParametersSet) throws CoreRealmServiceEntityExploreException;
+
+    /**
      * 查询符合实体过滤条件，并且通过特定的关系类型附着在指定的分类上的当前概念类型的概念实体对象数量
      *
      * @param attributesParameters AttributesParameters 概念实体查询过滤条件
