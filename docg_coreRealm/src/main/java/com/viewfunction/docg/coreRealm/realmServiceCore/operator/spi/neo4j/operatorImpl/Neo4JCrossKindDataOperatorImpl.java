@@ -454,11 +454,13 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             e.setCauseMessage("At least one conception entity UID is required");
             throw e;
         }
-        if(attributeNames != null & attributeNames.size() < 1){
-            logger.error("At least one attribute name is required");
-            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
-            e.setCauseMessage("At least one attribute name is required");
-            throw e;
+        if(attributeNames != null){
+            if(attributeNames.isEmpty()){
+                logger.error("At least one attribute name is required");
+                CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+                e.setCauseMessage("At least one attribute name is required");
+                throw e;
+            }
         }
 
         String cypherProcedureString = CypherBuilder.matchAttributesWithNodeIDs(conceptionEntityUIDs,attributeNames);
