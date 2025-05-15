@@ -5446,7 +5446,7 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
     /**
      * 输入一组概念实体的唯一值ID和属性列表，返回所有匹配的概念实体数据的目标属性值
      *
-     * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
+     * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表,如为空则返回各个实体的所有属性值
      * @param attributeNames List<String> 需要返回值的属性名称列表
      *
      * @return 匹配的概念实体对象的属性值列表

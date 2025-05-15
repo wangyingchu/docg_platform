@@ -454,7 +454,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             e.setCauseMessage("At least one conception entity UID is required");
             throw e;
         }
-        if(attributeNames == null || attributeNames.size() < 1){
+        if(attributeNames == null & attributeNames.size() < 1){
             logger.error("At least one attribute name is required");
             CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
             e.setCauseMessage("At least one attribute name is required");
@@ -462,6 +462,11 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         }
 
         String cypherProcedureString = CypherBuilder.matchAttributesWithNodeIDs(conceptionEntityUIDs,attributeNames);
+        if(attributeNames == null){
+            cypherProcedureString = "MATCH (targetNodes) WHERE id(targetNodes) IN " + conceptionEntityUIDs.toString()+"\n"+
+                    "RETURN DISTINCT targetNodes as operationResult";
+            logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+        }
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
             GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer = new GetListConceptionEntityValueTransformer(attributeNames);

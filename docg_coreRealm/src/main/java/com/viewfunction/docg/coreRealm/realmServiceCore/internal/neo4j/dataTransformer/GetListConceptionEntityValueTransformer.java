@@ -11,6 +11,9 @@ import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.*;
 
@@ -65,17 +68,27 @@ public class GetListConceptionEntityValueTransformer implements DataTransformer<
             currentConceptionEntityValue.setAllConceptionKindNames(allConceptionKindNames);
             conceptionEntityValueList.add(currentConceptionEntityValue);
             if(this.isUseIDMatchLogic()){
-                for(String currentAttributeName:returnedAttributeList){
-                    String entityAttributeName = CypherBuilder.operationResultName+"."+currentAttributeName;
-                    Object objectValue = valueMap.get(entityAttributeName);
-                    if(objectValue == null){
-                        //if attribute contains space for example : attribute a, will returned in `` such as .`attribute a`
-                        entityAttributeName = CypherBuilder.operationResultName+".`"+currentAttributeName+"`";
-                        objectValue = valueMap.get(entityAttributeName);
+                if(returnedAttributeList != null){
+                    for(String currentAttributeName:returnedAttributeList){
+                        String entityAttributeName = CypherBuilder.operationResultName+"."+currentAttributeName;
+                        Object objectValue = valueMap.get(entityAttributeName);
+                        if(objectValue == null){
+                            //if attribute contains space for example : attribute a, will returned in `` such as .`attribute a`
+                            entityAttributeName = CypherBuilder.operationResultName+".`"+currentAttributeName+"`";
+                            objectValue = valueMap.get(entityAttributeName);
+                        }
+                        Object resultAttributeValue = getFormattedValue(currentAttributeName,objectValue);
+                        if(resultAttributeValue != null){
+                            entityAttributesValue.put(currentAttributeName,resultAttributeValue);
+                        }
                     }
-                    Object resultAttributeValue = getFormattedValue(currentAttributeName,objectValue);
-                    if(resultAttributeValue != null){
-                        entityAttributesValue.put(currentAttributeName,resultAttributeValue);
+                }else{
+                    for (Map.Entry<String, Object> entry : valueMap.entrySet()) {
+                        String key = entry.getKey();
+                        Object value = entry.getValue();
+                        if(validateValueFormat(value)){
+                            entityAttributesValue.put(key,value);
+                        }
                     }
                 }
             }else{
@@ -223,6 +236,49 @@ public class GetListConceptionEntityValueTransformer implements DataTransformer<
             }
         }
         return null;
+    }
+
+    private boolean validateValueFormat(Object attributeValueObject){
+        if (attributeValueObject instanceof Boolean) {
+            return true;
+        }
+        if (attributeValueObject instanceof Integer) {
+            return true;
+        }
+        if (attributeValueObject instanceof Short) {
+            return true;
+        }
+        if (attributeValueObject instanceof Long) {
+            return true;
+        }
+        if (attributeValueObject instanceof Float) {
+            return true;
+        }
+        if (attributeValueObject instanceof Double) {
+            return true;
+        }
+        if (attributeValueObject instanceof BigDecimal) {
+            return true;
+        }
+        if (attributeValueObject instanceof String) {
+            return true;
+        }
+        if (attributeValueObject instanceof Byte) {
+            return true;
+        }
+        if (attributeValueObject instanceof ZonedDateTime) {
+            return true;
+        }
+        if (attributeValueObject instanceof LocalDateTime) {
+            return true;
+        }
+        if (attributeValueObject instanceof LocalDate) {
+            return true;
+        }
+        if (attributeValueObject instanceof LocalTime) {
+            return true;
+        }
+        return false;
     }
 
     public boolean isUseIDMatchLogic() {
