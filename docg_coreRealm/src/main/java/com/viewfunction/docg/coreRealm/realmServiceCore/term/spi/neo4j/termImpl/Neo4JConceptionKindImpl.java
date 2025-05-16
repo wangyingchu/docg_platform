@@ -1109,6 +1109,17 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         return commonConceptionEntitiesRetrieveResultImpl;
     }
 
+
+
+
+    @Override
+    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesWithClassificationsAttached(List<String> attributeNames, QueryParameters queryParameters, Set<ClassificationAttachParameters> classificationAttachParametersSet, FixConceptionEntityAttachParameters fixConceptionEntityAttachParameters) throws CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
+
+
+
     @Override
     public ConceptionEntity getEntityByUID(String conceptionEntityUID) {
         if (conceptionEntityUID != null) {
