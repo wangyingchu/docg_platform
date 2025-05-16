@@ -463,16 +463,23 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             }
         }
 
-        String cypherProcedureString = CypherBuilder.matchAttributesWithNodeIDs(conceptionEntityUIDs,attributeNames);
+        String cypherProcedureString;
         if(attributeNames == null){
             cypherProcedureString = "MATCH (targetNodes) WHERE id(targetNodes) IN " + conceptionEntityUIDs.toString()+"\n"+
                     "RETURN DISTINCT targetNodes as operationResult";
             logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+        }else{
+            cypherProcedureString = CypherBuilder.matchAttributesWithNodeIDs(conceptionEntityUIDs,attributeNames);
         }
+
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
             GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer = new GetListConceptionEntityValueTransformer(attributeNames);
-            getListConceptionEntityValueTransformer.setUseIDMatchLogic(true);
+            if(attributeNames != null){
+                getListConceptionEntityValueTransformer.setUseIDMatchLogic(true);
+            }else{
+                getListConceptionEntityValueTransformer.setUseIDMatchLogic(false);
+            }
             Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer,cypherProcedureString);
             if(resEntityRes != null){
                 List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
