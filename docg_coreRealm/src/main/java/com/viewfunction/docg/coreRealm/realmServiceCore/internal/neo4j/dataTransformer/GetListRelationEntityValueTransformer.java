@@ -8,6 +8,9 @@ import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Relationship;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.*;
 
@@ -45,12 +48,23 @@ public class GetListRelationEntityValueTransformer  implements DataTransformer<L
                         String toEntityUID = ""+resultRelationship.endNodeId();
                         Map<String,Object> valueMap = resultRelationship.asMap();
                         Map<String,Object> entityAttributesValue = new HashMap<>();
-                        if(returnedAttributeList != null && returnedAttributeList.size() > 0){
-                            for(String currentAttributeName : returnedAttributeList){
-                                Object objectValue = valueMap.get(currentAttributeName);
-                                Object resultAttributeValue = getFormattedValue(currentAttributeName,objectValue);
-                                if(resultAttributeValue != null){
-                                    entityAttributesValue.put(currentAttributeName,resultAttributeValue);
+
+                        if(returnedAttributeList!= null){
+                            if(returnedAttributeList != null && returnedAttributeList.size() > 0){
+                                for(String currentAttributeName : returnedAttributeList){
+                                    Object objectValue = valueMap.get(currentAttributeName);
+                                    Object resultAttributeValue = getFormattedValue(currentAttributeName,objectValue);
+                                    if(resultAttributeValue != null){
+                                        entityAttributesValue.put(currentAttributeName,resultAttributeValue);
+                                    }
+                                }
+                            }
+                        }else{
+                            for (Map.Entry<String, Object> entry : valueMap.entrySet()) {
+                                String key = entry.getKey();
+                                Object value = entry.getValue();
+                                if(validateValueFormat(value)){
+                                    entityAttributesValue.put(key,value);
                                 }
                             }
                         }
@@ -195,5 +209,48 @@ public class GetListRelationEntityValueTransformer  implements DataTransformer<L
             }
         }
         return null;
+    }
+
+    private boolean validateValueFormat(Object attributeValueObject){
+        if (attributeValueObject instanceof Boolean) {
+            return true;
+        }
+        if (attributeValueObject instanceof Integer) {
+            return true;
+        }
+        if (attributeValueObject instanceof Short) {
+            return true;
+        }
+        if (attributeValueObject instanceof Long) {
+            return true;
+        }
+        if (attributeValueObject instanceof Float) {
+            return true;
+        }
+        if (attributeValueObject instanceof Double) {
+            return true;
+        }
+        if (attributeValueObject instanceof BigDecimal) {
+            return true;
+        }
+        if (attributeValueObject instanceof String) {
+            return true;
+        }
+        if (attributeValueObject instanceof Byte) {
+            return true;
+        }
+        if (attributeValueObject instanceof ZonedDateTime) {
+            return true;
+        }
+        if (attributeValueObject instanceof LocalDateTime) {
+            return true;
+        }
+        if (attributeValueObject instanceof LocalDate) {
+            return true;
+        }
+        if (attributeValueObject instanceof LocalTime) {
+            return true;
+        }
+        return false;
     }
 }
