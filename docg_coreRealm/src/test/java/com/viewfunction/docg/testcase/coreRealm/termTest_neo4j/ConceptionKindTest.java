@@ -528,7 +528,7 @@ public class ConceptionKindTest {
         attributesList2.add("propTmp1");
         attributesList2.add("propTmpNOTEXIST");
 
-        ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributesRetrieveResult0 = _ConceptionKind01.getSingleValueEntityAttributesWithClassificationsAttached(attributesList2,null,classificationAttachParametersSet);
+        ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributesRetrieveResult0 = _ConceptionKind01.getSingleValueEntityAttributesByAttributeNamesWithClassificationsAttached(attributesList2,null,classificationAttachParametersSet);
         Assert.assertEquals(conceptionEntitiesAttributesRetrieveResult0.getOperationStatistics().getResultEntitiesCount(),20);
         Assert.assertEquals(conceptionEntitiesAttributesRetrieveResult0.getConceptionEntityValues().size(),20);
         for(ConceptionEntityValue cConceptionEntityValue:conceptionEntitiesAttributesRetrieveResult0.getConceptionEntityValues()){
@@ -555,7 +555,7 @@ public class ConceptionKindTest {
         fixConceptionEntityAttachParameters.setRelationDirection(RelationDirection.FROM);
         fixConceptionEntityAttachParameters.setRelationKind("relationKind01BB");
 
-        conceptionEntitiesAttributesRetrieveResult0 = _ConceptionKind01.getSingleValueEntityAttributesWithClassificationsAttached(attributesList2,null,classificationAttachParametersSet,fixConceptionEntityAttachParameters);
+        conceptionEntitiesAttributesRetrieveResult0 = _ConceptionKind01.getSingleValueEntityAttributesByAttributeNamesWithClassificationsAttached(attributesList2,null,classificationAttachParametersSet,fixConceptionEntityAttachParameters);
         Assert.assertEquals(conceptionEntitiesAttributesRetrieveResult0.getConceptionEntityValues().size(),1);
         ConceptionEntityValue resultValue = conceptionEntitiesAttributesRetrieveResult0.getConceptionEntityValues().get(0);
         Assert.assertEquals(resultValue.getConceptionEntityUID(),sourceConceptionEntity.getConceptionEntityUID());

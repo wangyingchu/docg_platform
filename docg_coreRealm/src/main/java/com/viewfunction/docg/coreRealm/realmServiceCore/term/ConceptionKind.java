@@ -209,7 +209,7 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      * @param queryParameters QueryParameters 概念实体查询过滤条件
      * @param relationMatchParameters RelationMatchParameters 概念实体关联关系的匹配条件
      *
-     * @return 概念实体数量
+     * @return 概念实体查询结果集
      */
     public ConceptionEntitiesRetrieveResult getEntitiesWithRelationsMatch(QueryParameters queryParameters, RelationMatchParameters relationMatchParameters) throws CoreRealmServiceEntityExploreException;
 
@@ -243,7 +243,15 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      *
      * @return 概念实体属性查询结果集
      */
-    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesWithClassificationsAttached(List<String> attributeNames,QueryParameters queryParameters, Set<ClassificationAttachParameters> classificationAttachParametersSet) throws CoreRealmServiceEntityExploreException;
+    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNamesWithClassificationsAttached(List<String> attributeNames, QueryParameters queryParameters, Set<ClassificationAttachParameters> classificationAttachParametersSet) throws CoreRealmServiceEntityExploreException;
+
+
+
+
+
+    //need getSingleValueEntityAttributesWithClassificationsAttached for  attributeViewkind
+
+
 
     /**
      * 查询符合实体过滤条件，并且通过特定的关系类型附着在指定的分类上的当前概念类型的概念实体对象数量
@@ -278,7 +286,19 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      *
      * @return 概念实体查询结果集
      */
-    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesWithClassificationsAttached(List<String> attributeNames,QueryParameters queryParameters, Set<ClassificationAttachParameters> classificationAttachParametersSet, FixConceptionEntityAttachParameters fixConceptionEntityAttachParameters) throws CoreRealmServiceEntityExploreException;
+    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNamesWithClassificationsAttached(List<String> attributeNames, QueryParameters queryParameters, Set<ClassificationAttachParameters> classificationAttachParametersSet, FixConceptionEntityAttachParameters fixConceptionEntityAttachParameters) throws CoreRealmServiceEntityExploreException;
+
+
+
+
+
+
+    //need getSingleValueEntityAttributesWithClassificationsAttached FixConceptionEntityAttachParameters fixConceptionEntityAttachParameters for  attributeViewkind
+
+
+
+
+
 
     /**
      * 根据唯一ID获取当前概念类型的概念实体对象
