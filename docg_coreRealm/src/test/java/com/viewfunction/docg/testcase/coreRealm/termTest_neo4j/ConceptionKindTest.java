@@ -2,6 +2,7 @@ package com.viewfunction.docg.testcase.coreRealm.termTest_neo4j;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.ClassificationAttachParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.FixConceptionEntityAttachParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.GreaterThanFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.NullValueFilteringItem;
@@ -530,7 +531,6 @@ public class ConceptionKindTest {
         ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributesRetrieveResult0 = _ConceptionKind01.getSingleValueEntityAttributesWithClassificationsAttached(attributesList2,null,classificationAttachParametersSet);
         Assert.assertEquals(conceptionEntitiesAttributesRetrieveResult0.getOperationStatistics().getResultEntitiesCount(),20);
         Assert.assertEquals(conceptionEntitiesAttributesRetrieveResult0.getConceptionEntityValues().size(),20);
-
         for(ConceptionEntityValue cConceptionEntityValue:conceptionEntitiesAttributesRetrieveResult0.getConceptionEntityValues()){
             String entityID = cConceptionEntityValue.getConceptionEntityUID();
             Assert.assertTrue(entitiesUIDList.contains(entityID));
@@ -542,6 +542,30 @@ public class ConceptionKindTest {
             Assert.assertNull(attrMap.get("propTmpNOTEXIST"));
         }
 
+        Map<String,Object> newEntityValueMap3= new HashMap<>();
+        newEntityValueMap3.put("propHHH",10000l);
+        ConceptionEntityValue fixConceptionEntityValue = new ConceptionEntityValue(newEntityValueMap3);
+        ConceptionEntity fixConceptionEntity = _ConceptionKind02.newEntity(fixConceptionEntityValue,false);
+
+        ConceptionEntity sourceConceptionEntity = _ConceptionKind01.getEntityByUID(entitiesUIDList.get(0));
+        sourceConceptionEntity.attachFromRelation(fixConceptionEntity.getConceptionEntityUID(),"relationKind01BB",null,false);
+
+        FixConceptionEntityAttachParameters fixConceptionEntityAttachParameters = new FixConceptionEntityAttachParameters();
+        fixConceptionEntityAttachParameters.setConceptionEntityUID(fixConceptionEntity.getConceptionEntityUID());
+        fixConceptionEntityAttachParameters.setRelationDirection(RelationDirection.FROM);
+        fixConceptionEntityAttachParameters.setRelationKind("relationKind01BB");
+
+        conceptionEntitiesAttributesRetrieveResult0 = _ConceptionKind01.getSingleValueEntityAttributesWithClassificationsAttached(attributesList2,null,classificationAttachParametersSet,fixConceptionEntityAttachParameters);
+        Assert.assertEquals(conceptionEntitiesAttributesRetrieveResult0.getConceptionEntityValues().size(),1);
+        ConceptionEntityValue resultValue = conceptionEntitiesAttributesRetrieveResult0.getConceptionEntityValues().get(0);
+        Assert.assertEquals(resultValue.getConceptionEntityUID(),sourceConceptionEntity.getConceptionEntityUID());
+
+        Map<String,Object> attrMap =  resultValue.getEntityAttributesValue();
+        Assert.assertEquals(attrMap.get("prop1"),sourceConceptionEntity.getAttribute("prop1").getAttributeValue());
+        Assert.assertEquals(attrMap.get("prop2"),sourceConceptionEntity.getAttribute("prop2").getAttributeValue());
+        Assert.assertEquals(attrMap.get("prop5"),sourceConceptionEntity.getAttribute("prop5").getAttributeValue());
+        Assert.assertEquals(attrMap.get("propTmp1"),sourceConceptionEntity.getAttribute("propTmp1").getAttributeValue());
+
         classificationAttachParameters.setOffspringAttach(true);
         classificationAttachParameters.setAttachedClassification(classificationName02);
         conceptionEntitiesRetrieveResult01 = _ConceptionKind01.getEntitiesWithClassificationsAttached(null,classificationAttachParametersSet);
@@ -549,5 +573,6 @@ public class ConceptionKindTest {
 
         EntitiesOperationResult removeResult = _ConceptionKind01.deleteEntities(entitiesUIDList);
         Assert.assertEquals(removeResult.getOperationStatistics().getSuccessItemsCount(),20);
+        _ConceptionKind02.deleteEntity(fixConceptionEntity.getConceptionEntityUID());
     }
 }

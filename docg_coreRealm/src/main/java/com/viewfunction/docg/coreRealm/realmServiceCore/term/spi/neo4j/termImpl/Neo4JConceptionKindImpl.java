@@ -1109,16 +1109,84 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         return commonConceptionEntitiesRetrieveResultImpl;
     }
 
-
-
-
     @Override
     public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesWithClassificationsAttached(List<String> attributeNames, QueryParameters queryParameters, Set<ClassificationAttachParameters> classificationAttachParametersSet, FixConceptionEntityAttachParameters fixConceptionEntityAttachParameters) throws CoreRealmServiceEntityExploreException {
+        if(attributeNames != null && attributeNames.size()>0){
+            CommonConceptionEntitiesAttributesRetrieveResultImpl commonConceptionEntitiesAttributesRetrieveResultImpl
+                    = new CommonConceptionEntitiesAttributesRetrieveResultImpl();
+            commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                //base queryCQL
+                String queryCql = CypherBuilder.matchAttributesWithQueryParameters(this.conceptionKindName,queryParameters,attributeNames);
+                String fixConceptionEntityAttachQueryPart = "";
+                String fixConceptionEntityMatchByIdPart = "";
+                if(fixConceptionEntityAttachParameters!=null){
+                    String conceptionEntityUID = fixConceptionEntityAttachParameters.getConceptionEntityUID();
+                    RelationDirection relationDirection = fixConceptionEntityAttachParameters.getRelationDirection();
+                    String relationKind = fixConceptionEntityAttachParameters.getRelationKind();
+                    if(conceptionEntityUID!=null & relationDirection!=null&relationKind!= null){
+                        fixConceptionEntityMatchByIdPart = "MATCH (fixEntity) WHERE id(fixEntity) = "+Long.parseLong(conceptionEntityUID) + "\n";
+                        switch(relationDirection){
+                            case FROM -> fixConceptionEntityAttachQueryPart = "(fixEntity) <-["+relationKind+"]-";
+                            case TO -> fixConceptionEntityAttachQueryPart = "(fixEntity) -["+relationKind+"]->";
+                            case TWO_WAY -> fixConceptionEntityAttachQueryPart = "(fixEntity) -["+relationKind+"]-";
+                        }
+                    }
+                }
+
+                StringBuilder classificationsQueryPart = new StringBuilder();
+                classificationsQueryPart.append(fixConceptionEntityMatchByIdPart);
+                if(classificationAttachParametersSet != null && classificationAttachParametersSet.size() > 0){
+                    int classificationIdx = 0;
+                    for(ClassificationAttachParameters currentRelationMatchParameters:classificationAttachParametersSet) {
+                        String classificationName = currentRelationMatchParameters.getAttachedClassification();
+                        RelationDirection relationDirection = currentRelationMatchParameters.getRelationDirection();
+                        String currentClassificationQueryPart= "(c"+classificationIdx+":"+RealmConstant.ClassificationClass+" {name: '"+classificationName+"'})";
+                        classificationIdx++;
+                        String relationKind = currentRelationMatchParameters.getRelationKind();
+                        boolean isOffspringAttach = currentRelationMatchParameters.isOffspringAttach();
+                        if(isOffspringAttach){
+                            switch(relationDirection){
+                                case FROM ->
+                                        classificationsQueryPart.append("MATCH "+fixConceptionEntityAttachQueryPart+" ("+CypherBuilder.operationResultName+":`"+this.conceptionKindName+"`)-[:"+relationKind+"]->(:"+RealmConstant.ClassificationClass+")-[classificationPLink"+classificationIdx+":"+RealmConstant.Classification_ClassificationRelationClass+"]->+"+currentClassificationQueryPart);
+                                case TO ->
+                                        classificationsQueryPart.append("MATCH "+fixConceptionEntityAttachQueryPart+" ("+CypherBuilder.operationResultName+":`"+this.conceptionKindName+"`)<-[:"+relationKind+"]-(:"+RealmConstant.ClassificationClass+")-[classificationPLink"+classificationIdx+":"+RealmConstant.Classification_ClassificationRelationClass+"]->+"+currentClassificationQueryPart);
+                                case TWO_WAY ->
+                                        classificationsQueryPart.append("MATCH "+fixConceptionEntityAttachQueryPart+" ("+CypherBuilder.operationResultName+":`"+this.conceptionKindName+"`)-[:"+relationKind+"]-(:"+RealmConstant.ClassificationClass+")-[classificationPLink"+classificationIdx+":"+RealmConstant.Classification_ClassificationRelationClass+"]->+"+currentClassificationQueryPart);
+                            }
+                        }else{
+                            switch(relationDirection){
+                                case FROM -> classificationsQueryPart.append("MATCH "+fixConceptionEntityAttachQueryPart+" ("+CypherBuilder.operationResultName+":`"+this.conceptionKindName+"`)-[:"+relationKind+"]->"+currentClassificationQueryPart);
+                                case TO -> classificationsQueryPart.append("MATCH "+fixConceptionEntityAttachQueryPart+" ("+CypherBuilder.operationResultName+":`"+this.conceptionKindName+"`)<-[:"+relationKind+"]-"+currentClassificationQueryPart);
+                                case TWO_WAY -> classificationsQueryPart.append("MATCH "+fixConceptionEntityAttachQueryPart+" ("+CypherBuilder.operationResultName+":`"+this.conceptionKindName+"`)-[:"+relationKind+"]-"+currentClassificationQueryPart);
+                            }
+                        }
+                        classificationsQueryPart.append("\n");
+                    }
+                    //MATCH (operationResult:`+this.conceptionKindName+`) WHERE ......
+                    queryCql = queryCql.replace("MATCH ("+CypherBuilder.operationResultName+":`"+this.conceptionKindName+"`)",classificationsQueryPart.toString());
+                }
+                logger.debug("Generated Cypher Statement: {}", queryCql);
+
+                List<AttributeKind> containsAttributesKinds = getContainsSingleValueAttributeKinds(workingGraphOperationExecutor);
+                GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer =
+                        new GetListConceptionEntityValueTransformer(attributeNames,containsAttributesKinds);
+                Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
+                if(resEntityRes != null){
+                    List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
+                    commonConceptionEntitiesAttributesRetrieveResultImpl.addConceptionEntitiesAttributes(resultEntitiesValues);
+                    commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultEntitiesValues.size());
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            commonConceptionEntitiesAttributesRetrieveResultImpl.finishEntitiesRetrieving();
+            return commonConceptionEntitiesAttributesRetrieveResultImpl;
+        }
         return null;
     }
-
-
-
 
     @Override
     public ConceptionEntity getEntityByUID(String conceptionEntityUID) {
