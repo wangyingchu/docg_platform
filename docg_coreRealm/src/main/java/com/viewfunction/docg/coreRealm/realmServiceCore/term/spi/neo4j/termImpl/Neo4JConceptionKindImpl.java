@@ -931,26 +931,28 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         return null;
     }
 
-
-
-
-
-
-
-
     @Override
     public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByViewKindsWithClassificationsAttached(List<String> attributesViewKindNames, QueryParameters queryParameters, Set<ClassificationAttachParameters> classificationAttachParametersSet) throws CoreRealmServiceEntityExploreException {
+        if(attributesViewKindNames != null && attributesViewKindNames.size()>0){
+            List<AttributesViewKind> resultRealAttributesViewKindList = new ArrayList<>();
+            for(String currentTargetViewKindName:attributesViewKindNames){
+                List<AttributesViewKind> currentAttributesViewKinds = getContainsAttributesViewKinds(currentTargetViewKindName);
+                if(currentAttributesViewKinds != null){
+                    resultRealAttributesViewKindList.addAll(currentAttributesViewKinds);
+                }
+            }
+            List<AttributeKind> allResultTargetAttributeKindList = new ArrayList<>();
+            for(AttributesViewKind resultAttributesViewKind:resultRealAttributesViewKindList){
+                List<AttributeKind> currentAttributeKinds = resultAttributesViewKind.getContainsAttributeKinds();
+                if(currentAttributeKinds != null){
+                    allResultTargetAttributeKindList.addAll(currentAttributeKinds);
+                }
+            }
+            List<String> targetAttributeKindNameList = filterSingleValueAttributeKindNames(allResultTargetAttributeKindList);
+            return getSingleValueEntityAttributesByAttributeNamesWithClassificationsAttached(targetAttributeKindNameList,queryParameters,classificationAttachParametersSet);
+        }
         return null;
     }
-
-
-
-
-
-
-
-
-
 
     @Override
     public Long countEntitiesWithClassificationsAttached(AttributesParameters attributesParameters, boolean isDistinctMode, Set<ClassificationAttachParameters> classificationAttachParametersSet, FixConceptionEntityAttachParameters fixConceptionEntityAttachParameters) throws CoreRealmServiceEntityExploreException {
@@ -1209,27 +1211,28 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         return null;
     }
 
-
-
-
-
-
-
-
-
     @Override
     public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByViewKindsWithClassificationsAttached(List<String> attributesViewKindNames, QueryParameters queryParameters, Set<ClassificationAttachParameters> classificationAttachParametersSet, FixConceptionEntityAttachParameters fixConceptionEntityAttachParameters) throws CoreRealmServiceEntityExploreException {
+        if(attributesViewKindNames != null && attributesViewKindNames.size()>0){
+            List<AttributesViewKind> resultRealAttributesViewKindList = new ArrayList<>();
+            for(String currentTargetViewKindName:attributesViewKindNames){
+                List<AttributesViewKind> currentAttributesViewKinds = getContainsAttributesViewKinds(currentTargetViewKindName);
+                if(currentAttributesViewKinds != null){
+                    resultRealAttributesViewKindList.addAll(currentAttributesViewKinds);
+                }
+            }
+            List<AttributeKind> allResultTargetAttributeKindList = new ArrayList<>();
+            for(AttributesViewKind resultAttributesViewKind:resultRealAttributesViewKindList){
+                List<AttributeKind> currentAttributeKinds = resultAttributesViewKind.getContainsAttributeKinds();
+                if(currentAttributeKinds != null){
+                    allResultTargetAttributeKindList.addAll(currentAttributeKinds);
+                }
+            }
+            List<String> targetAttributeKindNameList = filterSingleValueAttributeKindNames(allResultTargetAttributeKindList);
+            return getSingleValueEntityAttributesByAttributeNamesWithClassificationsAttached(targetAttributeKindNameList,queryParameters,classificationAttachParametersSet,fixConceptionEntityAttachParameters);
+        }
         return null;
     }
-
-
-
-
-
-
-
-
-
 
     @Override
     public ConceptionEntity getEntityByUID(String conceptionEntityUID) {

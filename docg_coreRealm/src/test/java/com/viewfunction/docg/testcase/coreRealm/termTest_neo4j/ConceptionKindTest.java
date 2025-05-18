@@ -542,6 +542,33 @@ public class ConceptionKindTest {
             Assert.assertNull(attrMap.get("propTmpNOTEXIST"));
         }
 
+        AttributeKind prop1Kind = coreRealm.createAttributeKind("prop1","属性1",AttributeDataType.INT);
+        AttributeKind prop4Kind = coreRealm.createAttributeKind("prop4","属性4",AttributeDataType.STRING);
+
+        AttributesViewKind attributesViewKind1 = coreRealm.createAttributesViewKind("attributesViewKind1","属性视图1",AttributesViewKind.AttributesViewKindDataForm.SINGLE_VALUE);
+        attributesViewKind1.attachAttributeKind(prop1Kind.getAttributeKindUID());
+        AttributesViewKind attributesViewKind2 = coreRealm.createAttributesViewKind("attributesViewKind2","属性视图2",AttributesViewKind.AttributesViewKindDataForm.SINGLE_VALUE);
+        attributesViewKind2.attachAttributeKind(prop4Kind.getAttributeKindUID());
+
+        _ConceptionKind01.attachAttributesViewKind(attributesViewKind1.getAttributesViewKindUID());
+        _ConceptionKind01.attachAttributesViewKind(attributesViewKind2.getAttributesViewKindUID());
+
+        List<String> attributesViewKindList = new ArrayList<>();
+        attributesViewKindList.add("attributesViewKind1");
+        attributesViewKindList.add("attributesViewKind2");
+
+        conceptionEntitiesAttributesRetrieveResult0 = _ConceptionKind01.getSingleValueEntityAttributesByViewKindsWithClassificationsAttached(attributesViewKindList,null,classificationAttachParametersSet);
+        Assert.assertEquals(conceptionEntitiesAttributesRetrieveResult0.getOperationStatistics().getResultEntitiesCount(),20);
+        Assert.assertEquals(conceptionEntitiesAttributesRetrieveResult0.getConceptionEntityValues().size(),20);
+
+        for(ConceptionEntityValue cConceptionEntityValue:conceptionEntitiesAttributesRetrieveResult0.getConceptionEntityValues()){
+            String entityID = cConceptionEntityValue.getConceptionEntityUID();
+            Assert.assertTrue(entitiesUIDList.contains(entityID));
+            Map<String,Object> attrMap =  cConceptionEntityValue.getEntityAttributesValue();
+            Assert.assertTrue(attrMap.get("prop1") != null);
+            Assert.assertTrue(attrMap.get("prop4") != null);
+        }
+
         Map<String,Object> newEntityValueMap3= new HashMap<>();
         newEntityValueMap3.put("propHHH",10000l);
         ConceptionEntityValue fixConceptionEntityValue = new ConceptionEntityValue(newEntityValueMap3);
@@ -561,10 +588,18 @@ public class ConceptionKindTest {
         Assert.assertEquals(resultValue.getConceptionEntityUID(),sourceConceptionEntity.getConceptionEntityUID());
 
         Map<String,Object> attrMap =  resultValue.getEntityAttributesValue();
-        Assert.assertEquals(attrMap.get("prop1"),sourceConceptionEntity.getAttribute("prop1").getAttributeValue());
+        Assert.assertEquals(Integer.parseInt(attrMap.get("prop1").toString()),Integer.parseInt(sourceConceptionEntity.getAttribute("prop1").getAttributeValue().toString()));
         Assert.assertEquals(attrMap.get("prop2"),sourceConceptionEntity.getAttribute("prop2").getAttributeValue());
         Assert.assertEquals(attrMap.get("prop5"),sourceConceptionEntity.getAttribute("prop5").getAttributeValue());
         Assert.assertEquals(attrMap.get("propTmp1"),sourceConceptionEntity.getAttribute("propTmp1").getAttributeValue());
+
+        conceptionEntitiesAttributesRetrieveResult0 = _ConceptionKind01.getSingleValueEntityAttributesByViewKindsWithClassificationsAttached(attributesViewKindList,null,classificationAttachParametersSet,fixConceptionEntityAttachParameters);
+        Assert.assertEquals(conceptionEntitiesAttributesRetrieveResult0.getConceptionEntityValues().size(),1);
+        resultValue = conceptionEntitiesAttributesRetrieveResult0.getConceptionEntityValues().get(0);
+        attrMap =  resultValue.getEntityAttributesValue();
+        Assert.assertEquals(resultValue.getConceptionEntityUID(),sourceConceptionEntity.getConceptionEntityUID());
+        Assert.assertEquals(Integer.parseInt(attrMap.get("prop1").toString()),Integer.parseInt(sourceConceptionEntity.getAttribute("prop1").getAttributeValue().toString()));
+        Assert.assertEquals(attrMap.get("prop4"),sourceConceptionEntity.getAttribute("prop4").getAttributeValue());
 
         classificationAttachParameters.setOffspringAttach(true);
         classificationAttachParameters.setAttachedClassification(classificationName02);
@@ -574,5 +609,11 @@ public class ConceptionKindTest {
         EntitiesOperationResult removeResult = _ConceptionKind01.deleteEntities(entitiesUIDList);
         Assert.assertEquals(removeResult.getOperationStatistics().getSuccessItemsCount(),20);
         _ConceptionKind02.deleteEntity(fixConceptionEntity.getConceptionEntityUID());
+
+        coreRealm.removeAttributeKind(prop1Kind.getAttributeKindUID());
+        coreRealm.removeAttributeKind(prop4Kind.getAttributeKindUID());
+
+        coreRealm.removeAttributesViewKind(attributesViewKind1.getAttributesViewKindUID());
+        coreRealm.removeAttributesViewKind(attributesViewKind2.getAttributesViewKindUID());
     }
 }
