@@ -931,6 +931,27 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         return null;
     }
 
+
+
+
+
+
+
+
+    @Override
+    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByViewKindsWithClassificationsAttached(List<String> attributesViewKindNames, QueryParameters queryParameters, Set<ClassificationAttachParameters> classificationAttachParametersSet) throws CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
+
+
+
+
+
+
+
+
+
     @Override
     public Long countEntitiesWithClassificationsAttached(AttributesParameters attributesParameters, boolean isDistinctMode, Set<ClassificationAttachParameters> classificationAttachParametersSet, FixConceptionEntityAttachParameters fixConceptionEntityAttachParameters) throws CoreRealmServiceEntityExploreException {
         QueryParameters queryParameters = null;
@@ -1187,6 +1208,28 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         }
         return null;
     }
+
+
+
+
+
+
+
+
+
+    @Override
+    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByViewKindsWithClassificationsAttached(List<String> attributesViewKindNames, QueryParameters queryParameters, Set<ClassificationAttachParameters> classificationAttachParametersSet, FixConceptionEntityAttachParameters fixConceptionEntityAttachParameters) throws CoreRealmServiceEntityExploreException {
+        return null;
+    }
+
+
+
+
+
+
+
+
+
 
     @Override
     public ConceptionEntity getEntityByUID(String conceptionEntityUID) {
