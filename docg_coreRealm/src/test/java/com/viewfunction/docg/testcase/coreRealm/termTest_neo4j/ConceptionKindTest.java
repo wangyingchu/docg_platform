@@ -1,6 +1,7 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest_neo4j;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.ClassificationAttachParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.GreaterThanFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.NullValueFilteringItem;
@@ -168,7 +169,6 @@ public class ConceptionKindTest {
 
         targetAttributesViewKindList = _ConceptionKind01.getContainsAttributesViewKinds("targetAttributesViewKindToAdd02");
         Assert.assertEquals(targetAttributesViewKindList.size(),0);
-
 
         Map<String,Object> newEntityValue= new HashMap<>();
         newEntityValue.put("prop1",10000l);
@@ -470,5 +470,84 @@ public class ConceptionKindTest {
         ConceptionEntity randomEntity = _ConceptionKind01.getEntityByUID(randomEntityId);
         Assert.assertNotNull(randomEntity.getAttribute("dateTypeAttr"));
         Assert.assertEquals(((Long)randomEntity.getAttribute("intTypeAttr").getAttributeValue()).longValue(),1000l);
+
+        String classificationName01 = "classificationForTest01";
+        String classificationName02 = "classificationForTest02";
+        Classification _Classification01 = coreRealm.getClassification(classificationName01);
+        Classification _Classification02 = coreRealm.getClassification(classificationName02);
+        if(_Classification01 != null){
+            boolean removeClassificationResult = coreRealm.removeClassification(classificationName01);
+            Assert.assertTrue(removeClassificationResult);
+        }
+        if(_Classification02 != null){
+            boolean removeClassificationResult = coreRealm.removeClassification(classificationName02);
+            Assert.assertTrue(removeClassificationResult);
+        }
+        coreRealm.createClassification(classificationName02,"Test01");
+        coreRealm.createClassification(classificationName01,"Test02",classificationName02);
+
+        List<String> entitiesUIDList = new ArrayList<>();
+        RelationAttachInfo relationAttachInfo = new RelationAttachInfo();
+        relationAttachInfo.setRelationKind("relationKind01AA");
+        relationAttachInfo.setRelationDirection(RelationDirection.FROM);
+
+        for(int i =0;i<20;i++){
+            Map<String,Object> newEntityValueMap2= new HashMap<>();
+            newEntityValueMap2.put("prop1",10000l);
+            newEntityValueMap2.put("prop2",190.22d);
+            newEntityValueMap2.put("prop3",50);
+            newEntityValueMap2.put("prop4","thi is s string");
+            newEntityValueMap2.put("prop5","我是中文string");
+            newEntityValueMap2.put("propTmp1", LocalDate.of(1667,1,1));
+            newEntityValueMap2.put("propTmp2", new LocalTime[]{LocalTime.of(13,3,3),
+                    LocalTime.of(14,4,4)});
+            ConceptionEntityValue currentConceptionEntityValue = new ConceptionEntityValue(newEntityValueMap2);
+            ConceptionEntity _CurrentConceptionEntity = _ConceptionKind01.newEntity(currentConceptionEntityValue,false);
+            entitiesUIDList.add(_CurrentConceptionEntity.getConceptionEntityUID());
+            _CurrentConceptionEntity.attachClassification(relationAttachInfo,classificationName01);
+        }
+
+        ClassificationAttachParameters classificationAttachParameters = new ClassificationAttachParameters();
+        classificationAttachParameters.setRelationKind("relationKind01AA");
+        classificationAttachParameters.setOffspringAttach(false);
+        classificationAttachParameters.setAttachedClassification(classificationName01);
+        classificationAttachParameters.setRelationDirection(RelationDirection.FROM);
+        Set<ClassificationAttachParameters> classificationAttachParametersSet = new HashSet();
+        classificationAttachParametersSet.add(classificationAttachParameters);
+
+        ConceptionEntitiesRetrieveResult conceptionEntitiesRetrieveResult01 = _ConceptionKind01.getEntitiesWithClassificationsAttached(null,classificationAttachParametersSet);
+        Assert.assertEquals(conceptionEntitiesRetrieveResult01.getOperationStatistics().getResultEntitiesCount(),20);
+        Long countResult =_ConceptionKind01.countEntitiesWithClassificationsAttached(null,true,classificationAttachParametersSet);
+        Assert.assertEquals(countResult,20);
+
+        List<String> attributesList2 = new ArrayList<>();
+        attributesList2.add("prop1");
+        attributesList2.add("prop2");
+        attributesList2.add("prop5");
+        attributesList2.add("propTmp1");
+        attributesList2.add("propTmpNOTEXIST");
+
+        ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributesRetrieveResult0 = _ConceptionKind01.getSingleValueEntityAttributesWithClassificationsAttached(attributesList2,null,classificationAttachParametersSet);
+        Assert.assertEquals(conceptionEntitiesAttributesRetrieveResult0.getOperationStatistics().getResultEntitiesCount(),20);
+        Assert.assertEquals(conceptionEntitiesAttributesRetrieveResult0.getConceptionEntityValues().size(),20);
+
+        for(ConceptionEntityValue cConceptionEntityValue:conceptionEntitiesAttributesRetrieveResult0.getConceptionEntityValues()){
+            String entityID = cConceptionEntityValue.getConceptionEntityUID();
+            Assert.assertTrue(entitiesUIDList.contains(entityID));
+            Map<String,Object> attrMap =  cConceptionEntityValue.getEntityAttributesValue();
+            Assert.assertTrue(attrMap.get("prop1") != null);
+            Assert.assertTrue(attrMap.get("prop2") != null);
+            Assert.assertTrue(attrMap.get("prop5") != null);
+            Assert.assertTrue(attrMap.get("propTmp1") != null);
+            Assert.assertNull(attrMap.get("propTmpNOTEXIST"));
+        }
+
+        classificationAttachParameters.setOffspringAttach(true);
+        classificationAttachParameters.setAttachedClassification(classificationName02);
+        conceptionEntitiesRetrieveResult01 = _ConceptionKind01.getEntitiesWithClassificationsAttached(null,classificationAttachParametersSet);
+        Assert.assertEquals(conceptionEntitiesRetrieveResult01.getOperationStatistics().getResultEntitiesCount(),20);
+
+        EntitiesOperationResult removeResult = _ConceptionKind01.deleteEntities(entitiesUIDList);
+        Assert.assertEquals(removeResult.getOperationStatistics().getSuccessItemsCount(),20);
     }
 }
