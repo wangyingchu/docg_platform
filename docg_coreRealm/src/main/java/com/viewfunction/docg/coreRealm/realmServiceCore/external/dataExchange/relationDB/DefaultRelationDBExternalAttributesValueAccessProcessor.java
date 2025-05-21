@@ -24,8 +24,8 @@ public class DefaultRelationDBExternalAttributesValueAccessProcessor implements 
     public final String _ExternalRelationDB_DefaultTableName = "DOCG_ExternalRelationDB_DefaultTableName";
     public final String _ExternalRelationDB_Host = "DOCG_ExternalRelationDB_Host";
     public final String _ExternalRelationDB_Port = "DOCG_ExternalRelationDB_Port";
-    public final String _ExternalRelationDBPORT_UserName = "DOCG_ExternalRelationDBPORT_UserName";
-    public final String _ExternalRelationDBPORT_UserPWD = "DOCG_ExternalRelationDBPORT_UserPWD";
+    public final String _ExternalRelationDB_UserName = "DOCG_ExternalRelationDB_UserName";
+    public final String _ExternalRelationDB_UserPWD = "DOCG_ExternalRelationDB_UserPWD";
 
     @Override
     public List<Map<String, Object>> getEntityExternalAttributesValues(AttributesViewKind attributesViewKind, QueryParameters queryParameters, List<AttributeValue> attributeValueList) {
@@ -50,11 +50,11 @@ public class DefaultRelationDBExternalAttributesValueAccessProcessor implements 
             if(metaConfigItems.containsKey(_ExternalRelationDB_Port)){
                 port = attributesViewKind.getMetaConfigItem(_ExternalRelationDB_Port).toString();
             }
-            if(metaConfigItems.containsKey(_ExternalRelationDBPORT_UserName)){
-                userName = attributesViewKind.getMetaConfigItem(_ExternalRelationDBPORT_UserName).toString();
+            if(metaConfigItems.containsKey(_ExternalRelationDB_UserName)){
+                userName = attributesViewKind.getMetaConfigItem(_ExternalRelationDB_UserName).toString();
             }
-            if(metaConfigItems.containsKey(_ExternalRelationDBPORT_UserPWD)){
-                userPWD = attributesViewKind.getMetaConfigItem(_ExternalRelationDBPORT_UserPWD).toString().trim();
+            if(metaConfigItems.containsKey(_ExternalRelationDB_UserPWD)){
+                userPWD = attributesViewKind.getMetaConfigItem(_ExternalRelationDB_UserPWD).toString().trim();
             }
 
             List<AttributeKind> attributeKindList = attributesViewKind.getContainsAttributeKinds();
@@ -103,11 +103,11 @@ public class DefaultRelationDBExternalAttributesValueAccessProcessor implements 
             if(metaConfigItems.containsKey(_ExternalRelationDB_Port)){
                 port = attributesViewKind.getMetaConfigItem(_ExternalRelationDB_Port).toString();
             }
-            if(metaConfigItems.containsKey(_ExternalRelationDBPORT_UserName)){
-                userName = attributesViewKind.getMetaConfigItem(_ExternalRelationDBPORT_UserName).toString();
+            if(metaConfigItems.containsKey(_ExternalRelationDB_UserName)){
+                userName = attributesViewKind.getMetaConfigItem(_ExternalRelationDB_UserName).toString();
             }
-            if(metaConfigItems.containsKey(_ExternalRelationDBPORT_UserPWD)){
-                userPWD = attributesViewKind.getMetaConfigItem(_ExternalRelationDBPORT_UserPWD).toString().trim();
+            if(metaConfigItems.containsKey(_ExternalRelationDB_UserPWD)){
+                userPWD = attributesViewKind.getMetaConfigItem(_ExternalRelationDB_UserPWD).toString().trim();
             }
 
             List<AttributeKind> attributeKindList = attributesViewKind.getContainsAttributeKinds();
@@ -156,11 +156,11 @@ public class DefaultRelationDBExternalAttributesValueAccessProcessor implements 
             if(metaConfigItems.containsKey(_ExternalRelationDB_Port)){
                 port = attributesViewKind.getMetaConfigItem(_ExternalRelationDB_Port).toString();
             }
-            if(metaConfigItems.containsKey(_ExternalRelationDBPORT_UserName)){
-                userName = attributesViewKind.getMetaConfigItem(_ExternalRelationDBPORT_UserName).toString();
+            if(metaConfigItems.containsKey(_ExternalRelationDB_UserName)){
+                userName = attributesViewKind.getMetaConfigItem(_ExternalRelationDB_UserName).toString();
             }
-            if(metaConfigItems.containsKey(_ExternalRelationDBPORT_UserPWD)){
-                userPWD = attributesViewKind.getMetaConfigItem(_ExternalRelationDBPORT_UserPWD).toString().trim();
+            if(metaConfigItems.containsKey(_ExternalRelationDB_UserPWD)){
+                userPWD = attributesViewKind.getMetaConfigItem(_ExternalRelationDB_UserPWD).toString().trim();
             }
 
             List<AttributeKind> attributeKindList = attributesViewKind.getContainsAttributeKinds();
