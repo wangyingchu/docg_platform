@@ -23,7 +23,7 @@ public class TimeSeriesDBQueryBuilder {
     private static Logger logger = LoggerFactory.getLogger(RelationDBQueryBuilder.class);
 
     public static String buildSelectQuerySQL(String dataTableName, QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException {
-        //RelationDB in DOCG mainly use Doris as its underlying database
+        //TimeSeriesDB in DOCG mainly use IotDB as its underlying database
         DSLContext create = DSL.using((Connection) null, SQLDialect.MYSQL);
         Query query = null;
         if(queryParameters != null){
@@ -162,7 +162,7 @@ public class TimeSeriesDBQueryBuilder {
     }
 
     public static String buildCountQuerySQL(String dataTableName, AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException{
-        //RelationDB in DOCG mainly use Doris as its underlying database
+        //TimeSeriesDB in DOCG mainly use IotDB as its underlying database
         DSLContext create = DSL.using((Connection) null, SQLDialect.MYSQL);
         Query query = null;
         if(attributesParameters != null){
@@ -210,7 +210,7 @@ public class TimeSeriesDBQueryBuilder {
     }
 
     public static String buildDeleteQuerySQL(String dataTableName, AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException{
-        //RelationDB in DOCG mainly use Doris as its underlying database
+        //TimeSeriesDB in DOCG mainly use IotDB as its underlying database
         DSLContext create = DSL.using((Connection) null, SQLDialect.MYSQL);
         Query query = null;
         if(attributesParameters != null){
