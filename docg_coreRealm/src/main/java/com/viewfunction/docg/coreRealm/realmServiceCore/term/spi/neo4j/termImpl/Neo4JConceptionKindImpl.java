@@ -1909,15 +1909,58 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind {
         entitiesOperationStatistics.setStartTime(new Date());
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
+            String countQueryCql = CypherBuilder.matchLabelWithSinglePropertyValueAndFunction(getConceptionKindName(), CypherBuilder.CypherFunctionType.COUNT, null, null);
+            GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
+            Object countConceptionEntitiesRes = workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer, countQueryCql);
+            long entitiesCount = (Long)countConceptionEntitiesRes;
+
             String queryCql = CypherBuilder.setConceptionKindProperties(this.conceptionKindName,attributes);
-            GetLongFormatAggregatedReturnValueTransformer GetLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
-            Object queryRes = workingGraphOperationExecutor.executeWrite(GetLongFormatAggregatedReturnValueTransformer,queryCql);
-            if(queryRes != null) {
-                Long operationResult =(Long)queryRes;
-                entitiesOperationStatistics.setFinishTime(new Date());
-                entitiesOperationStatistics.setSuccessItemsCount(operationResult);
-                entitiesOperationStatistics.setOperationSummary("setKindScopeAttributes operation success");
-                return entitiesOperationStatistics;
+            if(entitiesCount < 100000){
+                Object queryRes = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer,queryCql);
+                if(queryRes != null) {
+                    Long operationResult =(Long)queryRes;
+                    entitiesOperationStatistics.setFinishTime(new Date());
+                    entitiesOperationStatistics.setSuccessItemsCount(operationResult);
+                    entitiesOperationStatistics.setOperationSummary("setKindScopeAttributes operation success");
+                    return entitiesOperationStatistics;
+                }
+            }else{
+                String matchPart = queryCql.substring(0,queryCql.indexOf(" SET"));
+                String setPart = queryCql.substring(queryCql.indexOf("SET"),queryCql.indexOf(" RETURN"));
+                String periodicQueryCql = "CALL apoc.periodic.iterate(\n" +
+                        "\""+matchPart+" RETURN "+CypherBuilder.operationResultName+"\",\n" +
+                        "\""+setPart+"\",\n" +
+                        " {batchSize:1000, parallel:false}\n" +
+                        ")";
+                logger.debug("Generated Cypher Statement: {}", periodicQueryCql);
+                DataTransformer<Long> periodicSetOperationDataTransformer = new DataTransformer<Long>() {
+                    @Override
+                    public Long transformResult(Result result) {
+                        if(result.hasNext()){
+                            Record record = result.next();
+                            long committedOperations = 0;
+                            long failedOperations = 0;
+                            if(record.containsKey("committedOperations")){
+                                committedOperations = record.get("committedOperations").asLong();
+                            }
+                            if(record.containsKey("failedOperations")){
+                                failedOperations = record.get("failedOperations").asLong();
+                            }
+                            return committedOperations - failedOperations;
+                        }
+                        return 0l;
+                    }
+                };
+
+                Object queryRes = workingGraphOperationExecutor.executeWrite(periodicSetOperationDataTransformer,periodicQueryCql);
+                if(queryRes != null) {
+                    Long operationResult =(Long)queryRes;
+                    entitiesOperationStatistics.setFinishTime(new Date());
+                    entitiesOperationStatistics.setSuccessItemsCount(operationResult);
+                    entitiesOperationStatistics.setFailItemsCount(entitiesCount-operationResult);
+                    entitiesOperationStatistics.setOperationSummary("setKindScopeAttributes operation success");
+                    return entitiesOperationStatistics;
+                }
             }
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
