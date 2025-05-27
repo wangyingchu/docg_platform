@@ -360,6 +360,54 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
+    public EntitiesOperationStatistics removeConceptionEntitiesAttributesByUIDs(List<String> conceptionEntityUIDs, List<String> attributeNames) throws CoreRealmServiceEntityExploreException {
+        if(conceptionEntityUIDs == null || conceptionEntityUIDs.size() < 1){
+            logger.error("At least one conception entity UID is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("At least one conception entity UID is required");
+            throw e;
+        }
+
+        if(attributeNames == null || attributeNames.size() ==0){
+            logger.error("attributeNames must have at least 1 attribute name.");
+            CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+            exception.setCauseMessage("attributeNames must have at least 1 attribute name.");
+            throw exception;
+        }
+        EntitiesOperationStatistics entitiesOperationStatistics = new EntitiesOperationStatistics();
+        entitiesOperationStatistics.setStartTime(new Date());
+        //https://neo4j.com/docs/apoc/current/overview/apoc.create/apoc.create.removeProperties/
+        String attributeNameStr = "[";
+        for(String currentAttribute:attributeNames){
+            attributeNameStr = attributeNameStr+"'"+currentAttribute+"'"+",";
+        }
+        attributeNameStr = attributeNameStr.substring(0,attributeNameStr.length()-1);
+        attributeNameStr = attributeNameStr+"]";
+
+        String queryCql = "MATCH (n) WHERE id(n) IN " + conceptionEntityUIDs.toString()+"\n"
+                +"WITH collect(n) AS entities\n" +
+                "CALL apoc.create.removeProperties(entities, "+attributeNameStr+")\n" +
+                "YIELD node\n" +
+                "RETURN count(node) AS "+CypherBuilder.operationResultName;
+        logger.debug("Generated Cypher Statement: {}", queryCql);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer();
+            Object countConceptionEntitiesRes = workingGraphOperationExecutor.executeWrite(getLongFormatAggregatedReturnValueTransformer, queryCql);
+            if (countConceptionEntitiesRes != null) {
+                entitiesOperationStatistics.setFinishTime(new Date());
+                entitiesOperationStatistics.setSuccessItemsCount((Long) countConceptionEntitiesRes);
+                entitiesOperationStatistics.setOperationSummary("removeConceptionEntitiesAttributesByUIDs operation success");
+                return entitiesOperationStatistics;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return null;
+    }
+
+    @Override
     public Double computeConceptionEntityPairTopologySimilarity(String conceptionEntityAUID, String conceptionEntityBUID,
                                                                 TopologySimilarityComputeAlgorithm topologySimilarityComputeAlgorithm,
                                                                 TopologySimilarityComputeDirection topologySimilarityComputeDirection,
