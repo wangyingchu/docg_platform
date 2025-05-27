@@ -5467,6 +5467,16 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      */
     public EntitiesOperationStatistics setConceptionEntitiesAttributesByUIDs(List<String> conceptionEntityUIDs,Map<String, Object> attributes) throws CoreRealmServiceEntityExploreException;
 
+     /**
+     * 输入一组概念实体的唯一值ID，删除所有匹配的概念实体的指定属性
+     *
+     * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
+     * @param attributeNames List<String> 需要删除的所有属性
+     *
+     * @return 操作执行状况的统计结果
+     */
+    public EntitiesOperationStatistics removeConceptionEntitiesAttributesByUIDs(List<String> conceptionEntityUIDs,List<String> attributeNames) throws CoreRealmServiceEntityExploreException;
+
     /**
      * 输入一组概念实体的唯一值ID，删除所有匹配的概念实体数据
      *
