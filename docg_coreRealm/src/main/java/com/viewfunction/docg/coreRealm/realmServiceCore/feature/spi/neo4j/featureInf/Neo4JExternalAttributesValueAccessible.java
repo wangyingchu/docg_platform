@@ -30,7 +30,7 @@ import java.util.*;
 
 public interface Neo4JExternalAttributesValueAccessible extends ExternalAttributesValueAccessible,Neo4JKeyResourcesRetrievable{
 
-    public final String ExternalAttributesValueAccessProcessorID = "DOCG_ExternalAttributesValueAccessProcessorID";
+    public final String ExternalAttributesValueAccessProcessorID = RealmConstant.ExternalAttributesValueAccessProcessorID;
 
     public default Set<AttributesViewKind> getAvailableExternalValueAttributesViewKinds(){
         if(this.getEntityUID() != null) {
