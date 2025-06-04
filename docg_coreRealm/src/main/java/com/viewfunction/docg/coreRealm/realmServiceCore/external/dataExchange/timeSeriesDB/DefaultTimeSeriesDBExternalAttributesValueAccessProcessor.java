@@ -65,7 +65,7 @@ public class DefaultTimeSeriesDBExternalAttributesValueAccessProcessor implement
 
             if(!attributeKindList.isEmpty() && dbName != null && tableName != null && host != null && port != null && userName != null && userPWD != null){
                 try {
-                    String querySQL = TimeSeriesDBQueryBuilder.buildSelectQuerySQL(tableName,queryParameters);
+                    String querySQL = TimeSeriesDBQueryBuilder.buildSelectQuerySQL(dbName+"."+tableName,queryParameters);
                     return doQuery(host,port,dbName,userName,userPWD,querySQL,attributeDataTypeMap);
                 } catch (CoreRealmServiceEntityExploreException e) {
                     throw new RuntimeException(e);
