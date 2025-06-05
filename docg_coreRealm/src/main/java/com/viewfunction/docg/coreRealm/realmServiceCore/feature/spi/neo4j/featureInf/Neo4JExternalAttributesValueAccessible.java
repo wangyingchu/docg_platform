@@ -308,6 +308,14 @@ public interface Neo4JExternalAttributesValueAccessible extends ExternalAttribut
             viewAttributesNameList.add(currentAttributeKind.getAttributeKindName());
         }
 
+        Object _ExternalAttributesValueAccessProcessor = attributesViewKind.getMetaConfigItem(RealmConstant.ExternalAttributesValueAccessProcessorID);
+        if(_ExternalAttributesValueAccessProcessor != null){
+            String externalAttributesValueAccessProcessorID = _ExternalAttributesValueAccessProcessor.toString();
+            if(externalAttributesValueAccessProcessorID.equals(RealmConstant.DefaultTimeSeriesDBExternalAttributesValueAccessProcessorID)){
+                viewAttributesNameList.add(RealmConstant.DefaultTimeSeriesDBExternalTimeAttributeName);
+            }
+        }
+
         String defaultFilterAttributeName = queryParameters.getDefaultFilteringItem() != null ? queryParameters.getDefaultFilteringItem().getAttributeName():null;
         if(defaultFilterAttributeName != null && !viewAttributesNameList.contains(defaultFilterAttributeName)){
             CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
@@ -342,6 +350,14 @@ public interface Neo4JExternalAttributesValueAccessible extends ExternalAttribut
         List<AttributeKind> attributeKindList = attributesViewKind.getContainsAttributeKinds();
         for(AttributeKind currentAttributeKind:attributeKindList){
             viewAttributesNameList.add(currentAttributeKind.getAttributeKindName());
+        }
+
+        Object _ExternalAttributesValueAccessProcessor = attributesViewKind.getMetaConfigItem(RealmConstant.ExternalAttributesValueAccessProcessorID);
+        if(_ExternalAttributesValueAccessProcessor != null){
+            String externalAttributesValueAccessProcessorID = _ExternalAttributesValueAccessProcessor.toString();
+            if(externalAttributesValueAccessProcessorID.equals(RealmConstant.DefaultTimeSeriesDBExternalAttributesValueAccessProcessorID)){
+                viewAttributesNameList.add(RealmConstant.DefaultTimeSeriesDBExternalTimeAttributeName);
+            }
         }
 
         String defaultFilterAttributeName = attributesParameters.getDefaultFilteringItem() != null ? attributesParameters.getDefaultFilteringItem().getAttributeName():null;

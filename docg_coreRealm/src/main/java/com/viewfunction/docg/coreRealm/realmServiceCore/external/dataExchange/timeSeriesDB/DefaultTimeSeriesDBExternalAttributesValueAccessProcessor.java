@@ -8,6 +8,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 
 import java.sql.Date;
 import java.sql.*;
@@ -118,7 +119,7 @@ public class DefaultTimeSeriesDBExternalAttributesValueAccessProcessor implement
     }
 
     private void setRowDataMap(Map<String, Object> rowDataMap,Map<String,AttributeDataType> attributeDataTypeMap,ResultSet resultSet){
-        attributeDataTypeMap.put("Time",AttributeDataType.TIMESTAMP);
+        attributeDataTypeMap.put(RealmConstant.DefaultTimeSeriesDBExternalTimeAttributeName,AttributeDataType.TIMESTAMP);
         Set<String> attributeName = attributeDataTypeMap.keySet();
         for(String currenAttribute : attributeName){
             AttributeDataType currentAttributeDataType = attributeDataTypeMap.get(currenAttribute);
