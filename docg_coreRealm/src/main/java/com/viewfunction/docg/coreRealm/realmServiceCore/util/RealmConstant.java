@@ -106,4 +106,10 @@ public interface RealmConstant {
     public final String _GeospatialLLGeometryBorder="DOCG_GS_LLGeometryBorder";
 
     public final String ExternalAttributesValueAccessProcessorID = "DOCG_ExternalAttributesValueAccessProcessorID";
+    public final String DefaultRelationDBExternalAttributesValueAccessProcessorID =
+            "com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.relationDB.DefaultRelationDBExternalAttributesValueAccessProcessor";
+    public final String DefaultObjectStoreExternalAttributesValueAccessProcessorID =
+            "com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.objectStore.DefaultObjectStoreExternalAttributesValueAccessProcessor";
+    public final String DefaultTimeSeriesDBExternalAttributesValueAccessProcessorID =
+            "com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.timeSeriesDB.DefaultTimeSeriesDBExternalAttributesValueAccessProcessor";
 }

@@ -118,6 +118,7 @@ public class DefaultTimeSeriesDBExternalAttributesValueAccessProcessor implement
     }
 
     private void setRowDataMap(Map<String, Object> rowDataMap,Map<String,AttributeDataType> attributeDataTypeMap,ResultSet resultSet){
+        attributeDataTypeMap.put("Time",AttributeDataType.TIMESTAMP);
         Set<String> attributeName = attributeDataTypeMap.keySet();
         for(String currenAttribute : attributeName){
             AttributeDataType currentAttributeDataType = attributeDataTypeMap.get(currenAttribute);
