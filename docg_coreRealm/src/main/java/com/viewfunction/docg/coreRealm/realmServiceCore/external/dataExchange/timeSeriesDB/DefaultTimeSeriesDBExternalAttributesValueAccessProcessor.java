@@ -17,7 +17,6 @@ import java.util.*;
 public class DefaultTimeSeriesDBExternalAttributesValueAccessProcessor implements ExternalAttributesValueAccessProcessor {
 
     private static final String JDBC_DRIVER = "org.apache.iotdb.jdbc.IoTDBDriver";
-    private static final String URL_PATTERN = "jdbc:iotdb://%s:%d/";
     public final String _ExternalTimeSeriesDB_DefaultDBName = "DOCG_ExternalTimeSeriesDB_DefaultDBName";
     public final String _ExternalTimeSeriesDB_DefaultTableName = "DOCG_ExternalTimeSeriesDB_DefaultTableName";
     public final String _ExternalTimeSeriesDB_Host = "DOCG_ExternalTimeSeriesDB_Host";
@@ -123,21 +122,32 @@ public class DefaultTimeSeriesDBExternalAttributesValueAccessProcessor implement
         for(String currenAttribute : attributeName){
             AttributeDataType currentAttributeDataType = attributeDataTypeMap.get(currenAttribute);
             try {
+                Map<String,String> tsPropertyNameMapping = new HashMap<>();
+                ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+                for(int i =1;i<= resultSetMetaData.getColumnCount();i++){
+                    String currentTSAttributeName = resultSetMetaData.getColumnName(i);
+                    if(!currentTSAttributeName.contains(".")){
+                        tsPropertyNameMapping.put(currentTSAttributeName,currentTSAttributeName);
+                    }else{
+                        String currentPropertyName = currentTSAttributeName.substring(currentTSAttributeName.lastIndexOf(".")+1,currentTSAttributeName.length());
+                        tsPropertyNameMapping.put(currentPropertyName,currentTSAttributeName);
+                    }
+                }
                 //BOOLEAN,INT,SHORT,LONG,FLOAT,DOUBLE,TIMESTAMP,DATE,DATETIME,TIME,STRING,BYTE,DECIMAL
                 switch(currentAttributeDataType){
-                    case STRING -> rowDataMap.put(currenAttribute,resultSet.getString(currenAttribute));
-                    case INT -> rowDataMap.put(currenAttribute,resultSet.getInt(currenAttribute));
-                    case BOOLEAN -> rowDataMap.put(currenAttribute,resultSet.getBoolean(currenAttribute));
-                    case LONG -> rowDataMap.put(currenAttribute,resultSet.getLong(currenAttribute));
-                    case FLOAT -> rowDataMap.put(currenAttribute,resultSet.getFloat(currenAttribute));
-                    case DOUBLE -> rowDataMap.put(currenAttribute,resultSet.getDouble(currenAttribute));
-                    case BYTE -> rowDataMap.put(currenAttribute,resultSet.getByte(currenAttribute));
-                    case SHORT -> rowDataMap.put(currenAttribute,resultSet.getShort(currenAttribute));
-                    case DECIMAL -> rowDataMap.put(currenAttribute,resultSet.getBigDecimal(currenAttribute));
-                    case DATE -> rowDataMap.put(currenAttribute,getLocalDate(resultSet.getDate(currenAttribute))); //LocalDate
-                    case TIME -> rowDataMap.put(currenAttribute,getLocalTime(resultSet.getTime(currenAttribute))); //LocalTime
-                    case DATETIME -> rowDataMap.put(currenAttribute,getLocalDateTime(resultSet.getTimestamp(currenAttribute))); //LocalDateTime
-                    case TIMESTAMP -> rowDataMap.put(currenAttribute,getZonedDateTime(resultSet.getTimestamp(currenAttribute))); //ZonedDateTime
+                    case STRING -> rowDataMap.put(currenAttribute,resultSet.getString(tsPropertyNameMapping.get(currenAttribute)));
+                    case INT -> rowDataMap.put(currenAttribute,resultSet.getInt(tsPropertyNameMapping.get(currenAttribute)));
+                    case BOOLEAN -> rowDataMap.put(currenAttribute,resultSet.getBoolean(tsPropertyNameMapping.get(currenAttribute)));
+                    case LONG -> rowDataMap.put(currenAttribute,resultSet.getLong(tsPropertyNameMapping.get(currenAttribute)));
+                    case FLOAT -> rowDataMap.put(currenAttribute,resultSet.getFloat(tsPropertyNameMapping.get(currenAttribute)));
+                    case DOUBLE -> rowDataMap.put(currenAttribute,resultSet.getDouble(tsPropertyNameMapping.get(currenAttribute)));
+                    case BYTE -> rowDataMap.put(currenAttribute,resultSet.getByte(tsPropertyNameMapping.get(currenAttribute)));
+                    case SHORT -> rowDataMap.put(currenAttribute,resultSet.getShort(tsPropertyNameMapping.get(currenAttribute)));
+                    case DECIMAL -> rowDataMap.put(currenAttribute,resultSet.getBigDecimal(tsPropertyNameMapping.get(currenAttribute)));
+                    case DATE -> rowDataMap.put(currenAttribute,getLocalDate(resultSet.getDate(tsPropertyNameMapping.get(currenAttribute)))); //LocalDate
+                    case TIME -> rowDataMap.put(currenAttribute,getLocalTime(resultSet.getTime(tsPropertyNameMapping.get(currenAttribute)))); //LocalTime
+                    case DATETIME -> rowDataMap.put(currenAttribute,getLocalDateTime(resultSet.getTimestamp(tsPropertyNameMapping.get(currenAttribute)))); //LocalDateTime
+                    case TIMESTAMP -> rowDataMap.put(currenAttribute,getZonedDateTime(resultSet.getTimestamp(tsPropertyNameMapping.get(currenAttribute)))); //ZonedDateTime
                 }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
@@ -160,8 +170,4 @@ public class DefaultTimeSeriesDBExternalAttributesValueAccessProcessor implement
     private ZonedDateTime getZonedDateTime(Timestamp timestamp){
         return timestamp.toInstant().atZone(ZoneId.systemDefault());
     }
-
-
-
-
 }
