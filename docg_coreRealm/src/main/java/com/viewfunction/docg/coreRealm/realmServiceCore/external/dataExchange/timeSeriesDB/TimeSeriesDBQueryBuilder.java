@@ -7,6 +7,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filtering
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.relationDB.RelationDBQueryBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
+
 import org.jooq.*;
 import org.jooq.conf.ParamType;
 import org.jooq.impl.DSL;
@@ -440,6 +441,12 @@ public class TimeSeriesDBQueryBuilder {
     public static long getTimestampString(Object orgValue){
         if(orgValue instanceof java.util.Date){
             return ((java.util.Date)orgValue).getTime();
+        }
+        if(orgValue instanceof Number){
+            return ((Number)orgValue).longValue();
+        }
+        if(orgValue instanceof String){
+            return Long.parseLong((String)orgValue);
         }
         return 0;
     }
