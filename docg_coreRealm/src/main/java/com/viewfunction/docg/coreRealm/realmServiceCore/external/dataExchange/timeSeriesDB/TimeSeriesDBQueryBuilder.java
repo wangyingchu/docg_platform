@@ -6,6 +6,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.SortingIt
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.relationDB.RelationDBQueryBuilder;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.jooq.*;
 import org.jooq.conf.ParamType;
 import org.jooq.impl.DSL;
@@ -13,10 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.jooq.impl.DSL.*;
-import static org.jooq.impl.DSL.field;
 
 public class TimeSeriesDBQueryBuilder {
 
@@ -257,11 +258,19 @@ public class TimeSeriesDBQueryBuilder {
     }
 
     private static Condition generateQueryCondition(FilteringItem filteringItem){
+        boolean needConvertToTimeValue = false;
+        String filteringItemName = filteringItem.getAttributeName();
+        if(filteringItemName.equals(RealmConstant.DefaultTimeSeriesDBExternalTimeAttributeName)){
+            needConvertToTimeValue = true;
+        }
         Condition currentQueryCondition = null;
         if(filteringItem instanceof EqualFilteringItem){
             EqualFilteringItem currentFilteringItem = (EqualFilteringItem)filteringItem;
             String propertyName = currentFilteringItem.getAttributeName();
             Object propertyValue = currentFilteringItem.getAttributeValue();
+            if(needConvertToTimeValue){
+                propertyValue = getTimestampString(propertyValue);
+            }
             if(propertyName != null & propertyValue != null ){
                 if(currentFilteringItem.isReversedCondition()){
                     currentQueryCondition = field(propertyName).notEqual(propertyValue);
@@ -275,6 +284,10 @@ public class TimeSeriesDBQueryBuilder {
             String propertyName = currentFilteringItem.getAttributeName();
             Object propertyFromValue = currentFilteringItem.getAttributeFromValue();
             Object propertyToValue = currentFilteringItem.getAttributeToValue();
+            if(needConvertToTimeValue){
+                propertyFromValue = getTimestampString(propertyFromValue);
+                propertyToValue = getTimestampString(propertyToValue);
+            }
             if(propertyName != null & propertyFromValue != null & propertyToValue !=null){
                 if(currentFilteringItem.isReversedCondition()){
                     currentQueryCondition = field(propertyName).notBetween(propertyFromValue,propertyToValue);
@@ -287,6 +300,9 @@ public class TimeSeriesDBQueryBuilder {
             GreaterThanEqualFilteringItem currentFilteringItem = (GreaterThanEqualFilteringItem)filteringItem;
             String propertyName = currentFilteringItem.getAttributeName();
             Object propertyValue = currentFilteringItem.getAttributeValue();
+            if(needConvertToTimeValue){
+                propertyValue = getTimestampString(propertyValue);
+            }
             if(propertyName != null & propertyValue != null ){
                 if(currentFilteringItem.isReversedCondition()){
                     currentQueryCondition = field(propertyName).lessThan(propertyValue);
@@ -299,6 +315,9 @@ public class TimeSeriesDBQueryBuilder {
             GreaterThanFilteringItem currentFilteringItem = (GreaterThanFilteringItem)filteringItem;
             String propertyName = currentFilteringItem.getAttributeName();
             Object propertyValue = currentFilteringItem.getAttributeValue();
+            if(needConvertToTimeValue){
+                propertyValue = getTimestampString(propertyValue);
+            }
             if(propertyName != null & propertyValue != null ){
                 if(currentFilteringItem.isReversedCondition()){
                     currentQueryCondition = field(propertyName).lessOrEqual(propertyValue);
@@ -311,6 +330,13 @@ public class TimeSeriesDBQueryBuilder {
             InValueFilteringItem currentFilteringItem = (InValueFilteringItem)filteringItem;
             String propertyName = currentFilteringItem.getAttributeName();
             List<Object> propertyValues = currentFilteringItem.getAttributeValues();
+            if(needConvertToTimeValue){
+                List<Object> timestampStringList = new ArrayList<>();
+                for(Object currentObject:propertyValues){
+                    timestampStringList.add(getTimestampString(currentObject));
+                }
+                propertyValues = timestampStringList;
+            }
             if(propertyName != null & propertyValues != null & propertyValues.size() > 0){
                 if(currentFilteringItem.isReversedCondition()){
                     currentQueryCondition = field(propertyName).notIn(propertyValues.toArray());
@@ -323,6 +349,9 @@ public class TimeSeriesDBQueryBuilder {
             LessThanEqualFilteringItem currentFilteringItem = (LessThanEqualFilteringItem)filteringItem;
             String propertyName = currentFilteringItem.getAttributeName();
             Object propertyValue = currentFilteringItem.getAttributeValue();
+            if(needConvertToTimeValue){
+                propertyValue = getTimestampString(propertyValue);
+            }
             if(propertyName != null & propertyValue != null ){
                 if(currentFilteringItem.isReversedCondition()){
                     currentQueryCondition = field(propertyName).greaterThan(propertyValue);
@@ -335,6 +364,9 @@ public class TimeSeriesDBQueryBuilder {
             LessThanFilteringItem currentFilteringItem = (LessThanFilteringItem)filteringItem;
             String propertyName = currentFilteringItem.getAttributeName();
             Object propertyValue = currentFilteringItem.getAttributeValue();
+            if(needConvertToTimeValue){
+                propertyValue = getTimestampString(propertyValue);
+            }
             if(propertyName != null & propertyValue != null ){
                 if(currentFilteringItem.isReversedCondition()){
                     currentQueryCondition = field(propertyName).greaterOrEqual(propertyValue);
@@ -347,6 +379,9 @@ public class TimeSeriesDBQueryBuilder {
             NotEqualFilteringItem currentFilteringItem = (NotEqualFilteringItem)filteringItem;
             String propertyName = currentFilteringItem.getAttributeName();
             Object propertyValue = currentFilteringItem.getAttributeValue();
+            if(needConvertToTimeValue){
+                propertyValue = getTimestampString(propertyValue);
+            }
             if(propertyName != null & propertyValue != null ){
                 if(currentFilteringItem.isReversedCondition()){
                     currentQueryCondition = field(propertyName).equal(propertyValue);
@@ -400,5 +435,12 @@ public class TimeSeriesDBQueryBuilder {
             }
         }
         return currentQueryCondition;
+    }
+
+    public static long getTimestampString(Object orgValue){
+        if(orgValue instanceof java.util.Date){
+            return ((java.util.Date)orgValue).getTime();
+        }
+        return 0;
     }
 }

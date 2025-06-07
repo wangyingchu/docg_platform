@@ -66,7 +66,7 @@ public class DefaultTimeSeriesDBExternalAttributesValueAccessProcessor implement
             if(!attributeKindList.isEmpty() && dbName != null && tableName != null && host != null && port != null && userName != null && userPWD != null){
                 try {
                     String querySQL = TimeSeriesDBQueryBuilder.buildSelectQuerySQL(dbName+"."+tableName,queryParameters);
-                    return doQuery(host,port,dbName,userName,userPWD,querySQL,attributeDataTypeMap);
+                    return doQuery(host,port,userName,userPWD,querySQL,attributeDataTypeMap);
                 } catch (CoreRealmServiceEntityExploreException e) {
                     throw new RuntimeException(e);
                 }
@@ -87,8 +87,7 @@ public class DefaultTimeSeriesDBExternalAttributesValueAccessProcessor implement
         return 0l;
     }
 
-    private List<Map<String, Object>> doQuery(String host,String port, String dbName,String user,String userPWD,String querySQL,Map<String,AttributeDataType> attributeDataTypeMap){
-        int dbPort =Integer.parseInt(port);
+    private List<Map<String, Object>> doQuery(String host,String port,String user,String userPWD,String querySQL,Map<String,AttributeDataType> attributeDataTypeMap){
         try {
             Class.forName(JDBC_DRIVER);
         } catch (ClassNotFoundException e) {
