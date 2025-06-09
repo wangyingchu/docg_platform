@@ -227,69 +227,70 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
                 String checkCql = CypherBuilder.matchNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.getEntityUID()),new String[]{RealmConstant._NameProperty});
                 GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._NameProperty);
                 Object resultRes = workingGraphOperationExecutor.executeRead(getSingleAttributeValueTransformer,checkCql);
-                String statisticTargetType = ((AttributeValue)resultRes).getAttributeValue().toString();
+                if(resultRes != null){
+                    String statisticTargetType = ((AttributeValue)resultRes).getAttributeValue().toString();
+                    long sampleCountRealValue = sampleCount > 1000 ? sampleCount : 1000;
+                    String evaluateCql = "";
+                    if(this instanceof ConceptionKind){
+                        evaluateCql = "CALL apoc.meta.nodeTypeProperties({labels: [\""+statisticTargetType+"\"],sample:"+sampleCountRealValue+"});";
+                        logger.debug("Generated Cypher Statement: {}", evaluateCql);
+                        DataTransformer nodeTypePropertiesDataTransformer = new DataTransformer() {
+                            @Override
+                            public Object transformResult(Result result) {
 
-                long sampleCountRealValue = sampleCount > 1000 ? sampleCount : 1000;
-                String evaluateCql = "";
-                if(this instanceof ConceptionKind){
-                    evaluateCql = "CALL apoc.meta.nodeTypeProperties({labels: [\""+statisticTargetType+"\"],sample:"+sampleCountRealValue+"});";
-                    logger.debug("Generated Cypher Statement: {}", evaluateCql);
-                    DataTransformer nodeTypePropertiesDataTransformer = new DataTransformer() {
-                        @Override
-                        public Object transformResult(Result result) {
-
-                            while(result.hasNext()){
-                                Record nodeRecord = result.next();
-                                String kindName = nodeRecord.get("nodeType").asString().replace(":","").replaceAll("`","");
-                                String propertyName = nodeRecord.get("propertyName").asString();
-                                String propertyTypes = nodeRecord.get("propertyTypes").asList().get(0).toString();
-                                if(nodeRecord.containsKey("propertyObservations")&&nodeRecord.containsKey("propertyObservations")){
-                                    long propertyObservations = nodeRecord.get("propertyObservations").asLong();
-                                    long totalObservations = nodeRecord.get("totalObservations").asLong();
-                                    KindEntityAttributeRuntimeStatistics currentKindEntityAttributeRuntimeStatistics =
-                                            new KindEntityAttributeRuntimeStatistics(kindName,propertyName,propertyTypes,totalObservations,propertyObservations);
-                                    resultList.add(currentKindEntityAttributeRuntimeStatistics);
-                                }
-                            }
-                            return null;
-                        }
-                    };
-                    workingGraphOperationExecutor.executeRead(nodeTypePropertiesDataTransformer,evaluateCql);
-                }
-                if(this instanceof RelationKind){
-                    evaluateCql = "CALL apoc.meta.relTypeProperties({rels: [\""+statisticTargetType+"\"],maxRels: "+sampleCountRealValue+"});";
-                    logger.debug("Generated Cypher Statement: {}", evaluateCql);
-                    DataTransformer relTypePropertiesDataTransformer = new DataTransformer() {
-                        Map<String,KindEntityAttributeRuntimeStatistics> existingAttributeStatisticsMap = new HashMap<>();
-                        @Override
-                        public Object transformResult(Result result) {
-                            while(result.hasNext()){
-                                Record nodeRecord = result.next();
-                                String kindName = nodeRecord.get("relType").asString().replace(":","").replaceAll("`","");
-                                String propertyName = nodeRecord.get("propertyName").asString();
-                                if(!nodeRecord.get("propertyTypes").isNull()){
+                                while(result.hasNext()){
+                                    Record nodeRecord = result.next();
+                                    String kindName = nodeRecord.get("nodeType").asString().replace(":","").replaceAll("`","");
+                                    String propertyName = nodeRecord.get("propertyName").asString();
                                     String propertyTypes = nodeRecord.get("propertyTypes").asList().get(0).toString();
-                                    if(nodeRecord.containsKey("propertyObservations")&&nodeRecord.containsKey("totalObservations")){
+                                    if(nodeRecord.containsKey("propertyObservations")&&nodeRecord.containsKey("propertyObservations")){
                                         long propertyObservations = nodeRecord.get("propertyObservations").asLong();
                                         long totalObservations = nodeRecord.get("totalObservations").asLong();
-                                        if(existingAttributeStatisticsMap.containsKey(propertyName)){
-                                            long oldAttributeHitCount = existingAttributeStatisticsMap.get(propertyName).getAttributeHitCount();
-                                            long oldSampleCount = existingAttributeStatisticsMap.get(propertyName).getSampleCount();
-                                            existingAttributeStatisticsMap.get(propertyName).setSampleCount(oldSampleCount+totalObservations);
-                                            existingAttributeStatisticsMap.get(propertyName).setAttributeHitCount(oldAttributeHitCount+propertyObservations);
-                                        }else{
-                                            KindEntityAttributeRuntimeStatistics currentKindEntityAttributeRuntimeStatistics =
-                                                    new KindEntityAttributeRuntimeStatistics(kindName,propertyName,propertyTypes,totalObservations,propertyObservations);
-                                            existingAttributeStatisticsMap.put(propertyName,currentKindEntityAttributeRuntimeStatistics);
-                                            resultList.add(currentKindEntityAttributeRuntimeStatistics);
+                                        KindEntityAttributeRuntimeStatistics currentKindEntityAttributeRuntimeStatistics =
+                                                new KindEntityAttributeRuntimeStatistics(kindName,propertyName,propertyTypes,totalObservations,propertyObservations);
+                                        resultList.add(currentKindEntityAttributeRuntimeStatistics);
+                                    }
+                                }
+                                return null;
+                            }
+                        };
+                        workingGraphOperationExecutor.executeRead(nodeTypePropertiesDataTransformer,evaluateCql);
+                    }
+                    if(this instanceof RelationKind){
+                        evaluateCql = "CALL apoc.meta.relTypeProperties({rels: [\""+statisticTargetType+"\"],maxRels: "+sampleCountRealValue+"});";
+                        logger.debug("Generated Cypher Statement: {}", evaluateCql);
+                        DataTransformer relTypePropertiesDataTransformer = new DataTransformer() {
+                            Map<String,KindEntityAttributeRuntimeStatistics> existingAttributeStatisticsMap = new HashMap<>();
+                            @Override
+                            public Object transformResult(Result result) {
+                                while(result.hasNext()){
+                                    Record nodeRecord = result.next();
+                                    String kindName = nodeRecord.get("relType").asString().replace(":","").replaceAll("`","");
+                                    String propertyName = nodeRecord.get("propertyName").asString();
+                                    if(!nodeRecord.get("propertyTypes").isNull()){
+                                        String propertyTypes = nodeRecord.get("propertyTypes").asList().get(0).toString();
+                                        if(nodeRecord.containsKey("propertyObservations")&&nodeRecord.containsKey("totalObservations")){
+                                            long propertyObservations = nodeRecord.get("propertyObservations").asLong();
+                                            long totalObservations = nodeRecord.get("totalObservations").asLong();
+                                            if(existingAttributeStatisticsMap.containsKey(propertyName)){
+                                                long oldAttributeHitCount = existingAttributeStatisticsMap.get(propertyName).getAttributeHitCount();
+                                                long oldSampleCount = existingAttributeStatisticsMap.get(propertyName).getSampleCount();
+                                                existingAttributeStatisticsMap.get(propertyName).setSampleCount(oldSampleCount+totalObservations);
+                                                existingAttributeStatisticsMap.get(propertyName).setAttributeHitCount(oldAttributeHitCount+propertyObservations);
+                                            }else{
+                                                KindEntityAttributeRuntimeStatistics currentKindEntityAttributeRuntimeStatistics =
+                                                        new KindEntityAttributeRuntimeStatistics(kindName,propertyName,propertyTypes,totalObservations,propertyObservations);
+                                                existingAttributeStatisticsMap.put(propertyName,currentKindEntityAttributeRuntimeStatistics);
+                                                resultList.add(currentKindEntityAttributeRuntimeStatistics);
+                                            }
                                         }
                                     }
                                 }
+                                return null;
                             }
-                            return null;
-                        }
-                    };
-                    workingGraphOperationExecutor.executeRead(relTypePropertiesDataTransformer,evaluateCql);
+                        };
+                        workingGraphOperationExecutor.executeRead(relTypePropertiesDataTransformer,evaluateCql);
+                    }
                 }
                 return resultList;
             } finally {
