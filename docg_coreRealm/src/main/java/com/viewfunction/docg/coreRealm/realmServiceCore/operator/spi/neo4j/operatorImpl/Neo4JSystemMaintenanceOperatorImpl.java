@@ -675,9 +675,8 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                 GraphOperationExecutor graphOperationExecutor = new GraphOperationExecutor();
                 boolean relationExist = checkRelationEntitiesExist(graphOperationExecutor,conceptionKindId_nameMapping.get(startConceptionKindId),conceptionKindId_nameMapping.get(endConceptionKindId),relationshipType);
                 if(relationExist){
-                    if(conceptionKindId_nameMapping.get(startConceptionKindId).startsWith(RealmConstant.RealmInnerTypePerFix) &
-                            conceptionKindId_nameMapping.get(endConceptionKindId).startsWith(RealmConstant.RealmInnerTypePerFix)){
-                    }else{
+                    if(!conceptionKindId_nameMapping.get(startConceptionKindId).startsWith(RealmConstant.RealmInnerTypePerFix) &
+                            !conceptionKindId_nameMapping.get(endConceptionKindId).startsWith(RealmConstant.RealmInnerTypePerFix)){
                         ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
                                 new ConceptionKindCorrelationInfo(
                                         conceptionKindId_nameMapping.get(startConceptionKindId),
