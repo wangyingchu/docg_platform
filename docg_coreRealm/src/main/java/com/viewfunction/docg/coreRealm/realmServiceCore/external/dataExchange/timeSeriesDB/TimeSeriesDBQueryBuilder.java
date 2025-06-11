@@ -9,8 +9,9 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.re
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 
 import org.jooq.*;
-import org.jooq.conf.ParamType;
+import org.jooq.conf.*;
 import org.jooq.impl.DSL;
+import org.jooq.impl.DefaultVisitListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,10 +24,19 @@ import static org.jooq.impl.DSL.*;
 public class TimeSeriesDBQueryBuilder {
 
     private static Logger logger = LoggerFactory.getLogger(RelationDBQueryBuilder.class);
+    private static DSLContext dslContext;
+    static {
+        //TimeSeriesDB in DOCG mainly use IotDB as its underlying database
+        Settings settings = new Settings()
+                .withRenderFormatted(true)
+                .withRenderKeywordCase(RenderKeywordCase.UPPER)
+                .withRenderNameCase(RenderNameCase.LOWER)
+                .withRenderQuotedNames(RenderQuotedNames.EXPLICIT_DEFAULT_UNQUOTED);
+        dslContext = DSL.using((Connection) null, SQLDialect.MYSQL,settings);
+        dslContext.configuration().set(new ParenthesisPreservingVisitListener());
+    }
 
     public static String buildSelectQuerySQL(String dataTableName, QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException {
-        //TimeSeriesDB in DOCG mainly use IotDB as its underlying database
-        DSLContext create = DSL.using((Connection) null, SQLDialect.MYSQL);
         Query query = null;
         if(queryParameters != null){
             if(queryParameters.getCustomQuerySentence() != null){
@@ -105,9 +115,9 @@ public class TimeSeriesDBQueryBuilder {
                     throw e;
                 }else{
                     if(queryParameters.isDistinctMode()){
-                        query = create.selectDistinct(field("*")).from(table(dataTableName)).limit(limitRecordNumber).offset(skipRecordNumber);
+                        query = dslContext.selectDistinct(field("*")).from(table(dataTableName)).limit(limitRecordNumber).offset(skipRecordNumber);
                     }else{
-                        query = create.select(field("*")).from(table(dataTableName)).limit(limitRecordNumber).offset(skipRecordNumber);
+                        query = dslContext.select(field("*")).from(table(dataTableName)).limit(limitRecordNumber).offset(skipRecordNumber);
                     }
                     String sql = query.getSQL(ParamType.NAMED_OR_INLINED);
                     logger.debug("Generated SQL Statement: {}", sql);
@@ -133,9 +143,9 @@ public class TimeSeriesDBQueryBuilder {
                 }
 
                 if(queryParameters.isDistinctMode()){
-                    selectConditionStep = create.selectDistinct(field("*")).from(table(dataTableName)).where(defaultCondition);
+                    selectConditionStep = dslContext.selectDistinct(field("*")).from(table(dataTableName)).where(defaultCondition);
                 }else{
-                    selectConditionStep = create.select(field("*")).from(table(dataTableName)).where(defaultCondition);
+                    selectConditionStep = dslContext.select(field("*")).from(table(dataTableName)).where(defaultCondition);
                 }
 
                 List<SortingItem> sortingItemList = queryParameters.getSortingItems();
@@ -156,7 +166,7 @@ public class TimeSeriesDBQueryBuilder {
             selectConditionStep.limit(limitRecordNumber).offset(skipRecordNumber);
             query = selectConditionStep.getQuery();
         }else{
-            query = create.select(field("*")).from(table(dataTableName));
+            query = dslContext.select(field("*")).from(table(dataTableName));
         }
         String sql = query.getSQL(ParamType.NAMED_OR_INLINED);
         logger.debug("Generated SQL Statement: {}", sql);
@@ -164,8 +174,6 @@ public class TimeSeriesDBQueryBuilder {
     }
 
     public static String buildCountQuerySQL(String dataTableName, AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException{
-        //TimeSeriesDB in DOCG mainly use IotDB as its underlying database
-        DSLContext create = DSL.using((Connection) null, SQLDialect.MYSQL);
         Query query = null;
         if(attributesParameters != null){
             FilteringItem defaultFilteringItem = attributesParameters.getDefaultFilteringItem();
@@ -179,7 +187,7 @@ public class TimeSeriesDBQueryBuilder {
                     e.setCauseMessage("Default Filtering Item is required");
                     throw e;
                 }else{
-                    query = create.select(count(field("*"))).from(table(dataTableName));
+                    query = dslContext.select(count(field("*"))).from(table(dataTableName));
                 }
             }else{
                 Condition defaultCondition = generateQueryCondition(defaultFilteringItem);
@@ -199,11 +207,11 @@ public class TimeSeriesDBQueryBuilder {
                         }
                     }
                 }
-                SelectConditionStep selectConditionStep = create.select(count(field("*"))).from(table(dataTableName)).where(defaultCondition);
+                SelectConditionStep selectConditionStep = dslContext.select(count(field("*"))).from(table(dataTableName)).where(defaultCondition);
                 query = selectConditionStep.getQuery();
             }
         }else{
-            query = create.select(count(field("*"))).from(table(dataTableName));
+            query = dslContext.select(count(field("*"))).from(table(dataTableName));
         }
 
         String sql = query.getSQL(ParamType.NAMED_OR_INLINED);
@@ -212,8 +220,6 @@ public class TimeSeriesDBQueryBuilder {
     }
 
     public static String buildDeleteQuerySQL(String dataTableName, AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException{
-        //TimeSeriesDB in DOCG mainly use IotDB as its underlying database
-        DSLContext create = DSL.using((Connection) null, SQLDialect.MYSQL);
         Query query = null;
         if(attributesParameters != null){
             FilteringItem defaultFilteringItem = attributesParameters.getDefaultFilteringItem();
@@ -227,7 +233,7 @@ public class TimeSeriesDBQueryBuilder {
                     e.setCauseMessage("Default Filtering Item is required");
                     throw e;
                 }else{
-                    query = create.deleteFrom(table(dataTableName)).returning();
+                    query = dslContext.deleteFrom(table(dataTableName)).returning();
                 }
             }else{
                 Condition defaultCondition = generateQueryCondition(defaultFilteringItem);
@@ -247,11 +253,11 @@ public class TimeSeriesDBQueryBuilder {
                         }
                     }
                 }
-                DeleteConditionStep deleteConditionStep = create.deleteFrom(table(dataTableName)).where(defaultCondition);
+                DeleteConditionStep deleteConditionStep = dslContext.deleteFrom(table(dataTableName)).where(defaultCondition);
                 query = deleteConditionStep.returning();
             }
         }else{
-            query = create.deleteFrom(table(dataTableName)) .returning();
+            query = dslContext.deleteFrom(table(dataTableName)) .returning();
         }
         String sql = query.getSQL(ParamType.NAMED_OR_INLINED);
         logger.debug("Generated SQL Statement: {}", sql);
@@ -449,5 +455,21 @@ public class TimeSeriesDBQueryBuilder {
             return Long.parseLong((String)orgValue);
         }
         return 0;
+    }
+
+    public static class ParenthesisPreservingVisitListener extends DefaultVisitListener {
+        @Override
+        public void visitStart(VisitContext context) {
+            if (context.renderContext() != null && context.queryPart() instanceof Condition) {
+                context.renderContext().sql("(");
+            }
+        }
+
+        @Override
+        public void visitEnd(VisitContext context) {
+            if (context.renderContext() != null && context.queryPart() instanceof Condition) {
+                context.renderContext().sql(")");
+            }
+        }
     }
 }
