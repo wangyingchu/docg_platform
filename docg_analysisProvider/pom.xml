@@ -15,7 +15,7 @@
         <flink.version>1.20.0</flink.version>
         <datasyslab.geotools.version>1.5.1-28.2</datasyslab.geotools.version>
         <geotools.version>26.4</geotools.version>
-        <sedona.version>1.7.0</sedona.version>
+        <sedona.version>1.7.2</sedona.version>
         <akka.version>2.7.0</akka.version>
         <derby.version>10.15.2.0</derby.version>
         <rocketmq-client-java-version>5.0.7</rocketmq-client-java-version>
