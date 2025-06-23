@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow>
+    <nodes>
+        <node id="a" class="com.viewfunction.docg.dataFabric.applicationCapacity.dataChangeDetect.businessLogicBlock.ACmp"/>
+        <node id="b" class="com.viewfunction.docg.dataFabric.applicationCapacity.dataChangeDetect.businessLogicBlock.BCmp"/>
+        <node id="c" class="com.viewfunction.docg.dataFabric.applicationCapacity.dataChangeDetect.businessLogicBlock.CCmp"/>
+    </nodes>
+
+    <chain name="chain1">
+        THEN(b, c, a);
+    </chain>
+</flow>
