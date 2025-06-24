@@ -18,7 +18,7 @@
         <sedona.version>1.7.2</sedona.version>
         <akka.version>2.7.0</akka.version>
         <derby.version>10.15.2.0</derby.version>
-        <rocketmq-client-java-version>5.0.7</rocketmq-client-java-version>
+        <rocketmq-client-java-version>5.0.8</rocketmq-client-java-version>
     </properties>
 
     <dependencies>
