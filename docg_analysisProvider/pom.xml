@@ -11,7 +11,7 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <spark.version>3.5.3</spark.version>
+        <spark.version>3.5.6</spark.version>
         <flink.version>1.20.0</flink.version>
         <datasyslab.geotools.version>1.5.1-28.2</datasyslab.geotools.version>
         <geotools.version>26.4</geotools.version>
