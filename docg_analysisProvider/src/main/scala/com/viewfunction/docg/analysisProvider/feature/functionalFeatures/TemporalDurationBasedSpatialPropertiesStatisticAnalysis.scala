@@ -167,7 +167,7 @@ object TemporalDurationBasedSpatialPropertiesStatisticAnalysis {
         })
       }
 
-      val filterResDF = mergedSubjectStaticResultDF.select(subjectIdentityProperty,propertiesList:_*)
+      val filterResDF = mergedSubjectStaticResultDF.select(subjectIdentityProperty,propertiesList.toSeq:_*)
       //filterResDF.printSchema()
 
       val newNames = mutable.Buffer[String](CoreRealmOperationUtil.RealmGlobalUID)
@@ -177,7 +177,7 @@ object TemporalDurationBasedSpatialPropertiesStatisticAnalysis {
         newNames += tempStr
       })
 
-      dfRenamed = filterResDF.toDF(newNames: _*)
+      dfRenamed = filterResDF.toDF(newNames.toSeq: _*)
       //dfRenamed.printSchema()
 
       dfRenamedWithTimeWindow = dfRenamed.withColumn(statisticResultTemporalProperty, lit(currentLoopTimeWindowStartDateTime))

@@ -158,7 +158,7 @@ object AdministrativeDivisionBasedSpatialAnalysis {
     val calculateResultDF =
       spatialQueryMetaFunction.spatialJoinQuery(globalDataAccessor,dataSlice_spatialQueryParam,spatialPredicateType,administrativeDivision_spatialQueryParam,calculateResultDFName)
 
-    val newNames = mutable.Buffer[String](dataSlice+"__"+CoreRealmOperationUtil.RealmGlobalUID)
+    val newNames: scala.collection.mutable.Buffer[String] = mutable.Buffer[String](dataSlice+"__"+CoreRealmOperationUtil.RealmGlobalUID)
     dataSliceAttributes.foreach(attribute=>{
       newNames += (dataSlice+"__"+attribute)
     })
@@ -166,7 +166,7 @@ object AdministrativeDivisionBasedSpatialAnalysis {
     administrativeDivisionAttributes.foreach(attribute=>{
       newNames += (geospatialScaleGrade+"__"+attribute)
     })
-    val dfRenamed = calculateResultDF.toDF(newNames: _*)
+    val dfRenamed = calculateResultDF.toDF(newNames.toSeq: _*)
 
     analyseResponse.setResponseCode(AnalysisResponseCode.ANALYSUS_SUCCESS.toString)
     analyseResponse.setResponseSummary("AnalysisResponse of AdministrativeDivisionBasedSpatialAnalysis")

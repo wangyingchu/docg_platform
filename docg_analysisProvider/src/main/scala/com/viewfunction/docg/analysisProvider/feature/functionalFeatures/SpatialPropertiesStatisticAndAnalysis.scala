@@ -136,10 +136,10 @@ object SpatialPropertiesStatisticAndAnalysis {
         }
       })
     }
-    val filterResDF = mergedSubjectStaticResultDF.select(subjectIdentityProperty,propertiesList:_*)
+    val filterResDF = mergedSubjectStaticResultDF.select(subjectIdentityProperty,propertiesList.toSeq:_*)
     //filterResDF.printSchema()
 
-    val newNames = mutable.Buffer[String](CoreRealmOperationUtil.RealmGlobalUID)
+    val newNames:scala.collection.mutable.Buffer[String] = mutable.Buffer[String](CoreRealmOperationUtil.RealmGlobalUID)
     propertiesList.foreach(attribute=>{
       var tempStr = attribute.replaceAll("\\(","__")
       tempStr = tempStr.replaceAll("\\)","")
@@ -168,23 +168,23 @@ object SpatialPropertiesStatisticAndAnalysis {
         }
         Row(row.get(0),calValue)
       })
-      val schema = StructType(
+      val schema:org.apache.spark.sql.types.StructType = StructType(
         Seq(
           calculationDF.schema.fields(0),//fields(0) should be subjectIdentityProperty
           StructField(statisticResultProperty,DoubleType,true)
         )
       )
-      val calculationResultDF = globalDataAccessor.getSparkSession().createDataFrame(calculationResultRDD,schema)
+      val calculationResultDF = globalDataAccessor.getSparkSession().createDataFrame(calculationResultRDD,schema.toSeq)
       //calculationResultDF.printSchema()
 
       val finalCalculatedDF = filterResDF.join(calculationResultDF,subjectIdentityProperty)
       //finalCalculatedDF.printSchema()
 
-      val dfRenamed = finalCalculatedDF.toDF(newNames: _*)
+      val dfRenamed = finalCalculatedDF.toDF(newNames.toSeq: _*)
       //dfRenamed.printSchema()
       resultDataSetUtil.generateResultDataSet(globalDataAccessor,dfRenamed,analyseResponse,statisticRequest)
     }else{
-      val dfRenamed = filterResDF.toDF(newNames: _*)
+      val dfRenamed = filterResDF.toDF(newNames.toSeq: _*)
       //dfRenamed.printSchema()
       resultDataSetUtil.generateResultDataSet(globalDataAccessor,dfRenamed,analyseResponse,statisticRequest)
     }

@@ -23,7 +23,7 @@ public class SpatialPropertiesStatisticTest01 {
 
         SpatialPropertiesAggregateStatisticRequest spatialPropertiesAggregateStatisticRequest = new SpatialPropertiesAggregateStatisticRequest();
         spatialPropertiesAggregateStatisticRequest.setGeospatialScaleLevel(SpatialCommonConfig.GeospatialScaleLevel.GlobalLevel);
-        spatialPropertiesAggregateStatisticRequest.setSubjectConception("GreenLand");
+        spatialPropertiesAggregateStatisticRequest.setSubjectConception("RiverSystemSurface");
         spatialPropertiesAggregateStatisticRequest.setObjectConception("AddressAndPlaceName");
         spatialPropertiesAggregateStatisticRequest.setPredicateType(SpatialCommonConfig.PredicateType.Contains);
 

@@ -225,8 +225,8 @@ class SpatialDataMaintainUtil {
 
   private def buildAttributeKindList(dataSlicePropertyMap: util.Map[String, DataSlicePropertyType]) = {
     val attributeKindList = new util.ArrayList[AttributeKind]
-    import scala.collection.JavaConversions._
-    for (entry <- dataSlicePropertyMap.entrySet) {
+    import scala.collection.JavaConverters._
+    for (entry <- dataSlicePropertyMap.entrySet.asScala) {
       val attributeKindName = entry.getKey
       if (!(attributeKindName == CoreRealmOperationUtil.RealmGlobalUID)) {
         val mapValue = entry.getValue
@@ -344,8 +344,8 @@ class SpatialDataMaintainUtil {
       val feature: SimpleFeature = featureIterator.next
       // 要素属性信息，名称，值，类型
       val propertyList= feature.getValue
-      import scala.collection.JavaConversions._
-      for (property <- propertyList) {
+      import scala.collection.JavaConverters._
+      for (property <- propertyList.asScala) {
         var propertyName: String = property.getName.toString
         //handle invalid chars and reserved words
         propertyName = propertyName.replaceAll("△", "Delta_")
