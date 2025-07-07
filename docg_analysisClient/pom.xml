@@ -21,40 +21,40 @@
         <!-- https://mvnrepository.com/artifact/com.typesafe.akka/akka-actor -->
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-actor_2.12</artifactId>
+            <artifactId>akka-actor_2.13</artifactId>
             <version>${akka.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.typesafe.akka/akka-remote -->
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-remote_2.12</artifactId>
+            <artifactId>akka-remote_2.13</artifactId>
             <version>${akka.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.typesafe.akka/akka-cluster -->
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-cluster_2.12</artifactId>
+            <artifactId>akka-cluster_2.13</artifactId>
             <version>${akka.version}</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.typesafe.akka/akka-cluster-tools -->
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-cluster-tools_2.12</artifactId>
+            <artifactId>akka-cluster-tools_2.13</artifactId>
             <version>${akka.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-actor-typed_2.12</artifactId>
+            <artifactId>akka-actor-typed_2.13</artifactId>
             <version>${akka.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-cluster-typed_2.12</artifactId>
+            <artifactId>akka-cluster-typed_2.13</artifactId>
             <version>${akka.version}</version>
         </dependency>
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-serialization-jackson_2.12</artifactId>
+            <artifactId>akka-serialization-jackson_2.13</artifactId>
             <version>${akka.version}</version>
         </dependency>
         <!--
@@ -63,7 +63,7 @@
         <!-- https://mvnrepository.com/artifact/com.twitter/chill-akka -->
         <dependency>
             <groupId>com.twitter</groupId>
-            <artifactId>chill-akka_2.12</artifactId>
+            <artifactId>chill-akka_2.13</artifactId>
             <version>0.10.0</version>
         </dependency>
         <!--

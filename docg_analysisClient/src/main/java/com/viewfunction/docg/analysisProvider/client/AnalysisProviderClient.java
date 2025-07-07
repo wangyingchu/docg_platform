@@ -5,10 +5,10 @@ import akka.actor.ActorSelection;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.dispatch.OnComplete;
-import akka.dispatch.OnFailure;
-import akka.dispatch.OnSuccess;
 import akka.pattern.Patterns;
 import akka.util.Timeout;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import com.viewfunction.docg.analysisProvider.client.exception.AnalyseResponseFormatException;
 import com.viewfunction.docg.analysisProvider.client.exception.AnalysisEngineRuntimeException;
 import com.viewfunction.docg.analysisProvider.client.exception.ProviderClientInitException;
@@ -17,8 +17,6 @@ import com.viewfunction.docg.analysisProvider.feature.communication.AnalyseRespo
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseRequest;
 import com.viewfunction.docg.analysisProvider.feature.communication.messagePayload.AnalyseResponse;
 import com.viewfunction.docg.analysisProvider.util.PropertyHandler;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import scala.concurrent.Future;
 import scala.concurrent.duration.Duration;
 
@@ -92,38 +90,24 @@ public class AnalysisProviderClient {
                 future.onComplete(new OnComplete<Object>() {
                     @Override
                     public void onComplete(Throwable throwable, Object o) throws Throwable {
+                        analyseResponseCallback.onResponseReceived(o);
                         if (throwable != null) {
-                            //System.out.println("返回结果异常：" + throwable.getMessage());
-                            throwable.printStackTrace();
+                            //onFailure
+                            analyseResponseCallback.onFailureResponseReceived(throwable);
+                            if (throwable instanceof TimeoutException) {
+                                throwable.printStackTrace();
+                            } else {
+                                //System.out.println("未知错误");
+                                throwable.printStackTrace();
+                            }
                         } else {
-                            //System.out.println("返回消息：" + o);
-                            analyseResponseCallback.onResponseReceived(o);
+                            //onSuccess
+                            if(o instanceof AnalyseResponse){
+                                analyseResponseCallback.onSuccessResponseReceived((AnalyseResponse)o);
+                            }else{
+                                analyseResponseCallback.onFailureResponseReceived(new AnalyseResponseFormatException());
+                            }
                         }
-                    }
-                }, actorSystem.dispatcher());
-                // 成功，执行过程
-                future.onSuccess(new OnSuccess<Object>() {
-                    @Override
-                    public void onSuccess(Object msg) throws Throwable {
-                        //System.out.println("回复的消息：" + msg);
-                        if(msg instanceof AnalyseResponse){
-                            analyseResponseCallback.onSuccessResponseReceived((AnalyseResponse)msg);
-                        }else{
-                            analyseResponseCallback.onFailureResponseReceived(new AnalyseResponseFormatException());
-                        }
-                    }
-                }, actorSystem.dispatcher());
-                //失败，执行过程
-                future.onFailure(new OnFailure() {
-                    @Override
-                    public void onFailure(Throwable throwable) throws Throwable {
-                        if (throwable instanceof TimeoutException) {
-                            //System.out.println("服务超时");
-                            throwable.printStackTrace();
-                        } else {
-                            //System.out.println("未知错误");
-                        }
-                        analyseResponseCallback.onFailureResponseReceived(throwable);
                     }
                 }, actorSystem.dispatcher());
             }else{
