@@ -825,6 +825,14 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
     }
 
     @Override
+    public Set<ConceptionKindCorrelationInfo> getConceptionKindCorrelationRuntimeInfo(float samplingRate) {
+
+
+
+        return Set.of();
+    }
+
+    @Override
     public Set<String> getRealtimeAttributesStatistics() {
         String cql ="CALL db.propertyKeys()";
         logger.debug("Generated Cypher Statement: {}", cql);

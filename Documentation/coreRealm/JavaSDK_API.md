@@ -5915,6 +5915,15 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
     public Set<ConceptionKindCorrelationInfo> getAllDataRelationDistributionDetailStatistics();
 
     /**
+     * 获取系统中所有概念类型实体与其他概念类型实体之间的实时关联关系信息,此方法实时计算各个概念类型之间关系实体的真实数量
+     *
+     *  @param samplingRate float 执行计算时对关系实体数量进行采样的比例，取值范围(0,1]
+     *
+     * @return 所有概念类型之间的关联关系信息集合
+     */
+    public Set<ConceptionKindCorrelationInfo> getConceptionKindCorrelationRuntimeInfo(float samplingRate);
+
+    /**
      * 查询系统中实时存在的所有属性名称，其范围也包含不在系统属性类型(AttributeKind)定义管理之外的其他所有属性
      *
      * @return 属性名称集合
