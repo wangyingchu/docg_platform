@@ -869,56 +869,27 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
 
         Set<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet = new HashSet<>();
 
-        DataTransformer<Set<ConceptionKindCorrelationInfo>> statisticsDataTransformer = new DataTransformer() {
+        DataTransformer<Set<ConceptionKindCorrelationInfo>> statisticsDataTransformer = new DataTransformer<>() {
             @Override
-            public Object transformResult(Result result) {
+            public Set<ConceptionKindCorrelationInfo> transformResult(Result result) {
                 while(result.hasNext()){
-
-
-
                     Record nodeRecord = result.next();
-
-                    System.out.println(nodeRecord.keys());
-
                     List<Object> startKindsList = nodeRecord.get("startLabels").asList();
                     List<Object> endKindsList = nodeRecord.get("endLabels").asList();
                     String relationKindName = nodeRecord.get("relationshipType").asString();
                     Long connectionCount = nodeRecord.get("connectionCount").asLong();
 
-                    System.out.println(startKindsList);
-                    System.out.println(endKindsList);
-                    System.out.println(relationKindName);
-                    System.out.println(connectionCount);
-                    /*
-                    if(nodeRecord.containsKey("startLabels") && nodeRecord.containsKey("relationshipType") && nodeRecord.containsKey("endLabels"))
-                        List<String> startLabels = nodeRecord.get("startLabels").asList();
-                        String relationshipType = nodeRecord.get("relationshipType").asString();
-                        List<String> endLabels = nodeRecord.get("endLabels").asList();
-                        long connectionCount = nodeRecord.get("connectionCount").asLong();
-                      //  ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
-                       //         new ConceptionKindCorrelationInfo(startLabels.get(0),
-
-                     */
-
-
-
-
-/*
-                    ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
-                            new ConceptionKindCorrelationInfo(
-                                    conceptionKindId_nameMapping.get(startConceptionKindId),
-                                    conceptionKindId_nameMapping.get(endConceptionKindId),
-                                    relationKindName,connectionCount);
-                    conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
-*/
+                    for(Object startkindNameObj:startKindsList){
+                        for(Object endKindNameObj:endKindsList){
+                            ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
+                                    new ConceptionKindCorrelationInfo(
+                                            startkindNameObj.toString(),
+                                            endKindNameObj.toString(),
+                                            relationKindName,connectionCount);
+                            conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
+                        }
+                    }
                 }
-
-
-
-
-
-
-
                 return conceptionKindCorrelationInfoSet;
             }
         };
@@ -926,6 +897,9 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
             Object queryRes = workingGraphOperationExecutor.executeRead(statisticsDataTransformer,cql);
+            if(queryRes != null){
+                return (Set<ConceptionKindCorrelationInfo>)queryRes;
+            }
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
