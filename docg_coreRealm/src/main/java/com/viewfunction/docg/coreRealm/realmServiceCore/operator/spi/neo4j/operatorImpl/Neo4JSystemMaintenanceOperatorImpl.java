@@ -825,9 +825,110 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
     }
 
     @Override
-    public Set<ConceptionKindCorrelationInfo> getConceptionKindCorrelationRuntimeInfo(float samplingRate) {
+    public Set<ConceptionKindCorrelationInfo> getConceptionKindCorrelationRuntimeInfo(float samplingRate) throws CoreRealmServiceRuntimeException {
+        if(samplingRate<=0 || samplingRate>1){
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("Invalid sampling rate, should be in the range of (0 to 1].");
+            throw e;
+        }
+
+        /*
+        MATCH (a)-[r]->(b)
+        WHERE rand() < 0.1  // 10%采样率
+        WITH
+          apoc.coll.sort(labels(a)) AS startLabels,
+          type(r) AS relationshipType,
+          apoc.coll.sort(labels(b)) AS endLabels
+        RETURN
+          startLabels,
+          relationshipType,
+          endLabels,
+          count(*) * 10 AS connectionCount  // 乘以采样率的倒数
+        ORDER BY connectionCount DESC
+        */
+
+        String samplePartCQL = "";
+        int samplingRateMultiple = (int)(1/samplingRate);
+        if(samplingRate != 1){
+            samplePartCQL = "WHERE rand() < "+samplingRate+"\n";
+        }
+
+        String cql = "MATCH (a)-[r]->(b)\n" +
+        samplePartCQL +
+        "WITH\n" +
+        " apoc.coll.sort(labels(a)) AS startLabels,\n" +
+        " type(r) AS relationshipType,\n" +
+        " apoc.coll.sort(labels(b)) AS endLabels\n" +
+        "RETURN\n" +
+        " startLabels,\n" +
+        " relationshipType,\n" +
+        " endLabels,\n" +
+        " count(*) * "+samplingRateMultiple+" AS connectionCount\n" +
+        "ORDER BY connectionCount DESC";
+        logger.debug("Generated Cypher Statement: {}", cql);
+
+        Set<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet = new HashSet<>();
+
+        DataTransformer<Set<ConceptionKindCorrelationInfo>> statisticsDataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+                while(result.hasNext()){
 
 
+
+                    Record nodeRecord = result.next();
+
+                    System.out.println(nodeRecord.keys());
+
+                    List<Object> startKindsList = nodeRecord.get("startLabels").asList();
+                    List<Object> endKindsList = nodeRecord.get("endLabels").asList();
+                    String relationKindName = nodeRecord.get("relationshipType").asString();
+                    Long connectionCount = nodeRecord.get("connectionCount").asLong();
+
+                    System.out.println(startKindsList);
+                    System.out.println(endKindsList);
+                    System.out.println(relationKindName);
+                    System.out.println(connectionCount);
+                    /*
+                    if(nodeRecord.containsKey("startLabels") && nodeRecord.containsKey("relationshipType") && nodeRecord.containsKey("endLabels"))
+                        List<String> startLabels = nodeRecord.get("startLabels").asList();
+                        String relationshipType = nodeRecord.get("relationshipType").asString();
+                        List<String> endLabels = nodeRecord.get("endLabels").asList();
+                        long connectionCount = nodeRecord.get("connectionCount").asLong();
+                      //  ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
+                       //         new ConceptionKindCorrelationInfo(startLabels.get(0),
+
+                     */
+
+
+
+
+/*
+                    ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
+                            new ConceptionKindCorrelationInfo(
+                                    conceptionKindId_nameMapping.get(startConceptionKindId),
+                                    conceptionKindId_nameMapping.get(endConceptionKindId),
+                                    relationKindName,connectionCount);
+                    conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
+*/
+                }
+
+
+
+
+
+
+
+                return conceptionKindCorrelationInfoSet;
+            }
+        };
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            Object queryRes = workingGraphOperationExecutor.executeRead(statisticsDataTransformer,cql);
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
 
         return Set.of();
     }
