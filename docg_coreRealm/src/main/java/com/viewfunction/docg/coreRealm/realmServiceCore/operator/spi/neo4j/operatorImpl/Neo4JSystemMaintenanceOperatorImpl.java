@@ -878,15 +878,24 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                     List<Object> endKindsList = nodeRecord.get("endLabels").asList();
                     String relationKindName = nodeRecord.get("relationshipType").asString();
                     Long connectionCount = nodeRecord.get("connectionCount").asLong();
-
                     for(Object startkindNameObj:startKindsList){
                         for(Object endKindNameObj:endKindsList){
-                            ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
-                                    new ConceptionKindCorrelationInfo(
-                                            startkindNameObj.toString(),
-                                            endKindNameObj.toString(),
-                                            relationKindName,connectionCount);
-                            conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
+                            if(startkindNameObj.equals(RealmConstant.GeospatialScaleEntityClass)||endKindNameObj.equals(RealmConstant.GeospatialScaleEntityClass)||
+                                    startkindNameObj.equals(RealmConstant.TimeScaleEntityClass)||endKindNameObj.equals(RealmConstant.TimeScaleEntityClass)||
+                                    startkindNameObj.equals(RealmConstant.AttributesViewKindClass)||endKindNameObj.equals(RealmConstant.AttributesViewKindClass)||
+                                    startkindNameObj.equals(RealmConstant.AttributeKindClass)||endKindNameObj.equals(RealmConstant.AttributeKindClass)||
+                                    startkindNameObj.equals(RealmConstant.MetaConfigItemsStorageClass)||endKindNameObj.equals(RealmConstant.MetaConfigItemsStorageClass)||
+                                    startkindNameObj.equals(RealmConstant.RelationAttachKindClass)||endKindNameObj.equals(RealmConstant.RelationAttachKindClass)||
+                                    startkindNameObj.equals(RealmConstant.ClassificationClass)||endKindNameObj.equals(RealmConstant.ClassificationClass)||
+                                    startkindNameObj.equals(RealmConstant.ConceptionKindClass)||endKindNameObj.equals(RealmConstant.ConceptionKindClass)){
+                            }else{
+                                ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
+                                        new ConceptionKindCorrelationInfo(
+                                                startkindNameObj.toString(),
+                                                endKindNameObj.toString(),
+                                                relationKindName,connectionCount);
+                                conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
+                            }
                         }
                     }
                 }
