@@ -142,6 +142,13 @@ public interface SystemMaintenanceOperator {
      */
     public Set<ConceptionKindCorrelationInfo> getConceptionKindCorrelationRuntimeInfo(float samplingRate) throws CoreRealmServiceRuntimeException;
 
+
+    public boolean executeConceptionKindCorrelationRuntimeInfoPeriodicCollect(int collectionIntervalInSecond);
+
+    public boolean cancelConceptionKindCorrelationRuntimeInfoPeriodicCollect() throws CoreRealmServiceRuntimeException;
+
+    public Set<ConceptionKindCorrelationInfo> getPeriodicCollectedConceptionKindCorrelationRuntimeInfo() throws CoreRealmServiceRuntimeException;
+
     /**
      * 查询系统中实时存在的所有属性名称，其范围也包含不在系统属性类型(AttributeKind)定义管理之外的其他所有属性
      *

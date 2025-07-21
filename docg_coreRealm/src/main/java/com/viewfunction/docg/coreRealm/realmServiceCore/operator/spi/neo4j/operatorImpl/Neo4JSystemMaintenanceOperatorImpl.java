@@ -917,6 +917,32 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
     }
 
     @Override
+    public boolean executeConceptionKindCorrelationRuntimeInfoPeriodicCollect(int collectionIntervalInSecond) {
+/*
+
+https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.repeat/
+
+https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.cancel/
+https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.list/
+*/
+
+
+
+
+        return false;
+    }
+
+    @Override
+    public boolean cancelConceptionKindCorrelationRuntimeInfoPeriodicCollect() throws CoreRealmServiceRuntimeException {
+        return false;
+    }
+
+    @Override
+    public Set<ConceptionKindCorrelationInfo> getPeriodicCollectedConceptionKindCorrelationRuntimeInfo() throws CoreRealmServiceRuntimeException {
+        return Set.of();
+    }
+
+    @Override
     public Set<String> getRealtimeAttributesStatistics() {
         String cql ="CALL db.propertyKeys()";
         logger.debug("Generated Cypher Statement: {}", cql);
