@@ -917,18 +917,44 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
     }
 
     @Override
-    public boolean executeConceptionKindCorrelationRuntimeInfoPeriodicCollect(int collectionIntervalInSecond) {
-/*
+    public boolean executeConceptionKindCorrelationRuntimeInfoPeriodicCollect(int collectionIntervalInSecond) throws CoreRealmServiceRuntimeException {
+        /*
+        https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.repeat/
+        https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.cancel/
+        https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.list/
+        */
+        Map<String,PeriodicCollectTaskVO> periodicCollectTaskMap = new HashMap<>();
+        String cql ="CALL apoc.periodic.list();";
+        logger.debug("Generated Cypher Statement: {}", cql);
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
 
-https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.repeat/
+        DataTransformer operationDataTransformer = new DataTransformer<>(){
+            @Override
+            public Set<ConceptionKindCorrelationInfo> transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    String periodicName = nodeRecord.get("name").asString();
+                    int delay = nodeRecord.get("delay").asInt();
+                    int rate = nodeRecord.get("rate").asInt();
+                    boolean isDone = nodeRecord.get("done").asBoolean();
+                    boolean isCanceled = nodeRecord.get("cancelled").asBoolean();
+                    periodicCollectTaskMap.put(periodicName, new PeriodicCollectTaskVO(periodicName, delay, rate, isDone, isCanceled));
+                }
+                return null;
+            }
+        };
+        workingGraphOperationExecutor.executeRead(operationDataTransformer,cql);
 
-https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.cancel/
-https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.list/
-*/
+        PeriodicCollectTaskVO targetPeriodicCollectTaskVO = periodicCollectTaskMap.get(RealmConstant.ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask);
+        if(targetPeriodicCollectTaskVO == null){
+          //  if()
+        }else {
+            if(targetPeriodicCollectTaskVO.isCanceled()){
+
+            }
 
 
-
-
+        }
         return false;
     }
 
@@ -1470,5 +1496,42 @@ https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.list/
         }
 
         return conceptionKindDataCapabilityInfo;
+    }
+
+    private static class PeriodicCollectTaskVO{
+
+        private String periodicName;
+        private int delay;
+        private int rate;
+        private boolean isDone;
+        private boolean isCanceled;
+
+        public PeriodicCollectTaskVO(String periodicName,int delay,int rate,boolean isDone,boolean isCanceled){
+            this.periodicName = periodicName;
+            this.delay = delay;
+            this.rate = rate;
+            this.isDone = isDone;
+            this.isCanceled = isCanceled;
+        }
+
+        public String getPeriodicName() {
+            return periodicName;
+        }
+
+        public int getDelay() {
+            return delay;
+        }
+
+        public int getRate() {
+            return rate;
+        }
+
+        public boolean isDone() {
+            return isDone;
+        }
+
+        public boolean isCanceled() {
+            return isCanceled;
+        }
     }
 }

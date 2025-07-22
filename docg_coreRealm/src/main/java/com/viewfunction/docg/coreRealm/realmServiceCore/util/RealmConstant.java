@@ -113,4 +113,6 @@ public interface RealmConstant {
     public final String DefaultTimeSeriesDBExternalAttributesValueAccessProcessorID =
             "com.viewfunction.docg.coreRealm.realmServiceCore.external.dataExchange.timeSeriesDB.DefaultTimeSeriesDBExternalAttributesValueAccessProcessor";
     public final String DefaultTimeSeriesDBExternalTimeAttributeName = "Time";
+
+    public final String ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask = "DOCG_ConceptionKindCorrelationRuntimeInfoPeriodicCollect";
 }
