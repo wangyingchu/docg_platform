@@ -946,18 +946,79 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
 
         PeriodicCollectTaskVO targetPeriodicCollectTaskVO = periodicCollectTaskMap.get(RealmConstant.ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask);
         if(targetPeriodicCollectTaskVO == null){
+            String samplePartCQL = "";
+            int samplingRate = 1;
+            int samplingRateMultiple = (int)(1/samplingRate);
+            if(samplingRate != 1){
+                samplePartCQL = "WHERE rand() < "+samplingRate+"\n";
+            }
+
+            String xx ="CALL apoc.periodic.repeat(\n" +
+                    "  \"create-people\",\n" +
+                    "  \"UNWIND range(1,10) AS id CREATE (:Person {uuid: apoc.create.uuid()})\",\n" +
+                    "   1\n" +
+                    ");";
+
+            String cql2 = "MATCH (a)-[r]->(b)\n" +
+                    samplePartCQL +
+                    "WITH\n" +
+                    " apoc.coll.sort(labels(a)) AS startLabels,\n" +
+                    " type(r) AS relationshipType,\n" +
+                    " apoc.coll.sort(labels(b)) AS endLabels\n" +
+                    "RETURN\n" +
+                    " startLabels,\n" +
+                    " relationshipType,\n" +
+                    " endLabels,\n" +
+                    " count(*) * "+samplingRateMultiple+" AS connectionCount\n" +
+                    "ORDER BY connectionCount DESC";
 
 
 
+            String cql3 = "MATCH (n:DOCG_ConceptionKindCorrelationRuntimeInfo) DELETE n\n" +
+                    "WITH n\n" +
+                    "MATCH (a)-[r]->(b)\n" +
+                    "WITH\n" +
+                    " apoc.coll.sort(labels(a)) AS startLabels,\n" +
+                    " type(r) AS relationshipType,\n" +
+                    " apoc.coll.sort(labels(b)) AS endLabels\n" +
+                    "WITH\n" +
+                    " startLabels,\n" +
+                    " relationshipType,\n" +
+                    " endLabels,\n" +
+                    " count(*) AS connectionCount\n" +
+                    "CREATE (newP:DOCG_ConceptionKindCorrelationRuntimeInfo {fromKind: startLabels, relationKind: relationshipType,toKind:endLabels,relationCount:connectionCount})";
+
+            String cql4 = "MATCH (a)-[r]->(b)\n" +
+                    "WITH\n" +
+                    " apoc.coll.sort(labels(a)) AS startLabels,\n" +
+                    " type(r) AS relationshipType,\n" +
+                    " apoc.coll.sort(labels(b)) AS endLabels\n" +
+                    "WITH\n" +
+                    " startLabels,\n" +
+                    " relationshipType,\n" +
+                    " endLabels,\n" +
+                    " count(*) AS connectionCount\n" +
+                    "CREATE (newP:DOCG_XXX {fromKind: startLabels, relationKind: relationshipType,toKind:endLabels,relationCount:connectionCount})";
 
 
+            String cqlFinal = "CALL apoc.periodic.repeat(\n" +
+                "\""+RealmConstant.ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask+"\",\n" +
+                    "\""+ cql4+"\",\n" +
+                "   "+collectionIntervalInSecond+"\n" +
+                ");";
+            logger.debug("Generated Cypher Statement: {}", cqlFinal);
 
+            DataTransformer operationDataTransformer2 = new DataTransformer<>(){
+                @Override
+                public Object transformResult(Result result) {
+                    if(result.hasNext()){
+                        System.out.println(result.next());
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeWrite(operationDataTransformer2,cqlFinal);
 
-
-
-
-
-          //  if()
         }else {
             if(targetPeriodicCollectTaskVO.isCanceled()){
 
