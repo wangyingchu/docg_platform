@@ -920,6 +920,63 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
     public boolean executeConceptionKindCorrelationRuntimeInfoPeriodicCollect(int collectionIntervalInSecond) throws CoreRealmServiceRuntimeException {
         /*
         https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.repeat/
+        https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.list/
+        */
+        Map<String,PeriodicCollectTaskVO> periodicCollectTaskMap = new HashMap<>();
+        String cql ="CALL apoc.periodic.list();";
+        logger.debug("Generated Cypher Statement: {}", cql);
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+
+        DataTransformer operationDataTransformer = new DataTransformer<>(){
+            @Override
+            public Set<ConceptionKindCorrelationInfo> transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    String periodicName = nodeRecord.get("name").asString();
+                    int delay = nodeRecord.get("delay").asInt();
+                    int rate = nodeRecord.get("rate").asInt();
+                    boolean isDone = nodeRecord.get("done").asBoolean();
+                    boolean isCanceled = nodeRecord.get("cancelled").asBoolean();
+                    periodicCollectTaskMap.put(periodicName, new PeriodicCollectTaskVO(periodicName, delay, rate, isDone, isCanceled));
+                }
+                return null;
+            }
+        };
+        workingGraphOperationExecutor.executeRead(operationDataTransformer,cql);
+
+        PeriodicCollectTaskVO targetPeriodicCollectTaskVO = periodicCollectTaskMap.get(RealmConstant.ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask);
+        if(targetPeriodicCollectTaskVO == null){
+
+
+
+
+
+
+
+
+
+
+
+          //  if()
+        }else {
+            if(targetPeriodicCollectTaskVO.isCanceled()){
+
+            }else{
+                if(collectionIntervalInSecond != targetPeriodicCollectTaskVO.getDelay()){
+                    CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+                    e.setCauseMessage("ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask already exist and IntervalInSecond is not " +collectionIntervalInSecond+" .");
+                    throw e;
+                }else{
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean cancelConceptionKindCorrelationRuntimeInfoPeriodicCollect() throws CoreRealmServiceRuntimeException {
+        /*
         https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.cancel/
         https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.list/
         */
@@ -947,24 +1004,17 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
 
         PeriodicCollectTaskVO targetPeriodicCollectTaskVO = periodicCollectTaskMap.get(RealmConstant.ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask);
         if(targetPeriodicCollectTaskVO == null){
-          //  if()
-        }else {
-            if(targetPeriodicCollectTaskVO.isCanceled()){
-
-            }
-
+            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+            e.setCauseMessage("ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask not exist.");
+            throw e;
+        }else{
 
         }
         return false;
     }
 
     @Override
-    public boolean cancelConceptionKindCorrelationRuntimeInfoPeriodicCollect() throws CoreRealmServiceRuntimeException {
-        return false;
-    }
-
-    @Override
-    public Set<ConceptionKindCorrelationInfo> getPeriodicCollectedConceptionKindCorrelationRuntimeInfo() throws CoreRealmServiceRuntimeException {
+    public Set<ConceptionKindCorrelationInfo> getPeriodicCollectedConceptionKindCorrelationRuntimeInfo() {
         return Set.of();
     }
 
