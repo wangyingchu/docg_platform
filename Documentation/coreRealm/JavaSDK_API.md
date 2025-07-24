@@ -5924,6 +5924,29 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
     public Set<ConceptionKindCorrelationInfo> getConceptionKindCorrelationRuntimeInfo(float samplingRate) throws CoreRealmServiceRuntimeException;
 
     /**
+     * 创建周期性任务，获取系统中所有概念类型实体与其他概念类型实体之间的实时关联关系信息并持久化存储,此方法实时计算各个概念类型之间关系实体的真实数量
+     *
+     *  @param collectionIntervalInSecond int 每次数据采集的时间间隔，时间单位为秒
+     *
+     * @return 操作执行结果，如成功则返回 true
+     */
+    public boolean executeConceptionKindCorrelationRuntimeInfoPeriodicCollect(int collectionIntervalInSecond) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 取消已经创建的获取系统中所有概念类型实体与其他概念类型实体之间的实时关联关系信息并持久化存储的周期性任务
+     *
+     * @return 操作执行结果，如成功则返回 true
+     */
+    public boolean cancelConceptionKindCorrelationRuntimeInfoPeriodicCollect() throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取周期性任务中采集的系统中所有概念类型实体与其他概念类型实体之间的实时关联关系信息,此方法返回最近一次采集时的计算结果
+     *
+     * @return 所有概念类型之间的关联关系信息集合
+     */
+    public Set<ConceptionKindCorrelationInfo> getPeriodicCollectedConceptionKindCorrelationRuntimeInfo();
+
+    /**
      * 查询系统中实时存在的所有属性名称，其范围也包含不在系统属性类型(AttributeKind)定义管理之外的其他所有属性
      *
      * @return 属性名称集合
