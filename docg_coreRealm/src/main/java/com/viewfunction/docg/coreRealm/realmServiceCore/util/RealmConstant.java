@@ -115,4 +115,5 @@ public interface RealmConstant {
     public final String DefaultTimeSeriesDBExternalTimeAttributeName = "Time";
 
     public final String ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask = "DOCG_ConceptionKindCorrelationRuntimeInfoPeriodicCollect";
+    public final String ConceptionKindCorrelationInfoStaticClass="DOCG_Static_ConceptionKindCorrelationInfo";
 }

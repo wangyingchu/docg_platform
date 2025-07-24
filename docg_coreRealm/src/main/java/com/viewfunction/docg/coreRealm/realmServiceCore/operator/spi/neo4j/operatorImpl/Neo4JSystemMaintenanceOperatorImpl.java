@@ -918,160 +918,69 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
 
     @Override
     public boolean executeConceptionKindCorrelationRuntimeInfoPeriodicCollect(int collectionIntervalInSecond) throws CoreRealmServiceRuntimeException {
-        /*
-        https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.repeat/
-        https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.list/
-        */
-        Map<String,PeriodicCollectTaskVO> periodicCollectTaskMap = new HashMap<>();
-        String cql ="CALL apoc.periodic.list();";
-        logger.debug("Generated Cypher Statement: {}", cql);
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-
-        DataTransformer operationDataTransformer = new DataTransformer<>(){
-            @Override
-            public Set<ConceptionKindCorrelationInfo> transformResult(Result result) {
-                while(result.hasNext()){
-                    Record nodeRecord = result.next();
-                    String periodicName = nodeRecord.get("name").asString();
-                    int delay = nodeRecord.get("delay").asInt();
-                    int rate = nodeRecord.get("rate").asInt();
-                    boolean isDone = nodeRecord.get("done").asBoolean();
-                    boolean isCanceled = nodeRecord.get("cancelled").asBoolean();
-                    periodicCollectTaskMap.put(periodicName, new PeriodicCollectTaskVO(periodicName, delay, rate, isDone, isCanceled));
-                }
-                return null;
-            }
-        };
-        workingGraphOperationExecutor.executeRead(operationDataTransformer,cql);
-
-        PeriodicCollectTaskVO targetPeriodicCollectTaskVO = periodicCollectTaskMap.get(RealmConstant.ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask);
-        if(targetPeriodicCollectTaskVO == null){
-            String samplePartCQL = "";
-            int samplingRate = 1;
-            int samplingRateMultiple = (int)(1/samplingRate);
-            if(samplingRate != 1){
-                samplePartCQL = "WHERE rand() < "+samplingRate+"\n";
-            }
-
-            String xx ="CALL apoc.periodic.repeat(\n" +
-                    "  \"create-people\",\n" +
-                    "  \"UNWIND range(1,10) AS id CREATE (:Person {uuid: apoc.create.uuid()})\",\n" +
-                    "   1\n" +
-                    ");";
-
-            String cql2 = "MATCH (a)-[r]->(b)\n" +
-                    samplePartCQL +
-                    "WITH\n" +
-                    " apoc.coll.sort(labels(a)) AS startLabels,\n" +
-                    " type(r) AS relationshipType,\n" +
-                    " apoc.coll.sort(labels(b)) AS endLabels\n" +
-                    "RETURN\n" +
-                    " startLabels,\n" +
-                    " relationshipType,\n" +
-                    " endLabels,\n" +
-                    " count(*) * "+samplingRateMultiple+" AS connectionCount\n" +
-                    "ORDER BY connectionCount DESC";
-
-
-
-            String cql3 = "MATCH (n:DOCG_ConceptionKindCorrelationRuntimeInfo) DELETE n\n" +
-                    "WITH n\n" +
-                    "MATCH (a)-[r]->(b)\n" +
-                    "WITH\n" +
-                    " apoc.coll.sort(labels(a)) AS startLabels,\n" +
-                    " type(r) AS relationshipType,\n" +
-                    " apoc.coll.sort(labels(b)) AS endLabels\n" +
-                    "WITH\n" +
-                    " startLabels,\n" +
-                    " relationshipType,\n" +
-                    " endLabels,\n" +
-                    " count(*) AS connectionCount\n" +
-                    "CREATE (newP:DOCG_ConceptionKindCorrelationRuntimeInfo {fromKind: startLabels, relationKind: relationshipType,toKind:endLabels,relationCount:connectionCount})";
-
-            String cql4 = "MATCH (a)-[r]->(b)\n" +
-                    "WITH\n" +
-                    " apoc.coll.sort(labels(a)) AS startLabels,\n" +
-                    " type(r) AS relationshipType,\n" +
-                    " apoc.coll.sort(labels(b)) AS endLabels\n" +
-                    "WITH\n" +
-                    " startLabels,\n" +
-                    " relationshipType,\n" +
-                    " endLabels,\n" +
-                    " count(*) AS connectionCount\n" +
-                    "CREATE (newP:DOCG_XXX {fromKind: startLabels, relationKind: relationshipType,toKind:endLabels,relationCount:connectionCount})";
-
-
-            String cqlFinal = "CALL apoc.periodic.repeat(\n" +
-                "\""+RealmConstant.ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask+"\",\n" +
-                    "\""+ cql4+"\",\n" +
-                "   "+collectionIntervalInSecond+"\n" +
-                ");";
-            logger.debug("Generated Cypher Statement: {}", cqlFinal);
-
-            DataTransformer operationDataTransformer2 = new DataTransformer<>(){
-                @Override
-                public Object transformResult(Result result) {
-                    if(result.hasNext()){
-                        System.out.println(result.next());
-                    }
-                    return null;
-                }
-            };
-            workingGraphOperationExecutor.executeWrite(operationDataTransformer2,cqlFinal);
-
-        }else {
-            if(targetPeriodicCollectTaskVO.isCanceled()){
-
-            }else{
-                if(collectionIntervalInSecond != targetPeriodicCollectTaskVO.getDelay()){
-                    CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
-                    e.setCauseMessage("ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask already exist and IntervalInSecond is not " +collectionIntervalInSecond+" .");
-                    throw e;
+        try{
+            Map<String,PeriodicCollectTaskVO> periodicCollectTaskMap = getPeriodicCollectTasks(workingGraphOperationExecutor);
+            PeriodicCollectTaskVO targetPeriodicCollectTaskVO =  periodicCollectTaskMap.get(RealmConstant.ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask);
+            if(targetPeriodicCollectTaskVO == null){
+                return executeConceptionKindCorrelationInfoCollectPeriodicTask(workingGraphOperationExecutor,collectionIntervalInSecond);
+            }else {
+                if(targetPeriodicCollectTaskVO.isCanceled()){
+                    return executeConceptionKindCorrelationInfoCollectPeriodicTask(workingGraphOperationExecutor,collectionIntervalInSecond);
                 }else{
-                    return true;
+                    if(collectionIntervalInSecond != targetPeriodicCollectTaskVO.getRate()){
+                        CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+                        e.setCauseMessage("ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask already exist and IntervalInSecond is not " +collectionIntervalInSecond+" .");
+                        throw e;
+                    }else{
+                        return true;
+                    }
                 }
             }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
-        return false;
     }
 
     @Override
     public boolean cancelConceptionKindCorrelationRuntimeInfoPeriodicCollect() throws CoreRealmServiceRuntimeException {
         /*
         https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.cancel/
-        https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.list/
         */
-        Map<String,PeriodicCollectTaskVO> periodicCollectTaskMap = new HashMap<>();
-        String cql ="CALL apoc.periodic.list();";
-        logger.debug("Generated Cypher Statement: {}", cql);
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-
-        DataTransformer operationDataTransformer = new DataTransformer<>(){
-            @Override
-            public Set<ConceptionKindCorrelationInfo> transformResult(Result result) {
-                while(result.hasNext()){
-                    Record nodeRecord = result.next();
-                    String periodicName = nodeRecord.get("name").asString();
-                    int delay = nodeRecord.get("delay").asInt();
-                    int rate = nodeRecord.get("rate").asInt();
-                    boolean isDone = nodeRecord.get("done").asBoolean();
-                    boolean isCanceled = nodeRecord.get("cancelled").asBoolean();
-                    periodicCollectTaskMap.put(periodicName, new PeriodicCollectTaskVO(periodicName, delay, rate, isDone, isCanceled));
+        try{
+            Map<String,PeriodicCollectTaskVO> periodicCollectTaskMap = getPeriodicCollectTasks(workingGraphOperationExecutor);
+            PeriodicCollectTaskVO targetPeriodicCollectTaskVO = periodicCollectTaskMap.get(RealmConstant.ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask);
+            if(targetPeriodicCollectTaskVO == null){
+                CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+                e.setCauseMessage(RealmConstant.ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask+" not exist.");
+                throw e;
+            }else{
+                String cql ="CALL apoc.periodic.cancel(\""+RealmConstant.ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask+"\");";
+                logger.debug("Generated Cypher Statement: {}", cql);
+                DataTransformer<Boolean> operationDataTransformer = new DataTransformer<>(){
+                    @Override
+                    public Boolean transformResult(Result result) {
+                        if(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            String periodicName = nodeRecord.get("name").asString();
+                            boolean isCanceled = nodeRecord.get("cancelled").asBoolean();
+                            if(RealmConstant.ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask.equals(periodicName) && isCanceled){
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+                };
+                Object response = workingGraphOperationExecutor.executeWrite(operationDataTransformer,cql);
+                if(response!=null){
+                    return (Boolean)response;
                 }
-                return null;
             }
-        };
-        workingGraphOperationExecutor.executeRead(operationDataTransformer,cql);
-
-        PeriodicCollectTaskVO targetPeriodicCollectTaskVO = periodicCollectTaskMap.get(RealmConstant.ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask);
-        if(targetPeriodicCollectTaskVO == null){
-            CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
-            e.setCauseMessage("ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask not exist.");
-            throw e;
-        }else{
-
+            return false;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
-        return false;
     }
 
     @Override
@@ -1644,5 +1553,78 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         public boolean isCanceled() {
             return isCanceled;
         }
+    }
+
+    private boolean executeConceptionKindCorrelationInfoCollectPeriodicTask(GraphOperationExecutor workingGraphOperationExecutor,int collectionIntervalInSecond){
+        /*
+        https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.repeat/
+        */
+        String cql = "MATCH (a)-[r]->(b)\n" +
+                "WITH\n" +
+                " apoc.coll.sort(labels(a)) AS startLabels,\n" +
+                " type(r) AS relationshipType,\n" +
+                " apoc.coll.sort(labels(b)) AS endLabels\n" +
+                "WITH\n" +
+                " startLabels,\n" +
+                " relationshipType,\n" +
+                " endLabels,\n" +
+                " count(*) AS connectionCount\n" +
+                "CREATE (newInfo:"+RealmConstant.ConceptionKindCorrelationInfoStaticClass+" {startLabels: startLabels, relationshipType: relationshipType,endLabels:endLabels,connectionCount:connectionCount}) \n" +
+                "SET newInfo.createDate = localdatetime()";
+
+        String cqlFinal = "CALL apoc.periodic.repeat(\n" +
+                "\""+RealmConstant.ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask+"\",\n" +
+                "\""+ cql+"\",\n" +
+                "   "+collectionIntervalInSecond+"\n" +
+                ");";
+        logger.debug("Generated Cypher Statement: {}", cqlFinal);
+
+        DataTransformer<Boolean> operationDataTransformer2 = new DataTransformer<>(){
+            @Override
+            public Boolean transformResult(Result result) {
+                if(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    String periodicName = nodeRecord.get("name").asString();
+                    boolean isCanceled = nodeRecord.get("cancelled").asBoolean();
+                    if(RealmConstant.ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask.equals(periodicName) && !isCanceled){
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+        Object response = workingGraphOperationExecutor.executeWrite(operationDataTransformer2,cqlFinal);
+        if(response!=null){
+            return (Boolean)response;
+        }
+        return false;
+    }
+
+    private Map<String,PeriodicCollectTaskVO> getPeriodicCollectTasks(GraphOperationExecutor workingGraphOperationExecutor){
+        /*
+        https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.list/
+        */
+        Map<String,PeriodicCollectTaskVO> periodicCollectTaskMap = new HashMap<>();
+        String cql ="CALL apoc.periodic.list();";
+        logger.debug("Generated Cypher Statement: {}", cql);
+
+        DataTransformer operationDataTransformer = new DataTransformer<>(){
+            @Override
+            public Set<ConceptionKindCorrelationInfo> transformResult(Result result) {
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    String periodicName = nodeRecord.get("name").asString();
+                    int delay = nodeRecord.get("delay").asInt();
+                    int rate = nodeRecord.get("rate").asInt();
+                    boolean isDone = nodeRecord.get("done").asBoolean();
+                    boolean isCanceled = nodeRecord.get("cancelled").asBoolean();
+                    periodicCollectTaskMap.put(periodicName, new PeriodicCollectTaskVO(periodicName, delay, rate, isDone, isCanceled));
+                }
+                return null;
+            }
+        };
+        workingGraphOperationExecutor.executeRead(operationDataTransformer,cql);
+
+        return periodicCollectTaskMap;
     }
 }
