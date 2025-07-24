@@ -872,33 +872,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         DataTransformer<Set<ConceptionKindCorrelationInfo>> statisticsDataTransformer = new DataTransformer<>() {
             @Override
             public Set<ConceptionKindCorrelationInfo> transformResult(Result result) {
-                while(result.hasNext()){
-                    Record nodeRecord = result.next();
-                    List<Object> startKindsList = nodeRecord.get("startLabels").asList();
-                    List<Object> endKindsList = nodeRecord.get("endLabels").asList();
-                    String relationKindName = nodeRecord.get("relationshipType").asString();
-                    Long connectionCount = nodeRecord.get("connectionCount").asLong();
-                    for(Object startkindNameObj:startKindsList){
-                        for(Object endKindNameObj:endKindsList){
-                            if(startkindNameObj.equals(RealmConstant.GeospatialScaleEntityClass)||endKindNameObj.equals(RealmConstant.GeospatialScaleEntityClass)||
-                                    startkindNameObj.equals(RealmConstant.TimeScaleEntityClass)||endKindNameObj.equals(RealmConstant.TimeScaleEntityClass)||
-                                    startkindNameObj.equals(RealmConstant.AttributesViewKindClass)||endKindNameObj.equals(RealmConstant.AttributesViewKindClass)||
-                                    startkindNameObj.equals(RealmConstant.AttributeKindClass)||endKindNameObj.equals(RealmConstant.AttributeKindClass)||
-                                    startkindNameObj.equals(RealmConstant.MetaConfigItemsStorageClass)||endKindNameObj.equals(RealmConstant.MetaConfigItemsStorageClass)||
-                                    startkindNameObj.equals(RealmConstant.RelationAttachKindClass)||endKindNameObj.equals(RealmConstant.RelationAttachKindClass)||
-                                    startkindNameObj.equals(RealmConstant.ClassificationClass)||endKindNameObj.equals(RealmConstant.ClassificationClass)||
-                                    startkindNameObj.equals(RealmConstant.ConceptionKindClass)||endKindNameObj.equals(RealmConstant.ConceptionKindClass)){
-                            }else{
-                                ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
-                                        new ConceptionKindCorrelationInfo(
-                                                startkindNameObj.toString(),
-                                                endKindNameObj.toString(),
-                                                relationKindName,connectionCount);
-                                conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
-                            }
-                        }
-                    }
-                }
+                fillConceptionKindCorrelationInfoSet(result,conceptionKindCorrelationInfoSet);
                 return conceptionKindCorrelationInfoSet;
             }
         };
@@ -985,6 +959,29 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
 
     @Override
     public Set<ConceptionKindCorrelationInfo> getPeriodicCollectedConceptionKindCorrelationRuntimeInfo() {
+        String cql = "MATCH (n:"+RealmConstant.ConceptionKindCorrelationInfoStaticClass+") RETURN " +
+                "n.startLabels AS startLabels,n.endLabels AS endLabels,n.relationshipType AS relationshipType,n.connectionCount AS connectionCount " +
+                "LIMIT 100000000 ";
+        logger.debug("Generated Cypher Statement: {}", cql);
+
+        Set<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet = new HashSet<>();
+        DataTransformer<Set<ConceptionKindCorrelationInfo>> statisticsDataTransformer = new DataTransformer<>() {
+            @Override
+            public Set<ConceptionKindCorrelationInfo> transformResult(Result result) {
+                fillConceptionKindCorrelationInfoSet(result,conceptionKindCorrelationInfoSet);
+                return conceptionKindCorrelationInfoSet;
+            }
+        };
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            Object queryRes = workingGraphOperationExecutor.executeRead(statisticsDataTransformer,cql);
+            if(queryRes != null){
+                return (Set<ConceptionKindCorrelationInfo>)queryRes;
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
         return Set.of();
     }
 
@@ -1626,5 +1623,35 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         workingGraphOperationExecutor.executeRead(operationDataTransformer,cql);
 
         return periodicCollectTaskMap;
+    }
+
+    private void fillConceptionKindCorrelationInfoSet(Result result,Set<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet){
+        while(result.hasNext()){
+            Record nodeRecord = result.next();
+            List<Object> startKindsList = nodeRecord.get("startLabels").asList();
+            List<Object> endKindsList = nodeRecord.get("endLabels").asList();
+            String relationKindName = nodeRecord.get("relationshipType").asString();
+            Long connectionCount = nodeRecord.get("connectionCount").asLong();
+            for(Object startkindNameObj:startKindsList){
+                for(Object endKindNameObj:endKindsList){
+                    if(startkindNameObj.equals(RealmConstant.GeospatialScaleEntityClass)||endKindNameObj.equals(RealmConstant.GeospatialScaleEntityClass)||
+                            startkindNameObj.equals(RealmConstant.TimeScaleEntityClass)||endKindNameObj.equals(RealmConstant.TimeScaleEntityClass)||
+                            startkindNameObj.equals(RealmConstant.AttributesViewKindClass)||endKindNameObj.equals(RealmConstant.AttributesViewKindClass)||
+                            startkindNameObj.equals(RealmConstant.AttributeKindClass)||endKindNameObj.equals(RealmConstant.AttributeKindClass)||
+                            startkindNameObj.equals(RealmConstant.MetaConfigItemsStorageClass)||endKindNameObj.equals(RealmConstant.MetaConfigItemsStorageClass)||
+                            startkindNameObj.equals(RealmConstant.RelationAttachKindClass)||endKindNameObj.equals(RealmConstant.RelationAttachKindClass)||
+                            startkindNameObj.equals(RealmConstant.ClassificationClass)||endKindNameObj.equals(RealmConstant.ClassificationClass)||
+                            startkindNameObj.equals(RealmConstant.ConceptionKindClass)||endKindNameObj.equals(RealmConstant.ConceptionKindClass)){
+                    }else{
+                        ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo =
+                                new ConceptionKindCorrelationInfo(
+                                        startkindNameObj.toString(),
+                                        endKindNameObj.toString(),
+                                        relationKindName,connectionCount);
+                        conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
+                    }
+                }
+            }
+        }
     }
 }
