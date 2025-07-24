@@ -1556,6 +1556,31 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         /*
         https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.repeat/
         */
+
+        /*
+
+        CALL apoc.periodic.repeat(
+"DOCG_ConceptionKindCorrelationRuntimeInfoPeriodicCollect",
+"
+MATCH (n:DOCG_Static_ConceptionKindCorrelationInfo) DELETE n
+WITH n as oldStatics
+
+MATCH (a)-[r]->(b)
+WITH
+ apoc.coll.sort(labels(a)) AS startLabels,
+ type(r) AS relationshipType,
+ apoc.coll.sort(labels(b)) AS endLabels
+WITH
+ startLabels,
+ relationshipType,
+ endLabels,
+ count(*) AS connectionCount
+CREATE (newInfo:DOCG_Static_ConceptionKindCorrelationInfo {startLabels: startLabels, relationshipType: relationshipType,endLabels:endLabels,connectionCount:connectionCount})
+SET newInfo.createDate = localdatetime()",
+   1000
+);
+
+        */
         String cql = "MATCH (a)-[r]->(b)\n" +
                 "WITH\n" +
                 " apoc.coll.sort(labels(a)) AS startLabels,\n" +
