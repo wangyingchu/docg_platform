@@ -15,6 +15,7 @@
         <option value="$PROJECT_DIR$/docg_analysisProvider/pom.xml" />
         <option value="$PROJECT_DIR$/docg_analysisClient/pom.xml" />
         <option value="$PROJECT_DIR$/docg_dataFabric/pom.xml" />
+        <option value="$PROJECT_DIR$/docg_artificialIntelligence/pom.xml" />
       </list>
     </option>
   </component>
