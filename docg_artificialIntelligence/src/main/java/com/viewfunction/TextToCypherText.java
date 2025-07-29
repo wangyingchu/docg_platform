@@ -28,7 +28,7 @@ public class TextToCypherText {
                 """;
 
 
-        String question = "查询王小波写的论文里涉及双缝干涉的章节的节点UID";
+        String question = "查询王小波写的论文里提到鬼灭之刃的章节的节点UID";
 
         // 4. 生成 Cypher 查询
         String prompt = String.format("""

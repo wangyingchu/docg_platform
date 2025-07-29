@@ -16,33 +16,12 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-neo4j</artifactId>
-            <version>1.0.0-beta2</version>
-        </dependency>
-        <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-embeddings-all-minilm-l6-v2</artifactId>
-            <version>1.0.0-beta2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>neo4j</artifactId>
-            <version>1.19.6</version>
-        </dependency>
-        <!-- LangChain4j 核心 -->
-        <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j</artifactId>
-            <version>${langchain4j.version}</version>
-        </dependency>
-        <!-- LangChain4j OpenAI 集成 -->
-        <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j-open-ai</artifactId>
-            <version>${langchain4j.version}</version>
-        </dependency>
+
+
+
+
+
+
 
 
 
@@ -57,34 +36,27 @@
             <artifactId>langchain4j-core</artifactId>
             <version>1.1.0</version>
         </dependency>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <!-- SLF4J API -->
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.32</version>
+            <groupId>org.neo4j.driver</groupId>
+            <artifactId>neo4j-java-driver</artifactId>
+            <version>5.17.0</version>
         </dependency>
-        <!-- Logback Classic (as an example) -->
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.2.6</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
         </dependency>
+
+
+
+
+
+
+
+
+
+
     </dependencies>
 
 </project>
