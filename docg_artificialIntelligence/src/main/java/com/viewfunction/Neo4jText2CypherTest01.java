@@ -1,8 +1,5 @@
 package com.viewfunction;
 
-import dev.langchain4j.model.chat.ChatLanguageModel;
-import dev.langchain4j.model.openai.OpenAiChatModel;
-
 public class Neo4jText2CypherTest01 {
 
     private static final String NEO4J_URI = "bolt://localhost:7687";
@@ -12,13 +9,15 @@ public class Neo4jText2CypherTest01 {
 
     public static void main(String[] args) {
         // 1. 初始化 OpenAI 模型
-        ChatLanguageModel model = OpenAiChatModel.builder()
+
+        /*
+        ChatLanguageModel model =  OpenAiChatModel.builder()
                 .apiKey(OPENAI_API_KEY)
                 .modelName("deepseek-chat")
                 .baseUrl("https://api.deepseek.com/v1")// 可以使用 gpt-4 如果您有权限
                 .temperature(0.0)
                 .build();
-
+*/
         // 2. 定义图数据库结构
         String graphSchema = """
                 Node properties:
@@ -55,8 +54,10 @@ public class Neo4jText2CypherTest01 {
                 """, graphSchema, question);
 
         // 修正后的生成方式
-        String cypherQuery = model.chat(prompt);
-        System.out.println("生成的 Cypher 查询: " + cypherQuery);
+      //  String cypherQuery = model.chat(prompt);
+    //    System.out.println("生成的 Cypher 查询: " + cypherQuery);
+
+
 
         /*
         // 5. 执行 Cypher 查询
