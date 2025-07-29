@@ -1,4 +1,4 @@
-package com.viewfunction.ai.llm.rag.graphRAG;
+package com.docg.ai.llm.rag.graphRAG;
 
 import dev.langchain4j.model.openai.OpenAiChatModel;
 

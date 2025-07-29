@@ -1,4 +1,4 @@
-package com.viewfunction;
+package com.docg;
 
 public class Main {
     public static void main(String[] args) {

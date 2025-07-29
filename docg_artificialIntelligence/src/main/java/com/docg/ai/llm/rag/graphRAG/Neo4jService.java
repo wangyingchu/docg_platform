@@ -1,4 +1,4 @@
-package com.viewfunction.ai.llm.rag.graphRAG;
+package com.docg.ai.llm.rag.graphRAG;
 
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;

@@ -1,4 +1,4 @@
-package com.viewfunction;
+package com.docg;
 
 public class Neo4jText2CypherTest01 {
 
