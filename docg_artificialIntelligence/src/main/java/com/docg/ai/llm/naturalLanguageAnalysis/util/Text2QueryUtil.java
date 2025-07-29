@@ -1,17 +1,26 @@
-package com.docg;
+package com.docg.ai.llm.naturalLanguageAnalysis.util;
 
+import com.docg.ai.util.config.PropertiesHandler;
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class TextToCypherText {
-    static String openAiApiKey = "sk-ea43df124d9c4d45a684af8c8fee1fed";
-    public static  void main(String[] args){
+public class Text2QueryUtil {
+    private static Logger logger = LoggerFactory.getLogger(Text2QueryUtil.class);
+
+    public static String generateQueryCypher(String question){
+       if(question == null){
+           return null;
+       }
+
+       // question = "查询王小波写的论文里提到鬼灭之刃的章节的节点UID";
+
         ChatModel model = OpenAiChatModel.builder()
-                .apiKey(openAiApiKey)
-                //.modelName("gpt-3.5-turbo") // 可根据需要更换模型
-                .modelName("deepseek-chat")
-                .baseUrl("https://api.deepseek.com/v1")
-                .build();
+               .apiKey(PropertiesHandler.getPropertyValue(PropertiesHandler.TEXT2CYPHER_MODEL_APIKEY))
+               .modelName(PropertiesHandler.getPropertyValue(PropertiesHandler.TEXT2CYPHER_MODEL_NAME))
+               .baseUrl(PropertiesHandler.getPropertyValue(PropertiesHandler.TEXT2CYPHER_MODEL_BASEURL))
+               .build();
 
         String graphSchema = """
                 Node properties:
@@ -27,10 +36,6 @@ public class TextToCypherText {
                 (:Paper)-[:HAS_TOPIC]->(:Topic)
                 """;
 
-
-        String question = "查询王小波写的论文里提到鬼灭之刃的章节的节点UID";
-        question ="论文鬼灭之刃的作者是谁";
-        // 4. 生成 Cypher 查询
         String prompt = String.format("""
                 你是一个 Neo4j Cypher 查询生成专家。基于以下图数据库结构：
                 %s
@@ -45,26 +50,9 @@ public class TextToCypherText {
                 4. 使用英文节点和关系标签
                 """, graphSchema, question);
 
-
-
-
-
-
-
-
         String answer = model.chat(prompt);
-        // 记录本轮问答
-       /// history.add("用户: " + prompt);
-        //history.add("AI: " + answer);
 
-System.out.println(answer);
-
-
-
-
-
-    }
-
-
-
+        logger.debug("Generated Cypher Statement: {} for Question {}", answer, question);
+        return answer;
+   }
 }
