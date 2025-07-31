@@ -2,8 +2,10 @@ package com.docg.ai.llm.naturalLanguageAnalysis.util;
 
 import com.docg.ai.util.config.PropertiesHandler;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.operator.SystemMaintenanceOperator;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeSystemInfo;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionKindCorrelationInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntityStatisticsInfo;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
@@ -44,11 +46,10 @@ public class Text2QueryUtil {
                 4. 使用英文节点和关系标签
                 """, getGraphSchema(), question);
 
-        return "==================";
-       //String answer = model.chat(prompt);
+       String answer = model.chat(prompt);
 
-       //logger.debug("Generated Cypher Statement: [{}] For Question: [{}]", answer, question);
-      // return answer;
+       logger.debug("Generated Cypher Statement: [{}] For Question: [{}]", answer, question);
+       return answer;
    }
 
    private static String getGraphSchema(){
@@ -68,57 +69,65 @@ public class Text2QueryUtil {
 
         CoreRealm targetCoreRealm = RealmTermFactory.getDefaultCoreRealm();
         try {
-           List<EntityStatisticsInfo> realtimeConceptionList = targetCoreRealm.getConceptionEntitiesStatistics();
-           List<EntityStatisticsInfo> realtimeRelationList = targetCoreRealm.getRelationEntitiesStatistics();
+            SystemMaintenanceOperator systemMaintenanceOperator = targetCoreRealm.getSystemMaintenanceOperator();
+            if(systemMaintenanceOperator != null){
+                List<EntityStatisticsInfo> realtimeConceptionList = targetCoreRealm.getConceptionEntitiesStatistics();
+                List<EntityStatisticsInfo> realtimeRelationList = targetCoreRealm.getRelationEntitiesStatistics();
 
+                Map<String, List<AttributeSystemInfo>> conceptionKindsAttributesSystemInfo = systemMaintenanceOperator.getAllConceptionKindsAttributesSystemInfo();
+                String nodePropertiesContent = getTypePropertiesContent("Node properties:\n",realtimeConceptionList,conceptionKindsAttributesSystemInfo);
 
-       } catch (CoreRealmServiceEntityExploreException e) {
+                Map<String, List<AttributeSystemInfo>> relationKindsAttributesSystemInfo = systemMaintenanceOperator.getAllRelationKindsAttributesSystemInfo();
+                String relationPropertiesContent = getTypePropertiesContent("Relationship properties:\n",realtimeRelationList,relationKindsAttributesSystemInfo);
+
+                Set<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet = systemMaintenanceOperator.getPeriodicCollectedConceptionKindCorrelationRuntimeInfo();
+                if(conceptionKindCorrelationInfoSet == null || conceptionKindCorrelationInfoSet.isEmpty()){
+                    conceptionKindCorrelationInfoSet = systemMaintenanceOperator.getConceptionKindCorrelationRuntimeInfo(0.01f);
+                    systemMaintenanceOperator.executeConceptionKindCorrelationRuntimeInfoPeriodicCollect(7200);
+                }
+                String relationsContent = getRelationshipsContent(conceptionKindCorrelationInfoSet);
+                graphSchema = nodePropertiesContent +"\n"+relationPropertiesContent+"\n"+relationsContent;
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
            throw new RuntimeException(e);
-       }
-
-
-       SystemMaintenanceOperator systemMaintenanceOperator = targetCoreRealm.getSystemMaintenanceOperator();
-        if(systemMaintenanceOperator != null){
-
-
-
-
-
-
-            Map<String, List<AttributeSystemInfo>> conceptionKindsAttributesSystemInfo = systemMaintenanceOperator.getAllConceptionKindsAttributesSystemInfo();
-            //System.out.println(conceptionKindsAttributesSystemInfo);
-            String nodePropertiesContent = getNodePropertiesContent(conceptionKindsAttributesSystemInfo);
-            System.out.println("--------------");
-            System.out.println(nodePropertiesContent);
-            System.out.println("--------------");
-
-
-            Map<String, List<AttributeSystemInfo>> relationKindsAttributesSystemInfo = systemMaintenanceOperator.getAllRelationKindsAttributesSystemInfo();
-            System.out.println("++++++++++++++++++++");
-            System.out.println("++++++++++++++++++++");
-            System.out.println(relationKindsAttributesSystemInfo);
-            System.out.println("++++++++++++++++++++");
-            System.out.println("++++++++++++++++++++");
+        } catch (CoreRealmServiceRuntimeException e) {
+            throw new RuntimeException(e);
         }
-
-       return graphSchema;
+        return graphSchema;
    }
 
-   private static String getNodePropertiesContent(Map<String, List<AttributeSystemInfo>> conceptionKindsAttributesSystemInfo){
-        StringBuilder nodePropertiesSb = new StringBuilder();
-        nodePropertiesSb.append("Node properties:\n");
-        if(conceptionKindsAttributesSystemInfo != null){
-            Set<String> conceptionKindNameSet = conceptionKindsAttributesSystemInfo.keySet();
-            for(String conceptionKindName : conceptionKindNameSet){
-                nodePropertiesSb.append(conceptionKindName + " {");
-                List<AttributeSystemInfo> attributeSystemInfoList = conceptionKindsAttributesSystemInfo.get(conceptionKindName);
-                for(AttributeSystemInfo attributeSystemInfo : attributeSystemInfoList){
-                    nodePropertiesSb.append(attributeSystemInfo.getAttributeName() + ": " + attributeSystemInfo.getDataType() + ",");
+    private static String getTypePropertiesContent(String titleText,List<EntityStatisticsInfo> kindEntityStatisticsInfoList,Map<String, List<AttributeSystemInfo>> kindsAttributesSystemInfo){
+        StringBuilder typePropertiesSb = new StringBuilder();
+        typePropertiesSb.append(titleText);
+        if(kindEntityStatisticsInfoList != null){
+            for(EntityStatisticsInfo currentEntityStatisticsInfo:kindEntityStatisticsInfoList){
+                String kindName = currentEntityStatisticsInfo.getEntityKindName();
+                typePropertiesSb.append(kindName + " {");
+                if(kindsAttributesSystemInfo.containsKey(kindName)){
+                    List<AttributeSystemInfo> attributeSystemInfoList = kindsAttributesSystemInfo.get(kindName);
+                    for(AttributeSystemInfo attributeSystemInfo : attributeSystemInfoList){
+                        typePropertiesSb.append(attributeSystemInfo.getAttributeName() + ": " + attributeSystemInfo.getDataType() + ",");
+                    }
                 }
-                nodePropertiesSb.deleteCharAt(nodePropertiesSb.length() - 1);
-                nodePropertiesSb.append("}\n");
+                if(typePropertiesSb.charAt(typePropertiesSb.length() - 1) == ','){
+                    typePropertiesSb.deleteCharAt(typePropertiesSb.length() - 1);
+                }
+                typePropertiesSb.append("}\n");
             }
         }
-        return nodePropertiesSb.toString();
-   }
+        return typePropertiesSb.toString();
+    }
+
+    private static String getRelationshipsContent(Set<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet){
+        StringBuilder relationshipInfoSb = new StringBuilder();
+        relationshipInfoSb.append("Relationships:\n");
+
+        if(conceptionKindCorrelationInfoSet != null && !conceptionKindCorrelationInfoSet.isEmpty()){
+            for(ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo:conceptionKindCorrelationInfoSet){
+                String currentRelationInfoText = "(:"+currentConceptionKindCorrelationInfo.getSourceConceptionKindName()+")-[:"+currentConceptionKindCorrelationInfo.getRelationKindName()+"]->(:"+currentConceptionKindCorrelationInfo.getTargetConceptionKindName()+")\n";
+                relationshipInfoSb.append(currentRelationInfoText);
+            }
+        }
+        return relationshipInfoSb.toString();
+    }
 }
