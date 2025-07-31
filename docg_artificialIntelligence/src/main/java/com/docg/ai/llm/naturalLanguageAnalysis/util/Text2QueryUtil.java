@@ -102,7 +102,7 @@ public class Text2QueryUtil {
         if(kindEntityStatisticsInfoList != null){
             for(EntityStatisticsInfo currentEntityStatisticsInfo:kindEntityStatisticsInfoList){
                 String kindName = currentEntityStatisticsInfo.getEntityKindName();
-                typePropertiesSb.append(kindName + " {");
+                typePropertiesSb.append("`" + kindName + "`"+" {");
                 if(kindsAttributesSystemInfo.containsKey(kindName)){
                     List<AttributeSystemInfo> attributeSystemInfoList = kindsAttributesSystemInfo.get(kindName);
                     for(AttributeSystemInfo attributeSystemInfo : attributeSystemInfoList){
@@ -124,7 +124,7 @@ public class Text2QueryUtil {
 
         if(conceptionKindCorrelationInfoSet != null && !conceptionKindCorrelationInfoSet.isEmpty()){
             for(ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo:conceptionKindCorrelationInfoSet){
-                String currentRelationInfoText = "(:"+currentConceptionKindCorrelationInfo.getSourceConceptionKindName()+")-[:"+currentConceptionKindCorrelationInfo.getRelationKindName()+"]->(:"+currentConceptionKindCorrelationInfo.getTargetConceptionKindName()+")\n";
+                String currentRelationInfoText = "(:"+"`"+currentConceptionKindCorrelationInfo.getSourceConceptionKindName()+"`"+")-[:"+"`"+currentConceptionKindCorrelationInfo.getRelationKindName()+"`"+"]->(:"+"`"+currentConceptionKindCorrelationInfo.getTargetConceptionKindName()+"`"+")\n";
                 relationshipInfoSb.append(currentRelationInfoText);
             }
         }
