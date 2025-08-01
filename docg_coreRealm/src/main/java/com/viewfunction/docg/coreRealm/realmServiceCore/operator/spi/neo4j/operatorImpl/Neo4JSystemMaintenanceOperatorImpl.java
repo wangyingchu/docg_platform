@@ -985,6 +985,12 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         return Set.of();
     }
 
+
+    @Override
+    public List<Map<String, Integer>> getPeriodicTasksInfo() {
+        return List.of();
+    }
+
     @Override
     public Set<String> getRealtimeAttributesStatistics() {
         String cql ="CALL db.propertyKeys()";
