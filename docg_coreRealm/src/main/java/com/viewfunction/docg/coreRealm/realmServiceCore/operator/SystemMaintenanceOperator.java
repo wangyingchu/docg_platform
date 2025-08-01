@@ -170,7 +170,7 @@ public interface SystemMaintenanceOperator {
      *
      * @return 所有运行中的周期性任务名称与任务运行时间间隔，时间单位为秒
      */
-    public List<Map<String,Integer>> getPeriodicTasksInfo();
+    public Map<String,Integer> getPeriodicTasksInfo();
 
     /**
      * 查询系统中实时存在的所有属性名称，其范围也包含不在系统属性类型(AttributeKind)定义管理之外的其他所有属性

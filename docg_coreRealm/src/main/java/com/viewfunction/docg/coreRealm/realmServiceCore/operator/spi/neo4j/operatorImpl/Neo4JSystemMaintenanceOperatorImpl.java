@@ -987,8 +987,20 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
 
 
     @Override
-    public List<Map<String, Integer>> getPeriodicTasksInfo() {
-        return List.of();
+    public Map<String, Integer> getPeriodicTasksInfo() {
+        Map<String, Integer> periodicTaskInfoMap = new HashMap<>();
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            Map<String,PeriodicCollectTaskVO> currentRunningPeriodicTasksInfo = getPeriodicCollectTasks(workingGraphOperationExecutor);
+            if (!currentRunningPeriodicTasksInfo.isEmpty()) {
+                for (Map.Entry<String, PeriodicCollectTaskVO> entry : currentRunningPeriodicTasksInfo.entrySet()){
+                    periodicTaskInfoMap.put(entry.getKey(),entry.getValue().getRate());
+                }
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return periodicTaskInfoMap;
     }
 
     @Override
