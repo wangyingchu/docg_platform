@@ -858,12 +858,15 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         "WITH\n" +
         " apoc.coll.sort(labels(a)) AS startLabels,\n" +
         " type(r) AS relationshipType,\n" +
-        " apoc.coll.sort(labels(b)) AS endLabels\n" +
+        " apoc.coll.sort(labels(b)) AS endLabels,\n" +
+        " count(*) * "+samplingRateMultiple+" AS connectionCount\n" +
+        "CREATE (newInfo:"+RealmConstant.ConceptionKindCorrelationInfoStaticClass+" {startLabels: startLabels, relationshipType: relationshipType,endLabels:endLabels,connectionCount:connectionCount}) \n" +
+        "SET newInfo.createDate = datetime({timezone: apoc.date.systemTimezone()}) \n"+
         "RETURN\n" +
         " startLabels,\n" +
         " relationshipType,\n" +
         " endLabels,\n" +
-        " count(*) * "+samplingRateMultiple+" AS connectionCount\n" +
+        " connectionCount\n" +
         "ORDER BY connectionCount DESC";
         logger.debug("Generated Cypher Statement: {}", cql);
 
@@ -879,7 +882,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
-            Object queryRes = workingGraphOperationExecutor.executeRead(statisticsDataTransformer,cql);
+            Object queryRes = workingGraphOperationExecutor.executeWrite(statisticsDataTransformer,cql);
             if(queryRes != null){
                 return (Set<ConceptionKindCorrelationInfo>)queryRes;
             }
@@ -1574,8 +1577,9 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         /*
         https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.repeat/
         */
-        String cql = "MATCH (n:"+RealmConstant.ConceptionKindCorrelationInfoStaticClass+") DELETE n\n"+
-                "WITH n as oldStatics\n" +
+        String cql =
+                //"OPTIONAL MATCH (n:"+RealmConstant.ConceptionKindCorrelationInfoStaticClass+") DELETE n\n"+
+                //"WITH n as oldStatics\n" +
                 "MATCH (a)-[r]->(b)\n" +
                 "WITH\n" +
                 " apoc.coll.sort(labels(a)) AS startLabels,\n" +
@@ -1587,7 +1591,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                 " endLabels,\n" +
                 " count(*) AS connectionCount\n" +
                 "CREATE (newInfo:"+RealmConstant.ConceptionKindCorrelationInfoStaticClass+" {startLabels: startLabels, relationshipType: relationshipType,endLabels:endLabels,connectionCount:connectionCount}) \n" +
-                "SET newInfo.createDate = localdatetime()";
+                "SET newInfo.createDate = datetime({timezone: apoc.date.systemTimezone()})";
 
         String cqlFinal = "CALL apoc.periodic.repeat(\n" +
                 "\""+RealmConstant.ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask+"\",\n" +
