@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -825,7 +826,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
     }
 
     @Override
-    public Set<ConceptionKindCorrelationInfo> getConceptionKindCorrelationRuntimeInfo(float samplingRate) throws CoreRealmServiceRuntimeException {
+    public List<ConceptionKindCorrelationInfo> getConceptionKindCorrelationRuntimeInfo(float samplingRate) throws CoreRealmServiceRuntimeException {
         if(samplingRate<=0 || samplingRate>1){
             CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
             e.setCauseMessage("Invalid sampling rate, should be in the range of (0 to 1].");
@@ -870,11 +871,11 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         "ORDER BY connectionCount DESC";
         logger.debug("Generated Cypher Statement: {}", cql);
 
-        Set<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet = new HashSet<>();
+        List<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet = new ArrayList<>();
 
-        DataTransformer<Set<ConceptionKindCorrelationInfo>> statisticsDataTransformer = new DataTransformer<>() {
+        DataTransformer<List<ConceptionKindCorrelationInfo>> statisticsDataTransformer = new DataTransformer<>() {
             @Override
-            public Set<ConceptionKindCorrelationInfo> transformResult(Result result) {
+            public List<ConceptionKindCorrelationInfo> transformResult(Result result) {
                 fillConceptionKindCorrelationInfoSet(result,conceptionKindCorrelationInfoSet);
                 return conceptionKindCorrelationInfoSet;
             }
@@ -884,13 +885,13 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         try{
             Object queryRes = workingGraphOperationExecutor.executeWrite(statisticsDataTransformer,cql);
             if(queryRes != null){
-                return (Set<ConceptionKindCorrelationInfo>)queryRes;
+                return (List<ConceptionKindCorrelationInfo>)queryRes;
             }
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
 
-        return Set.of();
+        return List.of();
     }
 
     @Override
@@ -961,16 +962,16 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
     }
 
     @Override
-    public Set<ConceptionKindCorrelationInfo> getPeriodicCollectedConceptionKindCorrelationRuntimeInfo() {
+    public List<ConceptionKindCorrelationInfo> getPeriodicCollectedConceptionKindCorrelationRuntimeInfo() {
         String cql = "MATCH (n:"+RealmConstant.ConceptionKindCorrelationInfoStaticClass+") RETURN " +
-                "n.startLabels AS startLabels,n.endLabels AS endLabels,n.relationshipType AS relationshipType,n.connectionCount AS connectionCount " +
-                "LIMIT 100000000 ";
+                "n.startLabels AS startLabels,n.endLabels AS endLabels,n.relationshipType AS relationshipType,n.connectionCount AS connectionCount, n.createDate As createDate " +
+                "ORDER BY n.createDate DESC LIMIT 100000000 ";
         logger.debug("Generated Cypher Statement: {}", cql);
 
-        Set<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet = new HashSet<>();
-        DataTransformer<Set<ConceptionKindCorrelationInfo>> statisticsDataTransformer = new DataTransformer<>() {
+        List<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet = new ArrayList<>();
+        DataTransformer<List<ConceptionKindCorrelationInfo>> statisticsDataTransformer = new DataTransformer<>() {
             @Override
-            public Set<ConceptionKindCorrelationInfo> transformResult(Result result) {
+            public List<ConceptionKindCorrelationInfo> transformResult(Result result) {
                 fillConceptionKindCorrelationInfoSet(result,conceptionKindCorrelationInfoSet);
                 return conceptionKindCorrelationInfoSet;
             }
@@ -980,12 +981,12 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         try{
             Object queryRes = workingGraphOperationExecutor.executeRead(statisticsDataTransformer,cql);
             if(queryRes != null){
-                return (Set<ConceptionKindCorrelationInfo>)queryRes;
+                return (List<ConceptionKindCorrelationInfo>)queryRes;
             }
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
-        return Set.of();
+        return List.of();
     }
 
 
@@ -1649,13 +1650,15 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         return periodicCollectTaskMap;
     }
 
-    private void fillConceptionKindCorrelationInfoSet(Result result,Set<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet){
+    private void fillConceptionKindCorrelationInfoSet(Result result,List<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet){
         while(result.hasNext()){
             Record nodeRecord = result.next();
             List<Object> startKindsList = nodeRecord.get("startLabels").asList();
             List<Object> endKindsList = nodeRecord.get("endLabels").asList();
             String relationKindName = nodeRecord.get("relationshipType").asString();
             Long connectionCount = nodeRecord.get("connectionCount").asLong();
+            ZonedDateTime createDate = nodeRecord.get("createDate").asZonedDateTime();
+
             for(Object startkindNameObj:startKindsList){
                 for(Object endKindNameObj:endKindsList){
                     if(startkindNameObj.equals(RealmConstant.GeospatialScaleEntityClass)||endKindNameObj.equals(RealmConstant.GeospatialScaleEntityClass)||
@@ -1671,7 +1674,8 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                                 new ConceptionKindCorrelationInfo(
                                         startkindNameObj.toString(),
                                         endKindNameObj.toString(),
-                                        relationKindName,connectionCount);
+                                        relationKindName,connectionCount,
+                                        createDate);
                         conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
                     }
                 }

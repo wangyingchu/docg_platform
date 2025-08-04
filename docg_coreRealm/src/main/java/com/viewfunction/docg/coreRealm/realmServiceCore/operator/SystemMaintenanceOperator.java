@@ -140,7 +140,7 @@ public interface SystemMaintenanceOperator {
      *
      * @return 所有概念类型之间的关联关系信息集合
      */
-    public Set<ConceptionKindCorrelationInfo> getConceptionKindCorrelationRuntimeInfo(float samplingRate) throws CoreRealmServiceRuntimeException;
+    public List<ConceptionKindCorrelationInfo> getConceptionKindCorrelationRuntimeInfo(float samplingRate) throws CoreRealmServiceRuntimeException;
 
     /**
      * 创建周期性任务，获取系统中所有概念类型实体与其他概念类型实体之间的实时关联关系信息并持久化存储,此方法实时计算各个概念类型之间关系实体的真实数量
@@ -163,7 +163,7 @@ public interface SystemMaintenanceOperator {
      *
      * @return 所有概念类型之间的关联关系信息集合
      */
-    public Set<ConceptionKindCorrelationInfo> getPeriodicCollectedConceptionKindCorrelationRuntimeInfo();
+    public List<ConceptionKindCorrelationInfo> getPeriodicCollectedConceptionKindCorrelationRuntimeInfo();
 
     /**
      * 查询当前系统中运行的所有周期性任务信息列表

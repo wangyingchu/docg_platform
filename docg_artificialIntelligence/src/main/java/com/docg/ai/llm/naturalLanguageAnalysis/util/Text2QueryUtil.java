@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class Text2QueryUtil {
     private static Logger logger = LoggerFactory.getLogger(Text2QueryUtil.class);
@@ -80,7 +79,7 @@ public class Text2QueryUtil {
                 Map<String, List<AttributeSystemInfo>> relationKindsAttributesSystemInfo = systemMaintenanceOperator.getAllRelationKindsAttributesSystemInfo();
                 String relationPropertiesContent = getTypePropertiesContent("Relationship properties:\n",realtimeRelationList,relationKindsAttributesSystemInfo);
 
-                Set<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet = systemMaintenanceOperator.getPeriodicCollectedConceptionKindCorrelationRuntimeInfo();
+                List<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet = systemMaintenanceOperator.getPeriodicCollectedConceptionKindCorrelationRuntimeInfo();
                 if(conceptionKindCorrelationInfoSet == null || conceptionKindCorrelationInfoSet.isEmpty()){
                     conceptionKindCorrelationInfoSet = systemMaintenanceOperator.getConceptionKindCorrelationRuntimeInfo(0.01f);
                     systemMaintenanceOperator.executeConceptionKindCorrelationRuntimeInfoPeriodicCollect(7200);
@@ -118,7 +117,7 @@ public class Text2QueryUtil {
         return typePropertiesSb.toString();
     }
 
-    private static String getRelationshipsContent(Set<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet){
+    private static String getRelationshipsContent(List<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet){
         StringBuilder relationshipInfoSb = new StringBuilder();
         relationshipInfoSb.append("Relationships:\n");
 
