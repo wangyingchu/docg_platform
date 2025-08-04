@@ -79,7 +79,7 @@ public class Text2QueryUtil {
                 Map<String, List<AttributeSystemInfo>> relationKindsAttributesSystemInfo = systemMaintenanceOperator.getAllRelationKindsAttributesSystemInfo();
                 String relationPropertiesContent = getTypePropertiesContent("Relationship properties:\n",realtimeRelationList,relationKindsAttributesSystemInfo);
 
-                List<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet = systemMaintenanceOperator.getPeriodicCollectedConceptionKindCorrelationRuntimeInfo();
+                List<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet = systemMaintenanceOperator.getPeriodicCollectedConceptionKindCorrelationRuntimeInfo(SystemMaintenanceOperator.PeriodicCollectedInfoRetrieveLogic.LATEST);
                 if(conceptionKindCorrelationInfoSet == null || conceptionKindCorrelationInfoSet.isEmpty()){
                     conceptionKindCorrelationInfoSet = systemMaintenanceOperator.getConceptionKindCorrelationRuntimeInfo(0.01f);
                     systemMaintenanceOperator.executeConceptionKindCorrelationRuntimeInfoPeriodicCollect(7200);

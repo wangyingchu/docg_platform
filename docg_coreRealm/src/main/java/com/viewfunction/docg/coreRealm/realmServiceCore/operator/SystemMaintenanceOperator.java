@@ -13,6 +13,14 @@ public interface SystemMaintenanceOperator {
     //听风雪喧嚷 看流星在飞翔 我的心向我呼唤 去动荡的远方
 
     /**
+     * 周期性采集数据的获取方式
+     * ALL : 获取全部数据。
+     * LATEST : 获取最新采集的一组数据。
+     * OLDEST : 获取最早采集的一组数据。
+     */
+    enum PeriodicCollectedInfoRetrieveLogic {ALL, LATEST,OLDEST}
+
+    /**
      * 查询并返回当前领域模型所属数据服务系统的事实数据状态快照信息
      *
      * @return 数据状态实时快照信息
@@ -161,9 +169,11 @@ public interface SystemMaintenanceOperator {
     /**
      * 获取周期性任务中采集的系统中所有概念类型实体与其他概念类型实体之间的实时关联关系信息,此方法返回最近一次采集时的计算结果
      *
+     *  @param periodicCollectedInfoRetrieveLogic PeriodicCollectedInfoRetrieveLogic，数据采集方式，如输入 null 则按照 PeriodicCollectedInfoRetrieveLogic.ALL 逻辑处理
+     *
      * @return 所有概念类型之间的关联关系信息集合
      */
-    public List<ConceptionKindCorrelationInfo> getPeriodicCollectedConceptionKindCorrelationRuntimeInfo();
+    public List<ConceptionKindCorrelationInfo> getPeriodicCollectedConceptionKindCorrelationRuntimeInfo(PeriodicCollectedInfoRetrieveLogic periodicCollectedInfoRetrieveLogic);
 
     /**
      * 查询当前系统中运行的所有周期性任务信息列表

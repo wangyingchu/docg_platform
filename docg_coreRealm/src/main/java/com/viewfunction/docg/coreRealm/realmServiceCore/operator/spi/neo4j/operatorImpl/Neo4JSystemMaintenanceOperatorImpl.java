@@ -876,7 +876,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         DataTransformer<List<ConceptionKindCorrelationInfo>> statisticsDataTransformer = new DataTransformer<>() {
             @Override
             public List<ConceptionKindCorrelationInfo> transformResult(Result result) {
-                fillConceptionKindCorrelationInfoSet(result,conceptionKindCorrelationInfoSet);
+                fillConceptionKindCorrelationInfoSet(result,conceptionKindCorrelationInfoSet,PeriodicCollectedInfoRetrieveLogic.ALL);
                 return conceptionKindCorrelationInfoSet;
             }
         };
@@ -962,17 +962,17 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
     }
 
     @Override
-    public List<ConceptionKindCorrelationInfo> getPeriodicCollectedConceptionKindCorrelationRuntimeInfo() {
+    public List<ConceptionKindCorrelationInfo> getPeriodicCollectedConceptionKindCorrelationRuntimeInfo(PeriodicCollectedInfoRetrieveLogic periodicCollectedInfoRetrieveLogic) {
         String cql = "MATCH (n:"+RealmConstant.ConceptionKindCorrelationInfoStaticClass+") RETURN " +
                 "n.startLabels AS startLabels,n.endLabels AS endLabels,n.relationshipType AS relationshipType,n.connectionCount AS connectionCount, n.createDate As createDate " +
                 "ORDER BY n.createDate DESC LIMIT 100000000 ";
         logger.debug("Generated Cypher Statement: {}", cql);
-
+        PeriodicCollectedInfoRetrieveLogic realPeriodicCollectedInfoRetrieveLogic = periodicCollectedInfoRetrieveLogic != null ? periodicCollectedInfoRetrieveLogic : PeriodicCollectedInfoRetrieveLogic.ALL;
         List<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet = new ArrayList<>();
         DataTransformer<List<ConceptionKindCorrelationInfo>> statisticsDataTransformer = new DataTransformer<>() {
             @Override
             public List<ConceptionKindCorrelationInfo> transformResult(Result result) {
-                fillConceptionKindCorrelationInfoSet(result,conceptionKindCorrelationInfoSet);
+                fillConceptionKindCorrelationInfoSet(result,conceptionKindCorrelationInfoSet,realPeriodicCollectedInfoRetrieveLogic);
                 return conceptionKindCorrelationInfoSet;
             }
         };
@@ -1650,7 +1650,8 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         return periodicCollectTaskMap;
     }
 
-    private void fillConceptionKindCorrelationInfoSet(Result result,List<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet){
+    private void fillConceptionKindCorrelationInfoSet(Result result,List<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoList,PeriodicCollectedInfoRetrieveLogic periodicCollectedInfoRetrieveLogic){
+        List<ConceptionKindCorrelationInfo> tempConceptionKindCorrelationInfoList = new ArrayList<>();
         while(result.hasNext()){
             Record nodeRecord = result.next();
             List<Object> startKindsList = nodeRecord.get("startLabels").asList();
@@ -1676,10 +1677,41 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                                         endKindNameObj.toString(),
                                         relationKindName,connectionCount,
                                         createDate);
-                        conceptionKindCorrelationInfoSet.add(currentConceptionKindCorrelationInfo);
+                        tempConceptionKindCorrelationInfoList.add(currentConceptionKindCorrelationInfo);
                     }
                 }
             }
+        }
+
+        switch(periodicCollectedInfoRetrieveLogic){
+            case ALL :
+                conceptionKindCorrelationInfoList.addAll(tempConceptionKindCorrelationInfoList);
+                break;
+            case LATEST:
+                ZonedDateTime flagZonedDateTime = tempConceptionKindCorrelationInfoList.get(0).getCreateDate();
+                for(ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo:tempConceptionKindCorrelationInfoList){
+                    if(currentConceptionKindCorrelationInfo.getCreateDate() != null){
+                        if(currentConceptionKindCorrelationInfo.getCreateDate().equals(flagZonedDateTime)){
+                            conceptionKindCorrelationInfoList.add(currentConceptionKindCorrelationInfo);
+                        }else{
+                            break;
+                        }
+                    }
+                }
+                break;
+            case OLDEST:
+                Collections.reverse(tempConceptionKindCorrelationInfoList);
+                ZonedDateTime flagZonedDateTime2 = tempConceptionKindCorrelationInfoList.get(0).getCreateDate();
+                for(ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo:tempConceptionKindCorrelationInfoList){
+                    if(currentConceptionKindCorrelationInfo.getCreateDate() != null){
+                        if(currentConceptionKindCorrelationInfo.getCreateDate().equals(flagZonedDateTime2)){
+                            conceptionKindCorrelationInfoList.add(currentConceptionKindCorrelationInfo);
+                        }else{
+                            break;
+                        }
+                    }
+                }
+                break;
         }
     }
 }
