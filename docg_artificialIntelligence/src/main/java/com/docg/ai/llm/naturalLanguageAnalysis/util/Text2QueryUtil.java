@@ -14,6 +14,7 @@ import dev.langchain4j.model.openai.OpenAiChatModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -84,6 +85,13 @@ public class Text2QueryUtil {
                 List<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoList = systemMaintenanceOperator.getPeriodicCollectedConceptionKindCorrelationRuntimeInfo(SystemMaintenanceOperator.PeriodicCollectedInfoRetrieveLogic.LATEST);
                 if(conceptionKindCorrelationInfoList == null || conceptionKindCorrelationInfoList.isEmpty()){
                     conceptionKindCorrelationInfoList = systemMaintenanceOperator.getConceptionKindCorrelationRuntimeInfo(1);
+                }else{
+                    ZonedDateTime _latestRecordDatetime = conceptionKindCorrelationInfoList.get(0).getCreateDate();
+                    ZonedDateTime currentDateTime = ZonedDateTime.now();
+                    ZonedDateTime oneDayBeforeCurrent = currentDateTime.minusDays(1);
+                    if(_latestRecordDatetime.isBefore(oneDayBeforeCurrent)){
+                        conceptionKindCorrelationInfoList = systemMaintenanceOperator.getConceptionKindCorrelationRuntimeInfo(1);
+                    }
                 }
 
                 String relationsContent = getRelationshipsContent(conceptionKindCorrelationInfoList);

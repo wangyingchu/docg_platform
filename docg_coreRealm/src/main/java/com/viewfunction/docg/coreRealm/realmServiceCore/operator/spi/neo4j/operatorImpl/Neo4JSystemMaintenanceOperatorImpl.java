@@ -867,7 +867,8 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         " startLabels,\n" +
         " relationshipType,\n" +
         " endLabels,\n" +
-        " connectionCount\n" +
+        " connectionCount,\n" +
+        " newInfo.createDate AS createDate\n" +
         "ORDER BY connectionCount DESC";
         logger.debug("Generated Cypher Statement: {}", cql);
 
@@ -1599,7 +1600,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                 ");";
         logger.debug("Generated Cypher Statement: {}", cqlFinal);
 
-        DataTransformer<Boolean> operationDataTransformer2 = new DataTransformer<>(){
+        DataTransformer<Boolean> operationDataTransformer = new DataTransformer<>(){
             @Override
             public Boolean transformResult(Result result) {
                 if(result.hasNext()){
@@ -1613,7 +1614,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                 return false;
             }
         };
-        Object response = workingGraphOperationExecutor.executeWrite(operationDataTransformer2,cqlFinal);
+        Object response = workingGraphOperationExecutor.executeWrite(operationDataTransformer,cqlFinal);
         if(response!=null){
             return (Boolean)response;
         }
