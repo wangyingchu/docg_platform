@@ -47,6 +47,8 @@ public class Text2QueryUtil {
 
        String answer = model.chat(prompt);
 
+       answer=answer.replace("```cypher","");
+       answer=answer.replace("```","");
        logger.debug("Generated Cypher Statement: [{}] For Question: [{}]", answer, question);
        return answer;
    }
@@ -79,12 +81,12 @@ public class Text2QueryUtil {
                 Map<String, List<AttributeSystemInfo>> relationKindsAttributesSystemInfo = systemMaintenanceOperator.getAllRelationKindsAttributesSystemInfo();
                 String relationPropertiesContent = getTypePropertiesContent("Relationship properties:\n",realtimeRelationList,relationKindsAttributesSystemInfo);
 
-                List<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoSet = systemMaintenanceOperator.getPeriodicCollectedConceptionKindCorrelationRuntimeInfo(SystemMaintenanceOperator.PeriodicCollectedInfoRetrieveLogic.LATEST);
-                if(conceptionKindCorrelationInfoSet == null || conceptionKindCorrelationInfoSet.isEmpty()){
-                    conceptionKindCorrelationInfoSet = systemMaintenanceOperator.getConceptionKindCorrelationRuntimeInfo(0.01f);
-                    systemMaintenanceOperator.executeConceptionKindCorrelationRuntimeInfoPeriodicCollect(7200);
+                List<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoList = systemMaintenanceOperator.getPeriodicCollectedConceptionKindCorrelationRuntimeInfo(SystemMaintenanceOperator.PeriodicCollectedInfoRetrieveLogic.LATEST);
+                if(conceptionKindCorrelationInfoList == null || conceptionKindCorrelationInfoList.isEmpty()){
+                    conceptionKindCorrelationInfoList = systemMaintenanceOperator.getConceptionKindCorrelationRuntimeInfo(1);
                 }
-                String relationsContent = getRelationshipsContent(conceptionKindCorrelationInfoSet);
+
+                String relationsContent = getRelationshipsContent(conceptionKindCorrelationInfoList);
                 graphSchema = nodePropertiesContent +"\n"+relationPropertiesContent+"\n"+relationsContent;
             }
         } catch (CoreRealmServiceEntityExploreException e) {

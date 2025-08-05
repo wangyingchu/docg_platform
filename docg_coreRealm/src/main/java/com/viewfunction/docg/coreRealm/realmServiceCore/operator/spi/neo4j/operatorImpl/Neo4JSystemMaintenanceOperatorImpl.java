@@ -1579,8 +1579,6 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.repeat/
         */
         String cql =
-                //"OPTIONAL MATCH (n:"+RealmConstant.ConceptionKindCorrelationInfoStaticClass+") DELETE n\n"+
-                //"WITH n as oldStatics\n" +
                 "MATCH (a)-[r]->(b)\n" +
                 "WITH\n" +
                 " apoc.coll.sort(labels(a)) AS startLabels,\n" +
@@ -1683,35 +1681,37 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
             }
         }
 
-        switch(periodicCollectedInfoRetrieveLogic){
-            case ALL :
-                conceptionKindCorrelationInfoList.addAll(tempConceptionKindCorrelationInfoList);
-                break;
-            case LATEST:
-                ZonedDateTime flagZonedDateTime = tempConceptionKindCorrelationInfoList.get(0).getCreateDate();
-                for(ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo:tempConceptionKindCorrelationInfoList){
-                    if(currentConceptionKindCorrelationInfo.getCreateDate() != null){
-                        if(currentConceptionKindCorrelationInfo.getCreateDate().equals(flagZonedDateTime)){
-                            conceptionKindCorrelationInfoList.add(currentConceptionKindCorrelationInfo);
-                        }else{
-                            break;
+        if(!tempConceptionKindCorrelationInfoList.isEmpty()){
+            switch(periodicCollectedInfoRetrieveLogic){
+                case ALL :
+                    conceptionKindCorrelationInfoList.addAll(tempConceptionKindCorrelationInfoList);
+                    break;
+                case LATEST:
+                    ZonedDateTime flagZonedDateTime = tempConceptionKindCorrelationInfoList.get(0).getCreateDate();
+                    for(ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo:tempConceptionKindCorrelationInfoList){
+                        if(currentConceptionKindCorrelationInfo.getCreateDate() != null){
+                            if(currentConceptionKindCorrelationInfo.getCreateDate().equals(flagZonedDateTime)){
+                                conceptionKindCorrelationInfoList.add(currentConceptionKindCorrelationInfo);
+                            }else{
+                                break;
+                            }
                         }
                     }
-                }
-                break;
-            case OLDEST:
-                Collections.reverse(tempConceptionKindCorrelationInfoList);
-                ZonedDateTime flagZonedDateTime2 = tempConceptionKindCorrelationInfoList.get(0).getCreateDate();
-                for(ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo:tempConceptionKindCorrelationInfoList){
-                    if(currentConceptionKindCorrelationInfo.getCreateDate() != null){
-                        if(currentConceptionKindCorrelationInfo.getCreateDate().equals(flagZonedDateTime2)){
-                            conceptionKindCorrelationInfoList.add(currentConceptionKindCorrelationInfo);
-                        }else{
-                            break;
+                    break;
+                case OLDEST:
+                    Collections.reverse(tempConceptionKindCorrelationInfoList);
+                    ZonedDateTime flagZonedDateTime2 = tempConceptionKindCorrelationInfoList.get(0).getCreateDate();
+                    for(ConceptionKindCorrelationInfo currentConceptionKindCorrelationInfo:tempConceptionKindCorrelationInfoList){
+                        if(currentConceptionKindCorrelationInfo.getCreateDate() != null){
+                            if(currentConceptionKindCorrelationInfo.getCreateDate().equals(flagZonedDateTime2)){
+                                conceptionKindCorrelationInfoList.add(currentConceptionKindCorrelationInfo);
+                            }else{
+                                break;
+                            }
                         }
                     }
-                }
-                break;
+                    break;
+            }
         }
     }
 }
