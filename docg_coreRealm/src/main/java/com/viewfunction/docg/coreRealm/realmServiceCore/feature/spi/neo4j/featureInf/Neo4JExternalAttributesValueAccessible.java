@@ -20,6 +20,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
@@ -39,6 +40,8 @@ public interface Neo4JExternalAttributesValueAccessible extends ExternalAttribut
                 String cypherProcedureString1 = "MATCH (targetNode) WHERE id(targetNode) = " + this.getEntityUID()+"\n"+
                         "RETURN targetNode as "+CypherBuilder.operationResultName;
 
+                List<ConceptionKind> innerConceptionKindList = new ArrayList<>();
+
                 DataTransformer<List<String>> dataTransformer1 = new DataTransformer<List<String>>() {
                     @Override
                     public List<String> transformResult(Result result) {
@@ -48,6 +51,19 @@ public interface Neo4JExternalAttributesValueAccessible extends ExternalAttribut
                             if(nodeRecord != null){
                                 Node resultNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
                                 List<String> allConceptionKindNames = Lists.newArrayList(resultNode.labels());
+                                if(allConceptionKindNames.contains(RealmConstant.ConceptionKindClass)){
+                                    long nodeUID = resultNode.id();
+                                    String conceptionKindName = RealmConstant.ConceptionKindClass;
+                                    String conceptionKindDesc = null;
+                                    if(resultNode.get(RealmConstant._DescProperty) != null){
+                                        conceptionKindDesc = resultNode.get(RealmConstant._DescProperty).asString();
+                                    }
+                                    String conceptionKindUID = ""+nodeUID;
+                                    Neo4JConceptionKindImpl neo4JConceptionKindImpl =
+                                            new Neo4JConceptionKindImpl(null,conceptionKindName,conceptionKindDesc,conceptionKindUID);
+                                    //neo4JConceptionKindImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+                                    innerConceptionKindList.add(neo4JConceptionKindImpl);
+                                }
                                 return allConceptionKindNames;
                             }
                         }
@@ -57,20 +73,25 @@ public interface Neo4JExternalAttributesValueAccessible extends ExternalAttribut
                 Object conceptionKindNameListObj = workingGraphOperationExecutor.executeRead(dataTransformer1,cypherProcedureString1);
                 List<String> conceptionKindNameList = conceptionKindNameListObj!= null ? (List<String>)conceptionKindNameListObj : null;
 
-                String conceptionKindNameListString = "";
-                for(int i=0;i<conceptionKindNameList.size();i++){
-                    String currentString = conceptionKindNameList.get(i);
-                    conceptionKindNameListString = conceptionKindNameListString +"\""+currentString+"\"";
-                    if(i!= conceptionKindNameList.size()-1){
-                        conceptionKindNameListString = conceptionKindNameListString +",";
+                List<ConceptionKind> conceptionKindList;
+                if(!innerConceptionKindList.isEmpty()){
+                    conceptionKindList = innerConceptionKindList;
+                }else{
+                    String conceptionKindNameListString = "";
+                    for(int i=0;i<conceptionKindNameList.size();i++){
+                        String currentString = conceptionKindNameList.get(i);
+                        conceptionKindNameListString = conceptionKindNameListString +"\""+currentString+"\"";
+                        if(i!= conceptionKindNameList.size()-1){
+                            conceptionKindNameListString = conceptionKindNameListString +",";
+                        }
                     }
+                    String finalConceptionKindNamesStr = "["+conceptionKindNameListString+"]";
+                    String cypherProcedureString2 = "MATCH (targetNodes:"+ RealmConstant.ConceptionKindClass+") WHERE targetNodes.name IN " + finalConceptionKindNamesStr+"\n"+
+                            "RETURN targetNodes as "+CypherBuilder.operationResultName;
+                    GetListConceptionKindTransformer getListConceptionKindTransformer = new GetListConceptionKindTransformer(null,getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
+                    Object conceptionListRes = workingGraphOperationExecutor.executeRead(getListConceptionKindTransformer,cypherProcedureString2);
+                    conceptionKindList = conceptionListRes != null ? (List<ConceptionKind>)conceptionListRes : null;
                 }
-                String finalConceptionKindNamesStr = "["+conceptionKindNameListString+"]";
-                String cypherProcedureString2 = "MATCH (targetNodes:"+ RealmConstant.ConceptionKindClass+") WHERE targetNodes.name IN " + finalConceptionKindNamesStr+"\n"+
-                        "RETURN targetNodes as "+CypherBuilder.operationResultName;
-                GetListConceptionKindTransformer getListConceptionKindTransformer = new GetListConceptionKindTransformer(null,getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
-                Object conceptionListRes = workingGraphOperationExecutor.executeRead(getListConceptionKindTransformer,cypherProcedureString2);
-                List<ConceptionKind> conceptionKindList = conceptionListRes != null ? (List<ConceptionKind>)conceptionListRes : null;
 
                 Set<AttributesViewKind> availableAttributesViewKinds = Sets.newHashSet();
                 if(conceptionKindList!= null){
