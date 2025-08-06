@@ -8,6 +8,8 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Date;
 import java.sql.*;
@@ -26,7 +28,7 @@ public class DefaultRelationDBExternalAttributesValueAccessProcessor implements 
     public final String _ExternalRelationDB_Port = "DOCG_ExternalRelationDB_Port";
     public final String _ExternalRelationDB_UserName = "DOCG_ExternalRelationDB_UserName";
     public final String _ExternalRelationDB_UserPWD = "DOCG_ExternalRelationDB_UserPWD";
-
+    private static Logger logger = LoggerFactory.getLogger(DefaultRelationDBExternalAttributesValueAccessProcessor.class);
     @Override
     public List<Map<String, Object>> getEntityExternalAttributesValues(AttributesViewKind attributesViewKind, QueryParameters queryParameters, List<AttributeValue> attributeValueList) {
         if(attributesViewKind != null){
@@ -68,6 +70,7 @@ public class DefaultRelationDBExternalAttributesValueAccessProcessor implements 
             if(!attributeKindList.isEmpty() && dbName != null && tableName != null && host != null && port != null && userName != null && userPWD != null){
                 try {
                     String querySQL = RelationDBQueryBuilder.buildSelectQuerySQL(tableName,queryParameters);
+                    logger.debug("Generated SQL Statement: {}", querySQL);
                     return doQuery(host,port,dbName,userName,userPWD,querySQL,attributeDataTypeMap);
                 } catch (CoreRealmServiceEntityExploreException e) {
                     throw new RuntimeException(e);
@@ -121,6 +124,7 @@ public class DefaultRelationDBExternalAttributesValueAccessProcessor implements 
             if(!attributeKindList.isEmpty() && dbName != null && tableName != null && host != null && port != null && userName != null && userPWD != null){
                 try {
                     String querySQL = RelationDBQueryBuilder.buildCountQuerySQL(tableName,attributesParameters);
+                    logger.debug("Generated SQL Statement: {}", querySQL);
                     return doCount(host,port,dbName,userName,userPWD,querySQL);
                 } catch (CoreRealmServiceEntityExploreException e) {
                     throw new RuntimeException(e);
@@ -174,6 +178,7 @@ public class DefaultRelationDBExternalAttributesValueAccessProcessor implements 
             if(!attributeKindList.isEmpty() && dbName != null && tableName != null && host != null && port != null && userName != null && userPWD != null){
                 try {
                     String querySQL = RelationDBQueryBuilder.buildDeleteQuerySQL(tableName,attributesParameters);
+                    logger.debug("Generated SQL Statement: {}", querySQL);
                     return doDelete(host,port,dbName,userName,userPWD,querySQL);
                 } catch (CoreRealmServiceEntityExploreException e) {
                     throw new RuntimeException(e);
