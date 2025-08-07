@@ -280,4 +280,35 @@ public interface SystemMaintenanceOperator {
      * @return 每个时间周期间隔中统计到的操作实体数量
      */
     public Map<LocalDate,Long> getKindEntitiesPeriodicOperationStatic(String kindName, kindType kindType, OperationType operationType, OperationPeriod operationPeriod) throws CoreRealmServiceRuntimeException;
+
+
+
+
+
+
+
+    public boolean executeConceptionEntitiesRuntimeInfoPeriodicCollect(int collectionIntervalInSecond) throws CoreRealmServiceRuntimeException;
+
+
+    public boolean cancelConceptionEntitiesRuntimeInfoPeriodicCollect() throws CoreRealmServiceRuntimeException;
+
+
+    public boolean executeRelationEntitiesRuntimeInfoPeriodicCollect(int collectionIntervalInSecond) throws CoreRealmServiceRuntimeException;
+
+
+    public boolean cancelRelationEntitiesRuntimeInfoPeriodicCollect() throws CoreRealmServiceRuntimeException;
+
+
+
+    public boolean executeConceptionKindsAttributesSystemRuntimeInfoPeriodicCollect(int collectionIntervalInSecond) throws CoreRealmServiceRuntimeException;
+
+
+    public boolean cancelConceptionKindsAttributesSystemRuntimeInfoPeriodicCollect() throws CoreRealmServiceRuntimeException;
+
+
+    public boolean executeRelationKindsAttributesSystemRuntimeInfoPeriodicCollect(int collectionIntervalInSecond) throws CoreRealmServiceRuntimeException;
+
+
+    public boolean cancelRelationKindsAttributesSystemRuntimeInfoPeriodicCollect() throws CoreRealmServiceRuntimeException;
+
 }

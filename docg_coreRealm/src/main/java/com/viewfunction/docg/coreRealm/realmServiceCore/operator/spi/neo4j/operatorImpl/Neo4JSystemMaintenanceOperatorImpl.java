@@ -923,43 +923,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
 
     @Override
     public boolean cancelConceptionKindCorrelationRuntimeInfoPeriodicCollect() throws CoreRealmServiceRuntimeException {
-        /*
-        https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.cancel/
-        */
-        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-        try{
-            Map<String,PeriodicCollectTaskVO> periodicCollectTaskMap = getPeriodicCollectTasks(workingGraphOperationExecutor);
-            PeriodicCollectTaskVO targetPeriodicCollectTaskVO = periodicCollectTaskMap.get(RealmConstant.ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask);
-            if(targetPeriodicCollectTaskVO == null){
-                CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
-                e.setCauseMessage(RealmConstant.ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask+" not exist.");
-                throw e;
-            }else{
-                String cql ="CALL apoc.periodic.cancel(\""+RealmConstant.ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask+"\");";
-                logger.debug("Generated Cypher Statement: {}", cql);
-                DataTransformer<Boolean> operationDataTransformer = new DataTransformer<>(){
-                    @Override
-                    public Boolean transformResult(Result result) {
-                        if(result.hasNext()){
-                            Record nodeRecord = result.next();
-                            String periodicName = nodeRecord.get("name").asString();
-                            boolean isCanceled = nodeRecord.get("cancelled").asBoolean();
-                            if(RealmConstant.ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask.equals(periodicName) && isCanceled){
-                                return true;
-                            }
-                        }
-                        return false;
-                    }
-                };
-                Object response = workingGraphOperationExecutor.executeWrite(operationDataTransformer,cql);
-                if(response!=null){
-                    return (Boolean)response;
-                }
-            }
-            return false;
-        }finally {
-            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-        }
+        return cancelPeriodicCollectTask(RealmConstant.ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask);
     }
 
     @Override
@@ -1409,6 +1373,55 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         return periodicOperationStaticMap;
     }
 
+
+
+
+
+
+
+
+
+
+    @Override
+    public boolean executeConceptionEntitiesRuntimeInfoPeriodicCollect(int collectionIntervalInSecond) throws CoreRealmServiceRuntimeException {
+        return false;
+    }
+
+    @Override
+    public boolean cancelConceptionEntitiesRuntimeInfoPeriodicCollect() throws CoreRealmServiceRuntimeException {
+        return cancelPeriodicCollectTask(RealmConstant.ConceptionEntitiesRuntimeInfoPeriodicCollectTask);
+    }
+
+    @Override
+    public boolean executeRelationEntitiesRuntimeInfoPeriodicCollect(int collectionIntervalInSecond) throws CoreRealmServiceRuntimeException {
+        return false;
+    }
+
+    @Override
+    public boolean cancelRelationEntitiesRuntimeInfoPeriodicCollect() throws CoreRealmServiceRuntimeException {
+        return cancelPeriodicCollectTask(RealmConstant.RelationEntitiesRuntimeInfoPeriodicCollectTask);
+    }
+
+    @Override
+    public boolean executeConceptionKindsAttributesSystemRuntimeInfoPeriodicCollect(int collectionIntervalInSecond) throws CoreRealmServiceRuntimeException {
+        return false;
+    }
+
+    @Override
+    public boolean cancelConceptionKindsAttributesSystemRuntimeInfoPeriodicCollect() throws CoreRealmServiceRuntimeException {
+        return cancelPeriodicCollectTask(RealmConstant.ConceptionKindsAttributesSystemRuntimeInfoPeriodicCollectTask);
+    }
+
+    @Override
+    public boolean executeRelationKindsAttributesSystemRuntimeInfoPeriodicCollect(int collectionIntervalInSecond) throws CoreRealmServiceRuntimeException {
+        return false;
+    }
+
+    @Override
+    public boolean cancelRelationKindsAttributesSystemRuntimeInfoPeriodicCollect() throws CoreRealmServiceRuntimeException {
+        return cancelPeriodicCollectTask(RealmConstant.RelationKindsAttributesSystemRuntimeInfoPeriodicCollectTask);
+    }
+
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }
@@ -1713,6 +1726,46 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                     }
                     break;
             }
+        }
+    }
+
+    private boolean cancelPeriodicCollectTask(String taskName) throws CoreRealmServiceRuntimeException {
+        /*
+        https://neo4j.com/docs/apoc/2025.06/overview/apoc.periodic/apoc.periodic.cancel/
+        */
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            Map<String,PeriodicCollectTaskVO> periodicCollectTaskMap = getPeriodicCollectTasks(workingGraphOperationExecutor);
+            PeriodicCollectTaskVO targetPeriodicCollectTaskVO = periodicCollectTaskMap.get(taskName);
+            if(targetPeriodicCollectTaskVO == null){
+                CoreRealmServiceRuntimeException e = new CoreRealmServiceRuntimeException();
+                e.setCauseMessage(taskName+" not exist.");
+                throw e;
+            }else{
+                String cql ="CALL apoc.periodic.cancel(\""+taskName+"\");";
+                logger.debug("Generated Cypher Statement: {}", cql);
+                DataTransformer<Boolean> operationDataTransformer = new DataTransformer<>(){
+                    @Override
+                    public Boolean transformResult(Result result) {
+                        if(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            String periodicName = nodeRecord.get("name").asString();
+                            boolean isCanceled = nodeRecord.get("cancelled").asBoolean();
+                            if(taskName.equals(periodicName) && isCanceled){
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+                };
+                Object response = workingGraphOperationExecutor.executeWrite(operationDataTransformer,cql);
+                if(response!=null){
+                    return (Boolean)response;
+                }
+            }
+            return false;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
     }
 }
