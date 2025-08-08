@@ -1404,16 +1404,10 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         return cancelPeriodicCollectTask(RealmConstant.ConceptionKindsAttributesSystemRuntimeInfoPeriodicCollectTask);
     }
 
-
-
-
     @Override
-    public Map<String, List<AttributeSystemInfo>> getPeriodicCollectedConceptionKindsAttributesSystemRuntimeInfo(PeriodicCollectedInfoRetrieveLogic periodicCollectedInfoRetrieveLogic) {
-        return Map.of();
+    public Map<String, List<AttributeSystemInfo>> getPeriodicCollectedConceptionKindsAttributesSystemRuntimeInfo() {
+        return getKindsAttributesSystemRuntimeInfo(RealmConstant.ConceptionKindsAttributesSystemInfoStaticClass);
     }
-
-
-
 
     @Override
     public boolean executeRelationKindsAttributesSystemRuntimeInfoPeriodicCollect(int collectionIntervalInSecond) throws CoreRealmServiceRuntimeException {
@@ -1446,18 +1440,10 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         return cancelPeriodicCollectTask(RealmConstant.RelationKindsAttributesSystemRuntimeInfoPeriodicCollectTask);
     }
 
-
-
-
-
     @Override
-    public Map<String, List<AttributeSystemInfo>> getPeriodicCollectedRelationKindsAttributesSystemRuntimeInfo(PeriodicCollectedInfoRetrieveLogic periodicCollectedInfoRetrieveLogic) {
-        return Map.of();
+    public Map<String, List<AttributeSystemInfo>> getPeriodicCollectedRelationKindsAttributesSystemRuntimeInfo() {
+        return getKindsAttributesSystemRuntimeInfo(RealmConstant.RelationKindsAttributesSystemInfoStaticClass);
     }
-
-
-
-
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
@@ -1900,5 +1886,66 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
             return (Boolean)response;
         }
         return false;
+    }
+
+    private Map<String, List<AttributeSystemInfo>> getKindsAttributesSystemRuntimeInfo(String kindName) {
+        String cql = "MATCH (n:"+kindName+") RETURN " +
+                "n.label,n.property,n.type,n.isIndexed,n.uniqueConstraint,n.existenceConstraint,n.createDate "+
+                "ORDER BY n.createDate DESC LIMIT 100000000 ";
+        logger.debug("Generated Cypher Statement: {}", cql);
+
+        Map<String, List<AttributeSystemInfo>> resultMap = new HashMap<>();
+        DataTransformer statisticsDataTransformer = new DataTransformer<>() {
+            @Override
+            public List<ConceptionKindCorrelationInfo> transformResult(Result result) {
+                fillKindsAttributesSystemInfoMap(result,resultMap);
+                return null;
+            }
+        };
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            workingGraphOperationExecutor.executeRead(statisticsDataTransformer,cql);
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return resultMap;
+    }
+
+    private void fillKindsAttributesSystemInfoMap(Result result,Map<String, List<AttributeSystemInfo>> kindsAndAttributeSystemInfoListMap){
+        ZonedDateTime timeComputeFlag = null;
+        while(result.hasNext()){
+            Record nodeRecord = result.next();
+            ZonedDateTime createDate = nodeRecord.get("n.createDate").asZonedDateTime();
+            String attributeName = nodeRecord.get("n.property").asString();
+            String dataType = nodeRecord.get("n.type").asString();
+            String kindName = nodeRecord.get("n.label").asString();
+            boolean usedInIndex = false;
+            boolean uniqueAttribute = false;
+            boolean constraintAttribute = false;
+            if(!nodeRecord.get("n.isIndexed").isNull()){
+                usedInIndex = nodeRecord.get("n.isIndexed").asBoolean();
+            }
+            if(!nodeRecord.get("n.uniqueConstraint").isNull()){
+                uniqueAttribute = nodeRecord.get("n.uniqueConstraint").asBoolean();
+            }
+            if(!nodeRecord.get("n.existenceConstraint").isNull()){
+                constraintAttribute = nodeRecord.get("n.existenceConstraint").asBoolean();
+            }
+            if(timeComputeFlag == null){
+                timeComputeFlag = createDate;
+            }
+            if(createDate.equals(timeComputeFlag)){
+                if(!kindsAndAttributeSystemInfoListMap.containsKey(kindName)){
+                    ArrayList<AttributeSystemInfo> currentKindAttributeSystemInfoList = new ArrayList<>();
+                    kindsAndAttributeSystemInfoListMap.put(kindName,currentKindAttributeSystemInfoList);
+                }
+                AttributeSystemInfo attributeSystemInfo = new AttributeSystemInfo(attributeName,dataType,usedInIndex,
+                        uniqueAttribute,constraintAttribute);
+                kindsAndAttributeSystemInfoListMap.get(kindName).add(attributeSystemInfo);
+            }else{
+                break;
+            }
+        }
     }
 }
