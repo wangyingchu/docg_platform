@@ -261,6 +261,14 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                 "WHERE data.type = \"node\" \n" +
                 "UNWIND apoc.map.sortedProperties(data.properties) as property\n" +
                 "WITH label, property[0] as property, property[1] as propData\n" +
+                "CREATE (newInfo:"+RealmConstant.ConceptionKindsAttributesSystemInfoStaticClass+")\n" +
+                "SET newInfo.createDate = datetime({timezone: apoc.date.systemTimezone()})\n" +
+                "SET newInfo.label = label\n" +
+                "SET newInfo.property = property\n" +
+                "SET newInfo.type = propData.type \n" +
+                "SET newInfo.isIndexed = propData.indexed\n" +
+                "SET newInfo.uniqueConstraint = propData.unique\n" +
+                "SET newInfo.existenceConstraint = propData.existence\n"+
                 "RETURN label,\n" +
                 "property,\n" +
                 "propData.type as type,\n" +
@@ -273,7 +281,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         try {
             GetMapAttributeSystemInfoTransformer getMapAttributeSystemInfoTransformer =
                     new GetMapAttributeSystemInfoTransformer(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
-            Object responseObj = workingGraphOperationExecutor.executeRead(getMapAttributeSystemInfoTransformer,cypherProcedureString);
+            Object responseObj = workingGraphOperationExecutor.executeWrite(getMapAttributeSystemInfoTransformer,cypherProcedureString);
             return responseObj != null ? (Map<String, List<AttributeSystemInfo>>)responseObj : null;
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
@@ -326,6 +334,14 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                         "WHERE data.type = \"relationship\" \n" +
                         "UNWIND apoc.map.sortedProperties(data.properties) as property\n" +
                         "WITH label, property[0] as property, property[1] as propData\n" +
+                        "CREATE (newInfo:"+RealmConstant.RelationKindsAttributesSystemInfoStaticClass+")\n" +
+                        "SET newInfo.createDate = datetime({timezone: apoc.date.systemTimezone()})\n" +
+                        "SET newInfo.label = label\n" +
+                        "SET newInfo.property = property\n" +
+                        "SET newInfo.type = propData.type \n" +
+                        "SET newInfo.isIndexed = propData.indexed\n" +
+                        "SET newInfo.uniqueConstraint = propData.unique\n" +
+                        "SET newInfo.existenceConstraint = propData.existence\n"+
                         "RETURN label,\n" +
                         "property,\n" +
                         "propData.type as type,\n" +
@@ -337,7 +353,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
         try {
             GetMapAttributeSystemInfoTransformer getMapAttributeSystemInfoTransformer =
                     new GetMapAttributeSystemInfoTransformer(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
-            Object responseObj = workingGraphOperationExecutor.executeRead(getMapAttributeSystemInfoTransformer,cypherProcedureString);
+            Object responseObj = workingGraphOperationExecutor.executeWrite(getMapAttributeSystemInfoTransformer,cypherProcedureString);
             return responseObj != null ? (Map<String, List<AttributeSystemInfo>>)responseObj : null;
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
