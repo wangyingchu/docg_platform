@@ -167,7 +167,7 @@ public interface SystemMaintenanceOperator {
     public boolean cancelConceptionKindCorrelationRuntimeInfoPeriodicCollect() throws CoreRealmServiceRuntimeException;
 
     /**
-     * 获取周期性任务中采集的系统中所有概念类型实体与其他概念类型实体之间的实时关联关系信息,此方法返回最近一次采集时的计算结果
+     * 获取周期性任务中采集的系统中所有概念类型实体与其他概念类型实体之间的实时关联关系信息
      *
      *  @param periodicCollectedInfoRetrieveLogic PeriodicCollectedInfoRetrieveLogic，数据采集方式，如输入 null 则按照 PeriodicCollectedInfoRetrieveLogic.ALL 逻辑处理
      *
@@ -281,34 +281,54 @@ public interface SystemMaintenanceOperator {
      */
     public Map<LocalDate,Long> getKindEntitiesPeriodicOperationStatic(String kindName, kindType kindType, OperationType operationType, OperationPeriod operationPeriod) throws CoreRealmServiceRuntimeException;
 
-
-
-
-
-
-
-    public boolean executeConceptionEntitiesRuntimeInfoPeriodicCollect(int collectionIntervalInSecond) throws CoreRealmServiceRuntimeException;
-
-
-    public boolean cancelConceptionEntitiesRuntimeInfoPeriodicCollect() throws CoreRealmServiceRuntimeException;
-
-
-    public boolean executeRelationEntitiesRuntimeInfoPeriodicCollect(int collectionIntervalInSecond) throws CoreRealmServiceRuntimeException;
-
-
-    public boolean cancelRelationEntitiesRuntimeInfoPeriodicCollect() throws CoreRealmServiceRuntimeException;
-
-
-
+    /**
+     * 创建周期性任务，获取系统中所有概念类型实体具有的属性信息并持久化存储,此方法实时计算各
+     *
+     *  @param collectionIntervalInSecond int 每次数据采集的时间间隔，时间单位为秒
+     *
+     * @return 操作执行结果，如成功则返回 true
+     */
     public boolean executeConceptionKindsAttributesSystemRuntimeInfoPeriodicCollect(int collectionIntervalInSecond) throws CoreRealmServiceRuntimeException;
 
-
+    /**
+     * 取消已经创建的获取系统中所有概念类型实体具有的属性信息并持久化存储的周期性任务
+     *
+     * @return 操作执行结果，如成功则返回 true
+     */
     public boolean cancelConceptionKindsAttributesSystemRuntimeInfoPeriodicCollect() throws CoreRealmServiceRuntimeException;
 
+    /**
+     * 获取周期性任务中采集的系统中所有概念类型的实体数据中的属性的系统信息
+     *
+     *  @param periodicCollectedInfoRetrieveLogic PeriodicCollectedInfoRetrieveLogic，数据采集方式，如输入 null 则按照 PeriodicCollectedInfoRetrieveLogic.ALL 逻辑处理
+     *
+     * @return 所有的概念类型名称与其中包含的属性系统信息列表的映射字典
+     */
+    public Map<String, List<AttributeSystemInfo>> getPeriodicCollectedConceptionKindsAttributesSystemRuntimeInfo(PeriodicCollectedInfoRetrieveLogic periodicCollectedInfoRetrieveLogic);
 
+    /**
+     * 创建周期性任务，获取系统中所有关系类型实体具有的属性信息并持久化存储,此方法实时计算各
+     *
+     *  @param collectionIntervalInSecond int 每次数据采集的时间间隔，时间单位为秒
+     *
+     * @return 操作执行结果，如成功则返回 true
+     */
     public boolean executeRelationKindsAttributesSystemRuntimeInfoPeriodicCollect(int collectionIntervalInSecond) throws CoreRealmServiceRuntimeException;
 
-
+    /**
+     * 取消已经创建的获取系统中所有关系类型实体具有的属性信息并持久化存储的周期性任务
+     *
+     * @return 操作执行结果，如成功则返回 true
+     */
     public boolean cancelRelationKindsAttributesSystemRuntimeInfoPeriodicCollect() throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取周期性任务中采集的系统中所有关系类型的实体数据中的属性的系统信息
+     *
+     *  @param periodicCollectedInfoRetrieveLogic PeriodicCollectedInfoRetrieveLogic，数据采集方式，如输入 null 则按照 PeriodicCollectedInfoRetrieveLogic.ALL 逻辑处理
+     *
+     * @return 所有的关系类型名称与其中包含的属性系统信息列表的映射字典
+     */
+    public Map<String, List<AttributeSystemInfo>> getPeriodicCollectedRelationKindsAttributesSystemRuntimeInfo(PeriodicCollectedInfoRetrieveLogic periodicCollectedInfoRetrieveLogic);
 
 }

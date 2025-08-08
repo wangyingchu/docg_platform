@@ -1365,6 +1365,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 "YIELD value\n" +
                 "RETURN label, value.count as count\n" +
                 "ORDER BY label";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
             List<String> attributesNameList = new ArrayList<>();
@@ -1473,6 +1474,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
                 "YIELD value\n" +
                 "RETURN relationshipType, value.count AS count\n" +
                 "ORDER BY relationshipType";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
             List<String> attributesNameList = new ArrayList<>();

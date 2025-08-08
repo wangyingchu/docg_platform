@@ -116,10 +116,6 @@ public interface RealmConstant {
 
     public final String ConceptionKindCorrelationRuntimeInfoPeriodicCollectTask = "DOCG_ConceptionKindCorrelationRuntimeInfoPeriodicCollect";
     public final String ConceptionKindCorrelationInfoStaticClass="DOCG_Static_ConceptionKindCorrelationInfo";
-    public final String ConceptionEntitiesRuntimeInfoPeriodicCollectTask = "DOCG_ConceptionEntitiesRuntimeInfoPeriodicCollect";
-    public final String ConceptionEntitiesInfoStaticClass="DOCG_Static_ConceptionEntitiesInfo";
-    public final String RelationEntitiesRuntimeInfoPeriodicCollectTask = "DOCG_RelationEntitiesRuntimeInfoPeriodicCollect";
-    public final String RelationEntitiesInfoStaticClass="DOCG_Static_RelationEntitiesInfo";
     public final String ConceptionKindsAttributesSystemRuntimeInfoPeriodicCollectTask = "DOCG_ConceptionKindsAttributesSystemRuntimeInfoPeriodicCollect";
     public final String ConceptionKindsAttributesSystemInfoStaticClass="DOCG_Static_ConceptionKindsAttributesSystemInfo";
     public final String RelationKindsAttributesSystemRuntimeInfoPeriodicCollectTask = "DOCG_RelationKindsAttributesSystemRuntimeInfoPeriodicCollect";
