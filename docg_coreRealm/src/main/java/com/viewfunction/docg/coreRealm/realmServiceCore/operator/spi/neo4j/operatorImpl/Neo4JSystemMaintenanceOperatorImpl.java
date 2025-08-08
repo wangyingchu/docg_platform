@@ -1941,7 +1941,7 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
                     kindsAndAttributeSystemInfoListMap.put(kindName,currentKindAttributeSystemInfoList);
                 }
                 AttributeSystemInfo attributeSystemInfo = new AttributeSystemInfo(attributeName,dataType,usedInIndex,
-                        uniqueAttribute,constraintAttribute);
+                        uniqueAttribute,constraintAttribute,createDate);
                 kindsAndAttributeSystemInfoListMap.get(kindName).add(attributeSystemInfo);
             }else{
                 break;

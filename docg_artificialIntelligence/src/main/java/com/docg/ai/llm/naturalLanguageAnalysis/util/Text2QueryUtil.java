@@ -72,14 +72,33 @@ public class Text2QueryUtil {
         CoreRealm targetCoreRealm = RealmTermFactory.getDefaultCoreRealm();
         try {
             SystemMaintenanceOperator systemMaintenanceOperator = targetCoreRealm.getSystemMaintenanceOperator();
+            ZonedDateTime currentDateTime = ZonedDateTime.now();
             if(systemMaintenanceOperator != null){
                 List<EntityStatisticsInfo> realtimeConceptionList = targetCoreRealm.getConceptionEntitiesStatistics();
                 List<EntityStatisticsInfo> realtimeRelationList = targetCoreRealm.getRelationEntitiesStatistics();
 
-                Map<String, List<AttributeSystemInfo>> conceptionKindsAttributesSystemInfo = systemMaintenanceOperator.getAllConceptionKindsAttributesSystemInfo();
+                Map<String, List<AttributeSystemInfo>> conceptionKindsAttributesSystemInfo = systemMaintenanceOperator.getPeriodicCollectedConceptionKindsAttributesSystemRuntimeInfo();
+                if(conceptionKindsAttributesSystemInfo == null || conceptionKindsAttributesSystemInfo.isEmpty()){
+                    conceptionKindsAttributesSystemInfo = systemMaintenanceOperator.getAllConceptionKindsAttributesSystemInfo();
+                }else{
+                    ZonedDateTime _latestRecordDatetime = conceptionKindsAttributesSystemInfo.values().iterator().next().get(0).getCreateDate();
+                    ZonedDateTime oneDayBeforeCurrent = currentDateTime.minusDays(1);
+                    if(_latestRecordDatetime.isBefore(oneDayBeforeCurrent)){
+                        conceptionKindsAttributesSystemInfo = systemMaintenanceOperator.getAllConceptionKindsAttributesSystemInfo();
+                    }
+                }
                 String nodePropertiesContent = getTypePropertiesContent("Node properties:\n",realtimeConceptionList,conceptionKindsAttributesSystemInfo);
 
-                Map<String, List<AttributeSystemInfo>> relationKindsAttributesSystemInfo = systemMaintenanceOperator.getAllRelationKindsAttributesSystemInfo();
+                Map<String, List<AttributeSystemInfo>> relationKindsAttributesSystemInfo = systemMaintenanceOperator.getPeriodicCollectedRelationKindsAttributesSystemRuntimeInfo();
+                if(relationKindsAttributesSystemInfo == null || relationKindsAttributesSystemInfo.isEmpty()){
+                    relationKindsAttributesSystemInfo = systemMaintenanceOperator.getAllRelationKindsAttributesSystemInfo();
+                }else{
+                    ZonedDateTime _latestRecordDatetime = relationKindsAttributesSystemInfo.values().iterator().next().get(0).getCreateDate();
+                    ZonedDateTime oneDayBeforeCurrent = currentDateTime.minusDays(1);
+                    if(_latestRecordDatetime.isBefore(oneDayBeforeCurrent)){
+                        relationKindsAttributesSystemInfo = systemMaintenanceOperator.getAllRelationKindsAttributesSystemInfo();
+                    }
+                }
                 String relationPropertiesContent = getTypePropertiesContent("Relationship properties:\n",realtimeRelationList,relationKindsAttributesSystemInfo);
 
                 List<ConceptionKindCorrelationInfo> conceptionKindCorrelationInfoList = systemMaintenanceOperator.getPeriodicCollectedConceptionKindCorrelationRuntimeInfo(SystemMaintenanceOperator.PeriodicCollectedInfoRetrieveLogic.LATEST);
@@ -87,7 +106,6 @@ public class Text2QueryUtil {
                     conceptionKindCorrelationInfoList = systemMaintenanceOperator.getConceptionKindCorrelationRuntimeInfo(1);
                 }else{
                     ZonedDateTime _latestRecordDatetime = conceptionKindCorrelationInfoList.get(0).getCreateDate();
-                    ZonedDateTime currentDateTime = ZonedDateTime.now();
                     ZonedDateTime oneDayBeforeCurrent = currentDateTime.minusDays(1);
                     if(_latestRecordDatetime.isBefore(oneDayBeforeCurrent)){
                         conceptionKindCorrelationInfoList = systemMaintenanceOperator.getConceptionKindCorrelationRuntimeInfo(1);
