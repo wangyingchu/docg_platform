@@ -48,6 +48,7 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
                 if(this instanceof RelationKind){
                     statisticCql = CypherBuilder.statistRelationsWithQueryParametersAndStatisticFunctions(statisticTargetLabel,realQueryParameters,statisticConditions,null);
                 }
+                logger.debug("Generated Cypher Statement: {}", statisticCql);
 
                 DataTransformer resultHandleDataTransformer = new DataTransformer() {
                     @Override
@@ -98,6 +99,7 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
                 if(this instanceof RelationKind){
                     statisticCql = CypherBuilder.statistRelationsWithQueryParametersAndStatisticFunctions(statisticTargetLabel,realQueryParameters,statisticConditions,groupByAttribute);
                 }
+                logger.debug("Generated Cypher Statement: {}", statisticCql);
 
                 DataTransformer resultHandleDataTransformer = new DataTransformer() {
                     @Override
@@ -162,6 +164,7 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
                     inputQueryParameters.setResultNumber(10000000);
                 }
                 String queryEntitiesIDCql = CypherBuilder.matchNodesWithQueryParameters(statisticTargetLabel,inputQueryParameters, CypherBuilder.CypherFunctionType.ID);
+                logger.debug("Generated Cypher Statement: {}", queryEntitiesIDCql);
                 GetListObjectValueTransformer<Long> longListValueTransformer = new GetListObjectValueTransformer<Long>("id");
                 Object idList = workingGraphOperationExecutor.executeRead(longListValueTransformer,queryEntitiesIDCql);
 
