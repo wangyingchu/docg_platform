@@ -100,6 +100,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             }
             Map<String,Object> propertiesMap = new HashMap<>();
             propertiesMap.put(RealmConstant._NameProperty,conceptionKindName);
+            propertiesMap.put(RealmConstant._isConceptionKindProperty,true);
             if(conceptionKindDesc != null) {
                 propertiesMap.put(RealmConstant._DescProperty, conceptionKindDesc);
             }
@@ -609,6 +610,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             }
             Map<String,Object> propertiesMap = new HashMap<>();
             propertiesMap.put(RealmConstant._NameProperty,relationKindName);
+            propertiesMap.put(RealmConstant._isRelationKindProperty,true);
             if(relationKindDesc != null) {
                 propertiesMap.put(RealmConstant._DescProperty, relationKindDesc);
             }

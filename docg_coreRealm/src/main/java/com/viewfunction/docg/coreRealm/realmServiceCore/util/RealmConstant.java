@@ -60,6 +60,8 @@ public interface RealmConstant {
     public final String _lastModifyDateProperty = "lastModifyDate";
     public final String _creatorIdProperty = "creatorId";
     public final String _dataOriginProperty = "dataOrigin";
+    public final String _isConceptionKindProperty = "DOCG_IsConceptionKind";
+    public final String _isRelationKindProperty = "DOCG_IsRelationKind";
 
     public final String _viewKindDataForm = "viewKindDataForm";
 
