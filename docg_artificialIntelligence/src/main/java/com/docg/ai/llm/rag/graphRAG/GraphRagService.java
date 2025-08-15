@@ -21,6 +21,20 @@ public class GraphRagService {
         String cypher = "MATCH (p:Person)-[r:WORKS_AT]->(c:Company) " +
                         "OPTIONAL MATCH (p)-[k:KNOWS]->(f:Person) " +
                         "RETURN p.name AS person, p.age AS age, p.job AS job, c.name AS company, c.location AS location, collect(f.name) AS friends";
+
+        cypher ="MATCH (subwayLine:`SubWay-Line`)<-[r:CanAccessSubWayLine]-(subwayStation:`SubWay-Station`) \n" +
+                "OPTIONAL MATCH (subwayStation)-[c:ConnectedBySubWayLine]->(subwayStation) \n" +
+                "RETURN subwayLine.Line AS line, subwayStation.station AS station, subwayStation.adname AS stationDist, subwayStation.business_a AS stationLocation;";
+
+        cypher = "MATCH (subwayLine:`SubWay-Line`)<-[r:CanAccessSubWayLine]-(subwayStation:`SubWay-Station`) \n" +
+                "OPTIONAL MATCH (subwayStation)-[c:ConnectedBySubWayLine]->(subwayStation) \n" +
+                "OPTIONAL MATCH (ss:ShoppingService)<-[rb:SubwayStationNearbyAround]-(subwayStation) \n" +
+                "RETURN subwayLine.Line AS line, subwayStation.station AS station, subwayStation.adname AS stationDist, subwayStation.business_a AS stationLocation,ss.name AS shopName,ss.address AS shopAddress,ss.adname AS shopDist LIMIT 800;";
+
+        //只使用我提供的信息，回答：从西单如何去阳澄湖大闸蟹(角门路店)商店
+        //哪些地铁站周围有卖水果的商店
+        //只使用我提供的信息，回答：坐4号线去哪站可以买珠宝
+
         List<String> graphResults = neo4jService.queryGraph(cypher);
 
         StringBuilder info = new StringBuilder();
