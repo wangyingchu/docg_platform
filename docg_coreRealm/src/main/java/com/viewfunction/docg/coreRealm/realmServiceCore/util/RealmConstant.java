@@ -17,6 +17,8 @@ public interface RealmConstant {
     public final String RelationAttachKindClass="DOCG_RelationAttachKind";
     public final String RelationAttachLinkLogicClass="DOCG_RelationAttachLinkLogic";
     public final String RelationAttachKind_RelationAttachLinkLogicRelationClass="DOCG_AttachKindContainsAttachLinkLogicIs";
+    public final String ActionClass="DOCG_Action";
+    public final String ConceptionKind_ActionRelationClass="DOCG_ConceptionContainsActionIs";
 
     public final String TimeFlowClass="DOCG_TimeFlow";
     public final String _defaultTimeFlowName = "DefaultTimeFlow";
@@ -62,6 +64,7 @@ public interface RealmConstant {
     public final String _dataOriginProperty = "dataOrigin";
     public final String _isConceptionKindProperty = "DOCG_IsConceptionKind";
     public final String _isRelationKindProperty = "DOCG_IsRelationKind";
+    public final String _actionImplementationClassProperty = "DOCG_ActionImplementationClass";
 
     public final String _viewKindDataForm = "viewKindDataForm";
 

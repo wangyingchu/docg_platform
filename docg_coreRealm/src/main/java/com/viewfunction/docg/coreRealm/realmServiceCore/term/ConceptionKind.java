@@ -715,4 +715,16 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      * @return 当前概念类型中概念实体数据可以执行的数据操作能力统计
      */
     public ConceptionKindDataCapabilityInfo getConceptionKindDataCapabilityStatistics();
+
+
+
+
+
+    public boolean registerAction(String actionName,String actionDesc,String actionImplementationClass) throws CoreRealmServiceRuntimeException;
+
+    public boolean unregisterAction(String actionName) throws CoreRealmServiceRuntimeException;
+
+    public Action getAction(String actionName);
+
+    public Set<Action> getActions();
 }
