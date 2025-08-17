@@ -2843,6 +2843,10 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
                     this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
                 }
             }
+        }else{
+            CoreRealmServiceRuntimeException coreRealmServiceRuntimeException = new CoreRealmServiceRuntimeException();
+            coreRealmServiceRuntimeException.setCauseMessage("Action with name "+actionName+" doesn't registered in ConceptionKind "+conceptionKindName);
+            throw coreRealmServiceRuntimeException;
         }
         return false;
     }
@@ -3043,9 +3047,11 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
     }
 
     private Long createActionAndReturnActionUID(GraphOperationExecutor workingGraphOperationExecutor){
-        String storageNodeQueryCql = CypherBuilder.mergeRelatedNodesFromSpecialStartNodes(
-                CypherBuilder.CypherFunctionType.ID, Long.parseLong(this.getEntityUID()),
-                RealmConstant.ActionClass,RealmConstant.ConceptionKind_ActionRelationClass, RelationDirection.TO, null);
+        String createActionCql =
+                "MATCH (sourceNode) WHERE id(sourceNode) = "+this.getEntityUID()+"\n" +
+                "CREATE (operationResult:`"+RealmConstant.ActionClass+"`)\n" +
+                "CREATE (sourceNode)-[:`"+RealmConstant.ConceptionKind_ActionRelationClass+"`]->(operationResult)\n" +
+                "RETURN "+CypherBuilder.operationResultName;
         DataTransformer<Long> queryNodeDataTransformer = new DataTransformer() {
             @Override
             public Long transformResult(Result result) {
@@ -3057,7 +3063,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
                 return null;
             }
         };
-        Long storageNodeUID = (Long)workingGraphOperationExecutor.executeWrite(queryNodeDataTransformer,storageNodeQueryCql);
+        Long storageNodeUID = (Long)workingGraphOperationExecutor.executeWrite(queryNodeDataTransformer,createActionCql);
         return storageNodeUID;
     }
 

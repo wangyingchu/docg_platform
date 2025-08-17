@@ -4,6 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.external.customizedActio
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class TestExternalActionLogicExecutor implements ActionLogicExecutor {
@@ -12,7 +13,16 @@ public class TestExternalActionLogicExecutor implements ActionLogicExecutor {
         System.out.println(actionParameters);
         System.out.println(conceptionKind.getConceptionKindName());
         System.out.println(conceptionEntity);
-        return "helloworld";
+
+        Map<String,Object> result = new HashMap<>();
+        result.put("resultMessage","helloworld");
+        result.put("conceptionKindName",conceptionKind.getConceptionKindName());
+        result.putAll(actionParameters);
+        if(conceptionEntity != null){
+            result.put("conceptionEntityUID",conceptionEntity.getConceptionEntityUID());
+        }
+
+        return result;
     }
 
     @Override
