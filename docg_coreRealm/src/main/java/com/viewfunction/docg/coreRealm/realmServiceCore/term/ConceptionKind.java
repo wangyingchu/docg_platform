@@ -724,7 +724,7 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
 
     public boolean unregisterAction(String actionName) throws CoreRealmServiceRuntimeException;
 
-    public Action getAction(String actionName);
+    public ConceptionAction getAction(String actionName);
 
-    public Set<Action> getActions();
+    public Set<ConceptionAction> getActions();
 }

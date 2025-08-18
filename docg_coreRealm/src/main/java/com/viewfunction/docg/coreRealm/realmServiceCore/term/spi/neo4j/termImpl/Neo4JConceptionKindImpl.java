@@ -2783,8 +2783,8 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
 
     @Override
     public boolean registerAction(String actionName, String actionDesc, String actionImplementationClass) throws CoreRealmServiceRuntimeException{
-        Action targetAction = getAction(actionName);
-        if(targetAction!= null){
+        ConceptionAction targetConceptionAction = getAction(actionName);
+        if(targetConceptionAction != null){
             CoreRealmServiceRuntimeException coreRealmServiceRuntimeException = new CoreRealmServiceRuntimeException();
             coreRealmServiceRuntimeException.setCauseMessage("Action with name "+actionName+" already registered in ConceptionKind "+conceptionKindName);
             throw coreRealmServiceRuntimeException;
@@ -2824,9 +2824,9 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
 
     @Override
     public boolean unregisterAction(String actionName) throws CoreRealmServiceRuntimeException{
-        Action targetAction = getAction(actionName);
-        if(targetAction!= null){
-            String actionUID = targetAction.getActionUID();
+        ConceptionAction targetConceptionAction = getAction(actionName);
+        if(targetConceptionAction != null){
+            String actionUID = targetConceptionAction.getActionUID();
             if(actionUID != null){
                 GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
                 try{
@@ -2852,12 +2852,12 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
     }
 
     @Override
-    public Action getAction(String actionName) {
-        Set<Action> existActions = getActions();
-        if(existActions != null){
-            for(Action action:existActions){
-                if(action.getActionName().equals(actionName)){
-                    return action;
+    public ConceptionAction getAction(String actionName) {
+        Set<ConceptionAction> existConceptionActions = getActions();
+        if(existConceptionActions != null){
+            for(ConceptionAction conceptionAction : existConceptionActions){
+                if(conceptionAction.getActionName().equals(actionName)){
+                    return conceptionAction;
                 }
             }
         }
@@ -2865,7 +2865,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
     }
 
     @Override
-    public Set<Action> getActions() {
+    public Set<ConceptionAction> getActions() {
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
             String queryCql = CypherBuilder.matchRelatedNodesFromSpecialStartNodes(
@@ -2874,7 +2874,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
             GetSetActionTransformer getSetActionTransformer =
                     new GetSetActionTransformer(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object actionsRes = workingGraphOperationExecutor.executeWrite(getSetActionTransformer,queryCql);
-            return actionsRes != null ? (Set<Action>) actionsRes : null;
+            return actionsRes != null ? (Set<ConceptionAction>) actionsRes : null;
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }

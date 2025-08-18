@@ -92,7 +92,7 @@
     </test>
     <test verbose="19" name="ActionTest">
         <classes>
-            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.ActionTest"/>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.ConceptionActionTest"/>
         </classes>
     </test>
     <!-- KindCacheableTest must be the last test case at anytime-->

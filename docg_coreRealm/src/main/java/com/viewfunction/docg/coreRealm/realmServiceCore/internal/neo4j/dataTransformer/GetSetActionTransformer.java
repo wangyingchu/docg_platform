@@ -3,8 +3,8 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTran
 import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.Action;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JActionImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionAction;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionActionImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class GetSetActionTransformer implements DataTransformer<Set<Action>>{
+public class GetSetActionTransformer implements DataTransformer<Set<ConceptionAction>>{
 
     private GraphOperationExecutor workingGraphOperationExecutor;
 
@@ -23,8 +23,8 @@ public class GetSetActionTransformer implements DataTransformer<Set<Action>>{
     }
 
     @Override
-    public Set<Action> transformResult(Result result) {
-        Set<Action> actionSet = new HashSet<>();
+    public Set<ConceptionAction> transformResult(Result result) {
+        Set<ConceptionAction> conceptionActionSet = new HashSet<>();
         if(result.hasNext()){
             while(result.hasNext()){
                 Record nodeRecord = result.next();
@@ -48,14 +48,14 @@ public class GetSetActionTransformer implements DataTransformer<Set<Action>>{
                             actionImplementationClassProperty = resultNode.get(RealmConstant._actionImplementationClassProperty).asString();
                         }
                         String attributesViewKindUID = ""+nodeUID;
-                        Neo4JActionImpl neo4JActionImpl =
-                                new Neo4JActionImpl(actionName,actionDesc,attributesViewKindUID,actionImplementationClassProperty);
+                        Neo4JConceptionActionImpl neo4JActionImpl =
+                                new Neo4JConceptionActionImpl(actionName,actionDesc,attributesViewKindUID,actionImplementationClassProperty);
                         neo4JActionImpl.setGlobalGraphOperationExecutor(this.workingGraphOperationExecutor);
-                        actionSet.add(neo4JActionImpl);
+                        conceptionActionSet.add(neo4JActionImpl);
                     }
                 }
             }
         }
-        return actionSet;
+        return conceptionActionSet;
     }
 }

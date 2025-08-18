@@ -12,7 +12,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JAction;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JConceptionAction;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 
 import org.slf4j.Logger;
@@ -23,16 +23,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Neo4JActionImpl implements Neo4JAction {
+public class Neo4JConceptionActionImpl implements Neo4JConceptionAction {
 
-    private static Logger logger = LoggerFactory.getLogger(Neo4JActionImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(Neo4JConceptionActionImpl.class);
 
     private String actionName;
     private String actionDesc;
     private String actionImplementationClass;
     private String actionUID;
 
-    public Neo4JActionImpl(String actionName,String actionDesc,String actionUID,String actionImplementationClass){
+    public Neo4JConceptionActionImpl(String actionName, String actionDesc, String actionUID, String actionImplementationClass){
         this.actionName = actionName;
         this.actionDesc = actionDesc;
         this.actionUID = actionUID;
@@ -157,7 +157,7 @@ public class Neo4JActionImpl implements Neo4JAction {
     }
 
     @Override
-    public Object executeActionSync(Map<String, Object> actionParameters, ConceptionEntity conceptionEntity) throws CoreRealmServiceRuntimeException {
+    public Object executeActionSync(Map<String, Object> actionParameters, ConceptionEntity... conceptionEntity) throws CoreRealmServiceRuntimeException {
         if(this.actionImplementationClass == null){
             CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
             exception.setCauseMessage("ActionImplementationClass is required");
@@ -183,7 +183,7 @@ public class Neo4JActionImpl implements Neo4JAction {
     }
 
     @Override
-    public void executeActionAsync(Map<String, Object> actionParameters, ConceptionEntity conceptionEntity) throws CoreRealmServiceRuntimeException {
+    public void executeActionAsync(Map<String, Object> actionParameters, ConceptionEntity... conceptionEntity) throws CoreRealmServiceRuntimeException {
         if(this.actionImplementationClass == null){
             CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
             exception.setCauseMessage("ActionImplementationClass is required");

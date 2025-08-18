@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface ActionLogicExecutor {
 
-    public Object executeActionSync(Map<String,Object> actionParameters, ConceptionKind conceptionKind, ConceptionEntity conceptionEntity);
+    public Object executeActionSync(Map<String,Object> actionParameters, ConceptionKind conceptionKind, ConceptionEntity... conceptionEntity);
 
-    public void executeActionAsync(Map<String,Object> actionParameters, ConceptionKind conceptionKind, ConceptionEntity conceptionEntity);
+    public void executeActionAsync(Map<String,Object> actionParameters, ConceptionKind conceptionKind, ConceptionEntity... conceptionEntity);
 }

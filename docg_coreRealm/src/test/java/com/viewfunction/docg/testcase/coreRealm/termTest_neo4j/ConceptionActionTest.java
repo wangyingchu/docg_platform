@@ -3,7 +3,7 @@ package com.viewfunction.docg.testcase.coreRealm.termTest_neo4j;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.Action;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionAction;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class ActionTest {
+public class ConceptionActionTest {
 
     private static String testRealmName = "UNIT_TEST_Realm";
     private static String testConceptionKindName = "TestConceptionKindForActionTest";
@@ -51,9 +51,9 @@ public class ActionTest {
         Assert.assertNotNull(purgeEntitiesOperationResult.getOperationStatistics().getOperationSummary());
         Assert.assertEquals(purgeEntitiesOperationResult.getOperationStatistics().getFailItemsCount(),0);
 
-        Set<Action> actionSet =  testConceptionKind.getActions();
-        Assert.assertNotNull(actionSet);
-        Assert.assertEquals(actionSet.size(),0);
+        Set<ConceptionAction> conceptionActionSet =  testConceptionKind.getActions();
+        Assert.assertNotNull(conceptionActionSet);
+        Assert.assertEquals(conceptionActionSet.size(),0);
 
         boolean registerResult = testConceptionKind.registerAction("testActionName1","testActionDesc1","com.viewfunction.docg.externalCustomizedAction.TestExternalActionLogicExecutor_WRONG");
         Assert.assertTrue(registerResult);
@@ -67,37 +67,37 @@ public class ActionTest {
         }
         Assert.assertTrue(exceptionShouldThrow1);
 
-        actionSet = testConceptionKind.getActions();
-        Assert.assertNotNull(actionSet);
-        Assert.assertEquals(actionSet.size(),1);
+        conceptionActionSet = testConceptionKind.getActions();
+        Assert.assertNotNull(conceptionActionSet);
+        Assert.assertEquals(conceptionActionSet.size(),1);
 
         registerResult = testConceptionKind.registerAction("testActionName2","testActionDesc2","com.viewfunction.docg.externalCustomizedAction.TestExternalActionLogicExecutor");
         Assert.assertTrue(registerResult);
 
-        actionSet = testConceptionKind.getActions();
-        Assert.assertNotNull(actionSet);
-        Assert.assertEquals(actionSet.size(),2);
+        conceptionActionSet = testConceptionKind.getActions();
+        Assert.assertNotNull(conceptionActionSet);
+        Assert.assertEquals(conceptionActionSet.size(),2);
 
-        Action action1 = testConceptionKind.getAction("testActionName1");
-        Assert.assertNotNull(action1);
+        ConceptionAction conceptionAction1 = testConceptionKind.getAction("testActionName1");
+        Assert.assertNotNull(conceptionAction1);
 
-        Action action2 = testConceptionKind.getAction("testActionName2");
-        Assert.assertNotNull(action2);
+        ConceptionAction conceptionAction2 = testConceptionKind.getAction("testActionName2");
+        Assert.assertNotNull(conceptionAction2);
 
-        Assert.assertNotNull(action1.getActionUID());
-        Assert.assertEquals(action1.getActionName(),"testActionName1");
-        Assert.assertEquals(action1.getActionDesc(),"testActionDesc1");
-        Assert.assertEquals(action1.getActionImplementationClass(),"com.viewfunction.docg.externalCustomizedAction.TestExternalActionLogicExecutor_WRONG");
+        Assert.assertNotNull(conceptionAction1.getActionUID());
+        Assert.assertEquals(conceptionAction1.getActionName(),"testActionName1");
+        Assert.assertEquals(conceptionAction1.getActionDesc(),"testActionDesc1");
+        Assert.assertEquals(conceptionAction1.getActionImplementationClass(),"com.viewfunction.docg.externalCustomizedAction.TestExternalActionLogicExecutor_WRONG");
 
-        Assert.assertTrue(action1.updateActionDesc("testActionDesc1UPD"));
-        Assert.assertTrue(action1.updateActionImplementationClass("com.viewfunction.docg.externalCustomizedAction.TestExternalActionLogicExecutor"));
+        Assert.assertTrue(conceptionAction1.updateActionDesc("testActionDesc1UPD"));
+        Assert.assertTrue(conceptionAction1.updateActionImplementationClass("com.viewfunction.docg.externalCustomizedAction.TestExternalActionLogicExecutor"));
 
-        action1 = testConceptionKind.getAction("testActionName1");
-        Assert.assertNotNull(action1);
-        Assert.assertEquals(action1.getActionDesc(),"testActionDesc1UPD");
-        Assert.assertEquals(action1.getActionImplementationClass(),"com.viewfunction.docg.externalCustomizedAction.TestExternalActionLogicExecutor");
+        conceptionAction1 = testConceptionKind.getAction("testActionName1");
+        Assert.assertNotNull(conceptionAction1);
+        Assert.assertEquals(conceptionAction1.getActionDesc(),"testActionDesc1UPD");
+        Assert.assertEquals(conceptionAction1.getActionImplementationClass(),"com.viewfunction.docg.externalCustomizedAction.TestExternalActionLogicExecutor");
 
-        ConceptionKind containerConceptionKind = action1.getContainerConceptionKind();
+        ConceptionKind containerConceptionKind = conceptionAction1.getContainerConceptionKind();
         Assert.assertNotNull(containerConceptionKind);
         Assert.assertEquals(containerConceptionKind.getConceptionKindName(),testConceptionKindName);
 
@@ -105,7 +105,7 @@ public class ActionTest {
         params.put("param01","param01Value");
         params.put("param02",1200);
 
-        Object actionExecuteResult = action1.executeActionSync(params);
+        Object actionExecuteResult = conceptionAction1.executeActionSync(params);
         Assert.assertNotNull(actionExecuteResult);
 
         Map<String,Object> resultMap = (Map<String,Object>)actionExecuteResult;
@@ -126,7 +126,7 @@ public class ActionTest {
         ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue(newEntityValue);
         ConceptionEntity newEntity = testConceptionKind.newEntity(conceptionEntityValue,false);
 
-        actionExecuteResult = action1.executeActionSync(params,newEntity);
+        actionExecuteResult = conceptionAction1.executeActionSync(params,newEntity);
         Assert.assertNotNull(actionExecuteResult);
 
         resultMap = (Map<String,Object>)actionExecuteResult;
@@ -137,21 +137,21 @@ public class ActionTest {
 
         boolean unregisterResult = testConceptionKind.unregisterAction("testActionName1");
         Assert.assertTrue(unregisterResult);
-        action1 = testConceptionKind.getAction("testActionName1");
-        Assert.assertNull(action1);
+        conceptionAction1 = testConceptionKind.getAction("testActionName1");
+        Assert.assertNull(conceptionAction1);
 
-        actionSet = testConceptionKind.getActions();
-        Assert.assertNotNull(actionSet);
-        Assert.assertEquals(actionSet.size(),1);
+        conceptionActionSet = testConceptionKind.getActions();
+        Assert.assertNotNull(conceptionActionSet);
+        Assert.assertEquals(conceptionActionSet.size(),1);
 
         unregisterResult = testConceptionKind.unregisterAction("testActionName2");
         Assert.assertTrue(unregisterResult);
-        action2 = testConceptionKind.getAction("testActionName2");
-        Assert.assertNull(action2);
+        conceptionAction2 = testConceptionKind.getAction("testActionName2");
+        Assert.assertNull(conceptionAction2);
 
-        actionSet = testConceptionKind.getActions();
-        Assert.assertNotNull(actionSet);
-        Assert.assertEquals(actionSet.size(),0);
+        conceptionActionSet = testConceptionKind.getActions();
+        Assert.assertNotNull(conceptionActionSet);
+        Assert.assertEquals(conceptionActionSet.size(),0);
 
         boolean exceptionShouldThrow2 = false;
         try {

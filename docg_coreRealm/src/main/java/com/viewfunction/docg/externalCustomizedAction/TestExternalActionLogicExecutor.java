@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class TestExternalActionLogicExecutor implements ActionLogicExecutor {
     @Override
-    public Object executeActionSync(Map<String, Object> actionParameters, ConceptionKind conceptionKind, ConceptionEntity conceptionEntity) {
+    public Object executeActionSync(Map<String, Object> actionParameters, ConceptionKind conceptionKind, ConceptionEntity... conceptionEntity) {
         System.out.println(actionParameters);
         System.out.println(conceptionKind.getConceptionKindName());
         System.out.println(conceptionEntity);
@@ -18,15 +18,15 @@ public class TestExternalActionLogicExecutor implements ActionLogicExecutor {
         result.put("resultMessage","helloworld");
         result.put("conceptionKindName",conceptionKind.getConceptionKindName());
         result.putAll(actionParameters);
-        if(conceptionEntity != null){
-            result.put("conceptionEntityUID",conceptionEntity.getConceptionEntityUID());
+        if(conceptionEntity != null && conceptionEntity.length > 0){
+            result.put("conceptionEntityUID",conceptionEntity[0].getConceptionEntityUID());
         }
 
         return result;
     }
 
     @Override
-    public void executeActionAsync(Map<String, Object> actionParameters, ConceptionKind conceptionKind, ConceptionEntity conceptionEntity) {
+    public void executeActionAsync(Map<String, Object> actionParameters, ConceptionKind conceptionKind, ConceptionEntity... conceptionEntity) {
 
     }
 }
