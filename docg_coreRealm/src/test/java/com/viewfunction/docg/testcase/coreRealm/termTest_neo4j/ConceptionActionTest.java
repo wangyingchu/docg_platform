@@ -18,6 +18,8 @@ import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class ConceptionActionTest {
 
@@ -113,6 +115,20 @@ public class ConceptionActionTest {
         Assert.assertEquals(resultMap.get("param01"),"param01Value");
         Assert.assertEquals(resultMap.get("param02"),1200);
 
+        CompletableFuture<Object> resultFuture =  conceptionAction1.executeActionAsync(params);
+        Assert.assertNotNull(resultFuture);
+        try {
+            Object resMap = resultFuture.get();
+            resultMap = (Map<String,Object>)resMap;
+            Assert.assertEquals(resultMap.get("conceptionKindName"),testConceptionKindName);
+            Assert.assertEquals(resultMap.get("param01"),"param01Value");
+            Assert.assertEquals(resultMap.get("param02"),1200);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
         Map<String,Object> newEntityValue= new HashMap<>();
         newEntityValue.put("prop1",10000l);
         newEntityValue.put("prop2",190.22d);
@@ -134,6 +150,21 @@ public class ConceptionActionTest {
         Assert.assertEquals(resultMap.get("param01"),"param01Value");
         Assert.assertEquals(resultMap.get("param02"),1200);
         Assert.assertEquals(resultMap.get("conceptionEntityUID"),newEntity.getConceptionEntityUID());
+
+        resultFuture =  conceptionAction1.executeActionAsync(params,newEntity);
+        Assert.assertNotNull(resultFuture);
+        try {
+            Object resMap = resultFuture.get();
+            resultMap = (Map<String,Object>)resMap;
+            Assert.assertEquals(resultMap.get("conceptionKindName"),testConceptionKindName);
+            Assert.assertEquals(resultMap.get("param01"),"param01Value");
+            Assert.assertEquals(resultMap.get("param02"),1200);
+            Assert.assertEquals(resultMap.get("conceptionEntityUID"),newEntity.getConceptionEntityUID());
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
 
         boolean unregisterResult = testConceptionKind.unregisterAction("testActionName1");
         Assert.assertTrue(unregisterResult);

@@ -22,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public class Neo4JConceptionActionImpl implements Neo4JConceptionAction {
 
@@ -131,7 +132,7 @@ public class Neo4JConceptionActionImpl implements Neo4JConceptionAction {
     }
 
     @Override
-    public void executeActionAsync(Map<String, Object> actionParameters) throws CoreRealmServiceRuntimeException {
+    public CompletableFuture<Object> executeActionAsync(Map<String, Object> actionParameters) throws CoreRealmServiceRuntimeException {
         if(this.actionImplementationClass == null){
             CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
             exception.setCauseMessage("ActionImplementationClass is required");
@@ -141,7 +142,7 @@ public class Neo4JConceptionActionImpl implements Neo4JConceptionAction {
                 Class<?> actionLogicExecutorClass = Class.forName(this.actionImplementationClass);
                 ActionLogicExecutor actionLogicExecutor =
                         (ActionLogicExecutor)actionLogicExecutorClass.getDeclaredConstructor().newInstance();
-                actionLogicExecutor.executeActionSync(actionParameters,this.getContainerConceptionKind(),null);
+                return actionLogicExecutor.executeActionAsync(actionParameters,this.getContainerConceptionKind(),null);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             } catch (InvocationTargetException e) {
@@ -183,7 +184,7 @@ public class Neo4JConceptionActionImpl implements Neo4JConceptionAction {
     }
 
     @Override
-    public void executeActionAsync(Map<String, Object> actionParameters, ConceptionEntity... conceptionEntity) throws CoreRealmServiceRuntimeException {
+    public CompletableFuture<Object> executeActionAsync(Map<String, Object> actionParameters, ConceptionEntity... conceptionEntity) throws CoreRealmServiceRuntimeException {
         if(this.actionImplementationClass == null){
             CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
             exception.setCauseMessage("ActionImplementationClass is required");
@@ -193,7 +194,7 @@ public class Neo4JConceptionActionImpl implements Neo4JConceptionAction {
                 Class<?> actionLogicExecutorClass = Class.forName(this.actionImplementationClass);
                 ActionLogicExecutor actionLogicExecutor =
                         (ActionLogicExecutor)actionLogicExecutorClass.getDeclaredConstructor().newInstance();
-                actionLogicExecutor.executeActionAsync(actionParameters,this.getContainerConceptionKind(),conceptionEntity);
+                return actionLogicExecutor.executeActionAsync(actionParameters,this.getContainerConceptionKind(),conceptionEntity);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             } catch (InvocationTargetException e) {

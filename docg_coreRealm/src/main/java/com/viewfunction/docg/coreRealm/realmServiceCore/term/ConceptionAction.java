@@ -6,6 +6,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaAttributeFea
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.MetaConfigItemFeatureSupportable;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 public interface ConceptionAction extends MetaConfigItemFeatureSupportable, MetaAttributeFeatureSupportable, ClassificationAttachable {
 
@@ -23,11 +24,11 @@ public interface ConceptionAction extends MetaConfigItemFeatureSupportable, Meta
 
     public Object executeActionSync(Map<String,Object> actionParameters) throws CoreRealmServiceRuntimeException;
 
-    public void executeActionAsync(Map<String,Object> actionParameters) throws CoreRealmServiceRuntimeException;
+    public CompletableFuture<Object> executeActionAsync(Map<String,Object> actionParameters) throws CoreRealmServiceRuntimeException;
 
     public Object executeActionSync(Map<String,Object> actionParameters,ConceptionEntity... conceptionEntity) throws CoreRealmServiceRuntimeException;
 
-    public void executeActionAsync(Map<String,Object> actionParameters,ConceptionEntity... conceptionEntity) throws CoreRealmServiceRuntimeException;
+    public CompletableFuture<Object> executeActionAsync(Map<String,Object> actionParameters,ConceptionEntity... conceptionEntity) throws CoreRealmServiceRuntimeException;
 
     public ConceptionKind getContainerConceptionKind();
 }
