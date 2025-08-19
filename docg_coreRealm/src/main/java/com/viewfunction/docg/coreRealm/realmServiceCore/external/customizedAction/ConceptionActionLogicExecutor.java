@@ -6,7 +6,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public interface ActionLogicExecutor {
+public interface ConceptionActionLogicExecutor {
 
     public Object executeActionSync(Map<String,Object> actionParameters, ConceptionKind conceptionKind, ConceptionEntity... conceptionEntity);
 

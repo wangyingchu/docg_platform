@@ -1,6 +1,6 @@
 package com.viewfunction.docg.externalCustomizedAction;
 
-import com.viewfunction.docg.coreRealm.realmServiceCore.external.customizedAction.ActionLogicExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.external.customizedAction.ConceptionActionLogicExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 
@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-public class TestExternalActionLogicExecutor implements ActionLogicExecutor {
+public class TestExternalConceptionActionLogicExecutor implements ConceptionActionLogicExecutor {
     @Override
     public Object executeActionSync(Map<String, Object> actionParameters, ConceptionKind conceptionKind, ConceptionEntity... conceptionEntity) {
         System.out.println(actionParameters);

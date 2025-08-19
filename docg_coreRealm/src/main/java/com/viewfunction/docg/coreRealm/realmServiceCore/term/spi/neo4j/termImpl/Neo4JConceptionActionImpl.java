@@ -1,7 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.external.customizedAction.ActionLogicExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.external.customizedAction.ConceptionActionLogicExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionKindTransformer;
@@ -114,9 +114,9 @@ public class Neo4JConceptionActionImpl implements Neo4JConceptionAction {
         }else{
             try {
                 Class<?> actionLogicExecutorClass = Class.forName(this.actionImplementationClass);
-                ActionLogicExecutor actionLogicExecutor =
-                        (ActionLogicExecutor)actionLogicExecutorClass.getDeclaredConstructor().newInstance();
-                return actionLogicExecutor.executeActionSync(actionParameters,this.getContainerConceptionKind(),null);
+                ConceptionActionLogicExecutor conceptionActionLogicExecutor =
+                        (ConceptionActionLogicExecutor)actionLogicExecutorClass.getDeclaredConstructor().newInstance();
+                return conceptionActionLogicExecutor.executeActionSync(actionParameters,this.getContainerConceptionKind(),null);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             } catch (InvocationTargetException e) {
@@ -140,9 +140,9 @@ public class Neo4JConceptionActionImpl implements Neo4JConceptionAction {
         }else{
             try {
                 Class<?> actionLogicExecutorClass = Class.forName(this.actionImplementationClass);
-                ActionLogicExecutor actionLogicExecutor =
-                        (ActionLogicExecutor)actionLogicExecutorClass.getDeclaredConstructor().newInstance();
-                return actionLogicExecutor.executeActionAsync(actionParameters,this.getContainerConceptionKind(),null);
+                ConceptionActionLogicExecutor conceptionActionLogicExecutor =
+                        (ConceptionActionLogicExecutor)actionLogicExecutorClass.getDeclaredConstructor().newInstance();
+                return conceptionActionLogicExecutor.executeActionAsync(actionParameters,this.getContainerConceptionKind(),null);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             } catch (InvocationTargetException e) {
@@ -166,9 +166,9 @@ public class Neo4JConceptionActionImpl implements Neo4JConceptionAction {
         }else{
             try {
                 Class<?> actionLogicExecutorClass = Class.forName(this.actionImplementationClass);
-                ActionLogicExecutor actionLogicExecutor =
-                        (ActionLogicExecutor)actionLogicExecutorClass.getDeclaredConstructor().newInstance();
-                return actionLogicExecutor.executeActionSync(actionParameters,this.getContainerConceptionKind(),conceptionEntity);
+                ConceptionActionLogicExecutor conceptionActionLogicExecutor =
+                        (ConceptionActionLogicExecutor)actionLogicExecutorClass.getDeclaredConstructor().newInstance();
+                return conceptionActionLogicExecutor.executeActionSync(actionParameters,this.getContainerConceptionKind(),conceptionEntity);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             } catch (InvocationTargetException e) {
@@ -192,9 +192,9 @@ public class Neo4JConceptionActionImpl implements Neo4JConceptionAction {
         }else{
             try {
                 Class<?> actionLogicExecutorClass = Class.forName(this.actionImplementationClass);
-                ActionLogicExecutor actionLogicExecutor =
-                        (ActionLogicExecutor)actionLogicExecutorClass.getDeclaredConstructor().newInstance();
-                return actionLogicExecutor.executeActionAsync(actionParameters,this.getContainerConceptionKind(),conceptionEntity);
+                ConceptionActionLogicExecutor conceptionActionLogicExecutor =
+                        (ConceptionActionLogicExecutor)actionLogicExecutorClass.getDeclaredConstructor().newInstance();
+                return conceptionActionLogicExecutor.executeActionAsync(actionParameters,this.getContainerConceptionKind(),conceptionEntity);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             } catch (InvocationTargetException e) {
