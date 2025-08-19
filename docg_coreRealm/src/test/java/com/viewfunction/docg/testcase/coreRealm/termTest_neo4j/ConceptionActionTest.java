@@ -57,12 +57,12 @@ public class ConceptionActionTest {
         Assert.assertNotNull(conceptionActionSet);
         Assert.assertEquals(conceptionActionSet.size(),0);
 
-        boolean registerResult = testConceptionKind.registerAction("testActionName1","testActionDesc1","com.viewfunction.docg.externalCustomizedAction.TestExternalActionLogicExecutor_WRONG");
+        boolean registerResult = testConceptionKind.registerAction("testActionName1","testActionDesc1","com.viewfunction.docg.externalCustomizedAction.TestExternalConceptionActionLogicExecutor_WRONG");
         Assert.assertTrue(registerResult);
 
         boolean exceptionShouldThrow1 = false;
         try {
-            testConceptionKind.registerAction("testActionName1", "testActionDesc1", "com.viewfunction.docg.externalCustomizedAction.TestExternalActionLogicExecutor_WRONG");
+            testConceptionKind.registerAction("testActionName1", "testActionDesc1", "com.viewfunction.docg.externalCustomizedAction.TestExternalConceptionActionLogicExecutor_WRONG");
         }catch (CoreRealmServiceRuntimeException coreRealmServiceRuntimeException){
             coreRealmServiceRuntimeException.printStackTrace();
             exceptionShouldThrow1 = true;
@@ -73,7 +73,7 @@ public class ConceptionActionTest {
         Assert.assertNotNull(conceptionActionSet);
         Assert.assertEquals(conceptionActionSet.size(),1);
 
-        registerResult = testConceptionKind.registerAction("testActionName2","testActionDesc2","com.viewfunction.docg.externalCustomizedAction.TestExternalActionLogicExecutor");
+        registerResult = testConceptionKind.registerAction("testActionName2","testActionDesc2","com.viewfunction.docg.externalCustomizedAction.TestExternalConceptionActionLogicExecutor");
         Assert.assertTrue(registerResult);
 
         conceptionActionSet = testConceptionKind.getActions();
@@ -89,15 +89,15 @@ public class ConceptionActionTest {
         Assert.assertNotNull(conceptionAction1.getActionUID());
         Assert.assertEquals(conceptionAction1.getActionName(),"testActionName1");
         Assert.assertEquals(conceptionAction1.getActionDesc(),"testActionDesc1");
-        Assert.assertEquals(conceptionAction1.getActionImplementationClass(),"com.viewfunction.docg.externalCustomizedAction.TestExternalActionLogicExecutor_WRONG");
+        Assert.assertEquals(conceptionAction1.getActionImplementationClass(),"com.viewfunction.docg.externalCustomizedAction.TestExternalConceptionActionLogicExecutor_WRONG");
 
         Assert.assertTrue(conceptionAction1.updateActionDesc("testActionDesc1UPD"));
-        Assert.assertTrue(conceptionAction1.updateActionImplementationClass("com.viewfunction.docg.externalCustomizedAction.TestExternalActionLogicExecutor"));
+        Assert.assertTrue(conceptionAction1.updateActionImplementationClass("com.viewfunction.docg.externalCustomizedAction.TestExternalConceptionActionLogicExecutor"));
 
         conceptionAction1 = testConceptionKind.getAction("testActionName1");
         Assert.assertNotNull(conceptionAction1);
         Assert.assertEquals(conceptionAction1.getActionDesc(),"testActionDesc1UPD");
-        Assert.assertEquals(conceptionAction1.getActionImplementationClass(),"com.viewfunction.docg.externalCustomizedAction.TestExternalActionLogicExecutor");
+        Assert.assertEquals(conceptionAction1.getActionImplementationClass(),"com.viewfunction.docg.externalCustomizedAction.TestExternalConceptionActionLogicExecutor");
 
         ConceptionKind containerConceptionKind = conceptionAction1.getContainerConceptionKind();
         Assert.assertNotNull(containerConceptionKind);
