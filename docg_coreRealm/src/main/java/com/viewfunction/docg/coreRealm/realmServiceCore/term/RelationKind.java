@@ -314,4 +314,16 @@ public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttr
      * @return 属性类型对象列表
      */
     public List<AttributeKind> getContainsSingleValueAttributeKinds(String attributeKindName);
+
+
+
+
+
+    public boolean registerAction(String actionName,String actionDesc,String actionImplementationClass) throws CoreRealmServiceRuntimeException;
+
+    public boolean unregisterAction(String actionName) throws CoreRealmServiceRuntimeException;
+
+    public RelationAction getAction(String actionName);
+
+    public Set<RelationAction> getActions();
 }

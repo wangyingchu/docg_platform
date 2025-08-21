@@ -925,6 +925,46 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
         }
     }
 
+
+
+
+
+
+
+
+
+
+    @Override
+    public boolean registerAction(String actionName, String actionDesc, String actionImplementationClass) throws CoreRealmServiceRuntimeException {
+        return false;
+    }
+
+    @Override
+    public boolean unregisterAction(String actionName) throws CoreRealmServiceRuntimeException {
+        return false;
+    }
+
+    @Override
+    public RelationAction getAction(String actionName) {
+        return null;
+    }
+
+    @Override
+    public Set<RelationAction> getActions() {
+        return Set.of();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
     private long executeEntitiesOperationWithCountResponse(String cql){
         long operationResultCount = 0;
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
