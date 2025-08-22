@@ -1,7 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
-import com.viewfunction.docg.coreRealm.realmServiceCore.external.customizedAction.ConceptionActionLogicExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.external.customizedAction.RelationActionLogicExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
@@ -10,7 +9,9 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JRelationAction;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import org.slf4j.Logger;
@@ -91,7 +92,7 @@ public class Neo4JRelationActionImpl implements Neo4JRelationAction {
             GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._actionImplementationClassProperty);
             Object updateResultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,updateCql);
             CommonOperationUtil.updateEntityMetaAttributes(workingGraphOperationExecutor,this.actionUID,false);
-            AttributeValue resultAttributeValue =  updateResultRes != null ? (AttributeValue) updateResultRes : null;
+            AttributeValue resultAttributeValue = updateResultRes != null ? (AttributeValue) updateResultRes : null;
             if(resultAttributeValue != null && resultAttributeValue.getAttributeValue().toString().equals(actionImplementationClassFullName)){
                 this.actionImplementationClass = actionImplementationClassFullName;
                 return true;
@@ -112,9 +113,9 @@ public class Neo4JRelationActionImpl implements Neo4JRelationAction {
         }else{
             try {
                 Class<?> actionLogicExecutorClass = Class.forName(this.actionImplementationClass);
-                RelationActionLogicExecutor conceptionActionLogicExecutor =
+                RelationActionLogicExecutor relationActionLogicExecutor =
                         (RelationActionLogicExecutor)actionLogicExecutorClass.getDeclaredConstructor().newInstance();
-                return conceptionActionLogicExecutor.executeActionSync(actionParameters,this.getContainerRelationKind(),null);
+                return relationActionLogicExecutor.executeActionSync(actionParameters,this.getContainerRelationKind(),null);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             } catch (InvocationTargetException e) {
@@ -138,9 +139,9 @@ public class Neo4JRelationActionImpl implements Neo4JRelationAction {
         }else{
             try {
                 Class<?> actionLogicExecutorClass = Class.forName(this.actionImplementationClass);
-                ConceptionActionLogicExecutor conceptionActionLogicExecutor =
-                        (ConceptionActionLogicExecutor)actionLogicExecutorClass.getDeclaredConstructor().newInstance();
-                return conceptionActionLogicExecutor.executeActionAsync(actionParameters,this.getContainerConceptionKind(),null);
+                RelationActionLogicExecutor relationActionLogicExecutor =
+                        (RelationActionLogicExecutor)actionLogicExecutorClass.getDeclaredConstructor().newInstance();
+                return relationActionLogicExecutor.executeActionAsync(actionParameters,this.getContainerRelationKind(),null);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             } catch (InvocationTargetException e) {
@@ -156,7 +157,7 @@ public class Neo4JRelationActionImpl implements Neo4JRelationAction {
     }
 
     @Override
-    public Object executeActionSync(Map<String, Object> actionParameters, ConceptionEntity... conceptionEntity) throws CoreRealmServiceRuntimeException {
+    public Object executeActionSync(Map<String, Object> actionParameters, RelationEntity... relationEntity) throws CoreRealmServiceRuntimeException {
         if(this.actionImplementationClass == null){
             CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
             exception.setCauseMessage("ActionImplementationClass is required");
@@ -164,9 +165,9 @@ public class Neo4JRelationActionImpl implements Neo4JRelationAction {
         }else{
             try {
                 Class<?> actionLogicExecutorClass = Class.forName(this.actionImplementationClass);
-                ConceptionActionLogicExecutor conceptionActionLogicExecutor =
-                        (ConceptionActionLogicExecutor)actionLogicExecutorClass.getDeclaredConstructor().newInstance();
-                return conceptionActionLogicExecutor.executeActionSync(actionParameters,this.getContainerConceptionKind(),conceptionEntity);
+                RelationActionLogicExecutor relationActionLogicExecutor =
+                        (RelationActionLogicExecutor)actionLogicExecutorClass.getDeclaredConstructor().newInstance();
+                return relationActionLogicExecutor.executeActionSync(actionParameters,this.getContainerRelationKind(),relationEntity);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             } catch (InvocationTargetException e) {
@@ -182,7 +183,7 @@ public class Neo4JRelationActionImpl implements Neo4JRelationAction {
     }
 
     @Override
-    public CompletableFuture<Object> executeActionAsync(Map<String, Object> actionParameters, ConceptionEntity... conceptionEntity) throws CoreRealmServiceRuntimeException {
+    public CompletableFuture<Object> executeActionAsync(Map<String, Object> actionParameters, RelationEntity... relationEntity) throws CoreRealmServiceRuntimeException {
         if(this.actionImplementationClass == null){
             CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
             exception.setCauseMessage("ActionImplementationClass is required");
@@ -190,9 +191,9 @@ public class Neo4JRelationActionImpl implements Neo4JRelationAction {
         }else{
             try {
                 Class<?> actionLogicExecutorClass = Class.forName(this.actionImplementationClass);
-                ConceptionActionLogicExecutor conceptionActionLogicExecutor =
-                        (ConceptionActionLogicExecutor)actionLogicExecutorClass.getDeclaredConstructor().newInstance();
-                return conceptionActionLogicExecutor.executeActionAsync(actionParameters,this.getContainerConceptionKind(),conceptionEntity);
+                RelationActionLogicExecutor relationActionLogicExecutor =
+                        (RelationActionLogicExecutor)actionLogicExecutorClass.getDeclaredConstructor().newInstance();
+                return relationActionLogicExecutor.executeActionAsync(actionParameters,this.getContainerRelationKind(),relationEntity);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             } catch (InvocationTargetException e) {
@@ -217,7 +218,7 @@ public class Neo4JRelationActionImpl implements Neo4JRelationAction {
             GetListConceptionKindTransformer getListConceptionKindTransformer = new GetListConceptionKindTransformer(null,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object conceptionKindsRes = workingGraphOperationExecutor.executeWrite(getListConceptionKindTransformer,queryCql);
             if(conceptionKindsRes!= null){
-                List<ConceptionKind> conceptionKindList = (List<ConceptionKind>)conceptionKindsRes;
+                List<RelationKind> conceptionKindList = (List<RelationKind>)conceptionKindsRes;
                 if(!conceptionKindList.isEmpty()){
                     return conceptionKindList.get(0);
                 }
@@ -271,19 +272,4 @@ public class Neo4JRelationActionImpl implements Neo4JRelationAction {
 
 
 
-
-    @Override
-    public Object executeActionSync(Map<String, Object> actionParameters, RelationEntity... relationEntity) throws CoreRealmServiceRuntimeException {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<Object> executeActionAsync(Map<String, Object> actionParameters, RelationEntity... relationEntity) throws CoreRealmServiceRuntimeException {
-        return null;
-    }
-
-    @Override
-    public RelationKind getContainerRelationKind() {
-        return null;
-    }
 }
