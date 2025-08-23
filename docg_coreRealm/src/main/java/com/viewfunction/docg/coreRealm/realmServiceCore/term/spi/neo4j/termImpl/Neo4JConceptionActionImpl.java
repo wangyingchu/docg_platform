@@ -15,18 +15,14 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termInf.Neo4JConceptionAction;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.reflect.InvocationTargetException;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class Neo4JConceptionActionImpl implements Neo4JConceptionAction {
-
-    private static Logger logger = LoggerFactory.getLogger(Neo4JConceptionActionImpl.class);
 
     private String actionName;
     private String actionDesc;
@@ -57,6 +53,8 @@ public class Neo4JConceptionActionImpl implements Neo4JConceptionAction {
         try {
             Map<String,Object> attributeDataMap = new HashMap<>();
             attributeDataMap.put(RealmConstant._DescProperty, actionDesc);
+            ZonedDateTime currentDateTime = ZonedDateTime.now();
+            attributeDataMap.put(RealmConstant._lastModifyDateProperty, currentDateTime);
             String updateCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.actionUID),attributeDataMap);
             GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._DescProperty);
             Object updateResultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,updateCql);
@@ -89,6 +87,8 @@ public class Neo4JConceptionActionImpl implements Neo4JConceptionAction {
         try {
             Map<String,Object> attributeDataMap = new HashMap<>();
             attributeDataMap.put(RealmConstant._actionImplementationClassProperty, actionImplementationClassFullName);
+            ZonedDateTime currentDateTime = ZonedDateTime.now();
+            attributeDataMap.put(RealmConstant._lastModifyDateProperty, currentDateTime);
             String updateCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.actionUID),attributeDataMap);
             GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._actionImplementationClassProperty);
             Object updateResultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,updateCql);

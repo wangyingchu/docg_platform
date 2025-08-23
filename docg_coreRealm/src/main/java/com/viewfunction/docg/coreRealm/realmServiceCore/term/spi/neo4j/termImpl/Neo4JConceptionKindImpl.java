@@ -2797,6 +2797,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
                 attributeDataMap.put(RealmConstant._NameProperty,actionName);
                 attributeDataMap.put(RealmConstant._DescProperty,actionDesc);
                 attributeDataMap.put(RealmConstant._actionImplementationClassProperty,actionImplementationClass);
+                CommonOperationUtil.generateEntityMetaAttributes(attributeDataMap);
                 String updateCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,storageNodeUID,attributeDataMap);
                 DataTransformer updateItemDataTransformer = new DataTransformer() {
                     @Override

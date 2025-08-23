@@ -941,6 +941,7 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
                 attributeDataMap.put(RealmConstant._NameProperty,actionName);
                 attributeDataMap.put(RealmConstant._DescProperty,actionDesc);
                 attributeDataMap.put(RealmConstant._actionImplementationClassProperty,actionImplementationClass);
+                CommonOperationUtil.generateEntityMetaAttributes(attributeDataMap);
                 String updateCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,storageNodeUID,attributeDataMap);
                 DataTransformer updateItemDataTransformer = new DataTransformer() {
                     @Override
