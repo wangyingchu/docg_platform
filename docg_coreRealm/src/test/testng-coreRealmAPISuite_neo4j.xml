@@ -90,13 +90,18 @@
             <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.ClassificationTest"/>
         </classes>
     </test>
-    <test verbose="19" name="ActionTest">
+    <test verbose="19" name="ConceptionActionTest">
         <classes>
             <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.ConceptionActionTest"/>
         </classes>
     </test>
+    <test verbose="20" name="RelationActionTest">
+        <classes>
+            <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.RelationActionTest"/>
+        </classes>
+    </test>
     <!-- KindCacheableTest must be the last test case at anytime-->
-    <test verbose="20" name="KindCacheableTest">
+    <test verbose="21" name="KindCacheableTest">
         <classes>
             <class name="com.viewfunction.docg.testcase.coreRealm.termTest_neo4j.KindCacheableTest"/>
         </classes>

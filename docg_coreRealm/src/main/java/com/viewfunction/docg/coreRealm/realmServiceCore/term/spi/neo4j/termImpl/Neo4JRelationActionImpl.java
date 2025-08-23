@@ -4,7 +4,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServi
 import com.viewfunction.docg.coreRealm.realmServiceCore.external.customizedAction.RelationActionLogicExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
-import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListConceptionKindTransformer;
+import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetListRelationKindTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleAttributeValueTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
@@ -25,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class Neo4JRelationActionImpl implements Neo4JRelationAction {
 
-    private static Logger logger = LoggerFactory.getLogger(Neo4JConceptionActionImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(Neo4JRelationActionImpl.class);
 
     private String actionName;
     private String actionDesc;
@@ -214,13 +214,13 @@ public class Neo4JRelationActionImpl implements Neo4JRelationAction {
         try{
             String queryCql = CypherBuilder.matchRelatedNodesFromSpecialStartNodes(
                     CypherBuilder.CypherFunctionType.ID, Long.parseLong(actionUID),
-                    RealmConstant.ConceptionKindClass,RealmConstant.ConceptionKind_ActionRelationClass, RelationDirection.FROM, null);
-            GetListConceptionKindTransformer getListConceptionKindTransformer = new GetListConceptionKindTransformer(null,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
-            Object conceptionKindsRes = workingGraphOperationExecutor.executeWrite(getListConceptionKindTransformer,queryCql);
-            if(conceptionKindsRes!= null){
-                List<RelationKind> conceptionKindList = (List<RelationKind>)conceptionKindsRes;
-                if(!conceptionKindList.isEmpty()){
-                    return conceptionKindList.get(0);
+                    RealmConstant.RelationKindClass,RealmConstant.RelationKind_ActionRelationClass, RelationDirection.FROM, null);
+            GetListRelationKindTransformer getListRelationKindTransformer = new GetListRelationKindTransformer(null,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object relationKindsRes = workingGraphOperationExecutor.executeWrite(getListRelationKindTransformer,queryCql);
+            if(relationKindsRes!= null){
+                List<RelationKind> relationKindList = (List<RelationKind>)relationKindsRes;
+                if(!relationKindList.isEmpty()){
+                    return relationKindList.get(0);
                 }
             }
         }finally {
@@ -245,31 +245,4 @@ public class Neo4JRelationActionImpl implements Neo4JRelationAction {
     public GraphOperationExecutorHelper getGraphOperationExecutorHelper() {
         return graphOperationExecutorHelper;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

@@ -29,7 +29,7 @@ public class ConceptionActionTest {
     @BeforeTest
     public void initData(){
         System.out.println("--------------------------------------------------");
-        System.out.println("Init unit test data for ActionTest");
+        System.out.println("Init unit test data for ConceptionActionTest");
         System.out.println("--------------------------------------------------");
     }
 

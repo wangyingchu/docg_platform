@@ -925,45 +925,104 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
         }
     }
 
-
-
-
-
-
-
-
-
-
     @Override
-    public boolean registerAction(String actionName, String actionDesc, String actionImplementationClass) throws CoreRealmServiceRuntimeException {
+    public boolean registerAction(String actionName, String actionDesc, String actionImplementationClass) throws CoreRealmServiceRuntimeException{
+        RelationAction targetRelationAction = getAction(actionName);
+        if(targetRelationAction != null){
+            CoreRealmServiceRuntimeException coreRealmServiceRuntimeException = new CoreRealmServiceRuntimeException();
+            coreRealmServiceRuntimeException.setCauseMessage("Action with name "+actionName+" already registered in RelationKind "+this.relationKindName);
+            throw coreRealmServiceRuntimeException;
+        }
+        if (this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                Long storageNodeUID = createActionAndReturnActionUID(workingGraphOperationExecutor);
+                Map<String,Object> attributeDataMap = new HashMap<>();
+                attributeDataMap.put(RealmConstant._NameProperty,actionName);
+                attributeDataMap.put(RealmConstant._DescProperty,actionDesc);
+                attributeDataMap.put(RealmConstant._actionImplementationClassProperty,actionImplementationClass);
+                String updateCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,storageNodeUID,attributeDataMap);
+                DataTransformer updateItemDataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        if(result.hasNext()){
+                            Record returnRecord = result.next();
+                            Map<String,Object> returnValueMap = returnRecord.asMap();
+                            String attributeNameFullName= CypherBuilder.operationResultName+"."+ RealmConstant._NameProperty;
+                            Object attributeValueObject = returnValueMap.get(attributeNameFullName);
+                            if(attributeValueObject!= null){
+                                return attributeValueObject;
+                            }
+                        }
+                        return null;
+                    }
+                };
+                Object resultRes = workingGraphOperationExecutor.executeWrite(updateItemDataTransformer,updateCql);
+                return resultRes != null ? true: false;
+            } finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return false;
     }
 
     @Override
-    public boolean unregisterAction(String actionName) throws CoreRealmServiceRuntimeException {
+    public boolean unregisterAction(String actionName) throws CoreRealmServiceRuntimeException{
+        RelationAction targetRelationAction = getAction(actionName);
+        if(targetRelationAction != null){
+            String actionUID = targetRelationAction.getActionUID();
+            if(actionUID != null){
+                GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+                try{
+                    String deleteCql = CypherBuilder.deleteNodeWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID,Long.valueOf(actionUID),null,null);
+                    GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                            new GetSingleConceptionEntityTransformer(RealmConstant.ActionClass, this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    Object deletedEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer, deleteCql);
+                    if(deletedEntityRes == null){
+                        throw new CoreRealmServiceRuntimeException();
+                    }else{
+                        return true;
+                    }
+                }finally {
+                    this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+                }
+            }
+        }else{
+            CoreRealmServiceRuntimeException coreRealmServiceRuntimeException = new CoreRealmServiceRuntimeException();
+            coreRealmServiceRuntimeException.setCauseMessage("Action with name "+actionName+" doesn't registered in RelationKind "+ relationKindName);
+            throw coreRealmServiceRuntimeException;
+        }
         return false;
     }
 
     @Override
     public RelationAction getAction(String actionName) {
+        Set<RelationAction> existRelationActions = getActions();
+        if(existRelationActions != null){
+            for(RelationAction relationAction : existRelationActions){
+                if(relationAction.getActionName().equals(actionName)){
+                    return relationAction;
+                }
+            }
+        }
         return null;
     }
 
     @Override
     public Set<RelationAction> getActions() {
-        return Set.of();
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCql = CypherBuilder.matchRelatedNodesFromSpecialStartNodes(
+                    CypherBuilder.CypherFunctionType.ID, Long.parseLong(relationKindUID),
+                    RealmConstant.ActionClass,RealmConstant.RelationKind_ActionRelationClass,RelationDirection.TO, null);
+            GetSetRelationActionTransformer getSetRelationActionTransformer =
+                    new GetSetRelationActionTransformer(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object actionsRes = workingGraphOperationExecutor.executeWrite(getSetRelationActionTransformer,queryCql);
+            return actionsRes != null ? (Set<RelationAction>) actionsRes : null;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
-
-
-
-
-
-
-
-
-
-
-
 
     private long executeEntitiesOperationWithCountResponse(String cql){
         long operationResultCount = 0;
@@ -1095,6 +1154,27 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
             }
         }
         return singleValueAttributeKindNames;
+    }
+
+    private Long createActionAndReturnActionUID(GraphOperationExecutor workingGraphOperationExecutor){
+        String createActionCql =
+                "MATCH (sourceNode) WHERE id(sourceNode) = "+this.getEntityUID()+"\n" +
+                        "CREATE (operationResult:`"+RealmConstant.ActionClass+"`)\n" +
+                        "CREATE (sourceNode)-[:`"+RealmConstant.RelationKind_ActionRelationClass+"`]->(operationResult)\n" +
+                        "RETURN "+CypherBuilder.operationResultName;
+        DataTransformer<Long> queryNodeDataTransformer = new DataTransformer() {
+            @Override
+            public Long transformResult(Result result) {
+                Record nodeRecord = result.next();
+                if(nodeRecord != null){
+                    Node resultStorageNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
+                    return resultStorageNode.id();
+                }
+                return null;
+            }
+        };
+        Long storageNodeUID = (Long)workingGraphOperationExecutor.executeWrite(queryNodeDataTransformer,createActionCql);
+        return storageNodeUID;
     }
 
     //internal graphOperationExecutor management logic

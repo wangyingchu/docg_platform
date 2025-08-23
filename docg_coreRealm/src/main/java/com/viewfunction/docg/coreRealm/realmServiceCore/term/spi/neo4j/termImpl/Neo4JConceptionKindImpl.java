@@ -2871,9 +2871,9 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
             String queryCql = CypherBuilder.matchRelatedNodesFromSpecialStartNodes(
                     CypherBuilder.CypherFunctionType.ID, Long.parseLong(conceptionKindUID),
                     RealmConstant.ActionClass,RealmConstant.ConceptionKind_ActionRelationClass,RelationDirection.TO, null);
-            GetSetActionTransformer getSetActionTransformer =
-                    new GetSetActionTransformer(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
-            Object actionsRes = workingGraphOperationExecutor.executeWrite(getSetActionTransformer,queryCql);
+            GetSetConceptionActionTransformer getSetConceptionActionTransformer =
+                    new GetSetConceptionActionTransformer(this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object actionsRes = workingGraphOperationExecutor.executeWrite(getSetConceptionActionTransformer,queryCql);
             return actionsRes != null ? (Set<ConceptionAction>) actionsRes : null;
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
