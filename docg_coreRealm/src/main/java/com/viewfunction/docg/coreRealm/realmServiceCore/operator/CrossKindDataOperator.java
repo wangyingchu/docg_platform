@@ -424,4 +424,13 @@ public interface CrossKindDataOperator {
      * @return 更新关系实体属性操作的执行结果统计
      */
     public EntitiesOperationResult updateSingleValueRelationEntityAttributesByUIDs(Map<String,Map<String,Object>> relationEntityUIDAndAttributesMap) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 根据自定义查询条件获取领域中的数据即席查询结果
+     *
+     * @param adhocQuerySentence String 用户自定义的查询语句，可以包含任意查询条件，返回任意的查询结果
+     *
+     * @return 即席查询结果集，具体数据格式依查询语句的返回条件而定
+     */
+    public AdhocQueryResult executeAdhocQuery(String adhocQuerySentence) throws CoreRealmServiceRuntimeException;
 }

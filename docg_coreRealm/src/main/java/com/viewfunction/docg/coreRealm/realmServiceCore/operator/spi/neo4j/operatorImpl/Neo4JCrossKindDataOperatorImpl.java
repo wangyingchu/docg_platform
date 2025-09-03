@@ -1659,6 +1659,11 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         }
     }
 
+    @Override
+    public AdhocQueryResult executeAdhocQuery(String adhocQuerySentence) throws CoreRealmServiceRuntimeException {
+        return null;
+    }
+
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }
