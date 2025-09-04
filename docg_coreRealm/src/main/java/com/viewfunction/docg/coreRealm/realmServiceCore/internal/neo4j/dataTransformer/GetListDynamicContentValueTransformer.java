@@ -7,6 +7,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.structure.EntitiesPath;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionEntityImpl;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JRelationEntityImpl;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
@@ -17,9 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GetListDynamicContentValueTransformer implements DataTransformer<List<DynamicContentValue>>{
 
@@ -177,74 +176,56 @@ public class GetListDynamicContentValueTransformer implements DataTransformer<Li
     }
 
     private RelationEntity getRelationEntityFromRelationship(Relationship resultRelationship){
-
-
-
-
-
-
-
-/*
-
-        Relationship resultRelationship = nodeRecord.get(CypherBuilder.operationResultName).asRelationship();
-        Node sourceNode = nodeRecord.containsKey(CypherBuilder.sourceNodeName) ? nodeRecord.get(CypherBuilder.sourceNodeName).asNode():null;
-        Node targetNode = nodeRecord.containsKey(CypherBuilder.targetNodeName) ? nodeRecord.get(CypherBuilder.targetNodeName).asNode():null;
         String relationType = resultRelationship.type();
-        boolean isMatchedKind;
-        // if the relationEntity is come from a DELETE relation operation,the relationType will be empty string,
-        // make isMatchedKind to be true at this case
-        if(this.targetRelationKindName == null || relationType.equals("")){
-            isMatchedKind = true;
-        }else{
-            isMatchedKind = relationType.equals(targetRelationKindName)? true : false;
+        long relationUID = resultRelationship.id();
+        String relationEntityUID = ""+relationUID;
+        String fromEntityUID = ""+resultRelationship.startNodeId();
+        String toEntityUID = ""+resultRelationship.endNodeId();
+        Neo4JRelationEntityImpl neo4jRelationEntityImpl =
+                new Neo4JRelationEntityImpl(relationType,relationEntityUID,fromEntityUID,toEntityUID);
+        neo4jRelationEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+        return neo4jRelationEntityImpl;
+    }
+
+    private EntitiesPath getEntitiesPathFromPath(Path path){
+        String startEntityType = path.start().labels().iterator().next();
+        String startEntityUID = ""+path.start().id();
+        String endEntityType = path.end().labels().iterator().next();
+        String endEntityUID = ""+path.end().id();
+        int pathJumps = path.length();
+        LinkedList<ConceptionEntity> pathConceptionEntities = new LinkedList<>();
+        LinkedList<RelationEntity> pathRelationEntities = new LinkedList<>();
+
+        EntitiesPath currentEntitiesPath = new EntitiesPath(startEntityType,startEntityUID,
+                endEntityType,endEntityUID,pathJumps,pathConceptionEntities,pathRelationEntities);
+
+        Iterator<Node> nodeIterator = path.nodes().iterator();
+        while(nodeIterator.hasNext()){
+            Node currentNode = nodeIterator.next();
+            List<String> allConceptionKindNames = Lists.newArrayList(currentNode.labels());
+            long nodeUID = currentNode.id();
+            String conceptionEntityUID = ""+nodeUID;
+            Neo4JConceptionEntityImpl neo4jConceptionEntityImpl =
+                    new Neo4JConceptionEntityImpl(allConceptionKindNames.get(0),conceptionEntityUID);
+            neo4jConceptionEntityImpl.setAllConceptionKindNames(allConceptionKindNames);
+            neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+            pathConceptionEntities.add(neo4jConceptionEntityImpl);
         }
-        if(isMatchedKind){
+
+        Iterator<Relationship> relationIterator = path.relationships().iterator();
+        while(relationIterator.hasNext()){
+            Relationship resultRelationship = relationIterator.next();
+            String relationType = resultRelationship.type();
             long relationUID = resultRelationship.id();
             String relationEntityUID = ""+relationUID;
             String fromEntityUID = ""+resultRelationship.startNodeId();
             String toEntityUID = ""+resultRelationship.endNodeId();
             Neo4JRelationEntityImpl neo4jRelationEntityImpl =
                     new Neo4JRelationEntityImpl(relationType,relationEntityUID,fromEntityUID,toEntityUID);
-            if(sourceNode != null){
-                Iterable<String> sourceNodeLabels = sourceNode.labels();
-                List<String> sourceNodeLabelList = Lists.newArrayList(sourceNodeLabels);
-                String sourceNodeId = ""+sourceNode.id();
-                if(sourceNodeId.equals(fromEntityUID)){
-                    neo4jRelationEntityImpl.setFromEntityConceptionKindList(sourceNodeLabelList);
-                }else{
-                    neo4jRelationEntityImpl.setToEntityConceptionKindList(sourceNodeLabelList);
-                }
-            }
-            if(targetNode != null){
-                Iterable<String> targetNodeLabels = targetNode.labels();
-                List<String> targetNodeLabelList = Lists.newArrayList(targetNodeLabels);
-                String targetNodeId = ""+targetNode.id();
-                if(targetNodeId.equals(toEntityUID)){
-                    neo4jRelationEntityImpl.setToEntityConceptionKindList(targetNodeLabelList);
-                }else{
-                    neo4jRelationEntityImpl.setFromEntityConceptionKindList(targetNodeLabelList);
-                }
-            }
             neo4jRelationEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
-            return neo4jRelationEntityImpl;
-        }else{
-            return null;
+            pathRelationEntities.add(neo4jRelationEntityImpl);
         }
 
-
-        */
-
-
-
-
-
-
-
-
-        return null;
-    }
-
-    private EntitiesPath getEntitiesPathFromPath(Path path){
-        return null;
+        return currentEntitiesPath;
     }
 }

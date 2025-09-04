@@ -1675,7 +1675,6 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try {
                 String coreRealmName = this.coreRealm != null ? this.coreRealm.getCoreRealmName() : null;
-
                 GetListDynamicContentValueTransformer getListDynamicContentValueTransformer =
                         new GetListDynamicContentValueTransformer(coreRealmName, dynamicContentAttributesValueTypeMap,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object executeResultObj = workingGraphOperationExecutor.executeRead(getListDynamicContentValueTransformer, adhocQuerySentence);
