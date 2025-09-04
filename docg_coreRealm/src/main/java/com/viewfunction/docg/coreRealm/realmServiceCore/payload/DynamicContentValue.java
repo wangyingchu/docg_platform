@@ -3,7 +3,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.payload;
 public class DynamicContentValue {
 
     public enum ContentValueType{
-        BOOLEAN,BYTE_ARRAY,DOUBLE,FLOAT,INT,DATE,TIME,DATETIME,LONG,CONCEPTION_ENTITY,NUMBER,ENTITIES_PATH,RELATION_ENTITY,STRING,TIMESTAMP
+        BOOLEAN,BYTE_ARRAY,FLOAT,INT,DATE,TIME,DATETIME,CONCEPTION_ENTITY,NUMBER,ENTITIES_PATH,RELATION_ENTITY,STRING,TIMESTAMP
     }
 
     private ContentValueType valueType;
