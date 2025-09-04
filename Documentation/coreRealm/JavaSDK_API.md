@@ -7001,3 +7001,32 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      */
     public RelationKind getContainerRelationKind();
 ```
+
+###### ↳ ConceptionActionLogicExecutor
+---
+
+```java
+    public Object executeActionSync(Map<String,Object> actionParameters, ConceptionKind conceptionKind, ConceptionEntity... conceptionEntity);
+
+    public CompletableFuture<Object> executeActionAsync(Map<String,Object> actionParameters, ConceptionKind conceptionKind, ConceptionEntity... conceptionEntity);
+```
+
+###### ↳ RelationActionLogicExecutor
+---
+
+```java
+    public Object executeActionSync(Map<String,Object> actionParameters, RelationKind relationKind, RelationEntity... relationEntity);
+
+    public CompletableFuture<Object> executeActionAsync(Map<String,Object> actionParameters, RelationKind relationKind, RelationEntity... relationEntity);
+```
+
+###### ↳ ExternalAttributesValueAccessProcessor
+---
+
+```java
+    public List<Map<String,Object>> getEntityExternalAttributesValues(AttributesViewKind attributesViewKind,QueryParameters queryParameters,List<AttributeValue> attributeValueList);
+
+    public Long countEntityExternalAttributesValues(AttributesViewKind attributesViewKind,AttributesParameters attributesParameters,List<AttributeValue> attributeValueList);
+
+    public Long deleteEntityExternalAttributesValues(AttributesViewKind attributesViewKind,AttributesParameters attributesParameters,List<AttributeValue> attributeValueList);
+```
