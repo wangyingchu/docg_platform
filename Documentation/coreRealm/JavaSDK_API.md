@@ -1326,6 +1326,42 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 当前概念类型中概念实体数据可以执行的数据操作能力统计
      */
     public ConceptionKindDataCapabilityInfo getConceptionKindDataCapabilityStatistics();
+
+	/**
+     * 为当前概念类型注册自定义动作
+     *
+     * @param actionName String 自定义动作名称
+     * @param actionDesc String 自定义动作描述
+     * @param actionImplementationClass String 自定义动作实现类全路径名称
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean registerAction(String actionName,String actionDesc,String actionImplementationClass) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 为当前概念类型注销删除自定义动作
+     *
+     * @param actionName String 待注销删除的自定义动作名称
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean unregisterAction(String actionName) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取注册在当前概念类型上的指定自定义动作对象
+     *
+     * @param actionName String 目标自定义动作名称
+     *
+     * @return 目标自定义动作对象
+     */
+    public ConceptionAction getAction(String actionName);
+
+    /**
+     * 获取注册在当前概念类型上的全部自定义动作对象
+     *
+     * @return 目标自定义动作对象集合
+     */
+    public Set<ConceptionAction> getActions();
 ```
 ###### ↳ RelationKind
 
@@ -1628,6 +1664,42 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 属性类型对象列表
      */
     public List<AttributeKind> getContainsSingleValueAttributeKinds(String attributeKindName);
+
+    /**
+     * 为当前关系类型注册自定义动作
+     *
+     * @param actionName String 自定义动作名称
+     * @param actionDesc String 自定义动作描述
+     * @param actionImplementationClass String 自定义动作实现类全路径名称
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean registerAction(String actionName,String actionDesc,String actionImplementationClass) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 为当前关系类型注销删除自定义动作
+     *
+     * @param actionName String 待注销删除的自定义动作名称
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean unregisterAction(String actionName) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取注册在当前关系类型上的指定自定义动作对象
+     *
+     * @param actionName String 目标自定义动作名称
+     *
+     * @return 目标自定义动作对象
+     */
+    public RelationAction getAction(String actionName);
+
+    /**
+     * 获取注册在当前关系类型上的全部自定义动作对象
+     *
+     * @return 目标自定义动作对象集合
+     */
+    public Set<RelationAction> getActions();
 ```
 ###### ↳ AttributesViewKind
 ---
@@ -6734,4 +6806,198 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      */
     public EntitiesOperationStatistics exportRelationEntitiesToCSV(String relationKindName,QueryParameters queryParameters,String csvFileLocation) throws CoreRealmServiceEntityExploreException;
 
+```
+
+###### *自定义拓展功能*
+
+###### ↳ ConceptionAction
+---
+
+```java
+    /**
+     * 获取当前自定义动作名称
+     *
+     * @return 自定义动作名称
+     */
+    public String getActionName();
+
+    /**
+     * 获取当前自定义动作描述
+     *
+     * @return 自定义动作描述
+     */
+    public String getActionDesc();
+
+    /**
+     * 更新当前自定义动作描述
+     *
+     * @param actionDesc String 新的自定义动作描述
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean updateActionDesc(String actionDesc);
+
+    /**
+     * 获取当前自定义动作唯一ID
+     *
+     * @return 自定义动作唯一ID
+     */
+    public String getActionUID();
+
+    /**
+     * 获取当前自定义动作实现类全路径名称
+     *
+     * @return 自定义动作实现类全路径名称
+     */
+    public String getActionImplementationClass();
+
+    /**
+     * 更新当前自定义动作实现类全路径名称
+     *
+     * @param actionImplementationClassFullName String 新的自定义动作实现类全路径名称
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean updateActionImplementationClass(String actionImplementationClassFullName);
+
+    /**
+     * 同步执行当前自定义动作实现类的操作逻辑，并返回执行结果
+     *
+     * @param actionParameters Map<String,Object> 执行实现类操作逻辑所需的参数
+     *
+     * @return 实现类操作逻辑同步返回的运行结果
+     */
+    public Object executeActionSync(Map<String,Object> actionParameters) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 异步执行当前自定义动作实现类的操作逻辑，并返回执行结果
+     *
+     * @param actionParameters Map<String,Object> 执行实现类操作逻辑所需的参数
+     *
+     * @return 实现类操作逻辑异步返回的运行结果
+     */
+    public CompletableFuture<Object> executeActionAsync(Map<String,Object> actionParameters) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 同步执行当前自定义动作实现类的操作逻辑，并返回执行结果
+     *
+     * @param actionParameters Map<String,Object> 执行实现类操作逻辑所需的参数
+     * @param conceptionEntity ConceptionEntity... 执行实现类操作逻辑所需的其他概念实体对象
+     *
+     * @return 实现类操作逻辑同步返回的运行结果
+     */
+    public Object executeActionSync(Map<String,Object> actionParameters,ConceptionEntity... conceptionEntity) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 异步执行当前自定义动作实现类的操作逻辑，并返回执行结果
+     *
+     * @param actionParameters Map<String,Object> 执行实现类操作逻辑所需的参数
+     * @param conceptionEntity ConceptionEntity... 执行实现类操作逻辑所需的其他概念实体对象
+     *
+     * @return 实现类操作逻辑异步返回的运行结果
+     */
+    public CompletableFuture<Object> executeActionAsync(Map<String,Object> actionParameters,ConceptionEntity... conceptionEntity) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取包含当前自定义动作的概念类型对象
+     *
+     * @return 概念类型对象
+     */
+    public ConceptionKind getContainerConceptionKind();
+```
+
+###### ↳ RelationAction
+---
+
+```java
+    /**
+     * 获取当前自定义动作名称
+     *
+     * @return 自定义动作名称
+     */
+    public String getActionName();
+
+    /**
+     * 获取当前自定义动作描述
+     *
+     * @return 自定义动作描述
+     */
+    public String getActionDesc();
+
+    /**
+     * 更新当前自定义动作描述
+     *
+     * @param actionDesc String 新的自定义动作描述
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean updateActionDesc(String actionDesc);
+
+    /**
+     * 获取当前自定义动作唯一ID
+     *
+     * @return 自定义动作唯一ID
+     */
+    public String getActionUID();
+
+    /**
+     * 获取当前自定义动作实现类全路径名称
+     *
+     * @return 自定义动作实现类全路径名称
+     */
+    public String getActionImplementationClass();
+
+    /**
+     * 更新当前自定义动作实现类全路径名称
+     *
+     * @param actionImplementationClassFullName String 新的自定义动作实现类全路径名称
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean updateActionImplementationClass(String actionImplementationClassFullName);
+
+    /**
+     * 同步执行当前自定义动作实现类的操作逻辑，并返回执行结果
+     *
+     * @param actionParameters Map<String,Object> 执行实现类操作逻辑所需的参数
+     *
+     * @return 实现类操作逻辑同步返回的运行结果
+     */
+    public Object executeActionSync(Map<String,Object> actionParameters) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 异步执行当前自定义动作实现类的操作逻辑，并返回执行结果
+     *
+     * @param actionParameters Map<String,Object> 执行实现类操作逻辑所需的参数
+     *
+     * @return 实现类操作逻辑异步返回的运行结果
+     */
+    public CompletableFuture<Object> executeActionAsync(Map<String,Object> actionParameters) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 同步执行当前自定义动作实现类的操作逻辑，并返回执行结果
+     *
+     * @param actionParameters Map<String,Object> 执行实现类操作逻辑所需的参数
+     * @param relationEntity RelationEntity... 执行实现类操作逻辑所需的其他关系实体对象
+     *
+     * @return 实现类操作逻辑同步返回的运行结果
+     */
+    public Object executeActionSync(Map<String,Object> actionParameters,RelationEntity... relationEntity) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 异步执行当前自定义动作实现类的操作逻辑，并返回执行结果
+     *
+     * @param actionParameters Map<String,Object> 执行实现类操作逻辑所需的参数
+     * @param relationEntity RelationEntity... 执行实现类操作逻辑所需的其他关系实体对象
+     *
+     * @return 实现类操作逻辑异步返回的运行结果
+     */
+    public CompletableFuture<Object> executeActionAsync(Map<String,Object> actionParameters,RelationEntity... relationEntity) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 获取包含当前自定义动作的关系类型对象
+     *
+     * @return 关系类型对象
+     */
+    public RelationKind getContainerRelationKind();
 ```

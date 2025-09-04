@@ -315,15 +315,39 @@ public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttr
      */
     public List<AttributeKind> getContainsSingleValueAttributeKinds(String attributeKindName);
 
-
-
-
-
+    /**
+     * 为当前关系类型注册自定义动作
+     *
+     * @param actionName String 自定义动作名称
+     * @param actionDesc String 自定义动作描述
+     * @param actionImplementationClass String 自定义动作实现类全路径名称
+     *
+     * @return 如操作成功，返回结果为 true
+     */
     public boolean registerAction(String actionName,String actionDesc,String actionImplementationClass) throws CoreRealmServiceRuntimeException;
 
+    /**
+     * 为当前关系类型注销删除自定义动作
+     *
+     * @param actionName String 待注销删除的自定义动作名称
+     *
+     * @return 如操作成功，返回结果为 true
+     */
     public boolean unregisterAction(String actionName) throws CoreRealmServiceRuntimeException;
 
+    /**
+     * 获取注册在当前关系类型上的指定自定义动作对象
+     *
+     * @param actionName String 目标自定义动作名称
+     *
+     * @return 目标自定义动作对象
+     */
     public RelationAction getAction(String actionName);
 
+    /**
+     * 获取注册在当前关系类型上的全部自定义动作对象
+     *
+     * @return 目标自定义动作对象集合
+     */
     public Set<RelationAction> getActions();
 }
