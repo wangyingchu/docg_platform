@@ -1,10 +1,12 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer;
 
+import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.DynamicContentValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.EntitiesPath;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionEntityImpl;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
@@ -16,7 +18,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,15 +25,17 @@ public class GetListDynamicContentValueTransformer implements DataTransformer<Li
 
     private GraphOperationExecutor workingGraphOperationExecutor;
     private String currentCoreRealmName;
+    private Map<String,DynamicContentValue.ContentValueType> dynamicContentAttributesValueTypeMap;
 
-    public GetListDynamicContentValueTransformer(String currentCoreRealmName,GraphOperationExecutor workingGraphOperationExecutor){
+    public GetListDynamicContentValueTransformer(String currentCoreRealmName,Map<String,DynamicContentValue.ContentValueType> dynamicContentAttributesValueTypeMap,
+                                                 GraphOperationExecutor workingGraphOperationExecutor){
         this.currentCoreRealmName= currentCoreRealmName;
+        this.dynamicContentAttributesValueTypeMap = dynamicContentAttributesValueTypeMap;
         this.workingGraphOperationExecutor = workingGraphOperationExecutor;
     }
 
     @Override
     public List<DynamicContentValue> transformResult(Result result) {
-        Map<String,DynamicContentValue.ContentValueType> dynamicContentAttributesValueTypeMap = new HashMap<>();
         List<DynamicContentValue> dynamicContentValueList = new ArrayList<>();
         if(result.hasNext()){
             while(result.hasNext()){
@@ -42,9 +45,6 @@ public class GetListDynamicContentValueTransformer implements DataTransformer<Li
                     Object value = recordField.value();
                     createAttributeEntity(key,value,dynamicContentValueList,dynamicContentAttributesValueTypeMap);
                 });
-
-
-
             }
         }
         return dynamicContentValueList;
@@ -164,11 +164,83 @@ public class GetListDynamicContentValueTransformer implements DataTransformer<Li
         }
     }
 
-    private ConceptionEntity getConceptionEntityFromNode(Node node){
-        return null;
+    private ConceptionEntity getConceptionEntityFromNode(Node resultNode){
+        List<String> allConceptionKindNames = Lists.newArrayList(resultNode.labels());
+        String targetConceptionKindName = allConceptionKindNames.get(0);
+        long nodeUID = resultNode.id();
+        String conceptionEntityUID = ""+nodeUID;
+        Neo4JConceptionEntityImpl neo4jConceptionEntityImpl =
+                new Neo4JConceptionEntityImpl(targetConceptionKindName,conceptionEntityUID);
+        neo4jConceptionEntityImpl.setAllConceptionKindNames(allConceptionKindNames);
+        neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+        return neo4jConceptionEntityImpl;
     }
 
-    private RelationEntity getRelationEntityFromRelationship(Relationship relationship){
+    private RelationEntity getRelationEntityFromRelationship(Relationship resultRelationship){
+
+
+
+
+
+
+
+/*
+
+        Relationship resultRelationship = nodeRecord.get(CypherBuilder.operationResultName).asRelationship();
+        Node sourceNode = nodeRecord.containsKey(CypherBuilder.sourceNodeName) ? nodeRecord.get(CypherBuilder.sourceNodeName).asNode():null;
+        Node targetNode = nodeRecord.containsKey(CypherBuilder.targetNodeName) ? nodeRecord.get(CypherBuilder.targetNodeName).asNode():null;
+        String relationType = resultRelationship.type();
+        boolean isMatchedKind;
+        // if the relationEntity is come from a DELETE relation operation,the relationType will be empty string,
+        // make isMatchedKind to be true at this case
+        if(this.targetRelationKindName == null || relationType.equals("")){
+            isMatchedKind = true;
+        }else{
+            isMatchedKind = relationType.equals(targetRelationKindName)? true : false;
+        }
+        if(isMatchedKind){
+            long relationUID = resultRelationship.id();
+            String relationEntityUID = ""+relationUID;
+            String fromEntityUID = ""+resultRelationship.startNodeId();
+            String toEntityUID = ""+resultRelationship.endNodeId();
+            Neo4JRelationEntityImpl neo4jRelationEntityImpl =
+                    new Neo4JRelationEntityImpl(relationType,relationEntityUID,fromEntityUID,toEntityUID);
+            if(sourceNode != null){
+                Iterable<String> sourceNodeLabels = sourceNode.labels();
+                List<String> sourceNodeLabelList = Lists.newArrayList(sourceNodeLabels);
+                String sourceNodeId = ""+sourceNode.id();
+                if(sourceNodeId.equals(fromEntityUID)){
+                    neo4jRelationEntityImpl.setFromEntityConceptionKindList(sourceNodeLabelList);
+                }else{
+                    neo4jRelationEntityImpl.setToEntityConceptionKindList(sourceNodeLabelList);
+                }
+            }
+            if(targetNode != null){
+                Iterable<String> targetNodeLabels = targetNode.labels();
+                List<String> targetNodeLabelList = Lists.newArrayList(targetNodeLabels);
+                String targetNodeId = ""+targetNode.id();
+                if(targetNodeId.equals(toEntityUID)){
+                    neo4jRelationEntityImpl.setToEntityConceptionKindList(targetNodeLabelList);
+                }else{
+                    neo4jRelationEntityImpl.setFromEntityConceptionKindList(targetNodeLabelList);
+                }
+            }
+            neo4jRelationEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+            return neo4jRelationEntityImpl;
+        }else{
+            return null;
+        }
+
+
+        */
+
+
+
+
+
+
+
+
         return null;
     }
 

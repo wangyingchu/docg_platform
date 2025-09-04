@@ -1667,14 +1667,17 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             e.setCauseMessage("Adhoc Query Sentence is required");
             throw e;
         }else{
+            Map<String,DynamicContentValue.ContentValueType> dynamicContentAttributesValueTypeMap = new HashMap<>();
             DynamicContentQueryResult dynamicContentQueryResult = new DynamicContentQueryResult();
             dynamicContentQueryResult.setStartTime(new Date());
             dynamicContentQueryResult.setAdhocQuerySentence(adhocQuerySentence);
+            dynamicContentQueryResult.setDynamicContentAttributesValueTypeMap(dynamicContentAttributesValueTypeMap);
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try {
                 String coreRealmName = this.coreRealm != null ? this.coreRealm.getCoreRealmName() : null;
+
                 GetListDynamicContentValueTransformer getListDynamicContentValueTransformer =
-                        new GetListDynamicContentValueTransformer(coreRealmName, this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                        new GetListDynamicContentValueTransformer(coreRealmName, dynamicContentAttributesValueTypeMap,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
                 Object executeResultObj = workingGraphOperationExecutor.executeRead(getListDynamicContentValueTransformer, adhocQuerySentence);
                 if(executeResultObj != null){
                     List<DynamicContentValue> dynamicContentValueList = (List<DynamicContentValue>)executeResultObj;

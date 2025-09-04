@@ -2,6 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.payload;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class DynamicContentQueryResult {
 
@@ -10,6 +11,7 @@ public class DynamicContentQueryResult {
     private Date finishTime;
     private long dynamicContentValuesCount;
     private List<DynamicContentValue> dynamicContentValueList;
+    private Map<String,DynamicContentValue.ContentValueType> dynamicContentAttributesValueTypeMap;
 
     public String getAdhocQuerySentence() {
         return adhocQuerySentence;
@@ -49,5 +51,13 @@ public class DynamicContentQueryResult {
 
     public void setDynamicContentValueList(List<DynamicContentValue> dynamicContentValueList) {
         this.dynamicContentValueList = dynamicContentValueList;
+    }
+
+    public Map<String, DynamicContentValue.ContentValueType> getDynamicContentAttributesValueTypeMap() {
+        return dynamicContentAttributesValueTypeMap;
+    }
+
+    public void setDynamicContentAttributesValueTypeMap(Map<String, DynamicContentValue.ContentValueType> dynamicContentAttributesValueTypeMap) {
+        this.dynamicContentAttributesValueTypeMap = dynamicContentAttributesValueTypeMap;
     }
 }
