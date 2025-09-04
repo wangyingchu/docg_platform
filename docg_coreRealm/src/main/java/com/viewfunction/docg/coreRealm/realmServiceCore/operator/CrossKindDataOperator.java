@@ -432,5 +432,5 @@ public interface CrossKindDataOperator {
      *
      * @return 即席查询结果集，具体数据格式依查询语句的返回条件而定
      */
-    public AdhocQueryResult executeAdhocQuery(String adhocQuerySentence) throws CoreRealmServiceRuntimeException;
+    public DynamicContentQueryResult executeAdhocQuery(String adhocQuerySentence) throws CoreRealmServiceEntityExploreException;
 }

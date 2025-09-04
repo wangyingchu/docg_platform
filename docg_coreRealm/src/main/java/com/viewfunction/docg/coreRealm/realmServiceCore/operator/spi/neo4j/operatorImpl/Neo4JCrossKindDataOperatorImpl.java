@@ -1660,8 +1660,33 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public AdhocQueryResult executeAdhocQuery(String adhocQuerySentence) throws CoreRealmServiceRuntimeException {
-        return null;
+    public DynamicContentQueryResult executeAdhocQuery(String adhocQuerySentence) throws CoreRealmServiceEntityExploreException {
+        if(adhocQuerySentence == null){
+            logger.error("Adhoc Query Sentence is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("Adhoc Query Sentence is required");
+            throw e;
+        }else{
+            DynamicContentQueryResult dynamicContentQueryResult = new DynamicContentQueryResult();
+            dynamicContentQueryResult.setStartTime(new Date());
+            dynamicContentQueryResult.setAdhocQuerySentence(adhocQuerySentence);
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try {
+                String coreRealmName = this.coreRealm != null ? this.coreRealm.getCoreRealmName() : null;
+                GetListDynamicContentValueTransformer getListDynamicContentValueTransformer =
+                        new GetListDynamicContentValueTransformer(coreRealmName, this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                Object executeResultObj = workingGraphOperationExecutor.executeRead(getListDynamicContentValueTransformer, adhocQuerySentence);
+                if(executeResultObj != null){
+                    List<DynamicContentValue> dynamicContentValueList = (List<DynamicContentValue>)executeResultObj;
+                    dynamicContentQueryResult.setDynamicContentValueList(dynamicContentValueList);
+                    dynamicContentQueryResult.setDynamicContentValuesCount(dynamicContentValueList.size());
+                }
+                dynamicContentQueryResult.setFinishTime(new Date());
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            return dynamicContentQueryResult;
+        }
     }
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
