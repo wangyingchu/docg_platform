@@ -2,6 +2,9 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTran
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.DynamicContentValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.structure.EntitiesPath;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
@@ -12,7 +15,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GetListDynamicContentValueTransformer implements DataTransformer<List<DynamicContentValue>>{
 
@@ -26,115 +32,147 @@ public class GetListDynamicContentValueTransformer implements DataTransformer<Li
 
     @Override
     public List<DynamicContentValue> transformResult(Result result) {
+        Map<String,DynamicContentValue.ContentValueType> dynamicContentAttributesValueTypeMap = new HashMap<>();
+        List<DynamicContentValue> dynamicContentValueList = new ArrayList<>();
         if(result.hasNext()){
             while(result.hasNext()){
                 Record nodeRecord = result.next();
-
-
-
-
-
-
-
-               // nodeRecord.get(0).as
-
-
-
-
-
-
-
-
-
-
-
                 nodeRecord.fields().stream().forEach(recordField -> {
                     String key = recordField.key();
                     Object value = recordField.value();
-
-
-
-
-
-
+                    createAttributeEntity(key,value,dynamicContentValueList,dynamicContentAttributesValueTypeMap);
                 });
-
-
-
-
-
-
-                //nodeRecord.fields().stream().filter(recordField -> recordField.key().equals(currentKey)).forEach(recordField -> {});
-
-
-
-
-
-
-
-                List<String> recordKeyList = nodeRecord.keys();
-                for(String currentKey : recordKeyList){
-
-
-
-
-                }
 
 
 
             }
         }
-
-        return List.of();
+        return dynamicContentValueList;
     }
 
-    private void createAttributeEntity(Object entityObject){
+    private void createAttributeEntity(String entityKey,Object entityObject,List<DynamicContentValue> dynamicContentValueList,
+                                       Map<String,DynamicContentValue.ContentValueType> dynamicContentAttributesValueTypeMap){
+        DynamicContentValue dynamicContentValue = new DynamicContentValue();
+        dynamicContentValue.setValueName(entityKey);
+        dynamicContentValueList.add(dynamicContentValue);
         if(entityObject instanceof Boolean){
-
+            if(!dynamicContentAttributesValueTypeMap.containsKey(entityKey)){
+                dynamicContentAttributesValueTypeMap.put(entityKey, DynamicContentValue.ContentValueType.BOOLEAN);
+            }
+            dynamicContentValue.setValueObject(entityObject);
+            dynamicContentValue.setValueType(DynamicContentValue.ContentValueType.BOOLEAN);
         }else if(entityObject instanceof byte[]){
-
+            if(!dynamicContentAttributesValueTypeMap.containsKey(entityKey)){
+                dynamicContentAttributesValueTypeMap.put(entityKey, DynamicContentValue.ContentValueType.BYTE_ARRAY);
+            }
+            dynamicContentValue.setValueObject(entityObject);
+            dynamicContentValue.setValueType(DynamicContentValue.ContentValueType.BYTE_ARRAY);
         }
         else if(entityObject instanceof Double){
-
+            if(!dynamicContentAttributesValueTypeMap.containsKey(entityKey)){
+                dynamicContentAttributesValueTypeMap.put(entityKey, DynamicContentValue.ContentValueType.DOUBLE);
+            }
+            dynamicContentValue.setValueObject(entityObject);
+            dynamicContentValue.setValueType(DynamicContentValue.ContentValueType.DOUBLE);
         }
         else if(entityObject instanceof Float){
-
+            if(!dynamicContentAttributesValueTypeMap.containsKey(entityKey)){
+                dynamicContentAttributesValueTypeMap.put(entityKey, DynamicContentValue.ContentValueType.FLOAT);
+            }
+            dynamicContentValue.setValueObject(entityObject);
+            dynamicContentValue.setValueType(DynamicContentValue.ContentValueType.FLOAT);
         }
         else if(entityObject instanceof Integer){
-
+            if(!dynamicContentAttributesValueTypeMap.containsKey(entityKey)){
+                dynamicContentAttributesValueTypeMap.put(entityKey, DynamicContentValue.ContentValueType.INT);
+            }
+            dynamicContentValue.setValueObject(entityObject);
+            dynamicContentValue.setValueType(DynamicContentValue.ContentValueType.INT);
         }
         else if(entityObject instanceof LocalDate){
-
+            if(!dynamicContentAttributesValueTypeMap.containsKey(entityKey)){
+                dynamicContentAttributesValueTypeMap.put(entityKey, DynamicContentValue.ContentValueType.DATE);
+            }
+            dynamicContentValue.setValueObject(entityObject);
+            dynamicContentValue.setValueType(DynamicContentValue.ContentValueType.DATE);
         }
         else if(entityObject instanceof LocalTime){
-
+            if(!dynamicContentAttributesValueTypeMap.containsKey(entityKey)){
+                dynamicContentAttributesValueTypeMap.put(entityKey, DynamicContentValue.ContentValueType.TIME);
+            }
+            dynamicContentValue.setValueObject(entityObject);
+            dynamicContentValue.setValueType(DynamicContentValue.ContentValueType.TIME);
         }
         else if(entityObject instanceof LocalDateTime){
-
+            if(!dynamicContentAttributesValueTypeMap.containsKey(entityKey)){
+                dynamicContentAttributesValueTypeMap.put(entityKey, DynamicContentValue.ContentValueType.DATETIME);
+            }
+            dynamicContentValue.setValueObject(entityObject);
+            dynamicContentValue.setValueType(DynamicContentValue.ContentValueType.DATETIME);
         }
         else if(entityObject instanceof Long){
-
+            if(!dynamicContentAttributesValueTypeMap.containsKey(entityKey)){
+                dynamicContentAttributesValueTypeMap.put(entityKey, DynamicContentValue.ContentValueType.LONG);
+            }
+            dynamicContentValue.setValueObject(entityObject);
+            dynamicContentValue.setValueType(DynamicContentValue.ContentValueType.LONG);
         }
         else if(entityObject instanceof Node){
-
-        }
-        else if(entityObject instanceof Number){
-
+            if(!dynamicContentAttributesValueTypeMap.containsKey(entityKey)){
+                dynamicContentAttributesValueTypeMap.put(entityKey, DynamicContentValue.ContentValueType.CONCEPTION_ENTITY);
+            }
+            dynamicContentValue.setValueObject(getConceptionEntityFromNode((Node)entityObject));
+            dynamicContentValue.setValueType(DynamicContentValue.ContentValueType.CONCEPTION_ENTITY);
         }
         else if(entityObject instanceof Path){
-
+            if(!dynamicContentAttributesValueTypeMap.containsKey(entityKey)){
+                dynamicContentAttributesValueTypeMap.put(entityKey, DynamicContentValue.ContentValueType.ENTITIES_PATH);
+            }
+            dynamicContentValue.setValueObject(getEntitiesPathFromPath((Path)entityObject));
+            dynamicContentValue.setValueType(DynamicContentValue.ContentValueType.ENTITIES_PATH);
         }
         else if(entityObject instanceof Relationship){
-
+            if(!dynamicContentAttributesValueTypeMap.containsKey(entityKey)){
+                dynamicContentAttributesValueTypeMap.put(entityKey, DynamicContentValue.ContentValueType.RELATION_ENTITY);
+            }
+            dynamicContentValue.setValueObject(getRelationEntityFromRelationship((Relationship)entityObject));
+            dynamicContentValue.setValueType(DynamicContentValue.ContentValueType.RELATION_ENTITY);
         }
         else if(entityObject instanceof String){
-
+            if(!dynamicContentAttributesValueTypeMap.containsKey(entityKey)){
+                dynamicContentAttributesValueTypeMap.put(entityKey, DynamicContentValue.ContentValueType.STRING);
+            }
+            dynamicContentValue.setValueObject(entityObject);
+            dynamicContentValue.setValueType(DynamicContentValue.ContentValueType.STRING);
         }
         else if(entityObject instanceof ZonedDateTime){
-
-        }else{
+            if(!dynamicContentAttributesValueTypeMap.containsKey(entityKey)){
+                dynamicContentAttributesValueTypeMap.put(entityKey, DynamicContentValue.ContentValueType.TIMESTAMP);
+            }
+            dynamicContentValue.setValueObject(entityObject);
+            dynamicContentValue.setValueType(DynamicContentValue.ContentValueType.TIMESTAMP);
+        }
+        else if(entityObject instanceof Number){
+            if(!dynamicContentAttributesValueTypeMap.containsKey(entityKey)){
+                dynamicContentAttributesValueTypeMap.put(entityKey, DynamicContentValue.ContentValueType.NUMBER);
+            }
+            dynamicContentValue.setValueObject(entityObject);
+            dynamicContentValue.setValueType(DynamicContentValue.ContentValueType.NUMBER);
+        }
+        else{
 
         }
+    }
 
+    private ConceptionEntity getConceptionEntityFromNode(Node node){
+        return null;
+    }
+
+    private RelationEntity getRelationEntityFromRelationship(Relationship relationship){
+        return null;
+    }
+
+    private EntitiesPath getEntitiesPathFromPath(Path path){
+        return null;
     }
 }
