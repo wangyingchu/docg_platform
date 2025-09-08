@@ -10,7 +10,7 @@ public class DynamicContentQueryResult {
     private Date startTime;
     private Date finishTime;
     private long dynamicContentValuesCount;
-    private List<DynamicContentValue> dynamicContentValueList;
+    private List<Map<String,DynamicContentValue>> dynamicContentResultValueList;
     private Map<String,DynamicContentValue.ContentValueType> dynamicContentAttributesValueTypeMap;
 
     public String getAdhocQuerySentence() {
@@ -45,19 +45,19 @@ public class DynamicContentQueryResult {
         this.dynamicContentValuesCount = dynamicContentValuesCount;
     }
 
-    public List<DynamicContentValue> getDynamicContentValueList() {
-        return dynamicContentValueList;
-    }
-
-    public void setDynamicContentValueList(List<DynamicContentValue> dynamicContentValueList) {
-        this.dynamicContentValueList = dynamicContentValueList;
-    }
-
     public Map<String, DynamicContentValue.ContentValueType> getDynamicContentAttributesValueTypeMap() {
         return dynamicContentAttributesValueTypeMap;
     }
 
     public void setDynamicContentAttributesValueTypeMap(Map<String, DynamicContentValue.ContentValueType> dynamicContentAttributesValueTypeMap) {
         this.dynamicContentAttributesValueTypeMap = dynamicContentAttributesValueTypeMap;
+    }
+
+    public List<Map<String, DynamicContentValue>> getDynamicContentResultValueList() {
+        return dynamicContentResultValueList;
+    }
+
+    public void setDynamicContentResultValueList(List<Map<String, DynamicContentValue>> dynamicContentResultValueList) {
+        this.dynamicContentResultValueList = dynamicContentResultValueList;
     }
 }

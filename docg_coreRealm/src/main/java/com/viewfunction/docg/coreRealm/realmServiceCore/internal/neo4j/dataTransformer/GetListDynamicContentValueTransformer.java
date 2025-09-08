@@ -1,6 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer;
 
 import com.google.common.collect.Lists;
+
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.DynamicContentValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.EntitiesPath;
@@ -8,6 +9,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionEntityImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JRelationEntityImpl;
+
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.internal.value.*;
@@ -16,7 +18,7 @@ import org.neo4j.driver.types.Relationship;
 
 import java.util.*;
 
-public class GetListDynamicContentValueTransformer implements DataTransformer<List<DynamicContentValue>>{
+public class GetListDynamicContentValueTransformer implements DataTransformer<List<Map<String,DynamicContentValue>>>{
 
     private GraphOperationExecutor workingGraphOperationExecutor;
     private String currentCoreRealmName;
@@ -30,22 +32,24 @@ public class GetListDynamicContentValueTransformer implements DataTransformer<Li
     }
 
     @Override
-    public List<DynamicContentValue> transformResult(Result result) {
-        List<DynamicContentValue> dynamicContentValueList = new ArrayList<>();
+    public List<Map<String,DynamicContentValue>> transformResult(Result result) {
+        List<Map<String,DynamicContentValue>> dynamicContentValueList = new ArrayList<>();
         if(result.hasNext()){
             while(result.hasNext()){
+                Map<String,DynamicContentValue> currentRowMap = new HashMap<>();
+                dynamicContentValueList.add(currentRowMap);
                 Record nodeRecord = result.next();
                 nodeRecord.fields().stream().forEach(recordField -> {
                     String key = recordField.key();
                     Object value = recordField.value();
-                    createAttributeEntity(key,value,dynamicContentValueList,dynamicContentAttributesValueTypeMap);
+                    createAttributeEntity(key,value,currentRowMap,dynamicContentAttributesValueTypeMap);
                 });
             }
         }
         return dynamicContentValueList;
     }
 
-    private void createAttributeEntity(String entityKey,Object entityObject,List<DynamicContentValue> dynamicContentValueList,
+    private void createAttributeEntity(String entityKey,Object entityObject,Map<String,DynamicContentValue> currentRowMap,
                                        Map<String,DynamicContentValue.ContentValueType> dynamicContentAttributesValueTypeMap){
         DynamicContentValue dynamicContentValue = new DynamicContentValue();
         dynamicContentValue.setValueName(entityKey);
@@ -150,7 +154,7 @@ public class GetListDynamicContentValueTransformer implements DataTransformer<Li
             isValidObject = false;
         }
         if(isValidObject){
-            dynamicContentValueList.add(dynamicContentValue);
+            currentRowMap.put(entityKey,dynamicContentValue);
         }
     }
 
