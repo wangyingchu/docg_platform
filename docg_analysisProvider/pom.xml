@@ -11,11 +11,11 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <spark.version>3.5.6</spark.version>
+        <spark.version>4.0.1</spark.version>
         <flink.version>1.20.0</flink.version>
         <datasyslab.geotools.version>1.5.1-28.2</datasyslab.geotools.version>
         <geotools.version>26.4</geotools.version>
-        <sedona.version>1.7.2</sedona.version>
+        <sedona.version>1.8.0</sedona.version>
         <akka.version>2.7.0</akka.version>
         <derby.version>10.15.2.0</derby.version>
         <rocketmq-client-java-version>5.0.8</rocketmq-client-java-version>
@@ -61,17 +61,17 @@
         -->
         <dependency>
             <groupId>org.apache.sedona</groupId>
-            <artifactId>sedona-spark-shaded-3.5_2.13</artifactId>
+            <artifactId>sedona-spark-shaded-4.0_2.13</artifactId>
             <version>${sedona.version}</version>
         </dependency>
         <!-- Optional: https://mvnrepository.com/artifact/org.datasyslab/geotools-wrapper -->
-        <!--
+
         <dependency>
             <groupId>org.datasyslab</groupId>
             <artifactId>geotools-wrapper</artifactId>
-            <version>1.7.0-28.5</version>
+            <version>1.8.0-33.1</version>
         </dependency>
-        -->
+        <!--  -->
 
         <!--
          GIS Related

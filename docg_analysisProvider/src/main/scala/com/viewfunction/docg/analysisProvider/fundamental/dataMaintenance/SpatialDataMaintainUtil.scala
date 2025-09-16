@@ -14,9 +14,11 @@ import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.{DataServic
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.common.CoreRealmOperationUtil
 import org.geotools.data.shapefile.ShapefileDataStore
 import org.geotools.data.simple.{SimpleFeatureCollection, SimpleFeatureIterator, SimpleFeatureSource}
+import org.geotools.feature.simple.SimpleFeatureImpl
 import org.geotools.data.{FileDataStore, FileDataStoreFinder}
 import org.geotools.referencing.CRS
 import org.opengis.feature.GeometryAttribute
+import org.geotools.feature.GeometryAttributeImpl
 import org.opengis.feature.simple.{SimpleFeature, SimpleFeatureType}
 
 import java.io.File
@@ -321,7 +323,7 @@ class SpatialDataMaintainUtil {
         entityCRSAID = "EPSG:4545"
         geometryContentType = RealmConstant._GeospatialCLGeometryContent
       }else {
-        val _EpsgCodeValue: Integer = CRS.lookupEpsgCode(simpleFeatureType.getCoordinateReferenceSystem, true)
+        val _EpsgCodeValue: Integer = CRS.lookupEpsgCode(simpleFeatureType.getCoordinateReferenceSystem.asInstanceOf[org.geotools.referencing.crs.DefaultGeographicCRS], true)
         if (_EpsgCodeValue != null) {
           entityCRSAID = "EPSG:" + _EpsgCodeValue.intValue
         }
@@ -341,7 +343,7 @@ class SpatialDataMaintainUtil {
     }) {
       val newEntityValueMap: util.HashMap[String, Any] = new util.HashMap[String, Any]
       // 要素对象
-      val feature: SimpleFeature = featureIterator.next
+      val feature = featureIterator.next.asInstanceOf[org.geotools.feature.simple.SimpleFeatureImpl]
       // 要素属性信息，名称，值，类型
       val propertyList= feature.getValue
       import scala.collection.JavaConverters._
@@ -357,7 +359,7 @@ class SpatialDataMaintainUtil {
       }
       if (feature.getDefaultGeometry != null) {
         val geometryContent: String = feature.getDefaultGeometry.toString
-        val geometryAttribute: GeometryAttribute = feature.getDefaultGeometryProperty
+        val geometryAttribute = feature.getDefaultGeometryProperty.asInstanceOf[org.geotools.feature.GeometryAttributeImpl]
         val geometryType: String = geometryAttribute.getType.getName.toString
         var geometryTypeValue: String = "GEOMETRYCOLLECTION"
         if ("Point" == geometryType) {
