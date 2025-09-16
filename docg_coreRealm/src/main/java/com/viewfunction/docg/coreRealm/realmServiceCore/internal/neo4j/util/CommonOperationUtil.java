@@ -796,6 +796,22 @@ public class CommonOperationUtil {
             } else {
                 return Functions2.id((Node) targetPropertyContainer).in(Cypher.listOf(listLiteralValue));
             }
+        } else if (filteringItem instanceof BetweenAttributesFilteringItem) {
+            BetweenAttributesFilteringItem currentFilteringItem = (BetweenAttributesFilteringItem) filteringItem;
+            String fromPropertyName = currentFilteringItem.getFromAttributeName();
+            String toPropertyName = currentFilteringItem.getToAttributeName();
+            Object queryValue = internalValueConvert(currentFilteringItem.getAttributeValue());
+            if (fromPropertyName != null & toPropertyName != null & queryValue != null) {
+                if (filteringItem.isReversedCondition()) {
+                    return targetPropertyContainer.property(toPropertyName).lt(Cypher.literalOf(queryValue)).or(
+                            targetPropertyContainer.property(fromPropertyName).gt(Cypher.literalOf(queryValue))
+                    );
+                } else {
+                    return targetPropertyContainer.property(toPropertyName).gte(Cypher.literalOf(queryValue)).and(
+                            targetPropertyContainer.property(fromPropertyName).lte(Cypher.literalOf(queryValue))
+                    );
+                }
+            }
         }
         return null;
     }
