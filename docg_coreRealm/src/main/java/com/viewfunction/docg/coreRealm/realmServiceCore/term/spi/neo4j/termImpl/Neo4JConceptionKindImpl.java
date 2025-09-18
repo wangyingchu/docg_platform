@@ -1654,6 +1654,72 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
     }
 
     @Override
+    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByDirectRelations(List<String> attributeNames, String relationKind, RelationDirection relationDirection, String aimConceptionKind, QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException {
+        if(relationKind == null){
+            logger.error("RelationKind is required.");
+            CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+            exception.setCauseMessage("RelationKind is required.");
+            throw exception;
+        }
+        RelationDirection realRelationDirection =  RelationDirection.TWO_WAY;
+
+        if(relationDirection != null){
+            switch(relationDirection){
+                case FROM:
+                    realRelationDirection = RelationDirection.TO;
+                    break;
+                case TO:
+                    realRelationDirection = RelationDirection.FROM;
+                    break;
+                case TWO_WAY:
+                    realRelationDirection =  RelationDirection.TWO_WAY;
+            }
+        }
+        if(attributeNames != null && attributeNames.size() > 0){
+            CommonConceptionEntitiesAttributesRetrieveResultImpl commonConceptionEntitiesAttributesRetrieveResultImpl
+                    = new CommonConceptionEntitiesAttributesRetrieveResultImpl();
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try{
+                String queryCql = CypherBuilder.matchNodesWithQueryParameters(aimConceptionKind,queryParameters,null);
+                DataTransformer<List<String>> aimConceptionKindEntityUIDListDataTransformer = new DataTransformer<List<String>>() {
+                    @Override
+                    public List<String> transformResult(Result result) {
+                        List<String> conceptionEntityUIDList = new ArrayList<>();
+                        while(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            Node resultNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
+                            long nodeUID = resultNode.id();
+                            String conceptionEntityUID = ""+nodeUID;
+                            conceptionEntityUIDList.add(conceptionEntityUID);
+
+                        }
+                        return conceptionEntityUIDList;
+                    }
+                };
+                Object queryRes = workingGraphOperationExecutor.executeRead(aimConceptionKindEntityUIDListDataTransformer,queryCql);
+                List aimConceptionKindEntityUIDList = (List<String>)queryRes;
+                queryCql = CypherBuilder.matchNodeWithSpecialRelationAndAttributeFilter(relationKind,realRelationDirection,
+                        aimConceptionKind,aimConceptionKindEntityUIDList,this.conceptionKindName,null);
+
+                GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer = new GetListConceptionEntityValueTransformer(attributeNames);
+                Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
+                if(resEntityRes != null){
+                    List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
+                    commonConceptionEntitiesAttributesRetrieveResultImpl.addConceptionEntitiesAttributes(resultEntitiesValues);
+                    commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultEntitiesValues.size());
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+
+            commonConceptionEntitiesAttributesRetrieveResultImpl.finishEntitiesRetrieving();
+            return commonConceptionEntitiesAttributesRetrieveResultImpl;
+        }else{
+            return null;
+        }
+    }
+
+    @Override
     public Set<KindAttributeDistributionInfo> getKindAttributesDistributionStatistics(double sampleRatio) throws CoreRealmServiceRuntimeException {
         if(sampleRatio >1 || sampleRatio<=0){
             logger.error("Sample Ratio should between (0,1] .");

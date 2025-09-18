@@ -1064,6 +1064,21 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
             relationDirection,String aimConceptionKind,QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
 
 	/**
+     * 查询与符合过滤条件的目标概念类型实体直接关联的实体对象,并根据输入的属性类型返回相应的属性值
+     *
+     * @param attributeNames List<String> 属性类型列表
+     * @param relationKind String 关联的关系类型名称
+     * @param relationDirection RelationDirection 关联方向
+     * @param aimConceptionKind List<String> 查询目标概念类型名称，如传入 null 则忽略类型
+     * @param queryParameters QueryParameters 查询的目标关联概念实体过滤参数
+     *
+     * @return 概念实体属性查询结果集
+     */
+    public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByDirectRelations(
+            List<String> attributeNames, String relationKind,RelationDirection
+            relationDirection,String aimConceptionKind,QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
+
+	/**
      * 根据采样率获取部分概念实体数据并统计其中包含的属性分布统计信息
      *
      * @param sampleRatio double 采样率，介于0到1之间的小数，代表当前概念类型中需要采样数据的百分比
