@@ -194,6 +194,8 @@ public class GetListDynamicContentValueTransformer implements DataTransformer<Li
         EntitiesPath currentEntitiesPath = new EntitiesPath(startEntityType,startEntityUID,
                 endEntityType,endEntityUID,pathJumps,pathConceptionEntities,pathRelationEntities);
 
+        Map<String,List<String>> existedConceptionEntitiesConceptionKindNamesMap = new HashMap<>();
+
         Iterator<Node> nodeIterator = pathValue.asPath().nodes().iterator();
         while(nodeIterator.hasNext()){
             Node currentNode = nodeIterator.next();
@@ -205,6 +207,7 @@ public class GetListDynamicContentValueTransformer implements DataTransformer<Li
             neo4jConceptionEntityImpl.setAllConceptionKindNames(allConceptionKindNames);
             neo4jConceptionEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
             pathConceptionEntities.add(neo4jConceptionEntityImpl);
+            existedConceptionEntitiesConceptionKindNamesMap.put(conceptionEntityUID,allConceptionKindNames);
         }
 
         Iterator<Relationship> relationIterator = pathValue.asPath().relationships().iterator();
@@ -218,6 +221,12 @@ public class GetListDynamicContentValueTransformer implements DataTransformer<Li
             Neo4JRelationEntityImpl neo4jRelationEntityImpl =
                     new Neo4JRelationEntityImpl(relationType,relationEntityUID,fromEntityUID,toEntityUID);
             neo4jRelationEntityImpl.setGlobalGraphOperationExecutor(workingGraphOperationExecutor);
+            if(existedConceptionEntitiesConceptionKindNamesMap.containsKey(fromEntityUID)){
+                neo4jRelationEntityImpl.setFromEntityConceptionKindList(existedConceptionEntitiesConceptionKindNamesMap.get(fromEntityUID));
+            }
+            if(existedConceptionEntitiesConceptionKindNamesMap.containsKey(toEntityUID)){
+                neo4jRelationEntityImpl.setToEntityConceptionKindList(existedConceptionEntitiesConceptionKindNamesMap.get(toEntityUID));
+            }
             pathRelationEntities.add(neo4jRelationEntityImpl);
         }
 
