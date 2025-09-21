@@ -5498,6 +5498,16 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
     public List<RelationEntity> getRelationsOfConceptionEntityPair(List<String> conceptionEntityPairUIDs) throws CoreRealmServiceEntityExploreException;
 
     /**
+     * 输入一组概念实体的唯一值ID，查询并返回所有包含其中的概念实体两两间的关系实体属性数据
+     *
+     * @param attributeNames List<String> 属性类型列表
+     * @param conceptionEntityPairUIDs List<String> 概念实体唯一值ID列表
+     *
+     * @return 查询匹配的关系实体对象属性列表
+     */
+    public List<RelationEntityValue> getRelationsAttributesOfConceptionEntityPair(List<String> attributeNames,List<String> conceptionEntityPairUIDs) throws CoreRealmServiceEntityExploreException;
+
+    /**
      * 输入一组概念实体的唯一值ID，查询并删除所有包含其中的概念实体两两间的关系实体数据
      *
      * @param conceptionEntityPairUIDs List<String> 概念实体唯一值ID列表

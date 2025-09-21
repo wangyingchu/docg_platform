@@ -78,6 +78,43 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
+    public List<RelationEntityValue> getRelationsAttributesOfConceptionEntityPair(List<String> attributeNames, List<String> conceptionEntityPairUIDs) throws CoreRealmServiceEntityExploreException {
+        if(attributeNames != null && attributeNames.size()>0){}else{
+            logger.error("At least one attribute name is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("At least one attribute name is required");
+            throw e;
+        }
+        if(conceptionEntityPairUIDs == null || conceptionEntityPairUIDs.size() < 2){
+            logger.error("At least two conception entity UID is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("At least two conception entity UID is required");
+            throw e;
+        }
+
+        /*
+        Example:
+        https://neo4j.com/labs/apoc/4.1/overview/apoc.algo/apoc.algo.cover/
+        */
+
+        String cypherProcedureString = "MATCH (targetNodes) WHERE id(targetNodes) IN " + conceptionEntityPairUIDs.toString()+"\n"+
+                "with collect(targetNodes) as nodes\n" +
+                "CALL apoc.algo.cover(nodes)\n" +
+                "YIELD rel\n" +
+                "RETURN startNode(rel) as "+CypherBuilder.sourceNodeName+", rel as "+CypherBuilder.operationResultName+", endNode(rel) as "+CypherBuilder.targetNodeName+";";
+        logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListRelationEntityValueTransformer getListRelationEntityValueTransformer =
+                    new GetListRelationEntityValueTransformer(null,attributeNames);
+            Object queryRes = workingGraphOperationExecutor.executeRead(getListRelationEntityValueTransformer,cypherProcedureString);
+            return queryRes != null ? (List<RelationEntityValue>)queryRes : null;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
     public long removeRelationsOfConceptionEntityPair(List<String> conceptionEntityPairUIDs, String relationKind) throws CoreRealmServiceEntityExploreException {
         /*
         Example:
