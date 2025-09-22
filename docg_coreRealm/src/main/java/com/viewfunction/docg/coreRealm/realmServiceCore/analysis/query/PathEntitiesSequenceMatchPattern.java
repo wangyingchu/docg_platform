@@ -22,7 +22,7 @@ public class PathEntitiesSequenceMatchPattern {
                     sequenceMatchLogicList.add(sequenceMatchLogic);
                 }else{
                     CoreRealmServiceRuntimeException coreRealmServiceRuntimeException = new CoreRealmServiceRuntimeException();
-                    coreRealmServiceRuntimeException.setCauseMessage("lase SequenceMatchLogic must be RelationKindSequenceMatchLogic");
+                    coreRealmServiceRuntimeException.setCauseMessage("last SequenceMatchLogic must be RelationKindSequenceMatchLogic");
                     throw coreRealmServiceRuntimeException;
                 }
             }else if(lastSequenceMatchLogic instanceof RelationKindSequenceMatchLogic){
@@ -30,7 +30,7 @@ public class PathEntitiesSequenceMatchPattern {
                     sequenceMatchLogicList.add(sequenceMatchLogic);
                 }else{
                     CoreRealmServiceRuntimeException coreRealmServiceRuntimeException = new CoreRealmServiceRuntimeException();
-                    coreRealmServiceRuntimeException.setCauseMessage("lase SequenceMatchLogic must be ConceptionKindSequenceMatchLogic");
+                    coreRealmServiceRuntimeException.setCauseMessage("last SequenceMatchLogic must be ConceptionKindSequenceMatchLogic");
                     throw coreRealmServiceRuntimeException;
                 }
             }
