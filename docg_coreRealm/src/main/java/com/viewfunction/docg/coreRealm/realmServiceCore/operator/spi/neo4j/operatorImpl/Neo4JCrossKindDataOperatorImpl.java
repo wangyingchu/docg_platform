@@ -2,9 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.oper
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.PathEntitiesSequenceMatchPattern;
-import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
@@ -1403,6 +1401,27 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
     @Override
     public Set<PathEntitiesSequence> getPathEntitiesSequences(PathEntitiesSequenceMatchPattern sequenceMatchPattern) throws CoreRealmServiceRuntimeException {
+        String cql = "MATCH p=()-[r:SubwayStationNearbyAround]->() RETURN p LIMIT 25";
+        LinkedList<SequenceMatchLogic> sequenceMatchLogicList = sequenceMatchPattern.getSequenceMatchLogicList();
+        sequenceMatchLogicList.forEach(sequenceMatchLogic -> {
+            if(sequenceMatchLogic instanceof ConceptionKindSequenceMatchLogic){
+                ConceptionKindSequenceMatchLogic currentConceptionKindSequenceMatchLogic = (ConceptionKindSequenceMatchLogic)sequenceMatchLogic;
+                String currentConceptionKind = currentConceptionKindSequenceMatchLogic.getKindName();
+                AttributesParameters currentAttributesParameters = currentConceptionKindSequenceMatchLogic.getEntityAttributesFilterParameter();
+            }
+            if(sequenceMatchLogic instanceof RelationKindSequenceMatchLogic){
+                RelationKindSequenceMatchLogic currentRelationKindSequenceMatchLogic = (RelationKindSequenceMatchLogic)sequenceMatchLogic;
+            }
+        });
+
+
+
+
+
+
+
+
+
         return Set.of();
     }
 
