@@ -7,16 +7,17 @@ import java.util.LinkedList;
 public class PathEntitiesSequenceMatchPattern {
 
     private LinkedList<SequenceMatchLogic> sequenceMatchLogicList;
+    private int resultNumber;
 
     public PathEntitiesSequenceMatchPattern(){
         this.sequenceMatchLogicList = new LinkedList<>();
     }
 
     public void addSequenceMatchLogic(SequenceMatchLogic sequenceMatchLogic) throws CoreRealmServiceRuntimeException {
-        SequenceMatchLogic lastSequenceMatchLogic = sequenceMatchLogicList.getLast();
-        if(lastSequenceMatchLogic == null){
+        if(sequenceMatchLogicList.isEmpty()){
             sequenceMatchLogicList.add(sequenceMatchLogic);
         }else{
+            SequenceMatchLogic lastSequenceMatchLogic = sequenceMatchLogicList.getLast();
             if(lastSequenceMatchLogic instanceof ConceptionKindSequenceMatchLogic){
                 if(sequenceMatchLogic instanceof RelationKindSequenceMatchLogic){
                     sequenceMatchLogicList.add(sequenceMatchLogic);
@@ -43,5 +44,13 @@ public class PathEntitiesSequenceMatchPattern {
 
     public void clearSequenceMatchLogicList(LinkedList<SequenceMatchLogic> sequenceMatchLogicList) {
         this.sequenceMatchLogicList.clear();
+    }
+
+    public int getResultNumber() {
+        return resultNumber;
+    }
+
+    public void setResultNumber(int resultNumber) {
+        this.resultNumber = resultNumber;
     }
 }

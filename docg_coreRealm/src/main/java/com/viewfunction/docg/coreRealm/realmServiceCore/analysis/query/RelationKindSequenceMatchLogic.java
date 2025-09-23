@@ -14,6 +14,12 @@ public class RelationKindSequenceMatchLogic implements SequenceMatchLogic{
         this.relationDirection = RelationDirection.TWO_WAY;
     }
 
+    public RelationKindSequenceMatchLogic(String kinkName,AttributesParameters entityAttributesFilterParameter,RelationDirection relationDirection){
+        this.kinkName = kinkName;
+        this.entityAttributesFilterParameter = entityAttributesFilterParameter;
+        this.relationDirection = relationDirection;
+    }
+
     @Override
     public String getKindName() {
         return this.kinkName;

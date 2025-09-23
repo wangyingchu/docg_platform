@@ -32,6 +32,7 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
@@ -1401,27 +1402,86 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
     @Override
     public Set<PathEntitiesSequence> getPathEntitiesSequences(PathEntitiesSequenceMatchPattern sequenceMatchPattern) throws CoreRealmServiceRuntimeException {
-        String cql = "MATCH p=()-[r:SubwayStationNearbyAround]->() RETURN p LIMIT 25";
+        //String cql = "MATCH p=()-[r:SubwayStationNearbyAround]->() RETURN p LIMIT 25";
         LinkedList<SequenceMatchLogic> sequenceMatchLogicList = sequenceMatchPattern.getSequenceMatchLogicList();
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("MATCH p=");
+
+        String firstConceptionKindPerfix="";
+        String lastConceptionKindPerfix="";
+        if(sequenceMatchLogicList.getFirst() instanceof RelationKindSequenceMatchLogic){
+            firstConceptionKindPerfix="()";
+        }
+        if(sequenceMatchLogicList.getLast() instanceof RelationKindSequenceMatchLogic){
+            lastConceptionKindPerfix="()";
+        }
+        sb.append(firstConceptionKindPerfix);
+
+        Map<String,AttributesParameters> partFilterLogicMap = new HashMap<>();
+
+        AtomicInteger kindSequenceIdx= new AtomicInteger();
         sequenceMatchLogicList.forEach(sequenceMatchLogic -> {
+            String currentCqlPart = null;
             if(sequenceMatchLogic instanceof ConceptionKindSequenceMatchLogic){
-                ConceptionKindSequenceMatchLogic currentConceptionKindSequenceMatchLogic = (ConceptionKindSequenceMatchLogic)sequenceMatchLogic;
-                String currentConceptionKind = currentConceptionKindSequenceMatchLogic.getKindName();
-                AttributesParameters currentAttributesParameters = currentConceptionKindSequenceMatchLogic.getEntityAttributesFilterParameter();
+                ConceptionKindSequenceMatchLogic currentKindSequenceMatchLogic = (ConceptionKindSequenceMatchLogic)sequenceMatchLogic;
+                String currentConceptionKind = currentKindSequenceMatchLogic.getKindName();
+                AttributesParameters currentAttributesParameters = currentKindSequenceMatchLogic.getEntityAttributesFilterParameter();
+                String kindAlias = "c"+kindSequenceIdx.get();
+                partFilterLogicMap.put(kindAlias,currentAttributesParameters);
+                currentCqlPart = "("+kindAlias+":`"+currentConceptionKind+"`)";
             }
             if(sequenceMatchLogic instanceof RelationKindSequenceMatchLogic){
-                RelationKindSequenceMatchLogic currentRelationKindSequenceMatchLogic = (RelationKindSequenceMatchLogic)sequenceMatchLogic;
+                RelationKindSequenceMatchLogic currentKindSequenceMatchLogic = (RelationKindSequenceMatchLogic)sequenceMatchLogic;
+                String currentConceptionKind = currentKindSequenceMatchLogic.getKindName();
+                RelationDirection currentRelationDirection = currentKindSequenceMatchLogic.getRelationDirection();
+                AttributesParameters currentAttributesParameters = currentKindSequenceMatchLogic.getEntityAttributesFilterParameter();
+                String kindAlias = "r"+kindSequenceIdx.get();
+                partFilterLogicMap.put(kindAlias,currentAttributesParameters);
+                currentCqlPart = "["+kindAlias+":`"+currentConceptionKind+"`]";
+                switch (currentRelationDirection){
+                    case FROM -> currentCqlPart = "-"+currentCqlPart+"->";
+                    case TO -> currentCqlPart = "<-"+currentCqlPart+"-";
+                    case TWO_WAY -> currentCqlPart = "-"+currentCqlPart+"-";
+                }
+            }
+            kindSequenceIdx.getAndIncrement();
+            if(currentCqlPart!= null){
+                sb.append(currentCqlPart);
             }
         });
 
+        if(!partFilterLogicMap.isEmpty()){
+            sb.append(" WHERE ");
+            boolean isFirstPart = true;
+            Set<String> queryFilterMapKeys = partFilterLogicMap.keySet();
+            for(String currentKey:queryFilterMapKeys){
+                AttributesParameters currentAttributesParameters = partFilterLogicMap.get(currentKey);
+                try {
+                    if(currentAttributesParameters != null){
+                        String filterLogic = CypherBuilder.generateAttributesParametersQueryLogic(currentAttributesParameters,currentKey);
+                        String resStr = filterLogic.replace("WHERE ","");
+                        if(!isFirstPart){
+                            sb.append(" AND ");
+                        }
+                        sb.append("(");
+                        sb.append(resStr);
+                        sb.append(")");
+                    }
+                } catch (CoreRealmServiceEntityExploreException e) {
+                    throw new CoreRealmServiceRuntimeException();
+                }
+                isFirstPart = false;
+            }
+        }
 
+        sb.append(lastConceptionKindPerfix);
+        sb.append(" RETURN p");
 
+        int limitNumber = sequenceMatchPattern.getResultNumber() != 0 ? sequenceMatchPattern.getResultNumber() : 100;
+        sb.append(" LIMIT "+limitNumber);
 
-
-
-
-
-
+        System.out.println(sb.toString());
         return Set.of();
     }
 
