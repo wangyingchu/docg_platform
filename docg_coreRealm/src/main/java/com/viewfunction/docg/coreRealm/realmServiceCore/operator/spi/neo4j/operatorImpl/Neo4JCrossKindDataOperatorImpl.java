@@ -1402,7 +1402,6 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
     @Override
     public Set<PathEntitiesSequence> getPathEntitiesSequences(PathEntitiesSequenceMatchPattern sequenceMatchPattern) throws CoreRealmServiceRuntimeException {
-        //String cql = "MATCH p=()-[r:SubwayStationNearbyAround]->() RETURN p LIMIT 25";
         LinkedList<SequenceMatchLogic> sequenceMatchLogicList = sequenceMatchPattern.getSequenceMatchLogicList();
 
         StringBuilder sb = new StringBuilder();
@@ -1476,13 +1475,24 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         }
 
         sb.append(lastConceptionKindPerfix);
-        sb.append(" RETURN p");
+        sb.append(" RETURN p as operationResult");
 
         int limitNumber = sequenceMatchPattern.getResultNumber() != 0 ? sequenceMatchPattern.getResultNumber() : 100;
         sb.append(" LIMIT "+limitNumber);
 
-        System.out.println(sb.toString());
-        return Set.of();
+        String cql = sb.toString();
+        logger.debug("Generated Cypher Statement: {}", cql);
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetSetPathEntitiesSequenceTransformer getSetPathEntitiesSequenceTransformer = new GetSetPathEntitiesSequenceTransformer(
+                    this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object pathEntitiesSequenceSetObj = workingGraphOperationExecutor.executeRead(getSetPathEntitiesSequenceTransformer,cql);
+            Set<PathEntitiesSequence> pathEntitiesSequenceSet = pathEntitiesSequenceSetObj != null ? (Set<PathEntitiesSequence>)pathEntitiesSequenceSetObj : null;
+            return pathEntitiesSequenceSet;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
