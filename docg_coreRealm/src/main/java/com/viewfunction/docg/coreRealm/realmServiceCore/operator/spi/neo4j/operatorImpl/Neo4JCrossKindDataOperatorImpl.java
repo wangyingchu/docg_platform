@@ -1449,6 +1449,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                 sb.append(currentCqlPart);
             }
         });
+        sb.append(lastConceptionKindPerfix);
 
         if(!partFilterLogicMap.isEmpty()){
             sb.append(" WHERE ");
@@ -1466,15 +1467,15 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                         sb.append("(");
                         sb.append(resStr);
                         sb.append(")");
+
+                        isFirstPart = false;
                     }
                 } catch (CoreRealmServiceEntityExploreException e) {
                     throw new CoreRealmServiceRuntimeException();
                 }
-                isFirstPart = false;
             }
         }
 
-        sb.append(lastConceptionKindPerfix);
         sb.append(" RETURN p as operationResult");
 
         int limitNumber = sequenceMatchPattern.getResultNumber() != 0 ? sequenceMatchPattern.getResultNumber() : 100;

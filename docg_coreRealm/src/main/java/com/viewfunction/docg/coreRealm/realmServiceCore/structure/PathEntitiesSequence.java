@@ -10,6 +10,14 @@ public class PathEntitiesSequence {
         this.entitiesSequence = entitiesSequence;
     }
 
+    public PathEntitiesSequence(){
+        this.entitiesSequence = new LinkedList<>();
+    }
+
+    public void addPathEntity(PathEntity pathEntity){
+        this.entitiesSequence.add(pathEntity);
+    }
+
     public LinkedList<PathEntity> getEntitiesSequence() {
         return entitiesSequence;
     }
