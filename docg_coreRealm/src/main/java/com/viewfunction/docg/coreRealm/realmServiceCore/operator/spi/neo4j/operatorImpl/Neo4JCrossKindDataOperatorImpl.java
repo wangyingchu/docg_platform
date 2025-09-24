@@ -1404,7 +1404,6 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     @Override
     public Set<PathEntitiesSequence> getPathEntitiesSequences(PathEntitiesSequenceMatchPattern sequenceMatchPattern) throws CoreRealmServiceRuntimeException {
         String cql = generatePathEntitiesSequencesQueryCQL(sequenceMatchPattern);
-
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
             GetSetPathEntitiesSequenceTransformer getSetPathEntitiesSequenceTransformer = new GetSetPathEntitiesSequenceTransformer(
@@ -1419,14 +1418,16 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
     @Override
     public Set<PathEntityValuesSequence> getPathEntityValuesSequences(PathEntitiesSequenceMatchPattern sequenceMatchPattern) throws CoreRealmServiceRuntimeException {
-
-
-
-
-
-
-
-        return Set.of();
+        String cql = generatePathEntitiesSequencesQueryCQL(sequenceMatchPattern);
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetSetPathEntityValuesSequenceTransformer getSetPathEntityValuesSequenceTransformer = new GetSetPathEntityValuesSequenceTransformer();
+            Object pathEntityValuesSequenceSetObj = workingGraphOperationExecutor.executeRead(getSetPathEntityValuesSequenceTransformer,cql);
+            Set<PathEntityValuesSequence> pathEntityValuesSequenceSet = pathEntityValuesSequenceSetObj != null ? (Set<PathEntityValuesSequence>)pathEntityValuesSequenceSetObj : null;
+            return pathEntityValuesSequenceSet;
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     @Override
@@ -1904,6 +1905,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         sb.append(firstConceptionKindPerfix);
 
         Map<String,AttributesParameters> partFilterLogicMap = new HashMap<>();
+        StringBuilder entitiesReturnValueCQL = new StringBuilder();
 
         AtomicInteger kindSequenceIdx= new AtomicInteger();
         sequenceMatchLogicList.forEach(sequenceMatchLogic -> {
@@ -1915,6 +1917,12 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                 String kindAlias = "c"+kindSequenceIdx.get();
                 partFilterLogicMap.put(kindAlias,currentAttributesParameters);
                 currentCqlPart = "("+kindAlias+":`"+currentConceptionKind+"`)";
+                if(sequenceMatchLogic.getReturnAttributeNames()!= null && !sequenceMatchLogic.getReturnAttributeNames().isEmpty()){
+                    List<String> currentAttributesNameList = sequenceMatchLogic.getReturnAttributeNames();
+                    for(String currentAttributeName:currentAttributesNameList){
+                        entitiesReturnValueCQL.append(",").append(kindAlias).append(".").append(currentAttributeName);
+                    }
+                }
             }
             if(sequenceMatchLogic instanceof RelationKindSequenceMatchLogic){
                 RelationKindSequenceMatchLogic currentKindSequenceMatchLogic = (RelationKindSequenceMatchLogic)sequenceMatchLogic;
@@ -1928,6 +1936,12 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                     case FROM -> currentCqlPart = "-"+currentCqlPart+"->";
                     case TO -> currentCqlPart = "<-"+currentCqlPart+"-";
                     case TWO_WAY -> currentCqlPart = "-"+currentCqlPart+"-";
+                }
+                if(sequenceMatchLogic.getReturnAttributeNames()!= null && !sequenceMatchLogic.getReturnAttributeNames().isEmpty()){
+                    List<String> currentAttributesNameList = sequenceMatchLogic.getReturnAttributeNames();
+                    for(String currentAttributeName:currentAttributesNameList){
+                        entitiesReturnValueCQL.append(",").append(kindAlias).append(".").append(currentAttributeName);
+                    }
                 }
             }
             kindSequenceIdx.getAndIncrement();
@@ -1963,6 +1977,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         }
 
         sb.append(" RETURN p as operationResult");
+        sb.append(entitiesReturnValueCQL);
 
         int limitNumber = sequenceMatchPattern.getResultNumber() != 0 ? sequenceMatchPattern.getResultNumber() : 100;
         sb.append(" LIMIT "+limitNumber);
