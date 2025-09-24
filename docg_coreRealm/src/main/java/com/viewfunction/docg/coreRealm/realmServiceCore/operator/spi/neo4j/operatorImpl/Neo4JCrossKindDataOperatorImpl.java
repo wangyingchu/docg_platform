@@ -1,7 +1,10 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Multimap;
+
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
@@ -1403,7 +1406,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
     @Override
     public Set<PathEntitiesSequence> getPathEntitiesSequences(PathEntitiesSequenceMatchPattern sequenceMatchPattern) throws CoreRealmServiceRuntimeException {
-        String cql = generatePathEntitiesSequencesQueryCQL(sequenceMatchPattern);
+        String cql = generatePathEntitiesSequencesQueryCQL(sequenceMatchPattern,null,null,null);
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
             GetSetPathEntitiesSequenceTransformer getSetPathEntitiesSequenceTransformer = new GetSetPathEntitiesSequenceTransformer(
@@ -1418,10 +1421,14 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
     @Override
     public Set<PathEntityValuesSequence> getPathEntityValuesSequences(PathEntitiesSequenceMatchPattern sequenceMatchPattern) throws CoreRealmServiceRuntimeException {
-        String cql = generatePathEntitiesSequencesQueryCQL(sequenceMatchPattern);
+        List<String> conceptionEntitiesAliasList = new ArrayList<>();
+        List<String> relationEntitiesAliasList = new ArrayList<>();
+        Multimap<String, String> multimap = ArrayListMultimap.create();
+        String cql = generatePathEntitiesSequencesQueryCQL(sequenceMatchPattern,conceptionEntitiesAliasList,relationEntitiesAliasList,multimap);
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
-            GetSetPathEntityValuesSequenceTransformer getSetPathEntityValuesSequenceTransformer = new GetSetPathEntityValuesSequenceTransformer();
+            GetSetPathEntityValuesSequenceTransformer getSetPathEntityValuesSequenceTransformer =
+                    new GetSetPathEntityValuesSequenceTransformer(conceptionEntitiesAliasList,relationEntitiesAliasList,multimap);
             Object pathEntityValuesSequenceSetObj = workingGraphOperationExecutor.executeRead(getSetPathEntityValuesSequenceTransformer,cql);
             Set<PathEntityValuesSequence> pathEntityValuesSequenceSet = pathEntityValuesSequenceSetObj != null ? (Set<PathEntityValuesSequence>)pathEntityValuesSequenceSetObj : null;
             return pathEntityValuesSequenceSet;
@@ -1888,7 +1895,9 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         }
     }
 
-    public String generatePathEntitiesSequencesQueryCQL(PathEntitiesSequenceMatchPattern sequenceMatchPattern) throws CoreRealmServiceRuntimeException {
+    public String generatePathEntitiesSequencesQueryCQL(PathEntitiesSequenceMatchPattern sequenceMatchPattern,
+                                                        List<String> conceptionEntitiesAliasList,List<String> relationEntitiesAliasList,
+                                                        Multimap<String, String> entityAliasMultimap) throws CoreRealmServiceRuntimeException {
         LinkedList<SequenceMatchLogic> sequenceMatchLogicList = sequenceMatchPattern.getSequenceMatchLogicList();
 
         StringBuilder sb = new StringBuilder();
@@ -1915,12 +1924,18 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                 String currentConceptionKind = currentKindSequenceMatchLogic.getKindName();
                 AttributesParameters currentAttributesParameters = currentKindSequenceMatchLogic.getEntityAttributesFilterParameter();
                 String kindAlias = "c"+kindSequenceIdx.get();
+                if(conceptionEntitiesAliasList != null){
+                    conceptionEntitiesAliasList.add(kindAlias);
+                }
                 partFilterLogicMap.put(kindAlias,currentAttributesParameters);
                 currentCqlPart = "("+kindAlias+":`"+currentConceptionKind+"`)";
                 if(sequenceMatchLogic.getReturnAttributeNames()!= null && !sequenceMatchLogic.getReturnAttributeNames().isEmpty()){
                     List<String> currentAttributesNameList = sequenceMatchLogic.getReturnAttributeNames();
                     for(String currentAttributeName:currentAttributesNameList){
                         entitiesReturnValueCQL.append(",").append(kindAlias).append(".").append(currentAttributeName);
+                        if(entityAliasMultimap != null){
+                            entityAliasMultimap.put(kindAlias,kindAlias+"."+currentAttributeName);
+                        }
                     }
                 }
             }
@@ -1930,6 +1945,9 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                 RelationDirection currentRelationDirection = currentKindSequenceMatchLogic.getRelationDirection();
                 AttributesParameters currentAttributesParameters = currentKindSequenceMatchLogic.getEntityAttributesFilterParameter();
                 String kindAlias = "r"+kindSequenceIdx.get();
+                if(relationEntitiesAliasList != null){
+                    relationEntitiesAliasList.add(kindAlias);
+                }
                 partFilterLogicMap.put(kindAlias,currentAttributesParameters);
                 currentCqlPart = "["+kindAlias+":`"+currentConceptionKind+"`]";
                 switch (currentRelationDirection){
@@ -1941,6 +1959,9 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                     List<String> currentAttributesNameList = sequenceMatchLogic.getReturnAttributeNames();
                     for(String currentAttributeName:currentAttributesNameList){
                         entitiesReturnValueCQL.append(",").append(kindAlias).append(".").append(currentAttributeName);
+                        if(entityAliasMultimap != null){
+                            entityAliasMultimap.put(kindAlias,kindAlias+"."+currentAttributeName);
+                        }
                     }
                 }
             }
