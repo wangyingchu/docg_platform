@@ -51,13 +51,10 @@ public class GetSetPathEntityValuesSequenceTransformer implements DataTransforme
                         String relationEntityUID = ""+relationUID;
                         String fromEntityUID = ""+resultRelationship.startNodeId();
                         String toEntityUID = ""+resultRelationship.endNodeId();
+
                         Map<String,Object> entityAttributesValue = new HashMap<>();
-
                         RelationEntityValue relationEntityValue = new RelationEntityValue(relationEntityUID,fromEntityUID,toEntityUID,entityAttributesValue);
-
-
-
-
+                        relationEntityValue.setRelationKindName(relationType);
                         relationEntityValueList.add(relationEntityValue);
                     }
 

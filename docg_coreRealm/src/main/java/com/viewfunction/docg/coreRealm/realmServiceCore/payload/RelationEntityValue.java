@@ -10,6 +10,7 @@ public class RelationEntityValue implements PathEntityValue {
     private String fromConceptionEntityUID;
     private String toConceptionEntityUID;
     private Map<String,Object> entityAttributesValue;
+    private String relationKindName;
 
     public RelationEntityValue(){}
 
@@ -51,5 +52,13 @@ public class RelationEntityValue implements PathEntityValue {
 
     public void setEntityAttributesValue(Map<String, Object> entityAttributesValue) {
         this.entityAttributesValue = entityAttributesValue;
+    }
+
+    public String getRelationKindName() {
+        return relationKindName;
+    }
+
+    public void setRelationKindName(String relationKindName) {
+        this.relationKindName = relationKindName;
     }
 }
