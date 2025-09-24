@@ -5813,6 +5813,15 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
     public Set<PathEntitiesSequence> getPathEntitiesSequences(PathEntitiesSequenceMatchPattern sequenceMatchPattern) throws CoreRealmServiceRuntimeException;
 
     /**
+     * 获取符合匹配模式的路径实体属性值序列集合
+     *
+     * @param sequenceMatchPattern PathEntitiesSequenceMatchPattern 目标路径实体序列的查询匹配规则
+     *
+     * @return 符合条件的路径实体属性值序列集合
+     */
+    public Set<PathEntityValuesSequence> getPathEntityValuesSequences(PathEntitiesSequenceMatchPattern sequenceMatchPattern) throws CoreRealmServiceRuntimeException;
+
+    /**
      * 获取与分类名称集合中的各项分类自身直接关联的概念类型对象信息
      *
      * @param classificationNames Set<String> 目标分类名称,如集合为空或为 null 值,则返回所有分类相关概念类型信息

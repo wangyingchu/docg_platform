@@ -18,6 +18,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.paylo
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonTimeScaleEventAndConceptionEntityPairRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonTimeScaleEventsRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntitiesSequence;
+import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntityValuesSequence;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
@@ -1494,6 +1495,18 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
+    }
+
+    @Override
+    public Set<PathEntityValuesSequence> getPathEntityValuesSequences(PathEntitiesSequenceMatchPattern sequenceMatchPattern) throws CoreRealmServiceRuntimeException {
+
+
+
+
+
+
+
+        return Set.of();
     }
 
     @Override

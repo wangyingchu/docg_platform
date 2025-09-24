@@ -1,9 +1,11 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.payload;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntityValue;
+
 import java.util.List;
 import java.util.Map;
 
-public class ConceptionEntityValue {
+public class ConceptionEntityValue implements PathEntityValue {
 
     private String conceptionEntityUID;
     private Map<String,Object> entityAttributesValue;
