@@ -48,7 +48,6 @@ public interface Neo4JStatisticalAndEvaluable extends StatisticalAndEvaluable,Ne
                 if(this instanceof RelationKind){
                     statisticCql = CypherBuilder.statistRelationsWithQueryParametersAndStatisticFunctions(statisticTargetLabel,realQueryParameters,statisticConditions,null);
                 }
-                logger.debug("Generated Cypher Statement: {}", statisticCql);
 
                 DataTransformer resultHandleDataTransformer = new DataTransformer() {
                     @Override
