@@ -52,7 +52,8 @@ public class GetSetPathEntityValuesSequenceTransformer implements DataTransforme
                         if(entityAttributes != null && !entityAttributes.isEmpty()){
                             for(String entityAttribute:entityAttributes){
                                 Object entityAttributeValue = nodeRecord.get(entityAttribute).asObject();
-                                entityAttributesValue.put(entityAttribute,entityAttributeValue);
+                                String attributeName = entityAttribute.replace(entityAlias+".","");
+                                entityAttributesValue.put(attributeName,entityAttributeValue);
                             }
                         }
 
@@ -78,7 +79,8 @@ public class GetSetPathEntityValuesSequenceTransformer implements DataTransforme
                         if(entityAttributes != null && !entityAttributes.isEmpty()){
                             for(String entityAttribute:entityAttributes){
                                 Object entityAttributeValue = nodeRecord.get(entityAttribute).asObject();
-                                entityAttributesValue.put(entityAttribute,entityAttributeValue);
+                                String attributeName = entityAttribute.replace(entityAlias+".","");
+                                entityAttributesValue.put(attributeName,entityAttributeValue);
                             }
                         }
 
@@ -89,6 +91,8 @@ public class GetSetPathEntityValuesSequenceTransformer implements DataTransforme
                         String toEntityUID = ""+resultRelationship.endNodeId();
 
                         RelationEntityValue relationEntityValue = new RelationEntityValue(relationEntityUID,fromEntityUID,toEntityUID,entityAttributesValue);
+                        relationEntityValue.setFromConceptionEntityKinds(conceptionEntitiesConceptionKindsMap.get(fromEntityUID));
+                        relationEntityValue.setToConceptionEntityKinds(conceptionEntitiesConceptionKindsMap.get(toEntityUID));
                         relationEntityValue.setRelationKindName(relationType);
                         relationEntityValueList.add(relationEntityValue);
                     }

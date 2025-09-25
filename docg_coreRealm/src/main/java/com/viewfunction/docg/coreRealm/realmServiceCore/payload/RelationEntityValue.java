@@ -2,6 +2,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.payload;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntityValue;
 
+import java.util.List;
 import java.util.Map;
 
 public class RelationEntityValue implements PathEntityValue {
@@ -11,6 +12,8 @@ public class RelationEntityValue implements PathEntityValue {
     private String toConceptionEntityUID;
     private Map<String,Object> entityAttributesValue;
     private String relationKindName;
+    private List<String> fromConceptionEntityKinds;
+    private List<String> toConceptionEntityKinds;
 
     public RelationEntityValue(){}
 
@@ -60,5 +63,21 @@ public class RelationEntityValue implements PathEntityValue {
 
     public void setRelationKindName(String relationKindName) {
         this.relationKindName = relationKindName;
+    }
+
+    public List<String> getFromConceptionEntityKinds() {
+        return fromConceptionEntityKinds;
+    }
+
+    public void setFromConceptionEntityKinds(List<String> fromConceptionEntityKinds) {
+        this.fromConceptionEntityKinds = fromConceptionEntityKinds;
+    }
+
+    public List<String> getToConceptionEntityKinds() {
+        return toConceptionEntityKinds;
+    }
+
+    public void setToConceptionEntityKinds(List<String> toConceptionEntityKinds) {
+        this.toConceptionEntityKinds = toConceptionEntityKinds;
     }
 }
