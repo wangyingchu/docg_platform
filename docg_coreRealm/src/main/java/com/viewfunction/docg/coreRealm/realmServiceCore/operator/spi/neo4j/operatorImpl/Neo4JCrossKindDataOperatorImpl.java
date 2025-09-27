@@ -1972,7 +1972,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         });
         sb.append(lastConceptionKindPerfix);
 
-        if(!partFilterLogicMap.isEmpty()){
+        if(!areAllValuesEmpty(partFilterLogicMap)){
             sb.append(" WHERE ");
             boolean isFirstPart = true;
             Set<String> queryFilterMapKeys = partFilterLogicMap.keySet();
@@ -2006,5 +2006,34 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         String cql = sb.toString();
         logger.debug("Generated Cypher Statement: {}", cql);
         return cql;
+    }
+
+    private boolean areAllValuesEmpty(Map<?, ?> map) {
+        if (map == null || map.isEmpty()) {
+            return true;
+        }
+        for (Object value : map.values()) {
+            if (value != null) {
+                // For String values, check if they're empty
+                if (value instanceof String && !((String) value).isEmpty()) {
+                    return false;
+                }
+                // For Collection types, check if they're empty
+                else if (value instanceof java.util.Collection && !((java.util.Collection<?>) value).isEmpty()) {
+                    return false;
+                }
+                // For Map types, check if they're empty
+                else if (value instanceof Map && !((Map<?, ?>) value).isEmpty()) {
+                    return false;
+                }
+                // For any other non-null type
+                else if (!(value instanceof String) &&
+                        !(value instanceof java.util.Collection) &&
+                        !(value instanceof Map)) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
