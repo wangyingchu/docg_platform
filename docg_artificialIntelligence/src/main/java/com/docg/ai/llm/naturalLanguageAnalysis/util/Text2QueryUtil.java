@@ -10,6 +10,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntityStatistics
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,12 +26,20 @@ public class Text2QueryUtil {
        if(question == null){
            return null;
        }
-
-       ChatModel model = OpenAiChatModel.builder()
-               .apiKey(PropertiesHandler.getPropertyValue(PropertiesHandler.TEXT2CYPHER_MODEL_APIKEY))
-               .modelName(PropertiesHandler.getPropertyValue(PropertiesHandler.TEXT2CYPHER_MODEL_NAME))
-               .baseUrl(PropertiesHandler.getPropertyValue(PropertiesHandler.TEXT2CYPHER_MODEL_BASEURL))
-               .build();
+       String TEXT2CYPHER_TECH = PropertiesHandler.getPropertyValue(PropertiesHandler.TEXT2CYPHER_TECHNOLOGY);
+       ChatModel model = null;
+       if("OpenAI".equals(TEXT2CYPHER_TECH)){
+           model = OpenAiChatModel.builder()
+                   .apiKey(PropertiesHandler.getPropertyValue(PropertiesHandler.TEXT2CYPHER_MODEL_APIKEY))
+                   .modelName(PropertiesHandler.getPropertyValue(PropertiesHandler.TEXT2CYPHER_MODEL_NAME))
+                   .baseUrl(PropertiesHandler.getPropertyValue(PropertiesHandler.TEXT2CYPHER_MODEL_BASEURL))
+                   .build();
+       }else if("Ollama".equals(TEXT2CYPHER_TECH)){
+           model = OllamaChatModel.builder()
+                   .modelName(PropertiesHandler.getPropertyValue(PropertiesHandler.TEXT2CYPHER_MODEL_NAME))
+                   .baseUrl(PropertiesHandler.getPropertyValue(PropertiesHandler.TEXT2CYPHER_MODEL_BASEURL))
+                   .build();
+       }
 
        String prompt = String.format("""
                 你是一个 Neo4j Cypher 查询生成专家。基于以下图数据库结构：
@@ -46,12 +55,14 @@ public class Text2QueryUtil {
                 4. 使用英文节点和关系标签
                 """, getGraphSchema(), question);
 
-       String answer = model.chat(prompt);
-
-       answer=answer.replace("```cypher","");
-       answer=answer.replace("```","");
-       logger.debug("Generated Cypher Statement: [{}] For Question: [{}]", answer, question);
-       return answer;
+       if(model != null){
+           String answer = model.chat(prompt);
+           answer=answer.replace("```cypher","");
+           answer=answer.replace("```","");
+           logger.debug("Generated Cypher Statement: [{}] For Question: [{}]", answer, question);
+           return answer;
+       }
+       return null;
    }
 
    private static String getGraphSchema(){

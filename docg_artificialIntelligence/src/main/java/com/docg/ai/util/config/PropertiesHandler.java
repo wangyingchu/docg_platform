@@ -7,6 +7,7 @@ import java.util.Properties;
 
 public class PropertiesHandler {
     private static Properties _properties;
+    public static String TEXT2CYPHER_TECHNOLOGY = "TEXT2CYPHER_TECHNOLOGY";
     public static String TEXT2CYPHER_MODEL_NAME = "TEXT2CYPHER_MODEL_NAME";
     public static String TEXT2CYPHER_MODEL_BASEURL = "TEXT2CYPHER_MODEL_BASEURL";
     public static String TEXT2CYPHER_MODEL_APIKEY = "TEXT2CYPHER_MODEL_APIKEY";
