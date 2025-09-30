@@ -57,10 +57,15 @@ public class Text2QueryUtil {
 
        if(model != null){
            String answer = model.chat(prompt);
+           int finishPartOfThink = answer.indexOf("</think>");
+           if(finishPartOfThink != -1){
+               answer = answer.substring(finishPartOfThink+8, answer.length());
+               answer = answer.trim();
+           }
            answer=answer.replace("```cypher","");
            answer=answer.replace("```","");
            logger.debug("Generated Cypher Statement: [{}] For Question: [{}]", answer, question);
-           return answer;
+           return answer.trim();
        }
        return null;
    }

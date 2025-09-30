@@ -8,6 +8,7 @@ public class Text2QueryUtilTest {
         //String cql = Text2QueryUtil.generateQueryCypher("返回可以通往地址在三丰北里2号楼悠唐生活广场F3的公司的地铁站实体");
         String cql = Text2QueryUtil.generateQueryCypher("返回从地铁站西二旗到达可以前往地址在三丰北里2号楼悠唐生活广场F3的公司的地铁站实体的最短路径，只返回1条路径，请使用WHERE条件执行地铁站过滤");
         //String cql = Text2QueryUtil.generateQueryCypher("周边医疗设施最多的地铁站有哪些，请列举20个，返回地铁站的实体，相同station名称的站点只返回一个");
+        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++");
         System.out.println(cql);
     }
 }
