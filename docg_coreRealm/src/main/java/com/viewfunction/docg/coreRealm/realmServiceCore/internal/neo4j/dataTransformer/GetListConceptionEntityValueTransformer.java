@@ -82,6 +82,14 @@ public class GetListConceptionEntityValueTransformer implements DataTransformer<
                             entityAttributesValue.put(currentAttributeName,resultAttributeValue);
                         }
                     }
+                }else{
+                    for (Map.Entry<String, Object> entry : valueMap.entrySet()) {
+                        String key = entry.getKey();
+                        Object value = entry.getValue();
+                        if(validateValueFormat(value)){
+                            entityAttributesValue.put(key,value);
+                        }
+                    }
                 }
             }else{
                 if(returnedAttributeList!= null){

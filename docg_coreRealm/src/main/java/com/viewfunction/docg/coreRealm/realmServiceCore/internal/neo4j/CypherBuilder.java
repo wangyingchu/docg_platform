@@ -2877,11 +2877,11 @@ public class CypherBuilder {
         for(int i=0;i<relationIdList.size();i++){
             nodeIdValueList.add(Long.parseLong(relationIdList.get(i)));
         }
-        Node sourceNode = Cypher.anyNode();
-        Node targetNode = Cypher.anyNode();
+        Node sourceNode = Cypher.anyNode().named(sourceNodeName);
+        Node targetNode = Cypher.anyNode().named(targetNodeName);
         Relationship r =  sourceNode.relationshipBetween(targetNode).named(operationResultName);;
 
-        Statement statement = Cypher.match(r).where(Functions2.id(r).in(Cypher.literalOf(nodeIdValueList))).returningDistinct(r).build();
+        Statement statement = Cypher.match(r).where(Functions2.id(r).in(Cypher.literalOf(nodeIdValueList))).returningDistinct(r,sourceNode,targetNode).build();
         String rel = cypherRenderer.render(statement);
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;

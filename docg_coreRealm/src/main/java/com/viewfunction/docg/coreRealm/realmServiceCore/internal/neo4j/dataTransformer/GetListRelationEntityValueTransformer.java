@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer;
 
+import com.google.common.collect.Lists;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
@@ -28,49 +29,56 @@ public class GetListRelationEntityValueTransformer  implements DataTransformer<L
 
     @Override
     public List<RelationEntityValue> transformResult(Result result) {
+        Set<String> handledRelationUIDSet = new HashSet<>();
         List<RelationEntityValue> relationEntityValueList = new ArrayList<>();
-        if(result.hasNext()){
-            while(result.hasNext()){
-                Record nodeRecord = result.next();
-                if(nodeRecord != null){
-                    Relationship resultRelationship = nodeRecord.get(CypherBuilder.operationResultName).asRelationship();
-                    String relationType = resultRelationship.type();
-                    boolean isMatchedKind;
-                    if(this.targetRelationKindName == null){
-                        isMatchedKind = true;
-                    }else{
-                        isMatchedKind = relationType.equals(targetRelationKindName)? true : false;
-                    }
-                    if(isMatchedKind){
-                        long relationUID = resultRelationship.id();
-                        String relationEntityUID = ""+relationUID;
-                        String fromEntityUID = ""+resultRelationship.startNodeId();
-                        String toEntityUID = ""+resultRelationship.endNodeId();
-                        Map<String,Object> valueMap = resultRelationship.asMap();
-                        Map<String,Object> entityAttributesValue = new HashMap<>();
+        while(result.hasNext()){
+            Record nodeRecord = result.next();
+            Relationship resultRelationship = nodeRecord.get(CypherBuilder.operationResultName).asRelationship();
+            String relationType = resultRelationship.type();
+            boolean isMatchedKind;
+            if(this.targetRelationKindName == null){
+                isMatchedKind = true;
+            }else{
+                isMatchedKind = relationType.equals(targetRelationKindName)? true : false;
+            }
+            if(isMatchedKind){
+                long relationUID = resultRelationship.id();
+                String relationEntityUID = ""+relationUID;
 
-                        if(returnedAttributeList!= null){
-                            if(returnedAttributeList != null && returnedAttributeList.size() > 0){
-                                for(String currentAttributeName : returnedAttributeList){
-                                    Object objectValue = valueMap.get(currentAttributeName);
-                                    Object resultAttributeValue = getFormattedValue(currentAttributeName,objectValue);
-                                    if(resultAttributeValue != null){
-                                        entityAttributesValue.put(currentAttributeName,resultAttributeValue);
-                                    }
-                                }
-                            }
-                        }else{
-                            for (Map.Entry<String, Object> entry : valueMap.entrySet()) {
-                                String key = entry.getKey();
-                                Object value = entry.getValue();
-                                if(validateValueFormat(value)){
-                                    entityAttributesValue.put(key,value);
+                if(!handledRelationUIDSet.contains(relationEntityUID)){
+                    handledRelationUIDSet.add(relationEntityUID);
+                    String fromEntityUID = ""+resultRelationship.startNodeId();
+                    String toEntityUID = ""+resultRelationship.endNodeId();
+                    Map<String,Object> valueMap = resultRelationship.asMap();
+                    Map<String,Object> entityAttributesValue = new HashMap<>();
+
+                    if(returnedAttributeList!= null){
+                        if(returnedAttributeList != null && returnedAttributeList.size() > 0){
+                            for(String currentAttributeName : returnedAttributeList){
+                                Object objectValue = valueMap.get(currentAttributeName);
+                                Object resultAttributeValue = getFormattedValue(currentAttributeName,objectValue);
+                                if(resultAttributeValue != null){
+                                    entityAttributesValue.put(currentAttributeName,resultAttributeValue);
                                 }
                             }
                         }
-                        RelationEntityValue relationEntityValue = new RelationEntityValue(relationEntityUID,fromEntityUID,toEntityUID,entityAttributesValue);
-                        relationEntityValueList.add(relationEntityValue);
+                    }else{
+                        for (Map.Entry<String, Object> entry : valueMap.entrySet()) {
+                            String key = entry.getKey();
+                            Object value = entry.getValue();
+                            if(validateValueFormat(value)){
+                                entityAttributesValue.put(key,value);
+                            }
+                        }
                     }
+                    RelationEntityValue relationEntityValue = new RelationEntityValue(relationEntityUID,fromEntityUID,toEntityUID,entityAttributesValue);
+                    if(nodeRecord.containsKey(CypherBuilder.sourceNodeName)){
+                        relationEntityValue.setFromConceptionEntityKinds(Lists.newArrayList(nodeRecord.get(CypherBuilder.sourceNodeName).asNode().labels()));
+                    }
+                    if(nodeRecord.containsKey(CypherBuilder.targetNodeName)){
+                        relationEntityValue.setToConceptionEntityKinds(Lists.newArrayList(nodeRecord.get(CypherBuilder.targetNodeName).asNode().labels()));
+                    }
+                    relationEntityValueList.add(relationEntityValue);
                 }
             }
         }

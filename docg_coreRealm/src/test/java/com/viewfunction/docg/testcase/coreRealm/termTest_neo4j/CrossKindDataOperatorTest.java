@@ -130,6 +130,13 @@ public class CrossKindDataOperatorTest {
             Assert.assertTrue(currentConceptionEntityValue.getEntityAttributesValue().containsKey(("prop1")));
             Assert.assertTrue(currentConceptionEntityValue.getEntityAttributesValue().containsKey(("prop2")));
         }
+        conceptionEntityValueList = targetCrossKindDataOperator.getSingleValueConceptionEntityAttributesByUIDs(uidList,null);
+        Assert.assertEquals(conceptionEntityValueList.size(),10);
+        for(ConceptionEntityValue currentConceptionEntityValue:conceptionEntityValueList){
+            Assert.assertTrue(uidList.contains(currentConceptionEntityValue.getConceptionEntityUID()));
+            Assert.assertTrue(currentConceptionEntityValue.getEntityAttributesValue().containsKey(("prop1")));
+            Assert.assertTrue(currentConceptionEntityValue.getEntityAttributesValue().containsKey(("prop2")));
+        }
 
         Map<String, Map<String, Object>> conceptionEntityUIDAndAttributesMap = new HashMap<>();
 
@@ -181,6 +188,31 @@ public class CrossKindDataOperatorTest {
             Assert.assertTrue(relationUidList.contains(currentRelationEntityValue.getRelationEntityUID()));
             Assert.assertNotNull(currentRelationEntityValue.getFromConceptionEntityUID());
             Assert.assertNotNull(currentRelationEntityValue.getToConceptionEntityUID());
+
+            List<String> fromKinds = currentRelationEntityValue.getFromConceptionEntityKinds();
+            Assert.assertNotNull(fromKinds);
+            Assert.assertTrue(fromKinds.contains(testConceptionKindName2));
+            List<String> toKinds = currentRelationEntityValue.getToConceptionEntityKinds();
+            Assert.assertNotNull(toKinds);
+            Assert.assertTrue(toKinds.contains(testConceptionKindName1));
+        }
+        relationEntityValueList = targetCrossKindDataOperator.getSingleValueRelationEntityAttributesByUIDs(relationUidList,null);
+        Assert.assertEquals(relationEntityValueList.size(),50);
+        for(RelationEntityValue currentRelationEntityValue:relationEntityValueList){
+            Assert.assertTrue(!currentRelationEntityValue.getEntityAttributesValue().containsKey("prop1"));
+            Assert.assertTrue(!currentRelationEntityValue.getEntityAttributesValue().containsKey("prop2"));
+            Assert.assertTrue(currentRelationEntityValue.getEntityAttributesValue().containsKey(("propR1")));
+            Assert.assertTrue(currentRelationEntityValue.getEntityAttributesValue().containsKey(("propR2")));
+            Assert.assertTrue(relationUidList.contains(currentRelationEntityValue.getRelationEntityUID()));
+            Assert.assertNotNull(currentRelationEntityValue.getFromConceptionEntityUID());
+            Assert.assertNotNull(currentRelationEntityValue.getToConceptionEntityUID());
+
+            List<String> fromKinds = currentRelationEntityValue.getFromConceptionEntityKinds();
+            Assert.assertNotNull(fromKinds);
+            Assert.assertTrue(fromKinds.contains(testConceptionKindName2));
+            List<String> toKinds = currentRelationEntityValue.getToConceptionEntityKinds();
+            Assert.assertNotNull(toKinds);
+            Assert.assertTrue(toKinds.contains(testConceptionKindName1));
         }
 
         Map<String, Map<String, Object>> relationEntityUIDAndAttributesMap = new HashMap<>();
