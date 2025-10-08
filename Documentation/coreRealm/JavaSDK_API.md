@@ -5476,7 +5476,7 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * CommonNeighbors : Common Neighbors算法。
      * PreferentialAttachment : Preferential Attachment算法。
      * ResourceAllocation : Resource Allocation算法。
-     * TotalNeighbors : Tota lNeighbors算法。
+     * TotalNeighbors : Total Neighbors算法。
      */
     enum TopologySimilarityComputeAlgorithm {AdamicAdar, CommonNeighbors, PreferentialAttachment, ResourceAllocation, TotalNeighbors}     
 
