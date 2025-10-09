@@ -2244,11 +2244,29 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public List<Classification> getChildClassifications();
 
     /**
+     * 获取当前分类的子分类列表
+     *
+     * @param classificationAttributesFilter AttributesParameters 子分类属性过滤条件
+     *
+     * @return 子分类对象列表
+     */
+    public List<Classification> getChildClassifications(AttributesParameters classificationAttributesFilter) throws CoreRealmServiceEntityExploreException;
+
+    /**
      * 获取当前分类的所有后代分类
      *
      * @return 分类对象继承树
      */
     public InheritanceTree<Classification> getOffspringClassifications();
+
+	/**
+     * 获取当前分类的所有后代分类
+     *
+     * @param classificationAttributesFilter AttributesParameters 后代分类属性过滤条件
+     *
+     * @return 分类对象继承树
+     */
+    public InheritanceTree<Classification> getOffspringClassifications(AttributesParameters classificationAttributesFilter) throws CoreRealmServiceEntityExploreException;
 
     /**
      * 为当前分类附加已经存在的子分类

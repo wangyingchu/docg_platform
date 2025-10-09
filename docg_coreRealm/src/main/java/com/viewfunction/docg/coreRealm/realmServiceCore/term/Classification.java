@@ -1,5 +1,6 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.term;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
@@ -72,11 +73,29 @@ public interface Classification extends MetaAttributeFeatureSupportable, Attribu
     public List<Classification> getChildClassifications();
 
     /**
+     * 获取当前分类的子分类列表
+     *
+     * @param classificationAttributesFilter AttributesParameters 子分类属性过滤条件
+     *
+     * @return 子分类对象列表
+     */
+    public List<Classification> getChildClassifications(AttributesParameters classificationAttributesFilter) throws CoreRealmServiceEntityExploreException;
+
+    /**
      * 获取当前分类的所有后代分类
      *
      * @return 分类对象继承树
      */
     public InheritanceTree<Classification> getOffspringClassifications();
+
+    /**
+     * 获取当前分类的所有后代分类
+     *
+     * @param classificationAttributesFilter AttributesParameters 后代分类属性过滤条件
+     *
+     * @return 分类对象继承树
+     */
+    public InheritanceTree<Classification> getOffspringClassifications(AttributesParameters classificationAttributesFilter) throws CoreRealmServiceEntityExploreException;
 
     /**
      * 为当前分类附加已经存在的子分类

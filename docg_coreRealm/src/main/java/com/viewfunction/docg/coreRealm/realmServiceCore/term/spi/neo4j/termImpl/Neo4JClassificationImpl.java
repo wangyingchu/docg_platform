@@ -3,6 +3,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
@@ -155,6 +156,25 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
     }
 
     @Override
+    public List<Classification> getChildClassifications(AttributesParameters classificationAttributesFilter) throws CoreRealmServiceEntityExploreException{
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            String queryCqlPart = CypherBuilder.matchRelatedNodesFromSpecialStartNodes(
+                    CypherBuilder.CypherFunctionType.ID, Long.parseLong(classificationUID),RealmConstant.ClassificationClass,RealmConstant.Classification_ClassificationRelationClass, RelationDirection.FROM, null);
+            String filterLogic = CypherBuilder.generateAttributesParametersQueryLogic(classificationAttributesFilter,CypherBuilder.operationResultName);
+            String filterLogicCql = filterLogic.replace("WHERE ","");
+            String queryCql = queryCqlPart.replace("RETURN","AND "+filterLogicCql+" RETURN");
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            GetListClassificationTransformer getListClassificationTransformer =
+                    new GetListClassificationTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object classificationListRes = workingGraphOperationExecutor.executeWrite(getListClassificationTransformer,queryCql);
+            return classificationListRes != null ? (List<Classification>)classificationListRes : null;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
+    @Override
     public InheritanceTree<Classification> getOffspringClassifications() {
         Table<String,String,Classification> treeElementsTable = HashBasedTable.create();
         treeElementsTable.put(InheritanceTree.Virtual_ParentID_Of_Root_Node,this.classificationName,this);
@@ -169,6 +189,79 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
             */
             String queryCql = CypherBuilder.matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID, Long.parseLong(classificationUID),
                     RealmConstant.ClassificationClass,RealmConstant.Classification_ClassificationRelationClass, RelationDirection.FROM,0,0, CypherBuilder.ReturnRelationableDataType.BOTH);
+            DataTransformer offspringClassificationsDataTransformer = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    List<Record> recordList = result.list();
+                    if(recordList != null){
+                        for(Record nodeRecord : recordList){
+                            Node resultNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
+                            long nodeUID = resultNode.id();
+                            String classificationName = resultNode.get(RealmConstant._NameProperty).asString();
+                            classificationUID_NameMapping.put(""+nodeUID,classificationName);
+                        }
+                    }
+                    if(recordList != null){
+                        for(Record nodeRecord : recordList){
+                            Node resultNode = nodeRecord.get(CypherBuilder.operationResultName).asNode();
+                            long nodeUID = resultNode.id();
+                            String coreRealmName = currentCoreRealmName;
+                            String classificationName = resultNode.get(RealmConstant._NameProperty).asString();
+                            String classificationDesc = null;
+                            if(resultNode.get(RealmConstant._DescProperty) != null){
+                                classificationDesc = resultNode.get(RealmConstant._DescProperty).asString();
+                            }
+                            String classificationUID = ""+nodeUID;
+                            Neo4JClassificationImpl neo4JClassificationImpl =
+                                    new Neo4JClassificationImpl(coreRealmName,classificationName,classificationDesc,classificationUID);
+                            neo4JClassificationImpl.setGlobalGraphOperationExecutor(graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+
+                            List<Object> relationships = nodeRecord.get(CypherBuilder.relationResultName).asList();
+                            String parentClassificationUID = null;
+                            for(Object currentRelationship : relationships){
+                                Relationship currentTargetRelationship = (Relationship)currentRelationship;
+                                String startNodeUID = "" + currentTargetRelationship.startNodeId();
+                                String endNodeUID = "" + currentTargetRelationship.endNodeId();
+                                if(startNodeUID.equals(classificationUID)){
+                                    parentClassificationUID = endNodeUID;
+                                    break;
+                                }
+                            }
+                            treeElementsTable.put(classificationUID_NameMapping.get(parentClassificationUID),
+                                    classificationUID_NameMapping.get(classificationUID),neo4JClassificationImpl);
+
+                        }
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeRead(offspringClassificationsDataTransformer,queryCql);
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        CommonInheritanceTreeImpl<Classification> resultInheritanceTree = new CommonInheritanceTreeImpl(this.classificationName,treeElementsTable);
+        return resultInheritanceTree;
+    }
+
+    @Override
+    public InheritanceTree<Classification> getOffspringClassifications(AttributesParameters classificationAttributesFilter) throws CoreRealmServiceEntityExploreException{
+        Table<String,String,Classification> treeElementsTable = HashBasedTable.create();
+        treeElementsTable.put(InheritanceTree.Virtual_ParentID_Of_Root_Node,this.classificationName,this);
+        Map<String,String> classificationUID_NameMapping = new HashMap<>();
+        classificationUID_NameMapping.put(this.classificationUID,this.classificationName);
+
+        String currentCoreRealmName = this.coreRealmName;
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            /*
+            MATCH (sourceNode)<-[relation:`DOCG_ParentClassificationIs`*]-(operationResult:`DOCG_Classification`) WHERE id(sourceNode) = 2324 RETURN operationResult,relation
+            */
+            String queryCqlPart = CypherBuilder.matchRelatedNodesAndRelationsFromSpecialStartNodes(CypherBuilder.CypherFunctionType.ID, Long.parseLong(classificationUID),
+                    RealmConstant.ClassificationClass,RealmConstant.Classification_ClassificationRelationClass, RelationDirection.FROM,0,0, CypherBuilder.ReturnRelationableDataType.BOTH);
+            String filterLogic = CypherBuilder.generateAttributesParametersQueryLogic(classificationAttributesFilter,CypherBuilder.operationResultName);
+            String filterLogicCql = filterLogic.replace("WHERE ","");
+            String queryCql = queryCqlPart.replace("RETURN","AND "+filterLogicCql+" RETURN");
+            logger.debug("Generated Cypher Statement: {}", queryCql);
             DataTransformer offspringClassificationsDataTransformer = new DataTransformer() {
                 @Override
                 public Object transformResult(Result result) {

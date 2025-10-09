@@ -1,5 +1,6 @@
 package com.viewfunction.docg.testcase.coreRealm.termTest_neo4j;
 
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.EqualFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
@@ -101,6 +102,22 @@ public class ClassificationTest {
         List<Classification> _Classification01ChildrenList = _Classification01.getChildClassifications();
         Assert.assertNotNull(_Classification01ChildrenList);
         Assert.assertEquals(_Classification01ChildrenList.size(),3);
+
+        AttributesParameters attributesParameters = new AttributesParameters();
+        attributesParameters.setDefaultFilteringItem(new EqualFilteringItem("description","classification1DescNotExist"));
+        _Classification01ChildrenList = _Classification01.getChildClassifications(attributesParameters);
+        Assert.assertNotNull(_Classification01ChildrenList);
+        Assert.assertEquals(_Classification01ChildrenList.size(),0);
+
+        attributesParameters.setDefaultFilteringItem(new EqualFilteringItem("description",classificationName02+"Desc"));
+        _Classification01ChildrenList = _Classification01.getChildClassifications(attributesParameters);
+        Assert.assertNotNull(_Classification01ChildrenList);
+        Assert.assertEquals(_Classification01ChildrenList.size(),1);
+        Assert.assertEquals(_Classification01ChildrenList.get(0).getClassificationName(),classificationName02);
+        attributesParameters.addFilteringItem(new EqualFilteringItem("notEXISTFilter","NotExist"), QueryParameters.FilteringLogic.OR);
+        _Classification01ChildrenList = _Classification01.getChildClassifications(attributesParameters);
+        Assert.assertNotNull(_Classification01ChildrenList);
+        Assert.assertEquals(_Classification01ChildrenList.size(),1);
 
         String classificationName05_1 = "classification5_1";
         Classification _Classification05_1 = coreRealm.getClassification(classificationName05_1);
@@ -292,6 +309,16 @@ public class ClassificationTest {
 
         Assert.assertNotNull(traverTreeIterator2.iterator());
         Assert.assertTrue(traverTreeIterator2.iterator().hasNext());
+
+        AttributesParameters attributesParameters2 = new AttributesParameters();
+        attributesParameters2.setDefaultFilteringItem(new EqualFilteringItem("description","classification1DescNotExist"));
+        InheritanceTree<Classification> tree03 = _Classification01.getOffspringClassifications(attributesParameters2);
+        Assert.assertNotNull(tree03);
+        Assert.assertEquals(tree03.size(),1);
+        attributesParameters2.setDefaultFilteringItem(new EqualFilteringItem("description",classificationName02+"Desc"));
+        tree03 = _Classification01.getOffspringClassifications(attributesParameters2);
+        Assert.assertNotNull(tree03);
+        Assert.assertEquals(tree03.size(),2);
 
         String classificationName0A = "classificationName0A";
         Classification _Classification0A = coreRealm.getClassification(classificationName0A);
