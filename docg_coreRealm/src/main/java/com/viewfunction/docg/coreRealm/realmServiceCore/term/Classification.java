@@ -243,4 +243,13 @@ public interface Classification extends MetaAttributeFeatureSupportable, Attribu
      * @return 属性视图类型关联信息对象列表
      */
     public List<AttributesViewKindAttachInfo> getAllDirectRelatedAttributesViewKindsInfo();
+
+    /**
+     * 根据匹配的后代分类路径上的分类描述信息获取当前分类的指定后代分类对象
+     *
+     * @param pathClassificationDescriptions List<String> 后代分类路径上的分类 Description 描述信息序列，匹配需要满足全部信息的完全一致
+     *
+     * @return 属性视图类型关联信息对象列表
+     */
+    public List<Classification> getOffspringClassificationsByPathDescription(List<String> pathClassificationDescriptions) throws CoreRealmServiceEntityExploreException;
 }

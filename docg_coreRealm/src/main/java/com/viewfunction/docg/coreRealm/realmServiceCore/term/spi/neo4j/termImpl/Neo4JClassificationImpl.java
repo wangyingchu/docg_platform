@@ -244,7 +244,7 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
     }
 
     @Override
-    public InheritanceTree<Classification> getOffspringClassifications(AttributesParameters classificationAttributesFilter) throws CoreRealmServiceEntityExploreException{
+    public InheritanceTree<Classification> getOffspringClassifications(AttributesParameters classificationAttributesFilter) throws CoreRealmServiceEntityExploreException {
         Table<String,String,Classification> treeElementsTable = HashBasedTable.create();
         treeElementsTable.put(InheritanceTree.Virtual_ParentID_Of_Root_Node,this.classificationName,this);
         Map<String,String> classificationUID_NameMapping = new HashMap<>();
@@ -1182,6 +1182,32 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
         }
     }
 
+    @Override
+    public List<Classification> getOffspringClassificationsByPathDescription(List<String> pathClassificationDescriptions) throws CoreRealmServiceEntityExploreException{
+        if (pathClassificationDescriptions == null || pathClassificationDescriptions.isEmpty()) {
+            logger.error("At least one classification description is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("At least one classification description is required");
+            throw e;
+        }
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            StringBuilder sb = new StringBuilder("MATCH (sourceNode)");
+            for(String currentDescription:pathClassificationDescriptions){
+                sb.append("<-[:`DOCG_ParentClassificationIs`]-(:`DOCG_Classification`{"+RealmConstant._DescProperty+":'"+currentDescription+"'})");
+            }
+            String result  = sb.toString();
+            String replaced = replaceLast(result, "(:`DOCG_Classification`", "("+CypherBuilder.operationResultName+":`DOCG_Classification`");
+            String queryCql = replaced +" WHERE id(sourceNode) = "+this.classificationUID+" RETURN DISTINCT operationResult";
+            logger.debug("Generated Cypher Statement: {}", queryCql);GetListClassificationTransformer getListClassificationTransformer =
+                    new GetListClassificationTransformer(coreRealmName,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+            Object classificationListRes = workingGraphOperationExecutor.executeWrite(getListClassificationTransformer,queryCql);
+            return classificationListRes != null ? (List<Classification>)classificationListRes : null;
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+    }
+
     private List<Long> getTargetClassificationsUIDList(GraphOperationExecutor workingGraphOperationExecutor,boolean includeOffspringClassifications, int offspringLevel) throws CoreRealmServiceRuntimeException{
         if(includeOffspringClassifications & offspringLevel < 1){
             logger.error("Classification Offspring Level must great or equal 1, current value is {}.", offspringLevel);
@@ -1257,6 +1283,17 @@ public class Neo4JClassificationImpl extends Neo4JAttributesMeasurableImpl imple
         }
         return null;
     }
+
+    private String replaceLast(String source, String target, String replacement) {
+        int index = source.lastIndexOf(target);
+        if (index == -1) {
+            return source; // 如果没有找到目标字符串，返回原字符串
+        }
+        return source.substring(0, index) +
+                replacement +
+                source.substring(index + target.length());
+    }
+
 
     //internal graphOperationExecutor management logic
     private GraphOperationExecutorHelper graphOperationExecutorHelper;

@@ -86,7 +86,7 @@ public class ClassificationTest {
         String classificationName04 = "classification4";
         Classification _Classification04 = coreRealm.getClassification(classificationName04);
         if(_Classification04 != null){
-     //       coreRealm.removeClassification(classificationName04);
+            coreRealm.removeClassification(classificationName04);
         }
 
         String classificationName05 = "classification5";
@@ -101,7 +101,7 @@ public class ClassificationTest {
 
         List<Classification> _Classification01ChildrenList = _Classification01.getChildClassifications();
         Assert.assertNotNull(_Classification01ChildrenList);
-        Assert.assertEquals(_Classification01ChildrenList.size(),3);
+        Assert.assertEquals(_Classification01ChildrenList.size(),4);
 
         AttributesParameters attributesParameters = new AttributesParameters();
         attributesParameters.setDefaultFilteringItem(new EqualFilteringItem("description","classification1DescNotExist"));
@@ -143,20 +143,20 @@ public class ClassificationTest {
 
         _Classification01ChildrenList = _Classification01.getChildClassifications();
         Assert.assertNotNull(_Classification01ChildrenList);
-        Assert.assertEquals(_Classification01ChildrenList.size(),3);
+        Assert.assertEquals(_Classification01ChildrenList.size(),4);
 
         List<Classification> _Classification05ChildrenList = _Classification05.getChildClassifications();
         Assert.assertNotNull(_Classification05ChildrenList);
         Assert.assertEquals(_Classification05ChildrenList.size(),2);
 
         InheritanceTree<Classification> tree01 = _Classification01.getOffspringClassifications();
-        InheritanceTree<Classification> tree02 = _Classification04.getOffspringClassifications();
+        InheritanceTree<Classification> tree02 = _Classification05.getOffspringClassifications();
 
         Assert.assertNotNull(tree01);
         Assert.assertNotNull(tree02);
-        Assert.assertEquals(tree01.size(),7);
+        Assert.assertEquals(tree01.size(),8);
 
-        Assert.assertEquals(tree01.numOfChildren(classificationName01),3);
+        Assert.assertEquals(tree01.numOfChildren(classificationName01),4);
         Assert.assertEquals(tree01.numOfChildren(classificationName05),2);
 
         Assert.assertEquals(tree01.depth(classificationName01),0);
@@ -208,11 +208,12 @@ public class ClassificationTest {
 
         Collection<String> childIDOfRoot = tree01.getChildrenID(classificationName01);
         Assert.assertNotNull(childIDOfRoot);
-        Assert.assertEquals(childIDOfRoot.size(),3);
+        Assert.assertEquals(childIDOfRoot.size(),4);
         Assert.assertTrue(childIDOfRoot.contains(classificationName02));
         Assert.assertTrue(childIDOfRoot.contains(classificationName03));
-        Assert.assertFalse(childIDOfRoot.contains(classificationName04));
+        Assert.assertTrue(childIDOfRoot.contains(classificationName04));
         Assert.assertTrue(childIDOfRoot.contains(classificationName05));
+        Assert.assertFalse(childIDOfRoot.contains(classificationName05+"NOTEXIST"));
 
         Collection<String> childIDOfNode5 = tree01.getChildrenID(classificationName05);
         Assert.assertNotNull(childIDOfNode5);
@@ -319,6 +320,10 @@ public class ClassificationTest {
         tree03 = _Classification01.getOffspringClassifications(attributesParameters2);
         Assert.assertNotNull(tree03);
         Assert.assertEquals(tree03.size(),2);
+        attributesParameters2.addFilteringItem(new EqualFilteringItem("notExistProp","NotExistValue"), QueryParameters.FilteringLogic.AND);
+        tree03 = _Classification01.getOffspringClassifications(attributesParameters2);
+        Assert.assertNotNull(tree03);
+        Assert.assertEquals(tree03.size(),1);
 
         String classificationName0A = "classificationName0A";
         Classification _Classification0A = coreRealm.getClassification(classificationName0A);
@@ -713,6 +718,30 @@ public class ClassificationTest {
 
         boolean removeFlag = relatedClassification.removeChildClassification("NOT_EXIST_NAME");
         Assert.assertTrue(removeFlag);
+
+        Classification levelTestClassification = coreRealm.createClassification("firstLevelCF_2",classificationName01+"Desc");
+        Classification childClassification2 = levelTestClassification.createChildClassification("secondLevelCF_2","secondLevelCFDesc");
+        Classification childClassification3 = childClassification2.createChildClassification("thirdLevelCF_2","thirdLevelCFDesc");
+        List<String> pathClassificationDescriptions0 = new ArrayList<>();
+
+        pathClassificationDescriptions0.add("secondLevelCFDesc");
+        pathClassificationDescriptions0.add("thirdLevelCFDesc");
+        List<Classification> resultClassifications0 = levelTestClassification.getOffspringClassificationsByPathDescription(pathClassificationDescriptions0);
+        Assert.assertEquals(resultClassifications0.size(),1);
+        Assert.assertEquals(resultClassifications0.get(0).getClassificationName(),childClassification3.getClassificationName());
+
+        List<String> pathClassificationDescriptions = new ArrayList<>();
+        pathClassificationDescriptions.add("classification1Desc1");
+        pathClassificationDescriptions.add("classification1Desc2");
+        pathClassificationDescriptions.add("classification1Desc3");
+        pathClassificationDescriptions.add("classification1Desc4");
+        pathClassificationDescriptions.add("classification1Desc5");
+        List<Classification> resultClassifications = levelTestClassification.getOffspringClassificationsByPathDescription(pathClassificationDescriptions);
+        Assert.assertEquals(resultClassifications.size(),0);
+
+        coreRealm.removeClassification(levelTestClassification.getClassificationName());
+        coreRealm.removeClassification(childClassification2.getClassificationName());
+        coreRealm.removeClassification(childClassification3.getClassificationName());
 
         coreRealm.closeGlobalSession();
     }
