@@ -12,6 +12,11 @@ public class PropertiesHandler {
     public static String TEXT2CYPHER_MODEL_BASEURL = "TEXT2CYPHER_MODEL_BASEURL";
     public static String TEXT2CYPHER_MODEL_APIKEY = "TEXT2CYPHER_MODEL_APIKEY";
 
+    public static String DYNAMIC_CONTENT_INSIGHT_TECHNOLOGY = "DYNAMIC_CONTENT_INSIGHT_TECHNOLOGY";
+    public static String DYNAMIC_CONTENT_INSIGHT_MODEL_NAME = "DYNAMIC_CONTENT_INSIGHT_MODEL_NAME";
+    public static String DYNAMIC_CONTENT_INSIGHT_MODEL_BASEURL = "DYNAMIC_CONTENT_INSIGHT_MODEL_BASEURL";
+    public static String DYNAMIC_CONTENT_INSIGHT_MODEL_APIKEY = "DYNAMIC_CONTENT_INSIGHT_MODEL_APIKEY";
+
     public static String getPropertyValue(String propertyName) {
         if(_properties == null){
             String configPath = "AIComponentConfiguration.properties";
