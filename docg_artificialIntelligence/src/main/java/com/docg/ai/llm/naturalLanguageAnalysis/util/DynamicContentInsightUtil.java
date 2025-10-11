@@ -65,18 +65,21 @@ public class DynamicContentInsightUtil {
             StringBuilder currentDataInfo = new StringBuilder();
             fixedProperties.forEach( propertyName -> {
                 DynamicContentValue currentColumnContentValue = currentDataMap.get(propertyName);
-                DynamicContentValue.ContentValueType currentColumnContentValueType = currentColumnContentValue.getValueType();
+                if(currentColumnContentValue != null){
+                    DynamicContentValue.ContentValueType currentColumnContentValueType = currentColumnContentValue.getValueType();
+                    if(DynamicContentValue.ContentValueType.CONCEPTION_ENTITY.equals(currentColumnContentValueType)){
+                        ConceptionEntity conceptionEntity = (ConceptionEntity)currentColumnContentValue.getValueObject();
+                        currentDataInfo.append(conceptionEntity.getConceptionEntityUID()).append(",");
+                    }else if(DynamicContentValue.ContentValueType.RELATION_ENTITY.equals(currentColumnContentValueType)){
+                        RelationEntity relationEntity = (RelationEntity)currentColumnContentValue.getValueObject();
+                        currentDataInfo.append(relationEntity.getRelationEntityUID()).append(",");
+                    }else if(DynamicContentValue.ContentValueType.RELATION_ENTITY.equals(currentColumnContentValueType)){
 
-                if(DynamicContentValue.ContentValueType.CONCEPTION_ENTITY.equals(currentColumnContentValueType)){
-                    ConceptionEntity conceptionEntity = (ConceptionEntity)currentColumnContentValue.getValueObject();
-                    currentDataInfo.append(conceptionEntity.getConceptionEntityUID()).append(",");
-                }else if(DynamicContentValue.ContentValueType.RELATION_ENTITY.equals(currentColumnContentValueType)){
-                    RelationEntity relationEntity = (RelationEntity)currentColumnContentValue.getValueObject();
-                    currentDataInfo.append(relationEntity.getRelationEntityUID()).append(",");
-                }else if(DynamicContentValue.ContentValueType.RELATION_ENTITY.equals(currentColumnContentValueType)){
-
+                    }else{
+                        currentDataInfo.append(currentColumnContentValue.getValueObject().toString()).append(",");
+                    }
                 }else{
-                    currentDataInfo.append(currentColumnContentValue.getValueObject().toString()).append(",");
+                    currentDataInfo.append(",");
                 }
             });
             currentDataInfo.deleteCharAt(currentDataInfo.length() - 1);
