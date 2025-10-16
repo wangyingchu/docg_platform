@@ -283,6 +283,9 @@ public class CypherBuilder {
             }else{
                 rel = rel.replace("exists("+operationResultName+"."+additionalPropertyName+")",""+operationResultName+"."+additionalPropertyName+" IS NOT NULL AS "+operationResultName);
             }
+            if(rel.endsWith("IS NOT NULL")){
+                rel = rel + " AS "+operationResultName;
+            }
         }
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
@@ -1151,6 +1154,9 @@ public class CypherBuilder {
                 rel = rel.replace("exists("+operationResultName+".`"+additionalPropertyName+"`)",""+operationResultName+".`"+additionalPropertyName+"` IS NOT NULL AS "+operationResultName);
             }else{
                 rel = rel.replace("exists("+operationResultName+"."+additionalPropertyName+")",""+operationResultName+"."+additionalPropertyName+" IS NOT NULL AS "+operationResultName);
+            }
+            if(rel.endsWith("IS NOT NULL")){
+                rel = rel + " AS "+operationResultName;
             }
         }
         logger.debug("Generated Cypher Statement: {}", rel);
