@@ -8,7 +8,6 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.Comm
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.NumericalAttributeStatisticCondition;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
-
 import org.neo4j.cypherdsl.core.*;
 import org.neo4j.cypherdsl.core.renderer.Renderer;
 import org.slf4j.Logger;
@@ -254,10 +253,11 @@ public class CypherBuilder {
                     }
                     break;
                 case EXISTS:
+                    //In neo4j version 5, exists(variable.property) is no longer supported. Need use `variable.property IS NOT NULL` instead.
                     if (ongoingReadingWithWhere != null) {
-                        statement = ongoingReadingWithWhere.returning(Cypher.exists(m.property(additionalPropertyName))).build();
+                        statement = ongoingReadingWithWhere.returning(Cypher.isNotNull(m.property(additionalPropertyName))).build();
                     } else {
-                        statement = ongoingReadingWithoutWhere.returning(Cypher.exists(m.property(additionalPropertyName))).build();
+                        statement = ongoingReadingWithoutWhere.returning(Cypher.isNotNull(m.property(additionalPropertyName))).build();
                     }
                     break;
                 case LABEL:
@@ -275,14 +275,7 @@ public class CypherBuilder {
             }
         }
         String rel = cypherRenderer.render(statement);
-        //In neo4j version 5, exists(variable.property) is no longer supported. Need use `variable.property IS NOT NULL` instead.
         if(EXISTS.equals(returnFunctionType)){
-            //if attribute contains space for example : attribute a, will returned in `` such as .`attribute a`
-            if(rel.contains("exists("+operationResultName+".`"+additionalPropertyName+"`)")){
-                rel = rel.replace("exists("+operationResultName+".`"+additionalPropertyName+"`)",""+operationResultName+".`"+additionalPropertyName+"` IS NOT NULL AS "+operationResultName);
-            }else{
-                rel = rel.replace("exists("+operationResultName+"."+additionalPropertyName+")",""+operationResultName+"."+additionalPropertyName+" IS NOT NULL AS "+operationResultName);
-            }
             if(rel.endsWith("IS NOT NULL")){
                 rel = rel + " AS "+operationResultName;
             }
@@ -319,10 +312,11 @@ public class CypherBuilder {
                     }
                     break;
                 case EXISTS:
+                    //In neo4j version 5, exists(variable.property) is no longer supported. Need use `variable.property IS NOT NULL` instead.
                     if (ongoingReadingWithWhere != null) {
-                        statement = ongoingReadingWithWhere.detachDelete(m).returning(Cypher.exists(m.property(additionalPropertyName))).build();
+                        statement = ongoingReadingWithWhere.detachDelete(m).returning(Cypher.isNotNull(m.property(additionalPropertyName))).build();
                     } else {
-                        statement = ongoingReadingWithoutWhere.detachDelete(m).returning(Cypher.exists(m.property(additionalPropertyName))).build();
+                        statement = ongoingReadingWithoutWhere.detachDelete(m).returning(Cypher.isNotNull(m.property(additionalPropertyName))).build();
                     }
                 case ID:
                     if (ongoingReadingWithWhere != null) {
@@ -339,15 +333,6 @@ public class CypherBuilder {
             }
         }
         String rel = cypherRenderer.render(statement);
-        //In neo4j version 5, exists(variable.property) is no longer supported. Need use `variable.property IS NOT NULL` instead.
-        if(EXISTS.equals(returnFunctionType)){
-            //if attribute contains space for example : attribute a, will returned in `` such as .`attribute a`
-            if(rel.contains("exists("+operationResultName+".`"+additionalPropertyName+"`)")){
-                rel = rel.replace("exists("+operationResultName+".`"+additionalPropertyName+"`)",""+operationResultName+".`"+additionalPropertyName+"` IS NOT NULL AS "+operationResultName);
-            }else{
-                rel = rel.replace("exists("+operationResultName+"."+additionalPropertyName+")",""+operationResultName+"."+additionalPropertyName+" IS NOT NULL AS "+operationResultName);
-            }
-        }
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
     }
@@ -1069,10 +1054,11 @@ public class CypherBuilder {
                     }
                     break;
                 case EXISTS:
+                    //In neo4j version 5, exists(variable.property) is no longer supported. Need use `variable.property IS NOT NULL` instead.
                     if (ongoingReadingWithWhere != null) {
-                        statement = ongoingReadingWithWhere.delete(relation).returning(Cypher.exists(relation.property(additionalPropertyName))).build();
+                        statement = ongoingReadingWithWhere.delete(relation).returning(Cypher.isNotNull(relation.property(additionalPropertyName))).build();
                     } else {
-                        statement = ongoingReadingWithoutWhere.delete(relation).returning(Cypher.exists(relation.property(additionalPropertyName))).build();
+                        statement = ongoingReadingWithoutWhere.delete(relation).returning(Cypher.isNotNull(relation.property(additionalPropertyName))).build();
                     }
             }
         } else {
@@ -1083,15 +1069,6 @@ public class CypherBuilder {
             }
         }
         String rel = cypherRenderer.render(statement);
-        //In neo4j version 5, exists(variable.property) is no longer supported. Need use `variable.property IS NOT NULL` instead.
-        if(EXISTS.equals(returnFunctionType)){
-            //if attribute contains space for example : attribute a, will returned in `` such as .`attribute a`
-            if(rel.contains("exists("+operationResultName+".`"+additionalPropertyName+"`)")){
-                rel = rel.replace("exists("+operationResultName+".`"+additionalPropertyName+"`)",""+operationResultName+".`"+additionalPropertyName+"` IS NOT NULL AS "+operationResultName);
-            }else{
-                rel = rel.replace("exists("+operationResultName+"."+additionalPropertyName+")",""+operationResultName+"."+additionalPropertyName+" IS NOT NULL AS "+operationResultName);
-            }
-        }
         logger.debug("Generated Cypher Statement: {}", rel);
         return rel;
     }
@@ -1126,10 +1103,11 @@ public class CypherBuilder {
                     }
                     break;
                 case EXISTS:
+                    //In neo4j version 5, exists(variable.property) is no longer supported. Need use `variable.property IS NOT NULL` instead.
                     if (ongoingReadingWithWhere != null) {
-                        statement = ongoingReadingWithWhere.returningDistinct(Cypher.exists(relation.property(additionalPropertyName))).build();
+                        statement = ongoingReadingWithWhere.returningDistinct(Cypher.isNotNull(relation.property(additionalPropertyName))).build();
                     } else {
-                        statement = ongoingReadingWithoutWhere.returningDistinct(Cypher.exists(relation.property(additionalPropertyName))).build();
+                        statement = ongoingReadingWithoutWhere.returningDistinct(Cypher.isNotNull(relation.property(additionalPropertyName))).build();
                     }
                     break;
                 case LABEL:
@@ -1147,14 +1125,7 @@ public class CypherBuilder {
             }
         }
         String rel = cypherRenderer.render(statement);
-        //In neo4j version 5, exists(variable.property) is no longer supported. Need use `variable.property IS NOT NULL` instead.
         if(EXISTS.equals(returnFunctionType)){
-            //if attribute contains space for example : attribute a, will returned in `` such as .`attribute a`
-            if(rel.contains("exists("+operationResultName+".`"+additionalPropertyName+"`)")){
-                rel = rel.replace("exists("+operationResultName+".`"+additionalPropertyName+"`)",""+operationResultName+".`"+additionalPropertyName+"` IS NOT NULL AS "+operationResultName);
-            }else{
-                rel = rel.replace("exists("+operationResultName+"."+additionalPropertyName+")",""+operationResultName+"."+additionalPropertyName+" IS NOT NULL AS "+operationResultName);
-            }
             if(rel.endsWith("IS NOT NULL")){
                 rel = rel + " AS "+operationResultName;
             }
