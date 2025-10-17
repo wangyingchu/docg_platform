@@ -3039,20 +3039,19 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
     }
 
     private List<String> filterSingleValueAttributeKindNames(List<AttributeKind> targetAttributeKindList){
-        List<String> singleValueAttributeKindNames = new ArrayList<>();
+        Set<String> singleValueAttributesKindNamesSet = new HashSet<>();
         List<AttributeKind> singleValueAttributesKindsList = getContainsSingleValueAttributeKinds();
-
-        List<String> singleValueAttributesKindNamesList = new ArrayList<>();
         for(AttributeKind currentAttributeKind:singleValueAttributesKindsList){
-            singleValueAttributesKindNamesList.add(currentAttributeKind.getAttributeKindName());
+            singleValueAttributesKindNamesSet.add(currentAttributeKind.getAttributeKindName());
         }
+        Set<String> singleValueAttributeKindNames = new HashSet<>();
         for(AttributeKind currentTargetAttributeKind:targetAttributeKindList){
             String currentAttributeKindName = currentTargetAttributeKind.getAttributeKindName();
-            if(singleValueAttributesKindNamesList.contains(currentAttributeKindName)){
+            if(singleValueAttributesKindNamesSet.contains(currentAttributeKindName)){
                 singleValueAttributeKindNames.add(currentAttributeKindName);
             }
         }
-        return singleValueAttributeKindNames;
+        return new ArrayList<>(singleValueAttributeKindNames);
     }
 
     private String generateRelationMatchCQLPart(String conceptionEntityCqlAlias,RelationMatchingItem relationMatchingItem,RelationMatchParameters.MatchingLogic matchLogic){
