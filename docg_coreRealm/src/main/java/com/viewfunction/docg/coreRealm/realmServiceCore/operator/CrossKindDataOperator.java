@@ -5,6 +5,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.PathEntit
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleCalculable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntitiesSequence;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntityValuesSequence;
@@ -453,4 +454,31 @@ public interface CrossKindDataOperator {
      * @return 即席查询结果集，具体数据格式依查询语句的返回条件而定
      */
     public DynamicContentQueryResult executeAdhocQuery(String adhocQuerySentence) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 输入一组概念实体的唯一值ID。选择一个概念类型中的若干目标概念实体，与当前概念实体进行平面地理空间计算，并过滤返回符合计算规则的目标概念实体列表与计算源概念实体 UID 映射
+     *
+     * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
+     * @param targetConceptionKind String 执行空间计算的目标概念类型名称
+     * @param attributesParameters AttributesParameters 选择目标概念实体的查询过滤条件
+     * @param spatialPredicateType SpatialPredicateType 空间计算使用的空间拓扑关系类型
+     * @param spatialScaleLevel SpatialScaleLevel 空间计算针对的地理空间尺度坐标系数据
+     *
+     * @return 符合空间计算规则定义的目标概念实体列表与计算源概念实体 UID 映射
+     */
+    public Map<String,List<ConceptionEntity>> getSpatialPredicateMatchedConceptionEntities(List<String> conceptionEntityUIDs,String targetConceptionKind, AttributesParameters attributesParameters,GeospatialScaleCalculable.SpatialPredicateType spatialPredicateType, GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException;
+
+    /**
+     * 输入一组概念实体的唯一值ID，选择一个概念类型中的若干目标概念实体，与当前概念实体进行平面地理空间计算，并过滤返回符合计算规则的目标概念实体列表与计算源概念实体 UID 映射
+     *
+     * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
+     * @param targetConceptionKind String 执行空间计算的目标概念类型名称
+     * @param attributeNames List<String> 目标属性类型列表
+     * @param attributesParameters AttributesParameters 选择目标概念实体的查询过滤条件
+     * @param spatialPredicateType SpatialPredicateType 空间计算使用的空间拓扑关系类型
+     * @param spatialScaleLevel SpatialScaleLevel 空间计算针对的地理空间尺度坐标系数据
+     *
+     * @return 符合空间计算规则定义的目标概念实体属性查询结果集列表与计算源概念实体 UID 映射
+     */
+    public List<ConceptionEntityValue> getSpatialPredicateMatchedConceptionEntityAttributesByAttributeNames(List<String> conceptionEntityUIDs,String targetConceptionKind, List<String> attributeNames,AttributesParameters attributesParameters, GeospatialScaleCalculable.SpatialPredicateType spatialPredicateType,GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException;
 }

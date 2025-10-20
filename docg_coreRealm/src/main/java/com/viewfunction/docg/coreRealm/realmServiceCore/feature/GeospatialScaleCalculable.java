@@ -51,7 +51,7 @@ public interface GeospatialScaleCalculable {
                                                                                SpatialPredicateType spatialPredicateType, SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException;
 
     /**
-     * 选择一个概念类型中的若干目标概念实体，与当前概念实体进行平面地理空间计算，并过滤返回符合计算规则的目标概念实体列表
+     * 选择一个概念类型中的若干目标概念实体，与当前概念实体进行平面地理空间计算，并过滤返回符合计算规则的目标概念实体属性列表
      *
      * @param targetConceptionKind String 执行空间计算的目标概念类型名称
      * @param attributeNames List<String> 目标属性类型列表
@@ -93,7 +93,7 @@ public interface GeospatialScaleCalculable {
                                                                             SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException;
 
     /**
-     * 选择一个概念类型中的若干目标概念实体，与由当前概念实体计算获取的缓冲区进行平面地理空间计算，并过滤返回符合计算规则的目标概念实体列表
+     * 选择一个概念类型中的若干目标概念实体，与由当前概念实体计算获取的缓冲区进行平面地理空间计算，并过滤返回符合计算规则的目标概念实体属性列表
      *
      * @param targetConceptionKind String 执行空间计算的目标概念类型名称
      * @param attributeNames List<String> 目标属性类型列表

@@ -9,6 +9,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleCalculable;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.*;
@@ -1757,6 +1758,16 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             }
             return dynamicContentQueryResult;
         }
+    }
+
+    @Override
+    public Map<String, List<ConceptionEntity>> getSpatialPredicateMatchedConceptionEntities(List<String> conceptionEntityUIDs, String targetConceptionKind, AttributesParameters attributesParameters, GeospatialScaleCalculable.SpatialPredicateType spatialPredicateType, GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        return Map.of();
+    }
+
+    @Override
+    public List<ConceptionEntityValue> getSpatialPredicateMatchedConceptionEntityAttributesByAttributeNames(List<String> conceptionEntityUIDs, String targetConceptionKind, List<String> attributeNames, AttributesParameters attributesParameters, GeospatialScaleCalculable.SpatialPredicateType spatialPredicateType, GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        return List.of();
     }
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
