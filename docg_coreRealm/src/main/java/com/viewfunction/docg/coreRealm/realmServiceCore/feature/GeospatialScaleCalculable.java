@@ -3,6 +3,7 @@ package com.viewfunction.docg.coreRealm.realmServiceCore.feature;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialScaleEntity;
@@ -49,6 +50,21 @@ public interface GeospatialScaleCalculable {
     public List<ConceptionEntity> getSpatialPredicateMatchedConceptionEntities(String targetConceptionKind, AttributesParameters attributesParameters,
                                                                                SpatialPredicateType spatialPredicateType, SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException;
 
+    /**
+     * 选择一个概念类型中的若干目标概念实体，与当前概念实体进行平面地理空间计算，并过滤返回符合计算规则的目标概念实体列表
+     *
+     * @param targetConceptionKind String 执行空间计算的目标概念类型名称
+     * @param attributeNames List<String> 目标属性类型列表
+     * @param attributesParameters AttributesParameters 选择目标概念实体的查询过滤条件
+     * @param spatialPredicateType SpatialPredicateType 空间计算使用的空间拓扑关系类型
+     * @param spatialScaleLevel SpatialScaleLevel 空间计算针对的地理空间尺度坐标系数据
+     *
+     * @return 符合空间计算规则定义的目标概念实体属性查询结果集列表
+     */
+    public List<ConceptionEntityValue> getSpatialPredicateMatchedConceptionEntityAttributesByAttributeNames(String targetConceptionKind,List<String> attributeNames,
+                                                                            AttributesParameters attributesParameters,SpatialPredicateType spatialPredicateType,
+                                                                            SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException;
+
     /* 根据当前概念类型实体的地理空间 WKT 数据计算其与系统内置的地理空间区域实体（行政区划）的特定空间关系，返回符合计算逻辑的地理空间区域实体
      *
      * @param spatialScaleLevel GeospatialScaleCalculable.SpatialScaleLevel 空间计算使用的地理空间尺度参考坐标系
@@ -75,6 +91,22 @@ public interface GeospatialScaleCalculable {
     public List<ConceptionEntity> getSpatialBufferMatchedConceptionEntities(String targetConceptionKind, AttributesParameters attributesParameters,
                                                                             double bufferDistanceValue,SpatialPredicateType spatialPredicateType,
                                                                             SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException;
+
+    /**
+     * 选择一个概念类型中的若干目标概念实体，与由当前概念实体计算获取的缓冲区进行平面地理空间计算，并过滤返回符合计算规则的目标概念实体列表
+     *
+     * @param targetConceptionKind String 执行空间计算的目标概念类型名称
+     * @param attributeNames List<String> 目标属性类型列表
+     * @param attributesParameters AttributesParameters 选择目标概念实体的查询过滤条件
+     * @param bufferDistanceValue double 针对当前概念实体执行计算的缓冲值，其数值的度量单位与所使用的空间坐标系相同
+     * @param spatialPredicateType SpatialPredicateType 空间计算使用的空间拓扑关系类型
+     * @param spatialScaleLevel SpatialScaleLevel 空间计算针对的地理空间尺度坐标系数据
+     *
+     * @return 符合空间计算规则定义的目标概念实体属性查询结果集列表
+     */
+    public List<ConceptionEntityValue> getSpatialBufferMatchedConceptionEntityAttributesByAttributeNames(String targetConceptionKind,List<String> attributeNames,
+                                                                              AttributesParameters attributesParameters, double bufferDistanceValue, SpatialPredicateType spatialPredicateType,
+                                                                              SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException;
 
     /**
      * 选择一个目标概念实体，与当前概念实体进行平面地理空间计算

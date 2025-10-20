@@ -57,6 +57,17 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
         return null;
     }
 
+
+    default public List<ConceptionEntityValue> getSpatialPredicateMatchedConceptionEntityAttributesByAttributeNames(String targetConceptionKind,List<String> attributeNames,
+                                                                                          AttributesParameters attributesParameters,SpatialPredicateType spatialPredicateType,
+                                                                                          SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException{
+
+
+
+        return null;
+    }
+
+
     default List<GeospatialScaleEntity> getSpatialPredicateMatchedGeospatialScaleEntities(SpatialScaleLevel spatialScaleLevel, SpatialPredicateType spatialPredicateType,
                                                                                           GeospatialRegion.GeospatialScaleGrade geospatialScaleGrade, String geospatialRegionName) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException{
         if(spatialScaleLevel == null){
@@ -159,6 +170,18 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
         }
         return null;
     }
+
+
+    default public List<ConceptionEntityValue> getSpatialBufferMatchedConceptionEntityAttributesByAttributeNames(String targetConceptionKind,List<String> attributeNames,
+                                                                                          AttributesParameters attributesParameters, double bufferDistanceValue, SpatialPredicateType spatialPredicateType,
+                                                                                          SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException{
+
+        return null;
+    }
+
+
+
+
 
     default public boolean isSpatialPredicateMatchedWith(SpatialPredicateType spatialPredicateType,
                                                          String targetConceptionEntityUID, SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
