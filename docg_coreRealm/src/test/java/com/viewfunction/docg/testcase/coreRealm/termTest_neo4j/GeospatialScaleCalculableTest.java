@@ -187,6 +187,25 @@ public class GeospatialScaleCalculableTest {
             for(ConceptionEntity currentConceptionEntity:resultEntityList){
                 Assert.assertEquals(currentConceptionEntity.getAttribute("市").getAttributeValue(),"白银市");
             }
+
+            List<String> attributesNamesList = new ArrayList<>();
+            attributesNamesList.add("省");
+            attributesNamesList.add("市");
+            attributesNamesList.add("县");
+            attributesNamesList.add("乡");
+
+            List<ConceptionEntityValue> resultEntityValueList = conceptionEntityValueForLocationComputeEntity.getSpatialPredicateMatchedConceptionEntityAttributesByAttributeNames("TestWKTConceptionKind",attributesNamesList,null, GeospatialScaleCalculable.SpatialPredicateType.Within, GeospatialScaleCalculable.SpatialScaleLevel.Global);
+            Assert.assertEquals(resultEntityValueList.size(),1);
+            Assert.assertEquals(resultEntityValueList.get(0).getEntityAttributesValue().get("省"),"甘肃省");
+            Assert.assertEquals(resultEntityValueList.get(0).getEntityAttributesValue().get("市"),"白银市");
+            Assert.assertEquals(resultEntityValueList.get(0).getEntityAttributesValue().get("县"),"靖远县");
+            Assert.assertEquals(resultEntityValueList.get(0).getEntityAttributesValue().get("乡"),"石门乡");
+
+            resultEntityValueList = conceptionEntityValueForLocationComputeEntity.getSpatialBufferMatchedConceptionEntityAttributesByAttributeNames("TestWKTConceptionKind",attributesNamesList,null, 0.5,GeospatialScaleCalculable.SpatialPredicateType.Contains, GeospatialScaleCalculable.SpatialScaleLevel.Global);
+            Assert.assertEquals(resultEntityValueList.size(),13);
+            for(ConceptionEntityValue currentConceptionEntity:resultEntityValueList){
+                Assert.assertEquals(currentConceptionEntity.getEntityAttributesValue().get("市"),"白银市");
+            }
         } catch (CoreRealmServiceEntityExploreException e) {
             throw new RuntimeException(e);
         }

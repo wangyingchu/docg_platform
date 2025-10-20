@@ -61,9 +61,29 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
     default public List<ConceptionEntityValue> getSpatialPredicateMatchedConceptionEntityAttributesByAttributeNames(String targetConceptionKind,List<String> attributeNames,
                                                                                           AttributesParameters attributesParameters,SpatialPredicateType spatialPredicateType,
                                                                                           SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException{
-
-
-
+        if(this.getEntityUID() != null) {
+            if( attributeNames == null|| attributeNames.isEmpty()){
+                logger.error("At least one attributeName is required.");
+                CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+                exception.setCauseMessage("At least one attributeName is required.");
+                throw exception;
+            }
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
+                Map<String,String> entitiesSpatialContentDataMap = getEntitiesGeospatialScaleContentMap(workingGraphOperationExecutor,targetConceptionKind,attributesParameters,spatialScaleLevel);
+                if(entitiesSpatialContentDataMap != null){
+                    List<String> entityUIDList = new ArrayList<>();
+                    entityUIDList.add(this.getEntityUID());
+                    Map<String,String> getGeospatialScaleContentMap = getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,entityUIDList);
+                    Set<String> matchedEntityUIDSet = GeospatialCalculateUtil.spatialPredicateFilterWKTsCalculate(
+                            getGeospatialScaleContentMap.get(this.getEntityUID()),spatialPredicateType,entitiesSpatialContentDataMap);
+                    return getConceptionEntityAttributesByUIDs(workingGraphOperationExecutor,matchedEntityUIDSet,attributeNames);
+                }
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
 
@@ -175,13 +195,31 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
     default public List<ConceptionEntityValue> getSpatialBufferMatchedConceptionEntityAttributesByAttributeNames(String targetConceptionKind,List<String> attributeNames,
                                                                                           AttributesParameters attributesParameters, double bufferDistanceValue, SpatialPredicateType spatialPredicateType,
                                                                                           SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException{
-
+        if(this.getEntityUID() != null) {
+            if( attributeNames == null|| attributeNames.isEmpty()){
+                logger.error("At least one attributeName is required.");
+                CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+                exception.setCauseMessage("At least one attributeName is required.");
+                throw exception;
+            }
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try{
+                validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
+                Map<String,String> entitiesSpatialContentDataMap = getEntitiesGeospatialScaleContentMap(workingGraphOperationExecutor,targetConceptionKind,attributesParameters,spatialScaleLevel);
+                if(entitiesSpatialContentDataMap != null){
+                    List<String> entityUIDList = new ArrayList<>();
+                    entityUIDList.add(this.getEntityUID());
+                    Map<String,String> getGeospatialScaleContentMap = getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,entityUIDList);
+                    Set<String> matchedEntityUIDSet = GeospatialCalculateUtil.spatialBufferPredicateFilterWKTsCalculate(
+                            getGeospatialScaleContentMap.get(this.getEntityUID()),bufferDistanceValue,spatialPredicateType,entitiesSpatialContentDataMap);
+                    return getConceptionEntityAttributesByUIDs(workingGraphOperationExecutor,matchedEntityUIDSet,attributeNames);
+                }
+            }finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
         return null;
     }
-
-
-
-
 
     default public boolean isSpatialPredicateMatchedWith(SpatialPredicateType spatialPredicateType,
                                                          String targetConceptionEntityUID, SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException{
@@ -694,7 +732,6 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
     }
 
     private List<ConceptionEntity> getConceptionEntitiesByUIDs(GraphOperationExecutor workingGraphOperationExecutor,Set<String> matchedEntityUIDSet){
-
         if(matchedEntityUIDSet!= null){
             String cypherProcedureString = "MATCH (targetNodes) WHERE id(targetNodes) IN " + matchedEntityUIDSet.toString()+"\n"+
                     "RETURN DISTINCT targetNodes as operationResult";
@@ -703,6 +740,25 @@ public interface Neo4JGeospatialScaleCalculable extends GeospatialScaleCalculabl
                     getGraphOperationExecutorHelper().getGlobalGraphOperationExecutor());
             Object conceptionEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,cypherProcedureString);
             return conceptionEntityList != null ? (List<ConceptionEntity>)conceptionEntityList : null;
+        }
+        return null;
+    }
+
+    private List<ConceptionEntityValue> getConceptionEntityAttributesByUIDs(GraphOperationExecutor workingGraphOperationExecutor,Set<String> matchedEntityUIDSet,List<String> attributeNames) throws CoreRealmServiceEntityExploreException {
+        if(matchedEntityUIDSet!= null){
+            List<String> queryAttributeNames = new ArrayList<>();
+            for(String currentAttributeName:attributeNames){
+                if(!queryAttributeNames.contains(currentAttributeName)){
+                    queryAttributeNames.add(currentAttributeName);
+                }
+            }
+            String cypherProcedureString = CypherBuilder.matchAttributesWithNodeIDs(new ArrayList<>(matchedEntityUIDSet),attributeNames);
+            GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer = new GetListConceptionEntityValueTransformer(attributeNames);
+            getListConceptionEntityValueTransformer.setUseIDMatchLogic(true);
+            Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer,cypherProcedureString);
+            if(resEntityRes != null){
+                return (List<ConceptionEntityValue>)resEntityRes;
+            }
         }
         return null;
     }
