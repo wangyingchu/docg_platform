@@ -38,6 +38,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
@@ -1761,7 +1763,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public Map<String, List<ConceptionEntity>> getSpatialPredicateMatchedConceptionEntities(List<String> conceptionEntityUIDs, String targetConceptionKind, AttributesParameters attributesParameters, GeospatialScaleCalculable.SpatialPredicateType spatialPredicateType, GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+    public Map<String,List<ConceptionEntity>> getSpatialPredicateMatchedConceptionEntities(List<String> conceptionEntityUIDs, String targetConceptionKind, AttributesParameters attributesParameters, GeospatialScaleCalculable.SpatialPredicateType spatialPredicateType, GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         if( conceptionEntityUIDs == null|| conceptionEntityUIDs.isEmpty()){
             logger.error("At least one conceptionEntityUID is required.");
             CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
@@ -1769,31 +1771,58 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             throw exception;
         }
 
-
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
-            //validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
-            Map<String,String> entitiesSpatialContentDataMap = GeospatialCalculateUtil.getEntitiesGeospatialScaleContentMap(workingGraphOperationExecutor,targetConceptionKind,attributesParameters,spatialScaleLevel);
-            if(entitiesSpatialContentDataMap != null){
-                List<String> entityUIDList = new ArrayList<>();
-                //entityUIDList.add(this.getEntityUID());
-                Map<String,String> getGeospatialScaleContentMap = GeospatialCalculateUtil.getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,entityUIDList);
-                Set<String> matchedEntityUIDSet = GeospatialCalculateUtil.spatialPredicateFilterWKTsCalculate(
-                        getGeospatialScaleContentMap.get(null),spatialPredicateType,entitiesSpatialContentDataMap);
+            //Source ConceptionEntities GeospatialScaleContents
+            Map<String,String> sourceGeospatialScaleContentMap = GeospatialCalculateUtil.
+                    getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,conceptionEntityUIDs);
+            //target ConceptionEntities GeospatialScaleContents
+            Map<String,String> targetGeospatialScaleContentMap = GeospatialCalculateUtil.
+                    getEntitiesGeospatialScaleContentMap(workingGraphOperationExecutor,targetConceptionKind,attributesParameters,spatialScaleLevel);
 
-                GeospatialCalculateUtil.getConceptionEntitiesByUIDs(workingGraphOperationExecutor,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor(),matchedEntityUIDSet);
+            Multimap<String, String> multiUIDKeyMap = ArrayListMultimap.create();
+            Set<String> allMatchedTargetEntitiesUIDSet = new HashSet<>();
+            if(targetGeospatialScaleContentMap != null){
+                Set<String> sourceEntityUIDSet = sourceGeospatialScaleContentMap.keySet();
+                for(String currentSourceEntityUID:sourceEntityUIDSet){
+                    if(sourceGeospatialScaleContentMap.get(currentSourceEntityUID) != null){
+                        Set<String> matchedEntityUIDSet = GeospatialCalculateUtil.spatialPredicateFilterWKTsCalculate(
+                                sourceGeospatialScaleContentMap.get(currentSourceEntityUID),spatialPredicateType,targetGeospatialScaleContentMap);
+                        allMatchedTargetEntitiesUIDSet.addAll(matchedEntityUIDSet);
+                        matchedEntityUIDSet.forEach(matchedEntityUID->{
+                            multiUIDKeyMap.put(currentSourceEntityUID,matchedEntityUID);
+                        });
+                    }
+                }
             }
+
+            Map<String, List<ConceptionEntity>> resultMap = new HashMap<>();
+            List<ConceptionEntity> allTargetConceptionEntitiesList = GeospatialCalculateUtil.
+                    getConceptionEntitiesByUIDs(workingGraphOperationExecutor,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor(),allMatchedTargetEntitiesUIDSet);
+            Map<String,ConceptionEntity> conceptionEntityMap = allTargetConceptionEntitiesList.stream().collect(Collectors.toMap(ConceptionEntity::getConceptionEntityUID, Function.identity()));
+
+            Map<String,Collection<String>> sourceAndTargetConceptionEntitiesMap = multiUIDKeyMap.asMap();
+            Set<String> sourceEntitiesUIDSet = sourceAndTargetConceptionEntitiesMap.keySet();
+            sourceEntitiesUIDSet.forEach(sourceUID->{
+                Collection<String> targetUIDs = sourceAndTargetConceptionEntitiesMap.get(sourceUID);
+                List<ConceptionEntity> currentRoundTargetConceptionEntities = new ArrayList<>();
+                targetUIDs.forEach(targetUID->{
+                    if(conceptionEntityMap.containsKey(targetUID)){
+                        currentRoundTargetConceptionEntities.add(conceptionEntityMap.get(targetUID));
+                    }
+
+                });
+                resultMap.put(sourceUID,currentRoundTargetConceptionEntities);
+            });
+
+            return resultMap;
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
-
-
-
-        return Map.of();
     }
 
     @Override
-    public List<ConceptionEntityValue> getSpatialPredicateMatchedConceptionEntityAttributesByAttributeNames(List<String> conceptionEntityUIDs, String targetConceptionKind, List<String> attributeNames, AttributesParameters attributesParameters, GeospatialScaleCalculable.SpatialPredicateType spatialPredicateType, GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+    public Map<String,List<ConceptionEntityValue>> getSpatialPredicateMatchedConceptionEntityAttributesByAttributeNames(List<String> conceptionEntityUIDs, String targetConceptionKind, List<String> attributeNames, AttributesParameters attributesParameters, GeospatialScaleCalculable.SpatialPredicateType spatialPredicateType, GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
         if( conceptionEntityUIDs == null|| conceptionEntityUIDs.isEmpty()){
             logger.error("At least one conceptionEntityUID is required.");
             CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
@@ -1807,26 +1836,55 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             throw exception;
         }
 
-
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
-            //validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
-            Map<String,String> entitiesSpatialContentDataMap = GeospatialCalculateUtil.getEntitiesGeospatialScaleContentMap(workingGraphOperationExecutor,targetConceptionKind,attributesParameters,spatialScaleLevel);
-            if(entitiesSpatialContentDataMap != null){
-                List<String> entityUIDList = new ArrayList<>();
-                //entityUIDList.add(this.getEntityUID());
-                Map<String,String> getGeospatialScaleContentMap = GeospatialCalculateUtil.getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,entityUIDList);
-                Set<String> matchedEntityUIDSet = GeospatialCalculateUtil.spatialPredicateFilterWKTsCalculate(
-                        getGeospatialScaleContentMap.get(null),spatialPredicateType,entitiesSpatialContentDataMap);
-                return GeospatialCalculateUtil.getConceptionEntityAttributesByUIDs(workingGraphOperationExecutor,matchedEntityUIDSet,attributeNames);
+            //Source ConceptionEntities GeospatialScaleContents
+            Map<String,String> sourceGeospatialScaleContentMap = GeospatialCalculateUtil.
+                    getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,conceptionEntityUIDs);
+            //target ConceptionEntities GeospatialScaleContents
+            Map<String,String> targetGeospatialScaleContentMap = GeospatialCalculateUtil.
+                    getEntitiesGeospatialScaleContentMap(workingGraphOperationExecutor,targetConceptionKind,attributesParameters,spatialScaleLevel);
+
+            Multimap<String, String> multiUIDKeyMap = ArrayListMultimap.create();
+            Set<String> allMatchedTargetEntitiesUIDSet = new HashSet<>();
+            if(targetGeospatialScaleContentMap != null){
+                Set<String> sourceEntityUIDSet = sourceGeospatialScaleContentMap.keySet();
+                for(String currentSourceEntityUID:sourceEntityUIDSet){
+                    if(sourceGeospatialScaleContentMap.get(currentSourceEntityUID) != null){
+                        Set<String> matchedEntityUIDSet = GeospatialCalculateUtil.spatialPredicateFilterWKTsCalculate(
+                                sourceGeospatialScaleContentMap.get(currentSourceEntityUID),spatialPredicateType,targetGeospatialScaleContentMap);
+                        allMatchedTargetEntitiesUIDSet.addAll(matchedEntityUIDSet);
+                        matchedEntityUIDSet.forEach(matchedEntityUID->{
+                            multiUIDKeyMap.put(currentSourceEntityUID,matchedEntityUID);
+                        });
+                    }
+                }
             }
+
+            Map<String, List<ConceptionEntityValue>> resultMap = new HashMap<>();
+
+            List<ConceptionEntityValue> allTargetConceptionEntitiesAttributeList = GeospatialCalculateUtil.
+                    getConceptionEntityAttributesByUIDs(workingGraphOperationExecutor,allMatchedTargetEntitiesUIDSet,attributeNames);
+            Map<String,ConceptionEntityValue> conceptionEntityMap = allTargetConceptionEntitiesAttributeList.stream().collect(Collectors.toMap(ConceptionEntityValue::getConceptionEntityUID, Function.identity()));
+
+            Map<String,Collection<String>> sourceAndTargetConceptionEntitiesMap = multiUIDKeyMap.asMap();
+            Set<String> sourceEntitiesUIDSet = sourceAndTargetConceptionEntitiesMap.keySet();
+            sourceEntitiesUIDSet.forEach(sourceUID->{
+                Collection<String> targetUIDs = sourceAndTargetConceptionEntitiesMap.get(sourceUID);
+                List<ConceptionEntityValue> currentRoundTargetConceptionEntityValues = new ArrayList<>();
+                targetUIDs.forEach(targetUID->{
+                    if(conceptionEntityMap.containsKey(targetUID)){
+                        currentRoundTargetConceptionEntityValues.add(conceptionEntityMap.get(targetUID));
+                    }
+
+                });
+                resultMap.put(sourceUID,currentRoundTargetConceptionEntityValues);
+            });
+
+            return resultMap;
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
-
-
-
-        return List.of();
     }
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {

@@ -480,5 +480,5 @@ public interface CrossKindDataOperator {
      *
      * @return 符合空间计算规则定义的目标概念实体属性查询结果集列表与计算源概念实体 UID 映射
      */
-    public List<ConceptionEntityValue> getSpatialPredicateMatchedConceptionEntityAttributesByAttributeNames(List<String> conceptionEntityUIDs,String targetConceptionKind, List<String> attributeNames,AttributesParameters attributesParameters, GeospatialScaleCalculable.SpatialPredicateType spatialPredicateType,GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException;
+    public Map<String,List<ConceptionEntityValue>> getSpatialPredicateMatchedConceptionEntityAttributesByAttributeNames(List<String> conceptionEntityUIDs,String targetConceptionKind, List<String> attributeNames,AttributesParameters attributesParameters, GeospatialScaleCalculable.SpatialPredicateType spatialPredicateType,GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException;
 }
