@@ -4,7 +4,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
@@ -26,6 +25,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntityValu
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.geospatial.GeospatialCalculateUtil;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
@@ -1762,11 +1762,70 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
     @Override
     public Map<String, List<ConceptionEntity>> getSpatialPredicateMatchedConceptionEntities(List<String> conceptionEntityUIDs, String targetConceptionKind, AttributesParameters attributesParameters, GeospatialScaleCalculable.SpatialPredicateType spatialPredicateType, GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        if( conceptionEntityUIDs == null|| conceptionEntityUIDs.isEmpty()){
+            logger.error("At least one conceptionEntityUID is required.");
+            CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+            exception.setCauseMessage("At least one conceptionEntityUID is required.");
+            throw exception;
+        }
+
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            //validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
+            Map<String,String> entitiesSpatialContentDataMap = GeospatialCalculateUtil.getEntitiesGeospatialScaleContentMap(workingGraphOperationExecutor,targetConceptionKind,attributesParameters,spatialScaleLevel);
+            if(entitiesSpatialContentDataMap != null){
+                List<String> entityUIDList = new ArrayList<>();
+                //entityUIDList.add(this.getEntityUID());
+                Map<String,String> getGeospatialScaleContentMap = GeospatialCalculateUtil.getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,entityUIDList);
+                Set<String> matchedEntityUIDSet = GeospatialCalculateUtil.spatialPredicateFilterWKTsCalculate(
+                        getGeospatialScaleContentMap.get(null),spatialPredicateType,entitiesSpatialContentDataMap);
+
+                GeospatialCalculateUtil.getConceptionEntitiesByUIDs(workingGraphOperationExecutor,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor(),matchedEntityUIDSet);
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+
+
+
         return Map.of();
     }
 
     @Override
     public List<ConceptionEntityValue> getSpatialPredicateMatchedConceptionEntityAttributesByAttributeNames(List<String> conceptionEntityUIDs, String targetConceptionKind, List<String> attributeNames, AttributesParameters attributesParameters, GeospatialScaleCalculable.SpatialPredicateType spatialPredicateType, GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException, CoreRealmServiceEntityExploreException {
+        if( conceptionEntityUIDs == null|| conceptionEntityUIDs.isEmpty()){
+            logger.error("At least one conceptionEntityUID is required.");
+            CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+            exception.setCauseMessage("At least one conceptionEntityUID is required.");
+            throw exception;
+        }
+        if( attributeNames == null|| attributeNames.isEmpty()){
+            logger.error("At least one attributeName is required.");
+            CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+            exception.setCauseMessage("At least one attributeName is required.");
+            throw exception;
+        }
+
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            //validateSpatialScaleLevel(workingGraphOperationExecutor,spatialScaleLevel);
+            Map<String,String> entitiesSpatialContentDataMap = GeospatialCalculateUtil.getEntitiesGeospatialScaleContentMap(workingGraphOperationExecutor,targetConceptionKind,attributesParameters,spatialScaleLevel);
+            if(entitiesSpatialContentDataMap != null){
+                List<String> entityUIDList = new ArrayList<>();
+                //entityUIDList.add(this.getEntityUID());
+                Map<String,String> getGeospatialScaleContentMap = GeospatialCalculateUtil.getGeospatialScaleContent(workingGraphOperationExecutor,spatialScaleLevel,entityUIDList);
+                Set<String> matchedEntityUIDSet = GeospatialCalculateUtil.spatialPredicateFilterWKTsCalculate(
+                        getGeospatialScaleContentMap.get(null),spatialPredicateType,entitiesSpatialContentDataMap);
+                return GeospatialCalculateUtil.getConceptionEntityAttributesByUIDs(workingGraphOperationExecutor,matchedEntityUIDSet,attributeNames);
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+
+
+
         return List.of();
     }
 
