@@ -35,9 +35,13 @@ public class DynamicContentInsightUtil {
 
         String prompt = String.format("""
                 分析以下数据内容：
-                
-               %s
-               """, content);
+                %s
+               
+                要求：
+                1. 不要分析数据结构和可能来源
+                2. 不要包含标题
+                3. 除了包含常规的文字分析结果外，也尽可能的提供图表，表格类的分析汇总信息
+                """, content);
 
         if(model != null){
             String answer = model.chat(prompt);
