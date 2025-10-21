@@ -1,11 +1,11 @@
 package com.docg.ai.llm.naturalLanguageAnalysis.util;
 
 import com.docg.ai.util.config.PropertiesHandler;
+import com.docg.ai.util.markdown.MarkdownIllegalCharChecker;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.DynamicContentQueryResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.DynamicContentValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
-
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
@@ -50,7 +50,7 @@ public class DynamicContentInsightUtil {
         List<Map<String, DynamicContentValue>> contentValueList = dynamicContentQueryResult.getDynamicContentResultValueList();
         Map<String, DynamicContentValue.ContentValueType> contentValueTypeMap = dynamicContentQueryResult.getDynamicContentAttributesValueTypeMap();
         List<String> fixedProperties = new ArrayList<>();
-        fixedProperties.addAll( contentValueTypeMap.keySet());
+        fixedProperties.addAll(contentValueTypeMap.keySet());
 
         StringBuilder fullContentSb = new StringBuilder();
 
@@ -76,7 +76,8 @@ public class DynamicContentInsightUtil {
                     }else if(DynamicContentValue.ContentValueType.RELATION_ENTITY.equals(currentColumnContentValueType)){
 
                     }else{
-                        currentDataInfo.append(currentColumnContentValue.getValueObject().toString()).append(",");
+                        String currentContentStr = MarkdownIllegalCharChecker.escapeMarkdown(currentColumnContentValue.getValueObject().toString());
+                        currentDataInfo.append(currentContentStr).append(",");
                     }
                 }else{
                     currentDataInfo.append(",");
