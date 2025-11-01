@@ -1890,7 +1890,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public Map<String, List<Classification>> getConceptionEntitiesAttachedClassificationPaths(List<String> conceptionEntityUIDs, String startClassificationName,String attachedRelationKindName,RelationDirection relationDirection,int maxHop) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+    public Map<String, List<Classification>> getConceptionEntitiesAttachedClassificationPaths(List<String> conceptionEntityUIDs, String startClassificationName,String attachedRelationKindName,RelationDirection relationDirection,int classificationPathMaxHop) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
         if(conceptionEntityUIDs == null|| conceptionEntityUIDs.isEmpty()){
             logger.error("At least one conceptionEntityUID is required.");
             CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
@@ -1918,7 +1918,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             attachedRelationCqlPart = "-"+attachedRelationNameCqlPart+"-";
         }
 
-        int classificationPathDepth = maxHop != 0 ? maxHop : 10;
+        int classificationPathDepth = classificationPathMaxHop != 0 ? classificationPathMaxHop : 10;
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
             String cql =

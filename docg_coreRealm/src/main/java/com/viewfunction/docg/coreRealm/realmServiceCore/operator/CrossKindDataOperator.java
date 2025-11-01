@@ -479,8 +479,16 @@ public interface CrossKindDataOperator {
      */
     public Map<String,List<ConceptionEntityValue>> getSpatialPredicateMatchedConceptionEntityAttributesByAttributeNames(List<String> conceptionEntityUIDs,String targetConceptionKind, List<String> attributeNames,AttributesParameters attributesParameters, GeospatialScaleCalculable.SpatialPredicateType spatialPredicateType,GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException;
 
-
-    public Map<String,List<Classification>> getConceptionEntitiesAttachedClassificationPaths(List<String> conceptionEntityUIDs, String startClassificationName,String attachedRelationKindName,RelationDirection relationDirection,int maxHop) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
-
-
+    /**
+     * 输入一组概念实体的唯一值ID与一个指定目标分类的名称，获取这些概念类型实体对象上附着的目标分类的后代分类到达指定目标分类的路径
+     *
+     * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
+     * @param startClassificationName String 指定目标分类的名称
+     * @param attachedRelationKindName String 概念类型实体与指定目标分类的后代分类之间的关系类型名称
+     * @param relationDirection RelationDirection 概念类型实体与指定目标分类的后代分类之间的关系方向
+     * @param classificationPathMaxHop int 后代分类与指定目标分类之间的最大路径跳数
+     *
+     * @return 符附着的分类路径列表与概念实体 UID 映射
+     */
+    public Map<String,List<Classification>> getConceptionEntitiesAttachedClassificationPaths(List<String> conceptionEntityUIDs, String startClassificationName,String attachedRelationKindName,RelationDirection relationDirection,int classificationPathMaxHop) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
 }
