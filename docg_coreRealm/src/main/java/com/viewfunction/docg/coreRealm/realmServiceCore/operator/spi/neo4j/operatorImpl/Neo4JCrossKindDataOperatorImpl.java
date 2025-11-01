@@ -23,12 +23,14 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.paylo
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntitiesSequence;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntityValuesSequence;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JClassificationImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.geospatial.GeospatialCalculateUtil;
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.types.Node;
+import org.neo4j.driver.types.Path;
 import org.neo4j.driver.types.Relationship;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1885,6 +1887,82 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
+    }
+
+    @Override
+    public Map<String, List<Classification>> getConceptionEntitiesAttachedClassificationPaths(List<String> conceptionEntityUIDs, String startClassificationName,String attachedRelationKindName,RelationDirection relationDirection,int maxHop) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+        if(conceptionEntityUIDs == null|| conceptionEntityUIDs.isEmpty()){
+            logger.error("At least one conceptionEntityUID is required.");
+            CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+            exception.setCauseMessage("At least one conceptionEntityUID is required.");
+            throw exception;
+        }
+        if( startClassificationName == null){
+            logger.error("Start Classification Name is required.");
+            CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+            exception.setCauseMessage("Start Classification Name is required.");
+            throw exception;
+        }
+
+        Map<String, List<Classification>> resultMap = new HashMap<>();
+
+        String attachedRelationNameCqlPart = attachedRelationKindName != null ? "[:"+attachedRelationKindName+"]" : "[]";
+        String attachedRelationCqlPart = "";
+        if(relationDirection != null){
+            switch(relationDirection){
+                case FROM -> attachedRelationCqlPart ="-"+attachedRelationNameCqlPart+"->";
+                case TO -> attachedRelationCqlPart ="<-"+attachedRelationNameCqlPart+"-";
+                case TWO_WAY -> attachedRelationCqlPart ="-"+attachedRelationNameCqlPart+"-";
+            }
+        }else {
+            attachedRelationCqlPart = "-"+attachedRelationNameCqlPart+"-";
+        }
+
+        int classificationPathDepth = maxHop != 0 ? maxHop : 10;
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            String cql =
+                    "MATCH (conceptionEntities) WHERE id(conceptionEntities) IN " + conceptionEntityUIDs + "\n" +
+                    "MATCH (startClassification:DOCG_Classification {name: \"" + startClassificationName + "\"})\n" +
+                    "MATCH path = (conceptionEntities)" + attachedRelationCqlPart + "(leafNode:DOCG_Classification)-[:DOCG_ParentClassificationIs*0.." + classificationPathDepth + "]->(startClassification)\n" +
+                    "WITH conceptionEntities,path\n" +
+                    "RETURN id(conceptionEntities) as entityUID, path as classificationPath\n";
+            logger.debug("Generated Cypher Statement: {}", cql);
+
+            DataTransformer<Map<String, List<Classification>>> dataTransformer = new DataTransformer<Map<String, List<Classification>>>() {
+                @Override
+                public Map<String, List<Classification>> transformResult(Result result) {
+                    while(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        String entityUID = ""+nodeRecord.get("entityUID").asInt();
+                        Path classificationPath = nodeRecord.get("classificationPath").asPath();
+
+                        Iterable<Node> nodes = classificationPath.nodes();
+                        List<Classification> attachedClassificationsPath = new ArrayList<>();
+                        nodes.forEach(node->{
+                            if(node.hasLabel(RealmConstant.ClassificationClass)){
+                                String classificationName = node.get(RealmConstant._NameProperty).asString();
+                                String classificationDesc = null;
+                                if(node.get(RealmConstant._DescProperty) != null){
+                                    classificationDesc = node.get(RealmConstant._DescProperty).asString();
+                                }
+                                String classificationUID = ""+node.id();
+                                Neo4JClassificationImpl neo4JClassificationImpl =
+                                        new Neo4JClassificationImpl(coreRealm.getCoreRealmName(),classificationName,classificationDesc,classificationUID);
+                                neo4JClassificationImpl.setGlobalGraphOperationExecutor(graphOperationExecutorHelper.getWorkingGraphOperationExecutor());
+                                attachedClassificationsPath.add(neo4JClassificationImpl);
+                            }
+                        });
+                        resultMap.put(entityUID,attachedClassificationsPath);
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeRead(dataTransformer, cql);
+        }finally {
+           this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return resultMap;
     }
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {

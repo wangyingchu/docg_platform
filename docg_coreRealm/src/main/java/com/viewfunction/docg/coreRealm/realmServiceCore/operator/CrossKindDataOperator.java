@@ -9,10 +9,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleC
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntitiesSequence;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntityValuesSequence;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 
 import java.util.List;
 import java.util.Map;
@@ -481,4 +478,9 @@ public interface CrossKindDataOperator {
      * @return 符合空间计算规则定义的目标概念实体属性查询结果集列表与计算源概念实体 UID 映射
      */
     public Map<String,List<ConceptionEntityValue>> getSpatialPredicateMatchedConceptionEntityAttributesByAttributeNames(List<String> conceptionEntityUIDs,String targetConceptionKind, List<String> attributeNames,AttributesParameters attributesParameters, GeospatialScaleCalculable.SpatialPredicateType spatialPredicateType,GeospatialScaleCalculable.SpatialScaleLevel spatialScaleLevel) throws CoreRealmServiceRuntimeException,CoreRealmServiceEntityExploreException;
+
+
+    public Map<String,List<Classification>> getConceptionEntitiesAttachedClassificationPaths(List<String> conceptionEntityUIDs, String startClassificationName,String attachedRelationKindName,RelationDirection relationDirection,int maxHop) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
+
+
 }
