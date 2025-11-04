@@ -313,6 +313,15 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
     public ConceptionEntity getEntityByUID(String conceptionEntityUID);
 
     /**
+     * 根据唯一ID获取当前概念类型的概念实体对象的全部 SINGLE_VALUE 类型属性
+     *
+     * @param conceptionEntityUID String 需要获取的概念实体唯一ID
+     *
+     * @return 概念实体对象
+     */
+    public ConceptionEntityValue getEntityAllSingleValueAttributesByUID(String conceptionEntityUID);
+
+    /**
      * 查询符合过滤条件的当前概念类型的概念实体对象,并根据输入的 SINGLE_VALUE 数据存储结构的属性视图类型列表，合并其中包含的属性类型返回相应的属性值
      *
      * @param attributesViewKindNames List<String> 属性视图类型列表
@@ -394,6 +403,15 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      * @return 属性类型对象列表
      */
     public List<AttributeKind> getContainsSingleValueAttributeKinds();
+
+
+
+
+
+
+    public Map<String,List<AttributeKind>> getContainsSingleValueAttributeKindsGroupedByAttributesViewKinds();
+
+
 
     /**
      * 获取当前概念类型包含的全部符合名称查询条件的 SINGLE_VALUE 数据存储结构的属性视图类型中包含的属性类型
@@ -493,7 +511,7 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      *
      * @return 概念实体集合
      */
-    public Set<ConceptionEntity>  getRandomEntities(int entitiesCount) throws CoreRealmServiceEntityExploreException;
+    public Set<ConceptionEntity> getRandomEntities(int entitiesCount) throws CoreRealmServiceEntityExploreException;
 
     /**
      * 随机获取若干符合过滤条件的当前概念类型的概念实体

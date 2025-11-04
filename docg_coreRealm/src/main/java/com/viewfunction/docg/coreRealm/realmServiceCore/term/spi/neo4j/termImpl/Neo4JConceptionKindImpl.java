@@ -1256,6 +1256,45 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
     }
 
     @Override
+    public ConceptionEntityValue getEntityAllSingleValueAttributesByUID(String conceptionEntityUID) {
+        if (conceptionEntityUID != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try {
+                String cql = "MATCH (n:"+this.conceptionKindName+") WHERE id(n) = " + conceptionEntityUID + " RETURN properties(n) as properties,n as node";
+                logger.debug("Generated Cypher Statement: {}", cql);
+                DataTransformer<ConceptionEntityValue> dataTransformer = new DataTransformer<ConceptionEntityValue>() {
+                    @Override
+                    public ConceptionEntityValue transformResult(Result result) {
+                        if(result.hasNext()){
+                            Record nodeRecord = result.next();
+                            if(nodeRecord != null){
+                                Node resultNode = nodeRecord.get("node").asNode();
+                                List<String> allConceptionKindNames = Lists.newArrayList(resultNode.labels());
+                                ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue();
+                                conceptionEntityValue.setConceptionEntityUID(""+resultNode.id());
+                                conceptionEntityValue.setAllConceptionKindNames(allConceptionKindNames);
+                                if(nodeRecord.containsKey("properties")){
+                                    Map<String, Object> propertiesValue = nodeRecord.get("properties").asMap();
+                                    conceptionEntityValue.setEntityAttributesValue(propertiesValue);
+                                }
+                                return conceptionEntityValue;
+                            }
+                        }
+                        return null;
+                    }
+                };
+                Object resEntityRes = workingGraphOperationExecutor.executeRead(dataTransformer, cql);
+                return resEntityRes != null ? (ConceptionEntityValue) resEntityRes : null;
+            }catch (NumberFormatException e){
+                e.printStackTrace();
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+        }
+        return null;
+    }
+
+    @Override
     public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByViewKinds(List<String> attributesViewKindNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException{
         if(attributesViewKindNames != null && attributesViewKindNames.size()>0){
             List<AttributesViewKind> resultRealAttributesViewKindList = new ArrayList<>();
@@ -1514,6 +1553,58 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
     @Override
     public List<AttributeKind> getContainsSingleValueAttributeKinds() {
         return getSingleValueAttributeKinds(null);
+    }
+
+    @Override
+    public Map<String, List<AttributeKind>> getContainsSingleValueAttributeKindsGroupedByAttributesViewKinds() {
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            String cql = "MATCH (sourceNode)-[:`DOCG_ConceptionContainsViewKindIs`]->\n" +
+                    "(middleNode:`DOCG_AttributesViewKind` {viewKindDataForm: 'SINGLE_VALUE'})-[:`DOCG_ViewContainsAttributeKindIs`]->\n" +
+                    "(operationResult:`DOCG_AttributeKind`) WHERE id(sourceNode) = "+this.conceptionKindUID+" RETURN middleNode.name as attributeViewKindName,collect(operationResult) as attributeKind";
+            logger.debug("Generated Cypher Statement: {}", cql);
+            DataTransformer<ConceptionEntityValue> dataTransformer = new DataTransformer<ConceptionEntityValue>() {
+                @Override
+                public ConceptionEntityValue transformResult(Result result) {
+
+                    while(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        System.out.print(nodeRecord);
+
+                    }
+
+
+
+                    /*
+                    if(result.hasNext()){
+                        Record nodeRecord = result.next();
+                        if(nodeRecord != null){
+                            Node resultNode = nodeRecord.get("node").asNode();
+                            List<String> allConceptionKindNames = Lists.newArrayList(resultNode.labels());
+                            ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue();
+                            conceptionEntityValue.setConceptionEntityUID(""+resultNode.id());
+                            conceptionEntityValue.setAllConceptionKindNames(allConceptionKindNames);
+                            if(nodeRecord.containsKey("properties")){
+                                Map<String, Object> propertiesValue = nodeRecord.get("properties").asMap();
+                                conceptionEntityValue.setEntityAttributesValue(propertiesValue);
+                            }
+                            return conceptionEntityValue;
+                        }
+                    }
+
+                     */
+                    return null;
+                }
+            };
+            Object resEntityRes = workingGraphOperationExecutor.executeRead(dataTransformer, cql);
+            //return resEntityRes != null ? (ConceptionEntityValue) resEntityRes : null;
+        }catch (NumberFormatException e){
+            e.printStackTrace();
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return Map.of();
     }
 
     @Override

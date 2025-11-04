@@ -932,6 +932,15 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public ConceptionEntity getEntityByUID(String conceptionEntityUID);
 
     /**
+     * 根据唯一ID获取当前概念类型的概念实体对象的全部 SINGLE_VALUE 类型属性
+     *
+     * @param conceptionEntityUID String 需要获取的概念实体唯一ID
+     *
+     * @return 概念实体对象
+     */
+    public ConceptionEntityValue getEntityAllSingleValueAttributesByUID(String conceptionEntityUID);
+
+    /**
      * 查询符合过滤条件的当前概念类型的概念实体对象,并根据输入的 SINGLE_VALUE 数据存储结构的属性视图类型列表，合并其中包含的属性类型返回相应的属性值
      *
      * @param attributesViewKindNames List<String> 属性视图类型列表
