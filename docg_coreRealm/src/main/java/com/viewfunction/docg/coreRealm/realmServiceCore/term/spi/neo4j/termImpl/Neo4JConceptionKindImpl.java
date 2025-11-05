@@ -1556,55 +1556,130 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
     }
 
     @Override
-    public Map<String, List<AttributeKind>> getContainsSingleValueAttributeKindsGroupedByAttributesViewKinds() {
+    public Map<AttributesViewKind, List<AttributeKind>> getContainsAttributesViewKindGroupedAttributeKinds(AttributesViewKind.AttributesViewKindDataForm attributesViewKindDataForm) {
+        Map<AttributesViewKind, List<AttributeKind>> resultMap = new HashMap<>();
+        String attributeViewKindDataFormFilter = attributesViewKindDataForm != null? "{viewKindDataForm: '"+attributesViewKindDataForm.toString()+"'}":"";
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
             String cql = "MATCH (sourceNode)-[:`DOCG_ConceptionContainsViewKindIs`]->\n" +
-                    "(middleNode:`DOCG_AttributesViewKind` {viewKindDataForm: 'SINGLE_VALUE'})-[:`DOCG_ViewContainsAttributeKindIs`]->\n" +
-                    "(operationResult:`DOCG_AttributeKind`) WHERE id(sourceNode) = "+this.conceptionKindUID+" RETURN middleNode.name as attributeViewKindName,collect(operationResult) as attributeKind";
+                    "(middleNode:`DOCG_AttributesViewKind` "+attributeViewKindDataFormFilter+")-[:`DOCG_ViewContainsAttributeKindIs`]->\n" +
+                    "(operationResult:`DOCG_AttributeKind`) WHERE id(sourceNode) = "+this.conceptionKindUID+" RETURN middleNode as attributeViewKind,collect(operationResult) as attributeKinds";
             logger.debug("Generated Cypher Statement: {}", cql);
+
             DataTransformer<ConceptionEntityValue> dataTransformer = new DataTransformer<ConceptionEntityValue>() {
                 @Override
                 public ConceptionEntityValue transformResult(Result result) {
 
                     while(result.hasNext()){
                         Record nodeRecord = result.next();
-                        System.out.print(nodeRecord);
-
-                    }
-
-
-
-                    /*
-                    if(result.hasNext()){
-                        Record nodeRecord = result.next();
-                        if(nodeRecord != null){
-                            Node resultNode = nodeRecord.get("node").asNode();
-                            List<String> allConceptionKindNames = Lists.newArrayList(resultNode.labels());
-                            ConceptionEntityValue conceptionEntityValue = new ConceptionEntityValue();
-                            conceptionEntityValue.setConceptionEntityUID(""+resultNode.id());
-                            conceptionEntityValue.setAllConceptionKindNames(allConceptionKindNames);
-                            if(nodeRecord.containsKey("properties")){
-                                Map<String, Object> propertiesValue = nodeRecord.get("properties").asMap();
-                                conceptionEntityValue.setEntityAttributesValue(propertiesValue);
-                            }
-                            return conceptionEntityValue;
+                        Node attributeViewKindNode = nodeRecord.get("attributeViewKind").asNode();
+                        String attributesViewKindName = attributeViewKindNode.get(RealmConstant._NameProperty).asString();
+                        String attributesViewKindNameDesc = null;
+                        if(attributeViewKindNode.get(RealmConstant._DescProperty) != null){
+                            attributesViewKindNameDesc = attributeViewKindNode.get(RealmConstant._DescProperty).asString();
                         }
-                    }
+                        String attributesViewKindDataForm = attributeViewKindNode.get(RealmConstant._viewKindDataForm).asString();
 
-                     */
+                        AttributesViewKind.AttributesViewKindDataForm currentAttributesViewKindDataForm = AttributesViewKind.AttributesViewKindDataForm.SINGLE_VALUE;
+                        switch(attributesViewKindDataForm){
+                            case "SINGLE_VALUE":currentAttributesViewKindDataForm = AttributesViewKind.AttributesViewKindDataForm.SINGLE_VALUE;
+                                break;
+                            case "LIST_VALUE":currentAttributesViewKindDataForm = AttributesViewKind.AttributesViewKindDataForm.LIST_VALUE;
+                                break;
+                            case "RELATED_VALUE":currentAttributesViewKindDataForm = AttributesViewKind.AttributesViewKindDataForm.RELATED_VALUE;
+                                break;
+                            case "EXTERNAL_VALUE":currentAttributesViewKindDataForm = AttributesViewKind.AttributesViewKindDataForm.EXTERNAL_VALUE;
+                        }
+                        String attributesViewKindUID = ""+attributeViewKindNode.id();
+                        Neo4JAttributesViewKindImpl neo4jAttributesViewKindImpl =
+                                new Neo4JAttributesViewKindImpl(coreRealmName,attributesViewKindName,attributesViewKindNameDesc,currentAttributesViewKindDataForm,attributesViewKindUID);
+                        neo4jAttributesViewKindImpl.setGlobalGraphOperationExecutor(graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+
+                        List<Object> attributeKinds = nodeRecord.get("attributeKinds").asList();
+                        List<AttributeKind> attributeKindsList = new ArrayList<>();
+                        attributeKinds.forEach(attributeKindNodeObj -> {
+                            Node attributeKindNode = (Node)attributeKindNodeObj;
+                            String attributeKindName = attributeKindNode.get(RealmConstant._NameProperty).asString();
+                            String attributeKindNameDesc = null;
+                            if(attributeKindNode.get(RealmConstant._DescProperty) != null){
+                                attributeKindNameDesc = attributeKindNode.get(RealmConstant._DescProperty).asString();
+                            }
+                            String attributesViewKindDataFormStr = attributeKindNode.get(RealmConstant._attributeDataType).asString();
+                            AttributeDataType attributeDataType = null;
+                            switch(attributesViewKindDataFormStr){
+                                case "BOOLEAN":attributeDataType = AttributeDataType.BOOLEAN;
+                                    break;
+                                case "INT":attributeDataType = AttributeDataType.INT;
+                                    break;
+                                case "SHORT":attributeDataType = AttributeDataType.SHORT;
+                                    break;
+                                case "LONG":attributeDataType = AttributeDataType.LONG;
+                                    break;
+                                case "FLOAT":attributeDataType = AttributeDataType.FLOAT;
+                                    break;
+                                case "DOUBLE":attributeDataType = AttributeDataType.DOUBLE;
+                                    break;
+                                case "TIMESTAMP":attributeDataType = AttributeDataType.TIMESTAMP;
+                                    break;
+                                case "STRING":attributeDataType = AttributeDataType.STRING;
+                                    break;
+                                case "BINARY":attributeDataType = AttributeDataType.BINARY;
+                                    break;
+                                case "BYTE":attributeDataType = AttributeDataType.BYTE;
+                                    break;
+                                case "DECIMAL":attributeDataType = AttributeDataType.DECIMAL;
+                                    break;
+                                case "BOOLEAN_ARRAY":attributeDataType = AttributeDataType.BOOLEAN_ARRAY;
+                                    break;
+                                case "INT_ARRAY":attributeDataType = AttributeDataType.INT_ARRAY;
+                                    break;
+                                case "SHORT_ARRAY":attributeDataType = AttributeDataType.SHORT_ARRAY;
+                                    break;
+                                case "LONG_ARRAY":attributeDataType = AttributeDataType.LONG_ARRAY;
+                                    break;
+                                case "FLOAT_ARRAY":attributeDataType = AttributeDataType.FLOAT_ARRAY;
+                                    break;
+                                case "DOUBLE_ARRAY":attributeDataType = AttributeDataType.DOUBLE_ARRAY;
+                                    break;
+                                case "TIMESTAMP_ARRAY":attributeDataType = AttributeDataType.TIMESTAMP_ARRAY;
+                                    break;
+                                case "STRING_ARRAY":attributeDataType = AttributeDataType.STRING_ARRAY;
+                                    break;
+                                case "BYTE_ARRAY":attributeDataType = AttributeDataType.BYTE_ARRAY;
+                                    break;
+                                case "DECIMAL_ARRAY":attributeDataType = AttributeDataType.DECIMAL_ARRAY;
+                                    break;
+                                case "DATE":attributeDataType = AttributeDataType.DATE;
+                                    break;
+                                case "DATETIME":attributeDataType = AttributeDataType.DATETIME;
+                                    break;
+                                case "TIME":attributeDataType = AttributeDataType.TIME;
+                                    break;
+                                case "DATE_ARRAY":attributeDataType = AttributeDataType.DATE_ARRAY;
+                                    break;
+                                case "DATETIME_ARRAY":attributeDataType = AttributeDataType.DATETIME_ARRAY;
+                                    break;
+                                case "TIME_ARRAY":attributeDataType = AttributeDataType.TIME_ARRAY;
+                            }
+                            String attributeKindUID = ""+attributeKindNode.id();
+                            Neo4JAttributeKindImpl Neo4jAttributeKindImpl =
+                                    new Neo4JAttributeKindImpl(coreRealmName,attributeKindName,attributeKindNameDesc,attributeDataType,attributeKindUID);
+                            Neo4jAttributeKindImpl.setGlobalGraphOperationExecutor(graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                            attributeKindsList.add(Neo4jAttributeKindImpl);
+                        });
+                        resultMap.put(neo4jAttributesViewKindImpl,attributeKindsList);
+                    }
                     return null;
                 }
             };
-            Object resEntityRes = workingGraphOperationExecutor.executeRead(dataTransformer, cql);
-            //return resEntityRes != null ? (ConceptionEntityValue) resEntityRes : null;
-        }catch (NumberFormatException e){
+            workingGraphOperationExecutor.executeRead(dataTransformer, cql);
+        } catch (NumberFormatException e){
             e.printStackTrace();
-        }finally {
+        } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
-        return Map.of();
+        return resultMap;
     }
 
     @Override

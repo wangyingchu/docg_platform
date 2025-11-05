@@ -1030,6 +1030,15 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      */
     public List<AttributeKind> getContainsSingleValueAttributeKinds(String attributeKindName);   
 
+     /**
+     * 根据附加的属性视图类型分组，获取当前概念类型上包含的属性类型
+     *
+     * @param attributesViewKindDataForm AttributesViewKind.AttributesViewKindDataForm 需要返回的数据分组的属性视图类型数据存储结构，如为 null 则忽略数据存储结构，返回当前概念类型附加的全部属性视图类型分组
+     *
+     * @return 根据属性视图类型对象分组的属性类型对象映射表
+     */
+    public Map<AttributesViewKind,List<AttributeKind>> getContainsAttributesViewKindGroupedAttributeKinds(AttributesViewKind.AttributesViewKindDataForm attributesViewKindDataForm);
+
 	/**
      * 查询符合过滤条件的与当前概念类型的实体对象直接关联的其他实体对象
      *
