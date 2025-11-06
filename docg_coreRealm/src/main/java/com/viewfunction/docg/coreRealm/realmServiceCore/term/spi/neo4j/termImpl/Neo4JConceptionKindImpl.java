@@ -939,7 +939,11 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
             for(String currentTargetViewKindName:attributesViewKindNames){
                 List<AttributesViewKind> currentAttributesViewKinds = getContainsAttributesViewKinds(currentTargetViewKindName);
                 if(currentAttributesViewKinds != null){
-                    resultRealAttributesViewKindList.addAll(currentAttributesViewKinds);
+                    currentAttributesViewKinds.forEach(attributesViewKind -> {
+                        if(attributesViewKind.getAttributesViewKindDataForm().equals(AttributesViewKind.AttributesViewKindDataForm.SINGLE_VALUE)){
+                            resultRealAttributesViewKindList.add(attributesViewKind);
+                        }
+                    });
                 }
             }
             List<AttributeKind> allResultTargetAttributeKindList = new ArrayList<>();
@@ -1219,7 +1223,11 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
             for(String currentTargetViewKindName:attributesViewKindNames){
                 List<AttributesViewKind> currentAttributesViewKinds = getContainsAttributesViewKinds(currentTargetViewKindName);
                 if(currentAttributesViewKinds != null){
-                    resultRealAttributesViewKindList.addAll(currentAttributesViewKinds);
+                    currentAttributesViewKinds.forEach(attributesViewKind -> {
+                        if(attributesViewKind.getAttributesViewKindDataForm().equals(AttributesViewKind.AttributesViewKindDataForm.SINGLE_VALUE)){
+                            resultRealAttributesViewKindList.add(attributesViewKind);
+                        }
+                    });
                 }
             }
             List<AttributeKind> allResultTargetAttributeKindList = new ArrayList<>();
@@ -1301,7 +1309,11 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
             for(String currentTargetViewKindName:attributesViewKindNames){
                 List<AttributesViewKind> currentAttributesViewKinds = getContainsAttributesViewKinds(currentTargetViewKindName);
                 if(currentAttributesViewKinds != null){
-                    resultRealAttributesViewKindList.addAll(currentAttributesViewKinds);
+                    currentAttributesViewKinds.forEach(attributesViewKind -> {
+                        if(attributesViewKind.getAttributesViewKindDataForm().equals(AttributesViewKind.AttributesViewKindDataForm.SINGLE_VALUE)){
+                            resultRealAttributesViewKindList.add(attributesViewKind);
+                        }
+                    });
                 }
             }
             List<AttributeKind> allResultTargetAttributeKindList = new ArrayList<>();
@@ -1351,7 +1363,11 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
             for(String currentTargetViewKindName:attributesViewKindNames){
                 List<AttributesViewKind> currentAttributesViewKinds = getContainsAttributesViewKinds(currentTargetViewKindName);
                 if(currentAttributesViewKinds != null){
-                    resultRealAttributesViewKindList.addAll(currentAttributesViewKinds);
+                    currentAttributesViewKinds.forEach(attributesViewKind -> {
+                        if(attributesViewKind.getAttributesViewKindDataForm().equals(AttributesViewKind.AttributesViewKindDataForm.SINGLE_VALUE)){
+                            resultRealAttributesViewKindList.add(attributesViewKind);
+                        }
+                    });
                 }
             }
             List<AttributeKind> allResultTargetAttributeKindList = new ArrayList<>();
