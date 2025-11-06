@@ -5724,6 +5724,26 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
     public EntitiesOperationResult retreatEntitiesFromConceptionKind(String sourceKindName,AttributesParameters attributesParameters,String kindName) throws CoreRealmServiceEntityExploreException;
 
     /**
+     * 输入一组概念实体的唯一值ID和属性列表，将该组概念实体添加入额外的概念类型中
+     *
+     * @param conceptionEntityUIDs Set<String> 概念实体唯一值ID列表
+     * @param newKindNames String[] 需要加入的新概念类型名称列表
+     *
+     * @return 加入新概念类型操作的执行结果统计
+     */
+    public EntitiesOperationResult joinEntitiesToConceptionKinds(Set<String> conceptionEntityUIDs,String[] newKindNames) throws CoreRealmServiceEntityExploreException;
+
+    /**
+     * 输入一组概念实体的唯一值ID和属性列表，将该组概念实体从指定的概念类型中移除
+     *
+     * @param conceptionEntityUIDs Set<String> 概念实体唯一值ID列表
+     * @param kindName String 需要从中移除的概念类型名称
+     *
+     * @return 移除概念类型操作的执行结果统计
+     */
+    public EntitiesOperationResult retreatEntitiesFromConceptionKind(Set<String> conceptionEntityUIDs,String kindName) throws CoreRealmServiceEntityExploreException;
+
+    /**
      * 将源概念类型中具有指定类型的关联关系的概念实体合并到目标概念类型的相关实体中，合并后源概念实体中的属性全部复制到目标概念实体中，源概念实体中的除本方法中指定类型的关联关系全部在目标概念实体中重建。最后删除所有的源概念实体，所有的目标概念实体加入源概念类型中
      *
      * @param sourceKindName String 源概念类型名称

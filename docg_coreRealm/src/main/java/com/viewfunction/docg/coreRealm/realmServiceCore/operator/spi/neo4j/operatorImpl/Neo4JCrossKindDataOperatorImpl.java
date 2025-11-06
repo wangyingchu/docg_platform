@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.FilteringItem;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.filteringItem.UIDInValueFilteringItem;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.feature.GeospatialScaleCalculable;
@@ -775,6 +776,104 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
         commonEntitiesOperationResultImpl.getOperationStatistics().
                 setOperationSummary("retreatEntitiesFromConceptionKind operation for conceptionKind "+sourceKindName+" success.");
+        commonEntitiesOperationResultImpl.finishEntitiesOperation();
+        return commonEntitiesOperationResultImpl;
+    }
+
+    @Override
+    public EntitiesOperationResult joinEntitiesToConceptionKinds(Set<String> conceptionEntityUIDs, String[] newKindNames) throws CoreRealmServiceEntityExploreException {
+        if(conceptionEntityUIDs == null || conceptionEntityUIDs.isEmpty()){
+            logger.error("At least one conceptionEntity UID is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("At least one conceptionEntity UID is required");
+            throw e;
+        }
+        if(newKindNames == null || newKindNames.length == 0){
+            logger.error("At least one ConceptionKind Name is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("At least one ConceptionKind Name is required");
+            throw e;
+        }
+
+        CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setDistinctMode(false);
+        queryParameters.setResultNumber(100);
+        queryParameters.setDefaultFilteringItem(new UIDInValueFilteringItem(conceptionEntityUIDs));
+
+        String entityQueryCQL = CypherBuilder.matchNodesWithQueryParameters(null,queryParameters, CypherBuilder.CypherFunctionType.ID);
+        entityQueryCQL = entityQueryCQL.replace("RETURN id("+CypherBuilder.operationResultName+") LIMIT 100","");
+
+        String labelModifyText = CypherBuilder.operationResultName;
+        for(String currentLabel:newKindNames){
+            labelModifyText = labelModifyText+ ":"+currentLabel;
+        }
+        entityQueryCQL= entityQueryCQL+ "SET "+labelModifyText+" RETURN id("+CypherBuilder.operationResultName+")";
+        logger.debug("Generated Cypher Statement: {}", entityQueryCQL);
+
+        List<String> resultEntityUIDsList = null;
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListEntityUIDTransformer getListEntityUIDTransformer = new GetListEntityUIDTransformer();
+            Object queryRes = workingGraphOperationExecutor.executeWrite(getListEntityUIDTransformer,entityQueryCQL);
+            if(queryRes != null){
+                resultEntityUIDsList = (List<String>)queryRes;
+                commonEntitiesOperationResultImpl.getSuccessEntityUIDs().addAll(resultEntityUIDsList);
+                commonEntitiesOperationResultImpl.getOperationStatistics().setSuccessItemsCount(resultEntityUIDsList.size());
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+
+        commonEntitiesOperationResultImpl.getOperationStatistics().
+                setOperationSummary("joinEntitiesToConceptionKinds operation for conception entities success.");
+        commonEntitiesOperationResultImpl.finishEntitiesOperation();
+        return commonEntitiesOperationResultImpl;
+    }
+
+    @Override
+    public EntitiesOperationResult retreatEntitiesFromConceptionKind(Set<String> conceptionEntityUIDs, String kindName) throws CoreRealmServiceEntityExploreException {
+        if(conceptionEntityUIDs == null || conceptionEntityUIDs.isEmpty()){
+            logger.error("At least one conceptionEntity UID is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("At least one conceptionEntity UID is required");
+            throw e;
+        }
+        if(kindName == null){
+            logger.error("ConceptionKind Name is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("ConceptionKind Name is required");
+            throw e;
+        }
+
+        CommonEntitiesOperationResultImpl commonEntitiesOperationResultImpl = new CommonEntitiesOperationResultImpl();
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setDistinctMode(false);
+        queryParameters.setResultNumber(100);
+        queryParameters.setDefaultFilteringItem(new UIDInValueFilteringItem(conceptionEntityUIDs));
+
+        String entityQueryCQL = CypherBuilder.matchNodesWithQueryParameters(null,queryParameters, CypherBuilder.CypherFunctionType.ID);
+        entityQueryCQL = entityQueryCQL.replace("RETURN id("+CypherBuilder.operationResultName+") LIMIT 100","");
+
+        entityQueryCQL= entityQueryCQL+ "REMOVE "+CypherBuilder.operationResultName+":"+kindName+" RETURN id("+CypherBuilder.operationResultName+")";
+        logger.debug("Generated Cypher Statement: {}", entityQueryCQL);
+
+        List<String> resultEntityUIDsList = null;
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            GetListEntityUIDTransformer getListEntityUIDTransformer = new GetListEntityUIDTransformer();
+            Object queryRes = workingGraphOperationExecutor.executeWrite(getListEntityUIDTransformer,entityQueryCQL);
+            if(queryRes != null){
+                resultEntityUIDsList = (List<String>)queryRes;
+                commonEntitiesOperationResultImpl.getSuccessEntityUIDs().addAll(resultEntityUIDsList);
+                commonEntitiesOperationResultImpl.getOperationStatistics().setSuccessItemsCount(resultEntityUIDsList.size());
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+
+        commonEntitiesOperationResultImpl.getOperationStatistics().
+                setOperationSummary("retreatEntitiesFromConceptionKind operation for conception entities success.");
         commonEntitiesOperationResultImpl.finishEntitiesOperation();
         return commonEntitiesOperationResultImpl;
     }
