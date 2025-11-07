@@ -991,4 +991,37 @@ public class CommonOperationUtil {
             return Cypher.literalOf(propertyValue);
         }
     }
+
+    public static Object formatValueByAttributeDataType(AttributeDataType attributeDataType,Object value){
+        switch(attributeDataType){
+            case BOOLEAN:
+            case INT:
+            case SHORT:
+            case LONG:
+            case FLOAT:
+            case DOUBLE:
+            case TIMESTAMP:
+            case DATE:
+            case DATETIME:
+            case TIME:
+            case STRING:
+            case BYTE:
+            case DECIMAL:
+            case BOOLEAN_ARRAY:
+            case INT_ARRAY:
+            case SHORT_ARRAY:
+            case LONG_ARRAY:
+            case FLOAT_ARRAY:
+            case DOUBLE_ARRAY:
+            case TIMESTAMP_ARRAY:
+            case DATE_ARRAY:
+            case DATETIME_ARRAY:
+            case TIME_ARRAY:
+            case STRING_ARRAY:
+            case BYTE_ARRAY:
+            case DECIMAL_ARRAY:
+            case BINARY:
+        }
+        return null;
+    }
 }

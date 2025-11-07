@@ -331,6 +331,24 @@ public interface ConceptionKind extends MetaConfigItemFeatureSupportable, MetaAt
      */
     public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByViewKinds(List<String> attributesViewKindNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException;
 
+
+
+
+    /**
+     * 查询符合过滤条件的当前概念类型的概念实体对象,并根据输入的 SINGLE_VALUE 数据存储结构的属性视图类型列表，合并其中包含的属性类型返回相应的属性值
+     *
+     * @param attributesViewKindName String 属性视图类型列表
+     * @param exploreParameters QueryParameters 查询过滤条件
+     *
+     * @return 概念实体属性查询结果集
+     */
+    public ConceptionEntitiesAttributesRetrieveResult getEntityAttributesOfSingleValueViewKind(String attributesViewKindName, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException;
+
+
+
+
+
+
     /**
      * 查询符合过滤条件的当前概念类型的概念实体对象,并根据输入的属性类型返回相应的属性值
      *

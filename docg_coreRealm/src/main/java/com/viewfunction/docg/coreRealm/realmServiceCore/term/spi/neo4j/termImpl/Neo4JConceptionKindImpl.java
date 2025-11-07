@@ -1330,28 +1330,58 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
     }
 
     @Override
+    public ConceptionEntitiesAttributesRetrieveResult getEntityAttributesOfSingleValueViewKind(String attributesViewKindName, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException {
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            List<AttributesViewKind> containsAttributesViewKinds = getContainsAttributesViewKinds(workingGraphOperationExecutor);
+            AttributesViewKind targetSingleValueAttributesViewKind = null;
+            if(containsAttributesViewKinds != null){
+                for(AttributesViewKind currentAttributesViewKind : containsAttributesViewKinds){
+                    if(currentAttributesViewKind.getAttributesViewKindName().equals(attributesViewKindName) &&
+                            currentAttributesViewKind.getAttributesViewKindDataForm().equals(AttributesViewKind.AttributesViewKindDataForm.SINGLE_VALUE)){
+                        targetSingleValueAttributesViewKind = currentAttributesViewKind;
+                        break;
+                    }
+                }
+                if(targetSingleValueAttributesViewKind != null){
+                    String queryCql = CypherBuilder.matchRelatedNodesFromSpecialStartNodes(
+                            CypherBuilder.CypherFunctionType.ID, Long.parseLong(targetSingleValueAttributesViewKind.getAttributesViewKindUID()),
+                            RealmConstant.AttributeKindClass,RealmConstant.AttributesViewKind_AttributeKindRelationClass, RelationDirection.TO, null);
+                    GetListAttributeKindTransformer getListAttributeKindTransformer = new GetListAttributeKindTransformer(RealmConstant.AttributeKindClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+                    Object attributeKindsRes = workingGraphOperationExecutor.executeWrite(getListAttributeKindTransformer,queryCql);
+                    List<AttributeKind> attributeKindsList = attributeKindsRes != null ? (List<AttributeKind>) attributeKindsRes : null;
+                    if(!attributeKindsList.isEmpty()){
+                        List<String> attributeNames = new ArrayList<>();
+                        attributeKindsList.forEach(attributeKind -> {
+                            attributeNames.add(attributeKind.getAttributeKindName());
+                        });
+                        ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributesRetrieveResult = getSingleValueEntityAttributesByAttributeNames(workingGraphOperationExecutor,attributeNames,exploreParameters);
+                        formatDataTypeByAttributeKinds(conceptionEntitiesAttributesRetrieveResult,attributeKindsList);
+                        return conceptionEntitiesAttributesRetrieveResult;
+                    }
+                }else{
+                    logger.error("ConceptionKind {} doesn't attached SINGLE_VALUE AttributesViewKind {} .", this.conceptionKindName, attributesViewKindName);
+                    CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+                    exception.setCauseMessage("ConceptionKind "+this.conceptionKindName+" doesn't attached SINGLE_VALUE AttributesViewKind "+attributesViewKindName+".");
+                    throw exception;
+                }
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return null;
+    }
+
+    @Override
     public ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNames(List<String> attributeNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException{
         if(attributeNames != null && attributeNames.size()>0){
-            CommonConceptionEntitiesAttributesRetrieveResultImpl commonConceptionEntitiesAttributesRetrieveResultImpl
-                    = new CommonConceptionEntitiesAttributesRetrieveResultImpl();
-            commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setQueryParameters(exploreParameters);
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try {
-                String queryCql = CypherBuilder.matchAttributesWithQueryParameters(this.conceptionKindName,exploreParameters,attributeNames);
-                List<AttributeKind> containsAttributesKinds = getContainsSingleValueAttributeKinds(workingGraphOperationExecutor);
-                GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer =
-                        new GetListConceptionEntityValueTransformer(attributeNames,containsAttributesKinds);
-                Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
-                if(resEntityRes != null){
-                    List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
-                    commonConceptionEntitiesAttributesRetrieveResultImpl.addConceptionEntitiesAttributes(resultEntitiesValues);
-                    commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultEntitiesValues.size());
-                }
+                ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributesRetrieveResult = getSingleValueEntityAttributesByAttributeNames(workingGraphOperationExecutor,attributeNames,exploreParameters);
+                return conceptionEntitiesAttributesRetrieveResult;
             }finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
-            commonConceptionEntitiesAttributesRetrieveResultImpl.finishEntitiesRetrieving();
-            return commonConceptionEntitiesAttributesRetrieveResultImpl;
         }
         return null;
     }
@@ -1554,13 +1584,7 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
     public List<AttributesViewKind> getContainsAttributesViewKinds() {
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
-            String queryCql = CypherBuilder.matchRelatedNodesFromSpecialStartNodes(
-                    CypherBuilder.CypherFunctionType.ID, Long.parseLong(conceptionKindUID),
-                    RealmConstant.AttributesViewKindClass,RealmConstant.ConceptionKind_AttributesViewKindRelationClass,RelationDirection.TO, null);
-            GetListAttributesViewKindTransformer getListAttributesViewKindTransformer =
-                    new GetListAttributesViewKindTransformer(RealmConstant.ConceptionKind_AttributesViewKindRelationClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
-            Object attributesViewKindsRes = workingGraphOperationExecutor.executeWrite(getListAttributesViewKindTransformer,queryCql);
-            return attributesViewKindsRes != null ? (List<AttributesViewKind>) attributesViewKindsRes : null;
+            return getContainsAttributesViewKinds(workingGraphOperationExecutor);
         }finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
@@ -3236,6 +3260,37 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
         return new ArrayList<>(singleValueAttributeKindNames);
     }
 
+    private List<AttributesViewKind> getContainsAttributesViewKinds(GraphOperationExecutor workingGraphOperationExecutor) {
+        String queryCql = CypherBuilder.matchRelatedNodesFromSpecialStartNodes(
+                CypherBuilder.CypherFunctionType.ID, Long.parseLong(conceptionKindUID), RealmConstant.AttributesViewKindClass,RealmConstant.ConceptionKind_AttributesViewKindRelationClass,RelationDirection.TO, null);
+        GetListAttributesViewKindTransformer getListAttributesViewKindTransformer =
+                new GetListAttributesViewKindTransformer(RealmConstant.ConceptionKind_AttributesViewKindRelationClass,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
+        Object attributesViewKindsRes = workingGraphOperationExecutor.executeWrite(getListAttributesViewKindTransformer,queryCql);
+        return attributesViewKindsRes != null ? (List<AttributesViewKind>) attributesViewKindsRes : null;
+    }
+
+    private ConceptionEntitiesAttributesRetrieveResult getSingleValueEntityAttributesByAttributeNames(GraphOperationExecutor workingGraphOperationExecutor,List<String> attributeNames, QueryParameters exploreParameters) throws CoreRealmServiceEntityExploreException{
+        if(attributeNames != null && attributeNames.size()>0){
+            CommonConceptionEntitiesAttributesRetrieveResultImpl commonConceptionEntitiesAttributesRetrieveResultImpl
+                    = new CommonConceptionEntitiesAttributesRetrieveResultImpl();
+            commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setQueryParameters(exploreParameters);
+
+            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(this.conceptionKindName,exploreParameters,attributeNames);
+            List<AttributeKind> containsAttributesKinds = getContainsSingleValueAttributeKinds(workingGraphOperationExecutor);
+            GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer =
+                    new GetListConceptionEntityValueTransformer(attributeNames,containsAttributesKinds);
+            Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
+            if(resEntityRes != null){
+                List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
+                commonConceptionEntitiesAttributesRetrieveResultImpl.addConceptionEntitiesAttributes(resultEntitiesValues);
+                commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultEntitiesValues.size());
+            }
+            commonConceptionEntitiesAttributesRetrieveResultImpl.finishEntitiesRetrieving();
+            return commonConceptionEntitiesAttributesRetrieveResultImpl;
+        }
+        return null;
+    }
+
     private String generateRelationMatchCQLPart(String conceptionEntityCqlAlias,RelationMatchingItem relationMatchingItem,RelationMatchParameters.MatchingLogic matchLogic){
         if(relationMatchingItem != null && relationMatchingItem.getRelationKind() != null && relationMatchingItem.getRelationDirection() != null){
             String relationJumpStepStr=null;
@@ -3313,6 +3368,28 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
         };
         Long storageNodeUID = (Long)workingGraphOperationExecutor.executeWrite(queryNodeDataTransformer,createActionCql);
         return storageNodeUID;
+    }
+
+    private void formatDataTypeByAttributeKinds(ConceptionEntitiesAttributesRetrieveResult conceptionEntitiesAttributesRetrieveResult,List<AttributeKind> attributeKindsList){
+        List<ConceptionEntityValue> ConceptionEntityValues = conceptionEntitiesAttributesRetrieveResult.getConceptionEntityValues();
+        Map<String,AttributeDataType> attributeDataTypeMap = new HashMap<>();
+        attributeKindsList.forEach(attributeKind -> {
+            attributeDataTypeMap.put(attributeKind.getAttributeKindName(),attributeKind.getAttributeDataType());
+        });
+
+        ConceptionEntityValues.forEach(conceptionEntityValue -> {
+            Map<String,Object> entityAttributes = conceptionEntityValue.getEntityAttributesValue();
+            Set<String> attributeNames = entityAttributes.keySet();
+            attributeNames.forEach(attributeName -> {
+                Object attributeValue = entityAttributes.get(attributeName);
+                AttributeDataType attributeDataType = attributeDataTypeMap.get(attributeName);
+                Object formatedNewValue = CommonOperationUtil.formatValueByAttributeDataType(attributeDataType,attributeValue);
+                entityAttributes.remove(attributeName);
+                if(formatedNewValue != null){
+                    entityAttributes.put(attributeName,formatedNewValue);
+                }
+            });
+        });
     }
 
     //internal graphOperationExecutor management logic
