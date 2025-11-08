@@ -993,34 +993,104 @@ public class CommonOperationUtil {
     }
 
     public static Object formatValueByAttributeDataType(AttributeDataType attributeDataType,Object value){
-        switch(attributeDataType){
-            case BOOLEAN:
-            case INT:
-            case SHORT:
-            case LONG:
-            case FLOAT:
-            case DOUBLE:
-            case TIMESTAMP:
-            case DATE:
-            case DATETIME:
-            case TIME:
-            case STRING:
-            case BYTE:
-            case DECIMAL:
-            case BOOLEAN_ARRAY:
-            case INT_ARRAY:
-            case SHORT_ARRAY:
-            case LONG_ARRAY:
-            case FLOAT_ARRAY:
-            case DOUBLE_ARRAY:
-            case TIMESTAMP_ARRAY:
-            case DATE_ARRAY:
-            case DATETIME_ARRAY:
-            case TIME_ARRAY:
-            case STRING_ARRAY:
-            case BYTE_ARRAY:
-            case DECIMAL_ARRAY:
-            case BINARY:
+        if(value != null){
+            Object formatedData = null;
+            switch(attributeDataType){
+                case BOOLEAN:
+                    if(value instanceof Boolean){
+                        formatedData = value;
+                    }else if(value instanceof Number){
+                        formatedData = ((Number) value).doubleValue() >= 0;
+                    }else if(value instanceof String){
+                        formatedData = Boolean.valueOf(value.toString());
+                    }
+                    break;
+                case INT:
+                    if(value instanceof Integer){
+                        formatedData = value;
+                    }else if(value instanceof Number){
+                        formatedData = ((Number) value).intValue();
+                    }else if(value instanceof String){
+                        formatedData = Integer.valueOf(value.toString());
+                    }
+                    break;
+                case SHORT:
+                    if(value instanceof Short){
+                        formatedData = value;
+                    }else if(value instanceof Number){
+                        formatedData = ((Number) value).shortValue();
+                    }else if(value instanceof String){
+                        formatedData = Short.valueOf(value.toString());
+                    }
+                    break;
+                case LONG:
+                    if(value instanceof Long){
+                        formatedData = value;
+                    }else if(value instanceof Number){
+                        formatedData = ((Number) value).longValue();
+                    }else if(value instanceof String){
+                        formatedData = Long.valueOf(value.toString());
+                    }
+                    break;
+                case FLOAT:
+                    if(value instanceof Float){
+                        formatedData = value;
+                    }else if(value instanceof Number){
+                        formatedData = ((Number) value).floatValue();
+                    }else if(value instanceof String){
+                        formatedData = Float.valueOf(value.toString());
+                    }
+                    break;
+                case DOUBLE:
+                    if(value instanceof Double){
+                        formatedData = value;
+                    }else if(value instanceof Number){
+                        formatedData = ((Number) value).doubleValue();
+                    }else if(value instanceof String){
+                        formatedData = Double.valueOf(value.toString());
+                    }
+                    break;
+                case BYTE:
+                    if(value instanceof Byte){
+                        formatedData = value;
+                    }else if(value instanceof Number){
+                        formatedData = ((Number) value).byteValue();
+                    }else if(value instanceof String){
+                        formatedData = Byte.valueOf(value.toString());
+                    }
+                    break;
+                case DECIMAL:
+                    if(value instanceof BigDecimal){
+                        formatedData = value;
+                    }else if(value instanceof Number){
+                        formatedData = BigDecimal.valueOf(((Number) value).doubleValue());
+                    }else if(value instanceof String){
+                        formatedData = new BigDecimal((String) value);
+                    }
+                    break;
+                case TIMESTAMP:break;
+                case DATE:break;
+                case DATETIME:break;
+                case TIME:break;
+                case STRING:
+                    formatedData = value.toString();
+                    break;
+                case BOOLEAN_ARRAY:break;
+                case INT_ARRAY:break;
+                case SHORT_ARRAY:break;
+                case LONG_ARRAY:break;
+                case FLOAT_ARRAY:break;
+                case DOUBLE_ARRAY:break;
+                case TIMESTAMP_ARRAY:break;
+                case DATE_ARRAY:break;
+                case DATETIME_ARRAY:break;
+                case TIME_ARRAY:break;
+                case STRING_ARRAY:break;
+                case BYTE_ARRAY:break;
+                case DECIMAL_ARRAY:break;
+                case BINARY:
+            }
+            return formatedData;
         }
         return null;
     }
