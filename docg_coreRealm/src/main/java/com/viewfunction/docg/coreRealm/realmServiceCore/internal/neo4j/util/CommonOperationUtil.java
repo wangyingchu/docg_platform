@@ -994,448 +994,460 @@ public class CommonOperationUtil {
 
     public static Object formatValueByAttributeDataType(AttributeDataType attributeDataType,Object value){
         if(value != null){
-            Object formatedData = null;
-            switch(attributeDataType){
-                case BOOLEAN:
-                    if(value instanceof Boolean){
-                        formatedData = value;
-                    }else if(value instanceof Number){
-                        formatedData = ((Number) value).doubleValue() >= 0;
-                    }else if(value instanceof String){
-                        formatedData = Boolean.valueOf(value.toString());
-                    }
-                    break;
-                case INT:
-                    if(value instanceof Integer){
-                        formatedData = value;
-                    }else if(value instanceof Number){
-                        formatedData = ((Number) value).intValue();
-                    }else if(value instanceof String){
-                        formatedData = Integer.valueOf(value.toString());
-                    }
-                    break;
-                case SHORT:
-                    if(value instanceof Short){
-                        formatedData = value;
-                    }else if(value instanceof Number){
-                        formatedData = ((Number) value).shortValue();
-                    }else if(value instanceof String){
-                        formatedData = Short.valueOf(value.toString());
-                    }
-                    break;
-                case LONG:
-                    if(value instanceof Long){
-                        formatedData = value;
-                    }else if(value instanceof Number){
-                        formatedData = ((Number) value).longValue();
-                    }else if(value instanceof String){
-                        formatedData = Long.valueOf(value.toString());
-                    }
-                    break;
-                case FLOAT:
-                    if(value instanceof Float){
-                        formatedData = value;
-                    }else if(value instanceof Number){
-                        formatedData = ((Number) value).floatValue();
-                    }else if(value instanceof String){
-                        formatedData = Float.valueOf(value.toString());
-                    }
-                    break;
-                case DOUBLE:
-                    if(value instanceof Double){
-                        formatedData = value;
-                    }else if(value instanceof Number){
-                        formatedData = ((Number) value).doubleValue();
-                    }else if(value instanceof String){
-                        formatedData = Double.valueOf(value.toString());
-                    }
-                    break;
-                case BYTE:
-                    if(value instanceof Byte){
-                        formatedData = value;
-                    }else if(value instanceof Number){
-                        formatedData = ((Number) value).byteValue();
-                    }else if(value instanceof String){
-                        formatedData = Byte.valueOf(value.toString());
-                    }
-                    break;
-                case DECIMAL:
-                    if(value instanceof BigDecimal){
-                        formatedData = value;
-                    }else if(value instanceof Number){
-                        formatedData = BigDecimal.valueOf(((Number) value).doubleValue());
-                    }else if(value instanceof String){
-                        formatedData = new BigDecimal((String) value);
-                    }
-                    break;
-                case TIMESTAMP:
-                    //Java Date
-                    if(value instanceof Date){
-                        formatedData = value;
-                    }else if(value instanceof Long){
-                        formatedData = new Date((Long)value);
-                    }else if(value instanceof String){
-                        formatedData = new Date(Long.valueOf(value.toString()));
-                    }
-                    break;
-                case DATE:
-                    //Java LocalDate
-                    if(value instanceof Date){
-                        ZonedDateTime zonedDateTime = ((Date)value).toInstant().atZone(ZoneId.systemDefault());
-                        formatedData = zonedDateTime.toLocalDate();
-                    }else if(value instanceof Long){
-                        Instant instant = Instant.ofEpochMilli((Long)value);
-                        formatedData = instant.atZone(ZoneId.systemDefault()).toLocalDate();
-                    }else if(value instanceof LocalDate){
-                        formatedData = value;
-                    }else if(value instanceof LocalDateTime){
-                        formatedData = ((LocalDateTime)value).toLocalDate();
-                    }
-                    break;
-                case DATETIME:
-                    //Java  LocalDateTime
-                    if(value instanceof Date){
-                        ZonedDateTime zonedDateTime = ((Date)value).toInstant().atZone(ZoneId.systemDefault());
-                        formatedData = zonedDateTime.toLocalDateTime();
-                    }else if(value instanceof Long){
-                        Instant instant = Instant.ofEpochMilli((Long)value);
-                        formatedData = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
-                    }else if(value instanceof LocalDate){
-                        formatedData = ((LocalDate)value).atStartOfDay();
-                    }else if(value instanceof LocalDateTime){
-                        formatedData = value;
-                    }
-                    break;
-                case TIME:
-                    //Java LocalTime
-                    if(value instanceof Date){
-                        ZonedDateTime zonedDateTime = ((Date)value).toInstant().atZone(ZoneId.systemDefault());
-                        formatedData = zonedDateTime.toLocalTime();
-                    }else if(value instanceof Long){
-                        Instant instant = Instant.ofEpochMilli((Long)value);
-                        formatedData = instant.atZone(ZoneId.systemDefault()).toLocalTime();
-                    }else if(value instanceof LocalDateTime){
-                        formatedData = ((LocalDateTime)value).toLocalTime();
-                    }else if(value instanceof LocalTime){
-                        formatedData = value;
-                    }
-                    break;
-                case STRING:
-                    formatedData = value.toString();
-                    break;
-                case BOOLEAN_ARRAY:
-                    if(value instanceof boolean[] primitiveArray){
-                        Boolean[] wrapperArray = new Boolean[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = primitiveArray[i]; // Autoboxing happens here
+            try{
+                Object formatedData = null;
+                switch(attributeDataType){
+                    case BOOLEAN:
+                        if(value instanceof Boolean){
+                            formatedData = value;
+                        }else if(value instanceof Number){
+                            formatedData = ((Number) value).doubleValue() >= 0;
+                        }else if(value instanceof String){
+                            formatedData = Boolean.valueOf(value.toString());
                         }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof Boolean[]){
-                        formatedData = value;
-                    }else if(value instanceof String[] primitiveArray){
-                        Boolean[] wrapperArray = new Boolean[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = Boolean.valueOf(primitiveArray[i]);
+                        break;
+                    case INT:
+                        if(value instanceof Integer){
+                            formatedData = value;
+                        }else if(value instanceof Number){
+                            formatedData = ((Number) value).intValue();
+                        }else if(value instanceof String){
+                            formatedData = Integer.valueOf(value.toString());
                         }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof Number[] primitiveArray){
-                        Boolean[] wrapperArray = new Boolean[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = primitiveArray[i].doubleValue() >= 0;
+                        break;
+                    case SHORT:
+                        if(value instanceof Short){
+                            formatedData = value;
+                        }else if(value instanceof Number){
+                            formatedData = ((Number) value).shortValue();
+                        }else if(value instanceof String){
+                            formatedData = Short.valueOf(value.toString());
                         }
-                        formatedData = wrapperArray;
-                    }
-                    break;
-                case INT_ARRAY:
-                    if(value instanceof int[] primitiveArray){
-                        Integer[] wrapperArray = new Integer[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = primitiveArray[i]; // Autoboxing happens here
+                        break;
+                    case LONG:
+                        if(value instanceof Long){
+                            formatedData = value;
+                        }else if(value instanceof Number){
+                            formatedData = ((Number) value).longValue();
+                        }else if(value instanceof String){
+                            formatedData = Long.valueOf(value.toString());
                         }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof Integer[]){
-                        formatedData = value;
-                    }else if(value instanceof Long[] primitiveArray){
-                        //neo4j internal using long to represent int
-                        Integer[] wrapperArray = new Integer[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = primitiveArray[i].intValue();
+                        break;
+                    case FLOAT:
+                        if(value instanceof Float){
+                            formatedData = value;
+                        }else if(value instanceof Number){
+                            formatedData = ((Number) value).floatValue();
+                        }else if(value instanceof String){
+                            formatedData = Float.valueOf(value.toString());
                         }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof Number[] primitiveArray){
-                        Integer[] wrapperArray = new Integer[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = primitiveArray[i].intValue();
+                        break;
+                    case DOUBLE:
+                        if(value instanceof Double){
+                            formatedData = value;
+                        }else if(value instanceof Number){
+                            formatedData = ((Number) value).doubleValue();
+                        }else if(value instanceof String){
+                            formatedData = Double.valueOf(value.toString());
                         }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof String[] primitiveArray){
-                        Integer[] wrapperArray = new Integer[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = Integer.valueOf(primitiveArray[i]);
+                        break;
+                    case BYTE:
+                        if(value instanceof Byte){
+                            formatedData = value;
+                        }else if(value instanceof Number){
+                            formatedData = ((Number) value).byteValue();
+                        }else if(value instanceof String){
+                            formatedData = Byte.valueOf(value.toString());
                         }
-                        formatedData = wrapperArray;
-                    }
-                    break;
-                case SHORT_ARRAY:
-                    if(value instanceof short[] primitiveArray){
-                        Short[] wrapperArray = new Short[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = primitiveArray[i]; // Autoboxing happens here
+                        break;
+                    case DECIMAL:
+                        if(value instanceof BigDecimal){
+                            formatedData = value;
+                        }else if(value instanceof Number){
+                            formatedData = BigDecimal.valueOf(((Number) value).doubleValue());
+                        }else if(value instanceof String){
+                            formatedData = new BigDecimal((String) value);
                         }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof Short[]){
-                        formatedData = value;
-                    }else if(value instanceof Long[] primitiveArray){
-                        //neo4j internal using long to represent short
-                        Short[] wrapperArray = new Short[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = primitiveArray[i].shortValue();
+                        break;
+                    case TIMESTAMP:
+                        //Java Date
+                        if(value instanceof Date){
+                            formatedData = value;
+                        }else if(value instanceof Long){
+                            formatedData = new Date((Long)value);
+                        }else if(value instanceof String){
+                            formatedData = new Date(Long.valueOf(value.toString()));
                         }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof Number[] primitiveArray){
-                        Short[] wrapperArray = new Short[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = primitiveArray[i].shortValue();
+                        break;
+                    case DATE:
+                        //Java LocalDate
+                        if(value instanceof Date){
+                            ZonedDateTime zonedDateTime = ((Date)value).toInstant().atZone(ZoneId.systemDefault());
+                            formatedData = zonedDateTime.toLocalDate();
+                        }else if(value instanceof Long){
+                            Instant instant = Instant.ofEpochMilli((Long)value);
+                            formatedData = instant.atZone(ZoneId.systemDefault()).toLocalDate();
+                        }else if(value instanceof LocalDate){
+                            formatedData = value;
+                        }else if(value instanceof LocalDateTime){
+                            formatedData = ((LocalDateTime)value).toLocalDate();
                         }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof String[] primitiveArray){
-                        Short[] wrapperArray = new Short[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = Short.valueOf(primitiveArray[i]);
+                        break;
+                    case DATETIME:
+                        //Java  LocalDateTime
+                        if(value instanceof Date){
+                            ZonedDateTime zonedDateTime = ((Date)value).toInstant().atZone(ZoneId.systemDefault());
+                            formatedData = zonedDateTime.toLocalDateTime();
+                        }else if(value instanceof Long){
+                            Instant instant = Instant.ofEpochMilli((Long)value);
+                            formatedData = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+                        }else if(value instanceof LocalDate){
+                            formatedData = ((LocalDate)value).atStartOfDay();
+                        }else if(value instanceof LocalDateTime){
+                            formatedData = value;
                         }
-                        formatedData = wrapperArray;
-                    }
-                    break;
-                case BYTE_ARRAY:
-                    if(value instanceof Byte[]){
-                        formatedData = value;
-                    }else if(value instanceof Long[] primitiveArray){
-                        //neo4j internal using long to represent Byte
-                        Byte[] wrapperArray = new Byte[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = primitiveArray[i].byteValue();
+                        break;
+                    case TIME:
+                        //Java LocalTime
+                        if(value instanceof Date){
+                            ZonedDateTime zonedDateTime = ((Date)value).toInstant().atZone(ZoneId.systemDefault());
+                            formatedData = zonedDateTime.toLocalTime();
+                        }else if(value instanceof Long){
+                            Instant instant = Instant.ofEpochMilli((Long)value);
+                            formatedData = instant.atZone(ZoneId.systemDefault()).toLocalTime();
+                        }else if(value instanceof LocalDateTime){
+                            formatedData = ((LocalDateTime)value).toLocalTime();
+                        }else if(value instanceof LocalTime){
+                            formatedData = value;
                         }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof Number[] primitiveArray){
-                        Byte[] wrapperArray = new Byte[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = primitiveArray[i].byteValue();
+                        break;
+                    case STRING:
+                        formatedData = value.toString();
+                        break;
+                    case BOOLEAN_ARRAY:
+                        if(value instanceof boolean[] primitiveArray){
+                            Boolean[] wrapperArray = new Boolean[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = primitiveArray[i]; // Autoboxing happens here
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof Boolean[]){
+                            formatedData = value;
+                        }else if(value instanceof String[] primitiveArray){
+                            Boolean[] wrapperArray = new Boolean[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = Boolean.valueOf(primitiveArray[i]);
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof Number[] primitiveArray){
+                            Boolean[] wrapperArray = new Boolean[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = primitiveArray[i].doubleValue() >= 0;
+                            }
+                            formatedData = wrapperArray;
                         }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof String[] primitiveArray){
-                        Byte[] wrapperArray = new Byte[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = Byte.valueOf(primitiveArray[i]);
+                        break;
+                    case INT_ARRAY:
+                        if(value instanceof int[] primitiveArray){
+                            Integer[] wrapperArray = new Integer[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = primitiveArray[i]; // Autoboxing happens here
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof Integer[]){
+                            formatedData = value;
+                        }else if(value instanceof Long[] primitiveArray){
+                            //neo4j internal using long to represent int
+                            Integer[] wrapperArray = new Integer[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = primitiveArray[i].intValue();
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof Number[] primitiveArray){
+                            Integer[] wrapperArray = new Integer[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = primitiveArray[i].intValue();
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof String[] primitiveArray){
+                            Integer[] wrapperArray = new Integer[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = Integer.valueOf(primitiveArray[i]);
+                            }
+                            formatedData = wrapperArray;
                         }
-                        formatedData = wrapperArray;
-                    }
-                    break;
-                case LONG_ARRAY:
-                    if(value instanceof long[] primitiveArray){
-                        Long[] wrapperArray = new Long[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = primitiveArray[i]; // Autoboxing happens here
+                        break;
+                    case SHORT_ARRAY:
+                        if(value instanceof short[] primitiveArray){
+                            Short[] wrapperArray = new Short[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = primitiveArray[i]; // Autoboxing happens here
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof Short[]){
+                            formatedData = value;
+                        }else if(value instanceof Long[] primitiveArray){
+                            //neo4j internal using long to represent short
+                            Short[] wrapperArray = new Short[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = primitiveArray[i].shortValue();
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof Number[] primitiveArray){
+                            Short[] wrapperArray = new Short[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = primitiveArray[i].shortValue();
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof String[] primitiveArray){
+                            Short[] wrapperArray = new Short[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = Short.valueOf(primitiveArray[i]);
+                            }
+                            formatedData = wrapperArray;
                         }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof Long[]){
-                        formatedData = value;
-                    }else if(value instanceof Number[] primitiveArray){
-                        Long[] wrapperArray = new Long[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = primitiveArray[i].longValue();
+                        break;
+                    case BYTE_ARRAY:
+                        if(value instanceof Byte[]){
+                            formatedData = value;
+                        }else if(value instanceof Long[] primitiveArray){
+                            //neo4j internal using long to represent Byte
+                            Byte[] wrapperArray = new Byte[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = primitiveArray[i].byteValue();
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof Number[] primitiveArray){
+                            Byte[] wrapperArray = new Byte[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = primitiveArray[i].byteValue();
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof String[] primitiveArray){
+                            Byte[] wrapperArray = new Byte[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = Byte.valueOf(primitiveArray[i]);
+                            }
+                            formatedData = wrapperArray;
                         }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof String[] primitiveArray){
-                        Long[] wrapperArray = new Long[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = Long.valueOf(primitiveArray[i]);
+                        break;
+                    case LONG_ARRAY:
+                        if(value instanceof long[] primitiveArray){
+                            Long[] wrapperArray = new Long[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = primitiveArray[i]; // Autoboxing happens here
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof Long[]){
+                            formatedData = value;
+                        }else if(value instanceof Number[] primitiveArray){
+                            Long[] wrapperArray = new Long[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = primitiveArray[i].longValue();
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof String[] primitiveArray){
+                            Long[] wrapperArray = new Long[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = Long.valueOf(primitiveArray[i]);
+                            }
+                            formatedData = wrapperArray;
                         }
-                        formatedData = wrapperArray;
-                    }
-                    break;
-                case FLOAT_ARRAY:
-                    if(value instanceof float[] primitiveArray){
-                        Float[] wrapperArray = new Float[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = primitiveArray[i]; // Autoboxing happens here
+                        break;
+                    case FLOAT_ARRAY:
+                        if(value instanceof float[] primitiveArray){
+                            Float[] wrapperArray = new Float[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = primitiveArray[i]; // Autoboxing happens here
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof Float[]){
+                            formatedData = value;
+                        }else if(value instanceof Double[] primitiveArray){
+                            //neo4j internal using double to represent float
+                            Float[] wrapperArray = new Float[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = primitiveArray[i].floatValue();
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof Number[] primitiveArray){
+                            Float[] wrapperArray = new Float[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = primitiveArray[i].floatValue();
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof String[] primitiveArray){
+                            Float[] wrapperArray = new Float[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = Float.valueOf(primitiveArray[i]);
+                            }
+                            formatedData = wrapperArray;
                         }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof Float[]){
-                        formatedData = value;
-                    }else if(value instanceof Double[] primitiveArray){
-                        //neo4j internal using double to represent float
-                        Float[] wrapperArray = new Float[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = primitiveArray[i].floatValue();
+                        break;
+                    case DOUBLE_ARRAY:
+                        if(value instanceof double[] primitiveArray){
+                            Double[] wrapperArray = new Double[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = primitiveArray[i]; // Autoboxing happens here
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof Double[]){
+                            formatedData = value;
+                        }else if(value instanceof Number[] primitiveArray){
+                            Double[] wrapperArray = new Double[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = primitiveArray[i].doubleValue();
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof String[] primitiveArray){
+                            Double[] wrapperArray = new Double[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = Double.valueOf(primitiveArray[i]);
+                            }
+                            formatedData = wrapperArray;
                         }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof Number[] primitiveArray){
-                        Float[] wrapperArray = new Float[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = primitiveArray[i].floatValue();
+                        break;
+                    case TIMESTAMP_ARRAY:
+                        //Java Date
+                        if(value instanceof Date[]){
+                            formatedData = value;
+                        }else if(value instanceof Long[] primitiveArray){
+                            Date[] wrapperArray = new Date[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = new Date(primitiveArray[i]);
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof String[] primitiveArray){
+                            Date[] wrapperArray = new Date[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = new Date(Long.valueOf(primitiveArray[i]));
+                            }
+                            formatedData = wrapperArray;
                         }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof String[] primitiveArray){
-                        Float[] wrapperArray = new Float[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = Float.valueOf(primitiveArray[i]);
+                        break;
+                    case DATE_ARRAY:
+                        //Java LocalDate
+                        if(value instanceof LocalDate[]){
+                            formatedData = value;
+                        }else if(value instanceof Date[] primitiveArray){
+                            LocalDate[] wrapperArray = new LocalDate[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                ZonedDateTime zonedDateTime = primitiveArray[i].toInstant().atZone(ZoneId.systemDefault());
+                                wrapperArray[i] = zonedDateTime.toLocalDate();
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof Long[] primitiveArray){
+                            LocalDate[] wrapperArray = new LocalDate[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                Instant instant = Instant.ofEpochMilli(primitiveArray[i]);
+                                wrapperArray[i] = instant.atZone(ZoneId.systemDefault()).toLocalDate();
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof LocalDateTime[] primitiveArray){
+                            LocalDate[] wrapperArray = new LocalDate[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = primitiveArray[i].toLocalDate();
+                            }
+                            formatedData = wrapperArray;
                         }
-                        formatedData = wrapperArray;
-                    }
-                    break;
-                case DOUBLE_ARRAY:
-                    if(value instanceof double[] primitiveArray){
-                        Double[] wrapperArray = new Double[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = primitiveArray[i]; // Autoboxing happens here
+                        break;
+                    case DATETIME_ARRAY:
+                        //Java  LocalDateTime
+                        if(value instanceof LocalDateTime[]){
+                            formatedData = value;
+                        }else if(value instanceof Date[] primitiveArray){
+                            LocalDateTime[] wrapperArray = new LocalDateTime[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                ZonedDateTime zonedDateTime = primitiveArray[i].toInstant().atZone(ZoneId.systemDefault());
+                                wrapperArray[i] = zonedDateTime.toLocalDateTime();
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof Long[] primitiveArray){
+                            LocalDateTime[] wrapperArray = new LocalDateTime[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                Instant instant = Instant.ofEpochMilli(primitiveArray[i]);
+                                wrapperArray[i] = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof LocalDate[] primitiveArray){
+                            LocalDateTime[] wrapperArray = new LocalDateTime[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = primitiveArray[i].atStartOfDay();
+                            }
+                            formatedData = wrapperArray;
                         }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof Double[]){
-                        formatedData = value;
-                    }else if(value instanceof Number[] primitiveArray){
-                        Double[] wrapperArray = new Double[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = primitiveArray[i].doubleValue();
-                        }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof String[] primitiveArray){
-                        Double[] wrapperArray = new Double[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = Double.valueOf(primitiveArray[i]);
-                        }
-                        formatedData = wrapperArray;
-                    }
-                    break;
+                        break;
+                    case TIME_ARRAY:
+                        //Java LocalTime
+                        if(value instanceof LocalTime[]){
+                            formatedData = value;
+                        }else if(value instanceof Date[] primitiveArray){
+                            LocalTime[] wrapperArray = new LocalTime[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                ZonedDateTime zonedDateTime = primitiveArray[i].toInstant().atZone(ZoneId.systemDefault());
+                                wrapperArray[i] = zonedDateTime.toLocalTime();
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof Long[] primitiveArray){
+                            LocalTime[] wrapperArray = new LocalTime[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                Instant instant = Instant.ofEpochMilli(primitiveArray[i]);
+                                wrapperArray[i] = instant.atZone(ZoneId.systemDefault()).toLocalTime();
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof LocalDateTime[] primitiveArray){
+                            LocalTime[] wrapperArray = new LocalTime[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
 
-
-
-
-
-
-                case TIMESTAMP_ARRAY:
-                    if(value instanceof Date[]){
-                        formatedData = value;
-                    }
-
-
-
-
-
-
-
-
-
-
-                    break;
-                case DATE_ARRAY:
-                    if(value instanceof LocalDate[]){
-                        formatedData = value;
-                    }
-
-
-
-
-
-
-
-
-
-
-                    break;
-                case DATETIME_ARRAY:
-                    //Java  LocalDateTime
-                    if(value instanceof LocalDateTime[]){
-                        formatedData = value;
-                    }else if(value instanceof Date[] primitiveArray){
-                        LocalDateTime[] wrapperArray = new LocalDateTime[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            ZonedDateTime zonedDateTime = primitiveArray[i].toInstant().atZone(ZoneId.systemDefault());
-                            wrapperArray[i] = zonedDateTime.toLocalDateTime();
+                                wrapperArray[i] = primitiveArray[i].toLocalTime();
+                            }
+                            formatedData = wrapperArray;
                         }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof Long[] primitiveArray){
-                        LocalDateTime[] wrapperArray = new LocalDateTime[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            Instant instant = Instant.ofEpochMilli(primitiveArray[i]);
-                            wrapperArray[i] = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+                        break;
+                    case STRING_ARRAY:
+                        if(value instanceof String[]){
+                            formatedData = value;
+                        }else if(value instanceof Object[] primitiveArray){
+                            String[] wrapperArray = new String[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = primitiveArray[i].toString();
+                            }
+                            formatedData = wrapperArray;
                         }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof LocalDate[] primitiveArray){
-                        LocalDateTime[] wrapperArray = new LocalDateTime[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = primitiveArray[i].atStartOfDay();
+                        break;
+                    case DECIMAL_ARRAY:
+                        if(value instanceof BigDecimal[]){
+                            formatedData = value;
+                        }else if(value instanceof Double[] primitiveArray){
+                            //neo4j internal using double to represent bigDecimal
+                            BigDecimal[] wrapperArray = new BigDecimal[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = BigDecimal.valueOf(primitiveArray[i]);
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof Number[] primitiveArray){
+                            BigDecimal[] wrapperArray = new BigDecimal[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = BigDecimal.valueOf(primitiveArray[i].doubleValue());
+                            }
+                            formatedData = wrapperArray;
+                        }else if(value instanceof String[] primitiveArray){
+                            BigDecimal[] wrapperArray = new BigDecimal[primitiveArray.length];
+                            for (int i = 0; i < primitiveArray.length; i++) {
+                                wrapperArray[i] = new BigDecimal(primitiveArray[i]);
+                            }
+                            formatedData = wrapperArray;
                         }
-                        formatedData = wrapperArray;
-                    }
-                    break;
-                case TIME_ARRAY:
-                    //Java LocalTime
-                    if(value instanceof LocalTime[]){
-                        formatedData = value;
-                    }else if(value instanceof Date[] primitiveArray){
-                        LocalTime[] wrapperArray = new LocalTime[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            ZonedDateTime zonedDateTime = primitiveArray[i].toInstant().atZone(ZoneId.systemDefault());
-                            wrapperArray[i] = zonedDateTime.toLocalTime();
+                        break;
+                    case BINARY:
+                        if(value instanceof byte[]){
+                            formatedData = value;
                         }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof Long[] primitiveArray){
-                        LocalTime[] wrapperArray = new LocalTime[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            Instant instant = Instant.ofEpochMilli(primitiveArray[i]);
-                            wrapperArray[i] = instant.atZone(ZoneId.systemDefault()).toLocalTime();
-                        }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof LocalDateTime[] primitiveArray){
-                        LocalTime[] wrapperArray = new LocalTime[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-
-                            wrapperArray[i] = primitiveArray[i].toLocalTime();
-                        }
-                        formatedData = wrapperArray;
-                    }
-                    break;
-                case STRING_ARRAY:
-                    if(value instanceof String[]){
-                        formatedData = value;
-                    }else if(value instanceof Object[] primitiveArray){
-                        String[] wrapperArray = new String[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = primitiveArray[i].toString();
-                        }
-                        formatedData = wrapperArray;
-                    }
-                    break;
-                case DECIMAL_ARRAY:
-                    if(value instanceof BigDecimal[]){
-                        formatedData = value;
-                    }else if(value instanceof Double[] primitiveArray){
-                        //neo4j internal using double to represent bigDecimal
-                        BigDecimal[] wrapperArray = new BigDecimal[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = BigDecimal.valueOf(primitiveArray[i]);
-                        }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof Number[] primitiveArray){
-                        BigDecimal[] wrapperArray = new BigDecimal[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = BigDecimal.valueOf(primitiveArray[i].doubleValue());
-                        }
-                        formatedData = wrapperArray;
-                    }else if(value instanceof String[] primitiveArray){
-                        BigDecimal[] wrapperArray = new BigDecimal[primitiveArray.length];
-                        for (int i = 0; i < primitiveArray.length; i++) {
-                            wrapperArray[i] = new BigDecimal(primitiveArray[i]);
-                        }
-                        formatedData = wrapperArray;
-                    }
-                    break;
-                case BINARY:
-                    if(value instanceof byte[]){
-                        formatedData = value;
-                    }
+                }
+                return formatedData;
+            }catch (NumberFormatException e){
+                e.printStackTrace();
             }
-            return formatedData;
         }
         return null;
     }
