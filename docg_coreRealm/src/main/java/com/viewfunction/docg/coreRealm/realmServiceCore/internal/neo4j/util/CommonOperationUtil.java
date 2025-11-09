@@ -1068,27 +1068,166 @@ public class CommonOperationUtil {
                         formatedData = new BigDecimal((String) value);
                     }
                     break;
-                case TIMESTAMP:break;
-                case DATE:break;
-                case DATETIME:break;
-                case TIME:break;
+                case TIMESTAMP:
+                    //Java Date
+                    if(value instanceof Date){
+                        formatedData = value;
+                    }else if(value instanceof Long){
+                        formatedData = new Date((Long)value);
+                    }else if(value instanceof String){
+                        formatedData = new Date(Long.valueOf(value.toString()));
+                    }
+                    break;
+                case DATE:
+                    //Java LocalDate
+                    if(value instanceof Date){
+                        ZonedDateTime zonedDateTime = ((Date)value).toInstant().atZone(ZoneId.systemDefault());
+                        formatedData = zonedDateTime.toLocalDate();
+                    }else if(value instanceof Long){
+                        Instant instant = Instant.ofEpochMilli((Long)value);
+                        formatedData = instant.atZone(ZoneId.systemDefault()).toLocalDate();
+                    }else if(value instanceof LocalDate){
+                        formatedData = value;
+                    }else if(value instanceof LocalDateTime){
+                        formatedData = ((LocalDateTime)value).toLocalDate();
+                    }
+                    break;
+                case DATETIME:
+                    //Java  LocalDateTime
+                    if(value instanceof Date){
+                        ZonedDateTime zonedDateTime = ((Date)value).toInstant().atZone(ZoneId.systemDefault());
+                        formatedData = zonedDateTime.toLocalDateTime();
+                    }else if(value instanceof Long){
+                        Instant instant = Instant.ofEpochMilli((Long)value);
+                        formatedData = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+                    }else if(value instanceof LocalDate){
+                        formatedData = ((LocalDate)value).atStartOfDay();
+                    }else if(value instanceof LocalDateTime){
+                        formatedData = value;
+                    }
+                    break;
+                case TIME:
+                    //Java LocalTime
+                    if(value instanceof Date){
+                        ZonedDateTime zonedDateTime = ((Date)value).toInstant().atZone(ZoneId.systemDefault());
+                        formatedData = zonedDateTime.toLocalTime();
+                    }else if(value instanceof Long){
+                        Instant instant = Instant.ofEpochMilli((Long)value);
+                        formatedData = instant.atZone(ZoneId.systemDefault()).toLocalTime();
+                    }else if(value instanceof LocalDateTime){
+                        formatedData = ((LocalDateTime)value).toLocalTime();
+                    }else if(value instanceof LocalTime){
+                        formatedData = value;
+                    }
+                    break;
                 case STRING:
                     formatedData = value.toString();
                     break;
-                case BOOLEAN_ARRAY:break;
-                case INT_ARRAY:break;
-                case SHORT_ARRAY:break;
-                case LONG_ARRAY:break;
-                case FLOAT_ARRAY:break;
-                case DOUBLE_ARRAY:break;
-                case TIMESTAMP_ARRAY:break;
-                case DATE_ARRAY:break;
-                case DATETIME_ARRAY:break;
-                case TIME_ARRAY:break;
-                case STRING_ARRAY:break;
-                case BYTE_ARRAY:break;
-                case DECIMAL_ARRAY:break;
+                case BOOLEAN_ARRAY:
+                    if(value instanceof boolean[] primitiveArray){
+                        Boolean[] wrapperArray = new Boolean[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = primitiveArray[i]; // Autoboxing happens here
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof Boolean[]){
+                        formatedData = value;
+                    }
+                    break;
+                case INT_ARRAY:
+                    if(value instanceof int[] primitiveArray){
+                        Integer[] wrapperArray = new Integer[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = primitiveArray[i]; // Autoboxing happens here
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof Integer[]){
+                        formatedData = value;
+                    }
+                    break;
+                case SHORT_ARRAY:
+                    if(value instanceof short[] primitiveArray){
+                        Short[] wrapperArray = new Short[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = primitiveArray[i]; // Autoboxing happens here
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof Short[]){
+                        formatedData = value;
+                    }
+                    break;
+                case LONG_ARRAY:
+                    if(value instanceof long[] primitiveArray){
+                        Long[] wrapperArray = new Long[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = primitiveArray[i]; // Autoboxing happens here
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof Long[]){
+                        formatedData = value;
+                    }
+                    break;
+                case FLOAT_ARRAY:
+                    if(value instanceof float[] primitiveArray){
+                        Float[] wrapperArray = new Float[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = primitiveArray[i]; // Autoboxing happens here
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof Float[]){
+                        formatedData = value;
+                    }
+                    break;
+                case DOUBLE_ARRAY:
+                    if(value instanceof double[] primitiveArray){
+                        Double[] wrapperArray = new Double[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = primitiveArray[i]; // Autoboxing happens here
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof Double[]){
+                        formatedData = value;
+                    }
+                    break;
+                case TIMESTAMP_ARRAY:
+                    if(value instanceof Date[]){
+                        formatedData = value;
+                    }
+                    break;
+                case DATE_ARRAY:
+                    if(value instanceof LocalDate[]){
+                        formatedData = value;
+                    }
+                    break;
+                case DATETIME_ARRAY:
+                    if(value instanceof LocalDateTime[]){
+                        formatedData = value;
+                    }
+                    break;
+                case TIME_ARRAY:
+                    if(value instanceof LocalTime[]){
+                        formatedData = value;
+                    }
+                    break;
+                case STRING_ARRAY:
+                    if(value instanceof String[]){
+                        formatedData = value;
+                    }
+                    break;
+                case BYTE_ARRAY:
+                    if(value instanceof Byte[]){
+                        formatedData = value;
+                    }
+                    break;
+                case DECIMAL_ARRAY:
+                    if(value instanceof BigDecimal[]){
+                        formatedData = value;
+                    }
+                    break;
                 case BINARY:
+                    if(value instanceof byte[]){
+                        formatedData = value;
+                    }
             }
             return formatedData;
         }
