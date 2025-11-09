@@ -1132,6 +1132,18 @@ public class CommonOperationUtil {
                         formatedData = wrapperArray;
                     }else if(value instanceof Boolean[]){
                         formatedData = value;
+                    }else if(value instanceof String[] primitiveArray){
+                        Boolean[] wrapperArray = new Boolean[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = Boolean.valueOf(primitiveArray[i]);
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof Number[] primitiveArray){
+                        Boolean[] wrapperArray = new Boolean[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = primitiveArray[i].doubleValue() >= 0;
+                        }
+                        formatedData = wrapperArray;
                     }
                     break;
                 case INT_ARRAY:
@@ -1143,6 +1155,25 @@ public class CommonOperationUtil {
                         formatedData = wrapperArray;
                     }else if(value instanceof Integer[]){
                         formatedData = value;
+                    }else if(value instanceof Long[] primitiveArray){
+                        //neo4j internal using long to represent int
+                        Integer[] wrapperArray = new Integer[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = primitiveArray[i].intValue();
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof Number[] primitiveArray){
+                        Integer[] wrapperArray = new Integer[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = primitiveArray[i].intValue();
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof String[] primitiveArray){
+                        Integer[] wrapperArray = new Integer[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = Integer.valueOf(primitiveArray[i]);
+                        }
+                        formatedData = wrapperArray;
                     }
                     break;
                 case SHORT_ARRAY:
@@ -1154,6 +1185,49 @@ public class CommonOperationUtil {
                         formatedData = wrapperArray;
                     }else if(value instanceof Short[]){
                         formatedData = value;
+                    }else if(value instanceof Long[] primitiveArray){
+                        //neo4j internal using long to represent short
+                        Short[] wrapperArray = new Short[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = primitiveArray[i].shortValue();
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof Number[] primitiveArray){
+                        Short[] wrapperArray = new Short[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = primitiveArray[i].shortValue();
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof String[] primitiveArray){
+                        Short[] wrapperArray = new Short[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = Short.valueOf(primitiveArray[i]);
+                        }
+                        formatedData = wrapperArray;
+                    }
+                    break;
+                case BYTE_ARRAY:
+                    if(value instanceof Byte[]){
+                        formatedData = value;
+                    }else if(value instanceof Long[] primitiveArray){
+                        //neo4j internal using long to represent Byte
+                        Byte[] wrapperArray = new Byte[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = primitiveArray[i].byteValue();
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof Number[] primitiveArray){
+                        Byte[] wrapperArray = new Byte[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = primitiveArray[i].byteValue();
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof String[] primitiveArray){
+                        Byte[] wrapperArray = new Byte[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = Byte.valueOf(primitiveArray[i]);
+                        }
+                        formatedData = wrapperArray;
                     }
                     break;
                 case LONG_ARRAY:
@@ -1165,6 +1239,18 @@ public class CommonOperationUtil {
                         formatedData = wrapperArray;
                     }else if(value instanceof Long[]){
                         formatedData = value;
+                    }else if(value instanceof Number[] primitiveArray){
+                        Long[] wrapperArray = new Long[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = primitiveArray[i].longValue();
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof String[] primitiveArray){
+                        Long[] wrapperArray = new Long[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = Long.valueOf(primitiveArray[i]);
+                        }
+                        formatedData = wrapperArray;
                     }
                     break;
                 case FLOAT_ARRAY:
@@ -1176,6 +1262,25 @@ public class CommonOperationUtil {
                         formatedData = wrapperArray;
                     }else if(value instanceof Float[]){
                         formatedData = value;
+                    }else if(value instanceof Double[] primitiveArray){
+                        //neo4j internal using double to represent float
+                        Float[] wrapperArray = new Float[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = primitiveArray[i].floatValue();
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof Number[] primitiveArray){
+                        Float[] wrapperArray = new Float[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = primitiveArray[i].floatValue();
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof String[] primitiveArray){
+                        Float[] wrapperArray = new Float[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = Float.valueOf(primitiveArray[i]);
+                        }
+                        formatedData = wrapperArray;
                     }
                     break;
                 case DOUBLE_ARRAY:
@@ -1187,41 +1292,142 @@ public class CommonOperationUtil {
                         formatedData = wrapperArray;
                     }else if(value instanceof Double[]){
                         formatedData = value;
+                    }else if(value instanceof Number[] primitiveArray){
+                        Double[] wrapperArray = new Double[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = primitiveArray[i].doubleValue();
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof String[] primitiveArray){
+                        Double[] wrapperArray = new Double[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = Double.valueOf(primitiveArray[i]);
+                        }
+                        formatedData = wrapperArray;
                     }
                     break;
+
+
+
+
+
+
                 case TIMESTAMP_ARRAY:
                     if(value instanceof Date[]){
                         formatedData = value;
                     }
+
+
+
+
+
+
+
+
+
+
                     break;
                 case DATE_ARRAY:
                     if(value instanceof LocalDate[]){
                         formatedData = value;
                     }
+
+
+
+
+
+
+
+
+
+
                     break;
                 case DATETIME_ARRAY:
+                    //Java  LocalDateTime
                     if(value instanceof LocalDateTime[]){
                         formatedData = value;
+                    }else if(value instanceof Date[] primitiveArray){
+                        LocalDateTime[] wrapperArray = new LocalDateTime[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            ZonedDateTime zonedDateTime = primitiveArray[i].toInstant().atZone(ZoneId.systemDefault());
+                            wrapperArray[i] = zonedDateTime.toLocalDateTime();
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof Long[] primitiveArray){
+                        LocalDateTime[] wrapperArray = new LocalDateTime[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            Instant instant = Instant.ofEpochMilli(primitiveArray[i]);
+                            wrapperArray[i] = instant.atZone(ZoneId.systemDefault()).toLocalDateTime();
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof LocalDate[] primitiveArray){
+                        LocalDateTime[] wrapperArray = new LocalDateTime[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = primitiveArray[i].atStartOfDay();
+                        }
+                        formatedData = wrapperArray;
                     }
                     break;
                 case TIME_ARRAY:
+                    //Java LocalTime
                     if(value instanceof LocalTime[]){
                         formatedData = value;
+                    }else if(value instanceof Date[] primitiveArray){
+                        LocalTime[] wrapperArray = new LocalTime[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            ZonedDateTime zonedDateTime = primitiveArray[i].toInstant().atZone(ZoneId.systemDefault());
+                            wrapperArray[i] = zonedDateTime.toLocalTime();
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof Long[] primitiveArray){
+                        LocalTime[] wrapperArray = new LocalTime[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            Instant instant = Instant.ofEpochMilli(primitiveArray[i]);
+                            wrapperArray[i] = instant.atZone(ZoneId.systemDefault()).toLocalTime();
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof LocalDateTime[] primitiveArray){
+                        LocalTime[] wrapperArray = new LocalTime[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+
+                            wrapperArray[i] = primitiveArray[i].toLocalTime();
+                        }
+                        formatedData = wrapperArray;
                     }
                     break;
                 case STRING_ARRAY:
                     if(value instanceof String[]){
                         formatedData = value;
-                    }
-                    break;
-                case BYTE_ARRAY:
-                    if(value instanceof Byte[]){
-                        formatedData = value;
+                    }else if(value instanceof Object[] primitiveArray){
+                        String[] wrapperArray = new String[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = primitiveArray[i].toString();
+                        }
+                        formatedData = wrapperArray;
                     }
                     break;
                 case DECIMAL_ARRAY:
                     if(value instanceof BigDecimal[]){
                         formatedData = value;
+                    }else if(value instanceof Double[] primitiveArray){
+                        //neo4j internal using double to represent bigDecimal
+                        BigDecimal[] wrapperArray = new BigDecimal[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = BigDecimal.valueOf(primitiveArray[i]);
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof Number[] primitiveArray){
+                        BigDecimal[] wrapperArray = new BigDecimal[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = BigDecimal.valueOf(primitiveArray[i].doubleValue());
+                        }
+                        formatedData = wrapperArray;
+                    }else if(value instanceof String[] primitiveArray){
+                        BigDecimal[] wrapperArray = new BigDecimal[primitiveArray.length];
+                        for (int i = 0; i < primitiveArray.length; i++) {
+                            wrapperArray[i] = new BigDecimal(primitiveArray[i]);
+                        }
+                        formatedData = wrapperArray;
                     }
                     break;
                 case BINARY:
