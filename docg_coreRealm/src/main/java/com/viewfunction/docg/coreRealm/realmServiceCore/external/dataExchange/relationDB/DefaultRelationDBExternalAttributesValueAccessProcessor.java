@@ -291,18 +291,18 @@ public class DefaultRelationDBExternalAttributesValueAccessProcessor implements 
     }
 
     private LocalDate getLocalDate(Date date){
-        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        return date != null ? date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate() : null;
     }
 
     private LocalTime getLocalTime(Time time){
-        return time.toLocalTime();
+        return time != null ? time.toLocalTime() : null;
     }
 
     private LocalDateTime getLocalDateTime(Timestamp timestamp){
-        return timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        return timestamp != null ? timestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime() : null;
     }
 
     private ZonedDateTime getZonedDateTime(Timestamp timestamp){
-        return timestamp.toInstant().atZone(ZoneId.systemDefault());
+        return timestamp != null ? timestamp.toInstant().atZone(ZoneId.systemDefault()) : null;
     }
 }
