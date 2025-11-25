@@ -290,8 +290,14 @@ public class DefaultRelationDBExternalAttributesValueAccessProcessor implements 
         }
     }
 
+
     private LocalDate getLocalDate(Date date){
-        return date != null ? date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate() : null;
+        if(date == null){
+            return null;
+        }
+        long milliSeconds = date.getTime(); // 获取毫秒数（自 1970-01-01 UTC）
+        Instant instant = Instant.ofEpochMilli(milliSeconds); // 安全转换
+        return  instant.atZone(ZoneId.systemDefault()).toLocalDate() ;
     }
 
     private LocalTime getLocalTime(Time time){
