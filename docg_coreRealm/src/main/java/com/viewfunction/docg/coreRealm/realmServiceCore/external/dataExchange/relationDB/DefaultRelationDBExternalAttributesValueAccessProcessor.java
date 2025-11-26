@@ -290,7 +290,6 @@ public class DefaultRelationDBExternalAttributesValueAccessProcessor implements 
         }
     }
 
-
     private LocalDate getLocalDate(Date date){
         if(date == null){
             return null;
