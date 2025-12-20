@@ -6042,6 +6042,16 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @return 符附着的分类路径列表与概念实体 UID 映射
      */
     public Map<String,List<Classification>> getConceptionEntitiesAttachedClassificationPaths(List<String> conceptionEntityUIDs, String startClassificationName,String attachedRelationKindName,RelationDirection relationDirection,int classificationPathMaxHop) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
+
+    /**
+     * 输入一组概念类型名称列表和自定义配置项名称列表，获取这些概念类型的自定义配置项名称列表中包含的全部自定义配置项值
+     *
+     * @param conceptionKindNames List<String> 概念类型名称列表，如为 null 则返回系统中所有概念类型的自定义配置项值
+     * @param metaConfigItemNames List<String> 自定义配置项名称列表，该值不能为 null，并且需要包含至少一个配置项名称
+     *
+     * @return 概念类型与自定义配置项数据的映射表
+     */
+    public Map<String,Map<String,Object>> getConceptionKindsMetaConfigItemValues(List<String> conceptionKindNames,List<String> metaConfigItemNames) throws CoreRealmServiceEntityExploreException,CoreRealmServiceRuntimeException;
 ```
 
 ###### ↳ SystemMaintenanceOperator

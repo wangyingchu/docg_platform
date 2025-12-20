@@ -22,6 +22,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.paylo
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonTimeScaleEventAndConceptionEntityPairRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.spi.common.payloadImpl.CommonTimeScaleEventsRetrieveResultImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntitiesSequence;
+import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.PathEntityValuesSequence;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JClassificationImpl;
@@ -2060,6 +2061,40 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             workingGraphOperationExecutor.executeRead(dataTransformer, cql);
         }finally {
            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return resultMap;
+    }
+
+    @Override
+    public Map<String, Map<String, Object>> getConceptionKindsMetaConfigItemValues(List<String> conceptionKindNames, List<String> metaConfigItemNames) throws CoreRealmServiceEntityExploreException,CoreRealmServiceRuntimeException {
+        if(metaConfigItemNames == null || metaConfigItemNames.isEmpty()){
+            logger.error("At lease one metaConfigItem Name is required");
+            CoreRealmServiceEntityExploreException e = new CoreRealmServiceEntityExploreException();
+            e.setCauseMessage("At lease one metaConfigItem Name is required");
+            throw e;
+        }
+
+        Map<String, Map<String, Object>> resultMap = new HashMap<>();
+
+        PathEntitiesSequenceMatchPattern sequenceMatchPattern = new PathEntitiesSequenceMatchPattern();
+        List<String> conceptionKindReturnAttributesList = new ArrayList<>();
+        conceptionKindReturnAttributesList.add(RealmConstant._NameProperty);
+        sequenceMatchPattern.addSequenceMatchLogic(new ConceptionKindSequenceMatchLogic(RealmConstant.ConceptionKindClass,null,conceptionKindReturnAttributesList));
+        sequenceMatchPattern.addSequenceMatchLogic(new RelationKindSequenceMatchLogic(RealmConstant.Kind_MetaConfigItemsStorageRelationClass,null,RelationDirection.FROM));
+        sequenceMatchPattern.addSequenceMatchLogic(new ConceptionKindSequenceMatchLogic(RealmConstant.MetaConfigItemsStorageClass,null,metaConfigItemNames));
+        Set<PathEntityValuesSequence> resultSequences = getPathEntityValuesSequences(sequenceMatchPattern);
+
+        if(resultSequences != null && !resultSequences.isEmpty()){
+            for(PathEntityValuesSequence currentPathEntityValuesSequence:resultSequences){
+                LinkedList<PathEntityValue> conceptionKind_metaConfigItemsStoragePath = currentPathEntityValuesSequence.getEntityValuesSequence();
+                ConceptionEntityValue conceptionKindEntityValue = (ConceptionEntityValue)conceptionKind_metaConfigItemsStoragePath.get(0);
+                ConceptionEntityValue metaConfigItemsStorageEntityValue = (ConceptionEntityValue)conceptionKind_metaConfigItemsStoragePath.get(2);
+                String conceptionKindName = conceptionKindEntityValue.getEntityAttributesValue().get(RealmConstant._NameProperty).toString();
+                if (conceptionKindNames == null  || conceptionKindNames.contains(conceptionKindName)) {
+                    Map<String, Object> metaConfigValue = metaConfigItemsStorageEntityValue.getEntityAttributesValue();
+                    resultMap.put(conceptionKindName,metaConfigValue);
+                }
+            }
         }
         return resultMap;
     }
