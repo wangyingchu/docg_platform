@@ -33,11 +33,13 @@ public class Text2QueryUtil {
                    .apiKey(PropertiesHandler.getPropertyValue(PropertiesHandler.TEXT2CYPHER_MODEL_APIKEY))
                    .modelName(PropertiesHandler.getPropertyValue(PropertiesHandler.TEXT2CYPHER_MODEL_NAME))
                    .baseUrl(PropertiesHandler.getPropertyValue(PropertiesHandler.TEXT2CYPHER_MODEL_BASEURL))
+                   .temperature(0.0)
                    .build();
        }else if("Ollama".equals(TEXT2CYPHER_TECH)){
            model = OllamaChatModel.builder()
                    .modelName(PropertiesHandler.getPropertyValue(PropertiesHandler.TEXT2CYPHER_MODEL_NAME))
                    .baseUrl(PropertiesHandler.getPropertyValue(PropertiesHandler.TEXT2CYPHER_MODEL_BASEURL))
+                   .temperature(0.0)
                    .build();
        }
 
