@@ -2100,7 +2100,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public Map<String, List<Classification>> getConceptionEntitiesAttachedClassifications(List<String> conceptionEntityUIDs, String relationKindName, RelationDirection relationDirection, int classificationPathHop) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+    public Map<String, List<Classification>> getConceptionEntitiesAttachedClassifications(List<String> conceptionEntityUIDs, String relationKindName, RelationDirection relationDirection, ClassificationPathTraversalDirection traversalDirection,int classificationPathHop) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
         if(conceptionEntityUIDs == null|| conceptionEntityUIDs.isEmpty()){
             logger.error("At least one conceptionEntityUID is required.");
             CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
@@ -2123,7 +2123,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         RelationDirection currentRelationDirection = relationDirection != null ? relationDirection : RelationDirection.TWO_WAY;
         String relationTypePart = "[r]";
         if (relationKindName != null) {
-            relationTypePart = "[r:`" + relationKindName + "`*"+classificationPathHop+".."+classificationPathHop+"]";
+            relationTypePart = "[r:`" + relationKindName + "`]";
         }
         String relationMatchingPart = "";
         switch (currentRelationDirection) {
@@ -2132,11 +2132,34 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             case TWO_WAY -> relationMatchingPart = "-" + relationTypePart + "-";
         }
 
-        String cql =
-                "MATCH (conceptionEntities)" +
-                        relationMatchingPart + "(classification:"+RealmConstant.ClassificationClass+") "+
-                        "WHERE id(conceptionEntities) IN " + conceptionEntityUIDs + "\n"+
-                        "RETURN id(conceptionEntities) as entityUID, classification as classification\n";
+        ClassificationPathTraversalDirection currentTraversalDirection = traversalDirection != null ? traversalDirection : ClassificationPathTraversalDirection.BOTH;
+        String traversalDirectionPrePart = "-";
+        String traversalDirectionPostPart = "-";
+        switch (currentTraversalDirection) {
+            case BOTH : break;
+            case ANCESTOR:
+                traversalDirectionPostPart = "->";
+                break;
+            case OFFSPRING:
+                traversalDirectionPrePart = "<-";
+                break;
+        }
+
+        String cql = null;
+
+        if(classificationPathHop == 1){
+            cql = "MATCH (conceptionEntities)" + relationMatchingPart + "(classification:"+RealmConstant.ClassificationClass+") "+
+                    "WHERE id(conceptionEntities) IN " + conceptionEntityUIDs + "\n"+
+                    "RETURN id(conceptionEntities) as entityUID, classification as classification\n";
+        }else{
+            int classificationPathDepth = classificationPathHop -1;
+            cql = "MATCH (conceptionEntities)" +
+                    relationMatchingPart + "(leafClassification:"+RealmConstant.ClassificationClass+")"+
+                    traversalDirectionPrePart+"[:"+RealmConstant.Classification_ClassificationRelationClass+"*"+classificationPathDepth+".." + classificationPathDepth + "]"+traversalDirectionPostPart+"(classification:"+RealmConstant.ClassificationClass+")"+"\n"+
+                    "WHERE id(conceptionEntities) IN " + conceptionEntityUIDs + "\n"+
+                    "RETURN id(conceptionEntities) as entityUID, classification as classification\n";
+        }
+
         logger.debug("Generated Cypher Statement: {}", cql);
 
         Map<String, List<Classification>> resultMap = new HashMap<>();
