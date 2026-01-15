@@ -521,4 +521,16 @@ public interface CrossKindDataOperator {
      * @return 概念类型与自定义配置项数据的映射表
      */
     public Map<String,Map<String,Object>> getConceptionKindsMetaConfigItemValues(List<String> conceptionKindNames,List<String> metaConfigItemNames) throws CoreRealmServiceEntityExploreException,CoreRealmServiceRuntimeException;
+
+    /**
+     * 输入一组概念实体的唯一值ID，获取附着在这些概念类型实体对象上的符合匹配条件的目标分类或前后代目标分类
+     *
+     * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
+     * @param relationKindName String 关联的概念类型名称
+     * @param relationDirection RelationDirection 概念类型实体与指定目标分类的关系方向
+     * @param classificationPathHop int 前后代目标分类与直接附着分类之间的确定路径跳数
+     *
+     * @return 符合匹配条件的概念实体 UID与附着的分类列表映射
+     */
+    public Map<String,List<Classification>> getConceptionEntitiesAttachedClassifications(List<String> conceptionEntityUIDs, String relationKindName,RelationDirection relationDirection,int classificationPathHop) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
 }

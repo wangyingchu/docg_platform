@@ -2099,6 +2099,88 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         return resultMap;
     }
 
+    @Override
+    public Map<String, List<Classification>> getConceptionEntitiesAttachedClassifications(List<String> conceptionEntityUIDs, String relationKindName, RelationDirection relationDirection, int classificationPathHop) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+        if(conceptionEntityUIDs == null|| conceptionEntityUIDs.isEmpty()){
+            logger.error("At least one conceptionEntityUID is required.");
+            CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+            exception.setCauseMessage("At least one conceptionEntityUID is required.");
+            throw exception;
+        }
+        if( relationKindName == null){
+            logger.error("RelationKind Name Name is required.");
+            CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+            exception.setCauseMessage("RelationKind Name is required.");
+            throw exception;
+        }
+        if( classificationPathHop < 1 ){
+            logger.error("ClassificationPathHop must great then zero.");
+            CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+            exception.setCauseMessage("ClassificationPathHop must great then zero.");
+            throw exception;
+        }
+
+        RelationDirection currentRelationDirection = relationDirection != null ? relationDirection : RelationDirection.TWO_WAY;
+        String relationTypePart = "[r]";
+        if (relationKindName != null) {
+            relationTypePart = "[r:`" + relationKindName + "`*"+classificationPathHop+".."+classificationPathHop+"]";
+        }
+        String relationMatchingPart = "";
+        switch (currentRelationDirection) {
+            case FROM -> relationMatchingPart = "-" + relationTypePart + "->";
+            case TO -> relationMatchingPart = "<-" + relationTypePart + "-";
+            case TWO_WAY -> relationMatchingPart = "-" + relationTypePart + "-";
+        }
+
+        String cql =
+                "MATCH (conceptionEntities)" +
+                        relationMatchingPart + "(classification:"+RealmConstant.ClassificationClass+") "+
+                        "WHERE id(conceptionEntities) IN " + conceptionEntityUIDs + "\n"+
+                        "RETURN id(conceptionEntities) as entityUID, classification as classification\n";
+        logger.debug("Generated Cypher Statement: {}", cql);
+
+        Map<String, List<Classification>> resultMap = new HashMap<>();
+
+        DataTransformer<Integer> resultDataTransformer = new DataTransformer() {
+            @Override
+            public Object transformResult(Result result) {
+
+                while(result.hasNext()){
+                    Record nodeRecord = result.next();
+                    String entityUID = ""+nodeRecord.get("entityUID").asInt();
+                    Node classificationNode = nodeRecord.get("classification").asNode();
+
+                    if(classificationNode.hasLabel(RealmConstant.ClassificationClass)){
+                        String classificationName = classificationNode.get(RealmConstant._NameProperty).asString();
+                        String classificationDesc = null;
+                        if(classificationNode.get(RealmConstant._DescProperty) != null){
+                            classificationDesc = classificationNode.get(RealmConstant._DescProperty).asString();
+                        }
+                        String classificationUID = ""+classificationNode.id();
+                        Neo4JClassificationImpl neo4JClassificationImpl =
+                                new Neo4JClassificationImpl(coreRealm.getCoreRealmName(),classificationName,classificationDesc,classificationUID);
+                        neo4JClassificationImpl.setGlobalGraphOperationExecutor(graphOperationExecutorHelper.getWorkingGraphOperationExecutor());
+
+                        if(!resultMap.containsKey(entityUID)){
+                            List<Classification> currentKeyClassifications = new ArrayList<>();
+                            resultMap.put(entityUID,currentKeyClassifications);
+                        }
+                        resultMap.get(entityUID).add(neo4JClassificationImpl);
+                    }
+                }
+                return null;
+            }
+        };
+
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            workingGraphOperationExecutor.executeRead(resultDataTransformer,cql);
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        return resultMap;
+    }
+
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }
