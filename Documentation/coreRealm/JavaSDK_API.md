@@ -5571,6 +5571,14 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
     enum TopologySimilarityComputeDirection {BOTH, OUTGOING, INCOMING}
 
     /**
+     * 分类拓扑的计算移动方向
+     * BOTH : 忽略前后代方向。
+     * ANCESTOR : 向祖先方向计算。
+     * OFFSPRING : 向后代方向计算。
+     */
+    enum ClassificationPathTraversalDirection {BOTH,ANCESTOR,OFFSPRING}
+
+    /**
      * 输入一组概念实体的唯一值ID，查询并返回所有包含其中的概念实体两两间的关系实体数据
      *
      * @param conceptionEntityPairUIDs List<String> 概念实体唯一值ID列表
@@ -6053,17 +6061,19 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      */
     public Map<String,Map<String,Object>> getConceptionKindsMetaConfigItemValues(List<String> conceptionKindNames,List<String> metaConfigItemNames) throws CoreRealmServiceEntityExploreException,CoreRealmServiceRuntimeException;
 
-   /**
-     * 输入一组概念实体的唯一值ID，获取附着在这些概念类型实体对象上的符合匹配条件目标分类或前后代目标分类
+    /**
+     * 输入一组概念实体的唯一值ID，获取附着在这些概念实体对象上的符合匹配条件的目标分类或前后代目标分类
      *
      * @param conceptionEntityUIDs List<String> 概念实体唯一值ID列表
      * @param relationKindName String 关联的概念类型名称
      * @param relationDirection RelationDirection 概念类型实体与指定目标分类的关系方向
-     * @param classificationPathHop int 前后代目标分类与直接附着分类之间的确定路径跳数
+     * @param traversalDirection ClassificationPathTraversalDirection 目标分类的前后代计算移动方向
+     * @param classificationPathHop int 前后代目标分类与直接附着分类之间的准确路径跳数,取值需要大于等于1,如数值为1则只计算直接附着的分类，不考虑其它的前后代关系
      *
      * @return 符合匹配条件的概念实体 UID与附着的分类列表映射
      */
-    public Map<String,List<Classification>> getConceptionEntitiesAttachedClassifications(List<String> conceptionEntityUIDs, String relationKindName,RelationDirection relationDirection,int classificationPathHop) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
+    public Map<String,List<Classification>> getConceptionEntitiesAttachedClassifications(List<String> conceptionEntityUIDs, String relationKindName,RelationDirection relationDirection,ClassificationPathTraversalDirection traversalDirection,int classificationPathHop) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
+
 ```
 
 ###### ↳ SystemMaintenanceOperator
