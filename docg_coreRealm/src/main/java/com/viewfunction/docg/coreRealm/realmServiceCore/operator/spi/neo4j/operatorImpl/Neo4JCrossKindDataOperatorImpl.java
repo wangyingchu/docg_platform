@@ -2113,7 +2113,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             exception.setCauseMessage("RelationKind Name is required.");
             throw exception;
         }
-        if( classificationPathHop < 1 ){
+        if( classificationPathHop < 0 ){
             logger.error("ClassificationPathHop must great then zero.");
             CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
             exception.setCauseMessage("ClassificationPathHop must great then zero.");
@@ -2147,15 +2147,14 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
         String cql = null;
 
-        if(classificationPathHop == 1){
+        if(classificationPathHop == 0){
             cql = "MATCH (conceptionEntities)" + relationMatchingPart + "(classification:"+RealmConstant.ClassificationClass+") "+
                     "WHERE id(conceptionEntities) IN " + conceptionEntityUIDs + "\n"+
                     "RETURN id(conceptionEntities) as entityUID, classification as classification\n";
         }else{
-            int classificationPathDepth = classificationPathHop -1;
             cql = "MATCH (conceptionEntities)" +
                     relationMatchingPart + "(leafClassification:"+RealmConstant.ClassificationClass+")"+
-                    traversalDirectionPrePart+"[:"+RealmConstant.Classification_ClassificationRelationClass+"*"+classificationPathDepth+".." + classificationPathDepth + "]"+traversalDirectionPostPart+"(classification:"+RealmConstant.ClassificationClass+")"+"\n"+
+                    traversalDirectionPrePart+"[:"+RealmConstant.Classification_ClassificationRelationClass+"*"+classificationPathHop+".." + classificationPathHop + "]"+traversalDirectionPostPart+"(classification:"+RealmConstant.ClassificationClass+")"+"\n"+
                     "WHERE id(conceptionEntities) IN " + conceptionEntityUIDs + "\n"+
                     "RETURN id(conceptionEntities) as entityUID, classification as classification\n";
         }

@@ -6068,7 +6068,7 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
      * @param relationKindName String 关联的概念类型名称
      * @param relationDirection RelationDirection 概念类型实体与指定目标分类的关系方向
      * @param traversalDirection ClassificationPathTraversalDirection 目标分类的前后代计算移动方向
-     * @param classificationPathHop int 前后代目标分类与直接附着分类之间的准确路径跳数,取值需要大于等于1,如数值为1则只计算直接附着的分类，不考虑其它的前后代关系
+     * @param classificationPathHop int 前后代目标分类与直接附着分类之间的准确路径跳数,取值需要大于等于0,如数值为0则只计算直接附着的分类，不考虑其它的前后代关系
      *
      * @return 符合匹配条件的概念实体 UID与附着的分类列表映射
      */
