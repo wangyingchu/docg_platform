@@ -2100,7 +2100,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public Map<String, List<Classification>> getConceptionEntitiesAttachedClassifications(List<String> conceptionEntityUIDs, String relationKindName, RelationDirection relationDirection, ClassificationPathTraversalDirection traversalDirection,int classificationPathHop) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
+    public Map<String, List<Classification>> getConceptionEntitiesAttachedClassifications(List<String> conceptionEntityUIDs, String relationKindName, RelationDirection relationDirection, ClassificationPathTraversalDirection traversalDirection,int classificationPathHop,AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException {
         if(conceptionEntityUIDs == null|| conceptionEntityUIDs.isEmpty()){
             logger.error("At least one conceptionEntityUID is required.");
             CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
@@ -2108,7 +2108,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             throw exception;
         }
         if( relationKindName == null){
-            logger.error("RelationKind Name Name is required.");
+            logger.error("RelationKind Name is required.");
             CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
             exception.setCauseMessage("RelationKind Name is required.");
             throw exception;
@@ -2117,6 +2117,12 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             logger.error("ClassificationPathHop must great then zero.");
             CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
             exception.setCauseMessage("ClassificationPathHop must great then zero.");
+            throw exception;
+        }
+        if(attributesParameters != null && attributesParameters.getDefaultFilteringItem() == null){
+            logger.error("Classification Attribute default filtering Item is required.");
+            CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+            exception.setCauseMessage("Classification Attribute default filtering Item is required.");
             throw exception;
         }
 
@@ -2145,17 +2151,44 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                 break;
         }
 
+        String whereCQL = "WHERE id(conceptionEntities) IN " + conceptionEntityUIDs + "\n";
+
+        if(attributesParameters != null){
+            QueryParameters queryParameters = new QueryParameters();
+            queryParameters.setDistinctMode(false);
+            queryParameters.setResultNumber(100);
+            if (attributesParameters != null) {
+                queryParameters.setDefaultFilteringItem(attributesParameters.getDefaultFilteringItem());
+                if (attributesParameters.getAndFilteringItemsList() != null) {
+                    for (FilteringItem currentFilteringItem : attributesParameters.getAndFilteringItemsList()) {
+                        queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.AND);
+                    }
+                }
+                if (attributesParameters.getOrFilteringItemsList() != null) {
+                    for (FilteringItem currentFilteringItem : attributesParameters.getOrFilteringItemsList()) {
+                        queryParameters.addFilteringItem(currentFilteringItem, QueryParameters.FilteringLogic.OR);
+                    }
+                }
+            }
+
+            String entityQueryCQL = CypherBuilder.matchNodesWithQueryParameters("PLACEHOLDERKINDNAME",queryParameters, CypherBuilder.CypherFunctionType.ID);
+            entityQueryCQL = entityQueryCQL.replace("RETURN id("+CypherBuilder.operationResultName+") LIMIT 100","");
+            entityQueryCQL = entityQueryCQL.replace("MATCH (operationResult:`PLACEHOLDERKINDNAME`)","");
+            entityQueryCQL = entityQueryCQL.replaceAll("operationResult","classification");
+            whereCQL = entityQueryCQL+ " AND id(conceptionEntities) IN " + conceptionEntityUIDs + "\n";
+        }
+
         String cql = null;
 
         if(classificationPathHop == 0){
             cql = "MATCH (conceptionEntities)" + relationMatchingPart + "(classification:"+RealmConstant.ClassificationClass+") "+
-                    "WHERE id(conceptionEntities) IN " + conceptionEntityUIDs + "\n"+
+                    whereCQL+
                     "RETURN id(conceptionEntities) as entityUID, classification as classification\n";
         }else{
             cql = "MATCH (conceptionEntities)" +
                     relationMatchingPart + "(leafClassification:"+RealmConstant.ClassificationClass+")"+
                     traversalDirectionPrePart+"[:"+RealmConstant.Classification_ClassificationRelationClass+"*"+classificationPathHop+".." + classificationPathHop + "]"+traversalDirectionPostPart+"(classification:"+RealmConstant.ClassificationClass+")"+"\n"+
-                    "WHERE id(conceptionEntities) IN " + conceptionEntityUIDs + "\n"+
+                    whereCQL+
                     "RETURN id(conceptionEntities) as entityUID, classification as classification\n";
         }
 
