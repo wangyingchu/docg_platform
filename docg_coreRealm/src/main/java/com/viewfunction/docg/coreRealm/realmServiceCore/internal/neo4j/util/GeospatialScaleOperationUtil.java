@@ -45,6 +45,7 @@ public class GeospatialScaleOperationUtil {
 
     public static boolean generateGeospatialScaleEntities(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
         generateGeospatialScaleEntities_Continent(workingGraphOperationExecutor,geospatialRegionName);
+        generateGeospatialScaleEntities_ContinentGeoContent(workingGraphOperationExecutor,geospatialRegionName);
         generateGeospatialScaleEntities_CountryRegion(workingGraphOperationExecutor,geospatialRegionName);
         updateCountryRegionEntities_GeospatialScaleInfo(workingGraphOperationExecutor,geospatialRegionName);
         generateGeospatialScaleEntities_ProvinceOfWorld(workingGraphOperationExecutor,geospatialRegionName);
@@ -120,6 +121,129 @@ public class GeospatialScaleOperationUtil {
             }
         }
     }
+
+    public static void generateGeospatialScaleEntities_ContinentGeoContent(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
+        String filePath =
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/continents/Continents.shp";
+        SimpleFeatureCollection colls = readShp(filePath,null);
+        SimpleFeatureIterator iters = colls.features();
+        try {
+
+
+
+
+
+
+
+
+
+
+
+
+            while (iters.hasNext()) {
+                SimpleFeature sf = iters.next();
+                //Map<String, Object> _ISO_3166_2Data = new HashMap<>();
+
+                //iso_3166_2Code = iso_3166_2Code.replace("~", "");
+
+                String continentName = sf.getAttribute("CONTINENT").toString();
+                String geoContent = sf.getAttribute("the_geom").toString();
+
+
+                //_ISO_3166_2Data.put("the_geom", sf.getAttribute("the_geom"));
+
+
+                System.out.println(continentName);
+              //  System.out.println(geoContent);
+                System.out.println("-----------------------------");
+
+            }
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+
+
+
+/*
+
+        GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialRegionClass,workingGraphOperationExecutor);
+        String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialRegionClass,RealmConstant._NameProperty,geospatialRegionName,1);
+        Object getGeospatialRegionRes = workingGraphOperationExecutor.executeRead(getSingleConceptionEntityTransformer,queryCql);
+        String geospatialRegionUID = null;
+
+        if(getGeospatialRegionRes != null){
+            ConceptionEntity geospatialRegionEntity = (ConceptionEntity) getGeospatialRegionRes;
+            geospatialRegionUID = geospatialRegionEntity.getConceptionEntityUID();
+        }
+
+        getSingleConceptionEntityTransformer =
+                new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleContinentEntityClass,workingGraphOperationExecutor);
+
+        String[] conceptionTypeNameArray = new String[2];
+        conceptionTypeNameArray[0] = RealmConstant.GeospatialScaleEntityClass;
+        conceptionTypeNameArray[1] = RealmConstant.GeospatialScaleContinentEntityClass;
+
+        File file = new File(PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/"+"ContinentsData.txt");
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String tempStr;
+            while ((tempStr = reader.readLine()) != null) {
+                String currentLine = !tempStr.startsWith("# ISO Code")? tempStr : null;
+                if(currentLine != null){
+                    String[] dataItems = currentLine.split("\t");
+                    String _ISOCode = dataItems[0];
+                    String _EngName = dataItems[1];
+                    String _ChnName = dataItems[2];
+                    String _ChnFullName = dataItems[3];
+
+                    Map<String,Object> propertiesMap = new HashMap<>();
+                    propertiesMap.put("ISO_Code",_ISOCode);
+                    propertiesMap.put(RealmConstant.GeospatialChineseNameProperty,_ChnName);
+                    propertiesMap.put(RealmConstant.GeospatialEnglishNameProperty,_EngName);
+                    propertiesMap.put("ChineseFullName",_ChnFullName);
+                    propertiesMap.put(RealmConstant.GeospatialCodeProperty,_EngName);
+                    propertiesMap.put(RealmConstant.GeospatialRegionProperty,geospatialRegionName);
+                    propertiesMap.put(RealmConstant.GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.CONTINENT);
+
+                    String createGeospatialScaleEntitiesCql = CypherBuilder.createLabeledNodeWithProperties(conceptionTypeNameArray,propertiesMap);
+                    Object newEntityRes = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,createGeospatialScaleEntitiesCql);
+
+                    if(newEntityRes != null && geospatialRegionUID != null){
+                        ConceptionEntity geospatialScaleEntity = (ConceptionEntity) newEntityRes;
+                        geospatialScaleEntity.attachToRelation(geospatialRegionUID, RealmConstant.GeospatialScale_SpatialContainsRelationClass, null, true);
+                    }
+                }
+            }
+            reader.close();
+        } catch (
+                IOException | CoreRealmServiceRuntimeException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
+
+
+
+
+
+        */
+    }
+
+
+
+
+
+
+
+
 
     private static void generateGeospatialScaleEntities_CountryRegion(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
         Map<String,String> ContinentCode_EntityUIDMap = new HashMap<>();
