@@ -13,7 +13,10 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleConceptionEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer.GetSingleRelationEntityTransformer;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeDataType;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributeKind;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JAttributeKindImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.config.PropertiesHandler;
@@ -33,7 +36,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -52,6 +59,10 @@ public class GeospatialScaleOperationUtil {
         generateGeospatialScaleEntities_PrefectureAndLaterOfChina(workingGraphOperationExecutor,geospatialRegionName);
         linkGeospatialScaleEntitiesOfChina(workingGraphOperationExecutor,geospatialRegionName);
         linkSpecialAdministrativeRegionEntitiesOfChina(workingGraphOperationExecutor,geospatialRegionName);
+
+        //添加数据创建时间
+        //添加数据active状态
+        //分项添加数据采集时间
         return true;
     }
 
@@ -352,7 +363,9 @@ public class GeospatialScaleOperationUtil {
     }
 
     private static void generateGeospatialScaleEntities_ProvinceOfChina(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName) {
-        Map<String,Map<String,Object>> _ChinaProvinceGISInfoMap = generateNE_10m_admin_states_provincesForChinaDataMap();
+        Map<String,Map<String,Object>> _ChinaProvinceGISInfoMap = generateProvincesForChinaDataMap();
+        //"/ChinaData/省级/"+"省级.shp" is collected at 2023
+        LocalDate _GeometryCollectDate = LocalDate.of(2023, 1, 1);
         String _ChinaGeospatialEntityUID = null;
         try {
             QueryParameters queryParameters = new QueryParameters();
@@ -396,6 +409,8 @@ public class GeospatialScaleOperationUtil {
                     String DivisionName_EN = administrativeDivisionInfoValueArray[3].trim();
                     String ChinaDivisionCode = administrativeDivisionInfoValueArray[4].trim();
                     String DivisionName_CH = administrativeDivisionInfoValueArray[5].trim();
+                    String longitude = administrativeDivisionInfoValueArray[6].trim();
+                    String latitude = administrativeDivisionInfoValueArray[7].trim();
 
                     propertiesMap.put("DivisionCategory_EN",_DivisionCategory_EN);
                     propertiesMap.put("DivisionCategory_CH",_DivisionCategory_CH);
@@ -407,6 +422,9 @@ public class GeospatialScaleOperationUtil {
                     propertiesMap.put("Standard","GB/T 2260 | ISO 3166-2:2013");
                     propertiesMap.put("StandardStatus","Officially assigned");
 
+                    propertiesMap.put(RealmConstant._GeospatialGLGeometryCollectDate,_GeometryCollectDate);
+                    propertiesMap.put(RealmConstant._GeospatialCLGeometryCollectDate,_GeometryCollectDate);
+
                     propertiesMap.put(RealmConstant.GeospatialCodeProperty,ChinaDivisionCode);
                     propertiesMap.put(RealmConstant.GeospatialRegionProperty,geospatialRegionName);
                     propertiesMap.put(RealmConstant.GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.PROVINCE);
@@ -417,7 +435,7 @@ public class GeospatialScaleOperationUtil {
                     if(_ChinaProvinceGISInfoMap.get(ChinaDivisionCode) != null){
                         propertiesMap.put(RealmConstant._GeospatialGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
                         String geomWKT = _ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("the_geom").toString();
-                        String poiPointWKT = "POINT ("+_ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("longitude")+" "+_ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("latitude")+")";
+                        String poiPointWKT = "POINT ("+longitude+" "+latitude+")";
                         propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI,poiPointWKT);
                         propertiesMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
                         propertiesMap.put(RealmConstant._GeospatialGLGeometryContent,geomWKT);
@@ -915,7 +933,7 @@ public class GeospatialScaleOperationUtil {
         return _NE_10m_CountriesDataMap;
     }
 
-    private static Map<String,Map<String,Object>> generateNE_10m_admin_states_provincesForChinaDataMap(){
+    private static Map<String,Map<String,Object>> generateNE_10m_admin_states_provincesForChinaDataMapOrg(){
         Map<String,Map<String,Object>> _ProvincesISO_3166_2DataMap = new HashMap<>();
         String filePath =
                 PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/statesAndProvinces/ne_10m_admin_1_states_provinces_modifiedForChina/"+"ne_10m_admin_1_states_provinces.shp";
@@ -1019,6 +1037,23 @@ public class GeospatialScaleOperationUtil {
                 _ISO_3166_2Data.put("woe_label",sf.getAttribute("woe_label"));
                 _ISO_3166_2Data.put("woe_name",sf.getAttribute("woe_name"));
             }
+        }
+        return _ProvincesISO_3166_2DataMap;
+    }
+
+    private static Map<String,Map<String,Object>> generateProvincesForChinaDataMap(){
+        Map<String,Map<String,Object>> _ProvincesISO_3166_2DataMap = new HashMap<>();
+        String filePath =
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/省级/"+"省级.shp";
+        SimpleFeatureCollection colls = readShp(filePath,null);
+        SimpleFeatureIterator iters = colls.features();
+
+        while(iters.hasNext()){
+            SimpleFeature sf = iters.next();
+            Map<String,Object> _ISO_3166_2Data = new HashMap<>();
+            String iso_3166_2Code = sf.getAttribute("省级码").toString();
+            _ProvincesISO_3166_2DataMap.put(iso_3166_2Code,_ISO_3166_2Data);
+            _ISO_3166_2Data.put("the_geom",sf.getAttribute("the_geom"));
         }
         return _ProvincesISO_3166_2DataMap;
     }

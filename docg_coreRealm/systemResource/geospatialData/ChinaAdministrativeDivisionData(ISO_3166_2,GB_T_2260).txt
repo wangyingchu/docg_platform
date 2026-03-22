@@ -1,35 +1,35 @@
-# DivisionCategory_EN|DivisionCategory_CH|3166_2Code|DivisionName_EN|ChinaDivisionCode|DivisionName_CH
-province|省|CN-AH|Anhui Sheng|340000|安徽省
-special administrative region|特别行政区|CN-MO|Aomen Tebiexingzhengqu|820000|澳门特别行政区
-municipality|直辖市|CN-BJ|Beijing Shi|110000|北京市
-municipality|直辖市|CN-CQ|Chongqing Shi|500000|重庆市
-province|省|CN-FJ|Fujian Sheng|350000|福建省
-province|省|CN-GS|Gansu Sheng|620000|甘肃省
-province|省|CN-GD|Guangdong Sheng|440000|广东省
-autonomous region|自治区|CN-GX|Guangxi Zhuangzu Zizhiqu|450000|广西壮族自治区
-province|省|CN-GZ|Guizhou Sheng|520000|贵州省
-province|省|CN-HI|Hainan Sheng|460000|海南省
-province|省|CN-HE|Hebei Sheng|130000|河北省
-province|省|CN-HL|Heilongjiang Sheng|230000|黑龙江省
-province|省|CN-HA|Henan Sheng|410000|河南省
-province|省|CN-HB|Hubei Sheng|420000|湖北省
-province|省|CN-HN|Hunan Sheng|430000|湖南省
-province|省|CN-JS|Jiangsu Sheng|320000|江苏省
-province|省|CN-JX|Jiangxi Sheng|360000|江西省
-province|省|CN-JL|Jilin Sheng|220000|吉林省
-province|省|CN-LN|Liaoning Sheng|210000|辽宁省
-autonomous region|自治区|CN-NM|Nei Mongol Zizhiqu|150000|内蒙古自治区
-autonomous region|自治区|CN-NX|Ningxia Huizi Zizhiqu|640000|宁夏回族自治区
-province|省|CN-QH|Qinghai Sheng|630000|青海省
-province|省|CN-SN|Shaanxi Sheng|610000|陕西省
-province|省|CN-SD|Shandong Sheng|370000|山东省
-municipality|直辖市|CN-SH|Shanghai Shi|310000|上海市
-province|省|CN-SX|Shanxi Sheng|140000|山西省
-province|省|CN-SC|Sichuan Sheng|510000|四川省
-province|省|CN-TW|Taiwan Sheng|710000|台湾省
-municipality|直辖市|CN-TJ|Tianjin Shi|120000|天津市
-special administrative region|特别行政区|CN-HK|Xianggang Tebiexingzhengqu|810000|香港特别行政区
-autonomous region|自治区|CN-XJ|Xinjiang Uygur Zizhiqu|650000|新疆维吾尔自治区
-autonomous region|自治区|CN-XZ|Xizang Zizhiqu|540000|西藏自治区
-province|省|CN-YN|Yunnan Sheng|530000|云南省
-province|省|CN-ZJ|Zhejiang Sheng|330000|浙江省
+# DivisionCategory_EN|DivisionCategory_CH|3166_2Code|DivisionName_EN|ChinaDivisionCode|DivisionName_CH|longitude|latitude
+province|省|CN-AH|Anhui Sheng|340000|安徽省|117.2272|31.8206
+special administrative region|特别行政区|CN-MO|Aomen Tebiexingzhengqu|820000|澳门特别行政区|113.5431|22.1987
+municipality|直辖市|CN-BJ|Beijing Shi|110000|北京市|116.4074|39.9042
+municipality|直辖市|CN-CQ|Chongqing Shi|500000|重庆市|106.5044|29.5582
+province|省|CN-FJ|Fujian Sheng|350000|福建省|119.2965|26.0745
+province|省|CN-GS|Gansu Sheng|620000|甘肃省|103.8233|36.0580
+province|省|CN-GD|Guangdong Sheng|440000|广东省|113.2644|23.1292
+autonomous region|自治区|CN-GX|Guangxi Zhuangzu Zizhiqu|450000|广西壮族自治区|108.3200|22.8240
+province|省|CN-GZ|Guizhou Sheng|520000|贵州省|106.6302|26.6477
+province|省|CN-HI|Hainan Sheng|460000|海南省|110.1999|20.0440
+province|省|CN-HE|Hebei Sheng|130000|河北省|114.5149|38.0423
+province|省|CN-HL|Heilongjiang Sheng|230000|黑龙江省|126.5358|45.8023
+province|省|CN-HA|Henan Sheng|410000|河南省|113.6254|34.7466
+province|省|CN-HB|Hubei Sheng|420000|湖北省|114.3054|30.5931
+province|省|CN-HN|Hunan Sheng|430000|湖南省|112.9388|28.2282
+province|省|CN-JS|Jiangsu Sheng|320000|江苏省|118.7674|32.0415
+province|省|CN-JX|Jiangxi Sheng|360000|江西省|115.8579|28.6820
+province|省|CN-JL|Jilin Sheng|220000|吉林省|125.3235|43.8171
+province|省|CN-LN|Liaoning Sheng|210000|辽宁省|123.4315|41.8057
+autonomous region|自治区|CN-NM|Nei Mongol Zizhiqu|150000|内蒙古自治区|111.7510|40.8424
+autonomous region|自治区|CN-NX|Ningxia Huizi Zizhiqu|640000|宁夏回族自治区|106.2325|38.4864
+province|省|CN-QH|Qinghai Sheng|630000|青海省|101.7802|36.6209
+province|省|CN-SN|Shaanxi Sheng|610000|陕西省|108.9402|34.3416
+province|省|CN-SD|Shandong Sheng|370000|山东省|117.0009|36.6758
+municipality|直辖市|CN-SH|Shanghai Shi|310000|上海市|121.4802|31.2363
+province|省|CN-SX|Shanxi Sheng|140000|山西省|112.5624|37.8735
+province|省|CN-SC|Sichuan Sheng|510000|四川省|104.0668|30.5728
+province|省|CN-TW|Taiwan Sheng|710000|台湾省|121.5200|25.0300
+municipality|直辖市|CN-TJ|Tianjin Shi|120000|天津市|117.1902|39.1256
+special administrative region|特别行政区|CN-HK|Xianggang Tebiexingzhengqu|810000|香港特别行政区|114.1694|22.3193
+autonomous region|自治区|CN-XJ|Xinjiang Uygur Zizhiqu|650000|新疆维吾尔自治区|87.6168|43.8256
+autonomous region|自治区|CN-XZ|Xizang Zizhiqu|540000|西藏自治区|91.1409|29.6564
+province|省|CN-YN|Yunnan Sheng|530000|云南省|102.7123|25.0406
+province|省|CN-ZJ|Zhejiang Sheng|330000|浙江省|120.1551|30.2741
