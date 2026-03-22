@@ -235,15 +235,15 @@ public class GeospatialScaleOperationUtil {
     }
 
     private static void updateCountryRegionEntities_GeospatialScaleInfo(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
-        Map<String,Map<String,Object>> _CountriesDataMap = generateNE_10m_CountriesDataMap();
+        Map<String,Map<String,Object>> _CountriesDataMap = generate_ChinaCorrect_CountriesDataMap();
         String queryCql = CypherBuilder.matchLabelWithSinglePropertyValue(RealmConstant.GeospatialScaleCountryRegionEntityClass, RealmConstant.GeospatialRegionProperty,geospatialRegionName,100000);
         GetListConceptionEntityTransformer getListConceptionEntityTransformer = new GetListConceptionEntityTransformer(RealmConstant.GeospatialScaleCountryRegionEntityClass,workingGraphOperationExecutor);
         Object resultEntityList = workingGraphOperationExecutor.executeRead(getListConceptionEntityTransformer,queryCql);
         if(resultEntityList != null){
             List<ConceptionEntity> resultContinentList =  (List<ConceptionEntity>)resultEntityList;
             for(ConceptionEntity currentConceptionEntity : resultContinentList){
-                String _CountryRegionAlpha_2Code = currentConceptionEntity.getAttribute("Alpha_2Code").getAttributeValue().toString();
-                Map<String,Object> _CountriesData = _CountriesDataMap.get(_CountryRegionAlpha_2Code);
+                String _CountryRegionAlpha_3Code = currentConceptionEntity.getAttribute("Alpha_3Code").getAttributeValue().toString();
+                Map<String,Object> _CountriesData = _CountriesDataMap.get(_CountryRegionAlpha_3Code);
                 if(_CountriesData != null && _CountriesData.get("the_geom")!= null){
                     String geomWKT = _CountriesData.get("the_geom").toString();
                     currentConceptionEntity.addOrUpdateGeometryType(GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
@@ -868,7 +868,8 @@ public class GeospatialScaleOperationUtil {
         return _ProvincesISO_3166_2DataMap;
     }
 
-    private static Map<String,Map<String,Object>> generateNE_10m_CountriesDataMap(){
+    private static Map<String,Map<String,Object>> generate_ChinaCorrect_CountriesDataMap(){
+        //获取包括台湾在内的全部国家与地区地理边界
         Map<String,Map<String,Object>> _NE_10m_CountriesDataMap = new HashMap<>();
         String filePath =
                 PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/statesAndProvinces/ne_10m_admin_0_countries_modified/"+"ne_10m_admin_0_countries_modified.shp";
@@ -878,16 +879,36 @@ public class GeospatialScaleOperationUtil {
         while(iters.hasNext()){
             SimpleFeature sf = iters.next();
             Map<String,Object> _ISO_3166_1Data = new HashMap<>();
-            String iso_3166_1Code = sf.getAttribute("ISO_A2").toString();
+            String iso_3166_1Code = sf.getAttribute("ISO_A3").toString();
             _ISO_3166_1Data.put("the_geom",sf.getAttribute("the_geom"));
             if(!iso_3166_1Code.equals("-99")){
                 _NE_10m_CountriesDataMap.put(iso_3166_1Code,_ISO_3166_1Data);
-            }else{
-                String countryName = sf.getAttribute("ADMIN").toString();
-                if(countryName.equals("France")){
-                    _NE_10m_CountriesDataMap.put("FR",_ISO_3166_1Data);
-                }else if(countryName.equals("Norway")){
-                    _NE_10m_CountriesDataMap.put("NO",_ISO_3166_1Data);
+            }
+        }
+
+        //更新包括台湾+九段线区域在内的中国数据
+        filePath =
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/statesAndProvinces/中科院边界正确区划/"+"世界地图国家.shp";
+        colls = readShp(filePath,null);
+        iters = colls.features();
+        while(iters.hasNext()){
+            SimpleFeature sf = iters.next();
+            String the_geom = sf.getAttribute("the_geom").toString();
+            String soc = sf.getAttribute("SOC") != null ? sf.getAttribute("SOC").toString():null;
+            if(soc != null){
+                //留尼汪 马约特 法国 挪威 斯瓦尔巴和扬马延 马提尼克 瓜德罗普 托克劳 圣诞岛 科科斯群岛 法属圭亚那 布韦岛
+                if(soc.equals("REU") || soc.equals("MYT") || soc.equals("FRA") || soc.equals("NOR") ||
+                        soc.equals("SJM") || soc.equals("MTQ") || soc.equals("GLP") || soc.equals("TKL") ||
+                        soc.equals("CXR") || soc.equals("CCK") || soc.equals("GUF") || soc.equals("BVT")
+                ){
+                    Map<String,Object> _ISO_3166_1Data = new HashMap<>();
+                    _ISO_3166_1Data.put("the_geom",the_geom);
+                    _NE_10m_CountriesDataMap.put(soc,_ISO_3166_1Data);
+                }else{
+                    if(_NE_10m_CountriesDataMap.containsKey(soc) && !soc.equals("USA")){
+                        Map<String,Object> _ISO_3166_1Data = _NE_10m_CountriesDataMap.get(soc);
+                        _ISO_3166_1Data.put("the_geom",the_geom);
+                    }
                 }
             }
         }
