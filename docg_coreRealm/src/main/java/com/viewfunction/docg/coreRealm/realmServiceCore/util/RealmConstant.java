@@ -113,6 +113,8 @@ public interface RealmConstant {
     public final String _GeospatialGLGeometryCollectDate="DOCG_GS_GLGeometryCollectDate";
     public final String _GeospatialCLGeometryCollectDate="DOCG_GS_CLGeometryCollectDate";
     public final String _GeospatialLLGeometryCollectDate="DOCG_GS_LLGeometryCollectDate";
+    public final String _GeospatialGeometryComment="DOCG_GS_GeometryComment";
+    public final String _GeospatialGeometryFormerName="DOCG_GS_GeometryFormerName";
 
     public final String ExternalAttributesValueAccessProcessorID = "DOCG_ExternalAttributesValueAccessProcessorID";
     public final String DefaultRelationDBExternalAttributesValueAccessProcessorID =
