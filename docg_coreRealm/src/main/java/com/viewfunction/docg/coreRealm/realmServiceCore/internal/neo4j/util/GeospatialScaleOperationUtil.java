@@ -511,12 +511,12 @@ public class GeospatialScaleOperationUtil {
                 if(!地名.equals("北京市") && !地名.equals("上海市") && !地名.equals("天津市") && !地名.equals("重庆市") &&
                         !地名.equals("台湾省") && !地名.equals("香港特别行政区") && !地名.equals("澳门特别行政区")){
                     String 区划码 = sf.getAttribute("区划码").toString();
-                    //String 地级码 = sf.getAttribute("地级码").toString();
-                    //String 地级类 = sf.getAttribute("地级类").toString();
                     String 省级 = sf.getAttribute("省级").toString();
                     String 省级码 = sf.getAttribute("省级码").toString();
-                    //String 省级类 = sf.getAttribute("省级类").toString();
+                    String ENG_NAME = sf.getAttribute("ENG_NAME").toString();
                     String itemWKT = sf.getAttribute("the_geom").toString();
+                    String _DivisionCategory_EN = sf.getAttribute("TYPE_2").toString();
+                    String _DivisionCategory_CH =  sf.getAttribute("地级类").toString();
 
                     Map<String,Object> propertiesMap = new HashMap<>();
                     propertiesMap.put("ChinaParentDivisionCode",省级码);
@@ -524,6 +524,8 @@ public class GeospatialScaleOperationUtil {
                     propertiesMap.put("Standard","GB/T 2260 | GB/T 10114");
                     propertiesMap.put("StandardStatus","Officially assigned");
                     propertiesMap.put("ChinaProvinceName",省级);
+                    propertiesMap.put("DivisionCategory_EN",_DivisionCategory_EN);
+                    propertiesMap.put("DivisionCategory_CH",_DivisionCategory_CH);
                     propertiesMap.put(RealmConstant.GeospatialCodeProperty,区划码);
                     propertiesMap.put(RealmConstant.GeospatialRegionProperty,geospatialRegionName);
                     if(sf.getAttribute("备注") != null){
@@ -539,6 +541,7 @@ public class GeospatialScaleOperationUtil {
                     propertiesMap.put(RealmConstant.GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.PREFECTURE);
                     propertiesMap.put("ChinaProvinceName",省级);
                     propertiesMap.put(RealmConstant.GeospatialChineseNameProperty,地名);
+                    propertiesMap.put(RealmConstant.GeospatialEnglishNameProperty,ENG_NAME);
                     propertiesMap.put(RealmConstant._GeospatialGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
                     propertiesMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
                     propertiesMap.put(RealmConstant._GeospatialGLGeometryContent,itemWKT);
