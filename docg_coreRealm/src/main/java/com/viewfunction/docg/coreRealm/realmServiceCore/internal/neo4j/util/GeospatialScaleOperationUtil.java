@@ -58,14 +58,12 @@ public class GeospatialScaleOperationUtil {
         generateGeospatialScaleEntities_ProvinceOfChina(workingGraphOperationExecutor,geospatialRegionName);
         linkSpecialAdministrativeRegionEntitiesOfChina(workingGraphOperationExecutor,geospatialRegionName);
         generateGeospatialScaleEntities_PrefectureOfChina(workingGraphOperationExecutor,geospatialRegionName);
+        generateGeospatialScaleEntities_CountyOfChina(workingGraphOperationExecutor,geospatialRegionName);
 
         //generateGeospatialScaleEntities_PrefectureAndLaterOfChina(workingGraphOperationExecutor,geospatialRegionName);
         //linkGeospatialScaleEntitiesOfChina(workingGraphOperationExecutor,geospatialRegionName);
 
-
-
         //分项添加数据采集时间
-
         //添加数据创建时间
         //添加数据active状态
 
@@ -475,7 +473,7 @@ public class GeospatialScaleOperationUtil {
 
     private static void generateGeospatialScaleEntities_PrefectureOfChina(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
         QueryParameters queryParameters = new QueryParameters();
-        queryParameters.setResultNumber(100);
+        queryParameters.setResultNumber(100000);
         queryParameters.setDefaultFilteringItem(new EqualFilteringItem("ISO3166_1Alpha_2Code","CN"));
         queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
         try {
@@ -519,6 +517,7 @@ public class GeospatialScaleOperationUtil {
                     String _DivisionCategory_CH =  sf.getAttribute("地级类").toString();
 
                     Map<String,Object> propertiesMap = new HashMap<>();
+                    propertiesMap.put("ISO3166_1Alpha_2Code","CN");
                     propertiesMap.put("ChinaParentDivisionCode",省级码);
                     propertiesMap.put("ChinaDivisionCode",区划码);
                     propertiesMap.put("Standard","GB/T 2260 | GB/T 10114");
@@ -566,6 +565,133 @@ public class GeospatialScaleOperationUtil {
                         Map<String,Object> relationPropertiesMap = new HashMap<>();
                         String linkToTimeScaleEntityCql = CypherBuilder.createNodesRelationshipByIdsMatch(Long.parseLong(parentDivisionEntityUID),Long.parseLong(currentDivisionEntityUID),RealmConstant.GeospatialScale_SpatialContainsRelationClass,relationPropertiesMap);
                         workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, linkToTimeScaleEntityCql);
+                    }
+                }
+            }
+        } catch (CoreRealmServiceEntityExploreException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void generateGeospatialScaleEntities_CountyOfChina(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
+        QueryParameters queryParameters = new QueryParameters();
+        queryParameters.setResultNumber(1000000);
+        queryParameters.setDefaultFilteringItem(new EqualFilteringItem("ISO3166_1Alpha_2Code","CN"));
+        queryParameters.addFilteringItem(new EqualFilteringItem(RealmConstant.GeospatialRegionProperty,geospatialRegionName), QueryParameters.FilteringLogic.AND);
+        try {
+            List<String> attributeNames = new ArrayList<>();
+            attributeNames.add("ChinaDivisionCode");
+            List<AttributeKind> containsAttributesKinds = new ArrayList<>();
+            AttributeKind attributeKind = new Neo4JAttributeKindImpl(null, "ChinaDivisionCode",null,AttributeDataType.STRING,null);
+            containsAttributesKinds.add(attributeKind);
+
+            Map<String,String> ChinaDivisionCode_ProvinceEntityUIDMap = new HashMap<>();
+            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(RealmConstant.GeospatialScaleProvinceEntityClass,queryParameters,attributeNames);
+            GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer =
+                    new GetListConceptionEntityValueTransformer(attributeNames,containsAttributesKinds);
+            Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
+            if(resEntityRes != null){
+                List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
+                for(ConceptionEntityValue currentEntityValue:resultEntitiesValues){
+                    ChinaDivisionCode_ProvinceEntityUIDMap.put(currentEntityValue.getEntityAttributesValue().get("ChinaDivisionCode").toString(),currentEntityValue.getConceptionEntityUID());
+                }
+            }
+
+            Map<String,String> ChinaDivisionCode_PrefectureEntityUIDMap = new HashMap<>();
+            queryCql = CypherBuilder.matchAttributesWithQueryParameters(RealmConstant.GeospatialScalePrefectureEntityClass,queryParameters,attributeNames);
+            resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
+            if(resEntityRes != null){
+                List<ConceptionEntityValue> resultEntitiesValues = (List<ConceptionEntityValue>)resEntityRes;
+                for(ConceptionEntityValue currentEntityValue:resultEntitiesValues){
+                    ChinaDivisionCode_PrefectureEntityUIDMap.put(currentEntityValue.getEntityAttributesValue().get("ChinaDivisionCode").toString(),currentEntityValue.getConceptionEntityUID());
+                }
+            }
+
+            //"/ChinaData/县级/"+"县级.shp" is collected at 2023
+            LocalDate _GeometryCollectDate = LocalDate.of(2023, 1, 1);
+
+            String filePath =
+                    PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/县级/"+"县级.shp";
+            SimpleFeatureCollection colls = readShp(filePath,null);
+            SimpleFeatureIterator iters = colls.features();
+
+            while(iters.hasNext()){
+                SimpleFeature sf = iters.next();
+                String 地名 = sf.getAttribute("地名").toString();
+                String ENG_NAME = sf.getAttribute("ENG_NAME").toString();
+                String 区划码 = sf.getAttribute("区划码").toString();
+                if(!区划码.equals("0")){
+                    String 省级 = sf.getAttribute("省级").toString();
+                    String 省级码 = sf.getAttribute("省级码").toString();
+                    String 地级 = sf.getAttribute("地级").toString();
+                    String 地级码 = sf.getAttribute("地级码").toString();
+                    //String 县级 = sf.getAttribute("县级").toString();
+                    //String 县级码 = sf.getAttribute("县级码").toString();
+                    String itemWKT = sf.getAttribute("the_geom").toString();
+                    String _DivisionCategory_EN = sf.getAttribute("TYPE_3").toString();
+                    String _DivisionCategory_CH = sf.getAttribute("县级类").toString();
+                    String _ChinaParentDivisionCode = !地级码.equals("0") ? 地级码 : 省级码;
+
+                    Map<String,Object> propertiesMap = new HashMap<>();
+                    propertiesMap.put("ISO3166_1Alpha_2Code","CN");
+                    propertiesMap.put("ChinaParentDivisionCode",_ChinaParentDivisionCode); //是否要区分直辖市下的市辖区？
+                    propertiesMap.put("ChinaDivisionCode",区划码);
+                    propertiesMap.put("Standard","GB/T 2260 | GB/T 10114");
+                    propertiesMap.put("StandardStatus","Officially assigned");
+                    propertiesMap.put("ChinaProvinceName",省级);
+                    if(!地级码.equals("0")){
+                        propertiesMap.put("ChinaPrefectureName",地级);
+                    }
+                    propertiesMap.put("DivisionCategory_EN",_DivisionCategory_EN);
+                    propertiesMap.put("DivisionCategory_CH",_DivisionCategory_CH);
+                    propertiesMap.put(RealmConstant.GeospatialCodeProperty,区划码);
+                    propertiesMap.put(RealmConstant.GeospatialRegionProperty,geospatialRegionName);
+                    if(sf.getAttribute("备注") != null){
+                        if(!sf.getAttribute("备注").toString().equals("")){
+                            propertiesMap.put(RealmConstant._GeospatialGeometryComment,sf.getAttribute("备注").toString());
+                        }
+                    }
+                    if(sf.getAttribute("曾用名") != null){
+                        if(!sf.getAttribute("曾用名").toString().equals("")){
+                            propertiesMap.put(RealmConstant._GeospatialGeometryFormerName,sf.getAttribute("曾用名").toString());
+                        }
+                    }
+                    propertiesMap.put(RealmConstant.GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.COUNTY);
+                    propertiesMap.put(RealmConstant.GeospatialChineseNameProperty,地名);
+                    propertiesMap.put(RealmConstant.GeospatialEnglishNameProperty,ENG_NAME);
+                    propertiesMap.put(RealmConstant._GeospatialGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                    propertiesMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
+                    propertiesMap.put(RealmConstant._GeospatialGLGeometryContent,itemWKT);
+                    propertiesMap.put(RealmConstant._GeospatialCountryCRSAID,"EPSG:4490"); // CRS EPSG:4490 - CGCS2000 - Geographic
+                    propertiesMap.put(RealmConstant._GeospatialCLGeometryContent,itemWKT);
+                    propertiesMap.put(RealmConstant._GeospatialGLGeometryCollectDate,_GeometryCollectDate);
+                    propertiesMap.put(RealmConstant._GeospatialCLGeometryCollectDate,_GeometryCollectDate);
+                    String[] conceptionTypeNameArray = new String[2];
+                    conceptionTypeNameArray[0] = RealmConstant.GeospatialScaleEntityClass;
+                    conceptionTypeNameArray[1] = RealmConstant.GeospatialScaleCountyEntityClass;
+
+                    GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
+                            new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleEntityClass,workingGraphOperationExecutor);
+                    String createGeospatialScaleEntitiesCql = CypherBuilder.createLabeledNodeWithProperties(conceptionTypeNameArray,propertiesMap);
+                    Object responseObj = workingGraphOperationExecutor.executeWrite(getSingleConceptionEntityTransformer,createGeospatialScaleEntitiesCql);
+                    if(responseObj != null){
+                        String parentDivisionEntityUID = null;
+                        if(ChinaDivisionCode_PrefectureEntityUIDMap.containsKey(_ChinaParentDivisionCode)){
+                            parentDivisionEntityUID = ChinaDivisionCode_PrefectureEntityUIDMap.get(_ChinaParentDivisionCode);
+                        }else{
+                            if(ChinaDivisionCode_ProvinceEntityUIDMap.containsKey(_ChinaParentDivisionCode)){
+                                parentDivisionEntityUID = ChinaDivisionCode_ProvinceEntityUIDMap.get(_ChinaParentDivisionCode);
+                            }
+                        }
+                        if(parentDivisionEntityUID != null){
+                            ConceptionEntity geospatialScaleEntity = (ConceptionEntity)responseObj;
+                            GetSingleRelationEntityTransformer getSingleRelationEntityTransformer = new GetSingleRelationEntityTransformer
+                                    (RealmConstant.GeospatialScale_SpatialContainsRelationClass,workingGraphOperationExecutor);
+                            String currentDivisionEntityUID = geospatialScaleEntity.getConceptionEntityUID();
+                            Map<String,Object> relationPropertiesMap = new HashMap<>();
+                            String linkToTimeScaleEntityCql = CypherBuilder.createNodesRelationshipByIdsMatch(Long.parseLong(parentDivisionEntityUID),Long.parseLong(currentDivisionEntityUID),RealmConstant.GeospatialScale_SpatialContainsRelationClass,relationPropertiesMap);
+                            workingGraphOperationExecutor.executeWrite(getSingleRelationEntityTransformer, linkToTimeScaleEntityCql);
+                        }
                     }
                 }
             }
