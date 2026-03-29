@@ -368,7 +368,7 @@ public class GeospatialScaleOperationUtil {
 
     private static void generateGeospatialScaleEntities_ProvinceOfChina(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName) {
         Map<String,Map<String,Object>> _ChinaProvinceGISInfoMap = generateProvincesForChinaDataMap();
-        //"/ChinaData/省级/"+"省级.shp" is collected at 2023
+        //"/ChinaData/省级/2023-1/"+"省级.shp" is collected at 2023
         LocalDate _GeometryCollectDate = LocalDate.of(2023, 1, 1);
         String _ChinaGeospatialEntityUID = null;
         try {
@@ -494,11 +494,11 @@ public class GeospatialScaleOperationUtil {
                 }
             }
 
-            //"/ChinaData/地级/"+"地级.shp" is collected at 2023
+            //"/ChinaData/地级/2023-1/"+"地级.shp" is collected at 2023
             LocalDate _GeometryCollectDate = LocalDate.of(2023, 1, 1);
 
             String filePath =
-                    PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/地级/"+"地级.shp";
+                    PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/地级/2023-1/"+"地级.shp";
             SimpleFeatureCollection colls = readShp(filePath,null);
             SimpleFeatureIterator iters = colls.features();
 
@@ -607,11 +607,11 @@ public class GeospatialScaleOperationUtil {
                 }
             }
 
-            //"/ChinaData/县级/"+"县级.shp" is collected at 2023
+            //"/ChinaData/县级/2023-1/"+"县级.shp" is collected at 2023
             LocalDate _GeometryCollectDate = LocalDate.of(2023, 1, 1);
 
             String filePath =
-                    PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/县级/"+"县级.shp";
+                    PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/县级/2023-1/"+"县级.shp";
             SimpleFeatureCollection colls = readShp(filePath,null);
             SimpleFeatureIterator iters = colls.features();
 
@@ -1277,7 +1277,7 @@ public class GeospatialScaleOperationUtil {
     private static Map<String,Map<String,Object>> generateProvincesForChinaDataMap(){
         Map<String,Map<String,Object>> _ProvincesISO_3166_2DataMap = new HashMap<>();
         String filePath =
-                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/省级/"+"省级.shp";
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/省级/2023-1/"+"省级.shp";
         SimpleFeatureCollection colls = readShp(filePath,null);
         SimpleFeatureIterator iters = colls.features();
 
