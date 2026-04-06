@@ -701,102 +701,53 @@ public class GeospatialScaleOperationUtil {
     }
 
     private static void generateGeospatialScaleEntities_TownshipOfChina(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
-        //String filePath =
-          //      PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/县级/2023-1/"+"县级.shp";
-
         String shpFilePath =
-                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/China_Township_shp/"+"我国乡镇行政区划.shp";
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/乡镇级/2021-1/"+"我国乡镇行政区划.shp";
         File shpFile = new File(shpFilePath);
         String excelFilePath =
                 PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/全国各省市区县乡镇街道村五级行政区划代码和从属关系Excel_2024.xlsx";
         File excelFile = new File(excelFilePath);
-
         if(shpFile.exists() & excelFile.exists()){
-
-
-          //  com.viewfunction.docg.coreRealm.realmServiceCore.util.common.ExcelMultiTableStorage storage = new ExcelMultiTableStorage();
-
             ExcelMultiIndexStorage storage = new ExcelMultiIndexStorage();
+            storage.loadFromExcel(excelFile);
 
 
-            String[] indexKeys = new String[4];
-            indexKeys[0] = "省";
-            indexKeys[1] = "市";
-            indexKeys[2] = "县";
-            indexKeys[3] = "乡镇";
 
-            storage.loadFromExcel(excelFile,indexKeys);
 
-            System.out.println("=== 原始数据 ===");
-            //storage.printData();
 
-            // 单条件查询
+
+
+            SimpleFeatureCollection colls = readShp(shpFilePath,null);
+            SimpleFeatureIterator iters = colls.features();
+
             Map<String, Object> conditions = new HashMap<>();
-            conditions.put("省", "北京市");
-            conditions.put("市", "市辖区");
-            conditions.put("县", "东城区");
-            conditions.put("乡镇", "景山街道");
-
-
-
-           // List<Map<String, Object>> results = storage.queryByCompositeKey(conditions);
-
-
-            List<Map<String, Object>> results = storage.queryByColumn("省", "北京市");
-
-
-
-
-            //List<Map<String, Object>> results = storage.queryByAnd(conditions);
-
-            System.out.println("\n=== 查询结果：技术部在职员工 ===");
-            results.forEach(System.out::println);
-/*
-            // 高级条件查询
-            Map<String, ExcelMultiTableStorage.QueryCondition> advancedConditions = new HashMap<>();
-            advancedConditions.put("年龄", new ExcelMultiTableStorage.QueryCondition(
-                    ExcelMultiTableStorage.QueryCondition.Operator.GTE, 30));
-            advancedConditions.put("姓名", new ExcelMultiTableStorage.QueryCondition(
-                    ExcelMultiTableStorage.QueryCondition.Operator.STARTS_WITH, "张"));
-
-            List<Map<String, Object>> advancedResults = storage.queryWithOperators(advancedConditions);
-            System.out.println("\n=== 高级查询：年龄>=30且姓张的员工 ===");
-            advancedResults.forEach(System.out::println);
-            */
-
-
-
-
-
-
-
-
-/*
-
-            // 获取读取器（自动识别 xls/xlsx）
-            ExcelReader reader = ExcelUtil.getReader(excelFile);
-
-
-
-
-            // 读取第一个Sheet所有行，返回 List<List<Object>>
-            List<List<Object>> rows = reader.read();
-            for (List<Object> row : rows) {
-                System.out.println(row.get(0));
-
-
-
-
+            while(iters.hasNext()){
+                SimpleFeature sf = iters.next();
+                String 省 = sf.getAttribute("省").toString();
+                String 市 = sf.getAttribute("市").toString();
+                String 县 = sf.getAttribute("县").toString();
+                String 乡 = sf.getAttribute("乡").toString();
+                String itemWKT = sf.getAttribute("the_geom").toString();
+                conditions.clear();
+                conditions.put("省", 省);
+                if(市.equals("直辖市")){
+                    conditions.put("市", 省);
+                }else{
+                    conditions.put("市", 市);
+                }
+                conditions.put("县", 县);
+                conditions.put("乡镇", 乡);
+                List<Map<String, Object>> results = storage.queryByAnd(conditions);
+                System.out.println("查询结果："+ results.size());
+                //results.forEach(System.out::println);
             }
-            reader.close();
-*/
+
+
+
+
 
 
         }
-
-
-
-
     }
 
 
