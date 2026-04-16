@@ -53,6 +53,30 @@ public interface Neo4JGeospatialScaleFeatureSupportable extends GeospatialScaleF
         return addOrUpdateAttributeValue(RealmConstant._GeospatialGeometryType,""+wKTGeometryType);
     }
 
+    public default WKTGeometryType getGlobalGeometryType() {
+        return getTargetGeometryType(RealmConstant._GeospatialGLGeometryType);
+    }
+
+    public default boolean addOrUpdateGlobalGeometryType(WKTGeometryType wKTGeometryType){
+        return addOrUpdateAttributeValue(RealmConstant._GeospatialGLGeometryType,""+wKTGeometryType);
+    }
+
+    public default WKTGeometryType getCountryGeometryType() {
+        return getTargetGeometryType(RealmConstant._GeospatialCLGeometryType);
+    }
+
+    public default boolean addOrUpdateCountryGeometryType(WKTGeometryType wKTGeometryType){
+        return addOrUpdateAttributeValue(RealmConstant._GeospatialCLGeometryType,""+wKTGeometryType);
+    }
+
+    public default WKTGeometryType getLocalGeometryType() {
+        return getTargetGeometryType(RealmConstant._GeospatialLLGeometryType);
+    }
+
+    public default boolean addOrUpdateLocalGeometryType(WKTGeometryType wKTGeometryType){
+        return addOrUpdateAttributeValue(RealmConstant._GeospatialLLGeometryType,""+wKTGeometryType);
+    }
+
     public default String getGlobalCRSAID(){
         return getAttributeValue(RealmConstant._GeospatialGlobalCRSAID);
     }
@@ -470,5 +494,27 @@ public interface Neo4JGeospatialScaleFeatureSupportable extends GeospatialScaleF
             }
         }
         return false;
+    }
+
+    private WKTGeometryType getTargetGeometryType(String attributeName){
+        String returnDataValue = getAttributeValue(attributeName);
+        if(returnDataValue != null){
+            if(returnDataValue.equals(""+ WKTGeometryType.POINT)){
+                return WKTGeometryType.POINT;
+            }else if(returnDataValue.equals(""+ WKTGeometryType.LINESTRING)){
+                return WKTGeometryType.LINESTRING;
+            }else if(returnDataValue.equals(""+ WKTGeometryType.POLYGON)){
+                return WKTGeometryType.POLYGON;
+            }else if(returnDataValue.equals(""+ WKTGeometryType.MULTIPOINT)){
+                return WKTGeometryType.MULTIPOINT;
+            }else if(returnDataValue.equals(""+ WKTGeometryType.MULTILINESTRING)){
+                return WKTGeometryType.MULTILINESTRING;
+            }else if(returnDataValue.equals(""+ WKTGeometryType.MULTIPOLYGON)){
+                return WKTGeometryType.MULTIPOLYGON;
+            }else if(returnDataValue.equals(""+ WKTGeometryType.GEOMETRYCOLLECTION)){
+                return WKTGeometryType.GEOMETRYCOLLECTION;
+            }
+        }
+        return null;
     }
 }

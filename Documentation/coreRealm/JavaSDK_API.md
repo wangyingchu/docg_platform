@@ -3945,6 +3945,54 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public boolean addOrUpdateGeometryType(WKTGeometryType wKTGeometryType);
 
     /**
+     * 获取当前对象的全球尺度空间参考坐标系(CoordinateReferenceSystem) 下的空间数据结构
+     *
+     * @return WKTGeometryType
+     */
+    public WKTGeometryType getGlobalGeometryType();
+
+    /**
+     * 为当前对象添加或更新全球尺度空间参考坐标系(CoordinateReferenceSystem) 下的空间数据结构
+     *
+     * @param wKTGeometryType WKTGeometryType 空间数据结构
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean addOrUpdateGlobalGeometryType(WKTGeometryType wKTGeometryType);
+
+    /**
+     * 获取当前对象的国家尺度空间参考坐标系(CoordinateReferenceSystem)下的空间数据结构
+     *
+     * @return WKTGeometryType
+     */
+    public WKTGeometryType getCountryGeometryType();
+
+    /**
+     * 为当前对象添加或更新国家尺度空间参考坐标系(CoordinateReferenceSystem)下的空间数据结构
+     *
+     * @param wKTGeometryType WKTGeometryType 空间数据结构
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean addOrUpdateCountryGeometryType(WKTGeometryType wKTGeometryType);
+
+    /**
+     * 获取当前对象的地方尺度空间参考坐标系(CoordinateReferenceSystem)下的空间数据结构
+     *
+     * @return WKTGeometryType
+     */
+    public WKTGeometryType getLocalGeometryType();
+
+    /**
+     * 为当前对象添加或更新地方尺度空间参考坐标系(CoordinateReferenceSystem)下的空间数据结构
+     *
+     * @param wKTGeometryType WKTGeometryType 空间数据结构
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean addOrUpdateLocalGeometryType(WKTGeometryType wKTGeometryType);
+
+    /**
      * 获取当前对象的全球尺度空间参考坐标系(CoordinateReferenceSystem) Authority ID
      * 默认值为 EPSG:4326 (WGS-84)
      * @return 空间参考坐标系权威ID
