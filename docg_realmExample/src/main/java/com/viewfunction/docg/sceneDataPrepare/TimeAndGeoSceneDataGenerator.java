@@ -60,7 +60,7 @@ public class TimeAndGeoSceneDataGenerator {
                 if(entityValueMap != null && entityValueMap.containsKey("Location")){
                     String locationPoint = entityValueMap.get("Location").toString();
                     entityValueMap.put(RealmConstant._GeospatialGLGeometryContent,locationPoint);
-                    entityValueMap.put(RealmConstant._GeospatialGeometryType,"POINT");
+                    entityValueMap.put(RealmConstant._GeospatialGLGeometryType,"POINT");
                     entityValueMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326");
                 }
                 if(entityValueMap.containsKey("violation date") && !entityValueMap.get("violation date").toString().equals("")){
@@ -98,7 +98,7 @@ public class TimeAndGeoSceneDataGenerator {
                     String locationPoint = "POINT ("+longitude+" "+latitude+")";
                     if(!locationPoint.equals("POINT ( 0.0 0.0)")){
                         entityValueMap.put(RealmConstant._GeospatialGLGeometryContent, locationPoint);
-                        entityValueMap.put(RealmConstant._GeospatialGeometryType, "POINT");
+                        entityValueMap.put(RealmConstant._GeospatialGLGeometryType, "POINT");
                         entityValueMap.put(RealmConstant._GeospatialGlobalCRSAID, "EPSG:4326");
                     }
                 }
@@ -146,7 +146,7 @@ public class TimeAndGeoSceneDataGenerator {
                 if(entityValueMap != null && entityValueMap.containsKey("Latitude") && entityValueMap.containsKey("Longitude")){
                     String locationPoint = "POINT ("+entityValueMap.get("Longitude")+" "+entityValueMap.get("Latitude")+")";
                     entityValueMap.put(RealmConstant._GeospatialGLGeometryContent,locationPoint);
-                    entityValueMap.put(RealmConstant._GeospatialGeometryType,"POINT");
+                    entityValueMap.put(RealmConstant._GeospatialGLGeometryType,"POINT");
                     entityValueMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326");
                 }
                 if(entityValueMap.containsKey("Transaction DateTime") && !entityValueMap.get("Transaction DateTime").toString().equals("")){
@@ -173,7 +173,7 @@ public class TimeAndGeoSceneDataGenerator {
                 if(entityValueMap != null && entityValueMap.containsKey("Latitude") && entityValueMap.containsKey("Longitude")){
                     String locationPoint = "POINT ("+entityValueMap.get("Longitude")+" "+entityValueMap.get("Latitude")+")";
                     entityValueMap.put(RealmConstant._GeospatialGLGeometryContent,locationPoint);
-                    entityValueMap.put(RealmConstant._GeospatialGeometryType,"POINT");
+                    entityValueMap.put(RealmConstant._GeospatialGLGeometryType,"POINT");
                     entityValueMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326");
                 }
                 if(entityValueMap.containsKey("Offense End DateTime") && !entityValueMap.get("Offense End DateTime").toString().equals("")){
@@ -321,7 +321,7 @@ public class TimeAndGeoSceneDataGenerator {
                 if(entityValueMap != null && entityValueMap.containsKey("Point")){
                     String locationPoint = entityValueMap.get("Point").toString();
                     entityValueMap.put(RealmConstant._GeospatialGLGeometryContent,locationPoint);
-                    entityValueMap.put(RealmConstant._GeospatialGeometryType,"POINT");
+                    entityValueMap.put(RealmConstant._GeospatialGLGeometryType,"POINT");
                     entityValueMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326");
                 }
                 if(entityValueMap.containsKey("Incident Datetime") && !entityValueMap.get("Incident Datetime").toString().equals("")){
@@ -357,7 +357,7 @@ public class TimeAndGeoSceneDataGenerator {
                 if(entityValueMap != null && entityValueMap.containsKey("Current Police Districts 2 2")){
                     String locationPoint = entityValueMap.get("Current Police Districts 2 2").toString();
                     entityValueMap.put(RealmConstant._GeospatialGLGeometryContent,locationPoint);
-                    entityValueMap.put(RealmConstant._GeospatialGeometryType,"POINT");
+                    entityValueMap.put(RealmConstant._GeospatialGLGeometryType,"POINT");
                     entityValueMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326");
                 }
                 if(entityValueMap != null && entityValueMap.containsKey("Time") && entityValueMap.containsKey("PdDistrict")){

@@ -45,7 +45,7 @@ public class DataSliceSyncUtil {
             dataSlicePropertyMap.put(RealmConstant.GeospatialCodeProperty,DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put(RealmConstant.GeospatialRegionProperty,DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put(RealmConstant.GeospatialScaleGradeProperty, DataSlicePropertyType.STRING);
-            dataSlicePropertyMap.put(RealmConstant._GeospatialGeometryType, DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryType, DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put(RealmConstant._GeospatialGlobalCRSAID, DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryContent, DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID, DataSlicePropertyType.STRING);
@@ -73,7 +73,7 @@ public class DataSliceSyncUtil {
             dataSlicePropertyMap.put(RealmConstant.GeospatialChineseNameProperty,DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryPOI,DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put(RealmConstant._GeospatialGlobalCRSAID,DataSlicePropertyType.STRING);
-            dataSlicePropertyMap.put(RealmConstant._GeospatialGeometryType,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryType,DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryContent,DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put("ChinaDivisionCode",DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put(RealmConstant._GeospatialCLGeometryPOI,DataSlicePropertyType.STRING);
@@ -94,7 +94,7 @@ public class DataSliceSyncUtil {
             dataSlicePropertyMap.put("ChinaProvinceName",DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put(RealmConstant.GeospatialCodeProperty,DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put(RealmConstant.GeospatialRegionProperty,DataSlicePropertyType.STRING);
-            dataSlicePropertyMap.put(RealmConstant._GeospatialGeometryType,DataSlicePropertyType.STRING);
+            dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryType,DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put(RealmConstant._GeospatialGlobalCRSAID,DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryContent,DataSlicePropertyType.STRING);
             dataSlicePropertyMap.put(RealmConstant._GeospatialCountryCRSAID,DataSlicePropertyType.STRING);

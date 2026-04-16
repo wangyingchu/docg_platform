@@ -172,7 +172,8 @@ public class PerformanceTestingRealmDataLoader {
                             newEntityValueMap.put(Longitude,longitudeObject);
                         }
                         if(!lat_wgs.equals("") & !lng_wgs.equals("")){
-                            newEntityValueMap.put(RealmConstant._GeospatialGeometryType,"POINT");
+                            newEntityValueMap.put(RealmConstant._GeospatialGLGeometryType,"POINT");
+                            newEntityValueMap.put(RealmConstant._GeospatialCLGeometryType,"POINT");
                             String locationWKT = "POINT ("+lng_wgs+" "+lat_wgs+")";
                             newEntityValueMap.put(RealmConstant._GeospatialGLGeometryContent,locationWKT);
                             newEntityValueMap.put(RealmConstant._GeospatialCLGeometryContent,locationWKT);
