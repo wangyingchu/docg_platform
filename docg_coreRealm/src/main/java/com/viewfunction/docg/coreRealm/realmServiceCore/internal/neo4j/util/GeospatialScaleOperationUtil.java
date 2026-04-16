@@ -135,7 +135,7 @@ public class GeospatialScaleOperationUtil {
 
                     if(continentGeoContentMap.containsKey(_EngName)){
                         propertiesMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
-                        propertiesMap.put(RealmConstant._GeospatialGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                        propertiesMap.put(RealmConstant._GeospatialGLGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
                         String geomWKT = continentGeoContentMap.get(_EngName);
                         propertiesMap.put(RealmConstant._GeospatialGLGeometryContent,geomWKT);
                     }
@@ -265,7 +265,7 @@ public class GeospatialScaleOperationUtil {
                 Map<String,Object> _CountriesData = _CountriesDataMap.get(_CountryRegionAlpha_3Code);
                 if(_CountriesData != null && _CountriesData.get("the_geom")!= null){
                     String geomWKT = _CountriesData.get("the_geom").toString();
-                    currentConceptionEntity.addOrUpdateGeometryType(GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                    currentConceptionEntity.addOrUpdateGlobalGeometryType(GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
                     currentConceptionEntity.addOrUpdateGlobalCRSAID("EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
                     currentConceptionEntity.addOrUpdateGLGeometryContent(geomWKT);
                 }
@@ -338,7 +338,7 @@ public class GeospatialScaleOperationUtil {
                                 String poiPointWKT = "POINT ("+_currentProvincesDataMap.get("longitude")+" "+_currentProvincesDataMap.get("latitude")+")";
                                 propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI,poiPointWKT);
                                 propertiesMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
-                                propertiesMap.put(RealmConstant._GeospatialGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                                propertiesMap.put(RealmConstant._GeospatialGLGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
                                 String geomWKT = _currentProvincesDataMap.get("the_geom").toString();
                                 propertiesMap.put(RealmConstant._GeospatialGLGeometryContent,geomWKT);
                                 String createGeospatialScaleEntitiesCql = CypherBuilder.createLabeledNodeWithProperties(conceptionTypeNameArray,propertiesMap);
@@ -437,7 +437,8 @@ public class GeospatialScaleOperationUtil {
                     propertiesMap.put(RealmConstant.GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.PROVINCE);
 
                     if(_ChinaProvinceGISInfoMap.get(ChinaDivisionCode) != null){
-                        propertiesMap.put(RealmConstant._GeospatialGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                        propertiesMap.put(RealmConstant._GeospatialGLGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                        propertiesMap.put(RealmConstant._GeospatialCLGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
                         String geomWKT = _ChinaProvinceGISInfoMap.get(ChinaDivisionCode).get("the_geom").toString();
                         String poiPointWKT = "POINT ("+longitude+" "+latitude+")";
                         propertiesMap.put(RealmConstant._GeospatialGLGeometryPOI,poiPointWKT);
@@ -545,7 +546,8 @@ public class GeospatialScaleOperationUtil {
                         propertiesMap.put("ChinaProvinceName",省级);
                         propertiesMap.put(RealmConstant.GeospatialChineseNameProperty,地名);
                         propertiesMap.put(RealmConstant.GeospatialEnglishNameProperty,ENG_NAME);
-                        propertiesMap.put(RealmConstant._GeospatialGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                        propertiesMap.put(RealmConstant._GeospatialGLGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                        propertiesMap.put(RealmConstant._GeospatialCLGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
                         propertiesMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
                         propertiesMap.put(RealmConstant._GeospatialGLGeometryContent,itemWKT);
                         propertiesMap.put(RealmConstant._GeospatialCountryCRSAID,"EPSG:4490"); // CRS EPSG:4490 - CGCS2000 - Geographic
@@ -665,7 +667,8 @@ public class GeospatialScaleOperationUtil {
                         propertiesMap.put(RealmConstant.GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.COUNTY);
                         propertiesMap.put(RealmConstant.GeospatialChineseNameProperty,地名);
                         propertiesMap.put(RealmConstant.GeospatialEnglishNameProperty,ENG_NAME);
-                        propertiesMap.put(RealmConstant._GeospatialGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                        propertiesMap.put(RealmConstant._GeospatialGLGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                        propertiesMap.put(RealmConstant._GeospatialCLGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
                         propertiesMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
                         propertiesMap.put(RealmConstant._GeospatialGLGeometryContent,itemWKT);
                         propertiesMap.put(RealmConstant._GeospatialCountryCRSAID,"EPSG:4490"); // CRS EPSG:4490 - CGCS2000 - Geographic
@@ -855,7 +858,8 @@ public class GeospatialScaleOperationUtil {
                             LocalDate _GeometryCollectDate = LocalDate.of(2024, 1, 1);
                             propertiesMap.put(RealmConstant._GeospatialGLGeometryCollectDate, _GeometryCollectDate);
                             propertiesMap.put(RealmConstant._GeospatialCLGeometryCollectDate, _GeometryCollectDate);
-                            propertiesMap.put(RealmConstant._GeospatialGeometryType, "" + GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                            propertiesMap.put(RealmConstant._GeospatialGLGeometryType, "" + GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                            propertiesMap.put(RealmConstant._GeospatialCLGeometryType, "" + GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
                             propertiesMap.put(RealmConstant._GeospatialGlobalCRSAID, "EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
                             propertiesMap.put(RealmConstant._GeospatialGLGeometryContent, currentEntityItemWKT);
                             propertiesMap.put(RealmConstant._GeospatialCountryCRSAID, "EPSG:4490"); // CRS EPSG:4490 - CGCS2000 - Geographic
@@ -984,7 +988,8 @@ public class GeospatialScaleOperationUtil {
                     propertiesMap.put(RealmConstant.GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.COUNTY);
                     propertiesMap.put(RealmConstant.GeospatialChineseNameProperty,Name);
                     propertiesMap.put(RealmConstant.GeospatialEnglishNameProperty,ENG_NAME);
-                    propertiesMap.put(RealmConstant._GeospatialGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                    propertiesMap.put(RealmConstant._GeospatialGLGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                    propertiesMap.put(RealmConstant._GeospatialCLGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
                     propertiesMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
                     propertiesMap.put(RealmConstant._GeospatialGLGeometryContent,itemWKT);
                     propertiesMap.put(RealmConstant._GeospatialCountryCRSAID,"EPSG:4490"); // CRS EPSG:4490 - CGCS2000 - Geographic
@@ -1049,7 +1054,8 @@ public class GeospatialScaleOperationUtil {
                         propertiesMap.put(RealmConstant.GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.COUNTY);
                         propertiesMap.put(RealmConstant.GeospatialChineseNameProperty,Name);
                         propertiesMap.put(RealmConstant.GeospatialEnglishNameProperty,ENG_NAME);
-                        propertiesMap.put(RealmConstant._GeospatialGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                        propertiesMap.put(RealmConstant._GeospatialGLGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                        propertiesMap.put(RealmConstant._GeospatialCLGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
                         propertiesMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
                         propertiesMap.put(RealmConstant._GeospatialGLGeometryContent,itemWKT);
                         propertiesMap.put(RealmConstant._GeospatialCountryCRSAID,"EPSG:4490"); // CRS EPSG:4490 - CGCS2000 - Geographic
@@ -1112,7 +1118,8 @@ public class GeospatialScaleOperationUtil {
                         propertiesMap.put(RealmConstant.GeospatialScaleGradeProperty, ""+GeospatialRegion.GeospatialScaleGrade.COUNTY);
                         propertiesMap.put(RealmConstant.GeospatialChineseNameProperty,Name);
                         propertiesMap.put(RealmConstant.GeospatialEnglishNameProperty,ENG_NAME);
-                        propertiesMap.put(RealmConstant._GeospatialGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                        propertiesMap.put(RealmConstant._GeospatialGLGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                        propertiesMap.put(RealmConstant._GeospatialCLGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
                         propertiesMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
                         propertiesMap.put(RealmConstant._GeospatialGLGeometryContent,itemWKT);
                         propertiesMap.put(RealmConstant._GeospatialCountryCRSAID,"EPSG:4490"); // CRS EPSG:4490 - CGCS2000 - Geographic
@@ -1270,7 +1277,8 @@ public class GeospatialScaleOperationUtil {
                                 propertiesMap.put(RealmConstant.GeospatialChineseNameProperty,VILLAGE_Name);
                             }
                             if(_ChinaEntityWKTMap.containsKey(_ChinaDivisionCode)){
-                                propertiesMap.put(RealmConstant._GeospatialGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                                propertiesMap.put(RealmConstant._GeospatialGLGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                                propertiesMap.put(RealmConstant._GeospatialCLGeometryType,""+GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
                                 propertiesMap.put(RealmConstant._GeospatialGlobalCRSAID,"EPSG:4326"); // CRS EPSG:4326 - WGS 84 - Geographic
                                 propertiesMap.put(RealmConstant._GeospatialGLGeometryContent,_ChinaEntityWKTMap.get(_ChinaDivisionCode));
                                 propertiesMap.put(RealmConstant._GeospatialCountryCRSAID,"EPSG:4490"); // CRS EPSG:4490 - CGCS2000 - Geographic

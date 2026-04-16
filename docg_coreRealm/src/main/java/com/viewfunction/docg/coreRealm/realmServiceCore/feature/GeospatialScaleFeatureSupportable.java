@@ -24,22 +24,6 @@ public interface GeospatialScaleFeatureSupportable {
     }
 
     /**
-     * 获取当前对象的空间数据结构
-     *
-     * @return WKTGeometryType
-     */
-    public WKTGeometryType getGeometryType();
-
-    /**
-     * 为当前对象添加或更新空间数据结构
-     *
-     * @param wKTGeometryType WKTGeometryType 空间数据结构
-     *
-     * @return 如操作成功，返回结果为 true
-     */
-    public boolean addOrUpdateGeometryType(WKTGeometryType wKTGeometryType);
-
-    /**
      * 获取当前对象的全球尺度空间参考坐标系(CoordinateReferenceSystem) 下的空间数据结构
      *
      * @return WKTGeometryType

@@ -85,7 +85,7 @@ public class Island_GeoData_Realm_Generator {
             currentEntityValue.setEntityAttributesValue(entityDataMap);
             ConceptionEntity resultEntity = _IndividualTreeConceptionType.newEntity(currentEntityValue,false);
             if(resultEntity != null){
-                resultEntity.addOrUpdateGeometryType(GeospatialScaleFeatureSupportable.WKTGeometryType.POINT);
+                resultEntity.addOrUpdateLocalGeometryType(GeospatialScaleFeatureSupportable.WKTGeometryType.POINT);
                 resultEntity.addOrUpdateLocalCRSAID(_LocalCRSAID);
                 resultEntity.addOrUpdateLLGeometryContent(_LLGeometryContent);
                 addedResultCount++;
@@ -126,7 +126,7 @@ public class Island_GeoData_Realm_Generator {
             currentEntityValue.setEntityAttributesValue(entityDataMap);
             ConceptionEntity resultEntity = _FrutexConceptionType.newEntity(currentEntityValue,false);
             if(resultEntity != null){
-                resultEntity.addOrUpdateGeometryType(GeospatialScaleFeatureSupportable.WKTGeometryType.POINT);
+                resultEntity.addOrUpdateLocalGeometryType(GeospatialScaleFeatureSupportable.WKTGeometryType.POINT);
                 resultEntity.addOrUpdateLocalCRSAID(_LocalCRSAID);
                 resultEntity.addOrUpdateLLGeometryContent(_LLGeometryContent);
                 addedResultCount++;
@@ -166,7 +166,7 @@ public class Island_GeoData_Realm_Generator {
             currentEntityValue.setEntityAttributesValue(entityDataMap);
             ConceptionEntity resultEntity = _FunctionalZoneConceptionType.newEntity(currentEntityValue,false);
             if(resultEntity != null){
-                resultEntity.addOrUpdateGeometryType(GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                resultEntity.addOrUpdateLocalGeometryType(GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
                 resultEntity.addOrUpdateLocalCRSAID(_LocalCRSAID);
                 resultEntity.addOrUpdateLLGeometryContent(_LLGeometryContent);
                 addedResultCount++;
@@ -207,7 +207,7 @@ public class Island_GeoData_Realm_Generator {
             currentEntityValue.setEntityAttributesValue(entityDataMap);
             ConceptionEntity resultEntity = _ZoneSectionConceptionType.newEntity(currentEntityValue,false);
             if(resultEntity != null){
-                resultEntity.addOrUpdateGeometryType(GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                resultEntity.addOrUpdateLocalGeometryType(GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
                 resultEntity.addOrUpdateLocalCRSAID(_LocalCRSAID);
                 resultEntity.addOrUpdateLLGeometryContent(_LLGeometryContent);
                 addedResultCount++;
@@ -258,7 +258,7 @@ public class Island_GeoData_Realm_Generator {
             currentEntityValue.setEntityAttributesValue(entityDataMap);
             ConceptionEntity resultEntity = _SectionBlockConceptionType.newEntity(currentEntityValue,false);
             if(resultEntity != null){
-                resultEntity.addOrUpdateGeometryType(GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                resultEntity.addOrUpdateLocalGeometryType(GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
                 resultEntity.addOrUpdateLocalCRSAID(_LocalCRSAID);
                 resultEntity.addOrUpdateLLGeometryContent(_LLGeometryContent);
                 addedResultCount++;
@@ -351,7 +351,7 @@ public class Island_GeoData_Realm_Generator {
             }
 
             if(resultEntity != null){
-                resultEntity.addOrUpdateGeometryType(GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
+                resultEntity.addOrUpdateLocalGeometryType(GeospatialScaleFeatureSupportable.WKTGeometryType.MULTIPOLYGON);
                 resultEntity.addOrUpdateLocalCRSAID(_LocalCRSAID);
                 resultEntity.addOrUpdateLLGeometryContent(_LLGeometryContent);
                 addedResultCount++;

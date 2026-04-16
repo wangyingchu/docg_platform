@@ -121,17 +121,19 @@ public class GeospatialOperationUtil {
                     geometryTypeValue = "MULTIPOLYGON";
                 }
 
-                newEntityValueMap.put(RealmConstant._GeospatialGeometryType, geometryTypeValue);
                 if (_CRS_Range.equals("GlobalLevel")) {
                     newEntityValueMap.put(RealmConstant._GeospatialGLGeometryContent, geometryContent);
                     newEntityValueMap.put(RealmConstant._GeospatialGlobalCRSAID, entityCRSAID);
+                    newEntityValueMap.put(RealmConstant._GeospatialGLGeometryType, geometryTypeValue);
                 }
                 if (_CRS_Range.equals("CountryLevel")) {
                     newEntityValueMap.put(RealmConstant._GeospatialCLGeometryContent, geometryContent);
                     newEntityValueMap.put(RealmConstant._GeospatialCountryCRSAID, entityCRSAID);
+                    newEntityValueMap.put(RealmConstant._GeospatialCLGeometryType, geometryTypeValue);
                 }
                 if (_CRS_Range.equals("LocalLevel")) {
                     newEntityValueMap.put(RealmConstant._GeospatialLLGeometryContent, geometryContent);
+                    newEntityValueMap.put(RealmConstant._GeospatialLLGeometryType, geometryTypeValue);
                     if (entityCRSAID != null) {
                         newEntityValueMap.put(RealmConstant._GeospatialLocalCRSAID, entityCRSAID);
                     }
@@ -244,17 +246,19 @@ public class GeospatialOperationUtil {
                     geometryTypeValue = "MULTIPOLYGON";
                 }
 
-                newEntityValueMap.put(RealmConstant._GeospatialGeometryType, geometryTypeValue);
                 if (_CRS_Range.equals("GlobalLevel")) {
                     newEntityValueMap.put(RealmConstant._GeospatialGLGeometryContent, geometryContent);
                     newEntityValueMap.put(RealmConstant._GeospatialGlobalCRSAID, entityCRSAID);
+                    newEntityValueMap.put(RealmConstant._GeospatialGLGeometryType, geometryTypeValue);
                 }
                 if (_CRS_Range.equals("CountryLevel")) {
                     newEntityValueMap.put(RealmConstant._GeospatialCLGeometryContent, geometryContent);
                     newEntityValueMap.put(RealmConstant._GeospatialCountryCRSAID, entityCRSAID);
+                    newEntityValueMap.put(RealmConstant._GeospatialCLGeometryType, geometryTypeValue);
                 }
                 if (_CRS_Range.equals("LocalLevel")) {
                     newEntityValueMap.put(RealmConstant._GeospatialLLGeometryContent, geometryContent);
+                    newEntityValueMap.put(RealmConstant._GeospatialLLGeometryType, geometryTypeValue);
                     if (entityCRSAID != null) {
                         newEntityValueMap.put(RealmConstant._GeospatialLocalCRSAID, entityCRSAID);
                     }

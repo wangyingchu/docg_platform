@@ -27,32 +27,6 @@ public interface Neo4JGeospatialScaleFeatureSupportable extends GeospatialScaleF
 
     static Logger logger = LoggerFactory.getLogger(Neo4JGeospatialScaleFeatureSupportable.class);
 
-    public default WKTGeometryType getGeometryType() {
-        String returnDataValue = getAttributeValue(RealmConstant._GeospatialGeometryType);
-        if(returnDataValue != null){
-            if(returnDataValue.equals(""+ WKTGeometryType.POINT)){
-                return WKTGeometryType.POINT;
-            }else if(returnDataValue.equals(""+ WKTGeometryType.LINESTRING)){
-                return WKTGeometryType.LINESTRING;
-            }else if(returnDataValue.equals(""+ WKTGeometryType.POLYGON)){
-                return WKTGeometryType.POLYGON;
-            }else if(returnDataValue.equals(""+ WKTGeometryType.MULTIPOINT)){
-                return WKTGeometryType.MULTIPOINT;
-            }else if(returnDataValue.equals(""+ WKTGeometryType.MULTILINESTRING)){
-                return WKTGeometryType.MULTILINESTRING;
-            }else if(returnDataValue.equals(""+ WKTGeometryType.MULTIPOLYGON)){
-                return WKTGeometryType.MULTIPOLYGON;
-            }else if(returnDataValue.equals(""+ WKTGeometryType.GEOMETRYCOLLECTION)){
-                return WKTGeometryType.GEOMETRYCOLLECTION;
-            }
-        }
-        return null;
-    }
-
-    public default boolean addOrUpdateGeometryType(WKTGeometryType wKTGeometryType){
-        return addOrUpdateAttributeValue(RealmConstant._GeospatialGeometryType,""+wKTGeometryType);
-    }
-
     public default WKTGeometryType getGlobalGeometryType() {
         return getTargetGeometryType(RealmConstant._GeospatialGLGeometryType);
     }

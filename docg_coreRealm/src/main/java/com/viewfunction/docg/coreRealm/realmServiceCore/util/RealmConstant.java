@@ -97,7 +97,6 @@ public interface RealmConstant {
     public final String GeospatialEnglishNameProperty = "DOCG_GeospatialEnglishName";
     public final String GeospatialScaleGradeProperty = "DOCG_GeospatialScaleGrade";
 
-    public final String _GeospatialGeometryType="DOCG_GS_GeometryType";
     public final String _GeospatialGLGeometryType="DOCG_GS_GLGeometryType";
     public final String _GeospatialCLGeometryType="DOCG_GS_CLGeometryType";
     public final String _GeospatialLLGeometryType="DOCG_GS_LLGeometryType";

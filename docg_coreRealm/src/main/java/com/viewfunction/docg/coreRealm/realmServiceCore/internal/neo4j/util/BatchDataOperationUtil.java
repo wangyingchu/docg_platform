@@ -1631,23 +1631,27 @@ public class BatchDataOperationUtil {
             ConceptionKind conceptionKind = coreRealm.getConceptionKind(conceptionKindName);
             if(conceptionKind != null){
                 String spatialScaleGeometryContentPropertyName = null;
+                String spatialScaleGeometryTypePropertyName = null;
                 String spatialCRSAIDPropertyName = null;
                 switch(spatialScaleLevel){
                     case Local:
                         spatialScaleGeometryContentPropertyName = RealmConstant._GeospatialLLGeometryContent;
                         spatialCRSAIDPropertyName = RealmConstant._GeospatialLocalCRSAID;
+                        spatialScaleGeometryTypePropertyName = RealmConstant._GeospatialLLGeometryType;
                         break;
                     case Global:
                         spatialScaleGeometryContentPropertyName = RealmConstant._GeospatialGLGeometryContent;
                         spatialCRSAIDPropertyName = RealmConstant._GeospatialGlobalCRSAID;
+                        spatialScaleGeometryTypePropertyName = RealmConstant._GeospatialGLGeometryType;
                         break;
                     case Country:
                         spatialScaleGeometryContentPropertyName = RealmConstant._GeospatialCLGeometryContent;
                         spatialCRSAIDPropertyName = RealmConstant._GeospatialCountryCRSAID;
+                        spatialScaleGeometryTypePropertyName = RealmConstant._GeospatialCLGeometryType;
                         break;
                 }
                 Map<String, Object> attributes = new HashMap<>();
-                attributes.put(RealmConstant._GeospatialGeometryType,"POINT");
+                attributes.put(spatialScaleGeometryTypePropertyName,"POINT");
                 attributes.put(spatialCRSAIDPropertyName,geospatialCRSAID);
                 conceptionKind.setKindScopeAttributes(attributes);
 
