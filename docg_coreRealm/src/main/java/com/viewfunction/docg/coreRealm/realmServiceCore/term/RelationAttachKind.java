@@ -162,4 +162,6 @@ public interface RelationAttachKind extends MetaConfigItemFeatureSupportable, Me
      * @return 返回最新的是否允许状态
      */
     public boolean setAllowRepeatableRelationKind(boolean allowRepeatableRelationKind);
+
+    public boolean isActive();
 }

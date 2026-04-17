@@ -291,6 +291,11 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
         }
     }
 
+    @Override
+    public boolean isActive() {
+        return true;
+    }
+
     private FilteringItem generateFilteringItem(LinkLogicCondition linkLogicCondition, String attributeName, Object attributeValue){
         FilteringItem filteringItem = null;
         switch(linkLogicCondition){
