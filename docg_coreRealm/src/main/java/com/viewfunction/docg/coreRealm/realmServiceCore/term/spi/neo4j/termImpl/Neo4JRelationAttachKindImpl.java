@@ -38,9 +38,10 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
     private String targetConceptionKindName;
     private String relationKindName;
     private boolean allowRepeatableRelationKind;
+    private boolean attachKindActiveStatus;
 
     public Neo4JRelationAttachKindImpl(String coreRealmName, String relationAttachKindName, String relationAttachKindDesc, String relationAttachKindUID,
-                                       String sourceConceptionKindName, String targetConceptionKindName,String relationKindName,boolean allowRepeatableRelationKind){
+                                       String sourceConceptionKindName, String targetConceptionKindName,String relationKindName,boolean allowRepeatableRelationKind,boolean attachKindActiveStatus){
         this.coreRealmName = coreRealmName;
         this.relationAttachKindName = relationAttachKindName;
         this.relationAttachKindDesc = relationAttachKindDesc;
@@ -49,6 +50,7 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
         this.targetConceptionKindName = targetConceptionKindName;
         this.relationKindName = relationKindName;
         this.allowRepeatableRelationKind = allowRepeatableRelationKind;
+        this.attachKindActiveStatus = attachKindActiveStatus;
         this.graphOperationExecutorHelper = new GraphOperationExecutorHelper();
     }
 
@@ -197,70 +199,91 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
     }
 
     @Override
-    public long newRelationEntities(String conceptionEntityUID, EntityRelateRole entityRelateRole, Map<String,Object> relationData) {
-        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-        try{
-            return newRelationEntities(workingGraphOperationExecutor,conceptionEntityUID,entityRelateRole,relationData);
-        } finally {
-            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
-        }
-    }
-
-    @Override
-    public long newRelationEntities(List<String> conceptionEntityUIDs, EntityRelateRole entityRelateRole, Map<String, Object> relationData) {
-        if(conceptionEntityUIDs != null && conceptionEntityUIDs.size()>0){
-            long totalResultNumber = 0;
+    public long newRelationEntities(String conceptionEntityUID, EntityRelateRole entityRelateRole, Map<String,Object> relationData) throws CoreRealmServiceRuntimeException{
+        if(isActive()){
             GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
             try{
-                for(String currentEntityID : conceptionEntityUIDs){
-                    long currentResultNumber = newRelationEntities(workingGraphOperationExecutor,currentEntityID,entityRelateRole,relationData);
-                    totalResultNumber = totalResultNumber + currentResultNumber;
-                }
-                return totalResultNumber;
+                return newRelationEntities(workingGraphOperationExecutor,conceptionEntityUID,entityRelateRole,relationData);
             } finally {
                 this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
             }
+        }else{
+            logger.error("RelationAttachKind {} is not active.", this.relationAttachKindName);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("RelationAttachKind "+this.relationAttachKindName+" is not active");
+            throw exception;
         }
-        return 0;
     }
 
     @Override
-    public EntitiesOperationResult newUniversalRelationEntities(Map<String,Object> relationData) {
-        CommonEntitiesOperationResultImpl entitiesOperationResult = new CommonEntitiesOperationResultImpl();
-        entitiesOperationResult.getOperationStatistics().setSuccessItemsCount(0);
-
-        String sourceKind = this.sourceConceptionKindName;
-        String targetKind = this.targetConceptionKindName;
-
-        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
-        try {
-            String queryCql = CypherBuilder.matchLabelWithSinglePropertyValueAndFunction(sourceKind, CypherBuilder.CypherFunctionType.COUNT, null, null);
-            GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
-            Object countConceptionEntitiesRes = workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer, queryCql);
-            long sourceKindDataNumber = countConceptionEntitiesRes != null ?((Long)countConceptionEntitiesRes).longValue() : 0 ;
-            queryCql = CypherBuilder.matchLabelWithSinglePropertyValueAndFunction(targetKind, CypherBuilder.CypherFunctionType.COUNT, null, null);
-            countConceptionEntitiesRes = workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer, queryCql);
-            long targetKindDataNumber = countConceptionEntitiesRes != null ?((Long)countConceptionEntitiesRes).longValue() : 0 ;
-            if(sourceKindDataNumber != 0 && targetKindDataNumber != 0){
-                long successItemsCount = 0;
-                String cacheKindName = sourceKindDataNumber > targetKindDataNumber ? sourceKind : targetKind;
-                EntityRelateRole entityRelateRole = sourceKindDataNumber > targetKindDataNumber ? EntityRelateRole.SOURCE : EntityRelateRole.TARGET;
-                String queryCacheIDsCql = CypherBuilder.matchLabelWithSinglePropertyValueAndFunction(cacheKindName, CypherBuilder.CypherFunctionType.ID, null, null);
-                GetListObjectValueTransformer<Long> getListObjectValueTransformer = new GetListObjectValueTransformer("id");
-                Object idListRes = workingGraphOperationExecutor.executeRead(getListObjectValueTransformer, queryCacheIDsCql);
-                List<Long> idList = idListRes != null ? (List<Long>)idListRes : null;
-                if(idList != null){
-                    for(Long currentEntityId:idList){
-                        successItemsCount = successItemsCount + newRelationEntities(workingGraphOperationExecutor,""+currentEntityId.longValue(),entityRelateRole,relationData);
+    public long newRelationEntities(List<String> conceptionEntityUIDs, EntityRelateRole entityRelateRole, Map<String, Object> relationData) throws CoreRealmServiceRuntimeException{
+        if(isActive()){
+            if(conceptionEntityUIDs != null && conceptionEntityUIDs.size()>0){
+                long totalResultNumber = 0;
+                GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+                try{
+                    for(String currentEntityID : conceptionEntityUIDs){
+                        long currentResultNumber = newRelationEntities(workingGraphOperationExecutor,currentEntityID,entityRelateRole,relationData);
+                        totalResultNumber = totalResultNumber + currentResultNumber;
                     }
-               }
-                entitiesOperationResult.getOperationStatistics().setSuccessItemsCount(successItemsCount);
+                    return totalResultNumber;
+                } finally {
+                    this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+                }
             }
-        }finally {
-            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            return 0;
+        }else{
+            logger.error("RelationAttachKind {} is not active.", this.relationAttachKindName);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("RelationAttachKind "+this.relationAttachKindName+" is not active");
+            throw exception;
         }
-        entitiesOperationResult.finishEntitiesOperation();
-        return entitiesOperationResult;
+    }
+
+    @Override
+    public EntitiesOperationResult newUniversalRelationEntities(Map<String,Object> relationData) throws CoreRealmServiceRuntimeException{
+        if(isActive()){
+            CommonEntitiesOperationResultImpl entitiesOperationResult = new CommonEntitiesOperationResultImpl();
+            entitiesOperationResult.getOperationStatistics().setSuccessItemsCount(0);
+
+            String sourceKind = this.sourceConceptionKindName;
+            String targetKind = this.targetConceptionKindName;
+
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try {
+                String queryCql = CypherBuilder.matchLabelWithSinglePropertyValueAndFunction(sourceKind, CypherBuilder.CypherFunctionType.COUNT, null, null);
+                GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
+                Object countConceptionEntitiesRes = workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer, queryCql);
+                long sourceKindDataNumber = countConceptionEntitiesRes != null ?((Long)countConceptionEntitiesRes).longValue() : 0 ;
+                queryCql = CypherBuilder.matchLabelWithSinglePropertyValueAndFunction(targetKind, CypherBuilder.CypherFunctionType.COUNT, null, null);
+                countConceptionEntitiesRes = workingGraphOperationExecutor.executeRead(getLongFormatAggregatedReturnValueTransformer, queryCql);
+                long targetKindDataNumber = countConceptionEntitiesRes != null ?((Long)countConceptionEntitiesRes).longValue() : 0 ;
+                if(sourceKindDataNumber != 0 && targetKindDataNumber != 0){
+                    long successItemsCount = 0;
+                    String cacheKindName = sourceKindDataNumber > targetKindDataNumber ? sourceKind : targetKind;
+                    EntityRelateRole entityRelateRole = sourceKindDataNumber > targetKindDataNumber ? EntityRelateRole.SOURCE : EntityRelateRole.TARGET;
+                    String queryCacheIDsCql = CypherBuilder.matchLabelWithSinglePropertyValueAndFunction(cacheKindName, CypherBuilder.CypherFunctionType.ID, null, null);
+                    GetListObjectValueTransformer<Long> getListObjectValueTransformer = new GetListObjectValueTransformer("id");
+                    Object idListRes = workingGraphOperationExecutor.executeRead(getListObjectValueTransformer, queryCacheIDsCql);
+                    List<Long> idList = idListRes != null ? (List<Long>)idListRes : null;
+                    if(idList != null){
+                        for(Long currentEntityId:idList){
+                            successItemsCount = successItemsCount + newRelationEntities(workingGraphOperationExecutor,""+currentEntityId.longValue(),entityRelateRole,relationData);
+                        }
+                    }
+                    entitiesOperationResult.getOperationStatistics().setSuccessItemsCount(successItemsCount);
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            entitiesOperationResult.finishEntitiesOperation();
+            return entitiesOperationResult;
+        }else{
+            logger.error("RelationAttachKind {} is not active.", this.relationAttachKindName);
+            CoreRealmServiceRuntimeException exception = new CoreRealmServiceRuntimeException();
+            exception.setCauseMessage("RelationAttachKind "+this.relationAttachKindName+" is not active");
+            throw exception;
+        }
     }
 
     @Override
@@ -293,7 +316,30 @@ public class Neo4JRelationAttachKindImpl implements Neo4JRelationAttachKind {
 
     @Override
     public boolean isActive() {
-        return true;
+        return this.attachKindActiveStatus;
+    }
+
+    @Override
+    public boolean setActiveStatus(boolean isActive){
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try {
+            Map<String,Object> attributeDataMap = new HashMap<>();
+            attributeDataMap.put(RealmConstant._relationAttachKindActiveStatus, isActive);
+            String updateCql = CypherBuilder.setNodePropertiesWithSingleValueEqual(CypherBuilder.CypherFunctionType.ID,Long.parseLong(this.relationAttachKindUID),attributeDataMap);
+            GetSingleAttributeValueTransformer getSingleAttributeValueTransformer = new GetSingleAttributeValueTransformer(RealmConstant._relationAttachKindActiveStatus);
+            Object updateResultRes = workingGraphOperationExecutor.executeWrite(getSingleAttributeValueTransformer,updateCql);
+            CommonOperationUtil.updateEntityMetaAttributes(workingGraphOperationExecutor,this.relationAttachKindUID,false);
+            AttributeValue resultAttributeValue = updateResultRes != null ? (AttributeValue) updateResultRes : null;
+            if(resultAttributeValue != null ){
+                Boolean currentValue = (Boolean)resultAttributeValue.getAttributeValue();
+                this.attachKindActiveStatus = currentValue.booleanValue();
+                return currentValue.booleanValue();
+            }else{
+                return false;
+            }
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
     }
 
     private FilteringItem generateFilteringItem(LinkLogicCondition linkLogicCondition, String attributeName, Object attributeValue){

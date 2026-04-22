@@ -45,13 +45,17 @@ public class GetSingleRelationAttachKindTransformer implements DataTransformer<R
                     String relationAttachSourceKind = resultNode.get(RealmConstant._relationAttachSourceKind).asString();
                     String relationAttachTargetKind = resultNode.get(RealmConstant._relationAttachTargetKind).asString();
                     String relationAttachRelationKind = resultNode.get(RealmConstant._relationAttachRelationKind).asString();
+                    boolean relationAttachKindActiveStatus = true;
+                    if(!resultNode.get(RealmConstant._relationAttachKindActiveStatus).isNull()){
+                        relationAttachKindActiveStatus = resultNode.get(RealmConstant._relationAttachKindActiveStatus).asBoolean();
+                    }
                     boolean relationAttachRepeatableRelationKind = ! resultNode.get(RealmConstant._relationAttachRepeatableRelationKind).isNull() ?
                             resultNode.get(RealmConstant._relationAttachRepeatableRelationKind).asBoolean():false;
 
                     String relationAttachKindUID = ""+nodeUID;
                     Neo4JRelationAttachKindImpl neo4JRelationAttachKindImpl =
                             new Neo4JRelationAttachKindImpl(coreRealmName,relationAttachKindName,relationAttachKindNameDesc,relationAttachKindUID,
-                                    relationAttachSourceKind,relationAttachTargetKind,relationAttachRelationKind,relationAttachRepeatableRelationKind);
+                                    relationAttachSourceKind,relationAttachTargetKind,relationAttachRelationKind,relationAttachRepeatableRelationKind,relationAttachKindActiveStatus);
                     neo4JRelationAttachKindImpl.setGlobalGraphOperationExecutor(this.workingGraphOperationExecutor);
                     return neo4JRelationAttachKindImpl;
                 }

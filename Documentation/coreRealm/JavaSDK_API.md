@@ -2087,7 +2087,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @return 新创建的概念实体对象数量
      */
-    public long newRelationEntities(String conceptionEntityUID, EntityRelateRole entityRelateRole, Map<String,Object> relationData);
+    public long newRelationEntities(String conceptionEntityUID, EntityRelateRole entityRelateRole, Map<String,Object> relationData) throws CoreRealmServiceRuntimeException;
 
      /**
      * 使用当前关系附着规则类型的逻辑创建新的关系实体
@@ -2098,7 +2098,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      *
      * @return 新创建的概念实体对象数量
      */
-    public long newRelationEntities(List<String> conceptionEntityUIDs, EntityRelateRole entityRelateRole, Map<String,Object> relationData);
+    public long newRelationEntities(List<String> conceptionEntityUIDs, EntityRelateRole entityRelateRole, Map<String,Object> relationData) throws CoreRealmServiceRuntimeException;
 
      /**
      * 使用当前关系附着规则类型的定义在领域内的全部数据上创建符合条件的关系实体
@@ -2106,7 +2106,7 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @param relationData Map<String,Object> 关系实体上的自定义属性
      * @return 实体对象操作返回结果
      */
-    public EntitiesOperationResult newUniversalRelationEntities(Map<String,Object> relationData);
+    public EntitiesOperationResult newUniversalRelationEntities(Map<String,Object> relationData) throws CoreRealmServiceRuntimeException;
 
     /**
      * 是否允许在同样的两个实体之间创建相同关系类型的关系实体
@@ -2123,6 +2123,22 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
      * @return 返回最新的是否允许状态
      */
     public boolean setAllowRepeatableRelationKind(boolean allowRepeatableRelationKind);
+
+    /**
+     * 当前关系附着规则类型是否启用
+     *
+     * @return 如启用则返回 true
+     */
+    public boolean isActive();
+
+    /**
+     * 设定是否启用当前关系附着规则类型
+     *
+     * @param isActive boolean 是否启用当前关系附着规则类型
+     *
+     * @return 返回最新是否启用状态
+     */
+    public boolean setActiveStatus(boolean isActive);
 ```
 ###### *数据操作类对象*
 

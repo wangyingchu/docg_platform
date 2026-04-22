@@ -174,7 +174,13 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
         ConceptionEntity resultConceptionEntity = newEntity(conceptionEntityValue,false);
         if(relationAttachKindList != null){
             for(RelationAttachKind currentRelationAttachKind : relationAttachKindList){
-                currentRelationAttachKind.newRelationEntities(resultConceptionEntity.getConceptionEntityUID(),entityRelateRole,null);
+                try {
+                    if(currentRelationAttachKind.isActive()){
+                        currentRelationAttachKind.newRelationEntities(resultConceptionEntity.getConceptionEntityUID(),entityRelateRole,null);
+                    }
+                } catch (CoreRealmServiceRuntimeException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         return resultConceptionEntity;
@@ -228,7 +234,13 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
         EntitiesOperationResult entitiesOperationResult =  newEntities(conceptionEntityValues,false);
         if(relationAttachKindList != null){
             for(RelationAttachKind currentRelationAttachKind : relationAttachKindList){
-                currentRelationAttachKind.newRelationEntities(entitiesOperationResult.getSuccessEntityUIDs(),entityRelateRole,null);
+                try {
+                    if(currentRelationAttachKind.isActive()){
+                        currentRelationAttachKind.newRelationEntities(entitiesOperationResult.getSuccessEntityUIDs(),entityRelateRole,null);
+                    }
+                } catch (CoreRealmServiceRuntimeException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         return entitiesOperationResult;

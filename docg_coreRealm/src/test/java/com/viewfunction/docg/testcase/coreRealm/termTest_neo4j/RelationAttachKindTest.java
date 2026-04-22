@@ -304,6 +304,40 @@ public class RelationAttachKindTest {
         EntitiesOperationResult entitiesOperationResult = targetRelationAttachKind5.newUniversalRelationEntities(relationDataMap);
         Assert.assertEquals(entitiesOperationResult.getOperationStatistics().getSuccessItemsCount(),10l);
 
+        Assert.assertTrue(targetRelationAttachKind5.isActive());
+        Assert.assertFalse(targetRelationAttachKind5.setActiveStatus(false));
+
+        boolean exceptionShouldThrow = false;
+        try{
+            targetRelationAttachKind5.newUniversalRelationEntities(relationDataMap);
+        } catch (CoreRealmServiceRuntimeException e) {
+            exceptionShouldThrow = true;
+            e.printStackTrace();
+        }
+        Assert.assertTrue(exceptionShouldThrow);
+
+        exceptionShouldThrow = false;
+        try{
+            targetRelationAttachKind5.newRelationEntities("MOCKUID",null,relationDataMap);
+        } catch (CoreRealmServiceRuntimeException e) {
+            exceptionShouldThrow = true;
+            e.printStackTrace();
+        }
+        Assert.assertTrue(exceptionShouldThrow);
+
+        exceptionShouldThrow = false;
+        try{
+            targetRelationAttachKind5.newRelationEntities(new ArrayList<>(),null,relationDataMap);
+        } catch (CoreRealmServiceRuntimeException e) {
+            exceptionShouldThrow = true;
+            e.printStackTrace();
+        }
+        Assert.assertTrue(exceptionShouldThrow);
+
+        Assert.assertFalse(targetRelationAttachKind5.isActive());
+        Assert.assertTrue(targetRelationAttachKind5.setActiveStatus(true));
+        Assert.assertTrue(targetRelationAttachKind5.isActive());
+
         coreRealm.removeRelationAttachKind(targetRelationAttachKind3.getRelationAttachKindUID());
         coreRealm.removeRelationAttachKind(targetRelationAttachKind4.getRelationAttachKindUID());
         coreRealm.removeRelationAttachKind(targetRelationAttachKind5.getRelationAttachKindUID());

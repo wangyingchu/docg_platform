@@ -886,6 +886,7 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
             propertiesMap.put(RealmConstant._relationAttachTargetKind,targetConceptionKindName);
             propertiesMap.put(RealmConstant._relationAttachRelationKind,relationKindName);
             propertiesMap.put(RealmConstant._relationAttachRepeatableRelationKind,allowRepeatableRelationKind);
+            propertiesMap.put(RealmConstant._relationAttachKindActiveStatus,true);
             CommonOperationUtil.generateEntityMetaAttributes(propertiesMap);
 
             String createCql = CypherBuilder.createLabeledNodeWithProperties(new String[]{RealmConstant.RelationAttachKindClass},propertiesMap);
@@ -1091,7 +1092,9 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         ConceptionEntity conceptionEntity = newMultiConceptionEntity(conceptionKindNames,conceptionEntityValue,false);
         if(relationAttachKindList != null){
             for(RelationAttachKind currentRelationAttachKind : relationAttachKindList){
-                currentRelationAttachKind.newRelationEntities(conceptionEntity.getConceptionEntityUID(),entityRelateRole,null);
+                if(currentRelationAttachKind.isActive()){
+                    currentRelationAttachKind.newRelationEntities(conceptionEntity.getConceptionEntityUID(),entityRelateRole,null);
+                }
             }
         }
         return conceptionEntity;
@@ -1154,8 +1157,10 @@ public class Neo4JCoreRealmImpl implements Neo4JCoreRealm {
         EntitiesOperationResult entitiesOperationResult = newMultiConceptionEntities(conceptionKindNames,conceptionEntityValues,false);
         if(relationAttachKindList != null){
             for(RelationAttachKind currentRelationAttachKind : relationAttachKindList){
-                currentRelationAttachKind.newRelationEntities(entitiesOperationResult.getSuccessEntityUIDs(),entityRelateRole,null);
-            }
+                if(currentRelationAttachKind.isActive()){
+                    currentRelationAttachKind.newRelationEntities(entitiesOperationResult.getSuccessEntityUIDs(),entityRelateRole,null);
+                }
+           }
         }
         return entitiesOperationResult;
     }

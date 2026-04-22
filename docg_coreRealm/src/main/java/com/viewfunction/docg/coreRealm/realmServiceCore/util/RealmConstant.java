@@ -75,6 +75,7 @@ public interface RealmConstant {
     public final String _relationAttachTargetKind = "attachTargetKind";
     public final String _relationAttachRelationKind = "attachRelationKind";
     public final String _relationAttachRepeatableRelationKind = "attachAllowRepeatRelation";
+    public final String _relationAttachKindActiveStatus = "attachKindActiveStatus";
 
     public final String _attachLinkLogicType = "linkLogicType";
     public final String _attachLinkLogicCondition = "linkLogicCondition";
