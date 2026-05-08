@@ -185,7 +185,7 @@ GraphRAG 的优势在于，每一个生成结果都可以**追溯到具体的实
 
 <img src="Documentation/intro/documentPic/text2query.png"  style="zoom:25%;"/><img src="Documentation/intro/documentPic/graphRAGLLM.png"  style="zoom:25%;"/>
 
-<center>自然与语言数据检索 与 GraphRAG LLM内容智能解读</center>
+<center>自然与语言数据检索 与 GraphRAG LLM内容智能解读 示例</center>
 
 
 
