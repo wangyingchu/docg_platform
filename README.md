@@ -214,13 +214,25 @@ GraphRAG 的优势在于，每一个生成结果都可以**追溯到具体的实
 
 通过将不同数据节点中的时间和空间属性标准化并相互关联，能够执行传统上只能由 ArcGIS 类型的地理空间分析软件执行的空间分析计算。并且进一步的能够在这些空间分析算法中集成时间分析和普通的业务分析。进而提供了综合的 **时空一体化分析能力**。这种能力使得DOCG平台天然支持复杂的时空推理任务，例如：
 
-- “2015年海淀区新建建筑周边500米范围内的危险源分析”
-- “去年夏天暴雨期间，哪个加油站周边1000米内发生过两次以上交通拥堵？”
-- “过去三年中，每年第一季度交通事故高发的路口，其周边2公里内是否有学校或医院？”
+- **危险源分析** : 查找出自2015间年长春市某辖区所2010年到有新建的层高超过30层，周边100米内坐落有危险源（加油站，储气站等），距离消防设施超过1KM，建设方是富力地产，设计方是北京建筑设计院的建筑。
+  <img src="Documentation/intro/documentPic/geoAndTempo1.jpg" style="zoom:50%;" />
 
-<img src="Documentation/intro/documentPic/geoSpt1.png" style="zoom:25%;" /><img src="Documentation/intro/documentPic/geoSpt2.png" style="zoom:25%;" /><img src="Documentation/intro/documentPic/geoSpt3.png" style="zoom:25%;" />
-<center>时空一体化分析应用示例</center>
+  
+  
+- **城市功能区分析** : 使用空间叠加分析功能，基于路网数据，对长春市主要建成区的研究单元划分结果，共5685个独立单元
+ <img src="Documentation/intro/documentPic/geoAndTempo2.jpg" style="zoom:50%;" />
 
+ 
+ 
+- **时间与空间联动人流密度分析** : 结合实时航班信息与机场的交通吞吐信息以及飞行区和航站楼各类实体的时间与空间关联，分析指定空间流线的人流密度
+ <img src="Documentation/intro/documentPic/geoAndTempo3.jpg" style="zoom:50%;" />
+
+ 
+ 
+- **学区学位动态划分分析** : 根据长春市净月区各个住宅小区的适龄儿童数量与当前学籍分片信息，结合周边小学的学位数量与空间距离，动态分配各个学校收录的确切当年适龄入学儿童
+ <img src="Documentation/intro/documentPic/geoAndTempo4.jpg" style="zoom:50%;" />
+ 
+ 
 
 
 ### 3. LLM 驱动的自然语言时空查询
