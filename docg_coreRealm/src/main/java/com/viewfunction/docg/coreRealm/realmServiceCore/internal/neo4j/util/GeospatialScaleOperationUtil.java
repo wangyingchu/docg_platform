@@ -913,8 +913,9 @@ public class GeospatialScaleOperationUtil {
         if(excelFile.exists()){
             ExcelMultiIndexStorage storage = new ExcelMultiIndexStorage();
             storage.loadFromExcel(excelFile);
-            List<Map<String, Object>> allDataList = storage.getAllData();
+            //List<Map<String, Object>> allDataList = storage.getAllData();
             //List<Map<String, Object>> allDataList = storage.queryByColumn("省","北京市");
+            List<Map<String, Object>> allDataList = storage.queryByColumn("省","山东省");
             try {
                 GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
                         new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleEntityClass, workingGraphOperationExecutor);
@@ -1064,7 +1065,20 @@ public class GeospatialScaleOperationUtil {
 
     private static Map<String,String> getVillageOfChinaWKT(){
         Map<String,String> ChinaDivisionCode_And_WKT_Mapping = new HashMap<>();
-        //for 北京市村界
+        //processBeiJingData(ChinaDivisionCode_And_WKT_Mapping);
+        //processTianJinData(ChinaDivisionCode_And_WKT_Mapping);
+        //processYunNanData(ChinaDivisionCode_And_WKT_Mapping);
+        //processNeiMengGuData(ChinaDivisionCode_And_WKT_Mapping);BAD
+        //processJiJinData(ChinaDivisionCode_And_WKT_Mapping);
+        //processSiChuanData(ChinaDivisionCode_And_WKT_Mapping);
+        //processNingXiaData(ChinaDivisionCode_And_WKT_Mapping);
+        //processAnHuiData(ChinaDivisionCode_And_WKT_Mapping);
+        processShanDongData(ChinaDivisionCode_And_WKT_Mapping);
+        return ChinaDivisionCode_And_WKT_Mapping;
+    }
+
+    private static void processBeiJingData(Map<String,String> ChinaDivisionCode_And_WKT_Mapping){
+        //for 北京市村界 Done
         String shpFilePath =
                 PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/村级/北京市村界/"+"北京市社区村界-转坐标.shp";
         File shpFile = new File(shpFilePath);
@@ -1093,8 +1107,164 @@ public class GeospatialScaleOperationUtil {
                 }
             }
         }
-        return ChinaDivisionCode_And_WKT_Mapping;
     }
+
+    private static void processTianJinData(Map<String,String> ChinaDivisionCode_And_WKT_Mapping){
+        //for 天津市村界 Done
+        String shpFilePath =
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/村级/天津市村界/"+"天津市各村居2021.shp";
+        File shpFile = new File(shpFilePath);
+        if(shpFile.exists()) {
+            SimpleFeatureCollection colls = readShp(shpFilePath, null);
+            SimpleFeatureIterator iters = colls.features();
+            while (iters.hasNext()) {
+                SimpleFeature sf = iters.next();
+                String ChinaDivisionCode = sf.getAttribute("comid").toString();
+                String itemWKT = sf.getAttribute("the_geom").toString();
+                ChinaDivisionCode_And_WKT_Mapping.put(ChinaDivisionCode,itemWKT);
+            }
+        }
+    }
+
+    private static void processYunNanData(Map<String,String> ChinaDivisionCode_And_WKT_Mapping){
+        //for 云南省村界 Done
+        String shpFilePath =
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/村级/云南省村界/"+"云南省村级界线_GJ.shp";
+        File shpFile = new File(shpFilePath);
+        if(shpFile.exists()) {
+            SimpleFeatureCollection colls = readShp(shpFilePath, null);
+            SimpleFeatureIterator iters = colls.features();
+            while (iters.hasNext()) {
+                SimpleFeature sf = iters.next();
+                String ChinaDivisionCode = sf.getAttribute("PAC").toString();
+                String itemWKT = sf.getAttribute("the_geom").toString();
+                ChinaDivisionCode_And_WKT_Mapping.put(ChinaDivisionCode,itemWKT);
+            }
+        }
+    }
+
+    private static void processNeiMengGuData(Map<String,String> ChinaDivisionCode_And_WKT_Mapping){
+        //for 内蒙古自治区村界
+        //部分数据行政区划编码无法对应
+        String shpFilePath =
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/村级/内蒙古自治区村界/"+"内蒙古自治区村界WGS84.shp";
+        File shpFile = new File(shpFilePath);
+        if(shpFile.exists()) {
+            SimpleFeatureCollection colls = readShp(shpFilePath, null);
+            SimpleFeatureIterator iters = colls.features();
+            while (iters.hasNext()) {
+                SimpleFeature sf = iters.next();
+                String ChinaDivisionCode = sf.getAttribute("AREA_CODE").toString();
+                String itemWKT = sf.getAttribute("the_geom").toString();
+                if(itemWKT!=null & !itemWKT.equals("")){
+                    ChinaDivisionCode_And_WKT_Mapping.put(ChinaDivisionCode,itemWKT);
+                }
+            }
+        }
+    }
+
+    private static void processJiJinData(Map<String,String> ChinaDivisionCode_And_WKT_Mapping){
+        //for 吉林省村界
+        //部分数据行政区划编码无法对应
+        String shpFilePath =
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/村级/吉林省村界/"+"吉林省国土村界.shp";
+        File shpFile = new File(shpFilePath);
+        if(shpFile.exists()) {
+            SimpleFeatureCollection colls = readShp(shpFilePath, null);
+            SimpleFeatureIterator iters = colls.features();
+            while (iters.hasNext()) {
+                SimpleFeature sf = iters.next();
+                String ChinaDivisionCode = sf.getAttribute("xzqdm").toString();
+                String itemWKT = sf.getAttribute("the_geom").toString();
+                if(itemWKT!=null & !itemWKT.equals("")){
+                    ChinaDivisionCode_And_WKT_Mapping.put(ChinaDivisionCode,itemWKT);
+                }
+            }
+        }
+    }
+
+    private static void processSiChuanData(Map<String,String> ChinaDivisionCode_And_WKT_Mapping){
+        //for 四川省村界
+        //部分数据行政区划编码无法对应
+        String shpFilePath =
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/村级/四川省村界/"+"四川省_村界.shp";
+        File shpFile = new File(shpFilePath);
+        if(shpFile.exists()) {
+            SimpleFeatureCollection colls = readShp(shpFilePath, null);
+            SimpleFeatureIterator iters = colls.features();
+            while (iters.hasNext()) {
+                SimpleFeature sf = iters.next();
+                String ChinaDivisionCode = sf.getAttribute("村级码").toString();
+                String itemWKT = sf.getAttribute("the_geom").toString();
+                if(itemWKT!=null & !itemWKT.equals("")){
+                    ChinaDivisionCode_And_WKT_Mapping.put(ChinaDivisionCode,itemWKT);
+                }
+            }
+        }
+    }
+
+    private static void processNingXiaData(Map<String,String> ChinaDivisionCode_And_WKT_Mapping){
+        //for 宁夏回族自治区省村界
+        //部分数据行政区划编码无法对应
+        String shpFilePath =
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/村级/宁夏回族自治区村界/"+"宁夏回族自治区村界2021.shp";
+        File shpFile = new File(shpFilePath);
+        if(shpFile.exists()) {
+            SimpleFeatureCollection colls = readShp(shpFilePath, null);
+            SimpleFeatureIterator iters = colls.features();
+            while (iters.hasNext()) {
+                SimpleFeature sf = iters.next();
+                String ChinaDivisionCode = sf.getAttribute("村代码").toString();
+                String itemWKT = sf.getAttribute("the_geom").toString();
+                if(itemWKT!=null & !itemWKT.equals("")){
+                    ChinaDivisionCode_And_WKT_Mapping.put(ChinaDivisionCode,itemWKT);
+                }
+            }
+        }
+    }
+
+    private static void processAnHuiData(Map<String,String> ChinaDivisionCode_And_WKT_Mapping){
+        //for 安徽省村界
+        //大部分数据行政区划编码无法对应
+        String shpFilePath =
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/村级/安徽省村界/"+"安徽省村居界4490.shp";
+        File shpFile = new File(shpFilePath);
+        if(shpFile.exists()) {
+            SimpleFeatureCollection colls = readShp(shpFilePath, null);
+            SimpleFeatureIterator iters = colls.features();
+            while (iters.hasNext()) {
+                SimpleFeature sf = iters.next();
+                String ChinaDivisionCode = sf.getAttribute("CUN_MC").toString();
+                String itemWKT = sf.getAttribute("the_geom").toString();
+                if(itemWKT!=null & !itemWKT.equals("")){
+                    ChinaDivisionCode_And_WKT_Mapping.put(ChinaDivisionCode,itemWKT);
+                }
+            }
+        }
+    }
+
+    private static void processShanDongData(Map<String,String> ChinaDivisionCode_And_WKT_Mapping){
+        //for 山东省村界
+        //大部分数据行政区划编码无法对应
+        String shpFilePath =
+                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/村级/山东省村界/"+"山东村边界（修正版）.shp";
+        File shpFile = new File(shpFilePath);
+        if(shpFile.exists()) {
+            SimpleFeatureCollection colls = readShp(shpFilePath, null);
+            SimpleFeatureIterator iters = colls.features();
+            while (iters.hasNext()) {
+                SimpleFeature sf = iters.next();
+                String ChinaDivisionCode = sf.getAttribute("code").toString();
+                String itemWKT = sf.getAttribute("the_geom").toString();
+                if(itemWKT!=null & !itemWKT.equals("")){
+                    ChinaDivisionCode_And_WKT_Mapping.put(ChinaDivisionCode,itemWKT);
+                }
+            }
+        }
+    }
+
+
+
 
     private static void generateGeospatialScaleEntities_CountyOfChinaSpecialAdministrativeRegion(GraphOperationExecutor workingGraphOperationExecutor, String geospatialRegionName){
         try {
