@@ -11,11 +11,12 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <spark.version>4.0.1</spark.version>
+        <spark.version>4.1.1</spark.version>
         <flink.version>1.20.0</flink.version>
         <datasyslab.geotools.version>1.5.1-28.2</datasyslab.geotools.version>
-        <geotools.version>26.4</geotools.version>
-        <sedona.version>1.8.0</sedona.version>
+        <geotools.version>34.3</geotools.version>
+        <sedona.version>1.9.0</sedona.version>
+        <sedona.spark.version>sedona-spark-shaded-4.1_2.13</sedona.spark.version>
         <akka.version>2.7.0</akka.version>
         <derby.version>10.15.2.0</derby.version>
         <rocketmq-client-java-version>5.0.8</rocketmq-client-java-version>
@@ -61,17 +62,16 @@
         -->
         <dependency>
             <groupId>org.apache.sedona</groupId>
-            <artifactId>sedona-spark-shaded-4.0_2.13</artifactId>
+            <artifactId>${sedona.spark.version}</artifactId>
             <version>${sedona.version}</version>
         </dependency>
-        <!-- Optional: https://mvnrepository.com/artifact/org.datasyslab/geotools-wrapper -->
-
+        <!-- Source: https://mvnrepository.com/artifact/org.datasyslab/geotools-wrapper -->
         <dependency>
             <groupId>org.datasyslab</groupId>
             <artifactId>geotools-wrapper</artifactId>
-            <version>1.8.0-33.1</version>
+            <version>1.9.0-33.5</version>
+            <scope>compile</scope>
         </dependency>
-        <!--  -->
 
         <!--
          GIS Related
@@ -80,13 +80,13 @@
         <dependency>
             <groupId>org.locationtech.jts</groupId>
             <artifactId>jts-core</artifactId>
-            <version>1.18.0</version>
+            <version>1.20.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.wololo/jts2geojson -->
         <dependency>
             <groupId>org.wololo</groupId>
             <artifactId>jts2geojson</artifactId>
-            <version>0.16.1</version>
+            <version>0.18.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.locationtech.jts</groupId>

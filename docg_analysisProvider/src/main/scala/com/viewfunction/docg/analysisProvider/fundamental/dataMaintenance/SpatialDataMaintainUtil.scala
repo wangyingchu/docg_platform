@@ -12,14 +12,11 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.term.GeospatialRegion.Ge
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.RealmConstant
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.{DataService, DataSlice, DataSlicePropertyType}
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.common.CoreRealmOperationUtil
+import org.geotools.api.data.{FileDataStore, FileDataStoreFinder, SimpleFeatureSource}
+import org.geotools.api.feature.simple.SimpleFeatureType
 import org.geotools.data.shapefile.ShapefileDataStore
-import org.geotools.data.simple.{SimpleFeatureCollection, SimpleFeatureIterator, SimpleFeatureSource}
-import org.geotools.feature.simple.SimpleFeatureImpl
-import org.geotools.data.{FileDataStore, FileDataStoreFinder}
+import org.geotools.data.simple.{SimpleFeatureCollection, SimpleFeatureIterator}
 import org.geotools.referencing.CRS
-import org.opengis.feature.GeometryAttribute
-import org.geotools.feature.GeometryAttributeImpl
-import org.opengis.feature.simple.{SimpleFeature, SimpleFeatureType}
 
 import java.io.File
 import java.nio.charset.Charset
@@ -36,7 +33,6 @@ class SpatialDataMaintainUtil {
     }
 
     val dataSlicePropertyMap: util.HashMap[String, DataSlicePropertyType] = new util.HashMap[String, DataSlicePropertyType]()
-    dataSlicePropertyMap.put(RealmConstant._GeospatialGeometryType,DataSlicePropertyType.STRING)
 
     if(conceptionEntityPropertyMap != null){
       dataSlicePropertyMap.putAll(conceptionEntityPropertyMap)
@@ -45,12 +41,15 @@ class SpatialDataMaintainUtil {
     geospatialScaleLevel match {
       case GlobalLevel =>
         dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryContent,DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryType,DataSlicePropertyType.STRING)
         dataSlicePropertyMap.put(RealmConstant._GeospatialGlobalCRSAID,DataSlicePropertyType.STRING);
       case CountryLevel =>
         dataSlicePropertyMap.put(RealmConstant._GeospatialCLGeometryContent,DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put(RealmConstant._GeospatialCLGeometryType,DataSlicePropertyType.STRING)
         dataSlicePropertyMap.put(RealmConstant._GeospatialCountryCRSAID,DataSlicePropertyType.STRING);
       case LocalLevel =>
         dataSlicePropertyMap.put(RealmConstant._GeospatialLLGeometryContent,DataSlicePropertyType.STRING);
+        dataSlicePropertyMap.put(RealmConstant._GeospatialLLGeometryType,DataSlicePropertyType.STRING)
         dataSlicePropertyMap.put(RealmConstant._GeospatialLocalCRSAID,DataSlicePropertyType.STRING);
     }
 
@@ -121,7 +120,7 @@ class SpatialDataMaintainUtil {
       dataSlicePropertyMap.put(RealmConstant.GeospatialCodeProperty, DataSlicePropertyType.STRING)
       dataSlicePropertyMap.put(RealmConstant.GeospatialRegionProperty, DataSlicePropertyType.STRING)
       dataSlicePropertyMap.put(RealmConstant.GeospatialScaleGradeProperty, DataSlicePropertyType.STRING)
-      dataSlicePropertyMap.put(RealmConstant._GeospatialGeometryType, DataSlicePropertyType.STRING)
+      dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryType, DataSlicePropertyType.STRING)
       dataSlicePropertyMap.put(RealmConstant._GeospatialGlobalCRSAID, DataSlicePropertyType.STRING)
       dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryContent, DataSlicePropertyType.STRING)
       dataSlicePropertyMap.put(CoreRealmOperationUtil.RealmGlobalUID, DataSlicePropertyType.STRING)
@@ -144,7 +143,7 @@ class SpatialDataMaintainUtil {
       dataSlicePropertyMap.put(RealmConstant.GeospatialChineseNameProperty, DataSlicePropertyType.STRING)
       dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryPOI, DataSlicePropertyType.STRING)
       dataSlicePropertyMap.put(RealmConstant._GeospatialGlobalCRSAID, DataSlicePropertyType.STRING)
-      dataSlicePropertyMap.put(RealmConstant._GeospatialGeometryType, DataSlicePropertyType.STRING)
+      dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryType, DataSlicePropertyType.STRING)
       dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryContent, DataSlicePropertyType.STRING)
       dataSlicePropertyMap.put("ChinaDivisionCode", DataSlicePropertyType.STRING)
       dataSlicePropertyMap.put(RealmConstant._GeospatialCLGeometryPOI, DataSlicePropertyType.STRING)
@@ -163,7 +162,8 @@ class SpatialDataMaintainUtil {
       dataSlicePropertyMap.put("ChinaProvinceName", DataSlicePropertyType.STRING)
       dataSlicePropertyMap.put(RealmConstant.GeospatialCodeProperty, DataSlicePropertyType.STRING)
       dataSlicePropertyMap.put(RealmConstant.GeospatialRegionProperty, DataSlicePropertyType.STRING)
-      dataSlicePropertyMap.put(RealmConstant._GeospatialGeometryType, DataSlicePropertyType.STRING)
+      dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryType, DataSlicePropertyType.STRING)
+      dataSlicePropertyMap.put(RealmConstant._GeospatialCLGeometryType, DataSlicePropertyType.STRING)
       dataSlicePropertyMap.put(RealmConstant._GeospatialGlobalCRSAID, DataSlicePropertyType.STRING)
       dataSlicePropertyMap.put(RealmConstant._GeospatialGLGeometryContent, DataSlicePropertyType.STRING)
       dataSlicePropertyMap.put(RealmConstant._GeospatialCountryCRSAID, DataSlicePropertyType.STRING)
@@ -314,24 +314,28 @@ class SpatialDataMaintainUtil {
     val _CRSName: String = simpleFeatureType.getCoordinateReferenceSystem.getName.getCode
     var entityCRSAID: String = null
     var geometryContentType: String =null
+    var geospatialGeometryTypeAttribute: String = null
 
     if ("GCS_WGS_1984" == _CRSName || _CRSName.contains("WGS84")) {
       entityCRSAID = "EPSG:4326"
       geometryContentType = RealmConstant._GeospatialGLGeometryContent
+      geospatialGeometryTypeAttribute = RealmConstant._GeospatialGLGeometryType
     }else {
       if ("CGCS_2000" == _CRSName || _CRSName.contains("CGCS2000")) {
         entityCRSAID = "EPSG:4545"
         geometryContentType = RealmConstant._GeospatialCLGeometryContent
+        geospatialGeometryTypeAttribute = RealmConstant._GeospatialCLGeometryType
       }else {
         val _EpsgCodeValue: Integer = CRS.lookupEpsgCode(simpleFeatureType.getCoordinateReferenceSystem.asInstanceOf[org.geotools.referencing.crs.DefaultGeographicCRS], true)
         if (_EpsgCodeValue != null) {
           entityCRSAID = "EPSG:" + _EpsgCodeValue.intValue
         }
         geometryContentType = RealmConstant._GeospatialLLGeometryContent
+        geospatialGeometryTypeAttribute = RealmConstant._GeospatialLLGeometryType
       }
     }
 
-    shpDataPropertyTypeMap.put(RealmConstant._GeospatialGeometryType, DataSlicePropertyType.STRING)
+    shpDataPropertyTypeMap.put(geospatialGeometryTypeAttribute, DataSlicePropertyType.STRING)
     shpDataPropertyTypeMap.put(geometryContentType, DataSlicePropertyType.STRING)
 
     // 要素集合
@@ -380,7 +384,7 @@ class SpatialDataMaintainUtil {
         if ("MultiPolygon" == geometryType) {
           geometryTypeValue = "MULTIPOLYGON"
         }
-        newEntityValueMap.put(RealmConstant._GeospatialGeometryType, geometryTypeValue)
+        newEntityValueMap.put(geospatialGeometryTypeAttribute, geometryTypeValue)
         newEntityValueMap.put(geometryContentType, geometryContent)
       }
       shpDataValueList.add(newEntityValueMap)
