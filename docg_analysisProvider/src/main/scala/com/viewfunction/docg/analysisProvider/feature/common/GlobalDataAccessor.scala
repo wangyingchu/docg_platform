@@ -5,8 +5,10 @@ import com.viewfunction.docg.analysisProvider.providerApplication.AnalysisProvid
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.term.{ComputeGrid, DataService, DataSlice}
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.common.CoreRealmOperationUtil
 import com.viewfunction.docg.dataCompute.dataComputeServiceCore.util.factory.ComputeGridTermFactory
-import org.apache.sedona.sql.utils.SedonaSQLRegistrator
+
+import org.apache.sedona.spark.SedonaContext
 import org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
+
 import org.apache.spark.graphx.{Edge, VertexId}
 import org.apache.spark.rdd.{JdbcRDD, RDD}
 import org.apache.spark.{SparkConf, SparkContext}
@@ -51,7 +53,9 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
   sparkConfig.set("spark.kryoserializer.buffer.max","2047")
 
   val sc = new SparkContext(sparkConfig)
-  val sparkSession = SparkSession.builder.config(sc.getConf).getOrCreate()
+  val rawSparkSession: SparkSession = SparkSession.builder.config(sc.getConf).getOrCreate()
+  //Register Sedona SQL functions
+  val sparkSession: SparkSession = SedonaContext.create(rawSparkSession)
 
   /*
   val sparkSession : SparkSession = SparkSession.builder.appName(sessionName).master(masterLocation)
@@ -69,9 +73,6 @@ class GlobalDataAccessor (private val sessionName:String, private val masterLoca
     .config("spark.kryo.registrator", classOf[SedonaVizKryoRegistrator].getName) // org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
     .getOrCreate()
   */
-
-  //Register Sedona SQL functions
-  SedonaSQLRegistrator.registerAll(sparkSession)
 
   def getDataFrameFromDataSlice(sliceName: String, sliceGroup: String):DataFrame={
     val jdbcURL: String = if (sliceGroup != null) {
