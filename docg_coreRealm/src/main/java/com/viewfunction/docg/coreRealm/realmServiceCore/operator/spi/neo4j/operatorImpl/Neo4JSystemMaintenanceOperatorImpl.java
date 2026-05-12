@@ -210,6 +210,41 @@ public class Neo4JSystemMaintenanceOperatorImpl implements SystemMaintenanceOper
             };
             workingGraphOperationExecutor.executeRead(dataTransformer4,cypherProcedureString);
 
+
+            String internalDataStoreInfoCql = "CALL apoc.monitor.store();";
+            logger.debug("Generated Cypher Statement: {}", internalDataStoreInfoCql);
+            DataTransformer<Object> dataTransformer5 = new DataTransformer() {
+                @Override
+                public Object transformResult(Result result) {
+                    //logSize	stringStoreSize	arrayStoreSize	relStoreSize	propStoreSize	totalStoreSize	nodeStoreSize
+                    /*
+                    apoc.monitor.store() 存储过程用于返回 Neo4j 图存储不同组成部分的大小信息，所有返回值单位均为字节
+                    返回值字段	含义
+                    nodeStoreSize	节点存储的大小。用于存储节点及其属性（部分）。
+                    relStoreSize	关系存储的大小。用于存储关系及其类型和属性引用。
+                    propStoreSize	属性存储的总大小。注意，这里的属性指的是动态属性，节点和关系自有存储区中放不下的长字符串、数组等实际数据。
+                    stringStoreSize	动态字符串存储的大小。用于存储过长的字符串值（即propStoreSize的一部分）。
+                    arrayStoreSize	动态数组存储的大小。用于存储过长的数组值（也是propStoreSize的一部分）。
+                    logSize	事务日志（Transaction Logs）目录的大小。这些日志用于数据库恢复和复制。
+                    totalStoreSize	整个数据库存储目录的总大小。这个是nodeStoreSize、relStoreSize、logSize等所有存储文件的总和。
+                    */
+
+                    if(result.hasNext()) {
+                        Record staticRecord = result.next();
+                        long conceptionEntitiesDiskSpaceSize = staticRecord.get("nodeStoreSize").asLong();
+                        systemStatusSnapshotInfo.setConceptionEntitiesDiskSpaceSize(conceptionEntitiesDiskSpaceSize);
+                        long relationEntitiesDiskSpaceSize = staticRecord.get("relStoreSize").asLong();
+                        systemStatusSnapshotInfo.setRelationEntitiesDiskSpaceSize(relationEntitiesDiskSpaceSize);
+                        long attributesDiskSpaceSize = staticRecord.get("propStoreSize").asLong();
+                        systemStatusSnapshotInfo.setAttributesDiskSpaceSize(attributesDiskSpaceSize);
+                        long coreRealmUsedDiskSpaceSize = staticRecord.get("totalStoreSize").asLong();
+                        systemStatusSnapshotInfo.setCoreRealmUsedDiskSpaceSize(coreRealmUsedDiskSpaceSize);
+                    }
+                    return null;
+                }
+            };
+            workingGraphOperationExecutor.executeRead(dataTransformer5,internalDataStoreInfoCql);
+
             return systemStatusSnapshotInfo;
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();

@@ -17,6 +17,10 @@ public class SystemStatusSnapshotInfo {
     private String systemImplementationTech;
     private String systemImplementationVersion;
     private String systemImplementationEdition;
+    private long conceptionEntitiesDiskSpaceSize;
+    private long relationEntitiesDiskSpaceSize;
+    private long attributesDiskSpaceSize;
+    private long coreRealmUsedDiskSpaceSize;
 
     public SystemStatusSnapshotInfo(){
         this.snapshotTookTime = new Date().getTime();
@@ -120,5 +124,37 @@ public class SystemStatusSnapshotInfo {
 
     public void setSystemImplementationEdition(String systemImplementationEdition) {
         this.systemImplementationEdition = systemImplementationEdition;
+    }
+
+    public long getConceptionEntitiesDiskSpaceSize() {
+        return conceptionEntitiesDiskSpaceSize;
+    }
+
+    public void setConceptionEntitiesDiskSpaceSize(long conceptionEntitiesDiskSpaceSize) {
+        this.conceptionEntitiesDiskSpaceSize = conceptionEntitiesDiskSpaceSize;
+    }
+
+    public long getRelationEntitiesDiskSpaceSize() {
+        return relationEntitiesDiskSpaceSize;
+    }
+
+    public void setRelationEntitiesDiskSpaceSize(long relationEntitiesDiskSpaceSize) {
+        this.relationEntitiesDiskSpaceSize = relationEntitiesDiskSpaceSize;
+    }
+
+    public long getAttributesDiskSpaceSize() {
+        return attributesDiskSpaceSize;
+    }
+
+    public void setAttributesDiskSpaceSize(long attributesDiskSpaceSize) {
+        this.attributesDiskSpaceSize = attributesDiskSpaceSize;
+    }
+
+    public long getCoreRealmUsedDiskSpaceSize() {
+        return coreRealmUsedDiskSpaceSize;
+    }
+
+    public void setCoreRealmUsedDiskSpaceSize(long coreRealmUsedDiskSpaceSize) {
+        this.coreRealmUsedDiskSpaceSize = coreRealmUsedDiskSpaceSize;
     }
 }
