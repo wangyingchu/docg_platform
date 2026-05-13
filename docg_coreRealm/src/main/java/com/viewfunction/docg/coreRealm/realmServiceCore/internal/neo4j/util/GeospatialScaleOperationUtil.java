@@ -1085,7 +1085,7 @@ public class GeospatialScaleOperationUtil {
         processNeiMengGuData(ChinaDivisionCode_And_WKT_Mapping);
 
 
-        //next shanghai,sichuan
+        //next shanghai,sichuan,shanxi,xinjiang,hebei
 
         //Not Good
         //processQingHaiData(ChinaDivisionCode_And_WKT_Mapping);
