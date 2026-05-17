@@ -915,7 +915,7 @@ public class GeospatialScaleOperationUtil {
             storage.loadFromExcel(excelFile);
             //List<Map<String, Object>> allDataList = storage.getAllData();
             //List<Map<String, Object>> allDataList = storage.queryByColumn("省","北京市");
-            List<Map<String, Object>> allDataList = storage.queryByColumn("省", "四川省");
+            List<Map<String, Object>> allDataList = storage.queryByColumn("省", "浙江省");
             try {
                 GetSingleConceptionEntityTransformer getSingleConceptionEntityTransformer =
                         new GetSingleConceptionEntityTransformer(RealmConstant.GeospatialScaleEntityClass, workingGraphOperationExecutor);
@@ -1084,8 +1084,11 @@ public class GeospatialScaleOperationUtil {
         //processChongQinqData(ChinaDivisionCode_And_WKT_Mapping);
         //processNeiMengGuData(ChinaDivisionCode_And_WKT_Mapping);
         //processShangHaiData(ChinaDivisionCode_And_WKT_Mapping, storage);
-        processSiChuanData(ChinaDivisionCode_And_WKT_Mapping,storage);
-        //next sichuan,shanxi,xinjiang,hebei
+        //processSiChuanData(ChinaDivisionCode_And_WKT_Mapping,storage);
+        //processZheJiangData(ChinaDivisionCode_And_WKT_Mapping,storage);
+        //processShanXiData(ChinaDivisionCode_And_WKT_Mapping,storage);
+
+        //next xinjiang,hebei
 
 
 
@@ -1095,7 +1098,7 @@ public class GeospatialScaleOperationUtil {
         //processHuNanData(ChinaDivisionCode_And_WKT_Mapping);
         //processNeiMengGuData(ChinaDivisionCode_And_WKT_Mapping);BAD
         //processJiJinData(ChinaDivisionCode_And_WKT_Mapping);
-        //processSiChuanData(ChinaDivisionCode_And_WKT_Mapping);
+
         //processNingXiaData(ChinaDivisionCode_And_WKT_Mapping);
         //processAnHuiData(ChinaDivisionCode_And_WKT_Mapping);
         //processShanDongData(ChinaDivisionCode_And_WKT_Mapping);
@@ -1465,6 +1468,112 @@ public class GeospatialScaleOperationUtil {
         }
     }
 
+    private static void processZheJiangData(Map<String,String> ChinaDivisionCode_And_WKT_Mapping,ExcelMultiIndexStorage storage){
+        //for 浙江省村界 Done
+        /*
+        完成处理，累计处理: 25547
+        完成处理，累计未获得父级行政区划实体: 0
+        完成处理，累计未获得WKT实体: 9030
+        */
+        Map<String,String> fullAddressAndCodeMap = new HashMap<>();
+        List<String> fullAddressList = new ArrayList<>();
+        List<String> cunJieCodeList = new ArrayList<>();
+        if (storage != null) {
+            List<Map<String, Object>> allDataList = storage.queryByColumn("省", "浙江省");
+            allDataList.forEach(item -> {
+                //String key = item.get("市").toString() + item.get("县").toString() + item.get("乡镇").toString() + item.get("村").toString();
+                String key = item.get("县").toString() + item.get("乡镇").toString() + item.get("村").toString();
+                fullAddressList.add(key);
+                fullAddressAndCodeMap.put(key, item.get("村代码").toString());
+                cunJieCodeList.add(item.get("村代码").toString());
+            });
+
+            String shpFilePath =
+                    PropertiesHandler.SYSTEM_RESOURCE_ROOT + "/" + GEOSPATIAL_DATA_FOLDER + "/ChinaData/村级/浙江省村界/" + "浙江村界-4326-WGS84.shp";
+            File shpFile = new File(shpFilePath);
+            if (shpFile.exists()) {
+                SimpleFeatureCollection colls = readShp(shpFilePath, null);
+                SimpleFeatureIterator iters = colls.features();
+                while (iters.hasNext()) {
+                    SimpleFeature sf = iters.next();
+                    String itemWKT = sf.getAttribute("the_geom").toString();
+                    String 市 = sf.getAttribute("市级").toString();
+                    String 区 = sf.getAttribute("区县级").toString();
+                    String 街道0 = sf.getAttribute("乡镇级").toString();
+                    String 村级0 = sf.getAttribute("村级").toString();
+                    String 村级码 = sf.getAttribute("村代码").toString();
+                    String 街道 = 街道0.replace("街道办事处","街道").replace("街道办","街道");
+                    String 村级 = 村级0.replace(区,"").replace(街道,"");
+                    String fullName =  区 + 街道 + 村级;
+                    if(cunJieCodeList.contains(村级码)){
+                        ChinaDivisionCode_And_WKT_Mapping.put(村级码, itemWKT);
+                    }else{
+                        fullAddressList.stream().forEach(item -> {
+                            if (!item.equals("")) {
+                                if (item.contains(fullName)) {
+                                    String ChinaDivisionCode = fullAddressAndCodeMap.get(item);
+                                    ChinaDivisionCode_And_WKT_Mapping.put(ChinaDivisionCode, itemWKT);
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    }
+
+    private static void processShanXiData(Map<String,String> ChinaDivisionCode_And_WKT_Mapping, ExcelMultiIndexStorage storage){
+        //for 山西省村界 Done
+        /*
+        完成处理，累计处理: 21895
+        完成处理，累计未获得父级行政区划实体: 0
+        完成处理，累计未获得WKT实体: 8517
+        */
+        Map<String,String> fullAddressAndCodeMap = new HashMap<>();
+        List<String> fullAddressList = new ArrayList<>();
+        List<String> cunJieCodeList = new ArrayList<>();
+        if (storage != null) {
+            List<Map<String, Object>> allDataList = storage.queryByColumn("省", "山西省");
+            allDataList.forEach(item -> {
+                String key = item.get("县").toString() + item.get("乡镇").toString() + item.get("村").toString();
+                fullAddressList.add(key);
+                fullAddressAndCodeMap.put(key, item.get("村代码").toString());
+                cunJieCodeList.add(item.get("村代码").toString());
+            });
+
+            String shpFilePath =
+                    PropertiesHandler.SYSTEM_RESOURCE_ROOT + "/" + GEOSPATIAL_DATA_FOLDER + "/ChinaData/村级/山西省村界/" + "山西省村界.shp";
+            File shpFile = new File(shpFilePath);
+            if (shpFile.exists()) {
+                SimpleFeatureCollection colls = readShp(shpFilePath, null);
+                SimpleFeatureIterator iters = colls.features();
+                while (iters.hasNext()) {
+                    SimpleFeature sf = iters.next();
+                    String itemWKT = sf.getAttribute("the_geom").toString();
+                    //String 市 = sf.getAttribute("地市名").toString();
+                    String 区 = sf.getAttribute("区县名").toString();
+                    String 街道 = sf.getAttribute("乡镇名").toString();
+                    String 村级0 = sf.getAttribute("村级名").toString();
+                    String 村级码 = sf.getAttribute("村级码").toString();
+                    String 村级 = 村级0.replace("农名集体","").replace("村委会","村");
+                    String fullName =  区 + 街道 + 村级;
+                    if(cunJieCodeList.contains(村级码)){
+                        ChinaDivisionCode_And_WKT_Mapping.put(村级码, itemWKT);
+                    }else{
+                        fullAddressList.stream().forEach(item -> {
+                            if (!item.equals("")) {
+                                if (item.contains(fullName)) {
+                                    String ChinaDivisionCode = fullAddressAndCodeMap.get(item);
+                                    ChinaDivisionCode_And_WKT_Mapping.put(ChinaDivisionCode, itemWKT);
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    }
+
 
 
 
@@ -1605,25 +1714,7 @@ public class GeospatialScaleOperationUtil {
         }
     }
 
-    private static void processZheJiangData(Map<String,String> ChinaDivisionCode_And_WKT_Mapping){
-        //for 浙江省村界
-        //大部分数据行政区划编码无法对应
-        String shpFilePath =
-                PropertiesHandler.SYSTEM_RESOURCE_ROOT+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/村级/浙江省村界/"+"浙江村界-WGS84.shp";
-        File shpFile = new File(shpFilePath);
-        if(shpFile.exists()) {
-            SimpleFeatureCollection colls = readShp(shpFilePath, null);
-            SimpleFeatureIterator iters = colls.features();
-            while (iters.hasNext()) {
-                SimpleFeature sf = iters.next();
-                String ChinaDivisionCode = sf.getAttribute("村代码").toString();
-                String itemWKT = sf.getAttribute("the_geom").toString();
-                if(itemWKT!=null & !itemWKT.equals("")){
-                    ChinaDivisionCode_And_WKT_Mapping.put(ChinaDivisionCode,itemWKT);
-                }
-            }
-        }
-    }
+
 
 
 
@@ -2695,15 +2786,12 @@ public class GeospatialScaleOperationUtil {
 
 
     public static void main(String[] args){
-
         String baseFolder = "/media/wangychu/WorkStorage/GIT/DOCG/docg_platform/docg_coreRealm/systemResource";
-
         String excelFilePath =
                 baseFolder+"/"+GEOSPATIAL_DATA_FOLDER+"/ChinaData/全国各省市区县乡镇街道村五级行政区划代码和从属关系Excel_2024.xlsx";
         File excelFile = new File(excelFilePath);
         Map<String,String> fullAddressAndCodeMap = new HashMap<>();
         List<String> fullAddressList = new ArrayList<>();
-
         List<String> cunJieCodeList = new ArrayList<>();
 
         ExcelMultiIndexStorage storage = new ExcelMultiIndexStorage();
@@ -2711,8 +2799,7 @@ public class GeospatialScaleOperationUtil {
         AtomicInteger matched = new AtomicInteger();
 
         if (storage != null) {
-            List<Map<String, Object>> allDataList = storage.queryByColumn("省", "四川省");
-
+            List<Map<String, Object>> allDataList = storage.queryByColumn("省", "浙江省");
             allDataList.forEach(item -> {
                 //String key = item.get("市").toString() + item.get("县").toString() + item.get("乡镇").toString() + item.get("村").toString();
                 String key = item.get("县").toString() + item.get("乡镇").toString() + item.get("村").toString();
@@ -2722,7 +2809,7 @@ public class GeospatialScaleOperationUtil {
             });
 
             String shpFilePath =
-                    baseFolder + "/" + GEOSPATIAL_DATA_FOLDER + "/ChinaData/村级/四川省村界/" + "四川省_村界_WGS84.shp";
+                    baseFolder + "/" + GEOSPATIAL_DATA_FOLDER + "/ChinaData/村级/浙江省村界/" + "浙江村界-4326-WGS84.shp";
             File shpFile = new File(shpFilePath);
             if (shpFile.exists()) {
                 SimpleFeatureCollection colls = readShp(shpFilePath, null);
@@ -2733,12 +2820,16 @@ public class GeospatialScaleOperationUtil {
                     String 市 = sf.getAttribute("市级").toString();
                     String 区 = sf.getAttribute("区县级").toString();
                     String 街道0 = sf.getAttribute("乡镇级").toString();
-                    String 村级码 = sf.getAttribute("村级码").toString();
+                    String 村级0 = sf.getAttribute("村级").toString();
+                    String 村级码 = sf.getAttribute("村代码").toString();
 
+                    //String 村级 = 村级0.replace("农名集体","").replace("村委会","村");
+
+                    /*
                     if(街道0.contains(区)){
                         街道0 = 街道0.replace(区,"");
                     }
-                    String 街道 = 街道0.replace("街道办事处","街道").replace("街道办","街道");
+
                     String 居委 = sf.getAttribute("村级名").toString();
                     if(居委.contains(区)){
                         居委 = 居委.replace(区,"");
@@ -2746,7 +2837,13 @@ public class GeospatialScaleOperationUtil {
                     if(居委.contains(街道)){
                         居委 = 居委.replace(街道,"");
                     }
-                    String fullName =  区 + 街道 + 居委;
+                    */
+
+
+
+                    String 街道 = 街道0.replace("街道办事处","街道").replace("街道办","街道");
+                    String 村级 = 村级0.replace(区,"").replace(街道,"");
+                    String fullName =  区 + 街道 + 村级;
                     if(cunJieCodeList.contains(村级码)){
                         matched.getAndIncrement();
                         //ChinaDivisionCode_And_WKT_Mapping.put(村级码, itemWKT);
@@ -2764,17 +2861,8 @@ public class GeospatialScaleOperationUtil {
                 }
             }
 
-
             System.out.println(allDataList.size());
             System.out.println(matched.get());
-
-
-
-            //34412
-            //25692
-
-
-
         }
     }
 }
