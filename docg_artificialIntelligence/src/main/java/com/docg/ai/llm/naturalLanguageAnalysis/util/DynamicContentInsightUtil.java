@@ -16,6 +16,41 @@ import java.util.Map;
 
 public class DynamicContentInsightUtil {
 
+    public static String insightToDynamicContent(String queryQuestion,DynamicContentQueryResult dynamicContentQueryResult){
+        String content = getDynamicContentText(dynamicContentQueryResult);
+        String DYNAMIC_CONTENT_INSIGHT_TECH = PropertiesHandler.getPropertyValue(PropertiesHandler.DYNAMIC_CONTENT_INSIGHT_TECHNOLOGY);
+        ChatModel model = null;
+        if("OpenAI".equals(DYNAMIC_CONTENT_INSIGHT_TECH)){
+            model = OpenAiChatModel.builder()
+                    .apiKey(PropertiesHandler.getPropertyValue(PropertiesHandler.DYNAMIC_CONTENT_INSIGHT_MODEL_APIKEY))
+                    .modelName(PropertiesHandler.getPropertyValue(PropertiesHandler.DYNAMIC_CONTENT_INSIGHT_MODEL_NAME))
+                    .baseUrl(PropertiesHandler.getPropertyValue(PropertiesHandler.DYNAMIC_CONTENT_INSIGHT_MODEL_BASEURL))
+                    .build();
+        }else if("Ollama".equals(DYNAMIC_CONTENT_INSIGHT_TECH)){
+            model = OllamaChatModel.builder()
+                    .modelName(PropertiesHandler.getPropertyValue(PropertiesHandler.DYNAMIC_CONTENT_INSIGHT_MODEL_NAME))
+                    .baseUrl(PropertiesHandler.getPropertyValue(PropertiesHandler.DYNAMIC_CONTENT_INSIGHT_MODEL_BASEURL))
+                    .build();
+        }
+
+        String prompt = String.format("""
+                以下数据内容是问题 "%s" 的回答：
+                %s
+               
+                要求：
+                1. 结合问题进行分析
+                2. 不要分析数据结构和可能来源
+                3. 不要包含标题
+                4. 除了包含常规的文字分析结果外，也尽可能的提供图表，表格类的分析汇总信息
+                """, queryQuestion,content);
+
+        if(model != null){
+            String answer = model.chat(prompt);
+            return answer.trim();
+        }
+        return null;
+    }
+
     public static String insightToDynamicContent(DynamicContentQueryResult dynamicContentQueryResult){
         String content = getDynamicContentText(dynamicContentQueryResult);
         String DYNAMIC_CONTENT_INSIGHT_TECH = PropertiesHandler.getPropertyValue(PropertiesHandler.DYNAMIC_CONTENT_INSIGHT_TECHNOLOGY);
