@@ -2,15 +2,23 @@ package com.docg.ai.llm.naturalLanguageAnalysis.util;
 
 import com.docg.ai.util.config.PropertiesHandler;
 import com.docg.ai.util.markdown.MarkdownIllegalCharChecker;
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.CrossKindDataOperator;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.DynamicContentQueryResult;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.DynamicContentValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.payload.RelationEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
+import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
+
 import dev.langchain4j.model.chat.ChatModel;
 import dev.langchain4j.model.ollama.OllamaChatModel;
 import dev.langchain4j.model.openai.OpenAiChatModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -100,6 +108,9 @@ public class DynamicContentInsightUtil {
         headerInfo.deleteCharAt(headerInfo.length() - 1);
         fullContentSb.append(headerInfo).append("\n");
 
+        Map<String,List<String>> conceptionEntitiesMapping = new HashMap<>();
+        Map<String,List<String>> relationEntitiesMapping = new HashMap<>();
+
         for(Map<String, DynamicContentValue> currentDataMap:contentValueList){
             StringBuilder currentDataInfo = new StringBuilder();
             fixedProperties.forEach( propertyName -> {
@@ -109,9 +120,19 @@ public class DynamicContentInsightUtil {
                     if(DynamicContentValue.ContentValueType.CONCEPTION_ENTITY.equals(currentColumnContentValueType)){
                         ConceptionEntity conceptionEntity = (ConceptionEntity)currentColumnContentValue.getValueObject();
                         currentDataInfo.append(conceptionEntity.getConceptionEntityUID()).append(",");
+                        if(!conceptionEntitiesMapping.containsKey(propertyName)){
+                            List<String> conceptionEntityUIDList = new ArrayList<>();
+                            conceptionEntitiesMapping.put(propertyName, conceptionEntityUIDList);
+                        }
+                        conceptionEntitiesMapping.get(propertyName).add(conceptionEntity.getConceptionEntityUID());
                     }else if(DynamicContentValue.ContentValueType.RELATION_ENTITY.equals(currentColumnContentValueType)){
                         RelationEntity relationEntity = (RelationEntity)currentColumnContentValue.getValueObject();
                         currentDataInfo.append(relationEntity.getRelationEntityUID()).append(",");
+                        if(!relationEntitiesMapping.containsKey(propertyName)){
+                            List<String> relationEntityUIDList = new ArrayList<>();
+                            relationEntitiesMapping.put(propertyName, relationEntityUIDList);
+                        }
+                        relationEntitiesMapping.get(propertyName).add(relationEntity.getRelationEntityUID());
                     }else if(DynamicContentValue.ContentValueType.RELATION_ENTITY.equals(currentColumnContentValueType)){
 
                     }else{
@@ -124,6 +145,51 @@ public class DynamicContentInsightUtil {
             });
             currentDataInfo.deleteCharAt(currentDataInfo.length() - 1);
             fullContentSb.append(currentDataInfo).append("\n");
+        }
+
+        CoreRealm coreRealm = RealmTermFactory.getDefaultCoreRealm();
+        try{
+            coreRealm.openGlobalSession();
+            if(!conceptionEntitiesMapping.isEmpty() || !relationEntitiesMapping.isEmpty()){
+                CrossKindDataOperator crossKindDataOperator = coreRealm.getCrossKindDataOperator();
+                if(!conceptionEntitiesMapping.isEmpty()){
+                    conceptionEntitiesMapping.keySet().forEach(propertyName -> {
+                        StringBuilder currentPropertyDetailInfo = new StringBuilder();
+                        currentPropertyDetailInfo.append("属性 ").append(propertyName).append(" 详细信息").append("\n");
+                        List<String> conceptionEntityUIDList = conceptionEntitiesMapping.get(propertyName);
+                        try {
+                            List<ConceptionEntityValue> conceptionEntityValue = crossKindDataOperator.getSingleValueConceptionEntityAttributesByUIDs(conceptionEntityUIDList,null);
+                                conceptionEntityValue.forEach(currentConceptionEntityValue -> {
+                                    currentPropertyDetailInfo.append(currentConceptionEntityValue.getConceptionEntityUID()+ ":"+currentConceptionEntityValue.getEntityAttributesValue().toString()).append("\n");
+                                });
+                        } catch (CoreRealmServiceEntityExploreException e) {
+                            e.printStackTrace();
+                        }
+                        currentPropertyDetailInfo.append("\n");
+                        fullContentSb.append(currentPropertyDetailInfo);
+                    });
+                }
+
+                if(!relationEntitiesMapping.isEmpty()){
+                    relationEntitiesMapping.keySet().forEach(propertyName -> {
+                        StringBuilder currentPropertyDetailInfo = new StringBuilder();
+                        currentPropertyDetailInfo.append("属性 ").append(propertyName).append(" 详细信息").append("\n");
+                        List<String> relationEntityUIDList = relationEntitiesMapping.get(propertyName);
+                        try {
+                            List<RelationEntityValue> relationEntityValue = crossKindDataOperator.getSingleValueRelationEntityAttributesByUIDs(relationEntityUIDList,null);
+                            relationEntityValue.forEach(currentRelationEntityValue -> {
+                                currentPropertyDetailInfo.append(currentRelationEntityValue.getRelationEntityUID()+ ":"+currentRelationEntityValue.getEntityAttributesValue().toString()).append("\n");
+                            });
+                        } catch (CoreRealmServiceEntityExploreException e) {
+                            e.printStackTrace();
+                        }
+                        currentPropertyDetailInfo.append("\n");
+                        fullContentSb.append(currentPropertyDetailInfo);
+                    });
+                }
+            }
+        }finally {
+            coreRealm.closeGlobalSession();
         }
         return fullContentSb.toString();
     }
