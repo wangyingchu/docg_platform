@@ -7,17 +7,19 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="docg_dataFabric" />
-        <module name="docg_artificialIntelligence" />
         <module name="docg_realmKnowledgeManage" />
-        <module name="docg_analysisClient" />
         <module name="docg_coreRealm" />
-        <module name="docg_dataCompute" />
-        <module name="docg_dataCollector" />
         <module name="ddocg_analysisClient" />
-        <module name="docg_dataAnalyze" />
-        <module name="docg_analysisProvider" />
         <module name="docg_realmExample" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="docg_analysisClient" target="17" />
+      <module name="docg_analysisProvider" target="17" />
+      <module name="docg_artificialIntelligence" target="17" />
+      <module name="docg_dataAnalyze" target="1.8" />
+      <module name="docg_dataCollector" target="17" />
+      <module name="docg_dataCompute" target="17" />
+    </bytecodeTargetLevel>
   </component>
 </project>
