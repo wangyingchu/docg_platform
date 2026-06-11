@@ -7,10 +7,10 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="docg_dataFabric" />
-        <module name="docg_realmKnowledgeManage" />
-        <module name="docg_coreRealm" />
         <module name="ddocg_analysisClient" />
+        <module name="docg_realmKnowledgeManage" />
         <module name="docg_realmExample" />
+        <module name="docg_coreRealm" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
