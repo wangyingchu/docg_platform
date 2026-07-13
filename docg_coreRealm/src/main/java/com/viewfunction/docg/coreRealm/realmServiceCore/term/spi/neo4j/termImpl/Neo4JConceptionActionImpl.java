@@ -9,6 +9,7 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTrans
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.CommonOperationUtil;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.util.GraphOperationExecutorHelper;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.AttributeValue;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.AttributesViewKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationDirection;
@@ -228,6 +229,16 @@ public class Neo4JConceptionActionImpl implements Neo4JConceptionAction {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
         return null;
+    }
+
+    @Override
+    public AttributesViewKind getReferencedAttributesViewKind() {
+        return null;
+    }
+
+    @Override
+    public boolean setReferencedAttributesViewKind(AttributesViewKind attributesViewKind) {
+        return false;
     }
 
     //internal graphOperationExecutor management logic
