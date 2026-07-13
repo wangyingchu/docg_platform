@@ -920,7 +920,7 @@ public interface Neo4JEntityRelationable extends EntityRelationable,Neo4JKeyReso
             exception.setCauseMessage("Internal error occurs during create relation "+relationKind+" between entity with UID "+sourceRelationableUID+" and "+targetRelationableUID+".");
             throw exception;
         }else{
-                return (Neo4JRelationEntityImpl)newRelationEntityRes;
+            return (Neo4JRelationEntityImpl)newRelationEntityRes;
         }
     }
 

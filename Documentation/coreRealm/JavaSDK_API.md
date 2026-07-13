@@ -7185,13 +7185,13 @@ PathEntityFilterParameters relationPathEntityFilterParameters,PathEntityFilterPa
     public AttributesViewKind getReferencedAttributesViewKind();
 
     /**
-     * 设置当前自定义动作引用的属性视图类型
+     * 设置当前自定义动作引用的属性视图类型,如已经设置过引用属性视图类型，则旧的视图类型会被新的目标属性视图类型覆盖
      *
-     * @param attributesViewKind AttributesViewKind 目标属性视图类型
+     * @param targetAttributesViewKind AttributesViewKind 目标属性视图类型
      *
      * @return 如操作成功，返回结果为 true
      */
-    public boolean setReferencedAttributesViewKind(AttributesViewKind attributesViewKind);
+    public boolean setReferencedAttributesViewKind(AttributesViewKind targetAttributesViewKind) throws CoreRealmServiceRuntimeException;;
 ```
 
 ###### ↳ RelationAction

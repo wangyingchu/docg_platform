@@ -20,6 +20,7 @@ public interface RealmConstant {
     public final String ActionClass="DOCG_Action";
     public final String ConceptionKind_ActionRelationClass="DOCG_ConceptionContainsActionIs";
     public final String RelationKind_ActionRelationClass="DOCG_RelationContainsActionIs";
+    public final String Action_AttributesViewKindRelationClass="DOCG_ActionReferencedAttributesViewKindIs";
 
     public final String TimeFlowClass="DOCG_TimeFlow";
     public final String _defaultTimeFlowName = "DefaultTimeFlow";
