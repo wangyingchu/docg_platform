@@ -242,7 +242,7 @@ public class Neo4JConceptionActionImpl implements Neo4JConceptionAction {
         try{
             String queryCql = CypherBuilder.matchRelatedNodesFromSpecialStartNodes(
                     CypherBuilder.CypherFunctionType.ID, Long.parseLong(actionUID),
-                    RealmConstant.AttributesViewKindClass,RealmConstant.Action_AttributesViewKindRelationClass, RelationDirection.FROM, null);
+                    RealmConstant.AttributesViewKindClass,RealmConstant.Action_AttributesViewKindRelationClass, RelationDirection.TO, null);
             GetListAttributesViewKindTransformer getListAttributesViewKindTransformer = new GetListAttributesViewKindTransformer(null,this.graphOperationExecutorHelper.getGlobalGraphOperationExecutor());
             Object attributesViewKindsRes = workingGraphOperationExecutor.executeWrite(getListAttributesViewKindTransformer,queryCql);
             if(attributesViewKindsRes!= null){

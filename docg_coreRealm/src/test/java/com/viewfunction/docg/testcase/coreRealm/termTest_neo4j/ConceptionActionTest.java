@@ -3,10 +3,7 @@ package com.viewfunction.docg.testcase.coreRealm.termTest_neo4j;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceRuntimeException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.ConceptionEntityValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.EntitiesOperationResult;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionAction;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
-import com.viewfunction.docg.coreRealm.realmServiceCore.term.CoreRealm;
+import com.viewfunction.docg.coreRealm.realmServiceCore.term.*;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.CoreRealmStorageImplTech;
 import com.viewfunction.docg.coreRealm.realmServiceCore.util.factory.RealmTermFactory;
 import org.testng.Assert;
@@ -165,6 +162,26 @@ public class ConceptionActionTest {
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
+
+        AttributesViewKind referencedKind = conceptionAction1.getReferencedAttributesViewKind();
+        Assert.assertNull(referencedKind);
+
+        AttributesViewKind targetAttributesViewKind = coreRealm.createAttributesViewKind("targetAttributesViewKindA","targetAttributesViewKindADesc",null);
+        boolean setResult = conceptionAction1.setReferencedAttributesViewKind(targetAttributesViewKind);
+        Assert.assertTrue(setResult);
+
+        referencedKind = conceptionAction1.getReferencedAttributesViewKind();
+        Assert.assertNotNull(referencedKind);
+        Assert.assertEquals(referencedKind.getAttributesViewKindUID(),targetAttributesViewKind.getAttributesViewKindUID());
+        coreRealm.removeAttributesViewKind(targetAttributesViewKind.getAttributesViewKindUID());
+
+        AttributesViewKind targetAttributesViewKind2 = coreRealm.createAttributesViewKind("targetAttributesViewKindB","targetAttributesViewKindADesc",null);
+        setResult = conceptionAction1.setReferencedAttributesViewKind(targetAttributesViewKind2);
+        Assert.assertTrue(setResult);
+        referencedKind = conceptionAction1.getReferencedAttributesViewKind();
+        Assert.assertNotNull(referencedKind);
+        Assert.assertEquals(referencedKind.getAttributesViewKindUID(),targetAttributesViewKind2.getAttributesViewKindUID());
+        coreRealm.removeAttributesViewKind(targetAttributesViewKind2.getAttributesViewKindUID());
 
         boolean unregisterResult = testConceptionKind.unregisterAction("testActionName1");
         Assert.assertTrue(unregisterResult);
