@@ -116,4 +116,10 @@ public interface ConceptionAction extends MetaConfigItemFeatureSupportable, Meta
      * @return 如操作成功，返回结果为 true
      */
     public boolean setReferencedAttributesViewKind(AttributesViewKind targetAttributesViewKind) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 清除当前自定义动作已经设置的属性视图类型引用
+     *
+     */
+    public void clearReferencedAttributesViewKind();
 }

@@ -352,6 +352,66 @@ public class Neo4JConceptionActionImpl implements Neo4JConceptionAction {
         return false;
     }
 
+    @Override
+    public void clearReferencedAttributesViewKind() {
+        if(this.getEntityUID() != null) {
+            GraphOperationExecutor workingGraphOperationExecutor = getGraphOperationExecutorHelper().getWorkingGraphOperationExecutor();
+            try {
+                QueryParameters relationshipQueryParameters = new QueryParameters();
+                relationshipQueryParameters.setEntityKind(RealmConstant.Action_AttributesViewKindRelationClass);
+                relationshipQueryParameters.setResultNumber(10000000);
+                boolean ignoreDirection = false;
+                String sourceNodeProperty = getEntityUID();
+                String targetNodeProperty = null;
+
+                String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,sourceNodeProperty,targetNodeProperty,ignoreDirection,relationshipQueryParameters, null);
+
+                List<Object> relationEntitiesUIDList = new ArrayList<>();
+                DataTransformer queryRelationshipOperationDataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        if (result.hasNext()) {
+                            while (result.hasNext()) {
+                                org.neo4j.driver.Record nodeRecord = result.next();
+                                if (nodeRecord != null) {
+                                    Relationship resultRelationship = nodeRecord.get(CypherBuilder.operationResultName).asRelationship();
+                                    Long relationEntityUID = resultRelationship.id();
+                                    relationEntitiesUIDList.add(relationEntityUID);
+                                }
+                            }
+                        }
+                        return null;
+                    }
+                };
+                workingGraphOperationExecutor.executeRead(queryRelationshipOperationDataTransformer, queryCql);
+
+                String detachCql = CypherBuilder.deleteRelationsWithSingleFunctionValueEqual(CypherBuilder.CypherFunctionType.ID, relationEntitiesUIDList);
+                DataTransformer detachRelationshipOperationDataTransformer = new DataTransformer() {
+                    @Override
+                    public Object transformResult(Result result) {
+                        List<String> resultEntitiesUIDList = new ArrayList<>();
+                        if (result.hasNext()) {
+                            while (result.hasNext()) {
+                                Record nodeRecord = result.next();
+                                if (nodeRecord != null) {
+                                    Relationship resultRelationship = nodeRecord.get(CypherBuilder.operationResultName).asRelationship();
+                                    Long relationEntityUID = resultRelationship.id();
+                                    resultEntitiesUIDList.add("" + relationEntityUID);
+                                }
+                            }
+                        }
+                        return resultEntitiesUIDList;
+                    }
+                };
+                workingGraphOperationExecutor.executeWrite(detachRelationshipOperationDataTransformer, detachCql);
+            } catch (CoreRealmServiceEntityExploreException e) {
+                throw new RuntimeException(e);
+            } finally {
+                getGraphOperationExecutorHelper().closeWorkingGraphOperationExecutor();
+            }
+        }
+    }
+
     //internal graphOperationExecutor management logic
     private GraphOperationExecutorHelper graphOperationExecutorHelper;
 

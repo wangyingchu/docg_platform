@@ -97,4 +97,26 @@ public interface RelationAction {
      * @return 关系类型对象
      */
     public RelationKind getContainerRelationKind();
+
+    /**
+     * 获取当前自定义动作引用的属性视图类型
+     *
+     * @return 属性视图类型
+     */
+    public AttributesViewKind getReferencedAttributesViewKind();
+
+    /**
+     * 设置当前自定义动作引用的属性视图类型,如已经设置过引用属性视图类型，则旧的视图类型会被新的目标属性视图类型覆盖
+     *
+     * @param targetAttributesViewKind AttributesViewKind 目标属性视图类型
+     *
+     * @return 如操作成功，返回结果为 true
+     */
+    public boolean setReferencedAttributesViewKind(AttributesViewKind targetAttributesViewKind) throws CoreRealmServiceRuntimeException;
+
+    /**
+     * 清除当前自定义动作已经设置的属性视图类型引用
+     *
+     */
+    public void clearReferencedAttributesViewKind();
 }
