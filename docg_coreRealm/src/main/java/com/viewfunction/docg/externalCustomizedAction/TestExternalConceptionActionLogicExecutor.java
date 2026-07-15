@@ -4,32 +4,39 @@ import com.viewfunction.docg.coreRealm.realmServiceCore.external.customizedActio
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionKind;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class TestExternalConceptionActionLogicExecutor implements ConceptionActionLogicExecutor {
     @Override
     public Object executeActionSync(Map<String, Object> actionParameters, ConceptionKind conceptionKind, ConceptionEntity... conceptionEntity) {
-        System.out.println(actionParameters);
-        System.out.println(conceptionKind.getConceptionKindName());
-        System.out.println(conceptionEntity);
+        //System.out.println(actionParameters);
+        //System.out.println(conceptionKind.getConceptionKindName());
+        //System.out.println(conceptionEntity);
 
         Map<String,Object> result = new HashMap<>();
         result.put("resultMessage","helloworld");
         result.put("conceptionKindName",conceptionKind.getConceptionKindName());
         result.putAll(actionParameters);
+
+        List<String> conceptionEntityUIDs = new ArrayList<>();
         if(conceptionEntity != null && conceptionEntity.length > 0){
-            result.put("conceptionEntityUID",conceptionEntity[0].getConceptionEntityUID());
+            for(ConceptionEntity currentConceptionEntity:conceptionEntity){
+                conceptionEntityUIDs.add(currentConceptionEntity.getConceptionEntityUID());
+            }
+            result.put("conceptionEntityUID",conceptionEntityUIDs);
         }
         return result;
     }
 
     @Override
     public CompletableFuture<Object> executeActionAsync(Map<String, Object> actionParameters, ConceptionKind conceptionKind, ConceptionEntity... conceptionEntity) {
-        System.out.println(actionParameters);
-        System.out.println(conceptionKind.getConceptionKindName());
-        System.out.println(conceptionEntity);
+        //System.out.println(actionParameters);
+        //System.out.println(conceptionKind.getConceptionKindName());
+        //System.out.println(conceptionEntity);
 
         CompletableFuture<Object> future = CompletableFuture.supplyAsync(() -> {
             try {
@@ -41,8 +48,13 @@ public class TestExternalConceptionActionLogicExecutor implements ConceptionActi
             result.put("resultMessage","helloworld");
             result.put("conceptionKindName",conceptionKind.getConceptionKindName());
             result.putAll(actionParameters);
+
+            List<String> conceptionEntityUIDs = new ArrayList<>();
             if(conceptionEntity != null && conceptionEntity.length > 0){
-                result.put("conceptionEntityUID",conceptionEntity[0].getConceptionEntityUID());
+                for(ConceptionEntity currentConceptionEntity:conceptionEntity){
+                    conceptionEntityUIDs.add(currentConceptionEntity.getConceptionEntityUID());
+                }
+                result.put("conceptionEntityUID",conceptionEntityUIDs);
             }
             return result;
         });
