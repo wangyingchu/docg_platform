@@ -20,7 +20,9 @@ public class TestExternalConceptionActionLogicExecutor implements ConceptionActi
         Map<String,Object> result = new HashMap<>();
         result.put("resultMessage","helloworld");
         result.put("conceptionKindName",conceptionKind.getConceptionKindName());
-        result.putAll(actionParameters);
+        if(actionParameters!= null){
+            result.putAll(actionParameters);
+        }
 
         List<String> conceptionEntityUIDs = new ArrayList<>();
         if(conceptionEntity != null && conceptionEntity.length > 0){
@@ -47,7 +49,9 @@ public class TestExternalConceptionActionLogicExecutor implements ConceptionActi
             Map<String,Object> result = new HashMap<>();
             result.put("resultMessage","helloworld");
             result.put("conceptionKindName",conceptionKind.getConceptionKindName());
-            result.putAll(actionParameters);
+            if(actionParameters!= null){
+                result.putAll(actionParameters);
+            }
 
             List<String> conceptionEntityUIDs = new ArrayList<>();
             if(conceptionEntity != null && conceptionEntity.length > 0){
