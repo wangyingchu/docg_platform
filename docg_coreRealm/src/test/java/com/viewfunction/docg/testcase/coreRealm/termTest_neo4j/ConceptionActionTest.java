@@ -13,6 +13,7 @@ import org.testng.annotations.Test;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -146,8 +147,9 @@ public class ConceptionActionTest {
         Assert.assertEquals(resultMap.get("conceptionKindName"),testConceptionKindName);
         Assert.assertEquals(resultMap.get("param01"),"param01Value");
         Assert.assertEquals(resultMap.get("param02"),1200);
-        Assert.assertEquals(resultMap.get("conceptionEntityUID"),newEntity.getConceptionEntityUID());
-
+        Assert.assertTrue(resultMap.get("conceptionEntityUID") instanceof List);
+        List<String> uidList = (List<String>)resultMap.get("conceptionEntityUID");
+        Assert.assertEquals(uidList.get(0),newEntity.getConceptionEntityUID());
         resultFuture =  conceptionAction1.executeActionAsync(params,newEntity);
         Assert.assertNotNull(resultFuture);
         try {
@@ -156,7 +158,9 @@ public class ConceptionActionTest {
             Assert.assertEquals(resultMap.get("conceptionKindName"),testConceptionKindName);
             Assert.assertEquals(resultMap.get("param01"),"param01Value");
             Assert.assertEquals(resultMap.get("param02"),1200);
-            Assert.assertEquals(resultMap.get("conceptionEntityUID"),newEntity.getConceptionEntityUID());
+            Assert.assertTrue(resultMap.get("conceptionEntityUID") instanceof List);
+            uidList = (List<String>)resultMap.get("conceptionEntityUID");
+            Assert.assertEquals(uidList.get(0),newEntity.getConceptionEntityUID());
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
