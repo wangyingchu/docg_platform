@@ -1,15 +1,15 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.dataTransformer;
 
 import com.google.common.collect.Lists;
-
+import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
 import com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.GraphOperationExecutor;
+import com.viewfunction.docg.coreRealm.realmServiceCore.operator.spi.neo4j.operatorImpl.Neo4JCrossKindDataOperatorImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.payload.DynamicContentValue;
 import com.viewfunction.docg.coreRealm.realmServiceCore.structure.EntitiesPath;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.ConceptionEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.RelationEntity;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JConceptionEntityImpl;
 import com.viewfunction.docg.coreRealm.realmServiceCore.term.spi.neo4j.termImpl.Neo4JRelationEntityImpl;
-
 import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.internal.value.*;
@@ -23,6 +23,8 @@ public class GetListDynamicContentValueTransformer implements DataTransformer<Li
     private GraphOperationExecutor workingGraphOperationExecutor;
     private String currentCoreRealmName;
     private Map<String,DynamicContentValue.ContentValueType> dynamicContentAttributesValueTypeMap;
+    private boolean containsRelationEntities = false;
+    private List<RelationEntity> relationEntitiesList;
 
     public GetListDynamicContentValueTransformer(String currentCoreRealmName,Map<String,DynamicContentValue.ContentValueType> dynamicContentAttributesValueTypeMap,
                                                  GraphOperationExecutor workingGraphOperationExecutor){
@@ -43,6 +45,45 @@ public class GetListDynamicContentValueTransformer implements DataTransformer<Li
                     String key = recordField.key();
                     Object value = recordField.value();
                     createAttributeEntity(key,value,currentRowMap,dynamicContentAttributesValueTypeMap);
+                });
+            }
+        }
+        if(containsRelationEntities){
+            if(relationEntitiesList != null){
+                List<String> targetConceptionEntityUIDList = new ArrayList<>();
+                relationEntitiesList.forEach(relationEntity -> {
+                    String fromUID = relationEntity.getFromConceptionEntityUID();
+                    String toUID = relationEntity.getToConceptionEntityUID();
+                    if(!targetConceptionEntityUIDList.contains(fromUID)){
+                        targetConceptionEntityUIDList.add(fromUID);
+                    }
+                    if(!targetConceptionEntityUIDList.contains(toUID)){
+                        targetConceptionEntityUIDList.add(toUID);
+                    }
+                });
+
+                final Map<String,ConceptionEntity> uidAndConceptionEntityMapping = new HashMap<>();
+                Neo4JCrossKindDataOperatorImpl crossKindDataOperator = new Neo4JCrossKindDataOperatorImpl(null);
+                crossKindDataOperator.setGlobalGraphOperationExecutor(this.workingGraphOperationExecutor);
+                try {
+                    List<ConceptionEntity> resultConceptionEntitiesList = crossKindDataOperator.getConceptionEntitiesByUIDs(targetConceptionEntityUIDList);
+                    resultConceptionEntitiesList.forEach(conceptionEntity -> {
+                        uidAndConceptionEntityMapping.put(conceptionEntity.getConceptionEntityUID(),conceptionEntity);
+                    });
+                } catch (CoreRealmServiceEntityExploreException e) {
+                    throw new RuntimeException(e);
+                }
+                relationEntitiesList.forEach(relationEntity -> {
+                    String fromUID = relationEntity.getFromConceptionEntityUID();
+                    String toUID = relationEntity.getToConceptionEntityUID();
+                    if(uidAndConceptionEntityMapping.containsKey(fromUID)){
+                        ((Neo4JRelationEntityImpl)relationEntity).
+                                setFromEntityConceptionKindList(uidAndConceptionEntityMapping.get(fromUID).getAllConceptionKindNames());
+                    }
+                    if(uidAndConceptionEntityMapping.containsKey(toUID)){
+                        ((Neo4JRelationEntityImpl)relationEntity).
+                                setToEntityConceptionKindList(uidAndConceptionEntityMapping.get(toUID).getAllConceptionKindNames());
+                    }
                 });
             }
         }
@@ -127,8 +168,14 @@ public class GetListDynamicContentValueTransformer implements DataTransformer<Li
             if(!dynamicContentAttributesValueTypeMap.containsKey(entityKey)){
                 dynamicContentAttributesValueTypeMap.put(entityKey, DynamicContentValue.ContentValueType.RELATION_ENTITY);
             }
-            dynamicContentValue.setValueObject(getRelationEntityFromRelationship((RelationshipValue)entityObject));
+            RelationEntity currentRelationEntity = getRelationEntityFromRelationship((RelationshipValue)entityObject);
+            dynamicContentValue.setValueObject(currentRelationEntity);
             dynamicContentValue.setValueType(DynamicContentValue.ContentValueType.RELATION_ENTITY);
+            containsRelationEntities = true;
+            if(relationEntitiesList == null){
+                relationEntitiesList = Lists.newArrayList();
+            }
+            relationEntitiesList.add(currentRelationEntity);
         }
         else if(entityObject instanceof StringValue){
             if(!dynamicContentAttributesValueTypeMap.containsKey(entityKey)){
