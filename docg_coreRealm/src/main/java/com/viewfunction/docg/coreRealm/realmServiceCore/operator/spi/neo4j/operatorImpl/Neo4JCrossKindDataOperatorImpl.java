@@ -2238,6 +2238,57 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
     @Override
     public DynamicContentUnionQueryResult getAdhocUnionQueryResult(List<KindAttributesMatchLogic> conceptionKindMatchList, List<KindAttributesMatchLogic> relationKindMatchList, List<ConceptionKindCorrelationInfo> conceptionKindCorrelationList) {
+        if(conceptionKindMatchList != null && !conceptionKindMatchList.isEmpty()){
+            conceptionKindMatchList.forEach(conceptionKindMatchLogic ->{
+                QueryParameters queryParameters = conceptionKindMatchLogic.getQueryParameters();
+                if(queryParameters != null && queryParameters.getEntityKind() != null){
+                    String currentConceptionKindName = queryParameters.getEntityKind();
+                    List<String> attributeNames = conceptionKindMatchLogic.getAttributeNames();
+                    try {
+                        if(attributeNames == null){
+                            attributeNames = new ArrayList<>();
+                        }
+                        if(attributeNames.isEmpty()){
+                            attributeNames.add("__PLACEHOLDER_COREREALM__");
+                        }
+
+                        String queryCql = CypherBuilder.matchAttributesWithQueryParameters(currentConceptionKindName,queryParameters,attributeNames);
+
+
+
+
+                        System.out.println(queryCql);
+
+
+                    } catch (CoreRealmServiceEntityExploreException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+
+
+
+
+
+
+            });
+        }
+
+
+        if(relationKindMatchList != null && !relationKindMatchList.isEmpty()){}
+
+
+        if(conceptionKindCorrelationList != null && !conceptionKindCorrelationList.isEmpty()){}
+
+
+
+
+
+
+
+
+
+
         return null;
     }
 
