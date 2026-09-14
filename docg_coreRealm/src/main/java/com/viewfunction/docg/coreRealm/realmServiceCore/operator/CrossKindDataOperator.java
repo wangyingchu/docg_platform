@@ -543,4 +543,15 @@ public interface CrossKindDataOperator {
      * @return 符合匹配条件的概念实体 UID与附着的分类列表映射
      */
     public Map<String,List<Classification>> getConceptionEntitiesAttachedClassifications(List<String> conceptionEntityUIDs,String relationKindName,RelationDirection relationDirection,ClassificationPathTraversalDirection traversalDirection,int classificationPathHop,AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
+
+    /**
+     * 输入一组概念类型、关系类型 和 实体关联规则的列表，对这些定义创建综合查询，并返回联合查询结果
+     *
+     * @param conceptionKindList List<String> 概念类型定义列表
+     * @param relationKindList String 关系类型定义列表
+     * @param conceptionKindCorrelationList RelationDirection 概念类型实体与指定目标分类的关系方向
+     *
+     * @return 符合匹配条件的概念实体 UID与附着的分类列表映射
+     */
+    //public List<String> getAdhocUnionQueryResult(List<String> conceptionKindList,List<String> relationKindList,List<ConceptionKindCorrelationInfo> conceptionKindCorrelationList);
 }
