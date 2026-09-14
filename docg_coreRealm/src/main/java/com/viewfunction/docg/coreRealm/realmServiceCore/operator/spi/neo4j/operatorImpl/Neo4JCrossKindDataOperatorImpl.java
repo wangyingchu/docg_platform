@@ -2236,6 +2236,11 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         return resultMap;
     }
 
+    @Override
+    public DynamicContentUnionQueryResult getAdhocUnionQueryResult(List<KindAttributesMatchLogic> conceptionKindMatchList, List<KindAttributesMatchLogic> relationKindMatchList, List<ConceptionKindCorrelationInfo> conceptionKindCorrelationList) {
+        return null;
+    }
+
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
         this.graphOperationExecutorHelper.setGlobalGraphOperationExecutor(graphOperationExecutor);
     }

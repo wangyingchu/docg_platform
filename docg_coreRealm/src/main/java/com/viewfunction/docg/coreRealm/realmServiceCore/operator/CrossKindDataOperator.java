@@ -1,6 +1,7 @@
 package com.viewfunction.docg.coreRealm.realmServiceCore.operator;
 
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.AttributesParameters;
+import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.KindAttributesMatchLogic;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.PathEntitiesSequenceMatchPattern;
 import com.viewfunction.docg.coreRealm.realmServiceCore.analysis.query.QueryParameters;
 import com.viewfunction.docg.coreRealm.realmServiceCore.exception.CoreRealmServiceEntityExploreException;
@@ -545,13 +546,13 @@ public interface CrossKindDataOperator {
     public Map<String,List<Classification>> getConceptionEntitiesAttachedClassifications(List<String> conceptionEntityUIDs,String relationKindName,RelationDirection relationDirection,ClassificationPathTraversalDirection traversalDirection,int classificationPathHop,AttributesParameters attributesParameters) throws CoreRealmServiceEntityExploreException, CoreRealmServiceRuntimeException;
 
     /**
-     * 输入一组概念类型、关系类型 和 实体关联规则的列表，对这些定义创建综合查询，并返回联合查询结果
+     * 输入一组概念类型、关系类型和概念实体关联规则的属性查询匹配列表，针对这些规则创建综合查询，并返回联合查询结果
      *
-     * @param conceptionKindList List<String> 概念类型定义列表
-     * @param relationKindList String 关系类型定义列表
-     * @param conceptionKindCorrelationList RelationDirection 概念类型实体与指定目标分类的关系方向
+     * @param conceptionKindMatchList List<KindAttributesMatchLogic> 概念类型属性查询匹配列表
+     * @param relationKindMatchList List<KindAttributesMatchLogic> 关系类型属性查询匹配列表
+     * @param conceptionKindCorrelationList List<ConceptionKindCorrelationInfo> 概念实体关联规则列表
      *
-     * @return 符合匹配条件的概念实体 UID与附着的分类列表映射
+     * @return 符合匹配条件的查询结果
      */
-    //public List<String> getAdhocUnionQueryResult(List<String> conceptionKindList,List<String> relationKindList,List<ConceptionKindCorrelationInfo> conceptionKindCorrelationList);
+    public DynamicContentUnionQueryResult getAdhocUnionQueryResult(List<KindAttributesMatchLogic> conceptionKindMatchList, List<KindAttributesMatchLogic> relationKindMatchList, List<ConceptionKindCorrelationInfo> conceptionKindCorrelationList);
 }
