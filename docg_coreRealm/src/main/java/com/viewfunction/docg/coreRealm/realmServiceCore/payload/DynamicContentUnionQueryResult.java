@@ -12,9 +12,6 @@ public class DynamicContentUnionQueryResult {
     private Map<String, List<ConceptionEntityValue>> conceptionKindsEntityValueMap;
     private Map<String, List<RelationEntityValue>> relationKindsEntityValueMap;
 
-
-
-
     public Date getStartTime() {
         return startTime;
     }
@@ -37,5 +34,13 @@ public class DynamicContentUnionQueryResult {
 
     public void setConceptionKindsEntityValueMap(Map<String, List<ConceptionEntityValue>> conceptionKindsEntityValueMap) {
         this.conceptionKindsEntityValueMap = conceptionKindsEntityValueMap;
+    }
+
+    public Map<String, List<RelationEntityValue>> getRelationKindsEntityValueMap() {
+        return relationKindsEntityValueMap;
+    }
+
+    public void setRelationKindsEntityValueMap(Map<String, List<RelationEntityValue>> relationKindsEntityValueMap) {
+        this.relationKindsEntityValueMap = relationKindsEntityValueMap;
     }
 }

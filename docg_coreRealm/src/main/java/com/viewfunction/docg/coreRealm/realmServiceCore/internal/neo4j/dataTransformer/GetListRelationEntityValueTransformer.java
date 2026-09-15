@@ -20,11 +20,18 @@ public class GetListRelationEntityValueTransformer  implements DataTransformer<L
     private List<String> returnedAttributeList;
     private String targetRelationKindName;
     private Map<String, AttributeDataType> attributeDataTypeMap;
+    private boolean useAttributesAggregateLogic = false;
+    private String aggregateParameterName;
 
     public GetListRelationEntityValueTransformer(String targetRelationKindName,List<String> returnedAttributeList){
         this.targetRelationKindName = targetRelationKindName;
         this.returnedAttributeList = returnedAttributeList;
         this.attributeDataTypeMap = new HashMap<>();
+    }
+
+    public GetListRelationEntityValueTransformer(String aggregateParameterName){
+        this.useAttributesAggregateLogic = true;
+        this.aggregateParameterName = aggregateParameterName;
     }
 
     @Override
@@ -51,8 +58,14 @@ public class GetListRelationEntityValueTransformer  implements DataTransformer<L
                     String toEntityUID = ""+resultRelationship.endNodeId();
                     Map<String,Object> valueMap = resultRelationship.asMap();
                     Map<String,Object> entityAttributesValue = new HashMap<>();
-
-                    if(returnedAttributeList!= null){
+                    if(useAttributesAggregateLogic){
+                        if(this.aggregateParameterName != null){
+                            Map<String,Object> aggregateParameterValue = nodeRecord.get(this.aggregateParameterName).asMap();
+                            if(aggregateParameterValue != null){
+                                entityAttributesValue.putAll(aggregateParameterValue);
+                            }
+                        }
+                    }else if(returnedAttributeList!= null){
                         if(returnedAttributeList != null && returnedAttributeList.size() > 0){
                             for(String currentAttributeName : returnedAttributeList){
                                 Object objectValue = valueMap.get(currentAttributeName);
@@ -72,6 +85,7 @@ public class GetListRelationEntityValueTransformer  implements DataTransformer<L
                         }
                     }
                     RelationEntityValue relationEntityValue = new RelationEntityValue(relationEntityUID,fromEntityUID,toEntityUID,entityAttributesValue);
+                    relationEntityValue.setRelationKindName(relationType);
                     if(nodeRecord.containsKey(CypherBuilder.sourceNodeName)){
                         relationEntityValue.setFromConceptionEntityKinds(Lists.newArrayList(nodeRecord.get(CypherBuilder.sourceNodeName).asNode().labels()));
                     }

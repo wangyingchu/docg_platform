@@ -2279,15 +2279,56 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                                 conceptionEntityValuesMap.put(currentConceptionKindName,resultEntityValues);
                             }
                         }
-                    }else{
-                        logger.error("QueryParameters and EntityKind defined in QueryParameters are required.");
+                    } else{
+                        logger.error("QueryParameters and EntityKind defined in QueryParameters for conceptionKindMatchList are required.");
                         CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
-                        exception.setCauseMessage("QueryParameters and EntityKind defined in QueryParameters are required.");
+                        exception.setCauseMessage("QueryParameters and EntityKind defined in QueryParameters for conceptionKindMatchList are required.");
                         throw exception;
                     }
                 }
             }
-            if(relationKindMatchList != null && !relationKindMatchList.isEmpty()){}
+            if(relationKindMatchList != null && !relationKindMatchList.isEmpty()){
+                Map<String, List<RelationEntityValue>> relationEntityValuesMap = new HashMap<String, List<RelationEntityValue>>();
+                dynamicContentUnionQueryResult.setRelationKindsEntityValueMap(relationEntityValuesMap);
+
+                for(KindAttributesMatchLogic relationKindMatchLogic : relationKindMatchList){
+                    QueryParameters queryParameters = relationKindMatchLogic.getQueryParameters();
+                    if(queryParameters != null && queryParameters.getEntityKind() != null){
+                        String currentRelationKindName = queryParameters.getEntityKind();
+                        List<String> attributeNames = relationKindMatchLogic.getAttributeNames();
+                        if(attributeNames != null && !attributeNames.isEmpty()){
+                            String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,
+                                    null,null,false,queryParameters,null);
+                            logger.debug("Generated Cypher Statement: {}", queryCql);
+                            GetListRelationEntityValueTransformer getListRelationEntityValueTransformer =
+                                    new GetListRelationEntityValueTransformer(currentRelationKindName,attributeNames);
+                            Object queryRes = workingGraphOperationExecutor.executeRead(getListRelationEntityValueTransformer,queryCql);
+                            if(queryRes != null){
+                                List<RelationEntityValue> resultEntityValues = (List<RelationEntityValue>)queryRes;
+                                relationEntityValuesMap.put(currentRelationKindName,resultEntityValues);
+                            }
+                        }else{
+                            //not defined attributeNames,so need get all attributes
+                            String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,
+                                    null,null,false,queryParameters,null);
+                            queryCql = queryCql.replace("RETURN "+operationResultName+",","RETURN operationResult, properties("+operationResultName+"),");
+                            logger.debug("Generated Cypher Statement: {}", queryCql);
+                            GetListRelationEntityValueTransformer getListRelationEntityValueTransformer =
+                                    new GetListRelationEntityValueTransformer("properties(operationResult)");
+                            Object queryRes = workingGraphOperationExecutor.executeRead(getListRelationEntityValueTransformer,queryCql);
+                            if(queryRes != null){
+                                List<RelationEntityValue> resultEntityValues = (List<RelationEntityValue>)queryRes;
+                                relationEntityValuesMap.put(currentRelationKindName,resultEntityValues);
+                            }
+                        }
+                    } else{
+                        logger.error("QueryParameters and EntityKind defined for in QueryParameters for relationKindMatchList are required.");
+                        CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+                        exception.setCauseMessage("QueryParameters and EntityKind defined in QueryParameters for relationKindMatchList are required.");
+                        throw exception;
+                    }
+                }
+            }
             if(conceptionKindCorrelationList != null && !conceptionKindCorrelationList.isEmpty()){}
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
