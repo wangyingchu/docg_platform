@@ -23,9 +23,12 @@ public class GetListConceptionEntityValueTransformer implements DataTransformer<
     private List<String> returnedAttributeList;
     private Map<String,AttributeDataType> attributeDataTypeMap;
     private boolean useIDMatchLogic = true;
+    private boolean useAttributesAggregateLogic = false;
+    private String aggregateParameterName;
 
     public GetListConceptionEntityValueTransformer(List<String> returnedAttributeList){
         this.returnedAttributeList = returnedAttributeList;
+        this.attributeDataTypeMap = new HashMap<>();
         this.setUseIDMatchLogic(false);
         this.attributeDataTypeMap = new HashMap<>();
     }
@@ -40,6 +43,11 @@ public class GetListConceptionEntityValueTransformer implements DataTransformer<
             AttributeDataType attributeDataType = currentAttributeKind.getAttributeDataType();
             this.attributeDataTypeMap.put(attributeName,attributeDataType);
         }
+    }
+
+    public GetListConceptionEntityValueTransformer(String aggregateParameterName){
+        this.useAttributesAggregateLogic = true;
+        this.aggregateParameterName = aggregateParameterName;
     }
 
     @Override
@@ -68,7 +76,13 @@ public class GetListConceptionEntityValueTransformer implements DataTransformer<
             currentConceptionEntityValue.setAllConceptionKindNames(allConceptionKindNames);
             conceptionEntityValueList.add(currentConceptionEntityValue);
             if(this.isUseIDMatchLogic()){
-                if(returnedAttributeList != null){
+                if(useAttributesAggregateLogic){
+                    if(this.aggregateParameterName != null){}
+
+
+
+
+                }else if(returnedAttributeList != null){
                     for(String currentAttributeName:returnedAttributeList){
                         String entityAttributeName = CypherBuilder.operationResultName+"."+currentAttributeName;
                         Object objectValue = valueMap.get(entityAttributeName);
