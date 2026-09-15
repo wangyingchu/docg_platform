@@ -45,6 +45,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder.operationResultName;
+
 public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
 
     private CoreRealm coreRealm;
@@ -111,7 +113,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                 "with collect(targetNodes) as nodes\n" +
                 "CALL apoc.algo.cover(nodes)\n" +
                 "YIELD rel\n" +
-                "RETURN startNode(rel) as "+CypherBuilder.sourceNodeName+", rel as "+CypherBuilder.operationResultName+", endNode(rel) as "+CypherBuilder.targetNodeName+";";
+                "RETURN startNode(rel) as "+CypherBuilder.sourceNodeName+", rel as "+ operationResultName+", endNode(rel) as "+CypherBuilder.targetNodeName+";";
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
@@ -274,8 +276,8 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
             String queryCql = CypherBuilder.setRelationKindProperties("NOT_EXIST_RELATION_KIND",attributes);
-            String queryByUIDListPart = "MATCH (source)-["+CypherBuilder.operationResultName+"]->(target) WHERE id("+CypherBuilder.operationResultName+") IN "+relationEntityUIDs.toString()+"\n";
-            String queryByUIDsCql =queryCql.replace("MATCH (sourceNode)-["+CypherBuilder.operationResultName+":`NOT_EXIST_RELATION_KIND`]->(targetNode)",queryByUIDListPart);
+            String queryByUIDListPart = "MATCH (source)-["+ operationResultName+"]->(target) WHERE id("+ operationResultName+") IN "+relationEntityUIDs.toString()+"\n";
+            String queryByUIDsCql =queryCql.replace("MATCH (sourceNode)-["+ operationResultName+":`NOT_EXIST_RELATION_KIND`]->(targetNode)",queryByUIDListPart);
             logger.debug("Generated Cypher Statement: {}", queryByUIDsCql);
 
             GetLongFormatAggregatedReturnValueTransformer getLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
@@ -338,8 +340,8 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try{
             String queryCql = CypherBuilder.setConceptionKindProperties("NOT_EXIST_CONCEPTION_KIND",attributes);
-            String queryByUIDListPart = "MATCH ("+CypherBuilder.operationResultName+") WHERE id("+CypherBuilder.operationResultName+") IN " + conceptionEntityUIDs.toString()+"\n";
-            String queryByUIDsCql =queryCql.replace("MATCH ("+CypherBuilder.operationResultName+":`NOT_EXIST_CONCEPTION_KIND`)",queryByUIDListPart);
+            String queryByUIDListPart = "MATCH ("+ operationResultName+") WHERE id("+ operationResultName+") IN " + conceptionEntityUIDs.toString()+"\n";
+            String queryByUIDsCql =queryCql.replace("MATCH ("+ operationResultName+":`NOT_EXIST_CONCEPTION_KIND`)",queryByUIDListPart);
             logger.debug("Generated Cypher Statement: {}", queryByUIDsCql);
 
             GetLongFormatAggregatedReturnValueTransformer GetLongFormatAggregatedReturnValueTransformer = new GetLongFormatAggregatedReturnValueTransformer("count");
@@ -435,7 +437,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                 +"WITH collect(n) AS entities\n" +
                 "CALL apoc.create.removeProperties(entities, "+attributeNameStr+")\n" +
                 "YIELD node\n" +
-                "RETURN count(node) AS "+CypherBuilder.operationResultName;
+                "RETURN count(node) AS "+ operationResultName;
         logger.debug("Generated Cypher Statement: {}", queryCql);
 
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
@@ -706,13 +708,13 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         }
 
         String entityQueryCQL = CypherBuilder.matchNodesWithQueryParameters(sourceKindName,queryParameters, CypherBuilder.CypherFunctionType.ID);
-        entityQueryCQL = entityQueryCQL.replace("RETURN id("+CypherBuilder.operationResultName+") LIMIT 100","");
+        entityQueryCQL = entityQueryCQL.replace("RETURN id("+ operationResultName+") LIMIT 100","");
 
-        String labelModifyText = CypherBuilder.operationResultName;
+        String labelModifyText = operationResultName;
         for(String currentLabel:newKindNames){
             labelModifyText = labelModifyText+ ":"+currentLabel;
         }
-        entityQueryCQL= entityQueryCQL+ "SET "+labelModifyText+" RETURN id("+CypherBuilder.operationResultName+")";
+        entityQueryCQL= entityQueryCQL+ "SET "+labelModifyText+" RETURN id("+ operationResultName+")";
         logger.debug("Generated Cypher Statement: {}", entityQueryCQL);
 
         List<String> resultEntityUIDsList = null;
@@ -756,9 +758,9 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         }
 
         String entityQueryCQL = CypherBuilder.matchNodesWithQueryParameters(sourceKindName,queryParameters, CypherBuilder.CypherFunctionType.ID);
-        entityQueryCQL = entityQueryCQL.replace("RETURN id("+CypherBuilder.operationResultName+") LIMIT 100","");
+        entityQueryCQL = entityQueryCQL.replace("RETURN id("+ operationResultName+") LIMIT 100","");
 
-        entityQueryCQL= entityQueryCQL+ "REMOVE "+CypherBuilder.operationResultName+":"+kindName+" RETURN id("+CypherBuilder.operationResultName+")";
+        entityQueryCQL= entityQueryCQL+ "REMOVE "+ operationResultName+":"+kindName+" RETURN id("+ operationResultName+")";
         logger.debug("Generated Cypher Statement: {}", entityQueryCQL);
 
         List<String> resultEntityUIDsList = null;
@@ -803,13 +805,13 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         queryParameters.setDefaultFilteringItem(new UIDInValueFilteringItem(conceptionEntityUIDs));
 
         String entityQueryCQL = CypherBuilder.matchNodesWithQueryParameters(null,queryParameters, CypherBuilder.CypherFunctionType.ID);
-        entityQueryCQL = entityQueryCQL.replace("RETURN id("+CypherBuilder.operationResultName+") LIMIT 100","");
+        entityQueryCQL = entityQueryCQL.replace("RETURN id("+ operationResultName+") LIMIT 100","");
 
-        String labelModifyText = CypherBuilder.operationResultName;
+        String labelModifyText = operationResultName;
         for(String currentLabel:newKindNames){
             labelModifyText = labelModifyText+ ":"+currentLabel;
         }
-        entityQueryCQL= entityQueryCQL+ "SET "+labelModifyText+" RETURN id("+CypherBuilder.operationResultName+")";
+        entityQueryCQL= entityQueryCQL+ "SET "+labelModifyText+" RETURN id("+ operationResultName+")";
         logger.debug("Generated Cypher Statement: {}", entityQueryCQL);
 
         List<String> resultEntityUIDsList = null;
@@ -854,9 +856,9 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         queryParameters.setDefaultFilteringItem(new UIDInValueFilteringItem(conceptionEntityUIDs));
 
         String entityQueryCQL = CypherBuilder.matchNodesWithQueryParameters(null,queryParameters, CypherBuilder.CypherFunctionType.ID);
-        entityQueryCQL = entityQueryCQL.replace("RETURN id("+CypherBuilder.operationResultName+") LIMIT 100","");
+        entityQueryCQL = entityQueryCQL.replace("RETURN id("+ operationResultName+") LIMIT 100","");
 
-        entityQueryCQL= entityQueryCQL+ "REMOVE "+CypherBuilder.operationResultName+":"+kindName+" RETURN id("+CypherBuilder.operationResultName+")";
+        entityQueryCQL= entityQueryCQL+ "REMOVE "+ operationResultName+":"+kindName+" RETURN id("+ operationResultName+")";
         logger.debug("Generated Cypher Statement: {}", entityQueryCQL);
 
         List<String> resultEntityUIDsList = null;
@@ -906,7 +908,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
         }
 
         String entityQueryCQL = CypherBuilder.matchNodesWithQueryParameters(sourceKindName,queryParameters, CypherBuilder.CypherFunctionType.ID);
-        entityQueryCQL = entityQueryCQL.replace("RETURN id("+CypherBuilder.operationResultName+") LIMIT 100","");
+        entityQueryCQL = entityQueryCQL.replace("RETURN id("+ operationResultName+") LIMIT 100","");
 
         String relationTypeMatchingStr = relationKindName != null ? "r:"+relationKindName:"r";
         String relationPathMatchingStr = "-[r]-";
@@ -920,9 +922,9 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             }
         }
         String targetKindMatchingStr = targetConceptionKindName != null ? "target:"+targetConceptionKindName : "target";
-        String cypherProcedureString = "MATCH (source)"+relationPathMatchingStr+"("+targetKindMatchingStr+") WHERE id(source) IN sourceUIDs RETURN r AS "+CypherBuilder.operationResultName;
+        String cypherProcedureString = "MATCH (source)"+relationPathMatchingStr+"("+targetKindMatchingStr+") WHERE id(source) IN sourceUIDs RETURN r AS "+ operationResultName;
         entityQueryCQL = entityQueryCQL+" \n"+
-                "WITH collect(id("+CypherBuilder.operationResultName+")) AS sourceUIDs"+" \n"+
+                "WITH collect(id("+ operationResultName+")) AS sourceUIDs"+" \n"+
                 cypherProcedureString;
         logger.debug("Generated Cypher Statement: {}", entityQueryCQL);
         List<RelationEntityValue> resultEntitiesValues = null;
@@ -995,7 +997,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             }
         }
         String targetKindMatchingStr = targetConceptionKindName != null ? "target:"+targetConceptionKindName : "target";
-        String cypherProcedureString = "MATCH (source)"+relationPathMatchingStr+"("+targetKindMatchingStr+") WHERE id(source) IN "+ conceptionEntityUIDs.toString()+" RETURN r AS "+CypherBuilder.operationResultName;
+        String cypherProcedureString = "MATCH (source)"+relationPathMatchingStr+"("+targetKindMatchingStr+") WHERE id(source) IN "+ conceptionEntityUIDs.toString()+" RETURN r AS "+ operationResultName;
         logger.debug("Generated Cypher Statement: {}", cypherProcedureString);
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
         try {
@@ -1622,7 +1624,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             }else{
                 queryCql = queryCql.replace("RETURN","WHERE "+conceptionEntitiesUIDQueryPart+" RETURN");
             }
-            queryCql = queryCql.replace("RETURN "+CypherBuilder.operationResultName,"RETURN "+CypherBuilder.operationResultName+",conceptionEntity");
+            queryCql = queryCql.replace("RETURN "+ operationResultName,"RETURN "+ operationResultName+",conceptionEntity");
             logger.debug("Generated Cypher Statement: {}", queryCql);
 
             try{
@@ -1706,7 +1708,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             }else{
                 queryCql = queryCql.replace("RETURN","WHERE "+conceptionEntitiesUIDQueryPart+" RETURN");
             }
-            queryCql = queryCql.replace("RETURN "+CypherBuilder.operationResultName,"RETURN "+CypherBuilder.operationResultName+",conceptionEntity");
+            queryCql = queryCql.replace("RETURN "+ operationResultName,"RETURN "+ operationResultName+",conceptionEntity");
             logger.debug("Generated Cypher Statement: {}", queryCql);
 
             try{
@@ -2172,7 +2174,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
             }
 
             String entityQueryCQL = CypherBuilder.matchNodesWithQueryParameters("PLACEHOLDERKINDNAME",queryParameters, CypherBuilder.CypherFunctionType.ID);
-            entityQueryCQL = entityQueryCQL.replace("RETURN id("+CypherBuilder.operationResultName+") LIMIT 100","");
+            entityQueryCQL = entityQueryCQL.replace("RETURN id("+ operationResultName+") LIMIT 100","");
             entityQueryCQL = entityQueryCQL.replace("MATCH (operationResult:`PLACEHOLDERKINDNAME`)","");
             entityQueryCQL = entityQueryCQL.replaceAll("operationResult","classification");
             whereCQL = entityQueryCQL+ " AND id(conceptionEntities) IN " + conceptionEntityUIDs + "\n";
@@ -2253,6 +2255,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                         List<String> attributeNames = conceptionKindMatchLogic.getAttributeNames();
                         if(attributeNames != null && !attributeNames.isEmpty()){
                             String queryCql = CypherBuilder.matchAttributesWithQueryParameters(currentConceptionKindName,queryParameters,attributeNames);
+                            logger.debug("Generated Cypher Statement: {}", queryCql);
                             GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer = new GetListConceptionEntityValueTransformer(attributeNames);
                             getListConceptionEntityValueTransformer.setUseIDMatchLogic(true);
                             Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
@@ -2267,14 +2270,15 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                             }
                             attributeNames.add("__PLACEHOLDER_COREREALM__");
                             String queryCql = CypherBuilder.matchAttributesWithQueryParameters(currentConceptionKindName,queryParameters,attributeNames);
-                            queryCql = queryCql.replace("operationResult.__PLACEHOLDER_COREREALM__","properties(operationResult)");
-
-                            System.out.println(queryCql);
-
-
+                            queryCql = queryCql.replace(operationResultName+".__PLACEHOLDER_COREREALM__","properties("+operationResultName+")");
+                            logger.debug("Generated Cypher Statement: {}", queryCql);
+                            GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer = new GetListConceptionEntityValueTransformer("properties("+operationResultName+")");
+                            Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
+                            if(resEntityRes != null){
+                                List<ConceptionEntityValue> resultEntityValues = (List<ConceptionEntityValue>)resEntityRes;
+                                conceptionEntityValuesMap.put(currentConceptionKindName,resultEntityValues);
+                            }
                         }
-
-
                     }else{
                         logger.error("QueryParameters and EntityKind defined in QueryParameters are required.");
                         CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();

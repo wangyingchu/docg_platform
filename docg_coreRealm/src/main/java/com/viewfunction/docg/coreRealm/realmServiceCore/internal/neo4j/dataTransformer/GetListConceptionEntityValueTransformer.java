@@ -77,11 +77,12 @@ public class GetListConceptionEntityValueTransformer implements DataTransformer<
             conceptionEntityValueList.add(currentConceptionEntityValue);
             if(this.isUseIDMatchLogic()){
                 if(useAttributesAggregateLogic){
-                    if(this.aggregateParameterName != null){}
-
-
-
-
+                    if(this.aggregateParameterName != null){
+                        Object objectValue = valueMap.get(this.aggregateParameterName);
+                        if(objectValue instanceof Map){
+                            entityAttributesValue.putAll((Map)objectValue);
+                        }
+                    }
                 }else if(returnedAttributeList != null){
                     for(String currentAttributeName:returnedAttributeList){
                         String entityAttributeName = CypherBuilder.operationResultName+"."+currentAttributeName;
