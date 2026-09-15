@@ -554,5 +554,6 @@ public interface CrossKindDataOperator {
      *
      * @return 符合匹配条件的查询结果
      */
-    public DynamicContentUnionQueryResult getAdhocUnionQueryResult(List<KindAttributesMatchLogic> conceptionKindMatchList, List<KindAttributesMatchLogic> relationKindMatchList, List<ConceptionKindCorrelationInfo> conceptionKindCorrelationList);
+    public DynamicContentUnionQueryResult executeAdhocUnionQuery(List<KindAttributesMatchLogic> conceptionKindMatchList, List<KindAttributesMatchLogic> relationKindMatchList, List<ConceptionKindCorrelationInfo> conceptionKindCorrelationList) throws CoreRealmServiceEntityExploreException;
 }
+

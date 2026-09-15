@@ -9,7 +9,7 @@ public class KindAttributesMatchLogic {
 
     public KindAttributesMatchLogic() {}
 
-    public KindAttributesMatchLogic(List<String> attributeNames, QueryParameters queryParameters) {
+    public KindAttributesMatchLogic(QueryParameters queryParameters,List<String> attributeNames) {
         this.attributeNames = attributeNames;
         this.queryParameters = queryParameters;
     }

@@ -2237,59 +2237,59 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public DynamicContentUnionQueryResult getAdhocUnionQueryResult(List<KindAttributesMatchLogic> conceptionKindMatchList, List<KindAttributesMatchLogic> relationKindMatchList, List<ConceptionKindCorrelationInfo> conceptionKindCorrelationList) {
-        if(conceptionKindMatchList != null && !conceptionKindMatchList.isEmpty()){
-            conceptionKindMatchList.forEach(conceptionKindMatchLogic ->{
-                QueryParameters queryParameters = conceptionKindMatchLogic.getQueryParameters();
-                if(queryParameters != null && queryParameters.getEntityKind() != null){
-                    String currentConceptionKindName = queryParameters.getEntityKind();
-                    List<String> attributeNames = conceptionKindMatchLogic.getAttributeNames();
-                    try {
-                        if(attributeNames == null){
-                            attributeNames = new ArrayList<>();
-                        }
-                        if(attributeNames.isEmpty()){
+    public DynamicContentUnionQueryResult executeAdhocUnionQuery(List<KindAttributesMatchLogic> conceptionKindMatchList, List<KindAttributesMatchLogic> relationKindMatchList, List<ConceptionKindCorrelationInfo> conceptionKindCorrelationList) throws CoreRealmServiceEntityExploreException {
+        DynamicContentUnionQueryResult dynamicContentUnionQueryResult = new DynamicContentUnionQueryResult();
+        dynamicContentUnionQueryResult.setStartTime(new Date());
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            if(conceptionKindMatchList != null && !conceptionKindMatchList.isEmpty()){
+                Map<String, List<ConceptionEntityValue>> conceptionEntityValuesMap = new HashMap<String, List<ConceptionEntityValue>>();
+                dynamicContentUnionQueryResult.setConceptionKindsEntityValueMap(conceptionEntityValuesMap);
+
+                for(KindAttributesMatchLogic conceptionKindMatchLogic : conceptionKindMatchList){
+                    QueryParameters queryParameters = conceptionKindMatchLogic.getQueryParameters();
+                    if(queryParameters != null && queryParameters.getEntityKind() != null){
+                        String currentConceptionKindName = queryParameters.getEntityKind();
+                        List<String> attributeNames = conceptionKindMatchLogic.getAttributeNames();
+                        if(attributeNames != null && !attributeNames.isEmpty()){
+                            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(currentConceptionKindName,queryParameters,attributeNames);
+                            GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer = new GetListConceptionEntityValueTransformer(attributeNames);
+                            getListConceptionEntityValueTransformer.setUseIDMatchLogic(true);
+                            Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
+                            if(resEntityRes != null){
+                                List<ConceptionEntityValue> resultEntityValues = (List<ConceptionEntityValue>)resEntityRes;
+                                conceptionEntityValuesMap.put(currentConceptionKindName,resultEntityValues);
+                            }
+                        }else{
+                            //not defined attributeNames,so need get all attributes
+                            if(attributeNames == null){
+                                attributeNames = new ArrayList<>();
+                            }
                             attributeNames.add("__PLACEHOLDER_COREREALM__");
+                            String queryCql = CypherBuilder.matchAttributesWithQueryParameters(currentConceptionKindName,queryParameters,attributeNames);
+                            queryCql = queryCql.replace("operationResult.__PLACEHOLDER_COREREALM__","properties(operationResult)");
+
+                            System.out.println(queryCql);
+
+
                         }
 
-                        String queryCql = CypherBuilder.matchAttributesWithQueryParameters(currentConceptionKindName,queryParameters,attributeNames);
 
-
-
-
-                        System.out.println(queryCql);
-
-
-                    } catch (CoreRealmServiceEntityExploreException e) {
-                        throw new RuntimeException(e);
+                    }else{
+                        logger.error("QueryParameters and EntityKind defined in QueryParameters are required.");
+                        CoreRealmServiceEntityExploreException exception = new CoreRealmServiceEntityExploreException();
+                        exception.setCauseMessage("QueryParameters and EntityKind defined in QueryParameters are required.");
+                        throw exception;
                     }
                 }
-
-
-
-
-
-
-
-            });
+            }
+            if(relationKindMatchList != null && !relationKindMatchList.isEmpty()){}
+            if(conceptionKindCorrelationList != null && !conceptionKindCorrelationList.isEmpty()){}
+        } finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
-
-
-        if(relationKindMatchList != null && !relationKindMatchList.isEmpty()){}
-
-
-        if(conceptionKindCorrelationList != null && !conceptionKindCorrelationList.isEmpty()){}
-
-
-
-
-
-
-
-
-
-
-        return null;
+        dynamicContentUnionQueryResult.setFinishTime(new Date());
+        return dynamicContentUnionQueryResult;
     }
 
     public void setGlobalGraphOperationExecutor(GraphOperationExecutor graphOperationExecutor) {
