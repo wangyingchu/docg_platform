@@ -812,6 +812,15 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public ConceptionEntitiesRetrieveResult getEntities(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
 
     /**
+     * 查询符合过滤条件的当前概念类型的概念实体对象的全部属性
+     *
+     * @param queryParameters QueryParameters 查询过滤条件
+     *
+     * @return 概念实体属性查询结果集
+     */
+    public ConceptionEntitiesAttributesRetrieveResult getEntitiesWithAllAttributes(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
+
+    /**
      * 计算符合实体过滤条件，并且与指定的概念类型的实体通过特定的关系类型能够关联匹配的当前概念类型的概念实体对象数量
      *
      * @param attributesParameters AttributesParameters 查询过滤条件

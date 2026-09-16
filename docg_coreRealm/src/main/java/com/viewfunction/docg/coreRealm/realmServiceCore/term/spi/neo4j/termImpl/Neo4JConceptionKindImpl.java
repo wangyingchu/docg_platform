@@ -37,6 +37,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder.operationResultName;
+
 public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExternalAttributesValueAccessible {
 
     private static Logger logger = LoggerFactory.getLogger(Neo4JConceptionKindImpl.class);
@@ -623,6 +625,35 @@ public class Neo4JConceptionKindImpl implements Neo4JConceptionKind, Neo4JExtern
             return commonConceptionEntitiesRetrieveResultImpl;
         }
        return null;
+    }
+
+    @Override
+    public ConceptionEntitiesAttributesRetrieveResult getEntitiesWithAllAttributes(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException {
+        if (queryParameters != null) {
+            CommonConceptionEntitiesAttributesRetrieveResultImpl commonConceptionEntitiesAttributesRetrieveResultImpl
+                    = new CommonConceptionEntitiesAttributesRetrieveResultImpl();
+            commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+            GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+            try {
+                List<String> attributeNames = new ArrayList<>();
+                attributeNames.add("__PLACEHOLDER_COREREALM__");
+                String queryCql = CypherBuilder.matchAttributesWithQueryParameters(this.conceptionKindName,queryParameters,attributeNames);
+                queryCql = queryCql.replace(operationResultName+".__PLACEHOLDER_COREREALM__","properties("+operationResultName+")");
+                logger.debug("Generated Cypher Statement: {}", queryCql);
+                GetListConceptionEntityValueTransformer getListConceptionEntityValueTransformer = new GetListConceptionEntityValueTransformer("properties("+operationResultName+")");
+                Object resEntityRes = workingGraphOperationExecutor.executeRead(getListConceptionEntityValueTransformer, queryCql);
+                if(resEntityRes != null){
+                    List<ConceptionEntityValue> resultEntityValues = (List<ConceptionEntityValue>)resEntityRes;
+                    commonConceptionEntitiesAttributesRetrieveResultImpl.addConceptionEntitiesAttributes(resultEntityValues);
+                    commonConceptionEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultEntityValues.size());
+                }
+            }finally {
+                this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+            }
+            commonConceptionEntitiesAttributesRetrieveResultImpl.finishEntitiesRetrieving();
+            return commonConceptionEntitiesAttributesRetrieveResultImpl;
+        }
+        return null;
     }
 
     @Override
