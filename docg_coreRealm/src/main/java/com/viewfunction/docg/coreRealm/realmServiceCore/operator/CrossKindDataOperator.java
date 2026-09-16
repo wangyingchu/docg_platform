@@ -550,10 +550,10 @@ public interface CrossKindDataOperator {
      *
      * @param conceptionKindMatchList List<KindAttributesMatchLogic> 概念类型属性查询匹配列表
      * @param relationKindMatchList List<KindAttributesMatchLogic> 关系类型属性查询匹配列表
-     * @param conceptionKindCorrelationList List<ConceptionKindCorrelationInfo> 概念实体关联规则列表
+     * @param allowRelationsAttachToNotMatchedConceptionEntities boolean 允许返回与查询结果概念实体不相关的关系实体
      *
      * @return 符合匹配条件的查询结果
      */
-    public DynamicContentUnionQueryResult executeAdhocUnionQuery(List<KindAttributesMatchLogic> conceptionKindMatchList, List<KindAttributesMatchLogic> relationKindMatchList, List<ConceptionKindCorrelationInfo> conceptionKindCorrelationList) throws CoreRealmServiceEntityExploreException;
+    public DynamicContentUnionQueryResult executeAdhocUnionQuery(List<KindAttributesMatchLogic> conceptionKindMatchList, List<KindAttributesMatchLogic> relationKindMatchList, boolean allowRelationsAttachToNotMatchedConceptionEntities) throws CoreRealmServiceEntityExploreException;
 }
 

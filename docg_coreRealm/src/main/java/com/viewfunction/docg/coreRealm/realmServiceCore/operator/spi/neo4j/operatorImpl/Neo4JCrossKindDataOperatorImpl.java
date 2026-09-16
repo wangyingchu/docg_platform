@@ -2239,7 +2239,7 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
     }
 
     @Override
-    public DynamicContentUnionQueryResult executeAdhocUnionQuery(List<KindAttributesMatchLogic> conceptionKindMatchList, List<KindAttributesMatchLogic> relationKindMatchList, List<ConceptionKindCorrelationInfo> conceptionKindCorrelationList) throws CoreRealmServiceEntityExploreException {
+    public DynamicContentUnionQueryResult executeAdhocUnionQuery(List<KindAttributesMatchLogic> conceptionKindMatchList, List<KindAttributesMatchLogic> relationKindMatchList, boolean allowRelationsAttachToNotMatchedConceptionEntities) throws CoreRealmServiceEntityExploreException {
         DynamicContentUnionQueryResult dynamicContentUnionQueryResult = new DynamicContentUnionQueryResult();
         dynamicContentUnionQueryResult.setStartTime(new Date());
         GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
@@ -2329,7 +2329,9 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                     }
                 }
             }
-            if(conceptionKindCorrelationList != null && !conceptionKindCorrelationList.isEmpty()){}
+            if(!allowRelationsAttachToNotMatchedConceptionEntities){
+
+            }
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
         }
