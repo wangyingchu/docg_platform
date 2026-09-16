@@ -2330,7 +2330,26 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                 }
             }
             if(!allowRelationsAttachToNotMatchedConceptionEntities){
-
+                if(dynamicContentUnionQueryResult.getConceptionKindsEntityValueMap() != null
+                        && !dynamicContentUnionQueryResult.getConceptionKindsEntityValueMap().isEmpty()
+                        && dynamicContentUnionQueryResult.getRelationKindsEntityValueMap() != null
+                        && !dynamicContentUnionQueryResult.getRelationKindsEntityValueMap().isEmpty()
+                ){
+                    Set<String> existingConceptionEntityUIDsSet = new HashSet<>();
+                    Map<String, List<ConceptionEntityValue>> existingConceptionEntitiesValueMap = dynamicContentUnionQueryResult.getConceptionKindsEntityValueMap();
+                    existingConceptionEntitiesValueMap.values().forEach(existingConceptionEntities -> {
+                        existingConceptionEntities.forEach(existingConceptionEntity -> {
+                            existingConceptionEntityUIDsSet.add(existingConceptionEntity.getConceptionEntityUID());
+                        });
+                    });
+                    Map<String, List<RelationEntityValue>> existingRelationEntitiesValueMap = dynamicContentUnionQueryResult.getRelationKindsEntityValueMap();
+                    existingRelationEntitiesValueMap.values().forEach(list ->
+                            list.removeIf(e ->
+                                    !existingConceptionEntityUIDsSet.contains(e.getFromConceptionEntityUID())
+                                            && !existingConceptionEntityUIDsSet.contains(e.getToConceptionEntityUID())
+                            )
+                    );
+                }
             }
         } finally {
             this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
