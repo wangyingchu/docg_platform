@@ -2311,10 +2311,10 @@ public class Neo4JCrossKindDataOperatorImpl implements CrossKindDataOperator {
                             //not defined attributeNames,so need get all attributes
                             String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,
                                     null,null,false,queryParameters,null);
-                            queryCql = queryCql.replace("RETURN "+operationResultName+",","RETURN operationResult, properties("+operationResultName+"),");
+                            queryCql = queryCql.replace("RETURN "+operationResultName+",","RETURN "+operationResultName+", properties("+operationResultName+"),");
                             logger.debug("Generated Cypher Statement: {}", queryCql);
                             GetListRelationEntityValueTransformer getListRelationEntityValueTransformer =
-                                    new GetListRelationEntityValueTransformer("properties(operationResult)");
+                                    new GetListRelationEntityValueTransformer("properties("+operationResultName+")");
                             Object queryRes = workingGraphOperationExecutor.executeRead(getListRelationEntityValueTransformer,queryCql);
                             if(queryRes != null){
                                 List<RelationEntityValue> resultEntityValues = (List<RelationEntityValue>)queryRes;

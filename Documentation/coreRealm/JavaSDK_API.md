@@ -1496,6 +1496,15 @@ DOCG 数据分析平台的业务模型使用以下的术语来描述实现一个
     public RelationEntitiesRetrieveResult getRelationEntities(QueryParameters queryParameters)  throws CoreRealmServiceEntityExploreException;
 
     /**
+     * 查询符合过滤条件的当前关系类型的关系实体对象的全部属性
+     *
+     * @param queryParameters QueryParameters 查询过滤条件
+     *
+     * @return 关系实体属性查询结果集
+     */
+    public RelationEntitiesAttributesRetrieveResult getRelationEntitiesWithAllAttributes(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException;
+
+    /**
      * 删除当前关系类型的所有关系实体
      *
      * @return 实体对象操作返回结果

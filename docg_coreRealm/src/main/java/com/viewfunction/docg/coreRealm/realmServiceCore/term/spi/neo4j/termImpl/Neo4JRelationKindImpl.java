@@ -32,6 +32,8 @@ import org.slf4j.LoggerFactory;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static com.viewfunction.docg.coreRealm.realmServiceCore.internal.neo4j.CypherBuilder.operationResultName;
+
 public class Neo4JRelationKindImpl implements Neo4JRelationKind {
 
     private static Logger logger = LoggerFactory.getLogger(Neo4JRelationKindImpl.class);
@@ -198,6 +200,37 @@ public class Neo4JRelationKindImpl implements Neo4JRelationKind {
             return commonRelationEntitiesRetrieveResultImpl;
         }
         return null;
+    }
+
+    @Override
+    public RelationEntitiesAttributesRetrieveResult getRelationEntitiesWithAllAttributes(QueryParameters queryParameters) throws CoreRealmServiceEntityExploreException {
+        CommonRelationEntitiesAttributesRetrieveResultImpl commonRelationEntitiesAttributesRetrieveResultImpl =
+                new CommonRelationEntitiesAttributesRetrieveResultImpl();
+        commonRelationEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setQueryParameters(queryParameters);
+        if(queryParameters == null){
+            queryParameters = new QueryParameters();
+        }
+        GraphOperationExecutor workingGraphOperationExecutor = this.graphOperationExecutorHelper.getWorkingGraphOperationExecutor();
+        try{
+            queryParameters.setEntityKind(this.relationKindName);
+            String queryCql = CypherBuilder.matchRelationshipsWithQueryParameters(CypherBuilder.CypherFunctionType.ID,
+                    null,null,false,queryParameters,null);
+            queryCql = queryCql.replace("RETURN "+operationResultName+",","RETURN "+operationResultName+", properties("+operationResultName+"),");
+            logger.debug("Generated Cypher Statement: {}", queryCql);
+            GetListRelationEntityValueTransformer getListRelationEntityValueTransformer =
+                    new GetListRelationEntityValueTransformer("properties("+operationResultName+")");
+            Object queryRes = workingGraphOperationExecutor.executeRead(getListRelationEntityValueTransformer,queryCql);
+
+            if(queryRes != null){
+                List<RelationEntityValue> resultEntitiesValues = (List<RelationEntityValue>)queryRes;
+                commonRelationEntitiesAttributesRetrieveResultImpl.addRelationEntitiesAttributes(resultEntitiesValues);
+                commonRelationEntitiesAttributesRetrieveResultImpl.getOperationStatistics().setResultEntitiesCount(resultEntitiesValues.size());
+            }
+        }finally {
+            this.graphOperationExecutorHelper.closeWorkingGraphOperationExecutor();
+        }
+        commonRelationEntitiesAttributesRetrieveResultImpl.finishEntitiesRetrieving();
+        return commonRelationEntitiesAttributesRetrieveResultImpl;
     }
 
     @Override
