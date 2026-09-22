@@ -6,7 +6,7 @@
 
     <groupId>com.viewfunction</groupId>
     <artifactId>docg_coreRealm</artifactId>
-    <version>1.1</version>
+    <version>1.1.0</version>
 
     <properties>
         <neo4j.version>6.2.1</neo4j.version>
@@ -189,4 +189,12 @@
             </plugin>
         </plugins>
     </build>
+
+    <!-- for deploy to aliyun codeup ViewFunction packages service-->
+    <distributionManagement>
+        <repository>
+            <id>2535360-release-VZLLbW</id> <!-- 必须与 settings.xml 中 server 的 id 完全一致 -->
+            <url>https://packages.aliyun.com/680caa2481f0d609ac6a24a8/maven/2535360-release-vzllbw</url>
+        </repository>
+    </distributionManagement>
 </project>
