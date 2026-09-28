@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 public interface RelationKind extends MetaConfigItemFeatureSupportable, MetaAttributeFeatureSupportable, ClassificationAttachable, StatisticalAndEvaluable {
+    // 问题不大，我们再来 ～
     /**
      * 获取当前关系类型对象名称
      *
