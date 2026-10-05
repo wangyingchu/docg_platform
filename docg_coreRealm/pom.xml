@@ -10,7 +10,7 @@
 
     <properties>
         <neo4j.version>6.2.1</neo4j.version>
-        <neo4j-cypher-dsl.version>2025.3.0</neo4j-cypher-dsl.version>
+        <neo4j-cypher-dsl.version>2025.3.4</neo4j-cypher-dsl.version>
         <geotools.version>29.1</geotools.version>
     </properties>
 
